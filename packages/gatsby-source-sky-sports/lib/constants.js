@@ -8,6 +8,7 @@ module.exports = {
     nodeTypes: {
       gameWeeks: 'gameWeeks',
       cup: 'cup',
+      transfers: 'transfers',
       skySportsFixtures: 'skySportsFixtures',
       skySportsScores: 'skySportsScores',
       skySportsPlayers: 'skySportsPlayers',

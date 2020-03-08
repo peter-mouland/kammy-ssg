@@ -15,16 +15,18 @@ module.exports = () => {
     fetchSkySportsScoreData(),
     fetchGoogleGameWeeksData(),
     fetchGoogleCupData(),
+    fetchGoogleTransfersData(),
     // fetchGoogleDivisionsData(),
     // fetchGooglePlayersData(),
   ])
-    .then(([fixtureData, playerData, scoreData, googleGameWeekData, googleCupData, googleDivisionData, googlePlayerData ]) => {
+    .then(([fixtureData, playerData, scoreData, googleGameWeekData, googleCupData, googleTransferData, googleDivisionData, googlePlayerData ]) => {
       return {
         fixtureData,
         playerData,
         scoreData,
         googleGameWeekData,
         googleCupData,
+        googleTransferData,
       };
     })
 };

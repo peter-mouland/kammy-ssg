@@ -6,6 +6,7 @@ const buildFixtures = require('./builds/sky-sports-fixtures');
 const buildPlayers = require('./builds/sky-sports-players');
 const buildGameWeeks = require('./builds/game-weeks');
 const buildCup = require('./builds/cup');
+const buildTransfers = require('./builds/transfers');
 
 const createNode = ({ actions, createNodeId, node }) =>
     actions.createNode({
@@ -28,6 +29,7 @@ exports.sourceNodes = async (
       scoreData,
       googleGameWeekData,
       googleCupData,
+      googleTransferData,
       // googleDivisionData,
       // googlePlayerData,
     } = await fetchAllData();
@@ -38,6 +40,7 @@ exports.sourceNodes = async (
     const scores = buildScores({ scoreData });
     const gameWeeks = buildGameWeeks({ googleGameWeekData });
     const cup = buildCup({ googleCupData });
+    const transfers = buildTransfers({ googleTransferData });
 
     // create all the gatsby nodes
     const nodePromises = [
@@ -46,6 +49,7 @@ exports.sourceNodes = async (
         ...(scores || []),
         ...(gameWeeks || []),
         ...(cup || []),
+        ...(transfers || []),
     ].map((node) => createNode({ actions, createNodeId, node }));
 
     return Promise.all(nodePromises);
