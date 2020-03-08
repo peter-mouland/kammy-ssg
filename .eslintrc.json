@@ -1,0 +1,60 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:import/recommended",
+    "airbnb/base",
+    "plugin:import/errors",
+    "plugin:import/warnings"
+  ],
+  "env": {
+    "browser": true
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".json"]
+      }
+    },
+    "react": {
+      "version": "16.8.6"
+    }
+  },
+  "plugins": ["react"],
+  "rules": {
+    "indent": [2, 2],
+    "react/jsx-indent": [2, 2],
+    "react/jsx-indent-props": [2, 2],
+    "quotes": [ "error", "single" ],
+    "semi": [ "error", "always" ],
+    "no-console": 0,
+    "func-style": [ "error", "declaration", { "allowArrowFunctions": true } ],
+    "eol-last": [ "error", "always" ],
+    "arrow-body-style": ["error", "as-needed", {
+      "requireReturnForObjectLiteral": false
+    }],
+    "react/jsx-wrap-multilines": [2, {
+      "declaration": "parens-new-line",
+      "assignment": "parens-new-line",
+      "return": "parens-new-line",
+      "arrow": "parens-new-line",
+      "condition": "parens-new-line",
+      "logical": "parens-new-line",
+      "prop": "parens-new-line"
+    }],
+    "max-len": [2, { "code": 120, "ignoreStrings": true }],
+    "arrow-parens": [2, "always"],
+    "function-paren-newline": 0,
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^log" }],
+    "id-length": [2, {"exceptions": ["e", "i"]}],
+    "no-underscore-dangle": ["error", {"allow": ["_id" ]}],
+    "import/no-extraneous-dependencies": 0
+  }
+}

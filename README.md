@@ -1,1 +1,6 @@
-# kammy-ssg
+# Kammy-ssg
+
+ > Static Site Generator for Kammy Draft Fantasy Football
+
+Uses Gatsby
+

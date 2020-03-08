@@ -1,0 +1,85 @@
+{
+  "name": "kammy-data",
+  "version": "0.1.0",
+  "description": "Data components + lambdas Kammy using lerna",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "peter.mouland@gmail.com",
+  "license": "ISC",
+  "homepage": "https://github.com/peter-mouland/kammy-data#readme",
+  "engines": {
+    "node": ">=10.9.0",
+    "npm": ">=6.0.0",
+    "yarn": ">=1.9.0"
+  },
+  "bugs": {
+    "url": "https://github.com/peter-mouland/kammy-data/issues"
+  },
+  "scripts": {
+    "--- GATSBY ---": "",
+    "start": "yarn clean:dist && gatsby develop",
+    "start:static": "cd public; ws --spa index.html",
+    "serve": "gatsby serve",
+    "start:preview": "yarn clean:dist && CI=true gatsby develop -p ${NOMAD_PORT_HTTP} --host 0.0.0.0",
+    "playground": "GATSBY_GRAPHQL_IDE=playground gatsby develop",
+    "build": "yarn clean:dist && CI=${CI} gatsby build",
+    "build:prod": "yarn clean:dist && NODE_ENV=production CI=${CI} TRACKING_REDIRECT_URL=${TRACKING_REDIRECT_URL} gatsby build --prefix-paths",
+    "--- util ---": "",
+    "clean": "yarn clean:dist && yarn clean:yarn && yarn clean:npm && lerna clean --yes",
+    "clean:dist": "rimraf ./public && rimraf ./.cache",
+    "clean:npm": "rimraf packages/**/node_modules && rimraf node_modules",
+    "clean:yarn": "rimraf yarn.lock && rimraf packages/**/yarn.lock",
+    "verify": "yarn lint && yarn test",
+    "nuke": "yarn clean && yarn && yarn verify",
+    "lint": "eslint . --ext=js,jsx",
+    "sonar": "yarn sonar",
+    "lerna": "lerna",
+    "--- LAMBDA ---": "",
+    "lambdas:build": "lambda-build",
+    "lambdas:deploy": "lambda-deploy"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@mdx-js/mdx": "1.5.7",
+    "@mdx-js/react": "1.5.7",
+    "axios": "0.19.2",
+    "classnames": "2.2.6",
+    "express-ws": "4.0.0",
+    "gatsby": "2.19.26",
+    "gatsby-link": "2.2.29",
+    "gatsby-plugin-html-attributes": "1.0.5",
+    "gatsby-plugin-manifest": "2.2.42",
+    "gatsby-plugin-mdx": "1.0.74",
+    "gatsby-plugin-react-helmet": "3.1.22",
+    "gatsby-plugin-react-svg": "3.0.0",
+    "gatsby-plugin-sharp": "2.4.5",
+    "gatsby-plugin-svgr": "2.0.2",
+    "gatsby-plugin-webpack-bundle-analyser-v2": "1.1.8",
+    "gatsby-source-filesystem": "2.1.48",
+    "gatsby-transformer-sharp": "2.3.16",
+    "lerna": "3.20.2",
+    "prop-types": "15.7.2",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
+    "react-helmet": "5.2.1",
+    "react-redux": "7.2.0",
+    "react-router-dom": "5.1.2",
+    "redux": "4.0.5",
+    "rimraf": "^3.0.2",
+    "url-search-params-polyfill": "8.0.0"
+  },
+  "devDependencies": {
+    "@clearscore/sonar": "2.0.0",
+    "babel-preset-gatsby": "0.2.29",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb": "18.0.1",
+    "eslint-plugin-import": "2.20.1",
+    "husky": "4.2.3",
+    "jest": "25.1.0",
+    "lerna": "3.20.2"
+  }
+}

@@ -1,0 +1,7 @@
+node_modules
+dist
+compiled
+/node_modules/*
+src/**/*.spec.js
+src/**/*-copy.js
+object.assign.js
