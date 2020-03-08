@@ -12,7 +12,7 @@ const formatTimeStamp = (timestamp = '') => {
   return `${year}/${month}/${day} ${time}`;
 };
 
-module.exports = ({ googleTransferData }) => {
+module.exports = ({ googleTransferData, createNodeId }) => {
     return googleTransferData.map((transfer) => {
         const data = {
           division: transfer.division,
@@ -28,8 +28,14 @@ module.exports = ({ googleTransferData }) => {
           type: transfer['Transfer Type'],
         };
         return {
-            resourceId: `transfers-${String(transfer.timestamp)}-${transfer.Manager }`,
-            data,
+            resourceId: `transfers-${String(transfer.timestamp)}-${transfer.Manager}`,
+            data: {
+              ...data,
+              division___NODE: createNodeId(`divisions-${data.division}`),
+              manager___NODE: createNodeId(`managers-${data.manager}-${data.division}`),
+              transferIn___NODE: createNodeId(`players-${data.transferIn}`),
+              transferOut___NODE: createNodeId(`players-${data.transferOut}`),
+            },
             internal: {
                 description: 'Transfers',
                 mediaType: mediaTypes.JSON,

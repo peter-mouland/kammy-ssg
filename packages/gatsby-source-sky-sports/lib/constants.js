@@ -15,7 +15,7 @@ module.exports = {
       skySportsFixtures: 'skySportsFixtures',
       skySportsScores: 'skySportsScores',
       skySportsPlayers: 'skySportsPlayers',
-      skySportsPlayerFixtures: 'skySportsPlayerFixtures',
+      skySportsPlayerStats: 'skySportsPlayerStats',
     },
     mediaTypes: {
         IMG: (type) => `image/${type}`,

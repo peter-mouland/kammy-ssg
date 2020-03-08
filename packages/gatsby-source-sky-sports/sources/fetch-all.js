@@ -1,5 +1,6 @@
 const fetchSkySportsFixtureData = require('./sky-sports-fixtures');
 const fetchSkySportsPlayerData = require('./sky-sports-players');
+const fetchSkySportsPlayerStatsData = require('./sky-sports-player-stats');
 const fetchSkySportsScoreData = require('./sky-sports-scores');
 const fetchGoogleGameWeeksData = require('./google-sheets-game-weeks');
 const fetchGoogleCupData = require('./google-sheets-cup');
@@ -32,5 +33,8 @@ module.exports = () => {
         googleDivisionData,
         googleManagerData,
       };
-    })
+    }).then(async (data) => ({
+      ...data,
+      skyPlayerStatsData: await fetchSkySportsPlayerStatsData(data.playerData)
+    }));
 };

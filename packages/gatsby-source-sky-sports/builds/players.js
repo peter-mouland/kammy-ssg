@@ -10,7 +10,7 @@ module.exports = ({ googlePlayerData }) => {
         name: player.Player.trim(),
       };
       return {
-          resourceId: `players-${data.name}-${data.code}`,
+          resourceId: `players-${data.name}`,
           data,
           internal: {
               description: 'Players',

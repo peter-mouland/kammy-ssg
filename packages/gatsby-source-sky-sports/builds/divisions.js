@@ -1,13 +1,14 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 module.exports = ({ googleDivisionData }) => {
-  return googleDivisionData.map(({ label, order }) => {
+  return googleDivisionData.map(({ id, label, order }) => {
       const data = {
+        key: id,
         label,
         order
       };
       return {
-          resourceId: `divisions-${data.label}`,
+          resourceId: `divisions-${data.key}`,
           data,
           internal: {
               description: 'Divisions',

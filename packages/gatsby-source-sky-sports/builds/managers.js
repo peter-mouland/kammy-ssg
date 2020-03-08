@@ -1,11 +1,17 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
-module.exports = ({ googleManagerData }) => {
+module.exports = ({ googleManagerData, createNodeId }) => {
   return googleManagerData.map(({ manager, division }) => {
-      const data = {  manager, division };
+      const data = {
+        manager,
+        division,
+      };
       return {
-          resourceId: `managers-${data.manager}-${data.division}`,
-          data,
+          resourceId: `managers-${manager}-${division}`,
+          data: {
+            ...data,
+            division___NODE: createNodeId(`divisions-${division}`),
+          },
           internal: {
               description: 'Managers',
               mediaType: mediaTypes.JSON,
