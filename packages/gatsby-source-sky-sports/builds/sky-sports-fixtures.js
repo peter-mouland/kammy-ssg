@@ -1,7 +1,7 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
-module.exports = ({ fixtureData }) => {
-  return fixtureData.map((data) => {
+module.exports = ({ skySportsFixtureData }) => {
+  return skySportsFixtureData.map((data) => {
         return {
             resourceId: `skysports-fixtures-${data.id}-${data.locale}`,
             data: {

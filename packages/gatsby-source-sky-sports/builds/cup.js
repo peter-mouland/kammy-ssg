@@ -1,6 +1,6 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
-module.exports = ({ googleCupData }) => {
+module.exports = ({ googleCupData, createNodeId }) => {
   return googleCupData.map((cup) => {
       const data = {
         status: cup.status,
@@ -17,7 +17,13 @@ module.exports = ({ googleCupData }) => {
       };
       return {
           resourceId: `cup-${data.gameWeek}-${data.row}`,
-          data,
+          data: {
+            ...data,
+            player1___NODE: createNodeId(`skysports-players-${data.player1}`),
+            player2___NODE: createNodeId(`skysports-players-${data.player2}`),
+            player3___NODE: createNodeId(`skysports-players-${data.player3}`),
+            player4___NODE: createNodeId(`skysports-players-${data.player4}`),
+          },
           internal: {
               description: 'Cup',
               mediaType: mediaTypes.JSON,

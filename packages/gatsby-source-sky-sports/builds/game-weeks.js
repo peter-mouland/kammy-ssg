@@ -8,6 +8,7 @@ module.exports = ({ googleGameWeekData }) => {
         gameWeek: gw.gameweek,
         start: gw.start,
         end: gw.end,
+        isCurrent: new Date() < new Date(gw.end) && new Date() > new Date(gw.start)
       };
       return {
           resourceId: `game-weeks-${gw.gameWeek}-${gw.start}-${gw.end}`,

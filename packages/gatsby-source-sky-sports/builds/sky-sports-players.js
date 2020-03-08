@@ -4,18 +4,19 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
-module.exports = ({ playerData }) => {
-  return playerData
+module.exports = ({ skySportsPlayerData }) => {
+  return skySportsPlayerData
     .map((player) => {
         const data = {
+          ...player,
           name: `${player.sName}, ${player.fName}`.trim(),
           code: parseInt(player.id, 10),
-          skySportsPosition: player.group.toUpperCase(),
-          skySportsClub: toTitleCase(player.tName),
+          pos: player.group.toUpperCase(),
+          club: toTitleCase(player.tName),
           value: parseFloat(player.value),
           stats: player.stats,
-          new: false,
-          isHidden: false,
+          fixtures: player.stats,
+          tCode: player.tCode,
         };
         return {
             resourceId: `skysports-players-${data.name}`,

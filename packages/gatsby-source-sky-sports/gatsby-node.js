@@ -4,7 +4,6 @@ const fetchAllData = require('./sources/fetch-all');
 const buildSkyScores = require('./builds/sky-sports-scores');
 const buildSkyFixtures = require('./builds/sky-sports-fixtures');
 const buildSkyPlayers = require('./builds/sky-sports-players');
-const buildSkyPlayerStats = require('./builds/sky-sports-player-stats');
 const buildGameWeeks = require('./builds/game-weeks');
 const buildCup = require('./builds/cup');
 const buildTransfers = require('./builds/transfers');
@@ -28,10 +27,9 @@ exports.sourceNodes = async (
     { actions, createNodeId },
 ) => {
     const {
-      fixtureData,
-      playerData,
-      scoreData,
-      skyPlayerStatsData,
+      skySportsFixtureData,
+      skySportsPlayerData,
+      skySportsScoreData,
       googleGameWeekData,
       googleCupData,
       googleTransferData,
@@ -41,14 +39,13 @@ exports.sourceNodes = async (
     } = await fetchAllData();
 
     // build all the objects which will be used to create gatsby nodes
-    const skyFixtures = buildSkyFixtures({ fixtureData });
-    const skyPlayers = buildSkyPlayers({ playerData });
-    const skyPlayerStats = buildSkyPlayerStats({ skyPlayerStatsData, createNodeId });
-    const skyScores = buildSkyScores({ scoreData });
+    const skyFixtures = buildSkyFixtures({ skySportsFixtureData });
+    const skyPlayers = buildSkyPlayers({ skySportsPlayerData });
+    const skyScores = buildSkyScores({ skySportsScoreData });
     const gameWeeks = buildGameWeeks({ googleGameWeekData });
-    const cup = buildCup({ googleCupData });
+    const cup = buildCup({ googleCupData, createNodeId });
     const transfers = buildTransfers({ googleTransferData, createNodeId });
-    const players = buildPlayers({ googlePlayerData });
+    const players = buildPlayers({ googlePlayerData, skyPlayers });
     const divisions = buildDivisions({ googleDivisionData });
     const managers = buildManagers({ googleManagerData, createNodeId });
 
@@ -56,7 +53,6 @@ exports.sourceNodes = async (
     const nodePromises = [
         ...(skyFixtures || []),
         ...(skyPlayers || []),
-        ...(skyPlayerStats || []),
         ...(skyScores || []),
         ...(gameWeeks || []),
         ...(cup || []),
