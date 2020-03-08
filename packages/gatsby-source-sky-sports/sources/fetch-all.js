@@ -17,7 +17,7 @@ module.exports = () => {
     fetchGoogleCupData(),
     fetchGoogleTransfersData(),
     fetchGooglePlayersData(),
-    // fetchGoogleDivisionsData(),
+    fetchGoogleDivisionsData(),
   ])
     .then(([fixtureData, playerData, scoreData, googleGameWeekData, googleCupData, googleTransferData, googlePlayerData, googleDivisionData ]) => {
       return {
@@ -28,6 +28,7 @@ module.exports = () => {
         googleCupData,
         googleTransferData,
         googlePlayerData,
+        googleDivisionData,
       };
     })
 };
