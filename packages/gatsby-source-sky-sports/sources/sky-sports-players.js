@@ -17,10 +17,7 @@ const fetchPlayersFull = async (players) => {
 const fetchPlayers = async () => {
   const data = await fetch(PLAYERS_URL);
   const playersFixtures = await fetchPlayersFull(data.players);
-  return {
-    summary: data.players,
-    fixtures: playersFixtures
-  };
+  return playersFixtures;
 };
 
 module.exports = fetchPlayers;
