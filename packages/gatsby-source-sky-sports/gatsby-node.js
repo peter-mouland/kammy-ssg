@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 const hashContent = require('./lib/hash-content');
 const fetchAllData = require('./sources/fetch-all');
-const buildScores = require('./builds/sky-sports-scores');
-const buildFixtures = require('./builds/sky-sports-fixtures');
-const buildPlayers = require('./builds/sky-sports-players');
+const buildSkyScores = require('./builds/sky-sports-scores');
+const buildSkyFixtures = require('./builds/sky-sports-fixtures');
+const buildSkyPlayers = require('./builds/sky-sports-players');
 const buildGameWeeks = require('./builds/game-weeks');
 const buildCup = require('./builds/cup');
 const buildTransfers = require('./builds/transfers');
+const buildPlayers = require('./builds/players');
 
 const createNode = ({ actions, createNodeId, node }) =>
     actions.createNode({
@@ -30,26 +31,28 @@ exports.sourceNodes = async (
       googleGameWeekData,
       googleCupData,
       googleTransferData,
+      googlePlayerData,
       // googleDivisionData,
-      // googlePlayerData,
     } = await fetchAllData();
 
     // build all the objects which will be used to create gatsby nodes
-    const fixtures = buildFixtures({ fixtureData });
-    const players = buildPlayers({ playerData });
-    const scores = buildScores({ scoreData });
+    const skyFixtures = buildSkyFixtures({ fixtureData });
+    const skyPlayers = buildSkyPlayers({ playerData });
+    const skyScores = buildSkyScores({ scoreData });
     const gameWeeks = buildGameWeeks({ googleGameWeekData });
     const cup = buildCup({ googleCupData });
     const transfers = buildTransfers({ googleTransferData });
+    const players = buildPlayers({ googlePlayerData });
 
     // create all the gatsby nodes
     const nodePromises = [
-        ...(fixtures || []),
-        ...(players || []),
-        ...(scores || []),
+        ...(skyFixtures || []),
+        ...(skyPlayers || []),
+        ...(skyScores || []),
         ...(gameWeeks || []),
         ...(cup || []),
         ...(transfers || []),
+        ...(players || []),
     ].map((node) => createNode({ actions, createNodeId, node }));
 
     return Promise.all(nodePromises);
