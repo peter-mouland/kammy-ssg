@@ -9,7 +9,6 @@ module.exports = ({ googleGameWeekData }) => {
         start: gw.start,
         end: gw.end,
       };
-      console.log(gw)
       return {
           resourceId: `game-weeks-${gw.gameWeek}-${gw.start}-${gw.end}`,
           data,

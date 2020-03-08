@@ -14,7 +14,7 @@ module.exports = () => {
     fetchSkySportsPlayerData(),
     fetchSkySportsScoreData(),
     fetchGoogleGameWeeksData(),
-    // fetchGoogleCupData(),
+    fetchGoogleCupData(),
     // fetchGoogleDivisionsData(),
     // fetchGooglePlayersData(),
   ])
@@ -24,6 +24,7 @@ module.exports = () => {
         playerData,
         scoreData,
         googleGameWeekData,
+        googleCupData,
       };
     })
 };
