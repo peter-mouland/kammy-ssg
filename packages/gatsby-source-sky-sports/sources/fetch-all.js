@@ -4,9 +4,9 @@ const fetchSkySportsScoreData = require('./sky-sports-scores');
 const fetchGoogleGameWeeksData = require('./google-sheets-game-weeks');
 const fetchGoogleCupData = require('./google-sheets-cup');
 const fetchGoogleDivisionsData = require('./google-sheets-divisions');
-const fetchGoogleDraftSetupData = require('./google-sheets-draft-setup');
 const fetchGooglePlayersData = require('./google-sheets-players');
 const fetchGoogleTransfersData = require('./google-sheets-transfers');
+const fetchGoogleManagersData = require('./google-sheets-managers');
 
 module.exports = () => {
   return Promise.all([
@@ -18,8 +18,9 @@ module.exports = () => {
     fetchGoogleTransfersData(),
     fetchGooglePlayersData(),
     fetchGoogleDivisionsData(),
+    fetchGoogleManagersData(),
   ])
-    .then(([fixtureData, playerData, scoreData, googleGameWeekData, googleCupData, googleTransferData, googlePlayerData, googleDivisionData ]) => {
+    .then(([fixtureData, playerData, scoreData, googleGameWeekData, googleCupData, googleTransferData, googlePlayerData, googleDivisionData, googleManagerData ]) => {
       return {
         fixtureData,
         playerData,
@@ -29,6 +30,7 @@ module.exports = () => {
         googleTransferData,
         googlePlayerData,
         googleDivisionData,
+        googleManagerData,
       };
     })
 };
