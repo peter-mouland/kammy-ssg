@@ -13,10 +13,15 @@ const formatTimeStamp = (timestamp = '') => {
 };
 
 module.exports = ({ googleTransferData, createNodeId }) => {
-    return googleTransferData.map((transfer) => {
+    return googleTransferData
+      .sort((t1, t2) => (new Date(t1.timestamp) - new Date(t2.timestamp)))
+      .map((transfer) => {
         const data = {
           division: transfer.division,
           status: (transfer.Status || '').trim(),
+          isValid: transfer.Status === 'Y',
+          isPending: transfer.Status === 'TBC',
+          isFailed: transfer.Status === 'E',
           timestamp: formatTimeStamp(transfer.Timestamp),
           date: transfer.Timestamp,
           comment: (transfer.Comment || '').trim(),

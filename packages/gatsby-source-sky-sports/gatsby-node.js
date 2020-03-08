@@ -11,6 +11,7 @@ const buildPlayers = require('./builds/players');
 const buildDivisions = require('./builds/divisions');
 const buildManagers = require('./builds/managers');
 const buildDraft = require('./builds/draft');
+const buildLeagueTables = require('./builds/league-tables');
 
 const createNode = ({ actions, createNodeId, node }) =>
     actions.createNode({
@@ -51,6 +52,7 @@ exports.sourceNodes = async (
     const managers = buildManagers({ googleManagerData, createNodeId });
     const divisions = buildDivisions({ googleDivisionData });
     const draft = buildDraft({ googleDraftData, createNodeId });
+    const leagueTables = buildLeagueTables({ draft, managers, divisions, transfers, gameWeeks, players, createNodeId });
 
     // create all the gatsby nodes
     const nodePromises = [
@@ -64,6 +66,7 @@ exports.sourceNodes = async (
         ...(divisions || []),
         ...(managers || []),
         ...(draft || []),
+        ...(leagueTables || []),
     ].map((node) => createNode({ actions, createNodeId, node }));
 
     return Promise.all(nodePromises);

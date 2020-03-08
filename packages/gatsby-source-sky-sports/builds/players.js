@@ -15,7 +15,7 @@ module.exports = ({ googlePlayerData, skyPlayers }) => {
       isHidden: ['hidden', 'y', 'Y'].includes(player.isHidden),
       new: ['new', 'y', 'Y'].includes(player.new),
       code: parseInt(player.Code, 10),
-      club: parseInt(player.Club, 10),
+      club: player.Club,
       pos: player.Position.toUpperCase(),
       name: player.Player.trim(),
     }
@@ -31,7 +31,7 @@ module.exports = ({ googlePlayerData, skyPlayers }) => {
           value: skyPlayersObj[player].value,
           name: skyPlayersObj[player].name,
           code: skyPlayersObj[player].code,
-          club: skyPlayersObj[player].skySportsClub,
+          club: skyPlayersObj[player].club,
           skySportsPosition: skyPlayersObj[player].pos,
         },
       }), {});

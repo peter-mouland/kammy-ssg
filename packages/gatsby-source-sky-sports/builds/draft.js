@@ -6,6 +6,7 @@ module.exports = ({ googleDraftData, createNodeId }) => {
         manager: item.manager,
         division: item.division,
         player: item.player,
+        position: item.position,
       };
       return {
           resourceId: `draft-${data.manager}-${data.player}`,
