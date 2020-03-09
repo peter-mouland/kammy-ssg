@@ -12,4 +12,4 @@ const managerTeamSeason = ({
   }, {})
 );
 
-export default managerTeamSeason;
+module.exports = managerTeamSeason;

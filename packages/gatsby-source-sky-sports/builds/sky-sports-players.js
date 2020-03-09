@@ -15,7 +15,7 @@ module.exports = ({ skySportsPlayerData }) => {
           club: toTitleCase(player.tName),
           value: parseFloat(player.value),
           stats: player.stats,
-          fixtures: player.stats,
+          fixtures: player.fixtures,
           tCode: player.tCode,
         };
         return {
