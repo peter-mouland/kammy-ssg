@@ -13,10 +13,9 @@ module.exports = ({
 
   // filter and set required vard
   const validTransfers = transferData.filter((transfer) => transfer.isValid);
-  const pendingTransfers = transferData.filter((transfer) => transfer.isPending);
   const getValidManagerTransfers = (manager) => validTransfers.filter((transfer) => transfer.manager === manager);
   const currentGameWeek = (gameWeekData.find((gameWeek) => gameWeek.isCurrent) || {});
-  const playersByManager = draftData.reduce((prev, { manager }) => ({
+  const draftByManager = draftData.reduce((prev, { manager }) => ({
     ...prev,
     [manager]: draftData.filter((pick) => pick.manager === manager),
   }), {});
@@ -24,10 +23,9 @@ module.exports = ({
     ...prev,
     [player.name]: { ...player },
   }), {});
-
   const allTeams = managerData.reduce((prev, { manager }) => {
     const team = new TeamByGameWeek({
-      draft: playersByManager[manager],
+      draft: draftByManager[manager],
       transfers: getValidManagerTransfers(manager),
       gameWeeks: gameWeekData,
       players: playersByName,
