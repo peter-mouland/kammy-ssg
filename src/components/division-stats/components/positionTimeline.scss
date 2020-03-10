@@ -1,0 +1,11 @@
+.position-timeline {
+  &__team {
+    &--home {
+      text-align: right;
+    }
+
+    &--my-team {
+      font-weight: bold;
+    }
+  }
+}

@@ -1,0 +1,80 @@
+@import '~@kammy/bootstrap/src/abstracts/variables';
+
+.club-fixtures {
+  &__event,
+  &__home-or-away {
+    display: inline-block;
+    min-width: 28px;
+  }
+
+  &__fixture {
+    display: inline-block;
+    width: 100%;
+    min-width: 300px;
+
+    &--desktop {
+      min-width: 500px;
+      display: none;
+    }
+
+    @media only screen and (min-width: 550px) {
+      &--desktop {
+        display: inline-block;
+      }
+
+      &--mobile {
+        display: none;
+      }
+    }
+  }
+
+  &__team {
+    display: inline-block;
+    width: 40%;
+    margin: 2px 8px;
+
+    @media only screen and (min-width: 550px) {
+      width: 45%;
+    }
+
+    &--home {
+      text-align: right;
+    }
+
+    &--away {
+      text-align: left;
+    }
+  }
+
+  &__stats-header {
+    padding: 0 5px;
+    min-width: 50px;
+  }
+
+  &__stats {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    text-align: center;
+    cursor: help;
+  }
+
+  &__stat {
+    &--total {
+      flex: 1 1 50%;
+      font-weight: bold;
+      font-size: 1.5em;
+    }
+
+    &--group {
+      flex: 1 1 50%;
+      display: flex;
+      flex-flow: column;
+      color: $text--light;
+    }
+  }
+
+  &__live {
+    color: $warning;
+  }
+}

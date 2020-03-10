@@ -1,0 +1,21 @@
+@import '~@kammy/bootstrap/src/abstracts/variables';
+
+.caret {
+  content: '';
+  position: absolute;
+  left: calc(50% - 6px);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+
+  &--up {
+    top: -6px;
+    border-bottom: 6px solid $brand--dark;
+  }
+
+  &--down {
+    top: 100%;
+    border-top: 6px solid $brand--dark;
+  }
+}

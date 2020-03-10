@@ -1,0 +1,50 @@
+@function em($px) {
+  @return $px / 16px * 1em;
+}
+
+// Prefixes
+$scope-prefix: 'data-b-'; // prefix layout attribute
+
+// Grid Variables
+$container-width:           1200px;
+$gutter:                    30px;
+$cols:                      12;
+
+// Breakpoint Variables
+$no-break:                  0;
+$sm-break:                  em(540px);
+$md-break:                  em(720px);
+$lg-break:                  em(960px);
+$xl-break:                  em(1440px);
+
+// Spacing Variables
+$xs-spacing:                7.5px;
+$sm-spacing:                10px;
+$md-spacing:                15px;
+$lg-spacing:                15px;
+
+// Size Suffixes
+$xs-suffix:                 '';
+$sm-suffix:                 '--sm';
+$md-suffix:                 '--md';
+$lg-suffix:                 '--lg';
+$none-suffix:               '--none';
+
+// Location Suffixes
+$no-suffix:                 '';
+$top-suffix:                '-top';
+$bottom-suffix:             '-bottom';
+$left-suffix:               '-left';
+$right-suffix:              '-right';
+
+// Lists
+$location-suffixes: $no-suffix, $top-suffix, $bottom-suffix, $right-suffix, $left-suffix;
+
+// Maps
+$spacing-map: (
+  $xs-suffix:               $xs-spacing,
+  $sm-suffix:               $sm-spacing,
+  $md-suffix:               $md-spacing,
+  $lg-suffix:               $lg-spacing,
+  $none-suffix:             0
+);

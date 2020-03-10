@@ -2,5 +2,5 @@
 
  > Static Site Generator for Kammy Draft Fantasy Football
 
-Uses Gatsby
+Uses Gatsby to serve the static assets
 

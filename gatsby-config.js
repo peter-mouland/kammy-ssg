@@ -23,6 +23,12 @@ module.exports = {
             resolve: 'gatsby-transformer-sharp',
         },
         {
+          resolve: `gatsby-plugin-sass`,
+          options: {
+            includePaths: ["node_modules"],
+          },
+        },
+        {
             resolve: 'gatsby-plugin-sharp',
             useMozJpeg: true,
             stripMetadata: true,

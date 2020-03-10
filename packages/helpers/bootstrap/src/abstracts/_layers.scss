@@ -1,0 +1,23 @@
+$layers: (
+  modal     : 90, // the interface displayed over the existing page after user-interaction
+  overlay   : 80, // the 'greyed-out' area in between the modal and the existing page
+  tooltip   : 70, // additional information displayed about an icon, word or sentence after user-interaction
+  header    : 60, // the site header
+  dropdown  : 50, // a piece of navigation e.g. select box
+  footer    : 40, // the site footer
+  ad        : 30, // 3rd party adverts
+  badge     : 20, // items to go on content ie promotion, icons, slogans
+  content   : 10  // traditional page content
+);
+
+// usage:
+// .my-badge {
+//   z-index: z(badge);
+// }
+// .my-important-badge {
+//   z-index: z(badge) + 1;
+// }
+
+@function z($label) {
+  @return map-get($layers, $label);
+}

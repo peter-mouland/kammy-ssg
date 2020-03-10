@@ -1,0 +1,41 @@
+@import '~@kammy/bootstrap/src/abstracts/variables';
+
+.nav-item {
+  position: relative;
+  padding: .2em .5em;
+
+  @media only screen and (min-width: 650px) {
+    padding: .4em .75em;
+  }
+
+  &__children {
+    display: none;
+    position: absolute;
+    top: 1.6em;
+    right: 0;
+    min-width: 100%;
+    background: $brand;
+    z-index: 1;
+
+    @media only screen and (min-width: 650px) {
+      top: 1.85em;
+    }
+  }
+
+  &--open,
+  &:hover {
+    background-color: rgba(0, 0, 0, .25);
+
+    .nav-item__children {
+      display: block;
+    }
+  }
+
+  &__child {
+    padding: .25em;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, .25);
+    }
+  }
+}

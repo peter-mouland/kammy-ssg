@@ -60,6 +60,27 @@ exports.onCreateDevServer = () => {
 };
 
 exports.createPages = async ({ actions, graphql }) => {
+  // HOMEPAGE
+  const { data: homepageData } = await graphql(`
+        query {
+            allGameWeeks {
+                nodes {
+                    gameWeek
+                }
+            }
+        }
+    `);
+  homepageData.allGameWeeks.nodes.forEach(({ gameWeek }) => {
+    const pageConfig = {
+      path: `/week-${gameWeek}`,
+      matchPath: `/week-${gameWeek}/`, // otherwise gatsby will redirect on refresh
+      component: path.resolve('src/templates/homepage.js'),
+      context: {
+        gameWeek,
+      },
+    };
+    actions.createPage(pageConfig);
+  });
 };
 
 exports.sourceNodes = async ({ actions }) => {
