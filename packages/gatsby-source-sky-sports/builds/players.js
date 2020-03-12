@@ -59,7 +59,7 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
       new: ['new', 'y', 'Y'].includes(googlePlayer.new),
       code: parseInt(googlePlayer.Code, 10),
       club: googlePlayer.Club,
-      pos: googlePlayer.Position.toUpperCase(),
+      pos: googlePlayer.Pos.toUpperCase(), // Pos = dff pos, Position = ss pos
       name: googlePlayer.Player.trim(),
     };
     return {

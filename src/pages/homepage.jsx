@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-// import DivisionRankings from '../components/division-rankings';
+import DivisionRankings from '../components/division-rankings';
 // import Interstitial from '../components/interstitial';
 // import GameWeekFixtures from '../components/gameweek-fixtures';
 import GameWeekDate from '../components/gameweek-date';
@@ -78,16 +78,16 @@ class Homepage extends React.Component {
         >
           {/*<GameWeekFixtures {...gameWeekFixtures}/>*/}
         </Modal>
-        {/*{divisions.map(({ label, id }) => (*/}
-        {/*  <DivisionRankings*/}
-        {/*    key={id}*/}
-        {/*    label={label}*/}
-        {/*    divisionId={id}*/}
-        {/*    showGameWeekSwitcher={false}*/}
-        {/*    showChart={false}*/}
-        {/*    showWeekly={false}*/}
-        {/*  />*/}
-        {/*))}*/}
+        {divisions.map(({ label, id }) => (
+          <DivisionRankings
+            key={id}
+            label={label}
+            divisionId={id}
+            showGameWeekSwitcher={false}
+            showChart={false}
+            showWeekly={false}
+          />
+        ))}
       </section>
     );
   }

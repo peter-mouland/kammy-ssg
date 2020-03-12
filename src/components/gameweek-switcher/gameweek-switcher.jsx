@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import FormattedGameWeekDate from '../game-week-date';
+import FormattedGameWeekDate from '../gameweek-date';
 import MultiToggle from '../multi-toggle';
 import './gameweek-switcher.scss';
 

@@ -1,12 +1,5 @@
-const parse = require('date-fns/parse');
-
 const calculateSeasonStats = require('./calculateSeason');
 const { playerStats: getPlayerStats } = require('./index');
-
-const toDate = (string = '') => {
-  if (!string) return string;
-  return parse(string);
-};
 
 const UNKNOWN_PLAYER = (player) => ({
   ...player,
@@ -23,8 +16,6 @@ class TeamSeason {
     this.players = players;
     this.manager = manager;
     this.gameWeeks = gameWeeks;
-    this.endOfSeason = toDate(toDate(gameWeeks[gameWeeks.length - 1].end).setHours(23, 59, 59, 999));
-    this.startOfSeason = toDate(toDate(gameWeeks[0].start).setHours(0, 0, 0, 0));
   }
 
   getPlayer(player) {
@@ -60,6 +51,7 @@ class TeamSeason {
         players[i] = {
           ...players[i],
           teamPos: player.teamPos,
+          posIndex: i,
           pos: player.pos,
           gameWeeks: playerGws,
           seasonToGameWeek,
@@ -67,10 +59,11 @@ class TeamSeason {
       });
     });
 
-    return players.map((player) => ({
-      ...player,
-      seasonStats: calculateSeasonStats(player.gameWeeks),
-    }));
+    return players;
+    // return players.map((player) => ({
+    //   ...player,
+    //   seasonStats: calculateSeasonStats(player.gameWeeks),
+    // }));
   }
 }
 

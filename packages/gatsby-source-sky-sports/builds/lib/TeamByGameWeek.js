@@ -2,6 +2,7 @@ const UNKNOWN_PLAYER = (name) => ({
   name: `UNKNOWN: ${name}`,
   club: '',
   code: 0,
+  gameWeeks: [],
 });
 
 class TeamByGameWeek {
@@ -24,8 +25,8 @@ class TeamByGameWeek {
       club: player.club,
       code: player.code,
       pos: player.pos,
-      season: player.season, // Stats: { points, sb, tb, rcard, ycard, pensv, con, cs, asts, gls, subs, apps
-      gameWeek: player.gameWeek, // Stats: { points, sb, tb, rcard, ycard, pensv, con, cs, asts, gls, subs, apps }
+      seasonStats: player.season, // Stats: { points, sb, tb, rcard, ycard, pensv, con, cs, asts, gls, subs, apps
+      gameWeekStats: player.gameWeek, // Stats: { points, sb, tb, rcard, ycard, pensv, con, cs, asts, gls, subs, apps }
       gameWeeks: player.gameWeeks, // [ { stats: {}, fixtures: [] } ]
       // fixtures: player.fixtures, // [Fixture: { hScore... } ]
     };
@@ -96,25 +97,24 @@ class TeamByGameWeek {
 
   getSeason = () => {
     const { draft, gameWeeks } = this;
-    return gameWeeks.map((gameWeek) => {
+    return gameWeeks.reduce((prev, gameWeek) => {
       const players = draft.map((teamPlayer) => {
         const transferList = this.getTransferList(teamPlayer);
         const player = this.findPlayerThisGw({ transferList, gameWeek });
         const Player = this.getPlayer(player);
         return {
-          teamPos: teamPlayer.position,
-          pos: Player.pos,
-          code: player.code,
-          name: player.name || player.player || teamPlayer.player,
-          club: player.club,
+          ...gameWeek,
+          ...Player,
           manager: teamPlayer.manager,
+          teamPos: teamPlayer.position,
+          gameWeekIndex: gameWeek.gameWeek,
         };
       });
-      return {
-        ...gameWeek,
-        players,
-      };
-    });
+      return [
+        ...prev,
+        ...players,
+      ];
+    }, []);
   }
 }
 

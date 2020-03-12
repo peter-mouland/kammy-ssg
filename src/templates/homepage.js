@@ -9,7 +9,7 @@ const Index = ({ data }) => {
     const { allDivisions: { nodes: divisions }, selectedGameWeek, allGameWeeks: { nodes: gameWeeks }, allPlayers: { nodes: players } } = data;
     const gameWeekDates = getGameWeeks({ gameWeeks: { selectedGameWeek: parseInt(selectedGameWeek.gameWeek, 10), data: { gameWeeks }} });
     return (
-        <Layout >
+        <Layout>
             <Homepage selectedGameWeek={selectedGameWeek} gameWeekDates={gameWeekDates} divisions={divisions} />
         </Layout>
     );

@@ -1,36 +1,24 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-
 import bemHelper from '@kammy/bem';
-import GameWeekSwitcher from '@kammy-ui/game-week-switcher';
-import ErrorBoundary from '@kammy-ui/error-boundary';
+
+// import GameWeekSwitcher from '../gameweek-switcher';
+// import ErrorBoundary from '../error-boundary';
 
 import Table from './division-rankings.table';
-import LoadableChart from './components/loadable-chart';
+// import LoadableChart from './components/loadable-chart';
 
 const bem = bemHelper({ block: 'division-stats' });
 
 class DivisionRankings extends React.Component {
   state = { highlightManager: '' }
-
-  componentDidMount() {
-    const {
-      divisionId,
-      fetchAllPlayerData, fetchDivision, fetchGameWeeks,
-      playersLoaded, divisionLoaded, gameWeeksLoaded,
-    } = this.props;
-    if (!playersLoaded) fetchAllPlayerData();
-    if (!divisionLoaded) fetchDivision(divisionId);
-    if (!gameWeeksLoaded) fetchGameWeeks();
-  }
-
   handleRowHover = (manager) => {
     this.setState({ highlightManager: manager });
   }
 
   render() {
     const {
-      loaded, lineChartData, label, managersSeason, managersPoints, managersRankChange, managersRank, lineType,
+      lineChartData, label, managersSeason, managersPoints, managersRankChange, managersRank, lineType,
       showStandings, showWeekly, showChart, showGameWeekSwitcher, managers,
     } = this.props;
     const { highlightManager } = this.state;
@@ -39,50 +27,50 @@ class DivisionRankings extends React.Component {
       <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
         <h1>{label}</h1>
         {
-          loaded && showGameWeekSwitcher && <div style={{ position: 'relative', zIndex: 2 }}><GameWeekSwitcher /></div>
+          // showGameWeekSwitcher && <div style={{ position: 'relative', zIndex: 2 }}><GameWeekSwitcher /></div>
         }
         {
           <div style={{ position: 'relative', zIndex: 1 }}>
-            {showStandings && (
-              <Fragment>
-                {showWeekly && <h2 data-b-layout="v-space">Overall Standings</h2>}
-                <div data-b-layout="row vpad">
-                  <Table
-                    managers={managers}
-                    points={managersPoints}
-                    rank={managersRank}
-                    type='season'
-                    handleRowHover={this.handleRowHover}
-                  />
-                </div>
-              </Fragment>
-            )}
-            {showWeekly && (
-              <Fragment>
-                <div data-b-layout="row vpad">
-                  {showStandings && <h2>Weekly Scores</h2>}
-                  <Table
-                    managers={managers}
-                    points={managersPoints}
-                    rank={managersRankChange}
-                    type='gameWeek'
-                  />
-                </div>
-              </Fragment>
-            )}
-            {showChart && (
-              <ErrorBoundary>
-                <div data-b-layout="row vpad">
-                  <LoadableChart
-                    data={lineChartData}
-                    lines={Object.keys(managersSeason)}
-                    xAxis={'gameWeek'}
-                    highlightManager={highlightManager}
-                    lineType={lineType}
-                  />
-                </div>
-              </ErrorBoundary>
-            )}
+            {/*{showStandings && (*/}
+            {/*  <Fragment>*/}
+            {/*    {showWeekly && <h2 data-b-layout="v-space">Overall Standings</h2>}*/}
+            {/*    <div data-b-layout="row vpad">*/}
+            {/*      <Table*/}
+            {/*        managers={managers}*/}
+            {/*        points={managersPoints}*/}
+            {/*        rank={managersRank}*/}
+            {/*        type='season'*/}
+            {/*        handleRowHover={this.handleRowHover}*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  </Fragment>*/}
+            {/*)}*/}
+            {/*{showWeekly && (*/}
+            {/*  <Fragment>*/}
+            {/*    <div data-b-layout="row vpad">*/}
+            {/*      {showStandings && <h2>Weekly Scores</h2>}*/}
+            {/*      <Table*/}
+            {/*        managers={managers}*/}
+            {/*        points={managersPoints}*/}
+            {/*        rank={managersRankChange}*/}
+            {/*        type='gameWeek'*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  </Fragment>*/}
+            {/*)}*/}
+            {/*{showChart && (*/}
+            {/*  <ErrorBoundary>*/}
+            {/*    <div data-b-layout="row vpad">*/}
+            {/*      <LoadableChart*/}
+            {/*        data={lineChartData}*/}
+            {/*        lines={Object.keys(managersSeason)}*/}
+            {/*        xAxis={'gameWeek'}*/}
+            {/*        highlightManager={highlightManager}*/}
+            {/*        lineType={lineType}*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  </ErrorBoundary>*/}
+            {/*)}*/}
           </div>
         }
       </section>
