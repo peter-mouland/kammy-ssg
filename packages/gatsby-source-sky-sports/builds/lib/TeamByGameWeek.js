@@ -6,10 +6,7 @@ const UNKNOWN_PLAYER = (name) => ({
 });
 
 class TeamByGameWeek {
-  constructor({
-    gameWeeks, players, transfers, draft,
-  }) {
-    // console.log(gameWeeks, players, transfers, draft);
+  constructor({ gameWeeks, players, transfers, draft }) {
     this.transfers = transfers || []; // not all managers would have made transfers
     this.gameWeeks = gameWeeks;
     this.players = players;
@@ -37,9 +34,11 @@ class TeamByGameWeek {
    OUTPUT:
     [ player ]
   */
-  findPlayerThisGw = ({ transferList, gameWeek }) => {
+  findPlayerThisGw = ({ draftPlayer, gameWeek }) => {
+    const transferList = this.getTransferList(draftPlayer);
     const gwPlayers = transferList.filter((transfer) => transfer.start < new Date(gameWeek.start));
-    return gwPlayers.length ? gwPlayers[gwPlayers.length - 1].player || UNKNOWN_PLAYER() : UNKNOWN_PLAYER();
+    const player = gwPlayers.length ? gwPlayers[gwPlayers.length - 1].player || UNKNOWN_PLAYER() : UNKNOWN_PLAYER();
+    return this.getPlayer(player);
   };
 
   /*
@@ -97,24 +96,22 @@ class TeamByGameWeek {
 
   getSeason = () => {
     const { draft, gameWeeks } = this;
-    return gameWeeks.reduce((prev, gameWeek) => {
-      const players = draft.map((teamPlayer) => {
-        const transferList = this.getTransferList(teamPlayer);
-        const player = this.findPlayerThisGw({ transferList, gameWeek });
-        const Player = this.getPlayer(player);
+
+    return gameWeeks.map((gameWeek) => {
+      const players = draft.map((draftPlayer) => {
+        const player = this.findPlayerThisGw({ draftPlayer, gameWeek });
         return {
-          ...gameWeek,
-          ...Player,
-          manager: teamPlayer.manager,
-          teamPos: teamPlayer.position,
-          gameWeekIndex: gameWeek.gameWeek,
+          ...player,
+          gameWeek,
+          manager: draftPlayer.manager,
+          teamPos: draftPlayer.position,
         };
       });
-      return [
-        ...prev,
-        ...players,
-      ];
-    }, []);
+      return {
+        ...gameWeek,
+        players,
+      };
+    });
   }
 }
 

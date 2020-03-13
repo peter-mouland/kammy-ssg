@@ -10,12 +10,11 @@ const UNKNOWN_PLAYER = (player) => ({
 });
 
 class TeamSeason {
-  constructor({
-    manager, gameWeeks, players,
-  }) {
+  constructor({ manager, division, gameWeeks, players }) {
     this.players = players;
     this.manager = manager;
     this.gameWeeks = gameWeeks;
+    this.division = division;
   }
 
   getPlayer(player) {
@@ -37,29 +36,40 @@ class TeamSeason {
   //     seasonPoints: [ stats ],
   //   }]
   getSeason() {
-    const { gameWeeks, manager } = this;
+    const { gameWeeks, manager, division } = this;
     const players = Array(12).fill({});
+    const results = [];
 
     gameWeeks.forEach(({ players: gwPlayers, ...gameWeek }) => {
       const managerPlayers = gwPlayers.filter(({ manager: playerManager }) => manager === playerManager);
       managerPlayers.forEach((player, i) => {
-        const playerGws = (players[i].gameWeeks || []);
+        const playerGws = (players[i].player || []);
         const seasonToGameWeek = (players[i].seasonToGameWeek || []);
         playerGws[gameWeek.gameWeek] = getPlayerStats({ player: this.getPlayer(player), gameWeeks: [gameWeek] });
         seasonToGameWeek[gameWeek.gameWeek] = calculateSeasonStats(playerGws.slice(0, gameWeek.gameWeek + 1));
 
         players[i] = {
-          ...players[i],
+          player: playerGws,
+          seasonToGameWeek,
+        };
+        results.push({
           teamPos: player.teamPos,
           posIndex: i,
           pos: player.pos,
-          gameWeeks: playerGws,
-          seasonToGameWeek,
-        };
+          manager,
+          division,
+          gameWeek: gameWeek.gameWeek,
+          playerName: players[i].player[gameWeek.gameWeek].name,
+          seasonToGameWeek: players[i].seasonToGameWeek[gameWeek.gameWeek],
+        })
       });
     });
-
-    return players;
+    return results;
+    // return players;
+    // return players.reduce((prev, { seasonToGameWeek, ...player}) => ([
+    //   ...prev,
+    //   ...seasonToGameWeek.map((season) => ({ ...player, gameWeek: season.gameWeek, seasonToGameWeek: season }))
+    // ]), []);
     // return players.map((player) => ({
     //   ...player,
     //   seasonStats: calculateSeasonStats(player.gameWeeks),

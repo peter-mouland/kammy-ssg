@@ -1,4 +1,4 @@
-const { playerStats } = require('@kammy/data.player-stats');
+const { playerStats: getPlayerStats } = require('@kammy/data.player-stats');
 
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
@@ -13,13 +13,12 @@ const calculateSeasonStats = (gameWeeksWithFixtures) => (
 
 const getGameWeeksWithFixtures = ({ player, gameWeeks }) => (
   gameWeeks.map((gw) => {
-    const { gameWeekFixtures, gameWeekStats } = playerStats({ player, gameWeeks: [gw] });
+    const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeeks: [gw] });
     return { fixtures: gameWeekFixtures, stats: gameWeekStats };
   })
 );
 
-const getPlayerWithStats = ({ player, dbPlayer, gameWeeks, gameWeekIndex }) => {
-  const gameWeek = gameWeekIndex < 0 ? 0 : gameWeekIndex;
+const getPlayerWithStats = ({ player, dbPlayer, gameWeeks }) => {
   const playerWithNonZeroFixtures = {
     ...player,
     fixtures: (player.fixtures || []).map((fixture, i) => {
@@ -37,14 +36,12 @@ const getPlayerWithStats = ({ player, dbPlayer, gameWeeks, gameWeekIndex }) => {
   return {
     ...playerWithNonZeroFixtures,
     gameWeeks: gameWeeksWithFixtures,
-    gameWeek: gameWeeksWithFixtures[gameWeek].stats,
     season,
   };
 };
 
 module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
   const gameWeekData = gameWeeks.map(({ data }) => data);
-  const gameWeekIndex = gameWeekData.findIndex((gw) => gw.isCurrent);
   const skyPlayersObj = skyPlayers.reduce((prev, { data: player }) => ({
     ...prev,
     [player.name]: {
@@ -80,7 +77,7 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
         club: skyPlayersObj[playerName].club,
         skySportsPosition: skyPlayersObj[playerName].pos,
       };
-      const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData, gameWeekIndex });
+      const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
       return {
         ...prev,
         [playerName]: playerWithStats,

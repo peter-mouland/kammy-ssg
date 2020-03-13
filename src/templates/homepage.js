@@ -43,57 +43,6 @@ export const query = graphql`
         order
       }
     }
-    allPlayers {
-      nodes {
-        id
-        code
-        pos
-        name
-        club
-        skySportsPosition
-        isHidden
-        new
-        value
-        fixtures {
-          aScore
-          aTname
-          date
-          event
-          hScore
-          hTname
-          status
-          stats
-        }
-        season {
-          apps
-          asts
-          con
-          cs
-          gls
-          pensv
-          points
-          rcard
-          sb
-          subs
-          tb
-          ycard
-        }
-        gameWeek {
-          apps
-          asts
-          con
-          cs
-          gls
-          pensv
-          points
-          rcard
-          sb
-          subs
-          tb
-          ycard
-        }
-      }
-    }
   }
 `;
 

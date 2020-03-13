@@ -27,7 +27,7 @@ module.exports = ({
     [player.name]: { ...player },
   }), {});
 
-  const allTeamPlayers = managerData.reduce((prev, { manager }) => {
+  const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
     const teamByGameWeek = new TeamByGameWeek({
       draft: draftByManager[manager],
       transfers: getValidManagerTransfers(manager),
@@ -35,11 +35,11 @@ module.exports = ({
       players: playersByName,
     });
     const gameWeeks = teamByGameWeek.getSeason();
-    // const teamSeason = new TeamSeason({ manager, gameWeeks, players: playersByName });
-    // teamSeason.getSeason(),
+    const teamSeason = new TeamSeason({ manager, division, gameWeeks, players: playersByName });
+    const season = teamSeason.getSeason();
     return [
       ...prev,
-      ...gameWeeks,
+      ...season
     ];
   }, []);
 
