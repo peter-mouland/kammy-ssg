@@ -57,13 +57,13 @@ const DivisionRankingsTable = ({
             <tr key={manager} className={'row'} onMouseEnter={() => handleRowHover(manager)} onMouseLeave={() => handleRowHover(manager)}>
               <td className='cell cell--manager'>{manager}</td>
               {positions.map((position) => {
-                // const gradient = `gradient_${parseInt(rank[position.label][manager], 10).toString().replace('.', '-')}`;
+                const gradient = `gradient_${parseInt(pos[position.key].rank, 10).toString().replace('.', '-')}`;
                 return (
                   <Fragment key={position.key}>
-                    <td className={`cell cell--${position.key} $gradient}`}>
-                      {/*{ rank[position.key][manager] }*/}
+                    <td className={`cell cell--${position.key} ${gradient}`}>
+                      { pos[position.key].rank }
                     </td>
-                    <td className={`cell cell--pair cell--${position.key} $gradient}`}>
+                    <td className={`cell cell--pair cell--${position.key} ${gradient}`}>
                       { pos[position.key][type] }
                     </td>
                   </Fragment>

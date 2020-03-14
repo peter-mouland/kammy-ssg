@@ -37,6 +37,7 @@ const Index = ({ data }) => {
 };
 
 export const query = graphql`
+
   query Homepage($gameWeek: Int) {
     selectedGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
       gameWeek
@@ -71,30 +72,37 @@ export const query = graphql`
           am {
             gameWeekPoints
             seasonPoints
+            rank
           }
           cb {
             gameWeekPoints
             seasonPoints
+            rank
           }
           fb {
             seasonPoints
             gameWeekPoints
+            rank
           }
           gks {
             gameWeekPoints
             seasonPoints
+            rank
           }
           str {
             gameWeekPoints
             seasonPoints
+            rank
           }
           total {
             gameWeekPoints
             seasonPoints
+
           }
           mid {
             gameWeekPoints
             seasonPoints
+            rank
           }
         }
         managerName
