@@ -14,6 +14,11 @@ const getAssetPath = () => !assetsOnRoot;
 module.exports = {
     pathPrefix: `/`,
     assetPrefix: getAssetPath(),
+    siteMetadata: {
+      title: `Draft Fantasy Football`,
+      siteUrl: `http://localhost:8000`,
+      description: `Draft Fantasy Football game`,
+    },
     plugins: [
         'gatsby-plugin-react-helmet',
         {
