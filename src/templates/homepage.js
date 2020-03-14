@@ -13,7 +13,8 @@ const Index = ({ data }) => {
       allGameWeeks: { nodes: gameWeeks },
       allLeagueTable: { nodes: leagueStats }
     } = data;
-    const gameWeekDates = getGameWeeks({ gameWeeks: { selectedGameWeek: parseInt(selectedGameWeek.gameWeek, 10), data: { gameWeeks }} });
+    const selectedGameWeekIndex =  parseInt(selectedGameWeek.gameWeek, 10);
+    const gameWeekDates = getGameWeeks({ gameWeeks: { selectedGameWeek: selectedGameWeekIndex, data: { gameWeeks }} });
     const statsByDivision = managers.reduce((prev, { manager, division }) => ({
       ...prev,
       [division.key] : [
@@ -27,7 +28,7 @@ const Index = ({ data }) => {
         }
       ],
     }), {});
-console.log(statsByDivision)
+
     return (
         <Layout>
             <Homepage selectedGameWeek={selectedGameWeek} gameWeekDates={gameWeekDates} divisions={divisions} statsByDivision={statsByDivision} />

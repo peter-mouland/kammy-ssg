@@ -22,6 +22,7 @@ class Homepage extends React.Component {
 
   render() {
     const { gameWeekDates, selectedGameWeek, divisions, statsByDivision } = this.props;
+    if (!gameWeekDates) return null;
     const { currentGameWeekDates, nextGameWeekDates, prevGameWeekDates } = gameWeekDates;
     const { showTransfers, gameWeekFixtures } = this.state;
 

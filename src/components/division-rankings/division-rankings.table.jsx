@@ -53,7 +53,7 @@ const DivisionRankingsTable = ({
       {points.length > 0
         ? points
           // .sort((managerA, managerB) => rank.total[managerB.manager] - rank.total[managerA.manager])
-          .map(({ manager, points: pos }) => console.log(pos) || (
+          .map(({ manager, points: pos }) => (
             <tr key={manager} className={'row'} onMouseEnter={() => handleRowHover(manager)} onMouseLeave={() => handleRowHover(manager)}>
               <td className='cell cell--manager'>{manager}</td>
               {positions.map((position) => {

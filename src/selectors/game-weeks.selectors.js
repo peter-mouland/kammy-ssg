@@ -24,14 +24,13 @@ export const getGameWeeks = createSelector(
   (gameWeeks, selectedGameWeek) => {
     const currentGameWeekIndex = gameWeeks.findIndex(({ start, end }) => inDateRange({ start, end }, new Date()));
     const currentGameWeek = currentGameWeekIndex < 0 ? 1 : currentGameWeekIndex;
-    const gw = selectedGameWeek || currentGameWeek;
     return {
       gameWeeks,
-      selectedGameWeek: gw,
+      selectedGameWeek,
       currentGameWeek,
-      prevGameWeekDates: gw > 0 ? gameWeeks[gw - 1] : null,
-      currentGameWeekDates: gameWeeks[gw],
-      nextGameWeekDates: gameWeeks[gw + 1],
+      prevGameWeekDates: selectedGameWeek > 0 ? gameWeeks[selectedGameWeek - 1] : null,
+      currentGameWeekDates: gameWeeks[selectedGameWeek],
+      nextGameWeekDates: gameWeeks[selectedGameWeek + 1],
       count: gameWeeks.length,
     };
   },
