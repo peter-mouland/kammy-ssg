@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import calculateRankChange from './calculate-rank-change';
+const calculateRankChange = require('./calculate-rank-change');
 
 describe('calculateRankChange()', () => {
   it('should return current scores on gameWeek one', () => {

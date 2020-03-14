@@ -1,6 +1,6 @@
 const { TeamSeason } = require('@kammy/data.player-stats/src/team-season');
 
-const TeamByGameWeek = require('./lib/TeamByGameWeek');
+const { TeamByGameWeek } = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 module.exports = ({

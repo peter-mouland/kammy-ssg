@@ -115,4 +115,5 @@ class TeamByGameWeek {
   }
 }
 
-module.exports = TeamByGameWeek;
+module.exports.TeamByGameWeek = TeamByGameWeek;
+module.exports.UNKNOWN_PLAYER = UNKNOWN_PLAYER;

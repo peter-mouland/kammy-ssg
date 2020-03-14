@@ -1,4 +1,4 @@
-export default (rankWeek1, rankWeek2 = {}) => {
+module.exports = (rankWeek1, rankWeek2 = {}) => {
   const changeTotal = {};
   const posChange = (
     Object.keys(rankWeek2)

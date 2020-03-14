@@ -1,4 +1,4 @@
-import positions from './positions';
+const { positions } = require('./positions');
 
 // comparison function: numeric order
 const compare = (itemA, itemB) => (itemA - itemB);
@@ -25,39 +25,33 @@ function getRanks(values = []) {
   });
 }
 
-const getTeamRank = (arr = [], pos, dataKey) => {
-  const positionPoints = arr.map((item) => item[pos][dataKey]);
-  const ranked = getRanks(positionPoints);
-
-  return ranked
-    .map((item, i) => ({ rank: item, manager: arr[i].manager }))
-    .reduce((prev, item) => ({
-      ...prev,
-      [item.manager]: item.rank,
-    }), {});
-};
-
 const getRank = (teamsWithDivisionPoints = []) => {
   const ranks = (
     positions
       .reduce((prev, pos) => {
-        const posRanks = getTeamRank(
-          teamsWithDivisionPoints.map(
-            (team) => ({ ...team.points, manager: team.manager }),
-          ),
-          pos.label,
-          'season',
-        );
-        return ({
+        const arr = teamsWithDivisionPoints.map((team) => ({ ...team.points, managerName: team.managerName }));
+        const positionPoints = arr.map((item) => item[pos.key].seasonPoints);
+        const ranked = getRanks(positionPoints);
+        const rankings = {
           ...prev,
-          [pos.label]: posRanks,
-        });
+        };
+
+        ranked
+            .forEach((item, i) => {
+              const managerName = arr[i].managerName;
+              rankings[managerName] = {
+                ...rankings[managerName],
+                [pos.key]: item,
+
+              }
+            });
+        return rankings;
       }, {})
   );
   const total = {};
   Object.keys(ranks).forEach((position) => {
-    Object.keys(ranks[position]).forEach((manager) => {
-      total[manager] = (total[manager] || 0) + ranks[position][manager];
+    Object.keys(ranks[position]).forEach((managerName) => {
+      total[managerName] = (total[managerName] || 0) + ranks[position][managerName];
     });
   });
   return {
@@ -66,4 +60,4 @@ const getRank = (teamsWithDivisionPoints = []) => {
   };
 };
 
-export default getRank;
+module.exports = getRank;

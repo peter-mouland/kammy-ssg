@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import TeamByGameWeek, { UNKNOWN_PLAYER } from './TeamByGameWeek';
+const { TeamByGameWeek, UNKNOWN_PLAYER } = require('./TeamByGameWeek');
 
 let gameWeeks;
 let transfers;

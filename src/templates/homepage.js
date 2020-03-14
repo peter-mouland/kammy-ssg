@@ -69,32 +69,32 @@ export const query = graphql`
         gameWeek
         points {
           am {
-            gameWeekStats
-            seasonStats
+            gameWeekPoints
+            seasonPoints
           }
           cb {
-            gameWeekStats
-            seasonStats
+            gameWeekPoints
+            seasonPoints
           }
           fb {
-            seasonStats
-            gameWeekStats
+            seasonPoints
+            gameWeekPoints
           }
           gks {
-            gameWeekStats
-            seasonStats
+            gameWeekPoints
+            seasonPoints
           }
           str {
-            gameWeekStats
-            seasonStats
+            gameWeekPoints
+            seasonPoints
           }
           total {
-            gameWeekStats
-            seasonStats
+            gameWeekPoints
+            seasonPoints
           }
           mid {
-            gameWeekStats
-            seasonStats
+            gameWeekPoints
+            seasonPoints
           }
         }
         managerName

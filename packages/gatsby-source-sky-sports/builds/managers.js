@@ -4,7 +4,7 @@ module.exports = ({ googleManagerData, createNodeId }) => {
   return googleManagerData.map(({ manager, division }) => {
       const data = {
         manager,
-        division,
+        divisionKey: division,
       };
       return {
           resourceId: `managers-${manager}`,
