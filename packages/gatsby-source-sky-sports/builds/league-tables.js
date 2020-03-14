@@ -1,52 +1,30 @@
-const { TeamSeason } = require('@kammy/data.player-stats/src/team-season');
-
-const TeamByGameWeek = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const getPoints = require('./lib/calculate-division-points');
 
 module.exports = ({
-    draft, transfers, gameWeeks, players, managers, createNodeId,
+    teams,
 }) => {
-  // extract the data from the node
-  const gameWeekData = gameWeeks.map(({ data }) => data);
-  const transferData = transfers.map(({ data }) => data);
-  const playerData = players.map(({ data }) => data);
-  const managerData = managers.map(({ data }) => data);
-  const draftData = draft.map(({ data }) => data);
+  const teamData = teams.map(({ data }) => data);
+  const managers = [...new Set(teamData.map(p => p.manager))];
+  const gameWeeks = [...new Set(teamData.map(p => p.gameWeek))];
 
-  // filter and set required vard
-  const validTransfers = transferData.filter((transfer) => transfer.isValid);
-  const getValidManagerTransfers = (manager) => validTransfers.filter((transfer) => transfer.manager === manager);
-
-  const draftByManager = draftData.reduce((prev, { manager }) => ({
-    ...prev,
-    [manager]: draftData.filter((pick) => pick.manager === manager),
-  }), {});
-
-  const playersByName = playerData.reduce((prev, player) => ({
-    ...prev,
-    [player.name]: { ...player },
-  }), {});
-
-  const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
-    const teamByGameWeek = new TeamByGameWeek({
-      draft: draftByManager[manager],
-      transfers: getValidManagerTransfers(manager),
-      gameWeeks: gameWeekData,
-      players: playersByName,
+  const results = [];
+  managers.forEach((manager) => {
+    gameWeeks.forEach((gameWeek) => {
+      const team = teamData.filter((team) => team.manager === manager && team.gameWeek === gameWeek);
+      const points = getPoints(team);
+      results.push({
+        gameWeek,
+        manager,
+        points,
+      })
     });
-    const gameWeeks = teamByGameWeek.getSeason();
-    const teamSeason = new TeamSeason({ manager, division, gameWeeks, players: playersByName });
-    const season = teamSeason.getSeason();
-    return [
-      ...prev,
-      ...season
-    ];
-  }, []);
+  });
 
-  return allTeamPlayers.map((item, i) => {
+  return results.map((item, i) => {
       const data = item;
       return {
-          resourceId: `league-tables-posIndex${i}-${data.manager}-${data.name}`,
+          resourceId: `league-tables-i${i}-${data.teamPos}-${data.manager}-${data.gameWeek}`,
           data,
           internal: {
               description: 'League Tables',

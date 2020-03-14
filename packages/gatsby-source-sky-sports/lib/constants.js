@@ -6,6 +6,7 @@ module.exports = {
       SETUP_ID: '1HoInFwqCFLSl0yh8JBvQEFFjOg5ImiiT-BY_aDCy0AU', // game-weeks + players
     },
     nodeTypes: {
+      teams: 'teams',
       leagueTable: 'leagueTable',
       draft: 'draft',
       managers: 'managers',

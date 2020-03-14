@@ -18,10 +18,12 @@ class DivisionRankings extends React.Component {
 
   render() {
     const {
+      stats,
       lineChartData, label, managersSeason, managersPoints, managersRankChange, managersRank, lineType,
-      showStandings, showWeekly, showChart, showGameWeekSwitcher, managers,
+      showStandings, showWeekly, showChart, showGameWeekSwitcher,
     } = this.props;
     const { highlightManager } = this.state;
+    const managers = stats.reduce((prev, stat) => ({ [stat.manager]: stat }));
 
     return (
       <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
@@ -31,20 +33,20 @@ class DivisionRankings extends React.Component {
         }
         {
           <div style={{ position: 'relative', zIndex: 1 }}>
-            {/*{showStandings && (*/}
-            {/*  <Fragment>*/}
-            {/*    {showWeekly && <h2 data-b-layout="v-space">Overall Standings</h2>}*/}
-            {/*    <div data-b-layout="row vpad">*/}
-            {/*      <Table*/}
-            {/*        managers={managers}*/}
-            {/*        points={managersPoints}*/}
-            {/*        rank={managersRank}*/}
-            {/*        type='season'*/}
-            {/*        handleRowHover={this.handleRowHover}*/}
-            {/*      />*/}
-            {/*    </div>*/}
-            {/*  </Fragment>*/}
-            {/*)}*/}
+            {showStandings && (
+              <Fragment>
+                {showWeekly && <h2 data-b-layout="v-space">Overall Standings</h2>}
+                <div data-b-layout="row vpad">
+                  <Table
+                    managers={Object.keys(managers)}
+                    points={managersPoints}
+                    rank={managersRank}
+                    type='season'
+                    handleRowHover={this.handleRowHover}
+                  />
+                </div>
+              </Fragment>
+            )}
             {/*{showWeekly && (*/}
             {/*  <Fragment>*/}
             {/*    <div data-b-layout="row vpad">*/}

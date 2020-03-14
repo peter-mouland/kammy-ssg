@@ -60,6 +60,7 @@ class TeamSeason {
           division,
           gameWeek: gameWeek.gameWeek,
           playerName: players[i].player[gameWeek.gameWeek].name,
+          gameWeekStats: players[i].player[gameWeek.gameWeek].gameWeekStats,
           seasonToGameWeek: players[i].seasonToGameWeek[gameWeek.gameWeek],
         })
       });

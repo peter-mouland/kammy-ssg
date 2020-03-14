@@ -21,7 +21,7 @@ class Homepage extends React.Component {
   }
 
   render() {
-    const { gameWeekDates, selectedGameWeek, divisions } = this.props;
+    const { gameWeekDates, selectedGameWeek, divisions, statsByDivision } = this.props;
     const { currentGameWeekDates, nextGameWeekDates, prevGameWeekDates } = gameWeekDates;
     const { showTransfers, gameWeekFixtures } = this.state;
 
@@ -78,11 +78,12 @@ class Homepage extends React.Component {
         >
           {/*<GameWeekFixtures {...gameWeekFixtures}/>*/}
         </Modal>
-        {divisions.map(({ label, id }) => (
+        {divisions.map(({ label, key }) => (
           <DivisionRankings
-            key={id}
+            key={key}
             label={label}
-            divisionId={id}
+            divisionId={key}
+            stats={statsByDivision[key]}
             showGameWeekSwitcher={false}
             showChart={false}
             showWeekly={false}

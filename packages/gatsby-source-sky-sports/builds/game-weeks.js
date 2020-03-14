@@ -5,7 +5,7 @@ module.exports = ({ googleGameWeekData }) => {
       const data = {
         notes: gw.notes || '',
         cup: ['cup', 'y', 'yes', 'Y'].includes(gw.cup || ''),
-        gameWeek: gw.gameweek,
+        gameWeek: parseInt(gw.gameweek, 10),
         start: gw.start,
         end: gw.end,
         isCurrent: new Date() < new Date(gw.end) && new Date() > new Date(gw.start)
