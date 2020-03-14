@@ -52,24 +52,24 @@ const DivisionRankingsTable = ({
     <tbody>
       {points.length > 0
         ? points
-          .sort((managerA, managerB) => rank.total[managerB.manager] - rank.total[managerA.manager])
-          .map(({ manager, points: pos }) => (
+          // .sort((managerA, managerB) => rank.total[managerB.manager] - rank.total[managerA.manager])
+          .map(({ manager, points: pos }) => console.log(pos) || (
             <tr key={manager} className={'row'} onMouseEnter={() => handleRowHover(manager)} onMouseLeave={() => handleRowHover(manager)}>
               <td className='cell cell--manager'>{manager}</td>
               {positions.map((position) => {
-                const gradient = `gradient_${parseInt(rank[position.label][manager], 10).toString().replace('.', '-')}`;
+                // const gradient = `gradient_${parseInt(rank[position.label][manager], 10).toString().replace('.', '-')}`;
                 return (
-                  <Fragment key={position.label}>
-                    <td className={`cell cell--${position.key} ${gradient}`}>
-                      { rank[position.label][manager] }
+                  <Fragment key={position.key}>
+                    <td className={`cell cell--${position.key} $gradient}`}>
+                      {/*{ rank[position.key][manager] }*/}
                     </td>
-                    <td className={`cell cell--pair cell--${position.key} ${gradient}`}>
-                      { pos[position.label][type] }
+                    <td className={`cell cell--pair cell--${position.key} $gradient}`}>
+                      { pos[position.key][type] }
                     </td>
                   </Fragment>
                 );
               })}
-              <td className={'cell cell--total'}>{ rank.total[manager] }</td>
+              {/*<td className={'cell cell--total'}> { rank.total[manager] }</td>*/}
               <td className={'cell cell--pair cell--total'}>{ pos.total[type] }</td>
             </tr>
           ))

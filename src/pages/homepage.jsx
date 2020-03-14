@@ -96,13 +96,6 @@ class Homepage extends React.Component {
 
 
 Homepage.propTypes = {
-  fetchAllPlayerData: PropTypes.func,
-  fetchGameWeeks: PropTypes.func,
-  fetchLiveScores: PropTypes.func,
-  liveScoresLoaded: PropTypes.bool,
-  loaded: PropTypes.bool,
-  playersLoaded: PropTypes.bool,
-  gameWeeksLoaded: PropTypes.bool,
   gameWeeks: PropTypes.object,
   liveScores: PropTypes.object,
   divisions: PropTypes.array,

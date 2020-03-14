@@ -6,6 +6,8 @@ const { nodeTypes, mediaTypes } = require('../lib/constants');
 module.exports = ({
     draft, transfers, gameWeeks, players, managers,
 }) => {
+  console.log('Build: Teams start');
+  const start = new Date();
   // extract the data from the node
   const gameWeekData = gameWeeks.map(({ data }) => data);
   const transferData = transfers.map(({ data }) => data);
@@ -43,6 +45,7 @@ module.exports = ({
     ];
   }, []);
 
+  console.log('Build: Teams end: ', new Date() - start);
   return allTeamPlayers.map((item, i) => {
       const data = item;
       return {

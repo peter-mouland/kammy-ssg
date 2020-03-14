@@ -37,7 +37,7 @@ module.exports = ({ googleTransferData, createNodeId }) => {
             data: {
               ...data,
               division___NODE: createNodeId(`divisions-${data.division}`),
-              manager___NODE: createNodeId(`managers-${data.manager}-${data.division}`),
+              manager___NODE: createNodeId(`managers-${data.manager}`),
               transferIn___NODE: createNodeId(`players-${data.transferIn}`),
               transferOut___NODE: createNodeId(`players-${data.transferOut}`),
             },

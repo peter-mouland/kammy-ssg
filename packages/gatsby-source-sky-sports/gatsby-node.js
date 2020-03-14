@@ -54,7 +54,7 @@ exports.sourceNodes = async (
     const divisions = buildDivisions({ googleDivisionData });
     const draft = buildDraft({ googleDraftData, createNodeId });
     const teams = buildTeams({ draft, managers, divisions, transfers, gameWeeks, players, createNodeId });
-    const leagueTables = buildLeagueTables({ teams });
+    const leagueTables = buildLeagueTables({ teams, createNodeId });
 
     // create all the gatsby nodes
     const nodePromises = [

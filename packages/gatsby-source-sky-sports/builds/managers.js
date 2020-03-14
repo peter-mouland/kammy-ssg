@@ -7,7 +7,7 @@ module.exports = ({ googleManagerData, createNodeId }) => {
         division,
       };
       return {
-          resourceId: `managers-${manager}-${division}`,
+          resourceId: `managers-${manager}`,
           data: {
             ...data,
             division___NODE: createNodeId(`divisions-${division}`),

@@ -2,8 +2,10 @@ const { nodeTypes, mediaTypes } = require('../lib/constants');
 const getPoints = require('./lib/calculate-division-points');
 
 module.exports = ({
-    teams,
+    teams, createNodeId,
 }) => {
+  console.log('Build: League Tables start');
+  const start = new Date();
   const teamData = teams.map(({ data }) => data);
   const managers = [...new Set(teamData.map(p => p.manager))];
   const gameWeeks = [...new Set(teamData.map(p => p.gameWeek))];
@@ -15,11 +17,14 @@ module.exports = ({
       const points = getPoints(team);
       results.push({
         gameWeek,
-        manager,
+        managerName: manager,
+        manager___NODE: createNodeId(`managers-${manager}`),
         points,
       })
     });
   });
+  const ms = new Date() - start;
+  console.log('Build: League Tables end: ', ms);
 
   return results.map((item, i) => {
       const data = item;

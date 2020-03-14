@@ -41,6 +41,10 @@ const getPlayerWithStats = ({ player, dbPlayer, gameWeeks }) => {
 };
 
 module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
+
+  console.log('Build: Players start');
+  const start = new Date();
+
   const gameWeekData = gameWeeks.map(({ data }) => data);
   const skyPlayersObj = skyPlayers.reduce((prev, { data: player }) => ({
     ...prev,
@@ -83,6 +87,8 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
         [playerName]: playerWithStats,
       }
     }, {});
+
+  console.log('Build: Players end: ', new Date() - start);
 
   return Object.values(mergedPlayers).map((player) => {
       return {

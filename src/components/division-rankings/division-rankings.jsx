@@ -39,9 +39,9 @@ class DivisionRankings extends React.Component {
                 <div data-b-layout="row vpad">
                   <Table
                     managers={Object.keys(managers)}
-                    points={managersPoints}
-                    rank={managersRank}
-                    type='season'
+                    points={stats}
+                    // rank={managersRank}
+                    type='seasonStats'
                     handleRowHover={this.handleRowHover}
                   />
                 </div>
@@ -82,7 +82,6 @@ class DivisionRankings extends React.Component {
 
 DivisionRankings.propTypes = {
   lineType: PropTypes.string,
-  loaded: PropTypes.bool,
   divisionId: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   managers: PropTypes.array,
@@ -92,13 +91,6 @@ DivisionRankings.propTypes = {
   managersRankChange: PropTypes.object,
   lineChartData: PropTypes.array,
 
-  fetchAllPlayerData: PropTypes.func.isRequired,
-  fetchGameWeeks: PropTypes.func.isRequired,
-  fetchDivision: PropTypes.func.isRequired,
-
-  playersLoaded: PropTypes.bool,
-  gameWeeksLoaded: PropTypes.bool,
-  divisionLoaded: PropTypes.bool,
   showGameWeekSwitcher: PropTypes.bool,
   showWeekly: PropTypes.bool,
   showChart: PropTypes.bool,
