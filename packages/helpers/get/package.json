@@ -17,8 +17,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-  },
-  "peerDependencies": {
-  }
+  "dependencies": {},
+  "peerDependencies": {}
 }

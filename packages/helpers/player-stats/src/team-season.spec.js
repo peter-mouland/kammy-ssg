@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const parse = require('date-fns/parse');
+const parse = require('date-fns/parseISO');
 
 const { TeamSeason, UNKNOWN_PLAYER } = require('./team-season');
 

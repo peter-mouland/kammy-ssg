@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import jsonQuery from 'json-query';
 import bemHelper from '@kammy/bem';
-import parse from 'date-fns/parse';
+import parse from 'date-fns/parseISO';
 
 import './game-week-fixtures.scss';
 

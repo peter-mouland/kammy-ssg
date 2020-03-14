@@ -20,7 +20,7 @@
   "dependencies": {
     "@kammy/data.player-stats": "1.0.0",
     "bunyan": "^2.0.2",
-    "debug": "^3.2.6",
+    "debug": "^4.1.1",
     "mongoose": "^5.9.3"
   },
   "devDependencies": {
