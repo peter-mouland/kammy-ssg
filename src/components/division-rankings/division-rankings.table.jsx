@@ -88,7 +88,7 @@ DivisionRankingsTable.propTypes = {
   rank: PropTypes.object,
   points: PropTypes.array,
   managers: PropTypes.array,
-  type: PropTypes.oneOf(['season', 'gameWeek']).isRequired,
+  type: PropTypes.oneOf(['seasonStats', 'gameWeekStats']).isRequired,
 };
 
 DivisionRankingsTable.defaultProps = {

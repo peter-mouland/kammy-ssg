@@ -1,3 +1,3 @@
-import teamsPage from './division-rankings.container';
+import teamsPage from './division-rankings';
 
 export default teamsPage;
