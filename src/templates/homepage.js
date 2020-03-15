@@ -2,7 +2,7 @@ import React from 'react';
 import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
-import Homepage from '../pages/homepage';
+import Homepage from '../components/homepage';
 import { getGameWeeks } from "../selectors/game-weeks.selectors";
 
 const Index = ({ data }) => {

@@ -156,7 +156,8 @@ module.exports =  [
     label: 'Draft',
     props: {
       division: 'premierLeague',
-      src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQr3amNkTAxhpVu1Y1fBhEqDCV0r6J3PBLuNpHlhvmoaJQ7UIfgcOgSd9YKGsTsQfdXzZOLCsJwHnAk/pubhtml?gid=0&single=true',
+      src: '' +
+        '',
     },
     requiresAuthentication: false,
     component: 'iFrame',

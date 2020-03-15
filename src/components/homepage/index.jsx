@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import DivisionRankings from '../components/division-rankings';
-// import Interstitial from '../components/interstitial';
-// import GameWeekFixtures from '../components/gameweek-fixtures';
-import GameWeekDate from '../components/gameweek-date';
-import Modal from '../components/modal';
+import DivisionRankings from '../division-rankings';
+// import Interstitial from '../interstitial';
+// import GameWeekFixtures from '../gameweek-fixtures';
+import GameWeekDate from '../gameweek-date';
+import Modal from '../modal';
 import './styles.scss';
 
 const bem = bemHelper({ block: 'home-page' });
 
-class Homepage extends React.Component {
+class Index extends React.Component {
   state = {
     showTransfers: false,
   }
@@ -96,14 +96,14 @@ class Homepage extends React.Component {
 }
 
 
-Homepage.propTypes = {
+Index.propTypes = {
   gameWeeks: PropTypes.object,
   liveScores: PropTypes.object,
   divisions: PropTypes.array,
 };
 
-Homepage.defaultProps = {
+Index.defaultProps = {
   divisions: [],
 };
 
-export default Homepage;
+export default Index;
