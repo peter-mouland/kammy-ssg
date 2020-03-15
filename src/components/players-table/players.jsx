@@ -1,30 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Interstitial from '@kammy-ui/interstitial';
-import Errors from '@kammy-ui/errors';
 
 import PlayersFilters from './players-filters';
 import PlayersTable from './players-table';
 
 class Players extends React.Component {
-  componentDidMount() {
-    const { players, fetchPlayers } = this.props;
-    if (!players) {
-      fetchPlayers();
-    }
-  }
-
-  setShowFixtures = () => {
-    //
-  };
-
   render() {
     const {
-      loading, errors, players, positions, visibleStats,
+      players, positions, visibleStats,
     } = this.props;
-
-    if (loading) return <Interstitial />;
-    if (errors) return <Errors errors={errors} />;
 
     return (
       <div>
@@ -37,7 +21,7 @@ class Players extends React.Component {
               positions={positions}
               players={playersFiltered}
               visibleStats={visibleStats}
-              onPlayerClick={this.setShowFixtures}
+              // onPlayerClick={this.setShowFixtures}
             />
           )}
         </PlayersFilters>

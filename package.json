@@ -72,11 +72,8 @@
     "react-cookie": "4.0.3",
     "react-dom": "16.13.0",
     "react-helmet": "5.2.1",
-    "react-redux": "7.2.0",
-    "react-router-dom": "5.1.2",
     "react-select": "3.0.8",
     "recharts": "1.8.5",
-    "redux": "4.0.5",
     "reselect": "4.0.0",
     "rimraf": "^3.0.2",
     "url-search-params-polyfill": "8.0.0"
