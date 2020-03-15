@@ -1,24 +1,14 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import bemHelper from '@kammy/bem';
 
-import bemHelper from '@kammy-ui/bem';
-import Modal from '@kammy-ui/modal';
 
+import Modal from '../modal';
 import PlayerTimeline from './components/PlayerTimeline.table';
 import PositionTimeline from './components/PositionTimeline.table';
 import { StatsHeaders, StatsCells } from './components/tableHelpers';
 
 const bem = bemHelper({ block: 'table' });
-
-// const getLiveScores = (livePlayers = [], playersByCode) => livePlayers.reduce((prev, curr) => {
-//   const [code, skyPoints, START, tba3, CONCEDED, tba5, YELLOWS, GOALS, ASSISTS] = curr;
-//   return {
-//     ...prev,
-//     [playersByCode[code].name]: {
-//       name: playersByCode[code].name, code, skyPoints, START, tba3, CONCEDED, tba5, YELLOWS, GOALS, ASSISTS,
-//     },
-//   };
-// }, {});
 
 const validatePlayer = (managersSeason, intGameWeek) => {
   const players = Object.keys(managersSeason).reduce((acc, manager) => ([
@@ -96,7 +86,7 @@ class TeamsPage extends React.Component {
 
   render() {
     const {
-      managersSeason, selectedGameWeek, isAdmin, managers, // liveScores, playersByCode,
+      managersSeason, selectedGameWeek, isAdmin, managers,
     } = this.props;
     const {
       showPositionTimeline, positionTimelineProps,
@@ -108,7 +98,7 @@ class TeamsPage extends React.Component {
       const { clubWarnings } = validateClub(managersSeason[manager], selectedGameWeek);
       return clubWarnings.length ? { clubWarnings, manager } : undefined;
     }).filter(Boolean);
-    // const livePlayers = getLiveScores(liveScores.players, playersByCode);
+
     return (
       <div className={bem(null, null, 'page-content')} data-b-layout="row vpad">
         <div>

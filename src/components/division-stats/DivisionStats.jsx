@@ -9,36 +9,19 @@ import Table from './DivisionStats.table';
 const bem = bemHelper({ block: 'division-stats' });
 
 class DivisionStats extends React.Component {
-  state = { }
-
-  componentDidMount() {
-    const {
-      divisionId, gameWeeksLoaded, fetchGameWeeks,
-      fetchAllPlayerData, fetchDivision,
-      playersLoaded, divisionLoaded,
-      fetchLiveScores, liveScoresLoaded,
-    } = this.props;
-
-    if (!liveScoresLoaded) fetchLiveScores();
-    if (!playersLoaded) fetchAllPlayerData();
-    if (!divisionLoaded) fetchDivision(divisionId);
-    if (!gameWeeksLoaded) fetchGameWeeks();
-  }
-
   render() {
     const {
-      loaded, label, managersSeason, selectedGameWeek, cookies, managers, liveScores, playersByCode,
+      label, managersSeason, selectedGameWeek, cookies, managers, playersByCode,
     } = this.props;
     return (
       <section id="teams-page" className={bem()} data-b-layout="container">
         <h1>{label}</h1>
         <div data-b-layout="vpad">
-          {loaded && <GameWeekSwitcher />}
+          <GameWeekSwitcher />
         </div>
         <div data-b-layout="vpad">
           <Table
             playersByCode={playersByCode}
-            liveScores={liveScores}
             managers={managers}
             selectedGameWeek={selectedGameWeek}
             managersSeason={managersSeason}

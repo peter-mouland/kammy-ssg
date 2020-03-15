@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import GameWeekSwitcher from '../gameweek-switcher';
-// import ErrorBoundary from '../error-boundary';
+import ErrorBoundary from '../error-boundary';
+import Chart from '../divisions-ranking-chart';
 
 import Table from './division-rankings.table';
-// import LoadableChart from './components/loadable-chart';
 
 const bem = bemHelper({ block: 'division-stats' });
 
@@ -61,10 +61,10 @@ class DivisionRankings extends React.Component {
             {/*{showChart && (*/}
             {/*  <ErrorBoundary>*/}
             {/*    <div data-b-layout="row vpad">*/}
-            {/*      <LoadableChart*/}
+            {/*      <Chart*/}
             {/*        data={lineChartData}*/}
             {/*        lines={Object.keys(managersSeason)}*/}
-            {/*        xAxis={'gameWeek'}*/}
+            {/*        xAxis={'gameWeekPoints'}*/}
             {/*        highlightManager={highlightManager}*/}
             {/*        lineType={lineType}*/}
             {/*      />*/}
