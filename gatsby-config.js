@@ -16,7 +16,7 @@ module.exports = {
     assetPrefix: getAssetPath(),
     siteMetadata: {
       title: `Draft Fantasy Football`,
-      siteUrl: `http://localhost:8000`,
+      siteUrl: `http://draftff.herokuapp.com`,
       description: `Draft Fantasy Football game`,
     },
     plugins: [
