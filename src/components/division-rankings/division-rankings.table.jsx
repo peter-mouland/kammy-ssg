@@ -50,7 +50,7 @@ const DivisionRankingsTable = ({
       </tr>
     </thead>
     <tbody>
-      {console.log(points) || points.length > 0
+      {points.length > 0
         ? points
           .sort((managerA, managerB) => managerB.points.total.rank - managerA.points.total.rank)
           .map(({ manager, points: pos }) => (

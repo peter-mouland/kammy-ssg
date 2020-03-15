@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import DivisionRankings from '../division-rankings';
-// import Interstitial from '../interstitial';
 // import GameWeekFixtures from '../gameweek-fixtures';
 import GameWeekDate from '../gameweek-date';
 import Modal from '../modal';

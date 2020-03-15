@@ -66,20 +66,30 @@ exports.createPages = async ({ actions, graphql }) => {
             allGameWeeks {
                 nodes {
                     gameWeek
+                    isCurrent
                 }
             }
         }
     `);
-  homepageData.allGameWeeks.nodes.forEach(({ gameWeek }) => {
-    const pageConfig = {
+  homepageData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
+    actions.createPage({
       path: `/week-${gameWeek}`,
       matchPath: `/week-${gameWeek}/`, // otherwise gatsby will redirect on refresh
       component: path.resolve('src/templates/homepage.js'),
       context: {
         gameWeek,
       },
-    };
-    actions.createPage(pageConfig);
+    });
+    if (isCurrent) {
+      actions.createPage({
+        path: `/`,
+        matchPath: `/`,
+        component: path.resolve('src/templates/homepage.js'),
+        context: {
+          gameWeek,
+        },
+      });
+    }
   });
 };
 

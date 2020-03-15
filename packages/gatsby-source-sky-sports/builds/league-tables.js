@@ -104,9 +104,6 @@ module.exports = ({
       points,
     };
   });
-  console.log(results[30])
-  console.log(ranks[30])
-  console.log(resultsWithRank[30])
 
   const ms = new Date() - start;
   console.log('Build: League Tables end: ', ms);
