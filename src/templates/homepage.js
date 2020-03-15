@@ -3,18 +3,21 @@ import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
 import Homepage from '../components/homepage';
-import { getGameWeeks } from "../selectors/game-weeks.selectors";
 
 const Index = ({ data }) => {
     const {
-      selectedGameWeek,
+      prevGameWeek,
+      currentGameWeek,
+      nextGameWeek,
       allManagers:  { nodes: managers },
       allDivisions: { nodes: divisions },
-      allGameWeeks: { nodes: gameWeeks },
       allLeagueTable: { nodes: leagueStats }
     } = data;
-    const selectedGameWeekIndex =  parseInt(selectedGameWeek.gameWeek, 10);
-    const gameWeekDates = getGameWeeks({ gameWeeks: { selectedGameWeek: selectedGameWeekIndex, data: { gameWeeks }} });
+    const gameWeekDates = {
+      currentGameWeek,
+      nextGameWeek,
+      prevGameWeek,
+    };
     const statsByDivision = managers.reduce((prev, { manager, division }) => ({
       ...prev,
       [division.key] : [
@@ -31,32 +34,67 @@ const Index = ({ data }) => {
 
     return (
         <Layout>
-            <Homepage selectedGameWeek={selectedGameWeek} gameWeekDates={gameWeekDates} divisions={divisions} statsByDivision={statsByDivision} />
+            <Homepage gameWeekDates={gameWeekDates} divisions={divisions} statsByDivision={statsByDivision} />
         </Layout>
     );
 };
 
 export const query = graphql`
 
-  query Homepage($gameWeek: Int) {
-    selectedGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
+  query Homepage($gameWeek: Int, $prevGameWeek: Int, $nextGameWeek: Int) {
+    currentGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
       gameWeek
       isCurrent
       start
       end
       cup
       notes
-    }
-    allGameWeeks(sort: {fields: gameWeek}) {
-      nodes {
-        gameWeek
-        isCurrent
-        start
-        end
-        cup
-        notes
+      fixtures {
+        aScore
+        aTcode
+        aTname
+        date
+        hScore
+        hTcode
+        hTname
+        status
       }
-      totalCount
+    }
+    prevGameWeek: gameWeeks(gameWeek: {eq: $prevGameWeek}) {
+      gameWeek
+      isCurrent
+      start
+      end
+      cup
+      notes
+      fixtures {
+        aScore
+        aTcode
+        aTname
+        date
+        hScore
+        hTcode
+        hTname
+        status
+      }
+    }
+    nextGameWeek: gameWeeks(gameWeek: {eq: $nextGameWeek}) {
+      gameWeek
+      isCurrent
+      start
+      end
+      cup
+      notes
+      fixtures {
+        aScore
+        aTcode
+        aTname
+        date
+        hScore
+        hTcode
+        hTname
+        status
+      }
     }
     allDivisions(sort: {fields: order}) {
       nodes {

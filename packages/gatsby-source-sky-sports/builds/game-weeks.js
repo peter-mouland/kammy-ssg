@@ -1,6 +1,14 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const toDate = require('../lib/to-date');
 
-module.exports = ({ googleGameWeekData }) => {
+const getFixtures = (skyFixtures, { start, end }) => skyFixtures.filter(({ data: item}) => {
+  const fixtureDate = toDate(item.date);
+  const endDate = toDate(end);
+  const startDate = toDate(start);
+  return fixtureDate <= endDate && fixtureDate >= startDate;
+}).map(({ data }) => data);
+
+module.exports = ({ googleGameWeekData, skyFixtures }) => {
   return googleGameWeekData.map((gw) => {
       const data = {
         notes: gw.notes || '',
@@ -8,10 +16,11 @@ module.exports = ({ googleGameWeekData }) => {
         gameWeek: parseInt(gw.gameweek, 10),
         start: gw.start,
         end: gw.end,
-        isCurrent: new Date() < new Date(gw.end) && new Date() > new Date(gw.start)
+        isCurrent: new Date() < new Date(gw.end) && new Date() > new Date(gw.start),
+        fixtures: getFixtures(skyFixtures, gw)
       };
       return {
-          resourceId: `game-weeks-${gw.gameweek}-${gw.start}-${gw.end}`,
+          resourceId: `game-weeks-${gw.gameweek}`,
           data,
           internal: {
               description: 'Game Weeks',

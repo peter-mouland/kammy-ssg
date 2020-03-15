@@ -78,6 +78,8 @@ exports.createPages = async ({ actions, graphql }) => {
       component: path.resolve('src/templates/homepage.js'),
       context: {
         gameWeek,
+        prevGameWeek: gameWeek - 1,
+        nextGameWeek: gameWeek + 1,
       },
     });
     if (isCurrent) {
@@ -87,6 +89,8 @@ exports.createPages = async ({ actions, graphql }) => {
         component: path.resolve('src/templates/homepage.js'),
         context: {
           gameWeek,
+          prevGameWeek: gameWeek - 1,
+          nextGameWeek: gameWeek + 1,
         },
       });
     }

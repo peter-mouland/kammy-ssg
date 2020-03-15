@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import DivisionRankings from '../division-rankings';
-// import GameWeekFixtures from '../gameweek-fixtures';
+import GameWeekFixtures from '../gameweek-fixtures';
 import GameWeekDate from '../gameweek-date';
 import Modal from '../modal';
 import './styles.scss';
@@ -16,25 +16,26 @@ class Index extends React.Component {
   }
 
   showFixtures = (gameWeekFixtures) => {
+    console.log(gameWeekFixtures);
     this.setState({ showTransfers: true, gameWeekFixtures });
   }
 
   render() {
-    const { gameWeekDates, selectedGameWeek, divisions, statsByDivision } = this.props;
+    const { gameWeekDates, divisions, statsByDivision } = this.props;
     if (!gameWeekDates) return null;
-    const { currentGameWeekDates, nextGameWeekDates, prevGameWeekDates } = gameWeekDates;
+    const { currentGameWeek, nextGameWeek, prevGameWeek } = gameWeekDates;
     const { showTransfers, gameWeekFixtures } = this.state;
 
     return (
       <section id="home-page" className={bem()} >
         <div className='homepage-dates'>
           <div className={'homepage__prev-date'}>{
-            prevGameWeekDates && (
-              <a onClick={() => this.showFixtures(prevGameWeekDates)}>
+            prevGameWeek && (
+              <a onClick={() => this.showFixtures(prevGameWeek)}>
                 <GameWeekDate
-                  gameWeek={prevGameWeekDates}
+                  gameWeek={prevGameWeek}
                   calStart={`
-                      GW${prevGameWeekDates.gameWeek}
+                      GW${prevGameWeek.gameWeek}
                   `}
                   showEnd={false}
                   showStartTime={false}
@@ -43,24 +44,24 @@ class Index extends React.Component {
             )}
           </div>
           <div className={'homepage__gw-date'}>
-            <a onClick={() => this.showFixtures(currentGameWeekDates)}>
-              <GameWeekDate gameWeek={currentGameWeekDates} />
+            <a onClick={() => this.showFixtures(currentGameWeek)}>
+              <GameWeekDate gameWeek={currentGameWeek} />
             </a>
           </div>
           <div className={'homepage__next-date'}>
-            <a onClick={() => this.showFixtures(nextGameWeekDates)}>
+            <a onClick={() => this.showFixtures(nextGameWeek)}>
               {
-                nextGameWeekDates ? (
+                nextGameWeek ? (
                   <GameWeekDate
-                    gameWeek={nextGameWeekDates}
-                    calEnd={`GW${nextGameWeekDates.gameWeek}`}
+                    gameWeek={nextGameWeek}
+                    calEnd={`GW${nextGameWeek.gameWeek}`}
                     showStart={false}
                     showEndTime={false}
                   />
                 )
                   : (
                     <GameWeekDate
-                      gameWeek={currentGameWeekDates}
+                      gameWeek={currentGameWeek}
                       calEnd={'fin.'}
                       showStart={false}
                       showEndTime={false}
@@ -76,7 +77,7 @@ class Index extends React.Component {
           onClose={() => this.setState({ showTransfers: false })}
           style={{ maxWidth: '700px' }}
         >
-          {/*<GameWeekFixtures {...gameWeekFixtures}/>*/}
+          <GameWeekFixtures {...gameWeekFixtures}/>
         </Modal>
         {divisions.map(({ label, key }) => (
           <DivisionRankings
