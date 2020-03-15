@@ -2,6 +2,7 @@
 node_modules/
 dist
 coverage
+public
 compiled
 .DS_Store
 .swp

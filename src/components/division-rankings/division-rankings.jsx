@@ -46,19 +46,18 @@ class DivisionRankings extends React.Component {
                 </div>
               </Fragment>
             )}
-            {/*{showWeekly && (*/}
-            {/*  <Fragment>*/}
-            {/*    <div data-b-layout="row vpad">*/}
-            {/*      {showStandings && <h2>Weekly Scores</h2>}*/}
-            {/*      <Table*/}
-            {/*        managers={Object.keys(managers)}*/}
-            {/*        points={managersPoints}*/}
-            {/*        rank={managersRankChange}*/}
-            {/*        type='gameWeekPoints'*/}
-            {/*      />*/}
-            {/*    </div>*/}
-            {/*  </Fragment>*/}
-            {/*)}*/}
+            {showWeekly && (
+              <Fragment>
+                <div data-b-layout="row vpad">
+                  {showStandings && <h2>Weekly Scores</h2>}
+                  <Table
+                    managers={Object.keys(managers)}
+                    points={stats}
+                    type='gameWeekPoints'
+                  />
+                </div>
+              </Fragment>
+            )}
             {/*{showChart && (*/}
             {/*  <ErrorBoundary>*/}
             {/*    <div data-b-layout="row vpad">*/}

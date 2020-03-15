@@ -20,7 +20,7 @@ const Index = ({ data, pageContext: { gameWeek, divisionKey, divisionLabel } }) 
             gameWeek={gameWeek}
             showGameWeekSwitcher={true}
             showChart={false}
-            showWeekly={false}
+            showWeekly={true}
           />
         </Layout>
     );
