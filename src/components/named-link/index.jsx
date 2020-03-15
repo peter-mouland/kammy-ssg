@@ -1,26 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Route from 'react-router-dom/Route';
-import Link from 'react-router-dom/Link';
+import Link from 'gatsby-link';
 import bemHelper from '@kammy/bem';
 
+import appConfig from '../../config/config';
 
 const bem = bemHelper({ block: 'named-link' });
 
-const findRoute = ({ appConfig, to }) => appConfig.routes.find((rt) => rt.name === to);
+const findRoute = ({ to }) => appConfig.routes.find((rt) => rt.name === to);
 
-const Index = ({ className, to }, { appConfig }) => {
-  const route = findRoute({ to, appConfig });
+const Index = ({ className, to }) => {
+  const route = findRoute({ to });
   if (!route) throw new Error(`Route to '${to}' not found`);
   const { path, label } = route;
   return (
-    <Route path={ path }>
-      {({ match }) => (
-        <Link to={ path } className={ bem(null, { active: match }, className) }>
-          { label }
-        </Link>
-      )}
-    </Route>
+      <Link to={ path } className={ bem(null, null , className) }>
+        { label }
+      </Link>
   );
 };
 

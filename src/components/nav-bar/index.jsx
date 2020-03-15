@@ -4,6 +4,7 @@ import bemHelper from '@kammy/bem';
 import { withCookies, Cookies } from 'react-cookie';
 
 
+import appConfig from '../../config/config';
 import NamedLink from '../named-link';
 import NavItem from './components/nav-item';
 
@@ -30,7 +31,7 @@ AdminLinks.propTypes = {
   cookies: PropTypes.instanceOf(Cookies).isRequired,
 };
 
-const Index = ({ cookies }, { appConfig }) => (
+const Index = ({ cookies }) => (
   <nav className={bem()}>
     <div className={bem('content')}>
       <NavItem label='DraftFF' className={linkClass}>

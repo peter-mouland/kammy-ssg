@@ -1,3 +1,5 @@
+const routes = require('./routes');
+
 let config = {};
 
 const NODE_ENV = process.env.NODE_ENV || 'production';
@@ -8,10 +10,12 @@ const setConfig = () => {
     config = {
         NODE_ENV,
         PORT,
-        GITHUB: {
-          api: 'https://api.github.com/graphql',
-          repo: 'global-website.language-store',
-          accessToken: process.env.GITHUB_ACCESS_TOKEN,
+        routes,
+        divisionLabels: ['Premier League', 'Championship', 'League One'],
+        divisionSheets: {
+          'Premier League': 'premierLeague',
+          Championship: 'championship',
+          'League One': 'leagueOne',
         },
     };
 

@@ -3,17 +3,32 @@
 import "../config/config";
 /* eslint-enable */
 
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import bemHelper from '@kammy/bem';
+
+import NavBar from '../components/nav-bar';
+import appConfig from '../config/config';
 
 import './index.css';
 
 const Layout = ({ children }) => {
-    return (
-        <Fragment>
-            {typeof children === 'function' ? children() : children}
-        </Fragment>
-    );
+  const bem = bemHelper({ block: 'layout' });
+  return (
+    <div className={bem(null, 'main')}>
+      <NavBar className={bem('nav')} />
+      <main className={bem('content')}>
+        <section className={bem()}>
+          {typeof children === 'function' ? children() : children}
+        </section>
+      </main>
+      <footer className={bem('footer')}>
+        <div className={bem('footer-content')}>
+          Hosted at <a href="http://github.com/peter-mouland/kammy-ui">github.com/peter-mouland/kammy-ui</a>
+        </div>
+      </footer>
+    </div>
+  );
 };
 
 Layout.propTypes = {
