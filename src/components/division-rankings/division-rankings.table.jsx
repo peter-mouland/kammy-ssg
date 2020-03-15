@@ -50,9 +50,9 @@ const DivisionRankingsTable = ({
       </tr>
     </thead>
     <tbody>
-      {points.length > 0
+      {console.log(points) || points.length > 0
         ? points
-          // .sort((managerA, managerB) => rank.total[managerB.manager] - rank.total[managerA.manager])
+          .sort((managerA, managerB) => managerB.points.total.rank - managerA.points.total.rank)
           .map(({ manager, points: pos }) => (
             <tr key={manager} className={'row'} onMouseEnter={() => handleRowHover(manager)} onMouseLeave={() => handleRowHover(manager)}>
               <td className='cell cell--manager'>{manager}</td>
@@ -69,7 +69,7 @@ const DivisionRankingsTable = ({
                   </Fragment>
                 );
               })}
-              {/*<td className={'cell cell--total'}> { rank.total[manager] }</td>*/}
+              <td className={'cell cell--total'}> { pos.total.rank }</td>
               <td className={'cell cell--pair cell--total'}>{ pos.total[type] }</td>
             </tr>
           ))

@@ -40,7 +40,6 @@ class DivisionRankings extends React.Component {
                   <Table
                     managers={Object.keys(managers)}
                     points={stats}
-                    // rank={managersRank}
                     type='seasonPoints'
                     handleRowHover={this.handleRowHover}
                   />

@@ -98,11 +98,15 @@ module.exports = ({
         rank: divRankings.rank[item.managerName][posKey],
       }
     }), item.points);
+
     return {
       ...item,
       points,
     };
   });
+  console.log(results[30])
+  console.log(ranks[30])
+  console.log(resultsWithRank[30])
 
   const ms = new Date() - start;
   console.log('Build: League Tables end: ', ms);

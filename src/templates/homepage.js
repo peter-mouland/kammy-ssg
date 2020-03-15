@@ -97,7 +97,7 @@ export const query = graphql`
           total {
             gameWeekPoints
             seasonPoints
-
+            rank
           }
           mid {
             gameWeekPoints

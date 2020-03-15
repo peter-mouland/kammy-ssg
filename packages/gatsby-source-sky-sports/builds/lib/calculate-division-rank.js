@@ -42,22 +42,17 @@ const getRank = (teamsWithDivisionPoints = []) => {
               rankings[managerName] = {
                 ...rankings[managerName],
                 [pos.key]: item,
-
               }
             });
         return rankings;
       }, {})
   );
-  const total = {};
-  Object.keys(ranks).forEach((position) => {
-    Object.keys(ranks[position]).forEach((managerName) => {
-      total[managerName] = (total[managerName] || 0) + ranks[position][managerName];
+  Object.keys(ranks).forEach((managerName) => {
+    Object.keys(ranks[managerName]).forEach((position) => {
+      ranks[managerName].total = (ranks[managerName].total || 0) + ranks[managerName][position];
     });
   });
-  return {
-    ...ranks,
-    total,
-  };
+  return ranks;
 };
 
 module.exports = getRank;
