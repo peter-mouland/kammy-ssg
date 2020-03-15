@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-// import GameWeekSwitcher from '../gameweek-switcher';
+import GameWeekSwitcher from '../gameweek-switcher';
 // import ErrorBoundary from '../error-boundary';
 
 import Table from './division-rankings.table';
@@ -18,18 +18,18 @@ class DivisionRankings extends React.Component {
 
   render() {
     const {
-      stats,
+      stats = [], gameWeek, divisionUrl,
       lineChartData, label, managersSeason, managersPoints, managersRankChange, managersRank, lineType,
       showStandings, showWeekly, showChart, showGameWeekSwitcher,
     } = this.props;
     const { highlightManager } = this.state;
-    const managers = stats.reduce((prev, stat) => ({ [stat.manager]: stat }));
+    const managers = stats.reduce((prev, stat) => ({ [stat.manager]: stat }), {});
 
     return (
       <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
         <h1>{label}</h1>
         {
-          // showGameWeekSwitcher && <div style={{ position: 'relative', zIndex: 2 }}><GameWeekSwitcher /></div>
+          showGameWeekSwitcher && <div style={{ position: 'relative', zIndex: 2 }}><GameWeekSwitcher url={`/${divisionUrl}/rankings`} /></div>
         }
         {
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -51,10 +51,10 @@ class DivisionRankings extends React.Component {
             {/*    <div data-b-layout="row vpad">*/}
             {/*      {showStandings && <h2>Weekly Scores</h2>}*/}
             {/*      <Table*/}
-            {/*        managers={managers}*/}
+            {/*        managers={Object.keys(managers)}*/}
             {/*        points={managersPoints}*/}
             {/*        rank={managersRankChange}*/}
-            {/*        type='gameWeek'*/}
+            {/*        type='gameWeekPoints'*/}
             {/*      />*/}
             {/*    </div>*/}
             {/*  </Fragment>*/}

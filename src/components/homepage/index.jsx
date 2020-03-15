@@ -15,16 +15,16 @@ class Index extends React.Component {
     showTransfers: false,
   }
 
-  showFixtures = (gameWeekFixtures) => {
-    console.log(gameWeekFixtures);
-    this.setState({ showTransfers: true, gameWeekFixtures });
+  showFixtures = (selectedGameWeek) => {
+    console.log(selectedGameWeek);
+    this.setState({ showTransfers: true, selectedGameWeek });
   }
 
   render() {
     const { gameWeekDates, divisions, statsByDivision } = this.props;
     if (!gameWeekDates) return null;
     const { currentGameWeek, nextGameWeek, prevGameWeek } = gameWeekDates;
-    const { showTransfers, gameWeekFixtures } = this.state;
+    const { showTransfers, selectedGameWeek } = this.state;
 
     return (
       <section id="home-page" className={bem()} >
@@ -72,18 +72,19 @@ class Index extends React.Component {
         </div>
         <Modal
           id={'GameWeekFixtures'}
-          title={`GW${gameWeekFixtures && gameWeekFixtures.gameWeek} Fixtures`}
+          title={`GW${selectedGameWeek && selectedGameWeek.gameWeek} Fixtures`}
           open={showTransfers}
           onClose={() => this.setState({ showTransfers: false })}
           style={{ maxWidth: '700px' }}
         >
-          <GameWeekFixtures {...gameWeekFixtures}/>
+          <GameWeekFixtures {...selectedGameWeek}/>
         </Modal>
         {divisions.map(({ label, key }) => (
           <DivisionRankings
             key={key}
             label={label}
             divisionId={key}
+            gameWeek={currentGameWeek.gameWeek}
             stats={statsByDivision[key]}
             showGameWeekSwitcher={false}
             showChart={false}

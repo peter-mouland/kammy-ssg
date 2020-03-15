@@ -1,0 +1,96 @@
+/* stylelint-disable no-descending-specificity */
+@import '~@kammy/bootstrap/src/abstracts/variables';
+
+.multi-toggle {
+  display: flex;
+  align-items: center;
+
+  @media only screen and (min-width: 650px) {
+    display: flex;
+  }
+
+  &__interstitial {
+    text-align: center;
+    opacity: .8;
+  }
+
+  &__label {
+    padding: 0 1em 0 0;
+  }
+
+  &__group {
+    display: flex;
+    position: relative;
+    border: 1px solid currentcolor;
+    color: $brand--dark;
+    border-radius: .4em;
+    background: $sdarken;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  &__option {
+    position: relative;
+    display: block;
+    height: 100%;
+    line-height: 1.5em;
+    flex: 1 1 auto;
+    padding: 2px 0;
+
+    input[type='radio'] {
+      position: absolute;
+      appearance: none;
+      width: 0;
+      height: 0;
+      opacity: 0;
+
+      &:focus {
+        outline: 0;
+        outline-offset: 0;
+      }
+
+      &:not([disabled]) {
+        &:checked + label,
+        &:checked + .contextual-help label {
+          background-color: $brand--dark;
+          color: $white;
+        }
+
+        &:active + label,
+        &:active + .contextual-help label {
+          transform: scale(1.1);
+        }
+      }
+
+      &[disabled] + label,
+      &[disabled] + .contextual-help label {
+        opacity: .5;
+
+        &:hover {
+          background: transparent;
+        }
+      }
+    }
+  }
+
+  &__option-label {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    font-style: italic;
+    text-align: center;
+    transition: transform .3s  cubic-bezier(.175, .885, .32, 1.275), color .3s, background-color .3s;
+    border-radius: .6em;
+    padding: 0 8px;
+
+    &:hover {
+      background: $sdarken;
+    }
+
+    &--isCurrent {
+      background-color: #163;
+      color: #fff;
+    }
+  }
+}
