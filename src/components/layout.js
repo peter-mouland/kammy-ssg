@@ -6,9 +6,9 @@ import "../config/config";
 import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
+import '@kammy/bootstrap/dist/bootstrap.min.css';
 
 import NavBar from '../components/nav-bar';
-import appConfig from '../config/config';
 
 import './index.css';
 
