@@ -24,7 +24,7 @@ PlaceHolder.propTypes = {
 };
 
 const DivisionRankingsTable = ({
-  rank, points, type, handleRowHover, managers,
+  points, type, handleRowHover, managers,
 }) => (
   <table className={`table ${points.length === 0 && 'table--placeholder'}`}>
     <thead>
@@ -53,9 +53,9 @@ const DivisionRankingsTable = ({
       {points.length > 0
         ? points
           .sort((managerA, managerB) => managerB.points.total.rank - managerA.points.total.rank)
-          .map(({ manager, points: pos }) => (
-            <tr key={manager} className={'row'} onMouseEnter={() => handleRowHover(manager)} onMouseLeave={() => handleRowHover(manager)}>
-              <td className='cell cell--manager'>{manager}</td>
+          .map(({ managerName, points: pos }) => (
+            <tr key={managerName} className={'row'} onMouseEnter={() => handleRowHover(managerName)} onMouseLeave={() => handleRowHover(managerName)}>
+              <td className='cell cell--manager'>{managerName}</td>
               {positions.map((position) => {
                 const gradient = `gradient_${parseInt(pos[position.key].rank, 10).toString().replace('.', '-')}`;
                 return (
@@ -75,7 +75,7 @@ const DivisionRankingsTable = ({
           ))
         : (
           <Fragment>
-            {managers.map((manager) => <PlaceHolder key={manager} manager={manager}/>)}
+            {managers.map((managerName) => <PlaceHolder key={managerName} managerName={managerName}/>)}
           </Fragment>
         )
       }
@@ -85,7 +85,6 @@ const DivisionRankingsTable = ({
 
 DivisionRankingsTable.propTypes = {
   handleRowHover: PropTypes.func,
-  rank: PropTypes.object,
   points: PropTypes.array,
   managers: PropTypes.array,
   type: PropTypes.oneOf(['seasonPoints', 'gameWeekPoints']).isRequired,
@@ -93,7 +92,6 @@ DivisionRankingsTable.propTypes = {
 
 DivisionRankingsTable.defaultProps = {
   handleRowHover: () => {},
-  rank: { total: {}, season: {} },
   points: [],
   managers: [],
 };

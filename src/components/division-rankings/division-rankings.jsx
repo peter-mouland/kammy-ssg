@@ -23,7 +23,7 @@ class DivisionRankings extends React.Component {
       showStandings, showWeekly, showChart, showGameWeekSwitcher,
     } = this.props;
     const { highlightManager } = this.state;
-    const managers = stats.reduce((prev, stat) => ({ [stat.manager]: stat }), {});
+    const managers = stats.reduce((prev, stat) => ({ [stat.managerName]: stat }), {});
 
     return (
       <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">

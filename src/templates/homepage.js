@@ -23,7 +23,7 @@ const Index = ({ data }) => {
       [division.key] : [
         ...(prev[division.key] || []),
         {
-          manager,
+          managerName: manager,
           points: leagueStats.find((stats) => stats.managerName === manager).points,
           division: division.key,
           divisionLabel: division.label,

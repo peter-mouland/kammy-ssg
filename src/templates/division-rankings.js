@@ -10,29 +10,13 @@ const Index = ({ data, pageContext: { gameWeek, divisionKey, divisionLabel } }) 
       allLeagueTable: { nodes: leagueStats }
     } = data;
 
-    const statsByDivision = managers.reduce((prev, { manager, division }) => ({
-      ...prev,
-      [division.key] : [
-        ...(prev[division.key] || []),
-        {
-          manager,
-          points: leagueStats.find((stats) => stats.managerName === manager).points,
-          division: division.key,
-          divisionLabel: division.label,
-          divisionOrder: division.order,
-        }
-      ],
-    }), {});
-console.log({gameWeek})
-console.log({statsByDivision})
-console.log({divisionKey})
     return (
         <Layout>
           <DivisionRankings
             label={divisionLabel}
             divisionId={divisionKey}
             divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
-            stats={statsByDivision[divisionKey]}
+            stats={leagueStats}
             gameWeek={gameWeek}
             showGameWeekSwitcher={true}
             showChart={false}
