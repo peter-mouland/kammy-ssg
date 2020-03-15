@@ -20,39 +20,11 @@ module.exports = {
       description: `Draft Fantasy Football game`,
     },
     plugins: [
-        'gatsby-plugin-react-helmet',
-        {
-            resolve: 'gatsby-plugin-mdx',
-        },
-        {
-            resolve: 'gatsby-transformer-sharp',
-        },
         {
           resolve: `gatsby-plugin-sass`,
           options: {
             includePaths: ["node_modules"],
           },
-        },
-        {
-            resolve: 'gatsby-plugin-sharp',
-            useMozJpeg: true,
-            stripMetadata: true,
-            defaultQuality: 75,
-        },
-        {
-            resolve: 'gatsby-plugin-webpack-bundle-analyser-v2',
-            options: {
-                generateStatsFile: true,
-            },
-        },
-        {
-            resolve: 'gatsby-plugin-manifest',
-            options: {
-                name: `Draft FF`,
-                short_name: `Draft FF`,
-                start_url: `/`,
-                display: `browser`,
-            },
         },
         {
             resolve: 'gatsby-source-filesystem',
@@ -71,12 +43,6 @@ module.exports = {
                 rule: {
                     include: /\.svg$/,
                 },
-            },
-        },
-        {
-            resolve: 'gatsby-plugin-html-attributes',
-            options: {
-                lang: 'en',
             },
         },
     ],
