@@ -6,17 +6,11 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const axios = require('axios');
-const fs = require('fs').promises;
-const glob = require('glob');
 
 require('dotenv').config({
     path: '.env.production',
     debug: process.env.DEBUG,
 });
-
-const config = require('./src/config/config');
-
 
 // eslint-disable-next-line no-unused-vars
 exports.onCreateWebpackConfig = ({ stage, rules, loaders, plugins, actions }) => {
@@ -60,8 +54,7 @@ exports.onCreateDevServer = () => {
 };
 
 exports.createPages = async ({ actions, graphql }) => {
-  // HOMEPAGE
-  const { data: homepageData } = await graphql(`
+  const { data: gameWeekData } = await graphql(`
         query {
             allGameWeeks {
                 nodes {
@@ -71,7 +64,20 @@ exports.createPages = async ({ actions, graphql }) => {
             }
         }
     `);
-  homepageData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
+  const { data: divisionData } = await graphql(`
+        query {
+          allDivisions(sort: { fields: order }) {
+            nodes {
+              key
+              label
+              order
+            }
+          }
+        }
+    `);
+
+  // HOMEPAGE
+  gameWeekData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
     actions.createPage({
       path: `/week-${gameWeek}`,
       matchPath: `/week-${gameWeek}/`, // otherwise gatsby will redirect on refresh
@@ -94,6 +100,20 @@ exports.createPages = async ({ actions, graphql }) => {
         },
       });
     }
+  //   DIVISION RANKINGS
+      divisionData.allDivisions.nodes.forEach(({ key, label }) => {
+        const url = label.replace(/ /g, '-').toLowerCase();
+        actions.createPage({
+          path: `/${url}/rankings`,
+          matchPath: `/${url}/rankings/`, // otherwise gatsby will redirect on refresh
+          component: path.resolve('src/templates/division-rankings.js'),
+          context: {
+            gameWeek,
+            divisionKey: key,
+            divisionLabel: label,
+          },
+        });
+      });
   });
 };
 
