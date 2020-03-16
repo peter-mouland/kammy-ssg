@@ -9,8 +9,14 @@ const fetch = (URL) => new Promise((resolve, reject) => {
     });
 
     res.on('end', () => {
-      const json = JSON.parse(data);
-      resolve(json);
+      try {
+        const json = JSON.parse(data);
+        resolve(json);
+      } catch (e) {
+        console.log(URL)
+        console.log(data)
+        throw Error(e);
+      }
     });
   });
 
