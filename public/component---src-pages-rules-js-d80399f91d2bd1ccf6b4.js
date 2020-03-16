@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[9],{tHgG:function(e,t,n){"use strict";n.r(t);var c=n("q1tI"),a=n.n(c),o=n("3TEh"),r=n("Bl7J");t.default=function(){return a.a.createElement(r.a,null,a.a.createElement(o.a,{src:"https://docs.google.com/document/d/e/2PACX-1vTFlrJtsgbHsNScMLEDyAy1KnSclQmghRXLMdZV7T3L0phP2gp4r71GCzaAGPs6Z4kyw8UvyhD3axmr/pub"}))}}}]);
+//# sourceMappingURL=component---src-pages-rules-js-d80399f91d2bd1ccf6b4.js.map

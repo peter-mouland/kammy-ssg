@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{jWfS:function(e,t,a){"use strict";a.r(t);var c=a("q1tI"),n=a.n(c),o=a("3TEh"),s=a("Bl7J");t.default=function(){return n.a.createElement(s.a,null,n.a.createElement(o.a,{src:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTc6YcPueOZlY0YNx4W-SbcB2AwoDGfvTa1fxoBuRTmSsxHf61eujyBHkMYrxvjKuLaTbIKoAY97G2B/pubhtml"}))}}}]);
+//# sourceMappingURL=component---src-pages-prize-money-js-ed797fe90d7146c0a5a1.js.map
