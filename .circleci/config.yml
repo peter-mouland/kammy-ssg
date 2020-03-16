@@ -5,6 +5,8 @@ jobs:
   build-and-test:
     executor:
       name: node/default
+    environment:
+      TZ: "/usr/share/zoneinfo/Europe/London"
     steps:
       - checkout
       - node/with-cache:

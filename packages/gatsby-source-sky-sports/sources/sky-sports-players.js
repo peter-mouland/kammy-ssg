@@ -1,7 +1,7 @@
 const pMap = require('p-map');
 const fetch = require('../lib/fetch');
 
-const CONCURRENCY = ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
+const CONCURRENCY = 25; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
 const PLAYERS_URL = 'https://fantasyfootball.skysports.com/cache/json_players.json';
 
 const getFixtures = (code) => fetch(`https://fantasyfootball.skysports.com/cache/json_player_stats_${code}.json`);

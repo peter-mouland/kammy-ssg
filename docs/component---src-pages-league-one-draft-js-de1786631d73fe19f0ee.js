@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[6],{BqZD:function(e,t,n){"use strict";n.r(t);var s=n("q1tI"),a=n.n(s),o=n("3TEh"),c=n("Bl7J");t.default=function(){return a.a.createElement(c.a,null,a.a.createElement(o.a,{src:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTd7NQ2Iu4P7zzjwpHtHwLFacDKTwpmLO08R90fFdYurxEh-LJlYFGjoNM79sPi6iBpV3owLf7mXwOm/pubhtml?gid=0&single=true"}))}}}]);
+//# sourceMappingURL=component---src-pages-league-one-draft-js-de1786631d73fe19f0ee.js.map

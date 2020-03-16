@@ -1,5 +1,7 @@
 node_modules
 dist
+docs
+public
 compiled
 /node_modules/*
 src/**/*.spec.js

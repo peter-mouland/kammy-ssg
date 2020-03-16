@@ -2,7 +2,6 @@
 node_modules/
 dist
 coverage
-public
 compiled
 .DS_Store
 .swp
@@ -19,3 +18,4 @@ aws
 .env.production
 .cache
 /junit.xml
+/.env.development

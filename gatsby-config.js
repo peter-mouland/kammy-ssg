@@ -1,22 +1,24 @@
 // `gatsby build` expects this file to be named .env.production sinse it always set to process.env=production internally
 // https://github.com/gatsbyjs/gatsby/issues/10563
 require('dotenv').config({
-    path: '.env.production',
+    path: `.env.${process.env.NODE_ENV}`,
     debug: process.env.DEBUG,
 });
 
 const config = require('./src/config/config');
 
-const assetsOnRoot = process.env.DEV || process.env.IS_LOCAL;
+const hostOnRoot = ['true', true].includes(process.env.NODE_ENV === 'development');
+const pathPrefix = hostOnRoot ? '/' : '/kammy-ssg';
 
-const getAssetPath = () => !assetsOnRoot;
+console.log(process.env.NODE_ENV);
+console.log({ pathPrefix });
 
 module.exports = {
-    pathPrefix: '/',
-    assetPrefix: getAssetPath(),
+    pathPrefix,
+    assetPrefix: '/',
     siteMetadata: {
         title: 'Draft Fantasy Football',
-        siteUrl: 'http://draftff.herokuapp.com',
+        siteUrl: 'https://peter-mouland.github.io/kammy-ssg',
         description: 'Draft Fantasy Football game',
     },
     plugins: [
