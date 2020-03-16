@@ -1,0 +1,13 @@
+{
+  "name": "kammy-ssg",
+  "scripts": {
+  },
+  "env": {
+    "NODE_ENV": {
+      "required": true
+    },
+    "NPM_CONFIG_PRODUCTION": false
+  },
+  "addons": [
+  ]
+}
