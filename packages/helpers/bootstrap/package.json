@@ -2,8 +2,8 @@
   "name": "@kammy/bootstrap",
   "version": "1.0.0",
   "description": "Kammy UI Component: Modal",
-  "main": "dist/bootstrap.min.js",
-  "src": "src/bootstrap.jsx",
+  "main": "src/bootstrap.js",
+  "src": "src/bootstrap.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5",
