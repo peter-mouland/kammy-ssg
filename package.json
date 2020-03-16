@@ -35,7 +35,7 @@
     "nuke": "yarn clean && yarn && yarn verify",
     "lerna": "lerna",
     "--- testing ---": "",
-    "test": "jest --config=jest.json",
+    "test": "jest --config=jest.config.js",
     "lint": "eslint . --ext=js,jsx",
     "--- LAMBDA ---": "",
     "lambdas:build": "lambda-build",
@@ -75,6 +75,7 @@
   "devDependencies": {
     "@clearscore/sonar": "2.0.0",
     "local-web-server": "^4.0.0",
+    "babel-jest": "25.1.0",
     "babel-preset-gatsby": "0.2.35",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.2",
@@ -83,6 +84,7 @@
     "eslint-plugin-import": "2.20.1",
     "husky": "4.2.3",
     "jest": "25.1.0",
+    "jest-junit": "10.0.0",
     "jest-enzyme": "7.1.2",
     "lerna": "3.20.2"
   }

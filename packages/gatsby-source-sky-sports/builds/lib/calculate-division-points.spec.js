@@ -50,7 +50,6 @@ describe('getTeamPoints()', () => {
   describe('points() calculations based on the given intGameWeek', () => {
     it('should return the aggregate POSITION (gks) points for the gameWeekPoints and seasonPoints', () => {
       const divisionPoints = getTeamPoints(teams["Olly"]);
-      expect(divisionPoints).toHaveProperty('points');
       expect(divisionPoints).toHaveProperty('gks', {
           gameWeekPoints: 0,
           seasonPoints: 0,
@@ -58,7 +57,6 @@ describe('getTeamPoints()', () => {
     });
     it('should return the aggregate POSITION (FB) points for the gameWeekPoints and seasonPoints', () => {
       const divisionPoints = getTeamPoints(teams["Olly"]);
-      expect(divisionPoints).toHaveProperty('points');
       expect(divisionPoints).toHaveProperty('fb', {
           gameWeekPoints: 0,
           seasonPoints: 0,
@@ -75,7 +73,6 @@ describe('getTeamPoints()', () => {
 
     it('should return the aggregate POSITION (GK/SUB) points for the gameWeekPoints and seasonPoints', () => {
       const divisionPoints = getTeamPoints(teams["Olly"]);
-      expect(divisionPoints).toHaveProperty('points');
       expect(divisionPoints).toHaveProperty('gks', {
         gameWeekPoints: 2,
         seasonPoints: 2,
@@ -84,7 +81,6 @@ describe('getTeamPoints()', () => {
 
     it('should return the aggregate POSITION (fb) points for the gameWeekPoints and seasonPoints', () => {
       const divisionPoints = getTeamPoints(teams["Olly"]);
-      expect(divisionPoints).toHaveProperty('points');
       expect(divisionPoints).toHaveProperty('fb', {
         gameWeekPoints: 2,
         seasonPoints: 2,
@@ -93,7 +89,6 @@ describe('getTeamPoints()', () => {
 
     it('should return the empty positions if they do not match to prevent the app from crashing', () => {
       const divisionPoints = getTeamPoints(teams["Olly"]);
-      expect(divisionPoints).toHaveProperty('points');
       expect(divisionPoints).toHaveProperty('cb', {
         gameWeekPoints: 0,
         seasonPoints: 0,

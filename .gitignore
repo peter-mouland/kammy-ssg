@@ -18,3 +18,4 @@ aws
 .env
 .env.production
 .cache
+/junit.xml
