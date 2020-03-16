@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[7],{VlJq:function(e,t,n){"use strict";n.r(t);var s=n("q1tI"),a=n.n(s),r=n("3TEh"),c=n("Bl7J");t.default=function(){return a.a.createElement(c.a,null,a.a.createElement(r.a,{src:"https://docs.google.com/spreadsheets/d/e/2PACX-1vQr3amNkTAxhpVu1Y1fBhEqDCV0r6J3PBLuNpHlhvmoaJQ7UIfgcOgSd9YKGsTsQfdXzZOLCsJwHnAk/pubhtml?gid=0&single=true"}))}}}]);
-//# sourceMappingURL=component---src-pages-premier-league-draft-js-3401f15d33242658bdbf.js.map

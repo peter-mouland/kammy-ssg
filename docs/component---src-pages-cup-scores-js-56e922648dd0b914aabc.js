@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[5],{"/v1u":function(e,t,n){"use strict";n.r(t);var a=n("q1tI"),l=n.n(a),s=n("3TEh"),r=n("Bl7J");t.default=function(){return l.a.createElement(r.a,null,l.a.createElement(s.a,{src:"https://docs.google.com/spreadsheets/d/e/2PACX-1vSWyi5ZU1jMBPmpLMJzKlZ0aA71HJk7h3Fh4p-rS6e9rw_4lymyetJsYwlaB4iMTlLQPiUYiWwfgt1n/pubhtml"}))}}}]);
-//# sourceMappingURL=component---src-pages-cup-scores-js-56e922648dd0b914aabc.js.map

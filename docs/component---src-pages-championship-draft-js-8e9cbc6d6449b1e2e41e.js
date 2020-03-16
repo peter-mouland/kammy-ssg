@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[4],{"UK+5":function(e,t,n){"use strict";n.r(t);var a=n("q1tI"),r=n.n(a),s=n("3TEh"),c=n("Bl7J");t.default=function(){return r.a.createElement(c.a,null,r.a.createElement(s.a,{src:"https://docs.google.com/spreadsheets/d/e/2PACX-1vTLwqJA5bCMEeBr6N8IUQK-F2Cmx_-O-yBkp6JlnyKiuy08bPWyEEXSJa2ErJgS-OkcMkZgIZGntmB5/pubhtml?gid=0&single=true"}))}}}]);
-//# sourceMappingURL=component---src-pages-championship-draft-js-8e9cbc6d6449b1e2e41e.js.map
