@@ -12,19 +12,19 @@ const assetsOnRoot = process.env.DEV || process.env.IS_LOCAL;
 const getAssetPath = () => !assetsOnRoot;
 
 module.exports = {
-    pathPrefix: `/`,
+    pathPrefix: '/',
     assetPrefix: getAssetPath(),
     siteMetadata: {
-      title: `Draft Fantasy Football`,
-      siteUrl: `http://draftff.herokuapp.com`,
-      description: `Draft Fantasy Football game`,
+        title: 'Draft Fantasy Football',
+        siteUrl: 'http://draftff.herokuapp.com',
+        description: 'Draft Fantasy Football game',
     },
     plugins: [
         {
-          resolve: `gatsby-plugin-sass`,
-          options: {
-            includePaths: ["node_modules"],
-          },
+            resolve: 'gatsby-plugin-sass',
+            options: {
+                includePaths: ['node_modules'],
+            },
         },
         {
             resolve: 'gatsby-source-filesystem',

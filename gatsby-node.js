@@ -13,7 +13,7 @@ require('dotenv').config({
 });
 
 // eslint-disable-next-line no-unused-vars
-exports.onCreateWebpackConfig = ({ stage, rules, loaders, plugins, actions }) => {
+exports.onCreateWebpackConfig = ({ actions }) => {
     actions.setWebpackConfig({
         resolve: {
             // added to ensure `yarn link package` works
@@ -51,7 +51,7 @@ exports.onCreateDevServer = () => {
 };
 
 exports.createPages = async ({ actions, graphql }) => {
-  const { data: gameWeekData } = await graphql(`
+    const { data: gameWeekData } = await graphql(`
         query {
             allGameWeeks {
                 nodes {
@@ -61,7 +61,7 @@ exports.createPages = async ({ actions, graphql }) => {
             }
         }
     `);
-  const { data: divisionData } = await graphql(`
+    const { data: divisionData } = await graphql(`
         query {
           allDivisions(sort: { fields: order }) {
             nodes {
@@ -73,61 +73,61 @@ exports.createPages = async ({ actions, graphql }) => {
         }
     `);
 
-  // HOMEPAGE
-  gameWeekData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
-    actions.createPage({
-      path: `/week-${gameWeek}`,
-      matchPath: `/week-${gameWeek}/`, // otherwise gatsby will redirect on refresh
-      component: path.resolve('src/templates/homepage.js'),
-      context: {
-        gameWeek,
-        prevGameWeek: gameWeek - 1,
-        nextGameWeek: gameWeek + 1,
-      },
-    });
-    //   DIVISION RANKINGS
-    divisionData.allDivisions.nodes.forEach(({ key, label }) => {
-      const url = label.replace(/ /g, '-').toLowerCase();
-      actions.createPage({
-        path: `/week-${gameWeek}/${url}/rankings`,
-        matchPath: `/week-${gameWeek}/${url}/rankings/`, // otherwise gatsby will redirect on refresh
-        component: path.resolve('src/templates/division-rankings.js'),
-        context: {
-          gameWeek,
-          divisionKey: key,
-          divisionLabel: label,
-        },
-      });
-    });
-    if (isCurrent) {
-      actions.createPage({
-        path: `/`,
-        matchPath: `/`,
-        component: path.resolve('src/templates/homepage.js'),
-        context: {
-          gameWeek,
-          prevGameWeek: gameWeek - 1,
-          nextGameWeek: gameWeek + 1,
-        },
-      });
-      divisionData.allDivisions.nodes.forEach(({ key, label }) => {
-        const url = label.replace(/ /g, '-').toLowerCase();
+    // HOMEPAGE
+    gameWeekData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
         actions.createPage({
-          path: `/${url}/rankings`,
-          matchPath: `/${url}/rankings/`, // otherwise gatsby will redirect on refresh
-          component: path.resolve('src/templates/division-rankings.js'),
-          context: {
-            gameWeek,
-            divisionKey: key,
-            divisionLabel: label,
-          },
+            path: `/week-${gameWeek}`,
+            matchPath: `/week-${gameWeek}/`, // otherwise gatsby will redirect on refresh
+            component: path.resolve('src/templates/homepage.js'),
+            context: {
+                gameWeek,
+                prevGameWeek: gameWeek - 1,
+                nextGameWeek: gameWeek + 1,
+            },
         });
-      });
-    }
-  });
+        //   DIVISION RANKINGS
+        divisionData.allDivisions.nodes.forEach(({ key, label }) => {
+            const url = label.replace(/ /g, '-').toLowerCase();
+            actions.createPage({
+                path: `/week-${gameWeek}/${url}/rankings`,
+                matchPath: `/week-${gameWeek}/${url}/rankings/`, // otherwise gatsby will redirect on refresh
+                component: path.resolve('src/templates/division-rankings.js'),
+                context: {
+                    gameWeek,
+                    divisionKey: key,
+                    divisionLabel: label,
+                },
+            });
+        });
+        if (isCurrent) {
+            actions.createPage({
+                path: '/',
+                matchPath: '/',
+                component: path.resolve('src/templates/homepage.js'),
+                context: {
+                    gameWeek,
+                    prevGameWeek: gameWeek - 1,
+                    nextGameWeek: gameWeek + 1,
+                },
+            });
+            divisionData.allDivisions.nodes.forEach(({ key, label }) => {
+                const url = label.replace(/ /g, '-').toLowerCase();
+                actions.createPage({
+                    path: `/${url}/rankings`,
+                    matchPath: `/${url}/rankings/`, // otherwise gatsby will redirect on refresh
+                    component: path.resolve('src/templates/division-rankings.js'),
+                    context: {
+                        gameWeek,
+                        divisionKey: key,
+                        divisionLabel: label,
+                    },
+                });
+            });
+        }
+    });
 };
 
-exports.sourceNodes = async ({ actions }) => {
+exports.sourceNodes = async () => {
 };
 
 exports.onPostBuild = async () => {

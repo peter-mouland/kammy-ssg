@@ -3,16 +3,16 @@ const getPoints = require('./lib/calculate-division-points');
 const getRank = require('./lib/calculate-division-rank');
 
 module.exports = ({
-  divisions, managers, teams, createNodeId,
+    divisions, managers, teams, createNodeId,
 }) => {
-  console.log('Build: League Tables start');
-  const start = new Date();
-  const teamData = teams.map(({ data }) => data);
-  const managerData = managers.map(({ data }) => data);
-  const divisionData = divisions.map(({ data }) => data);
-  const gameWeeks = [...new Set(teamData.map(p => p.gameWeek))];
+    console.log('Build: League Tables start');
+    const start = new Date();
+    const teamData = teams.map(({ data }) => data);
+    const managerData = managers.map(({ data }) => data);
+    const divisionData = divisions.map(({ data }) => data);
+    const gameWeeks = [...new Set(teamData.map((player) => player.gameWeek))];
 
-  /*
+    /*
   {
     gameWeek: 1,
     divisionKey: 'leagueOne',
@@ -29,22 +29,22 @@ module.exports = ({
     }
   }
    */
-  const results = [];
-  gameWeeks.forEach((gameWeek) => {
-    managerData.forEach(({ manager, divisionKey }) => {
-      const team = teamData.filter((team) => team.manager === manager && team.gameWeek === gameWeek);
-      const points = getPoints(team);
-      results.push({
-        gameWeek,
-        managerName: manager,
-        divisionKey,
-        manager___NODE: createNodeId(`managers-${manager}`),
-        points,
-      })
+    const results = [];
+    gameWeeks.forEach((gameWeek) => {
+        managerData.forEach(({ manager, divisionKey }) => {
+            const team = teamData.filter((item) => item.manager === manager && item.gameWeek === gameWeek);
+            const points = getPoints(team);
+            results.push({
+                gameWeek,
+                managerName: manager,
+                divisionKey,
+                manager___NODE: createNodeId(`managers-${manager}`),
+                points,
+            });
+        });
     });
-  });
 
-  /*
+    /*
   {
     division: 'leagueOne',
     gameWeek: 10,
@@ -61,18 +61,18 @@ module.exports = ({
     }
   }
    */
-  const ranks = [];
-  gameWeeks.forEach((gameWeek) => {
-    divisionData.forEach(({ key }) => {
-      const managersInDivision = managerData.filter(({ divisionKey }) => divisionKey === key).map(({ manager }) => manager);
-      const division = results.filter((team) => {
-        return managersInDivision.includes(team.managerName) && team.gameWeek === gameWeek
-      });
-      ranks.push({ divisionKey: key, gameWeek, rank: getRank(division) });
+    const ranks = [];
+    gameWeeks.forEach((gameWeek) => {
+        divisionData.forEach(({ key }) => {
+            const divisionFilter = ({ divisionKey }) => divisionKey === key;
+            const divisionManagers = managerData.filter(divisionFilter).map(({ manager }) => manager);
+            const managerFilter = (team) => divisionManagers.includes(team.managerName) && team.gameWeek === gameWeek;
+            const division = results.filter(managerFilter);
+            ranks.push({ divisionKey: key, gameWeek, rank: getRank(division) });
+        });
     });
-  });
 
-  /*
+    /*
   {
     gameWeek: 1,
     managerName: 'Tim',
@@ -89,34 +89,33 @@ module.exports = ({
     }
   }
    */
-  const resultsWithRank = results.map((item, i) => {
-    const divRankings = ranks.find((rank) => rank.gameWeek === item.gameWeek && rank.divisionKey === item.divisionKey);
-    const points = Object.keys(item.points).reduce((prev, posKey) => ({
-      ...prev,
-      [posKey]: {
-        ...prev[posKey],
-        rank: divRankings.rank[item.managerName][posKey],
-      }
-    }), item.points);
+    const resultsWithRank = results.map((item) => {
+        const findDivisionGameWeek = (rank) => rank.gameWeek === item.gameWeek && rank.divisionKey === item.divisionKey;
+        const divRankings = ranks.find(findDivisionGameWeek);
+        const points = Object.keys(item.points).reduce((prev, posKey) => ({
+            ...prev,
+            [posKey]: {
+                ...prev[posKey],
+                rank: divRankings.rank[item.managerName][posKey],
+            },
+        }), item.points);
 
-    return {
-      ...item,
-      points,
-    };
-  });
+        return {
+            ...item,
+            points,
+        };
+    });
 
-  const ms = new Date() - start;
-  console.log('Build: League Tables end: ', ms);
+    const ms = new Date() - start;
+    console.log('Build: League Tables end: ', ms);
 
-  return resultsWithRank.map((data, i) => {
-      return {
-          resourceId: `league-tables-i${i}-${data.teamPos}-${data.manager}-${data.gameWeek}`,
-          data,
-          internal: {
-              description: 'League Tables',
-              mediaType: mediaTypes.JSON,
-              type: nodeTypes.leagueTable,
-          },
-      };
-  });
+    return resultsWithRank.map((data, i) => ({
+        resourceId: `league-tables-i${i}-${data.teamPos}-${data.manager}-${data.gameWeek}`,
+        data,
+        internal: {
+            description: 'League Tables',
+            mediaType: mediaTypes.JSON,
+            type: nodeTypes.leagueTable,
+        },
+    }));
 };

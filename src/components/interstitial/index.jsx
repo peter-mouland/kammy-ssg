@@ -6,18 +6,18 @@ import football from './football.svg';
 import './interstitial.scss';
 
 const Index = ({ message }) => (
-  <span className="interstitial">
-    <Svg>{football}</Svg>
-    { message || 'Please wait' }...
-  </span>
+    <span className="interstitial">
+        <Svg>{football}</Svg>
+        { message || 'Please wait' }...
+    </span>
 );
 
 Index.propTypes = {
-  message: PropTypes.string,
+    message: PropTypes.string,
 };
 
 Index.defaultProps = {
-  message: null,
+    message: null,
 };
 
 export default Index;

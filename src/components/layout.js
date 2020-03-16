@@ -8,27 +8,27 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import '@kammy/bootstrap/dist/bootstrap.min.css';
 
-import NavBar from '../components/nav-bar';
+import NavBar from './nav-bar';
 
 import './index.css';
 
 const Layout = ({ children }) => {
-  const bem = bemHelper({ block: 'layout' });
-  return (
-    <div className={bem(null, 'main')}>
-      <NavBar className={bem('nav')} />
-      <main className={bem('content')}>
-        <section className={bem()}>
-          {typeof children === 'function' ? children() : children}
-        </section>
-      </main>
-      <footer className={bem('footer')}>
-        <div className={bem('footer-content')}>
-          Hosted at <a href="http://github.com/peter-mouland/kammy-ui">github.com/peter-mouland/kammy-ui</a>
+    const bem = bemHelper({ block: 'layout' });
+    return (
+        <div className={bem(null, 'main')}>
+            <NavBar className={bem('nav')} />
+            <main className={bem('content')}>
+                <section className={bem()}>
+                    {typeof children === 'function' ? children() : children}
+                </section>
+            </main>
+            <footer className={bem('footer')}>
+                <div className={bem('footer-content')}>
+                    Hosted at <a href="http://github.com/peter-mouland/kammy-ui">github.com/peter-mouland/kammy-ui</a>
+                </div>
+            </footer>
         </div>
-      </footer>
-    </div>
-  );
+    );
 };
 
 Layout.propTypes = {

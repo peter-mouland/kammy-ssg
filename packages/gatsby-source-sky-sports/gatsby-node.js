@@ -14,32 +14,31 @@ const buildDraft = require('./builds/draft');
 const buildTeams = require('./builds/teams');
 const buildLeagueTables = require('./builds/league-tables');
 
-const createNode = ({ actions, createNodeId, node }) =>
-    actions.createNode({
-        parent: null,
-        children: [],
-        ...node.data,
-        id: createNodeId(node.resourceId),
-        internal: {
-            ...node.internal,
-            contentDigest: hashContent({ data: node.data, resourceId: node.resourceId }),
-        },
-    });
+const createNode = ({ actions, createNodeId, node }) => actions.createNode({
+    parent: null,
+    children: [],
+    ...node.data,
+    id: createNodeId(node.resourceId),
+    internal: {
+        ...node.internal,
+        contentDigest: hashContent({ data: node.data, resourceId: node.resourceId }),
+    },
+});
 
 exports.sourceNodes = async (
     { actions, createNodeId },
 ) => {
     const {
-      skySportsFixtureData,
-      skySportsPlayerData,
-      skySportsScoreData,
-      googleGameWeekData,
-      googleCupData,
-      googleTransferData,
-      googlePlayerData,
-      googleDivisionData,
-      googleManagerData,
-      googleDraftData,
+        skySportsFixtureData,
+        skySportsPlayerData,
+        skySportsScoreData,
+        googleGameWeekData,
+        googleCupData,
+        googleTransferData,
+        googlePlayerData,
+        googleDivisionData,
+        googleManagerData,
+        googleDraftData,
     } = await fetchAllData();
 
     // build all the objects which will be used to create gatsby nodes
@@ -53,8 +52,12 @@ exports.sourceNodes = async (
     const managers = buildManagers({ googleManagerData, createNodeId });
     const divisions = buildDivisions({ googleDivisionData });
     const draft = buildDraft({ googleDraftData, createNodeId });
-    const teams = buildTeams({ draft, managers, divisions, transfers, gameWeeks, players, createNodeId });
-    const leagueTables = buildLeagueTables({ divisions, managers, teams, createNodeId });
+    const teams = buildTeams({
+        draft, managers, divisions, transfers, gameWeeks, players, createNodeId,
+    });
+    const leagueTables = buildLeagueTables({
+        divisions, managers, teams, createNodeId,
+    });
 
     // create all the gatsby nodes
     const nodePromises = [

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { graphql } from 'gatsby';
 
@@ -6,30 +7,30 @@ import Homepage from '../components/homepage';
 
 const Index = ({ data }) => {
     const {
-      prevGameWeek,
-      currentGameWeek,
-      nextGameWeek,
-      allManagers:  { nodes: managers },
-      allDivisions: { nodes: divisions },
-      allLeagueTable: { nodes: leagueStats }
+        prevGameWeek,
+        currentGameWeek,
+        nextGameWeek,
+        allManagers: { nodes: managers },
+        allDivisions: { nodes: divisions },
+        allLeagueTable: { nodes: leagueStats },
     } = data;
     const gameWeekDates = {
-      currentGameWeek,
-      nextGameWeek,
-      prevGameWeek,
+        currentGameWeek,
+        nextGameWeek,
+        prevGameWeek,
     };
     const statsByDivision = managers.reduce((prev, { manager, division }) => ({
-      ...prev,
-      [division.key] : [
-        ...(prev[division.key] || []),
-        {
-          managerName: manager,
-          points: leagueStats.find((stats) => stats.managerName === manager).points,
-          division: division.key,
-          divisionLabel: division.label,
-          divisionOrder: division.order,
-        }
-      ],
+        ...prev,
+        [division.key]: [
+            ...(prev[division.key] || []),
+            {
+                managerName: manager,
+                points: leagueStats.find((stats) => stats.managerName === manager).points,
+                division: division.key,
+                divisionLabel: division.label,
+                divisionOrder: division.order,
+            },
+        ],
     }), {});
 
     return (
@@ -40,7 +41,6 @@ const Index = ({ data }) => {
 };
 
 export const query = graphql`
-
   query Homepage($gameWeek: Int, $prevGameWeek: Int, $nextGameWeek: Int) {
     currentGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
       gameWeek

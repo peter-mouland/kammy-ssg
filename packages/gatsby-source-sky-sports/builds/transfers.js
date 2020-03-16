@@ -3,43 +3,42 @@ const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 /* TRANSFERS */
 const formatTimeStamp = (timestamp = '') => {
-  const dateTimeArray = timestamp.split(' ');
-  const dateArray = dateTimeArray[0].split('/');
-  const year = dateArray[2];
-  const month = dateArray[1];
-  const day = dateArray[0];
-  const time = dateTimeArray[1];
-  return `${year}/${month}/${day} ${time}`;
+    const dateTimeArray = timestamp.split(' ');
+    const dateArray = dateTimeArray[0].split('/');
+    const year = dateArray[2];
+    const month = dateArray[1];
+    const day = dateArray[0];
+    const time = dateTimeArray[1];
+    return `${year}/${month}/${day} ${time}`;
 };
 
-module.exports = ({ googleTransferData, createNodeId }) => {
-    return googleTransferData
-      .sort((t1, t2) => (new Date(t1.timestamp) - new Date(t2.timestamp)))
-      .map((transfer) => {
+module.exports = ({ googleTransferData, createNodeId }) => googleTransferData
+    .sort((t1, t2) => (new Date(t1.timestamp) - new Date(t2.timestamp)))
+    .map((transfer) => {
         const data = {
-          division: transfer.division,
-          status: (transfer.Status || '').trim(),
-          isValid: transfer.Status === 'Y',
-          isPending: transfer.Status === 'TBC',
-          isFailed: transfer.Status === 'E',
-          timestamp: formatTimeStamp(transfer.Timestamp),
-          date: transfer.Timestamp,
-          comment: (transfer.Comment || '').trim(),
-          manager: (transfer.Manager || '').trim(),
-          transferIn: transfer['Transfer In'],
-          codeIn: transfer['Code In'],
-          transferOut: transfer['Transfer Out'],
-          codeOut: transfer['Code Out'],
-          type: transfer['Transfer Type'],
+            division: transfer.division,
+            status: (transfer.Status || '').trim(),
+            isValid: transfer.Status === 'Y',
+            isPending: transfer.Status === 'TBC',
+            isFailed: transfer.Status === 'E',
+            timestamp: formatTimeStamp(transfer.Timestamp),
+            date: transfer.Timestamp,
+            comment: (transfer.Comment || '').trim(),
+            manager: (transfer.Manager || '').trim(),
+            transferIn: transfer['Transfer In'],
+            codeIn: transfer['Code In'],
+            transferOut: transfer['Transfer Out'],
+            codeOut: transfer['Code Out'],
+            type: transfer['Transfer Type'],
         };
         return {
             resourceId: `transfers-${String(transfer.timestamp)}-${transfer.Manager}`,
             data: {
-              ...data,
-              division___NODE: createNodeId(`divisions-${data.division}`),
-              manager___NODE: createNodeId(`managers-${data.manager}`),
-              transferIn___NODE: createNodeId(`players-${data.transferIn}`),
-              transferOut___NODE: createNodeId(`players-${data.transferOut}`),
+                ...data,
+                division___NODE: createNodeId(`divisions-${data.division}`),
+                manager___NODE: createNodeId(`managers-${data.manager}`),
+                transferIn___NODE: createNodeId(`players-${data.transferIn}`),
+                transferOut___NODE: createNodeId(`players-${data.transferOut}`),
             },
             internal: {
                 description: 'Transfers',
@@ -47,6 +46,4 @@ module.exports = ({ googleTransferData, createNodeId }) => {
                 type: nodeTypes.transfers,
             },
         };
-  });
-};
-
+    });

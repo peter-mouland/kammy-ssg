@@ -5,14 +5,14 @@ import bemHelper from '@kammy/bem';
 const bem = bemHelper({ block: 'error' });
 
 const Index = ({ errors }) => (
-  <div className={ bem() }>
-    <p>Error!</p>
-    {errors.map((error, i) => <p key={i}>{error.message}</p>)}
-  </div>
+    <div className={ bem() }>
+        <p>Error!</p>
+        {errors.map((error, i) => <p key={i}>{error.message}</p>)}
+    </div>
 );
 
 Index.propTypes = {
-  errors: PropTypes.array.isRequired,
+    errors: PropTypes.array.isRequired,
 };
 
 export default Index;
