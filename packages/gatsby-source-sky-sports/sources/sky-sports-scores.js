@@ -1,7 +1,9 @@
 const fetch = require('../lib/fetch');
 
-const LIVE_SCORES_URL = 'https://fantasyfootball.skysports.com/scoring/scores.json';
+const URL = process.env.NODE_ENV === 'development'
+    ? 'https://fantasyfootball.skysports.com/scoring/scores.json'
+    : 'https://kammy-proxy.herokuapp.com/skysports/scores';
 
-const scores = () => fetch(LIVE_SCORES_URL).then(({ standings }) => standings);
+const scores = () => fetch(URL).then(({ standings }) => standings);
 
 module.exports = scores;

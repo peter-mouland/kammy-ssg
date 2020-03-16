@@ -1,7 +1,9 @@
 const fetch = require('../lib/fetch');
 
-const FIXTURES_URL = 'https://fantasyfootball.skysports.com/cache/json_fixtures.json';
+const URL = process.env.NODE_ENV === 'development'
+    ? 'https://fantasyfootball.skysports.com/cache/json_fixtures.json'
+    : 'https://kammy-proxy.herokuapp.com/skysports/fixtures';
 
-const fixtures = () => fetch(FIXTURES_URL).then(({ fixtures: data }) => data);
+const fixtures = () => fetch(URL).then(({ fixtures: data }) => data);
 
 module.exports = fixtures;
