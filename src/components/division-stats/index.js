@@ -11,7 +11,7 @@ const bem = bemHelper({ block: 'division-stats' });
 class DivisionStats extends React.Component {
     render() {
         const {
-            label, managersSeason, selectedGameWeek, cookies, managers, playersByCode,
+            label, teams, selectedGameWeek, playersByCode,
         } = this.props;
         return (
             <section id="teams-page" className={bem()} data-b-layout="container">
@@ -22,10 +22,9 @@ class DivisionStats extends React.Component {
                 <div data-b-layout="vpad">
                     <Table
                         playersByCode={playersByCode}
-                        managers={managers}
                         selectedGameWeek={selectedGameWeek}
-                        managersSeason={managersSeason}
-                        isAdmin={cookies.get('is-admin') === 'true' || false}
+                        teams={teams}
+                        // isAdmin={cookies.get('is-admin') === 'true' || false}
                     />
                 </div>
             </section>
@@ -44,7 +43,7 @@ DivisionStats.propTypes = {
     cookies: PropTypes.instanceOf(Cookies).isRequired,
     divisionId: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    managersSeason: PropTypes.object,
+    teams: PropTypes.object,
 
     fetchGameWeeks: PropTypes.func.isRequired,
     fetchAllPlayerData: PropTypes.func.isRequired,
@@ -73,7 +72,7 @@ DivisionStats.defaultProps = {
     Players: {},
     PlayersCount: null,
     gameWeeksCount: null,
-    managersSeason: null,
+    teams: null,
     transfersCount: null,
     managers: [],
 };

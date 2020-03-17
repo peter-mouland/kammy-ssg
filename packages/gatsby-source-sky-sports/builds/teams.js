@@ -4,7 +4,7 @@ const { TeamByGameWeek } = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 module.exports = ({
-    draft, transfers, gameWeeks, players, managers,
+    draft, transfers, gameWeeks, players, managers, createNodeId,
 }) => {
     console.log('Build: Teams start');
     const start = new Date();
@@ -49,9 +49,13 @@ module.exports = ({
 
     console.log('Build: Teams end: ', new Date() - start);
     return allTeamPlayers.map((item, i) => {
-        const data = item;
+        const data = {
+            ...item,
+            managerName: item.manager,
+            manager___NODE: createNodeId(`managers-${item.manager}`),
+        };
         return {
-            resourceId: `teams-posIndex${i}-${data.manager}-${data.name}`,
+            resourceId: `teams-${i}-${data.manager}-${data.playerName}`,
             data,
             internal: {
                 description: 'Teams',

@@ -53,7 +53,7 @@ exports.sourceNodes = async (
     const divisions = buildDivisions({ googleDivisionData });
     const draft = buildDraft({ googleDraftData, createNodeId });
     const teams = buildTeams({
-        draft, managers, divisions, transfers, gameWeeks, players, createNodeId,
+        draft, managers, transfers, gameWeeks, players, createNodeId,
     });
     const leagueTables = buildLeagueTables({
         divisions, managers, teams, createNodeId,

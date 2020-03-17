@@ -32,7 +32,7 @@ module.exports = ({
     const results = [];
     gameWeeks.forEach((gameWeek) => {
         managerData.forEach(({ manager, divisionKey }) => {
-            const team = teamData.filter((item) => item.manager === manager && item.gameWeek === gameWeek);
+            const team = teamData.filter((item) => item.managerName === manager && item.gameWeek === gameWeek);
             const points = getPoints(team);
             results.push({
                 gameWeek,

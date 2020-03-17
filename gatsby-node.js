@@ -98,6 +98,16 @@ exports.createPages = async ({ actions, graphql }) => {
                     divisionLabel: label,
                 },
             });
+            actions.createPage({
+                path: `/week-${gameWeek}/${url}/teams`,
+                matchPath: `/week-${gameWeek}/${url}/teams/`, // otherwise gatsby will redirect on refresh
+                component: path.resolve('src/templates/division-teams.js'),
+                context: {
+                    gameWeek,
+                    divisionKey: key,
+                    divisionLabel: label,
+                },
+            });
         });
         if (isCurrent) {
             actions.createPage({
@@ -116,6 +126,16 @@ exports.createPages = async ({ actions, graphql }) => {
                     path: `/${url}/rankings`,
                     matchPath: `/${url}/rankings/`, // otherwise gatsby will redirect on refresh
                     component: path.resolve('src/templates/division-rankings.js'),
+                    context: {
+                        gameWeek,
+                        divisionKey: key,
+                        divisionLabel: label,
+                    },
+                });
+                actions.createPage({
+                    path: `/${url}/teams`,
+                    matchPath: `/${url}/teams/`, // otherwise gatsby will redirect on refresh
+                    component: path.resolve('src/templates/division-teams.js'),
                     context: {
                         gameWeek,
                         divisionKey: key,
