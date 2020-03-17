@@ -45,6 +45,41 @@ export const query = graphql`
                     playerName
                     teamPos
                     pos
+                    posIndex
+                    player {
+                        club
+                        name
+                        gameWeeks {
+                            fixtures {
+                                id
+                                aScore
+                                aTcode
+                                aTname
+                                week
+                                status
+                                stats {
+                                    apps
+                                    asts
+                                    con
+                                    cs
+                                    pensv
+                                    gls
+                                    points
+                                    rcard
+                                    sb
+                                    subs
+                                    tb
+                                    ycard
+                                }
+                                pTcode
+                                hTname
+                                hTcode
+                                hScore
+                                event
+                                date
+                            }
+                        }
+                    }
                     seasonToGameWeek {
                         apps
                         subs
@@ -86,6 +121,7 @@ export const query = graphql`
                     playerName
                     teamPos
                     pos
+                    posIndex
                     seasonToGameWeek {
                         apps
                         subs
