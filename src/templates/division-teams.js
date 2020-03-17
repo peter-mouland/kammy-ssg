@@ -5,35 +5,37 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import DivisionStats from '../components/division-stats';
 
-const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, divisionLabel } }) => {
+const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel } }) => {
     const {
-        allTeams: { group: teams },
+        currentTeams: { group: currentTeams },
+        previousTeams: { group: previousTeams },
     } = data;
 
-    const teamsByManager = teams.reduce((prev, { nodes: team }) => ({
+    const teamsByManager = currentTeams.reduce((prev, { nodes: team }) => ({
         ...prev,
         [team[0].managerName]: team,
     }), {});
-    console.log(teamsByManager)
+    const previousTeamsByManager = previousTeams.reduce((prev, { nodes: team }) => ({
+        ...prev,
+        [team[0].managerName]: team,
+    }), {});
+
     return (
         <Layout>
             <DivisionStats
                 label={divisionLabel}
-                divisionId={divisionKey}
                 divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
                 teams={teamsByManager}
+                previousTeams={previousTeamsByManager}
                 selectedGameWeek={selectedGameWeek}
-                showGameWeekSwitcher={true}
-                showChart={false}
-                showWeekly={true}
             />
         </Layout>
     );
 };
 
 export const query = graphql`
-    query Teams($gameWeek: Int, $divisionKey: String) {
-        allTeams(
+    query Teams($gameWeek: Int, $prevGameWeek: Int, $divisionKey: String) {
+        currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } },
             sort: { fields: managerName }
         ) {
@@ -73,8 +75,49 @@ export const query = graphql`
                     }
                 }
             }
-      }
-  }
+        }
+        previousTeams: allTeams(
+            filter: { gameWeek: { eq: $prevGameWeek }, manager: { divisionKey: { eq: $divisionKey } } },
+            sort: { fields: managerName }
+        ) {
+            group(field: managerName) {
+                nodes {
+                    managerName
+                    playerName
+                    teamPos
+                    pos
+                    seasonToGameWeek {
+                        apps
+                        subs
+                        gls
+                        asts
+                        cs
+                        con
+                        pensv
+                        ycard
+                        rcard
+                        tb
+                        sb
+                        points
+                    }
+                    gameWeekStats {
+                        apps
+                        subs
+                        gls
+                        asts
+                        cs
+                        con
+                        pensv
+                        ycard
+                        rcard
+                        tb
+                        sb
+                        points
+                    }
+                }
+            }
+        }
+    }
 `;
 
 export default Index;

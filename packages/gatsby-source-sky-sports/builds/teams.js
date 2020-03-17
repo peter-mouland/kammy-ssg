@@ -53,6 +53,7 @@ module.exports = ({
             ...item,
             managerName: item.manager,
             manager___NODE: createNodeId(`managers-${item.manager}`),
+            player___NODE: createNodeId(`players-${item.playerName}`),
         };
         return {
             resourceId: `teams-${i}-${data.manager}-${data.playerName}`,

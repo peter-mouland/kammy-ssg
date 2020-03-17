@@ -86,19 +86,18 @@ class TeamsPage extends React.Component {
 
   render() {
       const {
-          teams, selectedGameWeek, isAdmin,
+          teams, previousTeams, selectedGameWeek, isAdmin,
       } = this.props;
       const {
           showPositionTimeline, positionTimelineProps,
           showPlayerTimeline, playerTimelineProps,
       } = this.state;
-      const previousGameWeek = selectedGameWeek > 0 ? selectedGameWeek - 1 : 0;
       // const duplicatePlayers = validatePlayer(managersSeason, selectedGameWeek) || [];
       // const allClubWarnings = managers.map((manager) => {
       //     const { clubWarnings } = validateClub(managersSeason[manager], selectedGameWeek);
       //     return clubWarnings.length ? { clubWarnings, manager } : undefined;
       // }).filter(Boolean);
-console.log({teams})
+      console.log({ teams });
       return (
           <div className={bem(null, null, 'page-content')} data-b-layout="row vpad">
               <div>
@@ -126,23 +125,23 @@ console.log({teams})
                           <PlayerTimeline { ...playerTimelineProps } />
                       </Modal>
                   )}
-                  {/*{isAdmin && duplicatePlayers.length > 0 && (*/}
-                  {/*    <div className={'row row--warning'}>*/}
-                  {/*        This division has the following player(s) in more than 2 teams: {duplicatePlayers.join(', ')}*/}
-                  {/*    </div>*/}
-                  {/*)}*/}
-                  {/*{isAdmin && allClubWarnings.length > 0 && (*/}
-                  {/*    <div className={'row row--warning'}>*/}
-                  {/*        This division has teams with 3+ players from the same club:*/}
-                  {/*        {allClubWarnings.map(({ manager, clubWarnings }) => `${manager}: ${clubWarnings.join(', ')}`)}*/}
-                  {/*    </div>*/}
-                  {/*)}*/}
+                  {/* {isAdmin && duplicatePlayers.length > 0 && ( */}
+                  {/*    <div className={'row row--warning'}> */}
+                  {/*        This division has the following player(s) in more than 2 teams: {duplicatePlayers.join(', ')} */}
+                  {/*    </div> */}
+                  {/* )} */}
+                  {/* {isAdmin && allClubWarnings.length > 0 && ( */}
+                  {/*    <div className={'row row--warning'}> */}
+                  {/*        This division has teams with 3+ players from the same club: */}
+                  {/*        {allClubWarnings.map(({ manager, clubWarnings }) => `${manager}: ${clubWarnings.join(', ')}`)} */}
+                  {/*    </div> */}
+                  {/* )} */}
               </div>
               <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
                   <table className={'table'}>
-                      {Object.keys(teams).map((managerName) => {
+                      {Object.keys(teams).map((managerName) =>
                           // const { clubWarnings } = validateClub(managerName, selectedGameWeek);
-                          return (
+                          (
                               <Fragment key={managerName}>
                                   <thead>
                                       <tr>
@@ -157,9 +156,12 @@ console.log({teams})
                                       </tr>
                                   </thead>
                                   <tbody>
-                                      {teams[managerName].map(({ playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }) => {
-                                          // const className = playerLastGW.name !== playerName ? bem('transfer') : '';
-                                          const className = '';
+                                      {teams[managerName].map(({
+                                          playerName, teamPos, pos, seasonToGameWeek, gameWeekStats,
+                                      }, i) => {
+                                          const playerLastGW = previousTeams[managerName][i];
+                                          console.log(managerName, {playerLastGW})
+                                          const className = playerLastGW.playerName !== playerName ? bem('transfer') : '';
                                           // const warningClassName = isAdmin && (
                                           //     clubWarnings.indexOf(player.club) > -1 || duplicatePlayers.indexOf(player.name) > -1
                                           // ) ? 'row row--warning' : 'row';
@@ -194,27 +196,27 @@ console.log({teams})
                                                           <span className='show-625'>{playerName}</span>
                                                           <span className='hide-625'>{playerName.split(',')[0]}</span>
                                                       </a>
-                                                      {/*<small className={'hide-850'}>*/}
-                                                      {/*    <span className='show-550'>{player.club}</span>*/}
-                                                      {/*    <span className='hide-550'>{player.club.split(' ')[0]} {(player.club.split(' ')[1] || '').charAt(0)}</span>*/}
-                                                      {/*</small>*/}
+                                                      {/* <small className={'hide-850'}> */}
+                                                      {/*    <span className='show-550'>{player.club}</span> */}
+                                                      {/*    <span className='hide-550'>{player.club.split(' ')[0]} {(player.club.split(' ')[1] || '').charAt(0)}</span> */}
+                                                      {/* </small> */}
                                                   </td>
-                                                  {/*<td className={'cell cell--club show-850'}>{player.club}</td>*/}
+                                                  {/* <td className={'cell cell--club show-850'}>{player.club}</td> */}
                                                   <StatsCells seasonToGameWeek={seasonToGameWeek} gameWeekStats={gameWeekStats} />
                                               </tr>
                                           );
                                       })}
                                   </tbody>
-                                  {/*{isAdmin && clubWarnings.length > 0 && (*/}
-                                  {/*    <tr className={'row row--warning'}>*/}
-                                  {/*        <td colSpan={30}>*/}
-                                  {/*            This team has more than 2 players within the following clubs: {clubWarnings.join(', ')}*/}
-                                  {/*        </td>*/}
-                                  {/*    </tr>*/}
-                                  {/*)}*/}
+                                  {/* {isAdmin && clubWarnings.length > 0 && ( */}
+                                  {/*    <tr className={'row row--warning'}> */}
+                                  {/*        <td colSpan={30}> */}
+                                  {/*            This team has more than 2 players within the following clubs: {clubWarnings.join(', ')} */}
+                                  {/*        </td> */}
+                                  {/*    </tr> */}
+                                  {/* )} */}
                               </Fragment>
-                          );
-                      })}
+                          ),
+                      )}
                   </table>
               </div>
           </div>
