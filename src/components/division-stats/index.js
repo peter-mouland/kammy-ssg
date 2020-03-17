@@ -11,13 +11,16 @@ const bem = bemHelper({ block: 'division-stats' });
 class DivisionStats extends React.Component {
     render() {
         const {
-            label, teams, selectedGameWeek, playersByCode,
+            label, teams, selectedGameWeek, playersByCode, divisionUrl,
         } = this.props;
         return (
             <section id="teams-page" className={bem()} data-b-layout="container">
                 <h1>{label}</h1>
                 <div data-b-layout="vpad">
-                    <GameWeekSwitcher />
+                    <GameWeekSwitcher
+                        url={`/${divisionUrl}/teams`}
+                        selectedGameWeek={selectedGameWeek}
+                    />
                 </div>
                 <div data-b-layout="vpad">
                     <Table
@@ -34,6 +37,7 @@ class DivisionStats extends React.Component {
 
 DivisionStats.propTypes = {
     selectedGameWeek: PropTypes.number,
+    divisionUrl: PropTypes.string,
     loaded: PropTypes.bool,
     gameWeeksLoaded: PropTypes.bool,
     players: PropTypes.object,
