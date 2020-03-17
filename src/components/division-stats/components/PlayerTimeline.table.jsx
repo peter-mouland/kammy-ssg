@@ -8,9 +8,8 @@ import './positionTimeline.scss';
 const bem = bemHelper({ block: 'position-timeline' });
 
 const sum = (total, stats = {}) => {
-    console.log({ stats })
     Object.keys(stats || {}).forEach((key) => {
-    total[key] = (total[key] || 0) + stats[key]; // eslint-disable-line
+        total[key] = (total[key] || 0) + stats[key]; // eslint-disable-line
     });
     return null;
 };

@@ -32,7 +32,6 @@ const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
         ? previousGameWeeks.slice(previousGameWeeks.length - 4, selectedGameWeek + 1 + 1)
         : previousGameWeeks;
     if (!options.includes(currentGameWeek)) {
-        console.log({selectedGameWeek, currentGameWeek})
         if (selectedGameWeek > currentGameWeek.gameWeek) {
             options.unshift(currentGameWeek);
         } else {

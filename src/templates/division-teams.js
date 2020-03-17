@@ -15,7 +15,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel 
         ...prev,
         [team[0].managerName]: team,
     }), {});
-    const previousTeamsByManager = previousTeams.reduce((prev, { nodes: team }) => ({
+    const previousTeamsByManager = (previousTeams || []).reduce((prev, { nodes: team }) => ({
         ...prev,
         [team[0].managerName]: team,
     }), {});

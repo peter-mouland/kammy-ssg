@@ -72,8 +72,9 @@ const TeamsPage = ({
                     {teams[managerName].map(({
                         player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats,
                     }, i) => {
+                        if (!player) return null; // allow for week zero
                         const playerLastGW = previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
-                        const className = playerLastGW.playerName !== playerName ? bem('transfer') : '';
+                        const className = playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
                         // const warningClassName = isAdmin && (
                         //     clubWarnings.indexOf(player.club) > -1 || duplicatePlayers.indexOf(player.name) > -1
                         // ) ? 'row row--warning' : 'row';
