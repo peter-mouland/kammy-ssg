@@ -20,7 +20,7 @@ class DivisionRankings extends React.Component {
   render() {
       const {
           stats = [], divisionUrl, lineChartData, label, managersSeason, lineType,
-          showStandings, showWeekly, showChart, showGameWeekSwitcher,
+          showStandings, showWeekly, showChart, showGameWeekSwitcher, selectedGameWeek,
       } = this.props;
       const { highlightManager } = this.state;
       const managers = stats.reduce((prev, stat) => ({ [stat.managerName]: stat }), {});
@@ -29,7 +29,11 @@ class DivisionRankings extends React.Component {
           <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
               <h1>{label}</h1>
               {
-                  showGameWeekSwitcher && <div style={{ position: 'relative', zIndex: 2 }}><GameWeekSwitcher url={`/${divisionUrl}/rankings`} /></div>
+                  showGameWeekSwitcher && (
+                      <div style={{ position: 'relative', zIndex: 2 }}>
+                          <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/rankings`} />
+                      </div>
+                  )
               }
               {
                   <div style={{ position: 'relative', zIndex: 1 }}>
@@ -79,6 +83,7 @@ class DivisionRankings extends React.Component {
 }
 
 DivisionRankings.propTypes = {
+    selectedGameWeek: PropTypes.number,
     lineType: PropTypes.string,
     divisionUrl: PropTypes.string.isRequired,
     divisionId: PropTypes.string.isRequired,

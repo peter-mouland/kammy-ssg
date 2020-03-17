@@ -5,7 +5,7 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import DivisionRankings from '../components/division-rankings';
 
-const Index = ({ data, pageContext: { gameWeek, divisionKey, divisionLabel } }) => {
+const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, divisionLabel } }) => {
     const {
         allLeagueTable: { nodes: leagueStats },
     } = data;
@@ -17,7 +17,7 @@ const Index = ({ data, pageContext: { gameWeek, divisionKey, divisionLabel } }) 
                 divisionId={divisionKey}
                 divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
                 stats={leagueStats}
-                gameWeek={gameWeek}
+                selectedGameWeek={selectedGameWeek}
                 showGameWeekSwitcher={true}
                 showChart={false}
                 showWeekly={true}

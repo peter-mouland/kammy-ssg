@@ -5,7 +5,7 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import Homepage from '../components/homepage';
 
-const Index = ({ data }) => {
+const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
     const {
         prevGameWeek,
         currentGameWeek,
@@ -35,7 +35,12 @@ const Index = ({ data }) => {
 
     return (
         <Layout>
-            <Homepage gameWeekDates={gameWeekDates} divisions={divisions} statsByDivision={statsByDivision} />
+            <Homepage
+                selectedGameWeek={selectedGameWeek}
+                gameWeekDates={gameWeekDates}
+                divisions={divisions}
+                statsByDivision={statsByDivision}
+            />
         </Layout>
     );
 };

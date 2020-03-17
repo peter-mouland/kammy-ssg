@@ -11,7 +11,7 @@ import ContextualHelp from '../contextual-help';
 const bem = bemHelper({ block: 'game-week-switcher' });
 const bemToggle = bemHelper({ block: 'multi-toggle' });
 
-const GameWeekSwitcher = ({ url = '' }) => {
+const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
     const data = useStaticQuery(graphql`
       query AllGameWeeks {
         allGameWeeks {
@@ -27,10 +27,18 @@ const GameWeekSwitcher = ({ url = '' }) => {
     `);
     const gameWeeks = data.allGameWeeks.nodes;
     const currentGameWeek = gameWeeks.find(({ isCurrent }) => !!isCurrent);
-    const previousGameWeeks = [...gameWeeks].slice(0, currentGameWeek.gameWeek + 1 + 1);
+    const previousGameWeeks = [...gameWeeks].slice(0, selectedGameWeek + 1 + 1);
     const options = previousGameWeeks.length > 4
-        ? previousGameWeeks.slice(previousGameWeeks.length - 4, currentGameWeek.gameWeek + 1 + 1)
+        ? previousGameWeeks.slice(previousGameWeeks.length - 4, selectedGameWeek + 1 + 1)
         : previousGameWeeks;
+    if (!options.includes(currentGameWeek)) {
+        console.log({selectedGameWeek, currentGameWeek})
+        if (selectedGameWeek > currentGameWeek.gameWeek) {
+            options.unshift(currentGameWeek);
+        } else {
+            options.push(currentGameWeek);
+        }
+    }
     return (
         <section id="gameweek-switcher" className={bem()}>
             GameWeek:
@@ -39,7 +47,7 @@ const GameWeekSwitcher = ({ url = '' }) => {
                     <ContextualHelp
                         body={<FormattedGameWeekDate gameWeek={gameWeeks[gameWeek]}/>}
                         Trigger={(
-                            <span className={ bemToggle('option-label', { isCurrent: !!isCurrent }) } >{gameWeek}</span>
+                            <span className={ bemToggle('option-label', { isCurrent: !!isCurrent, isSelected: selectedGameWeek === gameWeek }) }>{gameWeek}</span>
                         )}
                     />
                 </Link>
@@ -50,6 +58,7 @@ const GameWeekSwitcher = ({ url = '' }) => {
 
 GameWeekSwitcher.propTypes = {
     url: PropTypes.string,
+    selectedGameWeek: PropTypes.number,
 };
 
 export default GameWeekSwitcher;

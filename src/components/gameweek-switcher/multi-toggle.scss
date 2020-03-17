@@ -89,6 +89,10 @@
     }
 
     &--isCurrent {
+      border: 1px solid #163;
+    }
+
+    &--isSelected {
       background-color: #163;
       color: #fff;
     }
