@@ -1,4 +1,3 @@
-const fetch = require('../lib/fetch-google-spreadsheet');
-const { spreadsheets } = require('../lib/constants');
+const { fetchDraft } = require('@kammy/helpers.fetch-spreadsheet');
 
-module.exports = () => fetch(spreadsheets.DRAFT_ID, '/values/Divisions');
+module.exports = () => fetchDraft('Divisions');

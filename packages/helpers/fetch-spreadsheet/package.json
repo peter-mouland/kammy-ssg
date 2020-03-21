@@ -1,9 +1,9 @@
 {
-  "name": "@kammy/helpers.get",
+  "name": "@kammy/helpers.fetch-spreadsheet",
   "version": "1.0.0",
-  "description": "Kammy UI Helper: get",
-  "main": "src/get.js",
-  "src": "src/get.js",
+  "description": "Kammy UI Helper: fetch data from google spreadsheets",
+  "main": "src/index.js",
+  "src": "src/index.js",
   "engines": {
     "node": ">=8",
     "npm": ">=5",

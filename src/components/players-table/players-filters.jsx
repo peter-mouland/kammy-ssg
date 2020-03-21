@@ -126,7 +126,7 @@ export default class PlayersFilters extends React.Component {
           && ({ ...prev, [myTeam[curr].code]: { ...myTeam[curr], teamPos: curr } }), {})
           : {};
 
-      return players.filter((player) => applyFilters({
+      const filtered = players.filter((player) => applyFilters({
           selectedFilters,
           player,
           nameFilters,
@@ -138,6 +138,7 @@ export default class PlayersFilters extends React.Component {
           showHidden,
           showNew,
       }));
+      return filtered;
   }
 
   render() {

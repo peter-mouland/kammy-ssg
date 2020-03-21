@@ -1,4 +1,3 @@
-const fetch = require('./fetch');
 const { spreadsheets } = require('./constants');
 
 const rowToObj = ({ values = [] }) => {
@@ -18,7 +17,18 @@ const GS_API = (spreadsheet, endpoint, opts = {}) => {
     const fullUrl = Object.keys(opts).reduce((prev, opt) => (
         `${prev}${opts[opt] === true ? `&${opt}=true` : ''}`
     ), `${url}?key=${spreadsheets.ACCESS_KEY}`);
-    return fetch(fullUrl).then(rowToObj);
+    return fetch(fullUrl)
+        .then((response) => (response.json ? response.json() : response))
+        .then(rowToObj);
 };
 
+const kammyProxy = (spreadsheet, endpoint) => {
+    const url = `https://kammy-proxy.herokuapp.com/spreadsheets/${spreadsheet}${endpoint}`;
+    return fetch(url)
+        .then((response) => (response.json ? response.json() : response))
+        .then(rowToObj);
+};
+
+console.log(process.env.SPREADSHEET_ACCESS_KEY)
+// module.exports = process.env.SPREADSHEET_ACCESS_KEY ? GS_API : kammyProxy;
 module.exports = GS_API;

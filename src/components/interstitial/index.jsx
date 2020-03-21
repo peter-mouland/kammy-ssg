@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Svg from '../svg';
-import football from './football.svg';
+import Football from './football.svg';
 import './interstitial.scss';
 
 const Index = ({ message }) => (
     <span className="interstitial">
-        <Svg>{football}</Svg>
+        <Football />
         { message || 'Please wait' }...
     </span>
 );

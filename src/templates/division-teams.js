@@ -3,7 +3,7 @@ import React from 'react';
 import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
-import DivisionStats from '../components/division-stats';
+import DivisionTeams from '../components/division-teams';
 
 const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel } }) => {
     const {
@@ -22,8 +22,8 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel 
 
     return (
         <Layout>
-            <DivisionStats
-                label={divisionLabel}
+            <DivisionTeams
+                label={`${divisionLabel}: Teams`}
                 divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
                 teams={teamsByManager}
                 previousTeams={previousTeamsByManager}

@@ -73,6 +73,7 @@ exports.createPages = async ({ actions, graphql }) => {
         }
     `);
 
+    // a new page for each gameweek
     gameWeekData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
         // HOMEPAGE (by game-week)
         actions.createPage({
@@ -85,6 +86,8 @@ exports.createPages = async ({ actions, graphql }) => {
                 nextGameWeek: gameWeek + 1,
             },
         });
+
+        // a new page for each division
         divisionData.allDivisions.nodes.forEach(({ key, label }) => {
             const url = label.replace(/ /g, '-').toLowerCase();
             //   DIVISION RANKINGS (by game-week)
@@ -103,6 +106,30 @@ exports.createPages = async ({ actions, graphql }) => {
                 path: `/week-${gameWeek}/${url}/teams`,
                 matchPath: `/week-${gameWeek}/${url}/teams/`, // otherwise gatsby will redirect on refresh
                 component: path.resolve('src/templates/division-teams.js'),
+                context: {
+                    gameWeek,
+                    prevGameWeek: gameWeek - 1,
+                    divisionKey: key,
+                    divisionLabel: label,
+                },
+            });
+            // DIVISION PLAYERS
+            actions.createPage({
+                path: `/week-${gameWeek}/${url}/players`,
+                matchPath: `/week-${gameWeek}/${url}/players/`, // otherwise gatsby will redirect on refresh
+                component: path.resolve('src/templates/division-players.js'),
+                context: {
+                    gameWeek,
+                    prevGameWeek: gameWeek - 1,
+                    divisionKey: key,
+                    divisionLabel: label,
+                },
+            });
+            // DIVISION TRANSFERS
+            actions.createPage({
+                path: `/week-${gameWeek}/${url}/transfers`,
+                matchPath: `/week-${gameWeek}/${url}/transfers/`, // otherwise gatsby will redirect on refresh
+                component: path.resolve('src/templates/division-transfers.js'),
                 context: {
                     gameWeek,
                     prevGameWeek: gameWeek - 1,
@@ -142,6 +169,30 @@ exports.createPages = async ({ actions, graphql }) => {
                     path: `/${url}/teams`,
                     matchPath: `/${url}/teams/`, // otherwise gatsby will redirect on refresh
                     component: path.resolve('src/templates/division-teams.js'),
+                    context: {
+                        gameWeek,
+                        prevGameWeek: gameWeek - 1,
+                        divisionKey: key,
+                        divisionLabel: label,
+                    },
+                });
+                //   DIVISION PLAYERS
+                actions.createPage({
+                    path: `/${url}/players`,
+                    matchPath: `/${url}/players/`, // otherwise gatsby will redirect on refresh
+                    component: path.resolve('src/templates/division-players.js'),
+                    context: {
+                        gameWeek,
+                        prevGameWeek: gameWeek - 1,
+                        divisionKey: key,
+                        divisionLabel: label,
+                    },
+                });
+                //   DIVISION TRNSFERS
+                actions.createPage({
+                    path: `/${url}/transfers`,
+                    matchPath: `/${url}/transfers/`, // otherwise gatsby will redirect on refresh
+                    component: path.resolve('src/templates/division-transfers.js'),
                     context: {
                         gameWeek,
                         prevGameWeek: gameWeek - 1,

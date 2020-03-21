@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 
-import Svg from '../svg';
 import Cup from './trophy.svg';
 import './GameWeekDate.scss';
 
@@ -20,7 +19,7 @@ const Index = ({
         <div className={'formatted-gameweek-container'}>
             {label && <div>{label}</div>}
             <div className={'formatted-gameweek-date'}>
-                {cup && <Svg className='formatted-gameweek-cup'>{Cup}</Svg>}
+                {cup && <Cup className='formatted-gameweek-cup' />}
                 {showStart && (
                     <span className='formatted-gameweek-date__calendar'>
                         <span className='formatted-gameweek-date__month'>{startMonth}</span>

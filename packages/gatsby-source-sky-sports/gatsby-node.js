@@ -1,4 +1,8 @@
 /* eslint-disable no-console */
+const fetch = require('./lib/fetch');
+
+global.fetch = fetch;
+
 const hashContent = require('./lib/hash-content');
 const fetchAllData = require('./sources/fetch-all');
 const buildSkyScores = require('./builds/sky-sports-scores');

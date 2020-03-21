@@ -1,4 +1,3 @@
-const fetch = require('../lib/fetch-google-spreadsheet');
-const { spreadsheets } = require('../lib/constants');
+const { fetchCup } = require('@kammy/helpers.fetch-spreadsheet');
 
-module.exports = () => fetch(spreadsheets.TRANSFERS_ID, '/values/cup');
+module.exports = () => fetchCup();

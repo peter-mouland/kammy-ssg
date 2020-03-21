@@ -63,6 +63,7 @@
     "node-sass": "4.13.1",
     "prop-types": "15.7.2",
     "react": "16.13.0",
+    "react-query": "1.0.33",
     "react-cookie": "4.0.3",
     "react-dom": "16.13.0",
     "react-helmet": "5.2.1",

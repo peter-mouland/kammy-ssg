@@ -1,10 +1,9 @@
-const fetch = require('../lib/fetch-google-spreadsheet');
-const { spreadsheets } = require('../lib/constants');
+const { fetchDraft } = require('@kammy/helpers.fetch-spreadsheet');
 
 module.exports = () => Promise.all([
-    fetch(spreadsheets.DRAFT_ID, '/values/premierLeague'),
-    fetch(spreadsheets.DRAFT_ID, '/values/championship'),
-    fetch(spreadsheets.DRAFT_ID, '/values/leagueOne'),
+    fetchDraft('premierLeague'),
+    fetchDraft('championship'),
+    fetchDraft('leagueOne'),
 ]).then(([premierLeague, championship, leagueOne]) => ([
     ...premierLeague.map((row) => ({ ...row, division: 'premierLeague' })),
     ...championship.map((row) => ({ ...row, division: 'championship' })),

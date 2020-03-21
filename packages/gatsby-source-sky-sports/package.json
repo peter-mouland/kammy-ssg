@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@kammy/helpers.fetch-spreadsheet": "1.0.0",
     "@kammy/data.player-stats": "1.0.0",
     "axios": "0.19.2",
     "node-fetch": "2.6.0",

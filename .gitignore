@@ -3,6 +3,7 @@ node_modules/
 dist
 coverage
 compiled
+public
 .DS_Store
 .swp
 .divshot-cache/

@@ -1,38 +1,11 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
-
-/* TRANSFERS */
-const formatTimeStamp = (timestamp = '') => {
-    const dateTimeArray = timestamp.split(' ');
-    const dateArray = dateTimeArray[0].split('/');
-    const year = dateArray[2];
-    const month = dateArray[1];
-    const day = dateArray[0];
-    const time = dateTimeArray[1];
-    return `${year}/${month}/${day} ${time}`;
-};
-
 module.exports = ({ googleTransferData, createNodeId }) => googleTransferData
     .sort((t1, t2) => (new Date(t1.timestamp) - new Date(t2.timestamp)))
     .map((transfer) => {
-        const data = {
-            division: transfer.division,
-            status: (transfer.Status || '').trim(),
-            isValid: transfer.Status === 'Y',
-            isPending: transfer.Status === 'TBC',
-            isFailed: transfer.Status === 'E',
-            timestamp: formatTimeStamp(transfer.Timestamp),
-            date: transfer.Timestamp,
-            comment: (transfer.Comment || '').trim(),
-            manager: (transfer.Manager || '').trim(),
-            transferIn: transfer['Transfer In'],
-            codeIn: transfer['Code In'],
-            transferOut: transfer['Transfer Out'],
-            codeOut: transfer['Code Out'],
-            type: transfer['Transfer Type'],
-        };
+        const data = transfer;
         return {
-            resourceId: `transfers-${String(transfer.timestamp)}-${transfer.Manager}`,
+            resourceId: `transfers-${String(data.timestamp)}-${data.manager}`,
             data: {
                 ...data,
                 division___NODE: createNodeId(`divisions-${data.division}`),

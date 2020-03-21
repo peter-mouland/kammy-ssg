@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
 
-import { SortIcon, SortDownIcon, SortUpIcon } from '../sort-icons';
-import Svg from '../svg';
+import SortIcon from './sort.svg';
+import SortDownIcon from './sort-down.svg';
+import SortUpIcon from './sort-up.svg';
 import New from './new.svg';
 
 const bem = bemHelper({ block: 'table' });
@@ -18,9 +19,9 @@ const SortableHeader = ({
 }) => (
     <th className={`cell cell--${id} ${className}`} {...attrs}>
         <a className={ bem('sort-link') } onClick={() => handleSort(id)}>
-            {isSortUp(sort, id) && <Svg className={ bem('sort-icon', 'selected')}>{SortUpIcon}</Svg>}
-            {isSortDown(sort, id) && <Svg className={ bem('sort-icon', 'selected')}>{SortDownIcon}</Svg>}
-            {isNotSorted(sort, id) && <Svg className={ bem('sort-icon') }>{SortIcon}</Svg>}
+            {isSortUp(sort, id) && <SortUpIcon className={ bem('sort-icon', 'selected')} />}
+            {isSortDown(sort, id) && <SortDownIcon className={ bem('sort-icon', 'selected')} />}
+            {isNotSorted(sort, id) && <SortIcon className={ bem('sort-icon') } />}
             <span className={ bem('label') }>{label}</span>
         </a>
     </th>
@@ -89,7 +90,7 @@ class PlayerTable extends React.Component {
                               const isOnMyTeam = myTeam && myTeam[player.code];
                               return (
                                   <tr
-                                      key={player.code}
+                                      key={player.name}
                                       id={player.code}
                                       className={ bem('player', {
                                           selected: isOnMyTeam,
@@ -100,7 +101,7 @@ class PlayerTable extends React.Component {
                                       { !hiddenColumns.includes('isHidden') && (<td className={'cell'}>{ player.isHidden && 'hidden' }</td>) }
                                       { !hiddenColumns.includes('new') && (
                                           <td className={'cell'}>
-                                              { player.new && <Svg className={ bem('new-icon')}>{New}</Svg> }
+                                              { player.new && <New className={ bem('new-icon')} /> }
                                               { player.new && <span className="sr-only">new</span> }
                                           </td>
                                       )}

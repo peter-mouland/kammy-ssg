@@ -1,5 +1,4 @@
 const pMap = require('p-map');
-const fetch = require('../lib/fetch');
 
 const CONCURRENCY = 25; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
 const URL = process.env.NODE_ENV === 'development'
