@@ -22,13 +22,13 @@ const GS_API = (spreadsheet, endpoint, opts = {}) => {
         .then(rowToObj);
 };
 
-const kammyProxy = (spreadsheet, endpoint) => {
-    const url = `https://kammy-proxy.herokuapp.com/spreadsheets/${spreadsheet}${endpoint}`;
-    return fetch(url)
-        .then((response) => (response.json ? response.json() : response))
-        .then(rowToObj);
-};
+// kammy-proxy version... apparently not needed!
+// const kammyProxy = (spreadsheet, endpoint) => {
+//     const url = `https://kammy-proxy.herokuapp.com/spreadsheets/${spreadsheet}${endpoint}`;
+//     return fetch(url)
+//         .then((response) => (response.json ? response.json() : response))
+//         .then(rowToObj);
+// };
 
-console.log(process.env.SPREADSHEET_ACCESS_KEY)
 // module.exports = process.env.SPREADSHEET_ACCESS_KEY ? GS_API : kammyProxy;
 module.exports = GS_API;

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -6,6 +6,7 @@ import { useQuery } from 'react-query';
 import { fetchTransfers } from '@kammy/helpers.fetch-spreadsheet';
 
 import Interstitial from '../interstitial';
+import GameWeekSwitcher from '../gameweek-switcher';
 
 const toDate = (string = '') => {
     if (!string) return string;
@@ -27,19 +28,18 @@ const getEmoji = (status = '') => {
     }
 };
 
-const TransferBody = ({ getGameWeekFromDate, transfers }) => {
+const TransferBody = ({ transfers }) => {
     if (transfers.length < 1) return null;
     return (
         <tbody>
             {transfers.map(({
-                timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment,
+                timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment, gameWeek,
             }) => {
-                const gw = timestamp && typeof getGameWeekFromDate === 'function' ? getGameWeekFromDate(timestamp) : '';
                 return (
                     <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>
                         <td data-col-label='status' className={'cell cell--status cell--show-750 cell--center'}
                             dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}/>
-                        <td data-col-label='gw' className={'cell cell--center'}>{gw}</td>
+                        <td data-col-label='gw' className={'cell cell--center'}>{gameWeek}</td>
                         <td data-col-label='timestamp'
                             className={'cell cell--center cell--show-625'}>{formatTimestamp(timestamp)}</td>
                         <td data-col-label='type' className={'cell cell--center'}>{type}</td>
@@ -64,79 +64,75 @@ const inDateRange = ({ start, end }, comparison) => (
     toDate(comparison) < toDate(end) && toDate(comparison) > toDate(start)
 );
 
-const fetchr = (key, division = 0) => fetchTransfers(division); // TODO: NEED TO USE PROXY
+const fetchr = (key, division = 0) => fetchTransfers(division);
 
 
 const GameWeekTransfers = ({
     managers,
+    divisionUrl,
     currentGameWeek,
     prevGameWeek,
+    gameWeekMinus2,
     selectedGameWeek,
 }) => {
-    // const [transfers, setTransfers] = useState([]);
     const {
-        status,
-        data: transfers = [],
-        resolvedData,
-        latestData,
-        error,
-        isFetching,
+        status, data: transfers = [], error,
     } = useQuery(['transfers', 'leagueOne'], fetchr);
+
     console.log({
-        status,
-        transfers,
-        resolvedData,
-        latestData,
-        error,
-        isFetching,
-    });
-    // const gameWeekTransfers = transfers.filter((transfer) => inDateRange(prevGameWeek, transfer.timestamp));
-    const isLoading = isFetching;
+        currentGameWeek,
+        prevGameWeek,
+        gameWeekMinus2,
+    })
+
+    const limitTransfers = (gw) => transfers
+        .filter((transfer) => (inDateRange(gw, transfer.timestamp)))
+        .map((transfer) => ({ ...transfer, gameWeek: gw.gameWeek }));
+    const previousGameWeekTransfers = limitTransfers(prevGameWeek);
+    const previousGameWeekTransfers2 = limitTransfers(gameWeekMinus2);
+    const showTransfers = [...previousGameWeekTransfers2, ...previousGameWeekTransfers];
+    const isLoading = status === 'loading';
+
+    if (status === 'error') return <div>Error: {error.message}</div>;
 
     return (
         <Fragment>
-            {status === 'loading' ? (
-                'Loading...'
-            ) : status === 'error' ? (
-                <span>Error: {error.message}</span>
-            ) : (
-                <Fragment>
-                    <h2>Transfer Requests</h2>
-                    <table className={'table'}>
-                        <thead>
-                            <tr className={'row'}>
-                                <th className={'cell cell--show-750'}>Status</th>
-                                <th className={'cell'}>GW</th>
-                                <th className={'cell cell--show-625'}>Date</th>
-                                <th className={'cell'}>Type</th>
-                                <th className={'cell'}>Manager</th>
-                                <th className={'cell'}>In</th>
-                                <th className={'cell'}>Out</th>
-                                <th className={'cell cell--show-925'}>Comment</th>
-                            </tr>
-                        </thead>
-                        <TransferBody transfers={transfers}/>
-                        {transfers.length === 0 && !isLoading && (
-                            <tbody>
-                                <tr className={'row'}>
-                                    <td className={'cell cell--center'} colSpan={7}><em>no transfers have been
-                                        requested</em></td>
-                                </tr>
-                            </tbody>
-                        )}
-                        <tfoot>
-                            <tr className={'row row--interstitial'}>
-                                <td colSpan={7}>
-                                    {(isLoading) && (
-                                        <Interstitial message='loading transfers...'/>
-                                    )}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </Fragment>
-            )
-            }
+            <h2>Transfer Requests</h2>
+            <div style={{ position: 'relative', zIndex: 2 }}>
+                <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/transfers`} />
+            </div>
+            <table className={'table'}>
+                <thead>
+                    <tr className={'row'}>
+                        <th className={'cell cell--show-750'}>Status</th>
+                        <th className={'cell'}>GW</th>
+                        <th className={'cell cell--show-625'}>Date</th>
+                        <th className={'cell'}>Type</th>
+                        <th className={'cell'}>Manager</th>
+                        <th className={'cell'}>In</th>
+                        <th className={'cell'}>Out</th>
+                        <th className={'cell cell--show-925'}>Comment</th>
+                    </tr>
+                </thead>
+                <TransferBody transfers={showTransfers}/>
+                {transfers.length === 0 && !isLoading && (
+                    <tbody>
+                        <tr className={'row'}>
+                            <td className={'cell cell--center'} colSpan={7}><em>no transfers have been
+                                requested</em></td>
+                        </tr>
+                    </tbody>
+                )}
+                <tfoot>
+                    <tr className={'row row--interstitial'}>
+                        <td colSpan={7}>
+                            {(isLoading) && (
+                                <Interstitial message='loading transfers...'/>
+                            )}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
         </Fragment>
     );
 };

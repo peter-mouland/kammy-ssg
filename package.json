@@ -28,7 +28,7 @@
     "build:prod": "yarn clean:dist && NODE_ENV=production gatsby build --prefix-paths && mv ./public ./docs",
     "--- util ---": "",
     "clean": "yarn clean:dist && yarn clean:yarn && yarn clean:npm && lerna clean --yes",
-    "clean:dist": "rimraf docs && rimraf docs && rimraf ./.cache",
+    "clean:dist": "rimraf public && rimraf docs && rimraf ./.cache",
     "clean:npm": "rimraf packages/**/node_modules && rimraf node_modules",
     "clean:yarn": "rimraf yarn.lock && rimraf packages/**/yarn.lock",
     "verify": "yarn lint && yarn test",

@@ -76,14 +76,17 @@ exports.createPages = async ({ actions, graphql }) => {
     // a new page for each gameweek
     gameWeekData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
         // HOMEPAGE (by game-week)
+        const prev2GameWeek = gameWeek - 2;
+        const prevGameWeek = gameWeek - 1;
+        const nextGameWeek = gameWeek + 1;
         actions.createPage({
             path: `/week-${gameWeek}`,
             matchPath: `/week-${gameWeek}/`, // otherwise gatsby will redirect on refresh
             component: path.resolve('src/templates/homepage.js'),
             context: {
                 gameWeek,
-                prevGameWeek: gameWeek - 1,
-                nextGameWeek: gameWeek + 1,
+                prevGameWeek,
+                nextGameWeek,
             },
         });
 
@@ -108,7 +111,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 component: path.resolve('src/templates/division-teams.js'),
                 context: {
                     gameWeek,
-                    prevGameWeek: gameWeek - 1,
+                    prevGameWeek,
                     divisionKey: key,
                     divisionLabel: label,
                 },
@@ -120,7 +123,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 component: path.resolve('src/templates/division-players.js'),
                 context: {
                     gameWeek,
-                    prevGameWeek: gameWeek - 1,
+                    prevGameWeek,
                     divisionKey: key,
                     divisionLabel: label,
                 },
@@ -132,7 +135,8 @@ exports.createPages = async ({ actions, graphql }) => {
                 component: path.resolve('src/templates/division-transfers.js'),
                 context: {
                     gameWeek,
-                    prevGameWeek: gameWeek - 1,
+                    prevGameWeek,
+                    prev2GameWeek,
                     divisionKey: key,
                     divisionLabel: label,
                 },
@@ -146,8 +150,8 @@ exports.createPages = async ({ actions, graphql }) => {
                 component: path.resolve('src/templates/homepage.js'),
                 context: {
                     gameWeek,
-                    prevGameWeek: gameWeek - 1,
-                    nextGameWeek: gameWeek + 1,
+                    prevGameWeek,
+                    nextGameWeek,
                 },
             });
             divisionData.allDivisions.nodes.forEach(({ key, label }) => {
@@ -159,7 +163,7 @@ exports.createPages = async ({ actions, graphql }) => {
                     component: path.resolve('src/templates/division-rankings.js'),
                     context: {
                         gameWeek,
-                        prevGameWeek: gameWeek - 1,
+                        prevGameWeek,
                         divisionKey: key,
                         divisionLabel: label,
                     },
@@ -171,7 +175,7 @@ exports.createPages = async ({ actions, graphql }) => {
                     component: path.resolve('src/templates/division-teams.js'),
                     context: {
                         gameWeek,
-                        prevGameWeek: gameWeek - 1,
+                        prevGameWeek,
                         divisionKey: key,
                         divisionLabel: label,
                     },
@@ -183,19 +187,20 @@ exports.createPages = async ({ actions, graphql }) => {
                     component: path.resolve('src/templates/division-players.js'),
                     context: {
                         gameWeek,
-                        prevGameWeek: gameWeek - 1,
+                        prevGameWeek,
                         divisionKey: key,
                         divisionLabel: label,
                     },
                 });
-                //   DIVISION TRNSFERS
+                //   DIVISION TRANSFERS
                 actions.createPage({
                     path: `/${url}/transfers`,
                     matchPath: `/${url}/transfers/`, // otherwise gatsby will redirect on refresh
                     component: path.resolve('src/templates/division-transfers.js'),
                     context: {
                         gameWeek,
-                        prevGameWeek: gameWeek - 1,
+                        prevGameWeek,
+                        prev2GameWeek,
                         divisionKey: key,
                         divisionLabel: label,
                     },

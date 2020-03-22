@@ -6,24 +6,24 @@ import Layout from '../components/layout';
 import Transfers from '../components/division-transfers';
 
 const TransfersPage = ({
-    data: { currentGameWeek, prevGameWeek, allManagers },
-    pageContext: { gameWeek: selectedGameWeek, divisionLabel },
-}) => {
-    return (
-        <Layout>
-            <h1>{divisionLabel}: Transfers</h1>
-            <Transfers
-                managers={allManagers}
-                currentGameWeek={currentGameWeek}
-                prevGameWeek={prevGameWeek}
-                selectedGameWeek={selectedGameWeek}
-            />
-        </Layout>
-    );
-};
+    data: { currentGameWeek, prevGameWeek, gameWeekMinus2, allManagers },
+    pageContext: { gameWeek: selectedGameWeek, divisionLabel, prev2GameWeek, ...rest },
+}) => console.log({prev2GameWeek, rest}) || (
+    <Layout>
+        <h1>{divisionLabel}: Transfers</h1>
+        <Transfers
+            managers={allManagers}
+            divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
+            currentGameWeek={currentGameWeek}
+            prevGameWeek={prevGameWeek}
+            gameWeekMinus2={gameWeekMinus2}
+            selectedGameWeek={selectedGameWeek}
+        />
+    </Layout>
+);
 
 export const query = graphql`
-    query DivisionTransfers($gameWeek: Int, $prevGameWeek: Int, $divisionKey: String) {
+    query DivisionTransfers($gameWeek: Int, $prevGameWeek: Int, $prev2GameWeek: Int, $divisionKey: String) {
         currentGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
             gameWeek
             isCurrent
@@ -44,21 +44,17 @@ export const query = graphql`
         }
         prevGameWeek: gameWeeks(gameWeek: {eq: $prevGameWeek}) {
             gameWeek
-            isCurrent
             start
             end
             cup
             notes
-            fixtures {
-                aScore
-                aTcode
-                aTname
-                date
-                hScore
-                hTcode
-                hTname
-                status
-            }
+        }
+        gameWeekMinus2: gameWeeks(gameWeek: {eq: $prev2GameWeek}) {
+            gameWeek
+            start
+            end
+            cup
+            notes
         }
         allManagers(sort: { fields: division___order }, filter: { divisionKey: { eq: $divisionKey } }) {
             nodes {
