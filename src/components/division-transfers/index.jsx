@@ -70,6 +70,7 @@ const fetchr = (key, division = 0) => fetchTransfers(division);
 const GameWeekTransfers = ({
     managers,
     divisionUrl,
+    divisionKey,
     currentGameWeek,
     prevGameWeek,
     gameWeekMinus2,
@@ -77,13 +78,7 @@ const GameWeekTransfers = ({
 }) => {
     const {
         status, data: transfers = [], error,
-    } = useQuery(['transfers', 'leagueOne'], fetchr);
-
-    console.log({
-        currentGameWeek,
-        prevGameWeek,
-        gameWeekMinus2,
-    })
+    } = useQuery(['transfers', divisionKey], fetchr);
 
     const limitTransfers = (gw) => transfers
         .filter((transfer) => (inDateRange(gw, transfer.timestamp)))

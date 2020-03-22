@@ -6,13 +6,16 @@ import Layout from '../components/layout';
 import Transfers from '../components/division-transfers';
 
 const TransfersPage = ({
-    data: { currentGameWeek, prevGameWeek, gameWeekMinus2, allManagers },
-    pageContext: { gameWeek: selectedGameWeek, divisionLabel, prev2GameWeek, ...rest },
-}) => console.log({prev2GameWeek, rest}) || (
+    data: {
+        currentGameWeek, prevGameWeek, gameWeekMinus2, allManagers,
+    },
+    pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
+}) => (
     <Layout>
         <h1>{divisionLabel}: Transfers</h1>
         <Transfers
             managers={allManagers}
+            divisionKey={divisionKey}
             divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
             currentGameWeek={currentGameWeek}
             prevGameWeek={prevGameWeek}
