@@ -1,0 +1,60 @@
+.change-icon {
+  display: block;
+  width: 20px;
+  height: 29px;
+  background: white;
+}
+
+button.change-icon-button:disabled {
+  background-color: #eee;
+  color: grey;
+
+  svg {
+    fill: #eee;
+  }
+
+  .change-icon {
+    background-color: grey;
+  }
+}
+
+button:not(:disabled).change-icon-button {
+  transition: background-color 200ms;
+  background-color: black;
+
+  &:focus,
+  &:hover {
+    background-color: green;
+
+    svg {
+      fill: green;
+    }
+  }
+
+  svg { /* stylelint-disable-line no-descending-specificity */
+    fill: black;
+    transition: fill 200ms;
+  }
+}
+
+.transfers-page {
+  &__item {
+    &--selected {
+      font-weight: bold;
+    }
+  }
+
+  &__comment {
+    width: 450px;
+    max-width: 100%;
+    height: 50px;
+  }
+}
+
+.transfer-player__input {
+  max-width: 450px;
+}
+
+.transfer__final-step {
+  position: relative;
+}

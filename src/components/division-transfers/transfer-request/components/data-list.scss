@@ -1,0 +1,101 @@
+.datalist {
+  /* the container must be positioned relative: */
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+
+  &__input {
+    border: 1px solid #163;
+    background-color: #e2e2e2;
+    width: 100%;
+    border-radius: .4em;
+    padding: 4px 8px;
+    color: #163;
+    font-size: .8em;
+    height: 2.35em;
+  }
+
+  &--on {
+    min-height: 385px;
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+  &--on &__input {
+    border-radius: .4em .4em 0 0;
+  }
+}
+
+.datalist-items {
+  position: absolute;
+  border: 1px solid #163;
+  border-bottom-width: 0;
+  border-top-width: 0;
+  z-index: 99;
+
+  /* position the autocomplete items to be the same width as the container: */
+  top: 100%;
+  left: 0;
+  right: 0;
+
+  /* restrict height */
+  max-height: 355px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: rgba(0, 0, 0, .35) 5px 5px 13px;
+
+  &--on {
+    border-bottom-width: 1px;
+    box-shadow: none;
+    position: relative;
+  }
+}
+
+.datalist-button {
+  top: -10px;
+  position: relative;
+  padding: 8px;
+  margin: 2px;
+
+  &--active {
+    background-color: #163;
+    color: #fff;
+
+    &:hover {
+      background-color: #052;
+    }
+  }
+}
+
+.datalist-item {
+  padding: 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+
+  &:hover {
+    background-color: #e9e9e9;
+  }
+
+  &__img {
+    width: 40px;
+    display: inline-block;
+    margin: -6px 10px -6px -6px;
+  }
+
+  &__additional {
+    color: #888;
+  }
+
+  &--active {
+    background-color: #163;
+    color: #fff;
+
+    &:hover {
+      background-color: #052;
+    }
+  }
+
+  &--active &__additional {
+    color: #eee;
+  }
+}

@@ -3,27 +3,37 @@ import React from 'react';
 import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
-import Transfers from '../components/division-transfers';
+import DivisionTransfers from '../components/division-transfers';
 
 const TransfersPage = ({
     data: {
+        currentTeams: { group: currentTeams },
         currentGameWeek, prevGameWeek, gameWeekMinus2, allManagers,
     },
     pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
-}) => (
-    <Layout>
-        <h1>{divisionLabel}: Transfers</h1>
-        <Transfers
-            managers={allManagers}
-            divisionKey={divisionKey}
-            divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
-            currentGameWeek={currentGameWeek}
-            prevGameWeek={prevGameWeek}
-            gameWeekMinus2={gameWeekMinus2}
-            selectedGameWeek={selectedGameWeek}
-        />
-    </Layout>
-);
+}) => {
+
+    const teamsByManager = currentTeams.reduce((prev, { nodes: team }) => ({
+        ...prev,
+        [team[0].managerName]: team,
+    }), {});
+
+    const managers = allManagers.nodes.map(({ manager }) => manager);
+    return (
+        <Layout>
+            <h1>{divisionLabel}: Transfers</h1>
+            <DivisionTransfers
+                teamsByManager={teamsByManager}
+                managers={managers}
+                divisionKey={divisionKey}
+                divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
+                prevGameWeek={prevGameWeek}
+                gameWeekMinus2={gameWeekMinus2}
+                selectedGameWeek={selectedGameWeek}
+            />
+        </Layout>
+    );
+}
 
 export const query = graphql`
     query DivisionTransfers($gameWeek: Int, $prevGameWeek: Int, $prev2GameWeek: Int, $divisionKey: String) {
@@ -62,8 +72,23 @@ export const query = graphql`
         allManagers(sort: { fields: division___order }, filter: { divisionKey: { eq: $divisionKey } }) {
             nodes {
                 manager
-                division {
-                    key
+            }
+        }
+        currentTeams: allTeams(
+            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } },
+            sort: { fields: managerName }
+        ) {
+            group(field: managerName) {
+                nodes {
+                    managerName
+                    playerName
+                    teamPos
+                    pos
+                    posIndex
+                    player {
+                        club
+                        name
+                    }
                 }
             }
         }
