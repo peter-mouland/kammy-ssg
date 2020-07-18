@@ -96,7 +96,6 @@ class Index extends React.Component {
   }
 }
 
-
 Index.propTypes = {
     gameWeekDates: PropTypes.object,
     statsByDivision: PropTypes.object,

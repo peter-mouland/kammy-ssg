@@ -58,7 +58,6 @@ class TeamSeason {
     }
 }
 
-
 module.exports = {
     TeamSeason,
     UNKNOWN_PLAYER,

@@ -140,7 +140,6 @@ const TeamsPage = ({
     </table>
 );
 
-
 TeamsPage.propTypes = {
     selectedGameWeek: PropTypes.number,
     teams: PropTypes.object,

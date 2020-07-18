@@ -24,7 +24,7 @@
       }
     },
     "react": {
-      "version": "16.8.6"
+      "version": "16.13.1"
     }
   },
   "plugins": ["react"],
@@ -50,6 +50,7 @@
       "prop": "parens-new-line"
     }],
     "max-len": [2, { "code": 120, "ignoreStrings": true }],
+    "import/no-cycle": 2,
     "arrow-parens": [2, "always"],
     "function-paren-newline": 0,
     "no-unused-vars": ["error", { "varsIgnorePattern": "^log" }],

@@ -1,4 +1,3 @@
-
 const sortingFactory = (pos, data) => (itemA, itemB) => itemA[data][pos] - itemB[data][pos];
 
 function rank(arr, pos, data) {

@@ -3,7 +3,6 @@ import React from 'react';
 import bemHelper from '@kammy/bem';
 // import { withCookies, Cookies } from 'react-cookie';
 
-
 import appConfig from '../../config/config';
 import NamedLink from '../named-link';
 import NavItem from './components/nav-item';
@@ -52,7 +51,7 @@ const Index = () => (
                     </div>
                 ))
             }
-            {/*<AdminLinks cookies={cookies} />*/}
+            {/* <AdminLinks cookies={cookies} /> */}
         </div>
     </nav>
 );

@@ -12,7 +12,6 @@ const TransfersPage = ({
     },
     pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
 }) => {
-
     const teamsByManager = currentTeams.reduce((prev, { nodes: team }) => ({
         ...prev,
         [team[0].managerName]: team,
@@ -33,7 +32,7 @@ const TransfersPage = ({
             />
         </Layout>
     );
-}
+};
 
 export const query = graphql`
     query DivisionTransfers($gameWeek: Int, $prevGameWeek: Int, $prev2GameWeek: Int, $divisionKey: String) {

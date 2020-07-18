@@ -50,7 +50,6 @@ describe('calculatePoints', () => {
             expect(forGoals(10, position)).toEqual(100);
         });
 
-
         it('returns 4 points for save bonus', () => {
             expect(forSaveBonus(1, position)).toEqual(4);
             expect(forSaveBonus(0, position)).toEqual(0);

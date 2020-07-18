@@ -9,7 +9,6 @@ const getPlayerUrl = (code) => (process.env.NODE_ENV === 'development'
     ? `https://fantasyfootball.skysports.com/cache/json_player_stats_${code}.json`
     : `https://kammy-proxy.herokuapp.com/skysports/player/${code}`);
 
-
 const getFixtures = (code) => fetch(getPlayerUrl(code));
 
 const fetchPlayersFull = async (players) => {
