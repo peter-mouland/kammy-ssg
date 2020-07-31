@@ -18,11 +18,12 @@ class TeamByGameWeek {
     }
 
   getPlayer = (Player) => {
+      const playerName = Player.playerName || Player.player || Player.name;
       const player = {
-          ...(this.players[Player.player || Player.name] || UNKNOWN_PLAYER(Player.player || Player.name)),
+          ...(this.players[playerName] || UNKNOWN_PLAYER(playerName)),
       };
       return {
-          name: Player.player || player.name,
+          name: playerName,
           club: player.club,
           code: player.code,
           pos: player.pos,
@@ -68,28 +69,28 @@ class TeamByGameWeek {
               transfer.type !== 'Waiver Request'
         && (transfer.type !== 'Waiver')
         && (transfer.type !== 'New Player')
-        && players[transfer.transferIn]
-        && players[transfer.transferOut]
+        && players[transfer.transferInName]
+        && players[transfer.transferOutName]
           ))
           .forEach((transfer) => {
-              if (transfer.type === 'Swap' && transfer.transferIn === playerInPosition.name) {
+              if (transfer.type === 'Swap' && transfer.transferInName === playerInPosition.name) {
                   playerTransfers[playerTransfers.length - 1].end = new Date(transfer.timestamp);
                   playerTransfers.push({
-                      player: players[transfer.transferOut],
-                      playerOut: players[transfer.transferIn],
+                      player: players[transfer.transferOutName],
+                      playerOut: players[transfer.transferInName],
                       start: new Date(transfer.timestamp),
                       type: transfer.type,
                   });
-                  playerInPosition = players[transfer.transferOut];
-              } else if (transfer.transferOut === playerInPosition.name) {
+                  playerInPosition = players[transfer.transferOutName];
+              } else if (transfer.transferOutName === playerInPosition.name) {
                   playerTransfers[playerTransfers.length - 1].end = new Date(transfer.timestamp);
                   playerTransfers.push({
-                      player: players[transfer.transferIn],
-                      playerOut: players[transfer.transferOut],
+                      player: players[transfer.transferInName],
+                      playerOut: players[transfer.transferOutName],
                       start: new Date(transfer.timestamp),
                       type: transfer.type,
                   });
-                  playerInPosition = players[transfer.transferIn];
+                  playerInPosition = players[transfer.transferInName];
               }
           });
 

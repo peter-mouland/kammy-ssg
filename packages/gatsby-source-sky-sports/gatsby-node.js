@@ -44,38 +44,46 @@ exports.sourceNodes = async (
         googleManagerData,
         googleDraftData,
     } = await fetchAllData();
-
     // build all the objects which will be used to create gatsby nodes
+
+    // first, all those without deps i.e. ___node
     const skyFixtures = buildSkyFixtures({ skySportsFixtureData });
     const skyPlayers = buildSkyPlayers({ skySportsPlayerData });
     const skyScores = buildSkyScores({ skySportsScoreData });
     const gameWeeks = buildGameWeeks({ googleGameWeekData, skyFixtures });
-    const cup = buildCup({ googleCupData, createNodeId });
-    const transfers = buildTransfers({ googleTransferData, createNodeId });
-    const players = buildPlayers({ googlePlayerData, gameWeeks, skyPlayers });
-    const managers = buildManagers({ googleManagerData, createNodeId });
     const divisions = buildDivisions({ googleDivisionData });
-    const draft = buildDraft({ googleDraftData, createNodeId });
+    const players = buildPlayers({ googlePlayerData, gameWeeks, skyPlayers });
+
+    // second, all those with deps i.e. ___node
+    const cup = buildCup({ googleCupData, createNodeId }); // relies on sky players
+    const managers = buildManagers({ googleManagerData, createNodeId }); // relies on divisions
+    const draft = buildDraft({ googleDraftData, createNodeId }); // relies on players + divisions
+    const transfers = buildTransfers({ googleTransferData, createNodeId });// relies on players + divisions + managers
     const teams = buildTeams({
         draft, managers, transfers, gameWeeks, players, createNodeId,
-    });
+    });// relies on players + managers
+
+    // last - the tables
     const leagueTables = buildLeagueTables({
         divisions, managers, teams, createNodeId,
     });
 
     // create all the gatsby nodes
     const nodePromises = [
+        // first
         ...(skyFixtures || []),
         ...(skyPlayers || []),
         ...(skyScores || []),
         ...(gameWeeks || []),
-        ...(cup || []),
-        ...(transfers || []),
-        ...(players || []),
         ...(divisions || []),
+        ...(players || []),
+        // second
+        ...(cup || []),
         ...(managers || []),
         ...(draft || []),
+        ...(transfers || []),
         ...(teams || []),
+        // last
         ...(leagueTables || []),
     ].map((node) => createNode({ actions, createNodeId, node }));
 

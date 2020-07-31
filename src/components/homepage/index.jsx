@@ -16,7 +16,6 @@ class Index extends React.Component {
   }
 
   showFixtures = (selectedGameWeek) => {
-      console.log(selectedGameWeek);
       this.setState({ showTransfers: true, selectedGameWeek });
   }
 

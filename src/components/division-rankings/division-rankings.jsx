@@ -85,7 +85,7 @@ class DivisionRankings extends React.Component {
 DivisionRankings.propTypes = {
     selectedGameWeek: PropTypes.number,
     lineType: PropTypes.string,
-    divisionUrl: PropTypes.string.isRequired,
+    divisionUrl: PropTypes.string,
     divisionId: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     managers: PropTypes.array,
@@ -117,6 +117,7 @@ DivisionRankings.defaultProps = {
     showChart: true,
     showStandings: true,
     gameWeeksCount: null,
+    divisionUrl: null,
 };
 
 DivisionRankings.contextTypes = {

@@ -51,7 +51,7 @@ exports.onCreateDevServer = () => {
 };
 
 exports.createPages = async ({ actions, graphql }) => {
-    const { data: gameWeekData } = await graphql(`
+    const { data: { allGameWeeks, allDivisions } } = await graphql(`
         query {
             allGameWeeks {
                 nodes {
@@ -59,22 +59,18 @@ exports.createPages = async ({ actions, graphql }) => {
                     isCurrent
                 }
             }
-        }
-    `);
-    const { data: divisionData } = await graphql(`
-        query {
-          allDivisions(sort: { fields: order }) {
-            nodes {
-              key
-              label
-              order
+            allDivisions(sort: { fields: order }) {
+                nodes {
+                    key
+                    label
+                    order
+                }
             }
-          }
         }
     `);
 
     // a new page for each gameweek
-    gameWeekData.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
+    allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
         // HOMEPAGE (by game-week)
         const prev2GameWeek = gameWeek - 2;
         const prevGameWeek = gameWeek - 1;
@@ -91,7 +87,7 @@ exports.createPages = async ({ actions, graphql }) => {
         });
 
         // a new page for each division
-        divisionData.allDivisions.nodes.forEach(({ key, label }) => {
+        allDivisions.nodes.forEach(({ key, label }) => {
             const url = label.replace(/ /g, '-').toLowerCase();
             //   DIVISION RANKINGS (by game-week)
             actions.createPage({
@@ -154,7 +150,7 @@ exports.createPages = async ({ actions, graphql }) => {
                     nextGameWeek,
                 },
             });
-            divisionData.allDivisions.nodes.forEach(({ key, label }) => {
+            allDivisions.nodes.forEach(({ key, label }) => {
                 const url = label.replace(/ /g, '-').toLowerCase();
                 //   DIVISION RANKINGS
                 actions.createPage({
