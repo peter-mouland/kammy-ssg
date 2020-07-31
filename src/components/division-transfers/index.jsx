@@ -49,6 +49,7 @@ const GameWeekTransfers = ({
                 transfers={showTransfers}
             />
             <TransferRequest
+                divisionKey={divisionKey}
                 teamsByManager={teamsByManager}
                 isLoading={isLoading}
                 managers={managers}
