@@ -6,3 +6,4 @@ Uses Gatsby to serve the static assets
 
 ## Local Dev
 
+ - `yarn start`
