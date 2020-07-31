@@ -8,13 +8,46 @@ import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
 import Modal from '../../modal';
 import Players from './components/Players';
-// import GameWeekTransfers from './components/game-week-transfers';
+import GameWeekTransfers from './components/game-week-transfers';
 import { changeTypes } from './lib/consts';
 import createFilteredPlayers from './lib/create-filtered-players';
 
 import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
+
+const confirmTransfer = ({
+    playerIn, playerOut, changeType, manager, playerDisplaced, playerGapFiller, comment, division, saveTransfers,
+}) => {
+    const baseDetails = {
+        division, manager, status: 'TBC', transferType: changeType,
+    };
+    const transfers = [];
+    if (playerDisplaced && playerGapFiller) {
+        // rearrange transfer to ensure positions match for the spreadsheet
+        transfers.push({
+            ...baseDetails,
+            transferIn: playerGapFiller.name,
+            transferOut: playerOut.value,
+            comment: `${comment} (note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
+        });
+        transfers.push({
+            ...baseDetails,
+            transferIn: playerIn.value,
+            transferOut: playerDisplaced.name,
+            comment: `(note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
+        });
+    } else {
+        transfers.push({
+            ...baseDetails, transferIn: playerIn.name, transferOut: playerOut.name, comment,
+        });
+    }
+    console.log({
+        playerIn, playerOut, changeType, manager, playerDisplaced, playerGapFiller, comment, division, saveTransfers,
+    });
+    saveTransfers(transfers);
+    // initiateRequest(false);
+};
 
 const createFilterOptions = (managers = [], manager) => {
     const positions = [
@@ -41,13 +74,17 @@ const createFilterOptions = (managers = [], manager) => {
     ];
 };
 
-const TransfersPage = ({ teamsByManager, managers, isLoading }) => {
+const TransfersPage = ({
+    divisionKey, teamsByManager, managers, isLoading,
+}) => {
     const [initiateRequest, setInitiateRequest] = useState(false);
+    const [comment, setComment] = useState(undefined);
     const [manager, setManager] = useState(undefined);
     const [changeType, setChangeType] = useState(undefined);
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
     const [playerFilter, setPlayerFilter] = useState(undefined);
+    // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
     const { allPlayers: { nodes: playersArray } } = useStaticQuery(graphql`
         query TransferPlayers {
             allPlayers(filter: {isHidden: {eq: false}}) {
@@ -99,33 +136,30 @@ const TransfersPage = ({ teamsByManager, managers, isLoading }) => {
                     open={true}
                     onClose={() => setInitiateRequest(false)}
                 >
-                    {!manager && (
-                        <React.Fragment>
-                            <h4>1. Who are you?</h4>
-                            <MultiToggle
-                                id={'manager'}
-                                loadingMessage={'loading teams...'}
-                                options={managers}
-                                checked={manager}
-                                onChange={setManager}
-                            />
-                        </React.Fragment>
-                    )}
-                    {manager && !changeType && (
-                        <React.Fragment>
-                            <h4>2. What type of request is it?</h4>
-                            <MultiToggle
-                                id={'change-type'}
-                                options={Object.values(changeTypes)}
-                                checked={changeType}
-                                onChange={setChangeType}
-                            />
-                        </React.Fragment>
-                    )}
+                    <h4>1. Who are you?</h4>
+                    <p>
+                        <MultiToggle
+                            id={'manager'}
+                            loadingMessage={'loading teams...'}
+                            options={managers}
+                            checked={manager}
+                            onChange={setManager}
+                        />
+                    </p>
+                    <h4>2. What type of request is it?</h4>
+                    <p>
+                        <MultiToggle
+                            id={'change-type'}
+                            options={Object.values(changeTypes)}
+                            checked={changeType}
+                            onChange={setChangeType}
+                        />
+                    </p>
                     {manager && changeType && !playerOut && (
                         <React.Fragment>
                             <h3>3. Who is Leaving the squad?</h3>
                             <div style={{ position: 'relative', zIndex: '2' }}>
+                                Manager:
                                 <Select
                                     defaultValue={defaultLeavingFilter}
                                     placeholder="player filter..."
@@ -145,53 +179,61 @@ const TransfersPage = ({ teamsByManager, managers, isLoading }) => {
                             </div>
                         </React.Fragment>
                     )}
-                    {/* {manager && changeType && playerOut && !playerIn && ( */}
-                    {/*    <React.Fragment> */}
-                    {/*        <h3>4. Who is Joining the squad?</h3> */}
-                    {/*        <div style={{ position: 'relative', zIndex: '2' }}> */}
-                    {/*            <Select */}
-                    {/*                placeholder="player filter..." */}
-                    {/*                options={filterOptions} */}
-                    {/*                isMulti */}
-                    {/*                name={'playersFiltersIn'} */}
-                    {/*                onChange={this.updatePlayerFilter} */}
-                    {/*            /> */}
-                    {/*        </div> */}
-                    {/*        <div style={{ position: 'relative', zIndex: '1' }}> */}
-                    {/*            {playersArray.length > 0 && ( */}
-                    {/*                <Players */}
-                    {/*                    onSelect={this.updatePlayerIn} */}
-                    {/*                    playersArray={filteredPlayers.sortedPlayers} */}
-                    {/*                /> */}
-                    {/*            )} */}
-                    {/*        </div> */}
-                    {/*    </React.Fragment> */}
-                    {/* )} */}
-                    {/* {manager && changeType && playerOut && playerIn && ( */}
-                    {/*    <React.Fragment> */}
-                    {/*        <h3>Any Comments for the banter box?</h3> */}
-                    {/*        <textarea className='transfers-page__comment' onChange={this.updateComment} /> */}
-                    {/*        <h3>Confirm Request</h3> */}
-                    {/*        <GameWeekTransfers */}
-                    {/*            getGameWeekFromDate={gwFromDate} */}
-                    {/*            transfers={[{ */}
-                    {/*                manager, */}
-                    {/*                timestamp: new Date(), */}
-                    {/*                status: 'tbc', */}
-                    {/*                type: changeType, */}
-                    {/*                transferIn: playerIn ? playerIn.name : '', */}
-                    {/*                transferOut: playerOut ? playerOut.name : '', */}
-                    {/*                comment, */}
-                    {/*            }]} */}
-                    {/*            isLoading={false} */}
-                    {/*            Action={( */}
-                    {/*                <Button onClick={this.confirmTransfer} state={buttonState}> */}
-                    {/*                    Confirm {changeType} */}
-                    {/*                </Button> */}
-                    {/*            )} */}
-                    {/*        /> */}
-                    {/*    </React.Fragment> */}
-                    {/* )} */}
+                    {manager && changeType && playerOut && !playerIn && (
+                        <React.Fragment>
+                            <h3>4. Who is Joining the squad?</h3>
+                            <div style={{ position: 'relative', zIndex: '2' }}>
+                                <Select
+                                    placeholder="player filter..."
+                                    options={filterOptions}
+                                    isMulti
+                                    name={'playersFiltersIn'}
+                                    onChange={setPlayerFilter}
+                                />
+                            </div>
+                            <div style={{ position: 'relative', zIndex: '1' }}>
+                                {playersArray.length > 0 && (
+                                    <Players
+                                        onSelect={setPlayerIn}
+                                        playersArray={filteredPlayers.sortedPlayers}
+                                    />
+                                )}
+                            </div>
+                        </React.Fragment>
+                    )}
+                    {manager && changeType && playerOut && playerIn && (
+                        <React.Fragment>
+                            <h3>Any Comments for the banter box?</h3>
+                            <textarea className='transfers-page__comment' onChange={setComment} />
+                            <h3>Confirm Request</h3>
+                            <GameWeekTransfers
+                                // getGameWeekFromDate={gwFromDate}
+                                transfers={[{
+                                    manager,
+                                    timestamp: new Date(),
+                                    status: 'tbc',
+                                    type: changeType,
+                                    transferIn: playerIn ? playerIn.value : '',
+                                    transferOut: playerOut ? playerOut.value : '',
+                                    comment,
+                                }]}
+                                isLoading={false}
+                                Action={(
+                                    <Button onClick={() => confirmTransfer({
+                                        playerIn,
+                                        playerOut,
+                                        changeType,
+                                        manager,
+                                        comment,
+                                        division: divisionKey,
+                                        saveTransfers: () => {},
+                                    })} state={'buttonState'}>
+                                        Confirm {changeType}
+                                    </Button>
+                                )}
+                            />
+                        </React.Fragment>
+                    )}
                 </Modal>
             )}
         </div>
@@ -200,6 +242,7 @@ const TransfersPage = ({ teamsByManager, managers, isLoading }) => {
 
 TransfersPage.propTypes = {
     transfers: PropTypes.array,
+    divisionKey: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     division: PropTypes.string.isRequired,
     gameWeeks: PropTypes.array,
