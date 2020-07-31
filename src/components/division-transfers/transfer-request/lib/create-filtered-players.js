@@ -53,19 +53,6 @@ const createFilteredPlayers = ({
     );
     const playerDisplacements = teamPlayersAndRequests.filter(({ pos }) => playerIn && pos === playerIn.pos);
 
-    console.log({
-        managersPlayers,
-        sortedPlayers,
-        sortedTeam,
-        teamPlayers,
-        nonTeamPlayers,
-        teamPlayersAndRequests,
-        swapOut,
-        swapIn,
-        playerGaps,
-        playerDisplacements,
-    });
-
     return ({
         managersPlayers,
         sortedPlayers,

@@ -8,7 +8,7 @@ import DivisionTransfers from '../components/division-transfers';
 const TransfersPage = ({
     data: {
         currentTeams: { group: currentTeams },
-        currentGameWeek, prevGameWeek, gameWeekMinus2, allManagers,
+        currentGameWeek, prevGameWeek, gameWeekMinus2,
     },
     pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
 }) => {
@@ -17,15 +17,15 @@ const TransfersPage = ({
         [team[0].managerName]: team,
     }), {});
 
-    const managers = allManagers.nodes.map(({ manager }) => manager);
+    const divisionUrl = divisionLabel.toLowerCase().replace(/ /g, '-');
+
     return (
         <Layout>
             <h1>{divisionLabel}: Transfers</h1>
             <DivisionTransfers
                 teamsByManager={teamsByManager}
-                managers={managers}
                 divisionKey={divisionKey}
-                divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
+                divisionUrl={divisionUrl}
                 prevGameWeek={prevGameWeek}
                 gameWeekMinus2={gameWeekMinus2}
                 selectedGameWeek={selectedGameWeek}
@@ -67,11 +67,6 @@ export const query = graphql`
             end
             cup
             notes
-        }
-        allManagers(sort: { fields: division___order }, filter: { divisionKey: { eq: $divisionKey } }) {
-            nodes {
-                manager
-            }
         }
         currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } },

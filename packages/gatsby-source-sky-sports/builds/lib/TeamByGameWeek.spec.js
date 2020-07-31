@@ -27,8 +27,8 @@ describe('TeamByGameWeek', () => {
                 manager: 'Olly',
                 status: 'Y',
                 timestamp: '2018/08/12 18:00:00',
-                transferIn: 'Zarate, Mauro',
-                transferOut: 'Lukaku, Romelu',
+                transferInName: 'Zarate, Mauro',
+                transferOutName: 'Lukaku, Romelu',
                 type: 'Transfer',
             },
         ];
@@ -105,8 +105,8 @@ describe('TeamByGameWeek', () => {
                 },
                 transfers: [{
                     ...transfers[0],
-                    transferOut: 'de Gea, David',
-                    transferIn: 'Hernandez, Javier',
+                    transferOutName: 'de Gea, David',
+                    transferInName: 'Hernandez, Javier',
                 }],
                 draft,
             });
@@ -138,8 +138,8 @@ describe('TeamByGameWeek', () => {
                     transfers: [{
                         ...transfers[0],
                         type: 'Swap',
-                        transferOut: 'Hernandez, Javier',
-                        transferIn: 'de Gea, David',
+                        transferOutName: 'Hernandez, Javier',
+                        transferInName: 'de Gea, David',
                     }],
                     draft,
                 });

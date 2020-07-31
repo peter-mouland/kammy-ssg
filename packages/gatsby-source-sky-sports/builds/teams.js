@@ -1,11 +1,18 @@
 const { TeamSeason } = require('@kammy/data.player-stats/src/team-season');
 
+// const toJson = require('./lib/to-json');
 const { TeamByGameWeek } = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 module.exports = ({
     draft, transfers, gameWeeks, players, managers, createNodeId,
 }) => {
+    // toJson(draft, 'fixtures/draft.json');
+    // toJson(transfers, 'fixtures/transfers.json');
+    // toJson(gameWeeks, 'fixtures/gameWeeks.json');
+    // toJson(players, 'fixtures/players.json');
+    // toJson(managers, 'fixtures/managers.json');
+
     console.log('Build: Teams start');
     const start = new Date();
     // extract the data from the node
@@ -15,9 +22,9 @@ module.exports = ({
     const managerData = managers.map(({ data }) => data);
     const draftData = draft.map(({ data }) => data);
 
-    // filter and set required vard
+    // filter and set required vars
     const validTransfers = transferData.filter((transfer) => transfer.isValid);
-    const getValidManagerTransfers = (manager) => validTransfers.filter((transfer) => transfer.manager === manager);
+    const getValidManagerTransfers = (manager) => validTransfers.filter((transfer) => transfer.managerName === manager);
 
     const draftByManager = draftData.reduce((prev, { manager }) => ({
         ...prev,
@@ -47,17 +54,20 @@ module.exports = ({
         ];
     }, []);
 
-    console.log('Build: Teams end: ', new Date() - start);
-    return allTeamPlayers.map((item, i) => {
+    const teams = allTeamPlayers.map((item, i) => {
         const data = {
             ...item,
             managerName: item.manager,
-            manager___NODE: createNodeId(`managers-${item.manager}`),
-            player___NODE: createNodeId(`players-${item.playerName}`),
         };
+        delete data.manager;
+
         return {
-            resourceId: `teams-${i}-${data.manager}-${data.playerName}`,
-            data,
+            resourceId: `teams-${i}-${data.managerName}-${data.playerName}`,
+            data: {
+                ...data,
+                manager___NODE: createNodeId(`managers-${data.managerName}`),
+                player___NODE: createNodeId(`players-${data.playerName}`),
+            },
             internal: {
                 description: 'Teams',
                 mediaType: mediaTypes.JSON,
@@ -65,4 +75,6 @@ module.exports = ({
             },
         };
     });
+    console.log('Build: Teams end: ', new Date() - start);
+    return teams;
 };

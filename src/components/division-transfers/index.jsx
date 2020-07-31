@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { graphql, useStaticQuery } from 'gatsby';
 import parse from 'date-fns/parse';
 import { useQuery } from 'react-query';
 import { fetchTransfers } from '@kammy/helpers.fetch-spreadsheet';
@@ -15,10 +16,20 @@ const inDateRange = ({ start, end }, comparison) => (
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const GameWeekTransfers = ({
-    divisionUrl, divisionKey, prevGameWeek, gameWeekMinus2, selectedGameWeek, managers, teamsByManager,
+    divisionUrl, divisionKey, prevGameWeek, gameWeekMinus2, selectedGameWeek, teamsByManager,
 }) => {
+    const { allManagers: { nodes: managersArray } } = useStaticQuery(graphql`
+        query managers {
+            allManagers(sort: {fields: division___order}) {
+                nodes {
+                    manager
+                    divisionKey
+                }
+            }
+        }
+    `);
     const { status, data: transfers = [], error } = useQuery(['transfers', divisionKey], fetchr);
-
+    const managers = managersArray.filter(({ divisionKey: div }) => div === divisionKey).map(({ manager }) => manager);
     const limitTransfers = (gw) => transfers
         .filter((transfer) => (inDateRange(gw, transfer.timestamp)))
         .map((transfer) => ({ ...transfer, gameWeek: gw.gameWeek }));
