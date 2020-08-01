@@ -1,3 +1,3 @@
-const { fetchDraft } = require('@kammy/helpers.fetch-spreadsheet');
+const { fetchDraft } = require('@kammy/helpers.spreadsheet');
 
 module.exports = () => fetchDraft('managers');
