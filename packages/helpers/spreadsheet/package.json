@@ -1,7 +1,7 @@
 {
-  "name": "@kammy/helpers.fetch-spreadsheet",
+  "name": "@kammy/helpers.spreadsheet",
   "version": "1.0.0",
-  "description": "Kammy UI Helper: fetch data from google spreadsheets",
+  "description": "Kammy Helper: fetch/save data for google spreadsheets",
   "main": "src/index.js",
   "src": "src/index.js",
   "engines": {

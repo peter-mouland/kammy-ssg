@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { graphql, useStaticQuery } from 'gatsby';
 import parse from 'date-fns/parse';
 import { useQuery } from 'react-query';
-import { fetchTransfers } from '@kammy/helpers.fetch-spreadsheet';
+import { fetchTransfers } from '@kammy/helpers.spreadsheet';
 
 import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';

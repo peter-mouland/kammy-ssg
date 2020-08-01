@@ -1,3 +1,3 @@
-const { fetchSetup } = require('@kammy/helpers.fetch-spreadsheet');
+const { fetchSetup } = require('@kammy/helpers.spreadsheet');
 
 module.exports = () => fetchSetup('GameWeeks');

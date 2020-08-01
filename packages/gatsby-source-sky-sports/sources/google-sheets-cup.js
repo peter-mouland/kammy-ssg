@@ -1,3 +1,3 @@
-const { fetchCup } = require('@kammy/helpers.fetch-spreadsheet');
+const { fetchCup } = require('@kammy/helpers.spreadsheet');
 
 module.exports = () => fetchCup();

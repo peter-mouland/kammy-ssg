@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import { useMutation } from 'react-query';
 import bemHelper from '@kammy/bem';
+import { saveTransfers } from '@kammy/helpers.spreadsheet';
 
 import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
@@ -16,37 +18,37 @@ import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
 
+// todo: update table on mutation (via react-query)
+
 const confirmTransfer = ({
-    playerIn, playerOut, changeType, manager, playerDisplaced, playerGapFiller, comment, division, saveTransfers,
+    playerIn, playerOut, changeType, manager, playerDisplaced, playerGapFiller, comment, division, saveTransfer, reset,
 }) => {
     const baseDetails = {
-        division, manager, status: 'TBC', transferType: changeType,
+        Division: division, Manager: manager, Status: 'TBC', 'Transfer Type': changeType,
     };
     const transfers = [];
     if (playerDisplaced && playerGapFiller) {
         // rearrange transfer to ensure positions match for the spreadsheet
         transfers.push({
             ...baseDetails,
-            transferIn: playerGapFiller.name,
-            transferOut: playerOut.value,
-            comment: `${comment} (note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
+            'Transfer In': playerGapFiller.value,
+            'Transfer Out': playerOut.value,
+            Comment: `${comment} (note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
         });
         transfers.push({
             ...baseDetails,
-            transferIn: playerIn.value,
-            transferOut: playerDisplaced.name,
-            comment: `(note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
+            'Transfer In': playerIn.value,
+            'Transfer Out': playerDisplaced.value,
+            Comment: `(note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
         });
     } else {
         transfers.push({
-            ...baseDetails, transferIn: playerIn.name, transferOut: playerOut.name, comment,
+            ...baseDetails, 'Transfer In': playerIn.value, 'Transfer Out': playerOut.value, Comment: comment,
         });
     }
-    console.log({
-        playerIn, playerOut, changeType, manager, playerDisplaced, playerGapFiller, comment, division, saveTransfers,
-    });
-    saveTransfers(transfers);
-    // initiateRequest(false);
+
+    saveTransfer({ division, data: transfers });
+    reset();
 };
 
 const createFilterOptions = (managers = [], manager) => {
@@ -78,12 +80,22 @@ const TransfersPage = ({
     divisionKey, teamsByManager, managers, isLoading,
 }) => {
     const [initiateRequest, setInitiateRequest] = useState(false);
-    const [comment, setComment] = useState(undefined);
+    const [comment, setComment] = useState('');
     const [manager, setManager] = useState(undefined);
     const [changeType, setChangeType] = useState(undefined);
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
     const [playerFilter, setPlayerFilter] = useState(undefined);
+    const [saveTransfer] = useMutation(saveTransfers);
+
+    const reset = () => {
+        setComment('');
+        setPlayerIn(false);
+        setPlayerOut(false);
+        setPlayerFilter(false);
+        setInitiateRequest(false);
+    }
+
     // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
     const { allPlayers: { nodes: playersArray } } = useStaticQuery(graphql`
         query TransferPlayers {
@@ -226,7 +238,8 @@ const TransfersPage = ({
                                         manager,
                                         comment,
                                         division: divisionKey,
-                                        saveTransfers: () => {},
+                                        saveTransfer,
+                                        reset,
                                     })} state={'buttonState'}>
                                         Confirm {changeType}
                                     </Button>
@@ -252,7 +265,6 @@ TransfersPage.propTypes = {
     teamsByManager: PropTypes.object,
     pendingTransfers: PropTypes.object,
     dateIsInCurrentGameWeek: PropTypes.func.isRequired,
-    saveTransfers: PropTypes.func.isRequired,
     fetchTransfers: PropTypes.func.isRequired,
     gwFromDate: PropTypes.func.isRequired,
     transfersSaving: PropTypes.bool,
