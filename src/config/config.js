@@ -11,11 +11,12 @@ const setConfig = () => {
         NODE_ENV,
         PORT,
         routes,
-        divisionLabels: ['Premier League', 'Championship', 'League One'],
+        divisionLabels: ['Premier League', 'Championship', 'League One', 'League Two'],
         divisionSheets: {
             'Premier League': 'premierLeague',
             Championship: 'championship',
             'League One': 'leagueOne',
+            'League Two': 'leagueTwo',
         },
     };
 

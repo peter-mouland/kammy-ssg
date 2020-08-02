@@ -1,4 +1,6 @@
 const http = require('https');
+// const fs = require('fs');
+// const path = require('path');
 
 const fetch = (URL) => new Promise((resolve, reject) => {
     console.log(`fetch: ${URL}`);
@@ -11,6 +13,8 @@ const fetch = (URL) => new Promise((resolve, reject) => {
         res.on('end', () => {
             try {
                 const json = JSON.parse(data);
+                // todo:  write to disk at end of each season
+                // fs.writeFileSync(path.join(process.cwd(), 'skydata', URL.replace(/\//g, '-')), data, 'utf-8');
                 resolve(json);
             } catch (e) {
                 console.log(URL);
