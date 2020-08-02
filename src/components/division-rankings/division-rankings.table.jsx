@@ -24,7 +24,7 @@ PlaceHolder.propTypes = {
 };
 
 const DivisionRankingsTable = ({
-    points, type, handleRowHover, managers,
+    points, type, handleRowHover, managers, rank,
 }) => (
     <table className={`table ${points.length === 0 && 'table--placeholder'}`}>
         <thead>
@@ -52,16 +52,16 @@ const DivisionRankingsTable = ({
         <tbody>
             {points.length > 0
                 ? points
-                    .sort((managerA, managerB) => managerB.points.total.rank - managerA.points.total.rank)
+                    .sort((managerA, managerB) => managerB.points.total[rank] - managerA.points.total[rank])
                     .map(({ managerName, points: pos }) => (
                         <tr key={managerName} className={'row'} onMouseEnter={() => handleRowHover(managerName)} onMouseLeave={() => handleRowHover(managerName)}>
                             <td className='cell cell--manager'>{managerName}</td>
                             {positions.map((position) => {
-                                const gradient = `gradient_${parseInt(pos[position.key].rank, 10).toString().replace('.', '-')}`;
+                                const gradient = `gradient_${parseInt(pos[position.key][rank], 10).toString().replace('.', '-')}`;
                                 return (
                                     <Fragment key={position.key}>
                                         <td className={`cell cell--${position.key} ${gradient}`}>
-                                            { pos[position.key].rank }
+                                            { pos[position.key][rank] }
                                         </td>
                                         <td className={`cell cell--pair cell--${position.key} ${gradient}`}>
                                             { pos[position.key][type] }
@@ -69,7 +69,7 @@ const DivisionRankingsTable = ({
                                     </Fragment>
                                 );
                             })}
-                            <td className={'cell cell--total'}> { pos.total.rank }</td>
+                            <td className={'cell cell--total'}> { pos.total[rank] }</td>
                             <td className={'cell cell--pair cell--total'}>{ pos.total[type] }</td>
                         </tr>
                     ))
@@ -88,6 +88,7 @@ DivisionRankingsTable.propTypes = {
     points: PropTypes.array,
     managers: PropTypes.array,
     type: PropTypes.oneOf(['seasonPoints', 'gameWeekPoints']).isRequired,
+    rank: PropTypes.oneOf(['rank', 'rankChange']).isRequired,
 };
 
 DivisionRankingsTable.defaultProps = {
