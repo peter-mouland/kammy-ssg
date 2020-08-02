@@ -75,7 +75,7 @@ const DivisionRankingsTable = ({
                     ))
                 : (
                     <Fragment>
-                        {managers.map((managerName) => <PlaceHolder key={managerName} managerName={managerName}/>)}
+                        {managers.map((managerName) => <PlaceHolder key={managerName} manager={managerName}/>)}
                     </Fragment>
                 )
             }

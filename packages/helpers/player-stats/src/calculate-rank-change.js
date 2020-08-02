@@ -2,24 +2,25 @@ module.exports = (rankWeek1, rankWeek2 = {}) => {
     const changeTotal = {};
     const posChange = (
         Object.keys(rankWeek2)
-            .filter((key) => key.toLowerCase() !== 'total')
-            .reduce((prevWeek, pos) => ({
+            .reduce((prevWeek, managerName) => ({
                 ...prevWeek,
-                [pos]: Object.keys(rankWeek2[pos]).reduce((prev, manager) => {
-                    const week2Scores = rankWeek2[pos][manager];
-                    const week1Scores = (rankWeek1 || { [pos]: { [manager]: 0 } })[pos][manager];
-                    const change = week2Scores - week1Scores;
-                    changeTotal[manager] = changeTotal[manager] || 0;
-                    changeTotal[manager] += change;
-                    return ({
-                        ...prev,
-                        [manager]: change,
-                    });
-                }, {}),
+                [managerName]: {
+                    ...Object.keys(rankWeek2[managerName])
+                        .filter((key) => key.toLowerCase() !== 'total')
+                        .reduce((prev, pos) => {
+                            const week2Scores = rankWeek2[managerName][pos];
+                            const week1Scores = (rankWeek1 || { [managerName]: { [pos]: 0 } })[managerName][pos];
+                            const change = week2Scores - week1Scores;
+                            changeTotal[managerName] = changeTotal[managerName] || 0;
+                            changeTotal[managerName] += change;
+                            return ({
+                                ...prev,
+                                [pos]: change,
+                            });
+                        }, {}),
+                    total: changeTotal[managerName],
+                },
             }), {})
     );
-    return {
-        ...posChange,
-        total: changeTotal,
-    };
+    return posChange;
 };
