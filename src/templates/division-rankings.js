@@ -39,36 +39,43 @@ export const query = graphql`
             gameWeekPoints
             seasonPoints
             rank
+            rankChange
           }
           cb {
             gameWeekPoints
             seasonPoints
             rank
+            rankChange
           }
           fb {
             seasonPoints
             gameWeekPoints
             rank
+            rankChange
           }
           gks {
             gameWeekPoints
             seasonPoints
             rank
+            rankChange
           }
           str {
             gameWeekPoints
             seasonPoints
             rank
+            rankChange
           }
           total {
             gameWeekPoints
             seasonPoints
             rank
+            rankChange
           }
           mid {
             gameWeekPoints
             seasonPoints
             rank
+            rankChange
           }
         }
         managerName
