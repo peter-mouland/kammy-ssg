@@ -4,6 +4,7 @@ const CONCURRENCY = 25; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 
 const URL = process.env.NODE_ENV === 'development'
     ? 'https://fantasyfootball.skysports.com/cache/json_players.json'
     : 'https://kammy-proxy.herokuapp.com/skysports/players';
+// ? 'http://localhost:8888/.netlify/functions/sky-sports-players'
 
 const getPlayerUrl = (code) => (process.env.NODE_ENV === 'development'
     ? `https://fantasyfootball.skysports.com/cache/json_player_stats_${code}.json`

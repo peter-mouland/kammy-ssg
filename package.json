@@ -1,23 +1,25 @@
 {
-  "name": "kammy-data",
+  "name": "kammy-ssg",
   "version": "0.1.0",
-  "description": "Data components + lambdas Kammy using lerna",
+  "description": "UI components + lambdas Kammy using lerna",
   "private": true,
   "publishConfig": {
     "access": "public"
   },
   "author": "peter.mouland@gmail.com",
   "license": "ISC",
-  "homepage": "https://github.com/peter-mouland/kammy-data#readme",
+  "homepage": "https://github.com/peter-mouland/kammy-ssg#readme",
   "engines": {
     "node": ">=12.0.0",
     "npm": ">=6.0.0",
     "yarn": ">=1.9.0"
   },
   "bugs": {
-    "url": "https://github.com/peter-mouland/kammy-data/issues"
+    "url": "https://github.com/peter-mouland/kammy-ssg/issues"
   },
   "scripts": {
+    "--- NETLIFY ---": "",
+    "dev": "netlify dev",
     "--- GATSBY ---": "",
     "start": "yarn clean:dist && gatsby develop",
     "start:static": "cd docs; ws --spa index.html",
@@ -36,10 +38,7 @@
     "lerna": "lerna",
     "--- testing ---": "",
     "test": "jest --config=jest.config.js",
-    "lint": "eslint . --ext=js,jsx",
-    "--- LAMBDA ---": "",
-    "lambdas:build": "lambda-build",
-    "lambdas:deploy": "lambda-deploy"
+    "lint": "eslint . --ext=js,jsx"
   },
   "workspaces": [
     "packages/helpers/*",
@@ -88,6 +87,7 @@
     "jest": "26.2.2",
     "jest-junit": "11.1.0",
     "jest-enzyme": "7.1.2",
-    "lerna": "3.22.1"
+    "lerna": "3.22.1",
+    "netlify-cli": "2.59.0"
   }
 }

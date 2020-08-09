@@ -20,3 +20,6 @@ aws
 .cache
 /junit.xml
 /.env.development
+
+# Local Netlify folder
+.netlify

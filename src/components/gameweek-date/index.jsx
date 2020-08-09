@@ -5,16 +5,50 @@ import format from 'date-fns/format';
 import Cup from './trophy.svg';
 import './GameWeekDate.scss';
 
+const getDates = ({ start, end }) => {
+    try {
+        const startMonth = format(start, 'MMM');
+        const endMonth = format(end, 'MMM');
+        const startTime = format(start, 'HH:mm');
+        const endTime = format(end, 'HH:mm');
+        const startDay = format(start, 'Do');
+        const endDay = format(end, 'Do');
+
+        return {
+            startMonth,
+            endMonth,
+            startTime,
+            endTime,
+            startDay,
+            endDay,
+        };
+    } catch (e) {
+        console.error(e);
+        console.error({ start, end });
+        return {
+            startMonth: '',
+            endMonth: '',
+            startTime: '',
+            endTime: '',
+            startDay: '',
+            endDay: '',
+        };
+    }
+};
+
 const Index = ({
     gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd,
 }) => {
     const { start, end, cup } = gameWeek;
-    const startMonth = format(start, 'MMM');
-    const endMonth = format(end, 'MMM');
-    const startTime = format(start, 'HH:mm');
-    const endTime = format(end, 'HH:mm');
-    const startDay = format(start, 'Do');
-    const endDay = format(end, 'Do');
+
+    const {
+        startMonth,
+        endMonth,
+        startTime,
+        endTime,
+        startDay,
+        endDay,
+    } = getDates({ start, end });
     return (
         <div className={'formatted-gameweek-container'}>
             {label && <div>{label}</div>}
