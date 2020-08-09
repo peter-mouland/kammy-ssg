@@ -1,13 +1,12 @@
 const fetch = require('node-fetch');
 
 exports.handler = async function skySportsScores(event, context) {
-    const headers = {
-        Accept: 'application/json',
-    };
-
     try {
         const response = await fetch('https://fantasyfootball.skysports.com/cache/json_players.json', {
-            headers,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
         });
         if (!response.ok) {
             // NOT res.status >= 200 && res.status < 300

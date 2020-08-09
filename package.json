@@ -26,7 +26,7 @@
     "serve": "gatsby serve",
     "start:preview": "yarn clean:dist && CI=true gatsby develop -p ${NOMAD_PORT_HTTP} --host 0.0.0.0",
     "playground": "GATSBY_GRAPHQL_IDE=playground gatsby develop",
-    "build": "yarn clean:dist && CI=${CI} gatsby build",
+    "build": "GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES=true gatsby build --log-pages",
     "build:prod": "yarn clean:dist && NODE_ENV=production gatsby build --prefix-paths && mv ./public ./docs",
     "--- util ---": "",
     "clean": "yarn clean:dist && yarn clean:yarn && lerna clean --yes && yarn clean:npm",
