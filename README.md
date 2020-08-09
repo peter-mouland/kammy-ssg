@@ -2,11 +2,12 @@
 
  > Static Site Generator for Kammy Draft Fantasy Football
 
-Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gatsbyjs.com/dashboard) to generate the build, which is hosted on [draftff.netlify.com](http://draftff.netlify.com/)
+Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gatsbyjs.com/dashboard) to generate the build, which is hosted on [netlify](https://app.netlify.com/teams/peter-mouland/sites) and visible at [draftff.netlify.com](http://draftff.netlify.com/)
 
 ## Local Dev
 
  - `yarn start`
+ - or `yarn dev` (wip: using netlify)
 
 ## Data Sources
 
