@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
             </main>
             <footer className={bem('footer')}>
                 <div className={bem('footer-content')}>
-                    Hosted at <a href="http://github.com/peter-mouland/kammy-ui">github.com/peter-mouland/kammy-ui</a>
+                    Hosted at <a href="http://github.com/peter-mouland/kammy-ssg">github.com/peter-mouland/kammy-ui</a>
                 </div>
             </footer>
         </div>
