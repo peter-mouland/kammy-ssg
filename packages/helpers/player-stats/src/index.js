@@ -1,7 +1,7 @@
 const jsonQuery = require('json-query');
-const isBefore = require('date-fns/is_before');
-const isAfter = require('date-fns/is_after');
-const isEqual = require('date-fns/is_equal');
+const isBefore = require('date-fns/isBefore');
+const isAfter = require('date-fns/isAfter');
+const isEqual = require('date-fns/isEqual');
 
 const extractFFStats = require('./extract-ff-stats');
 const { calculateTotalPoints } = require('./calculatePoints');

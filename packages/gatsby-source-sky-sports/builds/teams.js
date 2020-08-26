@@ -37,6 +37,9 @@ module.exports = ({
     }), {});
 
     const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
+        if (!draftByManager[manager]) {
+            console.log(`Manager Mismatch: ${manager}`);
+        }
         const teamByGameWeek = new TeamByGameWeek({
             draft: draftByManager[manager],
             transfers: getValidManagerTransfers(manager),

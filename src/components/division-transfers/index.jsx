@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { graphql, useStaticQuery } from 'gatsby';
-import parse from 'date-fns/parse';
+import parseISO from 'date-fns/parseISO';
 import { useQuery } from 'react-query';
 import { fetchTransfers } from '@kammy/helpers.spreadsheet';
 
@@ -10,7 +10,7 @@ import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 
 const inDateRange = ({ start, end }, comparison) => (
-    parse(comparison) < parse(end) && parse(comparison) > parse(start)
+    parseISO(comparison) < parseISO(end) && parseISO(comparison) > parseISO(start)
 );
 
 const fetchr = (key, division = 0) => fetchTransfers(division);

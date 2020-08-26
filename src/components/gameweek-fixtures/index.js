@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
-import parse from 'date-fns/parse';
+import parseISO from 'date-fns/toDate';
 
 import './game-week-fixtures.scss';
 
 const bem = bemHelper({ block: 'club-fixtures' });
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const toDate = (string = '') => ((!string) ? string : parse(string));
+const toDate = (string = '') => ((!string) ? string : parseISO(string));
 
 const GameWeekFixtures = ({ fixtures }) => {
     let previousFullDate = '';

@@ -1,6 +1,6 @@
-const parse = require('date-fns/parse');
+const parseISO = require('date-fns/parseISO');
 
 module.exports = (string = '') => {
     if (!string) return string;
-    return parse(string);
+    return parseISO(string);
 };

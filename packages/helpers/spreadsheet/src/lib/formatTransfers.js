@@ -1,4 +1,4 @@
-const parse = require('date-fns/parse');
+const parseISO = require('date-fns/parseISO');
 
 const formatTimeStamp = (timestamp = '') => {
     const dateTimeArray = timestamp.split(' ');
@@ -7,7 +7,7 @@ const formatTimeStamp = (timestamp = '') => {
     const month = dateArray[1];
     const day = dateArray[0];
     const time = dateTimeArray[1];
-    return parse(`${year}/${month}/${day} ${time}`);
+    return parseISO(`${year}/${month}/${day} ${time}`);
 };
 
 const formatTransfers = (data = [], division) => {
