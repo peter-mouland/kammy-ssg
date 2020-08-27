@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
+import parseISO from 'date-fns/parseISO';
 
 import Cup from './trophy.svg';
 import './GameWeekDate.scss';
 
 const getDates = ({ start, end }) => {
     try {
-        const startMonth = format(start, 'MMM');
-        const endMonth = format(end, 'MMM');
-        const startTime = format(start, 'HH:mm');
-        const endTime = format(end, 'HH:mm');
-        const startDay = format(start, 'Do');
-        const endDay = format(end, 'Do');
+        const startMonth = format(parseISO(start), 'MMM');
+        const endMonth = format(parseISO(end), 'MMM');
+        const startTime = format(parseISO(start), 'HH:mm');
+        const endTime = format(parseISO(end), 'HH:mm');
+        const startDay = format(parseISO(start), 'Do');
+        const endDay = format(parseISO(end), 'Do');
 
         return {
             startMonth,

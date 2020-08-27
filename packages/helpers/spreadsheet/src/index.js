@@ -2,9 +2,11 @@ const fetchr = require('./fetch');
 const { spreadsheets } = require('./constants');
 const formatTransfers = require('./lib/formatTransfers');
 
+// const PROXY_HOST = 'http://localhost:3000';
+const PROXY_HOST = 'http://kammy-proxy.herokuapp.com';
+
 const kammyProxy = async (division, data) => {
-    const response = await fetch(`http://kammy-proxy.herokuapp.com/spreadsheets/transfers/${division}`, {
-    // const response = await fetch(`http://localhost:3000/spreadsheets/transfers/${division}`, {
+    const response = await fetch(`${PROXY_HOST}/spreadsheets/transfers/${division}`, {
         headers: {
             'Content-Type': 'application/json',
         },

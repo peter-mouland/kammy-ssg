@@ -2,6 +2,7 @@ const jsonQuery = require('json-query');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
+const parseISO = require('date-fns/parseISO');
 
 const extractFFStats = require('./extract-ff-stats');
 const { calculateTotalPoints } = require('./calculatePoints');
@@ -33,14 +34,17 @@ const totalUpStats = (fixtures) => (
 
 // exposrted for tests
 const getGameWeekFixtures = (player, gameWeeks) => (
-    jsonQuery('fixtures[*status!=PENDING][*:date]', {
+    // todo: don't include PENDING in production!
+    jsonQuery('fixtures[*:date]', { // [*status!=PENDING]
         data: player,
         locals: {
             date(item) {
-                const fixtureDate = item.date;
+                const fixtureDate = parseISO(item.date);
                 return gameWeeks.reduce((prev, gameWeek) => {
-                    const beforeEnd = isBefore(fixtureDate, gameWeek.end) || isEqual(fixtureDate, gameWeek.end);
-                    const afterStart = isAfter(fixtureDate, gameWeek.start) || isEqual(fixtureDate, gameWeek.start);
+                    const gameweekEnd = parseISO(gameWeek.end);
+                    const gameweekStart = parseISO(gameWeek.start);
+                    const beforeEnd = isBefore(fixtureDate, gameweekEnd) || isEqual(fixtureDate, gameweekEnd);
+                    const afterStart = isAfter(fixtureDate, gameweekStart) || isEqual(fixtureDate, gameweekStart);
                     return (
                         prev || (afterStart && beforeEnd)
                     );
@@ -62,6 +66,9 @@ const playerStats = ({ player, gameWeeks }) => {
         points: calculateTotalPoints({ stats, pos: player.pos }).total,
     };
     const fixtures = player.fixtures.map((fixture) => addPointsToFixtures(fixture, player.pos));
+    if (!fixtures || !fixtures.length) {
+        console.log(`PLAYER NOT FOUND: ${player.name}`)
+    }
     return {
         ...player, fixtures, gameWeekFixtures, gameWeekStats,
     };

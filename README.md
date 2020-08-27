@@ -13,3 +13,6 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 
  - Fetches data via the [rest v4 API](https://developers.google.com/sheets/api)
  - Saving data via [kammy-proxy project](http://github.com/peter-mouland/kammy-proxy)
+
+## Todo:
+ - filter out PENDING: packages/helpers/player-stats/src/index.js

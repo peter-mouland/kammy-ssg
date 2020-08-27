@@ -4,7 +4,14 @@ import format from 'date-fns/format';
 
 import Interstitial from '../../interstitial';
 
-const formatTimestamp = (ts) => format(ts, 'MMM Do, HH:mm:ss');
+const formatTimestamp = (ts) => {
+    try {
+        return format(ts, 'MMM Do, HH:mm:ss');
+    } catch (e) {
+        console.log(ts);
+        return 'unknown date';
+    }
+};
 
 const getEmoji = (status = '') => {
     switch (status.toLowerCase()) {

@@ -2,7 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 
-const formatTimestamp = (ts) => format(ts, 'MMM Do, HH:mm:ss');
+const formatTimestamp = (ts) => {
+    try {
+        return format(ts, 'MMM Do, HH:mm:ss');
+    } catch (e) {
+        console.log(ts)
+        return 'unknown date';
+    }
+};
+
 const Interstitial = <div>loading</div>;
 
 const getEmoji = (status = '') => {

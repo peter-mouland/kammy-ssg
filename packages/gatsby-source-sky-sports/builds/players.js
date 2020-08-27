@@ -10,10 +10,14 @@ const calculateSeasonStats = (gameWeeksWithFixtures) => (
         }), {})
     ), {})
 );
+const notFound = new Set();
 
 const getGameWeeksWithFixtures = ({ player, gameWeeks }) => (
     gameWeeks.map((gw) => {
         const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeeks: [gw] });
+        if (!gameWeekFixtures || !gameWeekFixtures.length) {
+            notFound.add(gw);
+        }
         return { fixtures: gameWeekFixtures, stats: gameWeekStats };
     })
 );
@@ -76,7 +80,8 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
         }, {});
 
     console.log('Build: Players end: ', new Date() - start);
-
+    console.log(...notFound);
+    console.log(`GameWeeks without Fixtures: ${notFound.size}`);
     return Object.values(mergedPlayers).map((player) => ({
         resourceId: `players-${player.name}`,
         data: player,
