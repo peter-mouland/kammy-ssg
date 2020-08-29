@@ -31,6 +31,7 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
  - fix teams page 'position timeline'
  - fix 'sticky' headers. ffs.
  - remove 'popup' with 'drawer'
+ - move from BEM to css-modules
  - standard game-week switcher (pills) vs game-week calendar
  - filter out PENDING: packages/helpers/player-stats/src/index.js
  - add `--local` flag and read from fixtures dir
