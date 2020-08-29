@@ -16,3 +16,5 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 
 ## Todo:
  - filter out PENDING: packages/helpers/player-stats/src/index.js
+ - add `--local` flag and read from fixtures dir
+ - use MSW for unit/integration testing

@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
-import parseISO from 'date-fns/toDate';
 
 import './game-week-fixtures.scss';
 
 const bem = bemHelper({ block: 'club-fixtures' });
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const toDate = (string = '') => ((!string) ? string : parseISO(string));
+const toDate = (string = '') => ((!string) ? string : new Date(string));
 
 const GameWeekFixtures = ({ fixtures }) => {
     let previousFullDate = '';
@@ -17,7 +16,7 @@ const GameWeekFixtures = ({ fixtures }) => {
                 fixtures && fixtures.map((fixture) => {
                     const date = toDate(fixture.date);
                     const fullDate = `${date.getFullYear()} ${months[date.getMonth()]} ${date.getDate()}`;
-                    const dateStr = fullDate === previousFullDate ? null : <h2>{fullDate}</h2>;
+                    const dateStr = fullDate === previousFullDate ? null : <h2 title={fixture.date}>{fullDate}</h2>;
                     const { aScore } = fixture;
                     const { hScore } = fixture;
                     const aScoreClass = bem();

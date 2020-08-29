@@ -12,8 +12,8 @@ const getDates = ({ start, end }) => {
         const endMonth = format(parseISO(end), 'MMM');
         const startTime = format(parseISO(start), 'HH:mm');
         const endTime = format(parseISO(end), 'HH:mm');
-        const startDay = format(parseISO(start), 'Do');
-        const endDay = format(parseISO(end), 'Do');
+        const startDay = format(parseISO(start), 'd');
+        const endDay = format(parseISO(end), 'd');
 
         return {
             startMonth,
