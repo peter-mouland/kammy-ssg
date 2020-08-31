@@ -1,4 +1,4 @@
-// `gatsby build` expects this file to be named .env.production sinse it always set to process.env=production internally
+// `gatsby build` expects this file to be named .env.production since it always set to process.env=production internally
 // https://github.com/gatsbyjs/gatsby/issues/10563
 require('dotenv').config({
     path: `.env.${process.env.NODE_ENV}`,
@@ -23,6 +23,10 @@ module.exports = {
     },
     plugins: [
         {
+            resolve: 'gatsby-plugin-react-css-modules',
+        },
+        {
+
             resolve: 'gatsby-plugin-sass',
             options: {
                 includePaths: ['node_modules'],

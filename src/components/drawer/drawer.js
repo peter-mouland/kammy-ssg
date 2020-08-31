@@ -4,7 +4,7 @@ import cx from 'classnames';
 
 import Icon from '../icons/cross.svg';
 import Portal from '../portal';
-import styles from './drawer.css';
+import styles from './drawer.module.css';
 import { placements, themes } from './constants';
 import useFocusTrap from './useFocusTrap';
 import useUpdateHeight from './useUpdateHeight';
@@ -25,7 +25,8 @@ const Drawer = ({
     theme,
     closeIconTitle,
 }) => {
-    const drawerClass = cx(styles.component, {
+    console.log({theme, s: styles[`isTheme${theme}`]})
+    const drawerClass = cx(styles.component, styles[`isTheme${theme}`], {
         [styles.isRight]: placement === placements.RIGHT,
         [styles.isBottom]: placement === placements.BOTTOM,
         [styles.isLeft]: placement === placements.LEFT,

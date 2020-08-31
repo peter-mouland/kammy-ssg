@@ -6,6 +6,13 @@
     visibility: hidden;
     overflow-y: auto;
 
+    &.isThemeLIGHT {
+         background-color: var(--rnb-colour-white);
+     }
+
+    &.isThemeDARK {
+         background-color: var(--rnb-colour-midnight);
+     }
     &.isOpen {
         visibility: visible;
     }
@@ -67,11 +74,11 @@
     top: var(--rnb-spacing-medium);
     z-index: 1;
 
-    &.isThemeLight {
+    &.isThemeLIGHT {
         color: var(--rnb-colour-midnight);
     }
 
-    &.isThemeDark {
+    &.isThemeDARK {
         color: var(--rnb-colour-white);
     }
 }

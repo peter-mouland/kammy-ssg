@@ -13,31 +13,6 @@ export const STATE = {
 };
 
 class ProgressButton extends React.Component {
-  static propTypes = {
-    classNamespace: PropTypes.string,
-    controlled: PropTypes.bool,
-    durationError: PropTypes.number,
-    durationSuccess: PropTypes.number,
-    form: PropTypes.string,
-    onClick: PropTypes.func,
-    onError: PropTypes.func,
-    onSuccess: PropTypes.func,
-    state: PropTypes.oneOf(Object.keys(STATE).map((k) => STATE[k])),
-    type: PropTypes.string,
-    shouldAllowClickOnLoading: PropTypes.bool,
-  }
-
-  static defaultProps = {
-    classNamespace: 'pb-',
-    controlled: false,
-    durationError: 1200,
-    durationSuccess: 500,
-    onClick() {},
-    onError() {},
-    onSuccess() {},
-    shouldAllowClickOnLoading: false,
-  }
-
   state = {
     currentState: this.props.state || STATE.NOTHING,
   }
@@ -177,4 +152,28 @@ class ProgressButton extends React.Component {
   }
 }
 
+ProgressButton.propTypes = {
+    classNamespace: PropTypes.string,
+    controlled: PropTypes.bool,
+    durationError: PropTypes.number,
+    durationSuccess: PropTypes.number,
+    form: PropTypes.string,
+    onClick: PropTypes.func,
+    onError: PropTypes.func,
+    onSuccess: PropTypes.func,
+    state: PropTypes.oneOf(Object.keys(STATE).map((k) => STATE[k])),
+    type: PropTypes.string,
+    shouldAllowClickOnLoading: PropTypes.bool,
+}
+
+ProgressButton.defaultProps = {
+    classNamespace: 'pb-',
+    controlled: false,
+    durationError: 1200,
+    durationSuccess: 500,
+    onClick() {},
+    onError() {},
+    onSuccess() {},
+    shouldAllowClickOnLoading: false,
+}
 export default ProgressButton;

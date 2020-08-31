@@ -17,6 +17,8 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 ## Todo:
  - improve transfer page
      - fix transfer comment box
+     - put transfer flow into an accordion
+        - put player filter/search into a drawer
      - fix manager-name filter
      - update time on transfer page in real-time
      - closing transfer box should clear selected players

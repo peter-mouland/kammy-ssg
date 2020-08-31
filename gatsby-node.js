@@ -6,14 +6,28 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const { tokens } = require('@kammy/tokens');
+const postcssPreset = require('postcss-preset-env');
+const postcssHexrgba = require('postcss-hexrgba');
+
+const addCssPrefix = (cssObj) => Object.keys(cssObj).reduce((prev, bp) => ({ ...prev, [`--${bp}`]: cssObj[bp] }), {});
 
 require('dotenv').config({
     path: '.env.production',
     debug: process.env.DEBUG,
 });
 
+const overrideBrowserslist = [
+    'last 2 Chrome versions',
+    'last 2 Firefox versions',
+    'last 2 Edge versions',
+    'safari >= 12',
+    'ios_saf >= 12',
+    'Android >= 9',
+];
+
 // eslint-disable-next-line no-unused-vars
-exports.onCreateWebpackConfig = ({ actions }) => {
+exports.onCreateWebpackConfig = ({ actions, loaders }) => {
     actions.setWebpackConfig({
         resolve: {
             // added to ensure `yarn link package` works
@@ -27,6 +41,45 @@ exports.onCreateWebpackConfig = ({ actions }) => {
                 'process.env.RELEASE': JSON.stringify(new Date().toISOString()),
             }),
         ],
+        module: {
+            rules: [
+                {
+                    test: /\.css$/,
+                    use: [
+                        loaders.postcss({
+                            plugins: [
+                                postcssPreset({
+                                    stage: 0, // enable custom-media-queries
+                                    preserve: false,
+                                    features: {
+                                        'focus-within-pseudo-class': false,
+                                        'custom-properties':
+                                        Object.keys(tokens.properties).length > 0
+                                            ? {
+                                                preserve: false, // true: keep css-properties in the css output
+                                            }
+                                            : false,
+                                        'custom-media-queries':
+                                        Object.keys(tokens.mediaQueries).length > 0
+                                            ? {
+                                                preserve: false,
+                                            }
+                                            : false,
+                                    },
+                                    overrideBrowserslist,
+                                    autoprefixer: { grid: true },
+                                    importFrom: {
+                                        customProperties: addCssPrefix(tokens.properties),
+                                        customMedia: addCssPrefix(tokens.mediaQueries),
+                                    },
+                                }),
+                                postcssHexrgba,
+                            ],
+                        }),
+                    ],
+                },
+            ],
+        },
     });
 };
 

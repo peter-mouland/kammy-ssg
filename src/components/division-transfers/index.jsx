@@ -1,10 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, useStaticQuery } from 'gatsby';
 import parseISO from 'date-fns/parseISO';
 import { useQuery } from 'react-query';
 import { fetchTransfers } from '@kammy/helpers.spreadsheet';
 
+import Spacer from '../spacer';
 import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
@@ -39,22 +40,30 @@ const GameWeekTransfers = ({
     if (status === 'error') return <div>Error: {error.message}</div>;
 
     return (
-        <Fragment>
-            <h2>Transfer Requests</h2>
-            <div style={{ position: 'relative', zIndex: 2 }}>
-                <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/transfers`} />
-            </div>
-            <TransfersTable
-                isLoading={isLoading}
-                transfers={showTransfers}
-            />
-            <TransferRequest
-                divisionKey={divisionKey}
-                teamsByManager={teamsByManager}
-                isLoading={isLoading}
-                managers={managers}
-            />
-        </Fragment>
+        <div data-b-layout="container">
+            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                <h2>Transfer Requests</h2>
+            </Spacer>
+            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                    <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/transfers`} />
+                </div>
+            </Spacer>
+            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                <TransfersTable
+                    isLoading={isLoading}
+                    transfers={showTransfers}
+                />
+            </Spacer>
+            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                <TransferRequest
+                    divisionKey={divisionKey}
+                    teamsByManager={teamsByManager}
+                    isLoading={isLoading}
+                    managers={managers}
+                />
+            </Spacer>
+        </div>
     );
 };
 

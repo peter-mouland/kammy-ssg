@@ -1,0 +1,11 @@
+{
+  "name": "@kammy/tokens",
+  "version": "4.5.0",
+  "description": "Design system token values.",
+  "main": "src/index.js",
+  "src": "src/index.js",
+  "license": "UNLICENSED",
+  "files": [
+    "src/"
+  ]
+}

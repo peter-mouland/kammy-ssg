@@ -1,0 +1,50 @@
+:root {
+    --max-width: 80rem;
+}
+
+.component {
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-left: var(--rnb-spacing-medium);
+    padding-right: var(--rnb-spacing-medium);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: var(--rnb-spacing-medium);
+}
+
+@media (--rnb-mq-small) {
+    .component {
+        padding-left: var(--rnb-spacing-large);
+        padding-right: var(--rnb-spacing-large);
+    }
+}
+
+@media (--rnb-mq-phablet) {
+    .component {
+        padding-left: var(--rnb-spacing-big);
+        padding-right: var(--rnb-spacing-big);
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+@media (--rnb-mq-large) {
+    .component {
+        padding-left: var(--rnb-spacing-super);
+        padding-right: var(--rnb-spacing-super);
+        grid-template-columns: repeat(12, 1fr);
+    }
+}
+
+@media (--rnb-mq-huge) {
+    .component {
+        padding: 0;
+    }
+}
+
+.fullWidth {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: none;
+}

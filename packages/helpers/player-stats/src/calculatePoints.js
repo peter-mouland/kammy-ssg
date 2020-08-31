@@ -26,8 +26,8 @@ function forAssists(assists) { // assist = 3 points
     return assists * 3;
 }
 
-function forYellowCards(yc) { // -2
-    return parseInt(yc * -2, 10);
+function forYellowCards(yc) { // -1
+    return parseInt(yc * -1, 10);
 }
 
 function forRedCards(rc) { // -5
@@ -57,7 +57,7 @@ function forConceded(conceded, position) { // -1
 function forTackleBonus(bonusPoints, position) { // 3
     let multiplier;
     if (position === 'MID') {
-        multiplier = 4;
+        multiplier = 5;
     } else if (position === 'FB' || position === 'CB') {
         multiplier = 3;
     } else {
@@ -73,11 +73,15 @@ function forPenaltiesSaved(ps) {
 function forSaveBonus(bonusPoints, position) { // 3
     let multiplier;
     if (position === 'GK') {
-        multiplier = 4;
+        multiplier = 2;
     } else {
         multiplier = 0;
     }
     return parseInt(bonusPoints * multiplier, 10);
+}
+
+function forPassBonus(bonusPoints, position) { // 3
+    return (position === 'MID' && bonusPoints > 0) ? 1 : 0;
 }
 
 function calculateTotalPoints({ stats, pos }) {
@@ -92,8 +96,9 @@ function calculateTotalPoints({ stats, pos }) {
     const rcard = forRedCards(stats.rcard, pos);
     const tb = forTackleBonus(stats.tb, pos);
     const sb = forSaveBonus(stats.sb, pos);
+    const pb = forPassBonus(0, pos);
     const points = {
-        apps, subs, gls, asts, cs, con, pensv, ycard, rcard, tb, sb,
+        apps, subs, gls, asts, cs, con, pensv, ycard, rcard, tb, sb, pb,
     };
     const total = (Object.keys(points)).reduce((prev, curr) => prev + points[curr], 0);
     return { ...points, total };
@@ -111,5 +116,6 @@ module.exports = {
     forTackleBonus,
     forPenaltiesSaved,
     forSaveBonus,
+    forPassBonus,
     calculateTotalPoints,
 };

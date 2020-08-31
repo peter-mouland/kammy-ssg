@@ -1,0 +1,15 @@
+.component {
+    border-top: var(--rnb-border-width-thin) solid var(--rnb-colour-midnight-tint-16);
+    margin: 0 var(--rnb-spacing-tiny);
+    padding: var(--rnb-spacing-tiny) 0;
+
+    @media (--rnb-mq-small) {
+        margin: 0 var(--rnb-spacing-small);
+        padding: var(--rnb-spacing-small) 0;
+    }
+
+    @media (--rnb-mq-phablet) {
+        margin: 0 var(--rnb-spacing-medium);
+        padding: var(--rnb-spacing-medium) 0;
+    }
+}

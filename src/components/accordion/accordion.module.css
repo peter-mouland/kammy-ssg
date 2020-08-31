@@ -1,0 +1,92 @@
+.component {
+    border-radius: var(--rnb-border-radius-medium);
+
+    &.isTypePrimary {
+        background-color: var(--rnb-colour-white);
+    }
+
+    &.isTypeSecondary {
+        background-color: var(--rnb-colour-midnight-tint-4);
+    }
+}
+
+.accordionToggle {
+    text-align: left;
+    width: 100%;
+    padding: var(--rnb-spacing-small) var(--rnb-spacing-tiny);
+    outline: none;
+
+    @media (--rnb-mq-small) {
+        padding: var(--rnb-spacing-small);
+    }
+
+    @media (--rnb-mq-phablet) {
+        padding: var(--rnb-spacing-small) var(--rnb-spacing-medium);
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.isDisabled:hover {
+    cursor: default;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.leftSection {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+}
+
+.icon,
+.title,
+.description {
+    margin-right: var(--rnb-spacing-tiny);
+}
+
+.title {
+    color: var(--rnb-colour-midnight);
+}
+
+.description {
+    color: var(--rnb-colour-midnight-tint-64);
+
+    a {
+        font-weight: var(--rnb-font-weight-bold);
+    }
+}
+
+.chevron,
+.icon {
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    width: 24px;
+
+    & > svg {
+        stroke: currentColor;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.chevron svg {
+    stroke: currentColor;
+    transition: transform var(--rnb-timing-fast) ease-in-out;
+}
+
+.isExpanded svg {
+    transform: rotate(-180deg);
+}

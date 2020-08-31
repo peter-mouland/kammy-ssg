@@ -6,15 +6,17 @@ import { useMutation } from 'react-query';
 import bemHelper from '@kammy/bem';
 import { saveTransfers } from '@kammy/helpers.spreadsheet';
 
+import Drawer from '../../drawer';
 import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
-import Modal from '../../modal';
+import Accordion from '../../accordion';
 import Players from './components/Players';
 import GameWeekTransfers from './components/game-week-transfers';
 import { changeTypes } from './lib/consts';
 import createFilteredPlayers from './lib/create-filtered-players';
 
 import './transferPage.scss';
+import Spacer from '../../spacer';
 
 const bem = bemHelper({ block: 'transfers-page' });
 
@@ -76,9 +78,44 @@ const createFilterOptions = (managers = [], manager) => {
     ];
 };
 
+const Search = ({
+    managers, manager, onSelect, onFilter, playersArray, filteredPlayers,
+}) => {
+    const filterOptions = createFilterOptions(managers, manager);
+    const defaultLeavingFilter = null; // filterOptions[1].options.filter((option) => option.value === manager);
+    return (
+        <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.SMALL }}>
+            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                <h3>Manager Search:</h3>
+            </Spacer>
+            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                <div style={{ position: 'relative', zIndex: '2' }}>
+                    <Select
+                        defaultValue={defaultLeavingFilter}
+                        placeholder="player filter..."
+                        options={filterOptions}
+                        isMulti
+                        name={'playersFiltersOut'}
+                        onChange={onFilter}
+                    />
+                </div>
+            </Spacer>
+            <div style={{ position: 'relative', zIndex: '1' }}>
+                {playersArray.length > 0 && (
+                    <Players
+                        onSelect={onSelect}
+                        playersArray={filteredPlayers.sortedPlayers}
+                    />
+                )}
+            </div>
+        </Spacer>
+    );
+};
+
 const TransfersPage = ({
     divisionKey, teamsByManager, managers, isLoading,
 }) => {
+    const [DrawerContent, setDrawerContent] = useState(undefined);
     const [initiateRequest, setInitiateRequest] = useState(false);
     const [comment, setComment] = useState('');
     const [manager, setManager] = useState(undefined);
@@ -88,13 +125,22 @@ const TransfersPage = ({
     const [playerFilter, setPlayerFilter] = useState(undefined);
     const [saveTransfer] = useMutation(saveTransfers);
 
+    const setPlayerOutAndClose = (player) => {
+        setDrawerContent(undefined);
+        setPlayerOut(player);
+    };
+    const setPlayerInAndClose = (player) => {
+        setDrawerContent(undefined);
+        setPlayerIn(player);
+    };
+
     const reset = () => {
         setComment('');
         setPlayerIn(false);
         setPlayerOut(false);
         setPlayerFilter(false);
         setInitiateRequest(false);
-    }
+    };
 
     // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
     const { allPlayers: { nodes: playersArray } } = useStaticQuery(graphql`
@@ -125,9 +171,6 @@ const TransfersPage = ({
         }
     `);
 
-    const defaultLeavingFilter = null; // filterOptions[1].options.filter((option) => option.value === manager);
-    const filterOptions = createFilterOptions(managers, manager);
-
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter || [],
         // pendingTransfers: pendingTransfers[manager], // todo
@@ -137,89 +180,101 @@ const TransfersPage = ({
         playerIn,
         playerOut,
     });
-
     return (
-        <div className={bem(null, null, 'page-content')} data-b-layout="container">
-            <button onClick={() => setInitiateRequest(true)} disabled={isLoading}>Create Request</button>
-            {initiateRequest && (
-                <Modal
-                    id={'new-transfer-request'}
-                    title={'New Transfer Request'}
-                    open={true}
-                    onClose={() => setInitiateRequest(false)}
-                >
-                    <h4>1. Who are you?</h4>
-                    <p>
-                        <MultiToggle
-                            id={'manager'}
-                            loadingMessage={'loading teams...'}
-                            options={managers}
-                            checked={manager}
-                            onChange={setManager}
-                        />
-                    </p>
-                    <h4>2. What type of request is it?</h4>
-                    <p>
-                        <MultiToggle
-                            id={'change-type'}
-                            options={Object.values(changeTypes)}
-                            checked={changeType}
-                            onChange={setChangeType}
-                        />
-                    </p>
-                    {manager && changeType && !playerOut && (
-                        <React.Fragment>
+        <div className={bem(null, null, 'page-content')} >
+            <Drawer
+                isCloseable
+                hasBackdrop
+                onClose={() => setDrawerContent(undefined)}
+                isOpen={!!DrawerContent}
+                placement={Drawer.placements.RIGHT}
+                theme={Drawer.themes.LIGHT}
+            >
+                {DrawerContent}
+            </Drawer>
+            <Accordion title={'Create Request'} description={'Initiate a Transfer, Loan, Swap or Trade'}>
+                <Accordion.Content>
+                    <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                        <h4>1. Who are you?</h4>
+                    </Spacer>
+                    <MultiToggle
+                        id={'manager'}
+                        loadingMessage={'loading teams...'}
+                        options={managers}
+                        checked={manager}
+                        onChange={setManager}
+                    />
+                </Accordion.Content>
+                <Accordion.Content>
+                    <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                        <h4>2. What type of request is it?</h4>
+                    </Spacer>
+                    <MultiToggle
+                        id={'change-type'}
+                        options={Object.values(changeTypes)}
+                        checked={changeType}
+                        onChange={setChangeType}
+                    />
+                </Accordion.Content>
+
+                {manager && changeType && (
+                    <Accordion.Content>
+                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                             <h3>3. Who is Leaving the squad?</h3>
-                            <div style={{ position: 'relative', zIndex: '2' }}>
-                                Manager:
-                                <Select
-                                    defaultValue={defaultLeavingFilter}
-                                    placeholder="player filter..."
-                                    options={filterOptions}
-                                    isMulti
-                                    name={'playersFiltersOut'}
-                                    onChange={setPlayerFilter}
-                                />
-                            </div>
-                            <div style={{ position: 'relative', zIndex: '1' }}>
-                                {playersArray.length > 0 && (
-                                    <Players
-                                        onSelect={setPlayerOut}
-                                        playersArray={filteredPlayers.sortedPlayers}
-                                    />
-                                )}
-                            </div>
-                        </React.Fragment>
-                    )}
-                    {manager && changeType && playerOut && !playerIn && (
-                        <React.Fragment>
+                        </Spacer>
+                        <div>
+                            {playerOut && playerOut.label}
+                        </div>
+                        <button onClick={() => setDrawerContent(
+                            <Search
+                                filteredPlayers={filteredPlayers}
+                                manager={manager}
+                                managers={managers}
+                                playersArray={playersArray}
+                                onFilter={setPlayerFilter}
+                                onSelect={setPlayerOutAndClose}
+                            />,
+                        )
+                        }>Pick</button>
+                    </Accordion.Content>
+                )}
+
+                {manager && changeType && playerOut && (
+                    <Accordion.Content>
+                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                             <h3>4. Who is Joining the squad?</h3>
-                            <div style={{ position: 'relative', zIndex: '2' }}>
-                                <Select
-                                    placeholder="player filter..."
-                                    options={filterOptions}
-                                    isMulti
-                                    name={'playersFiltersIn'}
-                                    onChange={setPlayerFilter}
-                                />
-                            </div>
-                            <div style={{ position: 'relative', zIndex: '1' }}>
-                                {playersArray.length > 0 && (
-                                    <Players
-                                        onSelect={setPlayerIn}
-                                        playersArray={filteredPlayers.sortedPlayers}
-                                    />
-                                )}
-                            </div>
-                        </React.Fragment>
-                    )}
-                    {manager && changeType && playerOut && playerIn && (
-                        <React.Fragment>
-                            <h3>Any Comments for the banter box?</h3>
+                        </Spacer>
+                        <div>
+                            {playerIn && playerIn.label}
+                        </div>
+                        <button onClick={() => setDrawerContent(
+                            <Search
+                                filteredPlayers={filteredPlayers}
+                                manager={manager}
+                                managers={managers}
+                                playersArray={playersArray}
+                                onFilter={setPlayerFilter}
+                                onSelect={setPlayerInAndClose}
+                            />,
+                        )
+                        }>Pick</button>
+                    </Accordion.Content>
+                )}
+
+                {manager && changeType && playerOut && playerIn && (
+                    <React.Fragment>
+                        <Accordion.Content>
+                            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                                <h3>Any Comments for the banter box?</h3>
+                            </Spacer>
                             <textarea className='transfers-page__comment' onChange={setComment} />
-                            <h3>Confirm Request</h3>
+                        </Accordion.Content>
+                        <Accordion.Content>
+                            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                                <h3>Confirm Request</h3>
+                            </Spacer>
                             <GameWeekTransfers
-                                // getGameWeekFromDate={gwFromDate}
+                            // getGameWeekFromDate={gwFromDate}
                                 transfers={[{
                                     manager,
                                     timestamp: new Date(),
@@ -245,10 +300,10 @@ const TransfersPage = ({
                                     </Button>
                                 )}
                             />
-                        </React.Fragment>
-                    )}
-                </Modal>
-            )}
+                        </Accordion.Content>
+                    </React.Fragment>
+                )}
+            </Accordion>
         </div>
     );
 };
