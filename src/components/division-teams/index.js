@@ -8,6 +8,7 @@ import Table from './DivisionStats.table';
 import Modal from '../modal';
 import PositionTimeline from './components/PositionTimeline.table';
 import PlayerTimeline from './components/PlayerTimeline.table';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'division-stats' });
 
@@ -18,7 +19,9 @@ const DivisionStats = ({
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     return (
         <section id="teams-page" className={bem()} data-b-layout="container">
-            <h1>{label}</h1>
+            <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                <h1>{label}</h1>
+            </Spacer>
             <div data-b-layout="vpad">
                 <GameWeekSwitcher
                     url={`/${divisionUrl}/teams`}

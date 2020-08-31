@@ -13,7 +13,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, d
     return (
         <Layout>
             <DivisionRankings
-                label={`${divisionLabel}: Table`}
+                label={`${divisionLabel}: League Table`}
                 divisionId={divisionKey}
                 divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
                 stats={leagueStats}

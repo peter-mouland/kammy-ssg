@@ -7,6 +7,7 @@ import FormattedGameWeekDate from '../gameweek-date';
 import './gameweek-switcher.scss';
 import './multi-toggle.scss';
 import ContextualHelp from '../contextual-help';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'game-week-switcher' });
 const bemToggle = bemHelper({ block: 'multi-toggle' });
@@ -40,7 +41,9 @@ const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
     }
     return (
         <section id="gameweek-switcher" className={bem()}>
-            GameWeek:
+            <Spacer tag={'span'} all={{ right: Spacer.spacings.MEDIUM }}>
+                GameWeek:
+            </Spacer>
             {options.map(({ gameWeek, isCurrent }) => (
                 <Link key={gameWeek} to={`/week-${gameWeek}${url}`} className={''}>
                     <ContextualHelp

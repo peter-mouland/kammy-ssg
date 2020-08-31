@@ -21,9 +21,9 @@ const TransfersPage = ({
 
     return (
         <Layout>
-            <h1>{divisionLabel}: Transfers</h1>
             <DivisionTransfers
                 teamsByManager={teamsByManager}
+                divisionLabel={divisionLabel}
                 divisionKey={divisionKey}
                 divisionUrl={divisionUrl}
                 prevGameWeek={prevGameWeek}

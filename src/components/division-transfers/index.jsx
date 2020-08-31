@@ -17,7 +17,7 @@ const inDateRange = ({ start, end }, comparison) => (
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const GameWeekTransfers = ({
-    divisionUrl, divisionKey, prevGameWeek, gameWeekMinus2, selectedGameWeek, teamsByManager,
+    divisionUrl, divisionLabel, divisionKey, prevGameWeek, gameWeekMinus2, selectedGameWeek, teamsByManager,
 }) => {
     const { allManagers: { nodes: managersArray } } = useStaticQuery(graphql`
         query managers {
@@ -41,8 +41,8 @@ const GameWeekTransfers = ({
 
     return (
         <div data-b-layout="container">
-            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <h2>Transfer Requests</h2>
+            <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                <h1>{divisionLabel}: Transfer Requests</h1>
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <div style={{ position: 'relative', zIndex: 2 }}>
@@ -70,6 +70,7 @@ const GameWeekTransfers = ({
 GameWeekTransfers.propTypes = {
     divisionUrl: PropTypes.string,
     divisionKey: PropTypes.string,
+    divisionLabel: PropTypes.string,
     prevGameWeek: PropTypes.object,
     gameWeekMinus2: PropTypes.object,
     selectedGameWeek: PropTypes.number,

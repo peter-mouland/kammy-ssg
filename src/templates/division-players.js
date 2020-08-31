@@ -5,6 +5,7 @@ import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
 import Layout from '../components/layout';
+import Spacer from '../components/spacer';
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
@@ -21,8 +22,10 @@ const PlayersPage = ({ data, pageContext: { divisionLabel } }) => {
     }), {});
     return (
         <Layout>
-            <section id="players-page" className={bemTable()}>
-                <h1>{divisionLabel}: Players</h1>
+            <section id="players-page" className={bemTable()} data-b-layout="container">
+                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                    <h1>{divisionLabel}: Players</h1>
+                </Spacer>
                 <div className="page-content">
                     <PlayersFilters
                         players={players}

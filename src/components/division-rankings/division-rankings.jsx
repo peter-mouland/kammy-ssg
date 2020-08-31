@@ -7,6 +7,7 @@ import ErrorBoundary from '../error-boundary';
 import Chart from '../divisions-ranking-chart';
 
 import Table from './division-rankings.table';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'division-stats' });
 
@@ -27,7 +28,9 @@ class DivisionRankings extends React.Component {
 
       return (
           <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
-              <h1>{label}</h1>
+              <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                  <h1>{label}</h1>
+              </Spacer>
               {
                   showGameWeekSwitcher && (
                       <div style={{ position: 'relative', zIndex: 2 }}>
@@ -39,7 +42,13 @@ class DivisionRankings extends React.Component {
                   <div style={{ position: 'relative', zIndex: 1 }}>
                       {showStandings && (
                           <Fragment>
-                              {showWeekly && <h2 data-b-layout="v-space">Overall Standings</h2>}
+                              {showWeekly && (
+                                  <h2 data-b-layout="v-space">
+                                      <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                                          Overall Standings
+                                      </Spacer>
+                                  </h2>
+                              )}
                               <div data-b-layout="row vpad">
                                   <Table
                                       managers={Object.keys(managers)}
@@ -54,7 +63,13 @@ class DivisionRankings extends React.Component {
                       {showWeekly && (
                           <Fragment>
                               <div data-b-layout="row vpad">
-                                  {showStandings && <h2>Weekly Scores</h2>}
+                                  {showStandings && (
+                                      <h2>
+                                          <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                                              Weekly Scores
+                                          </Spacer>
+                                      </h2>
+                                  )}
                                   <Table
                                       managers={Object.keys(managers)}
                                       points={stats}
