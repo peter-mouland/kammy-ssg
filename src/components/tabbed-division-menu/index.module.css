@@ -49,6 +49,9 @@
     &.isActive {
          background: lightgrey;
      }
+    &:hover {
+         text-decoration: none;
+     }
 
     &:hover:not(.isActive) {
          color: black;
