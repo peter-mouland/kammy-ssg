@@ -25,7 +25,6 @@ const Drawer = ({
     theme,
     closeIconTitle,
 }) => {
-    console.log({ theme, s: styles[`isTheme${theme}`] });
     const drawerClass = cx(styles.component, styles[`isTheme${theme}`], {
         [styles.isRight]: placement === placements.RIGHT,
         [styles.isBottom]: placement === placements.BOTTOM,

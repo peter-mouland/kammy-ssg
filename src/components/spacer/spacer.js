@@ -44,7 +44,6 @@ const getClassNames = (breakpoints) => breakpoints.reduce(
             const classNameModifiers = snakeToCamel([marginType, marginSize, bpIndex > 0 ? breakpoint : ''].filter(Boolean).join('-'));
             // do not add @all when it is for all screen sizes
             const className = bpIndex > 0 ? `${classNameModifiers}${breakpoint}` : classNameModifiers;
-            console.log({className, classNameModifiers, s: styles[className]})
             return {
                 ...prevSize,
                 [styles[classNameModifiers]]: !!styles[classNameModifiers],
@@ -53,8 +52,6 @@ const getClassNames = (breakpoints) => breakpoints.reduce(
     }),
     {},
 );
-
-console.log(styles)
 
 const Spacer = ({
     children, tag: Tag, all, small, phablet, medium, large, huge, dataId, className, ...props
