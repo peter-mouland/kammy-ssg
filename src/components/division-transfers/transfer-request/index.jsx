@@ -192,7 +192,11 @@ const TransfersPage = ({
             >
                 {DrawerContent}
             </Drawer>
-            <Accordion title={'Create Request'} description={'Initiate a Transfer, Loan, Swap or Trade'}>
+            <Accordion
+                title={'Create Request'}
+                description={'Initiate a Transfer, Loan, Swap or Trade'}
+                type={Accordion.types.SECONDARY}
+            >
                 <Accordion.Content>
                     <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                         <h4>1. Who are you?</h4>
