@@ -24,10 +24,7 @@ const TransfersPage = ({
     return (
         <Layout>
             <div data-b-layout="container">
-                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-                    <h1>{divisionLabel}: Transfers</h1>
-                </Spacer>
-                <TabbedMenu selected="transfers" division={divisionKey} />
+                <TabbedMenu selected="transfers" division={divisionKey} label={divisionLabel} />
             </div>
             <DivisionTransfers
                 teamsByManager={teamsByManager}

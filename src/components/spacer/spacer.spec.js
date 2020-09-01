@@ -15,9 +15,9 @@ describe('<Space />', () => {
     });
 
     describe('className:', () => {
-        it('doesnt add any given class', () => {
+        it('does add any given class', () => {
             const { wrapper } = render({ props: { className: 'test' } });
-            expect(wrapper.find('div')).not.toHaveClassName('test');
+            expect(wrapper.find('div')).toHaveClassName('test');
         });
     });
 

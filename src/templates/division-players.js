@@ -24,10 +24,7 @@ const PlayersPage = ({ data, pageContext: { divisionLabel, divisionKey } }) => {
     return (
         <Layout>
             <section id="players-page" className={bemTable()} data-b-layout="container">
-                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-                    <h1>{divisionLabel}: Players</h1>
-                </Spacer>
-                <TabbedMenu selected="players" division={divisionKey} />
+                <TabbedMenu selected="players" division={divisionKey} label={divisionLabel} />
                 <div className="page-content">
                     <PlayersFilters
                         players={players}

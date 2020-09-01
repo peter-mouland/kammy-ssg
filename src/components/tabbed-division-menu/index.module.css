@@ -1,3 +1,13 @@
+.container {
+    display: block;
+    align-items: center;
+}
+@media (--rnb-mq-phablet) {
+    .container {
+        display: flex;
+    }
+}
+
 .tabs {
     display: flex;
     flex-direction: row;
@@ -5,15 +15,18 @@
 
 .tab {
     display: flex;
-    align-items: center;
-    flex-direction: column;
     text-align: center;
+    font-size: 0.8em;
 }
 
-@media only screen and (min-width: 650px) {
+@media (--rnb-mq-medium) {
     .tab {
-        flex-direction: row;
         text-align: left;
+
+        &.isActive {
+            background: transparent;
+            color: black;
+         }
     }
 }
 
@@ -26,6 +39,24 @@
     fill: white;
 }
 
-.label {
+.cta {
     display: inline-block;
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px;
+    color: #444;
+
+    &.isActive {
+         background: lightgrey;
+     }
+
+    &:hover:not(.isActive) {
+         color: black;
+        background: #eee;
+     }
+}
+@media (--rnb-mq-medium) {
+    .cta {
+        display: flex;
+    }
 }

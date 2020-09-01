@@ -25,10 +25,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
     return (
         <Layout>
             <div data-b-layout="container">
-                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-                    <h1>{divisionLabel}: Teams</h1>
-                </Spacer>
-                <TabbedMenu selected="teams" division={divisionKey} />
+                <TabbedMenu selected="teams" division={divisionKey} label={divisionLabel} />
             </div>
             <DivisionTeams
                 label={`${divisionLabel}: Teams`}
