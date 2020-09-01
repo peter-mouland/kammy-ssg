@@ -6,7 +6,7 @@ const formatTimestamp = (ts) => {
     try {
         return format(ts, 'MMM Do, HH:mm:ss');
     } catch (e) {
-        console.log(ts)
+        console.log(ts);
         return 'unknown date';
     }
 };
@@ -29,7 +29,7 @@ const TransferBody = ({ getGameWeekFromDate, transfers, Action }) => {
             {transfers.map(({
                 timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment,
             }) => {
-                const gw = 1//timestamp && typeof getGameWeekFromDate === 'function' ? getGameWeekFromDate(timestamp) : '';
+                const gw = 1;// timestamp && typeof getGameWeekFromDate === 'function' ? getGameWeekFromDate(timestamp) : '';
                 return (
                     <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>
                         <td data-col-label='status' className={'cell cell--status cell--show-750 cell--center'} dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }} />

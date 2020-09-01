@@ -7,6 +7,6 @@ const storeData = (data, dir) => {
     } catch (err) {
         console.error(err);
     }
-}
+};
 
 module.exports = storeData;

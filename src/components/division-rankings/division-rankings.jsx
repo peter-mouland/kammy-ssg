@@ -28,9 +28,6 @@ class DivisionRankings extends React.Component {
 
       return (
           <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
-              <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-                  <h1>{label}</h1>
-              </Spacer>
               {
                   showGameWeekSwitcher && (
                       <div style={{ position: 'relative', zIndex: 2 }}>

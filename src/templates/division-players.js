@@ -6,6 +6,7 @@ import bemHelper from '@kammy/bem';
 import { PlayersFilters, PlayersTable } from '../components/players-table';
 import Layout from '../components/layout';
 import Spacer from '../components/spacer';
+import TabbedMenu from '../components/tabbed-division-menu';
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
@@ -14,7 +15,7 @@ const visibleStats = [
     'points', 'apps', 'subs', 'gls', 'asts', 'cs', 'con', 'pensv', 'sb', 'tb', 'ycard', 'rcard',
 ];
 
-const PlayersPage = ({ data, pageContext: { divisionLabel } }) => {
+const PlayersPage = ({ data, pageContext: { divisionLabel, divisionKey } }) => {
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce((prev, player) => ({
         ...prev,
@@ -26,6 +27,7 @@ const PlayersPage = ({ data, pageContext: { divisionLabel } }) => {
                 <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
                     <h1>{divisionLabel}: Players</h1>
                 </Spacer>
+                <TabbedMenu selected="players" division={divisionKey} />
                 <div className="page-content">
                     <PlayersFilters
                         players={players}

@@ -38,7 +38,7 @@ describe('Accordion component', () => {
         expect(wrapper).toHaveProp('data-id', 'some-test-id');
     });
 
-    it("shouldn't render with tertiary title value when no tertiary title is provided", () => {
+    it('shouldn\'t render with tertiary title value when no tertiary title is provided', () => {
         const description = '';
         const wrapper = shallow(<Accordion {...props} description={description} />);
         expect(wrapper.find(Text.Body2)).toHaveLength(0);

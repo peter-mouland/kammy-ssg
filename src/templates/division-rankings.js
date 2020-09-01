@@ -4,6 +4,8 @@ import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
 import DivisionRankings from '../components/division-rankings';
+import TabbedMenu from '../components/tabbed-division-menu';
+import Spacer from '../components/spacer';
 
 const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, divisionLabel } }) => {
     const {
@@ -12,6 +14,12 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, d
 
     return (
         <Layout>
+            <div data-b-layout="container">
+                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                    <h1>{divisionLabel}: League Table</h1>
+                </Spacer>
+                <TabbedMenu selected="rankings" division={divisionKey} />
+            </div>
             <DivisionRankings
                 label={`${divisionLabel}: League Table`}
                 divisionId={divisionKey}

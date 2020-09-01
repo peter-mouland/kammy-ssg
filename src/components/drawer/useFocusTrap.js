@@ -2,32 +2,33 @@ import { useEffect, useState, useCallback } from 'react';
 
 // eslint-disable-next-line
 // Based off https://github.com/medialize/ally.js/blob/987c12c64c00d79a9c2c64cd20ed42e08425473b/src/selector/focusable.js
-const FOCUSABLE_SELECTOR =
-    '' +
+const FOCUSABLE_SELECTOR = ''
     // Namespace problems of [xlink:href] explained in https://stackoverflow.com/a/23047888/515124
     // svg a[*|href] does not match in IE9, but since we're filtering
     // through is/focusable we can include all <a> from SVG
-    'svg a,' +
+    + 'svg a,'
     // may behave as 'svg, svg *,' in chrome as *every* svg element with a focus event listener is focusable
     // navigational elements
-    'a[href],' +
+    + 'a[href],'
     // validity determined by is/valid-area.js
-    'area[href],' +
+    + 'area[href],'
     // validity determined by is/disabled.js
-    'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]),' +
+    + 'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]),'
     // browsing context containers
-    'iframe, object, embed,' +
+    + 'iframe, object, embed,'
     // interactive content
-    'keygen,' +
-    'audio, audio[controls],' +
-    'video, video[controls],' +
-    'summary,' +
+    + 'keygen,'
+    + 'audio, audio[controls],'
+    + 'video, video[controls],'
+    + 'summary,'
     // just grab first one
-    '[tabindex],' +
+    + '[tabindex],'
     // editing hosts
-    '[contenteditable]';
+    + '[contenteditable]';
 
-function useFocusTrap({ hasBackdrop, isBackdropShown, isOpen, containerRef, onKeyDown, rootId = 'root' }) {
+function useFocusTrap({
+    hasBackdrop, isBackdropShown, isOpen, containerRef, onKeyDown, rootId = 'root',
+}) {
     const [focusableElements, setFocusableElements] = useState([]);
 
     useEffect(() => {

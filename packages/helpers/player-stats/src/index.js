@@ -67,7 +67,7 @@ const playerStats = ({ player, gameWeeks }) => {
     };
     const fixtures = player.fixtures.map((fixture) => addPointsToFixtures(fixture, player.pos));
     if (!fixtures || !fixtures.length) {
-        console.log(`PLAYER NOT FOUND: ${player.name}`)
+        console.log(`PLAYER NOT FOUND: ${player.name}`);
     }
     return {
         ...player, fixtures, gameWeekFixtures, gameWeekStats,

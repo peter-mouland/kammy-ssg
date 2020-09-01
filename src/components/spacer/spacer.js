@@ -26,12 +26,13 @@ const marginTypes = {
     bottom: PropTypes.string,
     left: PropTypes.string,
     stack: PropTypes.string,
+    stackH: PropTypes.string,
 };
 const snakeToCamel = (str) => str.replace(
     /([-_][a-z])/g,
     (group) => group.toUpperCase()
         .replace('-', '')
-        .replace('_', '')
+        .replace('_', ''),
 );
 // todo: use selector to cache results?
 const getClassNames = (breakpoints) => breakpoints.reduce(
@@ -53,12 +54,12 @@ const getClassNames = (breakpoints) => breakpoints.reduce(
 );
 
 const Spacer = ({
-    children, tag: Tag, all, small, phablet, medium, large, huge, dataId, ...props
+    children, tag: Tag, all, small, phablet, medium, large, huge, dataId, className, ...props
 }) => {
     const breakpointsWithAllShorthand = [all, small, phablet, medium, large, huge];
     const classNames = getClassNames(breakpointsWithAllShorthand);
     return (
-        <Tag {...props} className={cx(classNames)} data-id={dataId}>
+        <Tag {...props} className={cx(className, classNames)} data-id={dataId}>
             {children}
         </Tag>
     );
@@ -69,6 +70,7 @@ Spacer.propTypes = {
     children: PropTypes.node,
     tag: PropTypes.string,
     dataId: PropTypes.string,
+    className: PropTypes.string,
     all: PropTypes.shape(marginTypes),
     small: PropTypes.shape(marginTypes),
     phablet: PropTypes.shape(marginTypes),

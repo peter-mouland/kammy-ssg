@@ -38,7 +38,7 @@ describe('build teams', () => {
             managers: managersFixtures,
             createNodeId: jest.fn(),
         });
-        console.log(result)
+        console.log(result);
         // expect(result).toStrictEqual([]);
     });
 });

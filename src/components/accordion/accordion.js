@@ -9,7 +9,9 @@ import AccordionContent from './components/accordion-content';
 
 const toKebabCase = (value) => value.toLowerCase().replace(/ /g, '-');
 
-const Accordion = ({ title, description, icon, children, type, dataId, isDisabled, onToggle, isInitialExpanded }) => {
+const Accordion = ({
+    title, description, icon, children, type, dataId, isDisabled, onToggle, isInitialExpanded,
+}) => {
     const [isExpanded, setIsExpanded] = useState(isInitialExpanded);
     const formattedAriaTitle = toKebabCase(title);
     const Icon = icon;

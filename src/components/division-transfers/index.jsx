@@ -41,9 +41,6 @@ const GameWeekTransfers = ({
 
     return (
         <div data-b-layout="container">
-            <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-                <h1>{divisionLabel}: Transfer Requests</h1>
-            </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <div style={{ position: 'relative', zIndex: 2 }}>
                     <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/transfers`} />

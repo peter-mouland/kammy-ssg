@@ -19,9 +19,6 @@ const DivisionStats = ({
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     return (
         <section id="teams-page" className={bem()} data-b-layout="container">
-            <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-                <h1>{label}</h1>
-            </Spacer>
             <div data-b-layout="vpad">
                 <GameWeekSwitcher
                     url={`/${divisionUrl}/teams`}

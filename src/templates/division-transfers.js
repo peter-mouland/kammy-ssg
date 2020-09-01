@@ -4,6 +4,8 @@ import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
 import DivisionTransfers from '../components/division-transfers';
+import TabbedMenu from '../components/tabbed-division-menu';
+import Spacer from '../components/spacer';
 
 const TransfersPage = ({
     data: {
@@ -21,6 +23,12 @@ const TransfersPage = ({
 
     return (
         <Layout>
+            <div data-b-layout="container">
+                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                    <h1>{divisionLabel}: Transfers</h1>
+                </Spacer>
+                <TabbedMenu selected="transfers" division={divisionKey} />
+            </div>
             <DivisionTransfers
                 teamsByManager={teamsByManager}
                 divisionLabel={divisionLabel}

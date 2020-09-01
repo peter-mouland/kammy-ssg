@@ -38,4 +38,4 @@ module.exports = ({ googleTransferData, createNodeId }) => {
         });
     console.log('Build: Transfers end: ', new Date() - start);
     return transfers;
-}
+};

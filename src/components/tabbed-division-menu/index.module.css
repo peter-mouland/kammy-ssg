@@ -1,0 +1,31 @@
+.tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+@media only screen and (min-width: 650px) {
+    .tab {
+        flex-direction: row;
+        text-align: left;
+    }
+}
+
+.iconContainer {
+    display: inline-block;
+    max-width: 32px;
+
+}
+.iconContainer svg {
+    fill: white;
+}
+
+.label {
+    display: inline-block;
+}

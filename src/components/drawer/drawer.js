@@ -25,7 +25,7 @@ const Drawer = ({
     theme,
     closeIconTitle,
 }) => {
-    console.log({theme, s: styles[`isTheme${theme}`]})
+    console.log({ theme, s: styles[`isTheme${theme}`] });
     const drawerClass = cx(styles.component, styles[`isTheme${theme}`], {
         [styles.isRight]: placement === placements.RIGHT,
         [styles.isBottom]: placement === placements.BOTTOM,
@@ -47,7 +47,9 @@ const Drawer = ({
         [onClose],
     );
 
-    const keyHandler = useFocusTrap({ hasBackdrop, isBackdropShown, isOpen, containerRef, onKeyDown: handleEscape });
+    const keyHandler = useFocusTrap({
+        hasBackdrop, isBackdropShown, isOpen, containerRef, onKeyDown: handleEscape,
+    });
     const { height } = useUpdateHeight();
 
     return (

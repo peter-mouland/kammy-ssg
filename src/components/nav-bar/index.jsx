@@ -8,6 +8,7 @@ import NamedLink from '../named-link';
 import NavItem from './components/nav-item';
 
 import './nav-bar.scss';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'nav' });
 const linkClass = bem('link');
@@ -40,15 +41,11 @@ const Index = () => (
             </NavItem>
             {
                 appConfig.divisionLabels.map((division) => (
-                    <div key={division} className={linkClass}>
-                        <NavItem label={division} openOnClick>
-                            <NamedLink to={`${appConfig.divisionSheets[division]}-rankings`} className={linkClass} />
-                            <NamedLink to={`${appConfig.divisionSheets[division]}-teams`} className={linkClass} />
-                            <NamedLink to={`${appConfig.divisionSheets[division]}-players`} className={linkClass} />
-                            <NamedLink to={`${appConfig.divisionSheets[division]}-transfers`} className={linkClass} />
-                            <NamedLink to={`${appConfig.divisionSheets[division]}-draft`} className={linkClass} />
-                        </NavItem>
-                    </div>
+                    <Spacer key={division} all={{ horizontal: Spacer.spacings.SMALL }} tag={'span'}>
+                        <div className={linkClass}>
+                            <NamedLink to={`${appConfig.divisionSheets[division]}-rankings`}>{division}</NamedLink>
+                        </div>
+                    </Spacer>
                 ))
             }
             {/* <AdminLinks cookies={cookies} /> */}

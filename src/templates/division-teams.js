@@ -4,8 +4,10 @@ import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
 import DivisionTeams from '../components/division-teams';
+import TabbedMenu from '../components/tabbed-division-menu';
+import Spacer from '../components/spacer';
 
-const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel } }) => {
+const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey } }) => {
     const {
         currentTeams: { group: currentTeams },
         previousTeams: { group: previousTeams },
@@ -22,6 +24,12 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel 
 
     return (
         <Layout>
+            <div data-b-layout="container">
+                <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
+                    <h1>{divisionLabel}: Teams</h1>
+                </Spacer>
+                <TabbedMenu selected="teams" division={divisionKey} />
+            </div>
             <DivisionTeams
                 label={`${divisionLabel}: Teams`}
                 divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
