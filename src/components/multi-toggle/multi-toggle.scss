@@ -4,6 +4,7 @@
 .multi-toggle {
   display: flex;
   align-items: center;
+  font-size: 0.8em;
 
   @media only screen and (min-width: 650px) {
     display: flex;
@@ -21,12 +22,17 @@
   &__group {
     display: flex;
     position: relative;
-    border: 1px solid currentcolor;
     color: $brand--dark;
     border-radius: .4em;
-    background: $sdarken;
     flex-wrap: wrap;
     flex: 1;
+      flex-direction: column;
+      align-items: flex-end;
+      width: 100%;
+
+      @media only screen and (min-width: 512px) {
+          flex-direction: row;
+      }
   }
 
   &__option {
@@ -35,8 +41,14 @@
     height: 100%;
     line-height: 1.5em;
     flex: 1 1 auto;
-    padding: 2px 0;
+      border-radius: 5px;
+      margin: 4px;
+      min-width: 100px;
+      //box-shadow: 0px 2px #1635;
 
+      @media only screen and (min-width: 512px) {
+        min-width: auto;
+      }
     input[type='radio'] {
       position: absolute;
       appearance: none;
@@ -54,6 +66,7 @@
         &:checked + .contextual-help label {
           background-color: $brand--dark;
           color: $white;
+            box-shadow: none;
         }
 
         &:active + label,
@@ -81,7 +94,7 @@
     font-style: italic;
     text-align: center;
     transition: transform .3s  cubic-bezier(.175, .885, .32, 1.275), color .3s, background-color .3s;
-    border-radius: .6em;
+    border-radius: 5px;
     padding: 0 8px;
 
     &:hover {

@@ -8,10 +8,9 @@
     &.isTypeSecondary {
         background-color: var(--rnb-colour-midnight-tint-4);
     }
-
-     button {
-         background: transparent;
-     }
+}
+.component button {
+    background: transparent ;
 }
 
 .accordionToggle {

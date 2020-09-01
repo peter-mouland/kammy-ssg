@@ -39,37 +39,28 @@ const tabs = [
     },
 ];
 
-const Index = ({ division, label: title, selected }) => (
-    <Spacer all={{ bottom: Spacer.spacings.MEDIUM, top: Spacer.spacings.LARGE }}>
-        <div className={styles.container}>
-            <Spacer
-                all={{ right: Spacer.spacings.MEDIUM, bottom: Spacer.spacings.MEDIUM }}
-                phablet={{ bottom: Spacer.spacings.TINY }}
-            >
-                <h1>{title}</h1>
-            </Spacer>
-            <Spacer tag={'ul'} all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
-                {tabs.map(({ id, label, Icon }) => (
-                    <li key={id} className={cx(styles.tab)}>
-                        <NamedLink
-                            to={`${division}-${id}`}
-                            className={cx(styles.cta, { [styles.isActive]: id === selected })}
-                        >
-                            <Spacer medium={{ right: Spacer.spacings.SMALL }}>
-                                <div className={styles.iconContainer}><Icon width="26px" height="26px" /></div>
-                            </Spacer>
-                            {label}
-                        </NamedLink>
-                    </li>
-                ))}
-            </Spacer>
-        </div>
-    </Spacer>
+const Index = ({ division, selected }) => (
+    <div className={styles.container}>
+        <Spacer tag={'ul'} all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
+            {tabs.map(({ id, label, Icon }) => (
+                <li key={id} className={cx(styles.tab)}>
+                    <NamedLink
+                        to={`${division}-${id}`}
+                        className={cx(styles.cta, { [styles.isActive]: id === selected })}
+                    >
+                        <Spacer medium={{ right: Spacer.spacings.SMALL }}>
+                            <div className={styles.iconContainer}><Icon width="26px" height="26px" /></div>
+                        </Spacer>
+                        {label}
+                    </NamedLink>
+                </li>
+            ))}
+        </Spacer>
+    </div>
 );
 
 Index.propTypes = {
     division: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
     selected: PropTypes.string.isRequired,
 };
 

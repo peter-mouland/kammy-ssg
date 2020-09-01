@@ -1,0 +1,41 @@
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.component {
+    animation-name: spinner;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    border-radius: var(--rnb-border-radius-circle);
+    border-right: var(--rnb-border-width-default) solid transparent;
+    border-top: var(--rnb-border-width-default) solid currentColor;
+    box-sizing: border-box;
+
+    &.isSizeTiny {
+        height: 15px;
+        width: 15px;
+    }
+
+    &.isSizeSmall {
+        height: 20px;
+        width: 20px;
+    }
+
+    &.isSizeMedium {
+        height: 25px;
+        width: 25px;
+    }
+
+    &.isSizeLarge {
+        height: 30px;
+        width: 30px;
+    }
+
+    &.isSizeFullWidth {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+}

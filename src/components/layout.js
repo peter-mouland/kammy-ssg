@@ -11,6 +11,7 @@ import '@kammy/bootstrap';
 import NavBar from './nav-bar';
 
 import './index.css';
+import NamedLink from './named-link';
 
 const Layout = ({ children }) => {
     const bem = bemHelper({ block: 'layout' });
@@ -24,7 +25,21 @@ const Layout = ({ children }) => {
             </main>
             <footer className={bem('footer')}>
                 <div className={bem('footer-content')}>
-                    Hosted at <a href="http://github.com/peter-mouland/kammy-ssg">github.com/peter-mouland/kammy-ui</a>
+                    <h2 className={bem('footer-header')}>Relevant Links</h2>
+                    <ul className={bem('footer-links')}>
+                        <li>
+                            <NamedLink to="rules" />
+                        </li>
+                        <li>
+                            <NamedLink to="prize-money" />
+                        </li>
+                        <li>
+                            <NamedLink to="cup-scores" />
+                        </li>
+                        <li>
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
+                        </li>
+                    </ul>
                 </div>
             </footer>
         </div>

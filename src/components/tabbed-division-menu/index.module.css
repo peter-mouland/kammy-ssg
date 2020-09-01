@@ -11,8 +11,25 @@
 .tabs {
     display: flex;
     flex-direction: row;
+    justify-content: space-evenly;
+    background: #eee;
+    border-top: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 5px;
+    position: fixed;
+    z-index: 2;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
 }
-
+@media (--rnb-mq-phablet) {
+    .tabs {
+        position: relative;
+        border: 0;
+    }
+}
 .tab {
     display: flex;
     text-align: center;
@@ -58,6 +75,7 @@
         background: #eee;
      }
 }
+
 @media (--rnb-mq-medium) {
     .cta {
         display: flex;

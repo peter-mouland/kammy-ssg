@@ -30,18 +30,15 @@ const linkClass = bem('link');
 const Index = () => (
     <nav className={bem()}>
         <div className={bem('content')}>
-            <NavItem label='DraftFF' className={linkClass}>
+            <Spacer all={{ right: Spacer.spacings.TINY }} tag={'span'}>
                 <NamedLink to="homepage" />
-                <NamedLink to="rules" />
-                <NamedLink to="prize-money" />
-            </NavItem>
-            <NavItem label='Cup' className={linkClass}>
+            </Spacer>
+            <Spacer all={{ horizontal: Spacer.spacings.TINY }} tag={'span'}>
                 <NamedLink to="cup" className={linkClass} />
-                <NamedLink to="cup-scores" className={linkClass} />
-            </NavItem>
+            </Spacer>
             {
                 appConfig.divisionLabels.map((division) => (
-                    <Spacer key={division} all={{ horizontal: Spacer.spacings.SMALL }} tag={'span'}>
+                    <Spacer key={division} all={{ horizontal: Spacer.spacings.TINY }} tag={'span'}>
                         <div className={linkClass}>
                             <NamedLink to={`${appConfig.divisionSheets[division]}-rankings`}>{division}</NamedLink>
                         </div>

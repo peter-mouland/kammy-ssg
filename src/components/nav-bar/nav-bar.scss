@@ -1,37 +1,37 @@
 @import '~@kammy/bootstrap/src/abstracts/variables';
 
 .nav {
-  background-color: $brand;
+  border-bottom: 1px solid $brand;
   position: relative;
   z-index: 10;
   overflow: visible;
 
   &__content {
     padding: 0;
-    max-width: 1050px;
+    max-width: 1200px;
     margin: 0 auto;
   }
-
-  &__header {
-    margin-right: 1em;
-    background-color: $brand;
-    color: $white;
-  }
+    a {
+        padding: 2px 4px;
+        line-height: 2em;
+        display: inline-block;
+    }
+    [aria-current="page"] {
+        //background: #1633;
+        background: #163;
+        color: white;
+    }
 }
 
 .nav__link {
   display: inline-block;
   line-height: 1.25em;
   font-family: 'Roboto Slab', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  letter-spacing: 1px;
   text-align: center;
-  border-style: solid;
-  border-width: 2px 0;
-  border-color: transparent;
-  color: $white;
+    color: $brand;
 
   a {
-    color: $white;
+      color: $brand;
   }
 
   &--right {

@@ -9,6 +9,7 @@ const webpack = require('webpack');
 const { tokens } = require('@kammy/tokens');
 const postcssPreset = require('postcss-preset-env');
 const postcssHexrgba = require('postcss-hexrgba');
+const postcssNested = require('postcss-nested');
 
 const addCssPrefix = (cssObj) => Object.keys(cssObj).reduce((prev, bp) => ({ ...prev, [`--${bp}`]: cssObj[bp] }), {});
 
@@ -74,6 +75,7 @@ exports.onCreateWebpackConfig = ({ actions, loaders }) => {
                                     },
                                 }),
                                 postcssHexrgba,
+                                postcssNested,
                             ],
                         }),
                     ],

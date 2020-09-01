@@ -7,6 +7,7 @@ import GameWeekFixtures from '../gameweek-fixtures';
 import GameWeekDate from '../gameweek-date';
 import Modal from '../modal';
 import './styles.scss';
+import Spacer from "../spacer";
 
 const bem = bemHelper({ block: 'home-page' });
 

@@ -229,7 +229,7 @@ const TransfersPage = ({
                         <div>
                             {playerOut && playerOut.label}
                         </div>
-                        <button onClick={() => setDrawerContent(
+                        <Button onClick={() => setDrawerContent(
                             <Search
                                 filteredPlayers={filteredPlayers}
                                 manager={manager}
@@ -239,7 +239,7 @@ const TransfersPage = ({
                                 onSelect={setPlayerOutAndClose}
                             />,
                         )
-                        }>Pick</button>
+                        }>Pick</Button>
                     </Accordion.Content>
                 )}
 
@@ -251,7 +251,7 @@ const TransfersPage = ({
                         <div>
                             {playerIn && playerIn.label}
                         </div>
-                        <button onClick={() => setDrawerContent(
+                        <Button onClick={() => setDrawerContent(
                             <Search
                                 filteredPlayers={filteredPlayers}
                                 manager={manager}
@@ -261,7 +261,7 @@ const TransfersPage = ({
                                 onSelect={setPlayerInAndClose}
                             />,
                         )
-                        }>Pick</button>
+                        }>Pick</Button>
                     </Accordion.Content>
                 )}
 

@@ -23,7 +23,7 @@ const TransfersPage = ({
     return (
         <Layout>
             <div data-b-layout="container">
-                <TabbedMenu selected="transfers" division={divisionKey} label={divisionLabel} />
+                <TabbedMenu selected="transfers" division={divisionKey} />
             </div>
             <DivisionTransfers
                 teamsByManager={teamsByManager}
