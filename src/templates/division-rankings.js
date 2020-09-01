@@ -5,7 +5,6 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import DivisionRankings from '../components/division-rankings';
 import TabbedMenu from '../components/tabbed-division-menu';
-import Spacer from '../components/spacer';
 
 const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, divisionLabel } }) => {
     const {

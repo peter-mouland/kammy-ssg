@@ -2,8 +2,8 @@
   "name": "@kammy/helpers.can-use-dom",
   "version": "1.15.11",
   "description": "Function to return if DOM is available",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "src": "src/index.js",
   "author": "Peter Mouland <peter.mouland@clearscore.com> (http://www.clearscore.com)",
   "license": "UNLICENSED"

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import IFrame from '../../components/iFrame';
 import Layout from '../../components/layout';
-import TabbedMenu from "../../components/tabbed-division-menu";
+import TabbedMenu from '../../components/tabbed-division-menu';
 
 const Index = () => (
     <Layout>

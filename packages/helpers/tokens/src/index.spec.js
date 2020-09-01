@@ -1,4 +1,5 @@
-import * as tokens from '../src';
+/* eslint-env jest */
+import * as tokens from '.';
 
 describe('tokens lib', () => {
     it('should contain correct tokens', () => {

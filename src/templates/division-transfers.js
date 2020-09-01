@@ -5,7 +5,6 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import DivisionTransfers from '../components/division-transfers';
 import TabbedMenu from '../components/tabbed-division-menu';
-import Spacer from '../components/spacer';
 
 const TransfersPage = ({
     data: {

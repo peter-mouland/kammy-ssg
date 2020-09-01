@@ -5,7 +5,6 @@ import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
 import Layout from '../components/layout';
-import Spacer from '../components/spacer';
 import TabbedMenu from '../components/tabbed-division-menu';
 
 const bemTable = bemHelper({ block: 'players-page-table' });
