@@ -1,31 +1,10 @@
 /* eslint-disable react/no-danger */
 import React from 'react';
 import PropTypes from 'prop-types';
-import format from 'date-fns/format';
 
+import formatTimestamp from '../lib/format-timestamp';
+import getEmoji from '../lib/get-emoji';
 import Interstitial from '../../interstitial';
-
-const formatTimestamp = (ts) => {
-    try {
-        return format(ts, 'MMM d, HH:mm:ss');
-    } catch (e) {
-        console.log(ts);
-        return 'unknown date';
-    }
-};
-
-const getEmoji = (status = '') => {
-    switch (status.toLowerCase()) {
-        case 'tbc':
-            return '&#129300;'; // thinking
-        case 'e':
-            return '&#129324;'; // angry
-        case 'y':
-            return '&#129303;'; // happy
-        default:
-            return '';
-    }
-};
 
 const TransferBody = ({ transfers }) => {
     if (transfers.length < 1) return null;
@@ -43,7 +22,7 @@ const TransferBody = ({ transfers }) => {
                             {gameWeek}
                         </td>
                         <td data-col-label="timestamp" className="cell cell--center cell--show-625">
-                            {formatTimestamp(timestamp)}
+                            {formatTimestamp(timestamp, { fromGMT: true })}
                         </td>
                         <td data-col-label="type" className="cell cell--center">
                             {type}

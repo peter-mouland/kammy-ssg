@@ -6,15 +6,15 @@ import { useMutation } from 'react-query';
 import bemHelper from '@kammy/bem';
 import { saveTransfers } from '@kammy/helpers.spreadsheet';
 
+import Spacer from '../../spacer';
 import Drawer from '../../drawer';
 import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
 import Accordion from '../../accordion';
+import { changeTypes } from '../lib/consts';
+import createFilteredPlayers from '../lib/create-filtered-players';
 import Players from './components/Players';
 import GameWeekTransfers from './components/game-week-transfers';
-import { changeTypes } from './lib/consts';
-import createFilteredPlayers from './lib/create-filtered-players';
-import Spacer from '../../spacer';
 import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });

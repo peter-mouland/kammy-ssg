@@ -1,40 +1,18 @@
 /* eslint-disable react/no-danger */
 import React from 'react';
 import PropTypes from 'prop-types';
-import format from 'date-fns/format';
 import { graphql, useStaticQuery } from 'gatsby';
 import parseISO from 'date-fns/parseISO';
+
+import formatTimestamp from '../../lib/format-timestamp';
+import getEmoji from '../../lib/get-emoji';
+import Interstitial from '../../../interstitial';
 
 const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
 
 const getGameWeekFromDateFact = (gameWeeks) => (date) => {
     const gwIndex = gameWeeks.findIndex(({ start, end }) => inDateRange({ start, end }, date));
     return gwIndex < 0 ? 1 : gwIndex;
-};
-
-const formatTimestamp = (ts) => {
-    try {
-        return format(ts, 'MMM d, HH:mm:ss');
-    } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(ts);
-        return 'unknown date';
-    }
-};
-
-const Interstitial = <div>loading</div>;
-
-const getEmoji = (status = '') => {
-    switch (status.toLowerCase()) {
-        case 'tbc':
-            return '&#129300;'; // thinking
-        case 'e':
-            return '&#129324;'; // angry
-        case 'y':
-            return '&#129303;'; // happy
-        default:
-            return '';
-    }
 };
 
 const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {

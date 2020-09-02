@@ -1,0 +1,10 @@
+{
+  "name": "@kammy/helpers.get-gmt-date",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "src": "src/index.js",
+  "author": "Peter Mouland <peter.mouland@clearscore.com> (http://www.clearscore.com)",
+  "license": "UNLICENSED"
+}
