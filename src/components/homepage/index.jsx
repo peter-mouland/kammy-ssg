@@ -5,8 +5,9 @@ import bemHelper from '@kammy/bem';
 import DivisionRankings from '../division-rankings';
 import GameWeekFixtures from '../gameweek-fixtures';
 import GameWeekDate from '../gameweek-date';
-import Modal from '../modal';
+import Drawer from '../drawer';
 import './styles.scss';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'home-page' });
 
@@ -67,15 +68,19 @@ class Homepage extends React.Component {
                         </a>
                     </div>
                 </div>
-                <Modal
+                <Drawer
                     id="GameWeekFixtures"
-                    title={`GW${selectedGameWeek && selectedGameWeek.gameWeek} Fixtures`}
-                    open={showTransfers}
+                    isOpen={showTransfers}
+                    placement={Drawer.placements.RIGHT}
                     onClose={() => this.setState({ showTransfers: false })}
-                    style={{ maxWidth: '700px' }}
                 >
-                    <GameWeekFixtures {...selectedGameWeek} />
-                </Modal>
+                    <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.MEDIUM }}>
+                        <Spacer all={{ bottom: Spacer.spacings.MEDIUM }}>
+                            <h2>GW{selectedGameWeek && selectedGameWeek.gameWeek} Fixtures</h2>
+                        </Spacer>
+                        <GameWeekFixtures {...selectedGameWeek} />
+                    </Spacer>
+                </Drawer>
                 {divisions.map(({ label, key }) => (
                     <DivisionRankings
                         key={key}

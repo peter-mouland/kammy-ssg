@@ -16,7 +16,6 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 
 ## Todo:
  - improve transfer page
-     - fix transfer time display from google-sheets
      - update time on transfer page in real-time
      - show players selected + options
      - add 'bin' button (on left) to delete transfers

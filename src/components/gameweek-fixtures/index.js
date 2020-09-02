@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import './game-week-fixtures.scss';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'club-fixtures' });
 const months = [
@@ -23,6 +24,7 @@ const toDate = (string = '') => (!string ? string : new Date(string));
 
 const GameWeekFixtures = ({ fixtures }) => {
     let previousFullDate = '';
+    let theme = 1;
     return (
         <div>
             {fixtures &&
@@ -35,9 +37,15 @@ const GameWeekFixtures = ({ fixtures }) => {
                     const aScoreClass = bem();
                     const hScoreClass = bem();
                     previousFullDate = fullDate;
+                    if (dateStr) theme = 1 - theme;
+                    const themeClass = `theme-${theme}`;
                     return (
-                        <div key={`${fixture.date}-${fixture.hTname}`} className={bem('fixtures')}>
-                            {dateStr}
+                        <div key={`${fixture.date}-${fixture.hTname}`} className={bem('fixtures', themeClass)}>
+                            {dateStr && (
+                                <Spacer all={{ vertical: Spacer.spacings.LARGE, bottom: Spacer.spacings.SMALL }}>
+                                    {dateStr}
+                                </Spacer>
+                            )}
                             <span className={bem('fixture', 'desktop')}>
                                 <span className={bem('team', 'home')}>
                                     {fixture.hTname} <span className={hScoreClass}>{hScore}</span>
