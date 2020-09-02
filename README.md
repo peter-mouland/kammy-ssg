@@ -17,19 +17,13 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 ## Todo:
  - improve transfer page
      - fix transfer comment box
-     - put transfer flow into an accordion
-        - put player filter/search into a drawer
-     - fix manager-name filter
+     - fix transfer time display from google-sheets
      - update time on transfer page in real-time
-     - closing transfer box should clear selected players
-     - add cancel button to transfer process
      - show players selected + options
-     - add '+' button to transfer page to make multiple transfers
      - add 'bin' button (on left) to delete transfers
      - add 'you have x transfers remaining' message
      - disable button if too many transfers
-    - improve 'steps' ui of transfer page e.g. https://uxmovement.com/mobile/how-to-display-steppers-on-mobile-forms/
-    - improve transfer page filters
+     - improve transfer page filters
  - fix teams page 'position timeline'
  - fix 'sticky' headers. ffs.
  - remove 'popup' with 'drawer'

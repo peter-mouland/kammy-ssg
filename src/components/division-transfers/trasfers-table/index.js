@@ -6,7 +6,7 @@ import Interstitial from '../../interstitial';
 
 const formatTimestamp = (ts) => {
     try {
-        return format(ts, 'MMM Do, HH:mm:ss');
+        return format(ts, 'MMM d, HH:mm:ss');
     } catch (e) {
         console.log(ts);
         return 'unknown date';
@@ -107,6 +107,11 @@ const GameWeekTransfers = ({ transfers, isLoading }) => (
 GameWeekTransfers.propTypes = {
     isLoading: PropTypes.bool,
     transfers: PropTypes.array,
+};
+
+GameWeekTransfers.defaultProps = {
+    isLoading: false,
+    transfers: [],
 };
 
 export default GameWeekTransfers;

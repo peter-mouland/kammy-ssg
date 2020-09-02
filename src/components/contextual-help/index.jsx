@@ -10,37 +10,18 @@ import './contextual-help.scss';
 
 const bem = BemHelper({ block: 'contextual-help' });
 
-class Index extends PureComponent {
-    static propTypes = {
-        /** @type {string} title text content of the popover */
-        header: PropTypes.string,
-        /** @type {string} body text content of the popover */
-        body: PropTypes.node,
-        /** @type {number} popover width */
-        width: PropTypes.number,
-        Trigger: PropTypes.node,
-    };
-
-    static defaultProps = {
-        width: 250,
-    };
-
+class ContextualHelp extends PureComponent {
     state = {
         isOpen: false,
     };
 
     open = () => {
         const { x, y } = this.getBoxPosition();
-        this.setState({
-            isOpen: true,
-            opacity: 1,
-            x,
-            y,
-        });
+        this.setState({ isOpen: true, x, y });
     };
 
     close = () => {
-        this.setState({ isOpen: false, opacity: 0 });
+        this.setState({ isOpen: false });
     };
 
     /**
@@ -123,4 +104,19 @@ class Index extends PureComponent {
     }
 }
 
-export default Index;
+ContextualHelp.propTypes = {
+    Trigger: PropTypes.node.isRequired,
+    /** @type {string} body text content of the popover */
+    body: PropTypes.node.isRequired,
+    /** @type {string} title text content of the popover */
+    header: PropTypes.string,
+    /** @type {number} popover width */
+    width: PropTypes.number,
+};
+
+ContextualHelp.defaultProps = {
+    header: '',
+    width: 250,
+};
+
+export default ContextualHelp;

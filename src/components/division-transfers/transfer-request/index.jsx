@@ -14,57 +14,41 @@ import Players from './components/Players';
 import GameWeekTransfers from './components/game-week-transfers';
 import { changeTypes } from './lib/consts';
 import createFilteredPlayers from './lib/create-filtered-players';
-
-import './transferPage.scss';
 import Spacer from '../../spacer';
+import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
 
 // todo: update table on mutation (via react-query)
 
-const confirmTransfer = ({
-    playerIn,
-    playerOut,
-    changeType,
-    manager,
-    playerDisplaced,
-    playerGapFiller,
-    comment,
-    division,
-    saveTransfer,
-    reset,
-}) => {
-    const baseDetails = {
+const confirmTransfer = ({ transfers, division, saveTransfer, reset }) => {
+    // if (playerDisplaced && playerGapFiller) {
+    //     // rearrange transfer to ensure positions match for the spreadsheet
+    //     transfers.push({
+    //         ...baseDetails,
+    //         'Transfer In': playerGapFiller.value,
+    //         'Transfer Out': playerOut.value,
+    //         Comment: `${comment} (note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
+    //     });
+    //     transfers.push({
+    //         ...baseDetails,
+    //         'Transfer In': playerIn.value,
+    //         'Transfer Out': playerDisplaced.value,
+    //         Comment: `(note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
+    //     });
+    //
+    const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
+        ...transfer,
         Division: division,
         Manager: manager,
         Status: 'TBC',
-        'Transfer Type': changeType,
-    };
-    const transfers = [];
-    if (playerDisplaced && playerGapFiller) {
-        // rearrange transfer to ensure positions match for the spreadsheet
-        transfers.push({
-            ...baseDetails,
-            'Transfer In': playerGapFiller.value,
-            'Transfer Out': playerOut.value,
-            Comment: `${comment} (note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
-        });
-        transfers.push({
-            ...baseDetails,
-            'Transfer In': playerIn.value,
-            'Transfer Out': playerDisplaced.value,
-            Comment: `(note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
-        });
-    } else {
-        transfers.push({
-            ...baseDetails,
-            'Transfer In': playerIn.value,
-            'Transfer Out': playerOut.value,
-            Comment: comment,
-        });
-    }
+        'Transfer Type': type,
+        'Transfer In': playerIn.value,
+        'Transfer Out': playerOut.value,
+        Comment: comment,
+    }));
 
-    saveTransfer({ division, data: transfers });
+    saveTransfer({ division, data });
     reset();
 };
 
@@ -123,6 +107,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
     const [DrawerContent, setDrawerContent] = useState(undefined);
     const [initiateRequest, setInitiateRequest] = useState(false);
     const [comment, setComment] = useState('');
+    const [requestedTransfers, setRequestedTransfers] = useState([]);
     const [manager, setManager] = useState(undefined);
     const [changeType, setChangeType] = useState(undefined);
     const [playerIn, setPlayerIn] = useState(undefined);
@@ -142,6 +127,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
 
     const reset = () => {
         setComment('');
+        setChangeType(false);
         setPlayerIn(false);
         setPlayerOut(false);
         setPlayerFilter(false);
@@ -206,6 +192,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
             onSelect={setPlayerInAndClose}
         />
     );
+
     return (
         <div className={bem(null, null, 'page-content')}>
             <Drawer
@@ -224,7 +211,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                 type={Accordion.types.SECONDARY}
             >
                 <Accordion.Content>
-                    <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                    <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                         <h4>1. Who are you?</h4>
                     </Spacer>
                     <MultiToggle
@@ -235,84 +222,105 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                         onChange={setManager}
                     />
                 </Accordion.Content>
-                <Accordion.Content>
-                    <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                        <h4>2. What type of request is it?</h4>
-                    </Spacer>
-                    <MultiToggle
-                        id="change-type"
-                        options={Object.values(changeTypes)}
-                        checked={changeType}
-                        onChange={setChangeType}
-                    />
-                </Accordion.Content>
+                {manager && (
+                    <Accordion.Content>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                            <h4>2. What type of request is it?</h4>
+                        </Spacer>
+                        <MultiToggle
+                            id="change-type"
+                            options={Object.values(changeTypes)}
+                            checked={changeType}
+                            onChange={setChangeType}
+                        />
+                    </Accordion.Content>
+                )}
 
                 {manager && changeType && (
                     <Accordion.Content>
-                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>3. Who is Leaving the squad?</h3>
                         </Spacer>
-                        <div>{playerOut && playerOut.label}</div>
-                        <Button onClick={() => setDrawerContent('playerOut')}>Pick</Button>
+                        {playerOut && (
+                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                                <div>{playerOut.label}</div>
+                            </Spacer>
+                        )}
+                        <Button onClick={() => setDrawerContent('playerOut')}>{playerOut ? 'Change' : 'Pick'}</Button>
                     </Accordion.Content>
                 )}
 
                 {manager && changeType && playerOut && (
                     <Accordion.Content>
-                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>4. Who is Joining the squad?</h3>
                         </Spacer>
-                        <div>{playerIn && playerIn.label}</div>
-                        <Button onClick={() => setDrawerContent('playerIn')}>Pick</Button>
+                        {playerIn && (
+                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                                <div>{playerIn.label}</div>
+                            </Spacer>
+                        )}
+                        <Button onClick={() => setDrawerContent('playerIn')}>{playerIn ? 'Change' : 'Pick'}</Button>
                     </Accordion.Content>
                 )}
 
                 {manager && changeType && playerOut && playerIn && (
+                    <Accordion.Content>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                            <h3>Any Comments for the banter box?</h3>
+                        </Spacer>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                            <textarea className="transfers-page__comment" onChange={setComment} />
+                        </Spacer>
+                        <Button
+                            onClick={() => {
+                                requestedTransfers.push({
+                                    manager,
+                                    timestamp: new Date(),
+                                    status: 'tbc',
+                                    type: changeType,
+                                    playerIn,
+                                    playerOut,
+                                    transferIn: playerIn ? playerIn.value : '',
+                                    transferOut: playerOut ? playerOut.value : '',
+                                    comment,
+                                });
+                                setRequestedTransfers(requestedTransfers);
+                                reset();
+                            }}
+                        >
+                            Save Request
+                        </Button>
+                    </Accordion.Content>
+                )}
+                {requestedTransfers.length > 0 && (
                     <React.Fragment>
                         <Accordion.Content>
-                            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                                <h3>Any Comments for the banter box?</h3>
-                            </Spacer>
-                            <textarea className="transfers-page__comment" onChange={setComment} />
-                        </Accordion.Content>
-                        <Accordion.Content>
-                            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                                <h3>Confirm Request</h3>
+                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                                <h3>Pending Requests</h3>
                             </Spacer>
                             <GameWeekTransfers
                                 // getGameWeekFromDate={gwFromDate}
-                                transfers={[
-                                    {
-                                        manager,
-                                        timestamp: new Date(),
-                                        status: 'tbc',
-                                        type: changeType,
-                                        transferIn: playerIn ? playerIn.value : '',
-                                        transferOut: playerOut ? playerOut.value : '',
-                                        comment,
-                                    },
-                                ]}
+                                transfers={requestedTransfers}
                                 isLoading={false}
-                                Action={
-                                    <Button
-                                        onClick={() =>
-                                            confirmTransfer({
-                                                playerIn,
-                                                playerOut,
-                                                changeType,
-                                                manager,
-                                                comment,
-                                                division: divisionKey,
-                                                saveTransfer,
-                                                reset,
-                                            })
-                                        }
-                                        state="buttonState"
-                                    >
-                                        Confirm {changeType}
-                                    </Button>
-                                }
                             />
+                        </Accordion.Content>
+
+                        <Accordion.Content>
+                            <Button
+                                onClick={() => {
+                                    confirmTransfer({
+                                        transfers: requestedTransfers,
+                                        division: divisionKey,
+                                        saveTransfer,
+                                        reset,
+                                    });
+                                    setRequestedTransfers([]);
+                                }}
+                                state="buttonState"
+                            >
+                                Submit Pending Requests
+                            </Button>
                         </Accordion.Content>
                     </React.Fragment>
                 )}

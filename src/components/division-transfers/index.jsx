@@ -10,15 +10,14 @@ import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 
-const inDateRange = ({ start, end }, comparison) =>
-    parseISO(comparison) < parseISO(end) && parseISO(comparison) > parseISO(start);
+const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
 
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const GameWeekTransfers = ({
     divisionUrl,
-    divisionLabel,
     divisionKey,
+    currentGameWeek,
     prevGameWeek,
     gameWeekMinus2,
     selectedGameWeek,
@@ -42,7 +41,10 @@ const GameWeekTransfers = ({
         transfers
             .filter((transfer) => inDateRange(gw, transfer.timestamp))
             .map((transfer) => ({ ...transfer, gameWeek: gw.gameWeek }));
-    const showTransfers = [...limitTransfers(gameWeekMinus2), ...limitTransfers(prevGameWeek)];
+    let showTransfers = [];
+    showTransfers = gameWeekMinus2 ? limitTransfers(gameWeekMinus2) : showTransfers;
+    showTransfers = prevGameWeek ? showTransfers.concat(limitTransfers(prevGameWeek)) : showTransfers;
+    showTransfers = currentGameWeek ? showTransfers.concat(limitTransfers(currentGameWeek)) : showTransfers;
     const isLoading = status === 'loading';
 
     if (status === 'error') return <div>Error: {error.message}</div>;
@@ -70,13 +72,12 @@ const GameWeekTransfers = ({
 };
 
 GameWeekTransfers.propTypes = {
-    divisionUrl: PropTypes.string,
-    divisionKey: PropTypes.string,
-    divisionLabel: PropTypes.string,
-    prevGameWeek: PropTypes.object,
-    gameWeekMinus2: PropTypes.object,
-    selectedGameWeek: PropTypes.number,
-    managers: PropTypes.array,
+    currentGameWeek: PropTypes.object.isRequired,
+    prevGameWeek: PropTypes.object.isRequired,
+    gameWeekMinus2: PropTypes.object.isRequired,
+    selectedGameWeek: PropTypes.number.isRequired,
+    divisionUrl: PropTypes.string.isRequired,
+    divisionKey: PropTypes.string.isRequired,
     teamsByManager: PropTypes.object,
 };
 

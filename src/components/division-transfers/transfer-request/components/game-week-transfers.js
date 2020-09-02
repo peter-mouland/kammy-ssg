@@ -4,7 +4,7 @@ import format from 'date-fns/format';
 
 const formatTimestamp = (ts) => {
     try {
-        return format(ts, 'MMM Do, HH:mm:ss');
+        return format(ts, 'MMM d, HH:mm:ss');
     } catch (e) {
         console.log(ts);
         return 'unknown date';
@@ -31,6 +31,7 @@ const TransferBody = ({ getGameWeekFromDate, transfers, Action }) => {
     return (
         <tbody>
             {transfers.map(({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment }) => {
+                console.log(comment)
                 const gw = 1; // timestamp && typeof getGameWeekFromDate === 'function' ? getGameWeekFromDate(timestamp) : '';
                 return (
                     <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>

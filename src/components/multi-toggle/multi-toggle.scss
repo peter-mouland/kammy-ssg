@@ -95,7 +95,7 @@
     text-align: center;
     transition: transform .3s  cubic-bezier(.175, .885, .32, 1.275), color .3s, background-color .3s;
     border-radius: 5px;
-    padding: 0 8px;
+    padding: 4px 8px;
 
     &:hover {
       background: $sdarken;

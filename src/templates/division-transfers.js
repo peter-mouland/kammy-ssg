@@ -35,6 +35,7 @@ const TransfersPage = ({
                 divisionLabel={divisionLabel}
                 divisionKey={divisionKey}
                 divisionUrl={divisionUrl}
+                currentGameWeek={currentGameWeek}
                 prevGameWeek={prevGameWeek}
                 gameWeekMinus2={gameWeekMinus2}
                 selectedGameWeek={selectedGameWeek}
