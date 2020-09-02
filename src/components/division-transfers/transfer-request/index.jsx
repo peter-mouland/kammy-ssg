@@ -79,38 +79,34 @@ const createFilterOptions = (managers = [], manager) => {
 };
 
 const Search = ({
-    managers, manager, onSelect, onFilter, playersArray, filteredPlayers,
-}) => {
-    const filterOptions = createFilterOptions(managers, manager);
-    const defaultLeavingFilter = null; // filterOptions[1].options.filter((option) => option.value === manager);
-    return (
-        <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.SMALL }}>
-            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <h3>Manager Search:</h3>
-            </Spacer>
-            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <div style={{ position: 'relative', zIndex: '2' }}>
-                    <Select
-                        defaultValue={defaultLeavingFilter}
-                        placeholder="player filter..."
-                        options={filterOptions}
-                        isMulti
-                        name={'playersFiltersOut'}
-                        onChange={onFilter}
-                    />
-                </div>
-            </Spacer>
-            <div style={{ position: 'relative', zIndex: '1' }}>
-                {playersArray.length > 0 && (
-                    <Players
-                        onSelect={onSelect}
-                        playersArray={filteredPlayers.sortedPlayers}
-                    />
-                )}
+    filterOptions, onSelect, onFilter, playersArray, playerFilter, filteredPlayers,
+}) => (
+    <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.SMALL }}>
+        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+            <h3>Search:</h3>
+        </Spacer>
+        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+            <div style={{ position: 'relative', zIndex: '2' }}>
+                <Select
+                    value={playerFilter}
+                    placeholder="player filter..."
+                    options={filterOptions}
+                    isMulti
+                    name={'playersFiltersOut'}
+                    onChange={onFilter}
+                />
             </div>
         </Spacer>
-    );
-};
+        <div style={{ position: 'relative', zIndex: '1' }}>
+            {playersArray.length > 0 && (
+                <Players
+                    onSelect={onSelect}
+                    playersArray={filteredPlayers.sortedPlayers}
+                />
+            )}
+        </div>
+    </Spacer>
+);
 
 const TransfersPage = ({
     divisionKey, teamsByManager, managers, isLoading,
@@ -124,6 +120,7 @@ const TransfersPage = ({
     const [playerOut, setPlayerOut] = useState(undefined);
     const [playerFilter, setPlayerFilter] = useState(undefined);
     const [saveTransfer] = useMutation(saveTransfers);
+    const filterOptions = createFilterOptions(managers, manager);
 
     const setPlayerOutAndClose = (player) => {
         setDrawerContent(undefined);
@@ -141,7 +138,6 @@ const TransfersPage = ({
         setPlayerFilter(false);
         setInitiateRequest(false);
     };
-
     // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
     const { allPlayers: { nodes: playersArray } } = useStaticQuery(graphql`
         query TransferPlayers {
@@ -180,6 +176,25 @@ const TransfersPage = ({
         playerIn,
         playerOut,
     });
+    const RequestPlayerOut = () => (
+        <Search
+            filteredPlayers={filteredPlayers}
+            playerFilter={playerFilter}
+            filterOptions={filterOptions}
+            playersArray={playersArray}
+            onFilter={setPlayerFilter}
+            onSelect={setPlayerOutAndClose}
+        />
+    );
+    const RequestPlayerIn = () => (
+        <Search
+            filteredPlayers={filteredPlayers}
+            filterOptions={filterOptions}
+            playersArray={playersArray}
+            onFilter={setPlayerFilter}
+            onSelect={setPlayerInAndClose}
+        />
+    );
     return (
         <div className={bem(null, null, 'page-content')} >
             <Drawer
@@ -190,7 +205,7 @@ const TransfersPage = ({
                 placement={Drawer.placements.RIGHT}
                 theme={Drawer.themes.LIGHT}
             >
-                {DrawerContent}
+                {DrawerContent === 'playerIn' ? <RequestPlayerIn /> : <RequestPlayerOut /> }
             </Drawer>
             <Accordion
                 title={'Create Request'}
@@ -229,16 +244,7 @@ const TransfersPage = ({
                         <div>
                             {playerOut && playerOut.label}
                         </div>
-                        <Button onClick={() => setDrawerContent(
-                            <Search
-                                filteredPlayers={filteredPlayers}
-                                manager={manager}
-                                managers={managers}
-                                playersArray={playersArray}
-                                onFilter={setPlayerFilter}
-                                onSelect={setPlayerOutAndClose}
-                            />,
-                        )
+                        <Button onClick={() => setDrawerContent('playerOut')
                         }>Pick</Button>
                     </Accordion.Content>
                 )}
@@ -251,16 +257,7 @@ const TransfersPage = ({
                         <div>
                             {playerIn && playerIn.label}
                         </div>
-                        <Button onClick={() => setDrawerContent(
-                            <Search
-                                filteredPlayers={filteredPlayers}
-                                manager={manager}
-                                managers={managers}
-                                playersArray={playersArray}
-                                onFilter={setPlayerFilter}
-                                onSelect={setPlayerInAndClose}
-                            />,
-                        )
+                        <Button onClick={() => setDrawerContent('playerIn')
                         }>Pick</Button>
                     </Accordion.Content>
                 )}

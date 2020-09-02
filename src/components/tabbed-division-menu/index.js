@@ -39,7 +39,7 @@ const tabs = [
     },
 ];
 
-const Index = ({ division, selected }) => (
+const TabbedDivisionMenu = ({ division, selected }) => (
     <div className={styles.container}>
         <Spacer tag={'ul'} all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
             {tabs.map(({ id, label, Icon }) => (
@@ -59,9 +59,9 @@ const Index = ({ division, selected }) => (
     </div>
 );
 
-Index.propTypes = {
+TabbedDivisionMenu.propTypes = {
     division: PropTypes.string.isRequired,
     selected: PropTypes.string.isRequired,
 };
 
-export default Index;
+export default TabbedDivisionMenu;

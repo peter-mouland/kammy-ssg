@@ -22,19 +22,22 @@ const createFilteredPlayers = ({
     const managersPlayers = Object.values(teams)
         .flatMap((name) => name)
         .reduce((prev, curr) => ({ ...prev, [curr.playerName]: curr }), {});
+
     const selectedManagersPlayers = onlyAvailablePlayers ? [] : selectedManagers
         .map((manager) => teams[manager])
         .flatMap((name) => name)
         .map(({ playerName }) => playerName);
+
     const pickedPlayers = Object.keys(teams)
         .reduce((prev, curr) => ([...prev, ...teams[curr]]), [])
         .map(({ playerName }) => playerName);
 
-    const filteredPlayersArray = playersArray.filter(({ pos, playerName }) => (
+    const filteredPlayersArray = playersArray.filter(({ pos, name }) => (
         (selectedPositions.includes(pos) || !selectedPositions.length)
-    && (selectedManagersPlayers.includes(playerName) || !selectedManagersPlayers.length)
-    && ((onlyAvailablePlayers && !pickedPlayers.includes(playerName)) || !onlyAvailablePlayers)
+    && (selectedManagersPlayers.includes(name) || !selectedManagersPlayers.length)
+    && ((onlyAvailablePlayers && !pickedPlayers.includes(name)) || !onlyAvailablePlayers)
     ));
+
     const sortedPlayers = filteredPlayersArray
         .sort(sortBy(['pos', 'name'], { pos: positionsOrder }))
         .map((player) => ({
@@ -42,6 +45,7 @@ const createFilteredPlayers = ({
             manager: managersPlayers[player.playerName] ? managersPlayers[player.playerName].manager : undefined,
             teamPos: managersPlayers[player.playerName] ? managersPlayers[player.playerName].teamPos : undefined,
         }));
+
     const sortedTeam = team.sort(sortBy(['pos', 'playerName'], { pos: positionsOrder }));
     const teamPlayers = sortedTeam.reduce((prev, curr) => ([...prev, curr.playerName]), []);
     const nonTeamPlayers = sortedPlayers.filter(({ name }) => !teamPlayers.includes(name));

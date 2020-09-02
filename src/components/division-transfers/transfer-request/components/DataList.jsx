@@ -39,7 +39,7 @@ const Item = ({
 };
 
 Item.propTypes = {
-    item: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string, additional: PropTypes.string }).isRequired,
+    item: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string, additional: PropTypes.node }).isRequired,
     selectedItem: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }),
     index: PropTypes.number.isRequired,
     focusIndex: PropTypes.number.isRequired,

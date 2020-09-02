@@ -23,7 +23,7 @@ const Index = ({ className, to, children }) => {
 Index.propTypes = {
     to: PropTypes.string.isRequired,
     className: PropTypes.string,
-    children: PropTypes.string,
+    children: PropTypes.node,
 };
 
 Index.contextTypes = {

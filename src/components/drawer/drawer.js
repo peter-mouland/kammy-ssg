@@ -84,7 +84,7 @@ Backdrop.defaultProps = {
 };
 
 Drawer.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     placement: PropTypes.oneOf(Object.keys(placements)),
     isCloseable: PropTypes.bool,
     onClose: PropTypes.func,
@@ -103,6 +103,7 @@ Drawer.defaultProps = {
     onBackdropClick: null,
     isOpen: false,
     hasBackdrop: false,
+    children: null,
     dataId: '',
     theme: 'LIGHT',
     closeIconTitle: 'close drawer',
