@@ -80,7 +80,6 @@ function forPenaltiesSaved(ps) {
 }
 
 function forSaveBonus(bonusPoints, position) {
-    // 3
     let multiplier;
     if (position === 'GK') {
         multiplier = 2;
@@ -91,7 +90,6 @@ function forSaveBonus(bonusPoints, position) {
 }
 
 function forPassBonus(bonusPoints, position) {
-    // 3
     return position === 'MID' && bonusPoints > 0 ? 1 : 0;
 }
 
@@ -107,7 +105,7 @@ function calculateTotalPoints({ stats, pos }) {
     const rcard = forRedCards(stats.rcard, pos);
     const tb = forTackleBonus(stats.tb, pos);
     const sb = forSaveBonus(stats.sb, pos);
-    const pb = forPassBonus(0, pos);
+    const pb = forPassBonus(stats.pb, pos);
     const points = {
         apps,
         subs,

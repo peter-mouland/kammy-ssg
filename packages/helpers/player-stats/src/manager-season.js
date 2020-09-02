@@ -1,4 +1,4 @@
-const TeamSeason = require('./team-season');
+const { TeamSeason } = require('./team-season');
 
 const managerTeamSeason = ({ managers, gameWeeks, players }) =>
     managers.reduce((prev, manager) => {

@@ -76,6 +76,7 @@ export const query = graphql`
                                     gls
                                     points
                                     rcard
+                                    pb
                                     sb
                                     subs
                                     tb
@@ -100,6 +101,7 @@ export const query = graphql`
                         pensv
                         ycard
                         rcard
+                        pb
                         tb
                         sb
                         points
@@ -114,6 +116,7 @@ export const query = graphql`
                         pensv
                         ycard
                         rcard
+                        pb
                         tb
                         sb
                         points
@@ -142,6 +145,7 @@ export const query = graphql`
                         pensv
                         ycard
                         rcard
+                        pb
                         tb
                         sb
                         points
@@ -156,6 +160,7 @@ export const query = graphql`
                         pensv
                         ycard
                         rcard
+                        pb
                         tb
                         sb
                         points

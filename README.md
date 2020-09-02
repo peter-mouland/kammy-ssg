@@ -15,15 +15,13 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
  - Saving data via [kammy-proxy project](http://github.com/peter-mouland/kammy-proxy)
 
 ## Todo:
+ - re-enable 'admin view'
  - improve transfer page
      - update time on transfer page in real-time
-     - show players selected + options
      - add 'bin' button (on left) to delete transfers
      - add 'you have x transfers remaining' message
      - disable button if too many transfers
      - improve transfer page filters
- - add pass-bonus to tables
- - re-enable 'admin view'
  - fix teams page 'position timeline'
  - fix 'sticky' headers. ffs.
  - remove 'popup' with 'drawer'

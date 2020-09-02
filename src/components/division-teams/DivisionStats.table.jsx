@@ -88,6 +88,7 @@ const TeamsPage = ({
                     {teams[managerName].map(
                         ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
                             if (!player) return null; // allow for week zero
+                            console.log(seasonToGameWeek)
                             const playerLastGW =
                                 previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
                             const className =

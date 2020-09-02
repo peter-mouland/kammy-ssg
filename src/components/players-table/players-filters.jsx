@@ -70,7 +70,6 @@ export default class PlayersFilters extends React.Component {
         this.state = {
             showHidden: false,
             showNew: false,
-            isSaving: false,
             customFilterChecked: false,
             posFilters: props.selectedPosition ? [props.selectedPosition] : [],
             nameFilters: [],
