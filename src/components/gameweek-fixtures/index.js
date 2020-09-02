@@ -75,4 +75,8 @@ GameWeekFixtures.propTypes = {
     ),
 };
 
+GameWeekFixtures.defaultProps = {
+    fixtures: [],
+};
+
 export default GameWeekFixtures;

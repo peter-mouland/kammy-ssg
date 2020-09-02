@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
@@ -67,9 +68,7 @@ const TransferBody = ({ transfers }) => {
 };
 
 TransferBody.propTypes = {
-    getGameWeekFromDate: PropTypes.func.isRequired,
     transfers: PropTypes.array.isRequired,
-    Action: PropTypes.element,
 };
 
 const GameWeekTransfers = ({ transfers, isLoading }) => (

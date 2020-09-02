@@ -30,7 +30,7 @@ const MultiToggle = ({
                 </div>
             )}
             {options.map((option, i) => (
-                <div className={bem('option')} key={`${id}-${i}`}>
+                <div className={bem('option')} key={option}>
                     <input
                         checked={checked === option}
                         id={`${id}-${i}`}

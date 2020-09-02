@@ -10,7 +10,7 @@ import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'game-week-switcher' });
 
-const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
+const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
     const data = useStaticQuery(graphql`
         query AllGameWeeks {
             allGameWeeks {
@@ -66,7 +66,11 @@ const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
 
 GameWeekSwitcher.propTypes = {
     url: PropTypes.string,
-    selectedGameWeek: PropTypes.number,
+    selectedGameWeek: PropTypes.number.isRequired,
+};
+
+GameWeekSwitcher.defaultProps = {
+    url: '',
 };
 
 export default GameWeekSwitcher;

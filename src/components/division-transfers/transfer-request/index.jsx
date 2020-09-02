@@ -127,11 +127,11 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
 
     const reset = () => {
         setComment('');
-        setChangeType(false);
-        setPlayerIn(false);
-        setPlayerOut(false);
-        setPlayerFilter(false);
-        setInitiateRequest(false);
+        setChangeType(undefined);
+        setPlayerIn(undefined);
+        setPlayerOut(undefined);
+        setPlayerFilter(undefined);
+        setInitiateRequest(undefined);
     };
     // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
     const {
@@ -192,7 +192,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
             onSelect={setPlayerInAndClose}
         />
     );
-
+    console.log({ changeType });
     return (
         <div className={bem(null, null, 'page-content')}>
             <Drawer
@@ -270,7 +270,10 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                             <h3>Any Comments for the banter box?</h3>
                         </Spacer>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <textarea className="transfers-page__comment" onChange={setComment} />
+                            <textarea
+                                className="transfers-page__comment"
+                                onChange={(e) => setComment(e.currentTarget.value)}
+                            />
                         </Spacer>
                         <Button
                             onClick={() => {

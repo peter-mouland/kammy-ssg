@@ -80,6 +80,10 @@ TransferBody.propTypes = {
     Action: PropTypes.element,
 };
 
+TransferBody.defaultProps = {
+    Action: null,
+};
+
 const GameWeekTransfers = ({ transfers, isLoading, Action, getGameWeekFromDate }) => (
     <table className="table">
         <thead>
@@ -116,7 +120,7 @@ const GameWeekTransfers = ({ transfers, isLoading, Action, getGameWeekFromDate }
 GameWeekTransfers.propTypes = {
     transfers: PropTypes.arrayOf(
         PropTypes.shape({
-            timestamp: PropTypes.string,
+            timestamp: PropTypes.date,
             status: PropTypes.string,
             type: PropTypes.string,
             manager: PropTypes.string,
