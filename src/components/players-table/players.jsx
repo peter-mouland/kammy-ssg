@@ -6,16 +6,11 @@ import PlayersTable from './players-table';
 
 class Players extends React.Component {
     render() {
-        const {
-            players, positions, visibleStats,
-        } = this.props;
+        const { players, positions, visibleStats } = this.props;
 
         return (
             <div>
-                <PlayersFilters
-                    players={players}
-                    positions={positions}
-                >
+                <PlayersFilters players={players} positions={positions}>
                     {(playersFiltered) => (
                         <PlayersTable
                             positions={positions}

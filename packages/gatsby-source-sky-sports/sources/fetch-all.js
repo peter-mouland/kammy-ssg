@@ -9,31 +9,40 @@ const fetchGoogleTransfersData = require('./google-sheets-transfers');
 const fetchGoogleManagersData = require('./google-sheets-managers');
 const fetchGoogleDraftData = require('./google-sheets-draft-setup');
 
-module.exports = () => Promise.all([
-    fetchSkySportsFixtureData(),
-    fetchSkySportsPlayerData(),
-    fetchSkySportsScoreData(),
-    fetchGoogleGameWeeksData(),
-    fetchGoogleCupData(),
-    fetchGoogleTransfersData(),
-    fetchGooglePlayersData(),
-    fetchGoogleDivisionsData(),
-    fetchGoogleManagersData(),
-    fetchGoogleDraftData(),
-])
-    .then(([
-        skySportsFixtureData, skySportsPlayerData, skySportsScoreData,
-        googleGameWeekData, googleCupData, googleTransferData, googlePlayerData,
-        googleDivisionData, googleManagerData, googleDraftData,
-    ]) => ({
-        skySportsFixtureData,
-        skySportsPlayerData,
-        skySportsScoreData,
-        googleGameWeekData,
-        googleCupData,
-        googleTransferData,
-        googlePlayerData,
-        googleDivisionData,
-        googleManagerData,
-        googleDraftData,
-    }));
+module.exports = () =>
+    Promise.all([
+        fetchSkySportsFixtureData(),
+        fetchSkySportsPlayerData(),
+        fetchSkySportsScoreData(),
+        fetchGoogleGameWeeksData(),
+        fetchGoogleCupData(),
+        fetchGoogleTransfersData(),
+        fetchGooglePlayersData(),
+        fetchGoogleDivisionsData(),
+        fetchGoogleManagersData(),
+        fetchGoogleDraftData(),
+    ]).then(
+        ([
+            skySportsFixtureData,
+            skySportsPlayerData,
+            skySportsScoreData,
+            googleGameWeekData,
+            googleCupData,
+            googleTransferData,
+            googlePlayerData,
+            googleDivisionData,
+            googleManagerData,
+            googleDraftData,
+        ]) => ({
+            skySportsFixtureData,
+            skySportsPlayerData,
+            skySportsScoreData,
+            googleGameWeekData,
+            googleCupData,
+            googleTransferData,
+            googlePlayerData,
+            googleDivisionData,
+            googleManagerData,
+            googleDraftData,
+        }),
+    );

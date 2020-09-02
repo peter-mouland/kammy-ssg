@@ -12,24 +12,25 @@ const bem = bemHelper({ block: 'game-week-switcher' });
 
 const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
     const data = useStaticQuery(graphql`
-      query AllGameWeeks {
-        allGameWeeks {
-          nodes {
-            gameWeek
-            isCurrent
-            start
-            end
-            cup
-          }
+        query AllGameWeeks {
+            allGameWeeks {
+                nodes {
+                    gameWeek
+                    isCurrent
+                    start
+                    end
+                    cup
+                }
+            }
         }
-      }
     `);
     const gameWeeks = data.allGameWeeks.nodes;
     const currentGameWeek = gameWeeks.find(({ isCurrent }) => !!isCurrent);
     const previousGameWeeks = [...gameWeeks].slice(0, selectedGameWeek + 1 + 1);
-    const options = previousGameWeeks.length > 4
-        ? previousGameWeeks.slice(previousGameWeeks.length - 4, selectedGameWeek + 1 + 1)
-        : previousGameWeeks;
+    const options =
+        previousGameWeeks.length > 4
+            ? previousGameWeeks.slice(previousGameWeeks.length - 4, selectedGameWeek + 1 + 1)
+            : previousGameWeeks;
     if (!options.includes(currentGameWeek)) {
         if (selectedGameWeek > currentGameWeek.gameWeek) {
             options.unshift(currentGameWeek);
@@ -39,16 +40,23 @@ const GameWeekSwitcher = ({ url = '', selectedGameWeek }) => {
     }
     return (
         <section id="gameweek-switcher" className={bem()}>
-            <Spacer tag={'span'} all={{ right: Spacer.spacings.MEDIUM }}>
+            <Spacer tag="span" all={{ right: Spacer.spacings.MEDIUM }}>
                 GameWeek:
             </Spacer>
             {options.map(({ gameWeek, isCurrent }) => (
-                <Link key={gameWeek} to={`/week-${gameWeek}${url}`} className={''}>
+                <Link key={gameWeek} to={`/week-${gameWeek}${url}`} className="">
                     <ContextualHelp
-                        body={<FormattedGameWeekDate gameWeek={gameWeeks[gameWeek]}/>}
-                        Trigger={(
-                            <span className={ bem('option-label', { isCurrent: !!isCurrent, isSelected: selectedGameWeek === gameWeek }) }>{gameWeek}</span>
-                        )}
+                        body={<FormattedGameWeekDate gameWeek={gameWeeks[gameWeek]} />}
+                        Trigger={
+                            <span
+                                className={bem('option-label', {
+                                    isCurrent: !!isCurrent,
+                                    isSelected: selectedGameWeek === gameWeek,
+                                })}
+                            >
+                                {gameWeek}
+                            </span>
+                        }
                     />
                 </Link>
             ))}

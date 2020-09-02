@@ -9,14 +9,19 @@ import TabbedMenu from '../components/tabbed-division-menu';
 const TransfersPage = ({
     data: {
         currentTeams: { group: currentTeams },
-        currentGameWeek, prevGameWeek, gameWeekMinus2,
+        currentGameWeek,
+        prevGameWeek,
+        gameWeekMinus2,
     },
     pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
 }) => {
-    const teamsByManager = currentTeams.reduce((prev, { nodes: team }) => ({
-        ...prev,
-        [team[0].managerName]: team,
-    }), {});
+    const teamsByManager = currentTeams.reduce(
+        (prev, { nodes: team }) => ({
+            ...prev,
+            [team[0].managerName]: team,
+        }),
+        {},
+    );
 
     const divisionUrl = divisionLabel.toLowerCase().replace(/ /g, '-');
 
@@ -40,7 +45,7 @@ const TransfersPage = ({
 
 export const query = graphql`
     query DivisionTransfers($gameWeek: Int, $prevGameWeek: Int, $prev2GameWeek: Int, $divisionKey: String) {
-        currentGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
+        currentGameWeek: gameWeeks(gameWeek: { eq: $gameWeek }) {
             gameWeek
             isCurrent
             start
@@ -58,14 +63,14 @@ export const query = graphql`
                 status
             }
         }
-        prevGameWeek: gameWeeks(gameWeek: {eq: $prevGameWeek}) {
+        prevGameWeek: gameWeeks(gameWeek: { eq: $prevGameWeek }) {
             gameWeek
             start
             end
             cup
             notes
         }
-        gameWeekMinus2: gameWeeks(gameWeek: {eq: $prev2GameWeek}) {
+        gameWeekMinus2: gameWeeks(gameWeek: { eq: $prev2GameWeek }) {
             gameWeek
             start
             end
@@ -73,7 +78,7 @@ export const query = graphql`
             notes
         }
         currentTeams: allTeams(
-            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } },
+            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
             sort: { fields: managerName }
         ) {
             group(field: managerName) {

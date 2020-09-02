@@ -26,7 +26,6 @@ module.exports = {
             resolve: 'gatsby-plugin-react-css-modules',
         },
         {
-
             resolve: 'gatsby-plugin-sass',
             options: {
                 includePaths: ['node_modules'],

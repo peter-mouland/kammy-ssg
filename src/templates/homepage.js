@@ -19,19 +19,22 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
         nextGameWeek,
         prevGameWeek,
     };
-    const statsByDivision = managers.reduce((prev, { manager, division }) => ({
-        ...prev,
-        [division.key]: [
-            ...(prev[division.key] || []),
-            {
-                managerName: manager,
-                points: leagueStats.find((stats) => stats.managerName === manager).points,
-                division: division.key,
-                divisionLabel: division.label,
-                divisionOrder: division.order,
-            },
-        ],
-    }), {});
+    const statsByDivision = managers.reduce(
+        (prev, { manager, division }) => ({
+            ...prev,
+            [division.key]: [
+                ...(prev[division.key] || []),
+                {
+                    managerName: manager,
+                    points: leagueStats.find((stats) => stats.managerName === manager).points,
+                    division: division.key,
+                    divisionLabel: division.label,
+                    divisionOrder: division.order,
+                },
+            ],
+        }),
+        {},
+    );
 
     return (
         <Layout>
@@ -46,128 +49,128 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
 };
 
 export const query = graphql`
-  query Homepage($gameWeek: Int, $prevGameWeek: Int, $nextGameWeek: Int) {
-    currentGameWeek: gameWeeks(gameWeek: {eq: $gameWeek}) {
-      gameWeek
-      isCurrent
-      start
-      end
-      cup
-      notes
-      fixtures {
-        aScore
-        aTcode
-        aTname
-        date
-        hScore
-        hTcode
-        hTname
-        status
-      }
-    }
-    prevGameWeek: gameWeeks(gameWeek: {eq: $prevGameWeek}) {
-      gameWeek
-      isCurrent
-      start
-      end
-      cup
-      notes
-      fixtures {
-        aScore
-        aTcode
-        aTname
-        date
-        hScore
-        hTcode
-        hTname
-        status
-      }
-    }
-    nextGameWeek: gameWeeks(gameWeek: {eq: $nextGameWeek}) {
-      gameWeek
-      isCurrent
-      start
-      end
-      cup
-      notes
-      fixtures {
-        aScore
-        aTcode
-        aTname
-        date
-        hScore
-        hTcode
-        hTname
-        status
-      }
-    }
-    allDivisions(sort: {fields: order}) {
-      nodes {
-        key
-        label
-        order
-      }
-    }
-    allLeagueTable(filter: {gameWeek: {eq: $gameWeek}}, sort: {fields: manager___division___order}) {
-      nodes {
-        gameWeek
-        points {
-          am {
-            gameWeekPoints
-            seasonPoints
-            rank
-          }
-          cb {
-            gameWeekPoints
-            seasonPoints
-            rank
-          }
-          fb {
-            seasonPoints
-            gameWeekPoints
-            rank
-          }
-          gks {
-            gameWeekPoints
-            seasonPoints
-            rank
-          }
-          str {
-            gameWeekPoints
-            seasonPoints
-            rank
-          }
-          total {
-            gameWeekPoints
-            seasonPoints
-            rank
-          }
-          mid {
-            gameWeekPoints
-            seasonPoints
-            rank
-          }
+    query Homepage($gameWeek: Int, $prevGameWeek: Int, $nextGameWeek: Int) {
+        currentGameWeek: gameWeeks(gameWeek: { eq: $gameWeek }) {
+            gameWeek
+            isCurrent
+            start
+            end
+            cup
+            notes
+            fixtures {
+                aScore
+                aTcode
+                aTname
+                date
+                hScore
+                hTcode
+                hTname
+                status
+            }
         }
-        managerName
-        manager {
-          manager
-          division {
-            key
-            label
-            order
-          }
+        prevGameWeek: gameWeeks(gameWeek: { eq: $prevGameWeek }) {
+            gameWeek
+            isCurrent
+            start
+            end
+            cup
+            notes
+            fixtures {
+                aScore
+                aTcode
+                aTname
+                date
+                hScore
+                hTcode
+                hTname
+                status
+            }
         }
-      }
-    }
-    allManagers(sort: {fields: division___order}) {
-      nodes {
-        manager
-        division {
-          key
+        nextGameWeek: gameWeeks(gameWeek: { eq: $nextGameWeek }) {
+            gameWeek
+            isCurrent
+            start
+            end
+            cup
+            notes
+            fixtures {
+                aScore
+                aTcode
+                aTname
+                date
+                hScore
+                hTcode
+                hTname
+                status
+            }
         }
-      }
+        allDivisions(sort: { fields: order }) {
+            nodes {
+                key
+                label
+                order
+            }
+        }
+        allLeagueTable(filter: { gameWeek: { eq: $gameWeek } }, sort: { fields: manager___division___order }) {
+            nodes {
+                gameWeek
+                points {
+                    am {
+                        gameWeekPoints
+                        seasonPoints
+                        rank
+                    }
+                    cb {
+                        gameWeekPoints
+                        seasonPoints
+                        rank
+                    }
+                    fb {
+                        seasonPoints
+                        gameWeekPoints
+                        rank
+                    }
+                    gks {
+                        gameWeekPoints
+                        seasonPoints
+                        rank
+                    }
+                    str {
+                        gameWeekPoints
+                        seasonPoints
+                        rank
+                    }
+                    total {
+                        gameWeekPoints
+                        seasonPoints
+                        rank
+                    }
+                    mid {
+                        gameWeekPoints
+                        seasonPoints
+                        rank
+                    }
+                }
+                managerName
+                manager {
+                    manager
+                    division {
+                        key
+                        label
+                        order
+                    }
+                }
+            }
+        }
+        allManagers(sort: { fields: division___order }) {
+            nodes {
+                manager
+                division {
+                    key
+                }
+            }
+        }
     }
-  }
 `;
 
 export default Index;

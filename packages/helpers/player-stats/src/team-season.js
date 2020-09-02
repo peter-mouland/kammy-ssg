@@ -10,9 +10,7 @@ const UNKNOWN_PLAYER = (player) => ({
 });
 
 class TeamSeason {
-    constructor({
-        manager, division, gameWeeks, players,
-    }) {
+    constructor({ manager, division, gameWeeks, players }) {
         this.players = players;
         this.manager = manager;
         this.gameWeeks = gameWeeks;
@@ -32,8 +30,8 @@ class TeamSeason {
             const { gameWeek } = gameWeekObj;
             const managerPlayers = gwPlayers.filter(({ manager: playerManager }) => manager === playerManager);
             managerPlayers.forEach((player, i) => {
-                const playerGws = (players[i].player || []);
-                const seasonToGameWeek = (players[i].seasonToGameWeek || []);
+                const playerGws = players[i].player || [];
+                const seasonToGameWeek = players[i].seasonToGameWeek || [];
                 playerGws[gameWeek] = getPlayerStats({ player: this.getPlayer(player), gameWeeks: [gameWeekObj] });
                 seasonToGameWeek[gameWeek] = calculateSeasonStats(playerGws.slice(0, gameWeek + 1));
 

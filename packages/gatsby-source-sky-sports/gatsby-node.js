@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+// eslint-disable-next-line import/order
 const fetch = require('./lib/fetch');
 
 global.fetch = fetch;
@@ -18,20 +19,19 @@ const buildDraft = require('./builds/draft');
 const buildTeams = require('./builds/teams');
 const buildLeagueTables = require('./builds/league-tables');
 
-const createNode = ({ actions, createNodeId, node }) => actions.createNode({
-    parent: null,
-    children: [],
-    ...node.data,
-    id: createNodeId(node.resourceId),
-    internal: {
-        ...node.internal,
-        contentDigest: hashContent({ data: node.data, resourceId: node.resourceId }),
-    },
-});
+const createNode = ({ actions, createNodeId, node }) =>
+    actions.createNode({
+        parent: null,
+        children: [],
+        ...node.data,
+        id: createNodeId(node.resourceId),
+        internal: {
+            ...node.internal,
+            contentDigest: hashContent({ data: node.data, resourceId: node.resourceId }),
+        },
+    });
 
-exports.sourceNodes = async (
-    { actions, createNodeId },
-) => {
+exports.sourceNodes = async ({ actions, createNodeId }) => {
     const {
         skySportsFixtureData,
         skySportsPlayerData,
@@ -58,14 +58,22 @@ exports.sourceNodes = async (
     const cup = buildCup({ googleCupData, createNodeId }); // relies on sky players
     const managers = buildManagers({ googleManagerData, createNodeId }); // relies on divisions
     const draft = buildDraft({ googleDraftData, createNodeId }); // relies on players + divisions
-    const transfers = buildTransfers({ googleTransferData, createNodeId });// relies on players + divisions + managers
+    const transfers = buildTransfers({ googleTransferData, createNodeId }); // relies on players + divisions + managers
     const teams = buildTeams({
-        draft, managers, transfers, gameWeeks, players, createNodeId,
-    });// relies on players + managers
+        draft,
+        managers,
+        transfers,
+        gameWeeks,
+        players,
+        createNodeId,
+    }); // relies on players + managers
 
     // last - the tables
     const leagueTables = buildLeagueTables({
-        divisions, managers, teams, createNodeId,
+        divisions,
+        managers,
+        teams,
+        createNodeId,
     });
 
     // create all the gatsby nodes

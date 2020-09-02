@@ -13,29 +13,34 @@ const emptyStats = extractFFStats(emptyStatsArray);
 // exported for tests
 const addPointsToFixtures = (fixture, pos) => {
     const stats = extractFFStats(fixture.stats || emptyStatsArray);
-    return ({
+    return {
         ...fixture,
         stats: {
             ...stats,
             points: calculateTotalPoints({ stats, pos }).total,
         },
-    });
+    };
 };
 
 // expsorted for tests
-const totalUpStats = (fixtures) => (
-    fixtures.reduce((totals, gw) => (
-        Object.keys(totals).reduce((prev, stat) => ({
-            ...prev,
-            [stat]: (gw.stats[stat] || 0) + totals[stat],
-        }), emptyStats)
-    ), emptyStats)
-);
+const totalUpStats = (fixtures) =>
+    fixtures.reduce(
+        (totals, gw) =>
+            Object.keys(totals).reduce(
+                (prev, stat) => ({
+                    ...prev,
+                    [stat]: (gw.stats[stat] || 0) + totals[stat],
+                }),
+                emptyStats,
+            ),
+        emptyStats,
+    );
 
 // exposrted for tests
-const getGameWeekFixtures = (player, gameWeeks) => (
+const getGameWeekFixtures = (player, gameWeeks) =>
     // todo: don't include PENDING in production!
-    jsonQuery('fixtures[*:date]', { // [*status!=PENDING]
+    jsonQuery('fixtures[*:date]', {
+        // [*status!=PENDING]
         data: player,
         locals: {
             date(item) {
@@ -45,14 +50,11 @@ const getGameWeekFixtures = (player, gameWeeks) => (
                     const gameweekStart = parseISO(gameWeek.start);
                     const beforeEnd = isBefore(fixtureDate, gameweekEnd) || isEqual(fixtureDate, gameweekEnd);
                     const afterStart = isAfter(fixtureDate, gameweekStart) || isEqual(fixtureDate, gameweekStart);
-                    return (
-                        prev || (afterStart && beforeEnd)
-                    );
+                    return prev || (afterStart && beforeEnd);
                 }, false);
             },
         },
-    }).value || []
-);
+    }).value || [];
 
 const calculatePoints = calculateTotalPoints;
 
@@ -70,13 +72,14 @@ const playerStats = ({ player, gameWeeks }) => {
         console.log(`PLAYER NOT FOUND: ${player.name}`);
     }
     return {
-        ...player, fixtures, gameWeekFixtures, gameWeekStats,
+        ...player,
+        fixtures,
+        gameWeekFixtures,
+        gameWeekStats,
     };
 };
 
-const defaults = ({ children, gameWeeks, player }) => (
-    children(playerStats({ player, gameWeeks }))
-);
+const defaults = ({ children, gameWeeks, player }) => children(playerStats({ player, gameWeeks }));
 
 module.exports = {
     defaults,

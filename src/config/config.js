@@ -22,7 +22,7 @@ const setConfig = () => {
 
     // explicitly check vars so that webpack can help us
     if (config.NODE_ENV === 'development') {
-    // set dev envs here
+        // set dev envs here
         config.DEBUG = true;
         config.isPreview = true;
     }

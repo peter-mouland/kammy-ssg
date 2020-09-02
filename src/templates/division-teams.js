@@ -12,14 +12,20 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
         previousTeams: { group: previousTeams },
     } = data;
 
-    const teamsByManager = currentTeams.reduce((prev, { nodes: team }) => ({
-        ...prev,
-        [team[0].managerName]: team,
-    }), {});
-    const previousTeamsByManager = (previousTeams || []).reduce((prev, { nodes: team }) => ({
-        ...prev,
-        [team[0].managerName]: team,
-    }), {});
+    const teamsByManager = currentTeams.reduce(
+        (prev, { nodes: team }) => ({
+            ...prev,
+            [team[0].managerName]: team,
+        }),
+        {},
+    );
+    const previousTeamsByManager = (previousTeams || []).reduce(
+        (prev, { nodes: team }) => ({
+            ...prev,
+            [team[0].managerName]: team,
+        }),
+        {},
+    );
 
     return (
         <Layout>
@@ -40,7 +46,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
 export const query = graphql`
     query Teams($gameWeek: Int, $prevGameWeek: Int, $divisionKey: String) {
         currentTeams: allTeams(
-            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } },
+            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
             sort: { fields: managerName }
         ) {
             group(field: managerName) {
@@ -116,7 +122,7 @@ export const query = graphql`
             }
         }
         previousTeams: allTeams(
-            filter: { gameWeek: { eq: $prevGameWeek }, manager: { divisionKey: { eq: $divisionKey } } },
+            filter: { gameWeek: { eq: $prevGameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
             sort: { fields: managerName }
         ) {
             group(field: managerName) {

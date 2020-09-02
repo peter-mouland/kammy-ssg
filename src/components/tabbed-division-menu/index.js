@@ -41,7 +41,7 @@ const tabs = [
 
 const TabbedDivisionMenu = ({ division, selected }) => (
     <div className={styles.container}>
-        <Spacer tag={'ul'} all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
+        <Spacer tag="ul" all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
             {tabs.map(({ id, label, Icon }) => (
                 <li key={id} className={cx(styles.tab)}>
                     <NamedLink
@@ -49,7 +49,9 @@ const TabbedDivisionMenu = ({ division, selected }) => (
                         className={cx(styles.cta, { [styles.isActive]: id === selected })}
                     >
                         <Spacer medium={{ right: Spacer.spacings.SMALL }}>
-                            <div className={styles.iconContainer}><Icon width="26px" height="26px" /></div>
+                            <div className={styles.iconContainer}>
+                                <Icon width="26px" height="26px" />
+                            </div>
                         </Spacer>
                         {label}
                     </NamedLink>

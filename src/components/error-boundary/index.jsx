@@ -8,7 +8,7 @@ class Index extends React.Component {
     }
 
     componentDidCatch(error, info) {
-    // Display fallback UI
+        // Display fallback UI
         this.setState({ hasError: true });
         // You can also log the error to an error reporting service
         console.log(error, info);

@@ -5,7 +5,7 @@ module.exports = ({ googleTransferData, createNodeId }) => {
     const start = new Date();
 
     const transfers = googleTransferData
-        .sort((t1, t2) => (new Date(t1.timestamp) - new Date(t2.timestamp)))
+        .sort((t1, t2) => new Date(t1.timestamp) - new Date(t2.timestamp))
         .map((transfer) => {
             const data = transfer;
 

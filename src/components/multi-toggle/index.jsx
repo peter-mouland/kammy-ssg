@@ -9,34 +9,54 @@ import './multi-toggle.scss';
 const bem = bemHelper({ block: 'multi-toggle' });
 
 const Index = ({
-    id, checked, options, disabledOptions, label, loadingMessage, className, onChange, contextualHelp, loading, ...props
+    id,
+    checked,
+    options,
+    disabledOptions,
+    label,
+    loadingMessage,
+    className,
+    onChange,
+    contextualHelp,
+    loading,
+    ...props
 }) => (
-    <span className={bem(null, null, className)} id={ id } { ...props }>
+    <span className={bem(null, null, className)} id={id} {...props}>
         {label && <span className={bem('label')}>{label}</span>}
-        <span className={bem('group')} id={ id } { ...props }>
-            {loading && <div className={bem('interstitial')}><Interstitial message={loadingMessage}/></div>}
+        <span className={bem('group')} id={id} {...props}>
+            {loading && (
+                <div className={bem('interstitial')}>
+                    <Interstitial message={loadingMessage} />
+                </div>
+            )}
             {options.map((option, i) => (
-                <div className={ bem('option') } key={ `${id}-${i}` }>
+                <div className={bem('option')} key={`${id}-${i}`}>
                     <input
                         checked={checked === option}
-                        id={ `${id}-${i}` }
-                        name={ id }
-                        type={'radio'}
+                        id={`${id}-${i}`}
+                        name={id}
+                        type="radio"
                         value={option}
                         onChange={disabledOptions.includes(option) ? null : () => onChange(option)}
                         disabled={disabledOptions.includes(option)}
                     />
                     {contextualHelp && (
-                        <ContextualHelp body={contextualHelp(option)} Trigger={(
-                            <label className={ bem('option-label') } htmlFor={ `${id}-${i}` }>{option}</label>
-                        )}/>
+                        <ContextualHelp
+                            body={contextualHelp(option)}
+                            Trigger={
+                                <label className={bem('option-label')} htmlFor={`${id}-${i}`}>
+                                    {option}
+                                </label>
+                            }
+                        />
                     )}
                     {!contextualHelp && (
-                        <label className={ bem('option-label') } htmlFor={ `${id}-${i}` }>{option}</label>
+                        <label className={bem('option-label')} htmlFor={`${id}-${i}`}>
+                            {option}
+                        </label>
                     )}
                 </div>
-            ))
-            }
+            ))}
         </span>
     </span>
 );
@@ -57,6 +77,7 @@ Index.propTypes = {
 Index.defaultProps = {
     disabledOptions: [],
     options: [],
+    className: '',
     checked: null,
     loading: false,
     loadingMessage: null,

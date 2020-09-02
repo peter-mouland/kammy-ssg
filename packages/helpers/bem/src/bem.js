@@ -10,9 +10,11 @@ function toClass(classes = '', prefix = '') {
     return arrClasses.reduce((prev, currClass) => `${prev ? `${prev} ` : ''}${prefix + currClass}`, '');
 }
 
-const bem = ({
-    prefix = '', block, elementPrefix = '__', modifierPrefix = '--',
-}) => (element = '', modifier = '', utils = '') => {
+const bem = ({ prefix = '', block, elementPrefix = '__', modifierPrefix = '--' }) => (
+    element = '',
+    modifier = '',
+    utils = '',
+) => {
     const blockClass = `${prefix}${block}`;
     const elementClass = element ? toClass(element, blockClass + elementPrefix) : '';
     const blockModifier = modifier && !elementClass ? ` ${toClass(modifier, blockClass + modifierPrefix)}` : '';

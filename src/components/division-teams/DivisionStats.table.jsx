@@ -8,10 +8,13 @@ import { StatsHeaders, StatsCells } from './components/tableHelpers';
 const bem = bemHelper({ block: 'table' });
 
 const validatePlayer = (managersSeason, intGameWeek) => {
-    const players = Object.keys(managersSeason).reduce((acc, manager) => ([
-        ...acc,
-        ...managersSeason[manager].map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek]),
-    ]), []);
+    const players = Object.keys(managersSeason).reduce(
+        (acc, manager) => [
+            ...acc,
+            ...managersSeason[manager].map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek]),
+        ],
+        [],
+    );
     const cache = {};
     return players
         .reduce((acc, player = {}) => {
@@ -31,101 +34,113 @@ const validateClub = (team = [], intGameWeek) => {
         .map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek])
         .filter(Boolean)
         .filter(({ club }) => !!club);
-    return players.reduce((acc, player = {}) => {
-        const count = (acc[player.club] || 0) + 1;
-        const clubWarnings = count > 2 && acc.clubWarnings.indexOf(player.club) < 0
-            ? [...acc.clubWarnings, player.club]
-            : acc.clubWarnings;
-        return ({
-            ...acc,
-            [player.club]: count,
-            clubWarnings,
-        });
-    }, { clubWarnings: [] });
+    return players.reduce(
+        (acc, player = {}) => {
+            const count = (acc[player.club] || 0) + 1;
+            const clubWarnings =
+                count > 2 && acc.clubWarnings.indexOf(player.club) < 0
+                    ? [...acc.clubWarnings, player.club]
+                    : acc.clubWarnings;
+            return {
+                ...acc,
+                [player.club]: count,
+                clubWarnings,
+            };
+        },
+        { clubWarnings: [] },
+    );
 };
 
 const TeamsPage = ({
-    teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, selectedGameWeek, isAdmin,
+    teams,
+    previousTeams,
+    onShowPositionTimeline,
+    onShowPlayerTimeline,
+    selectedGameWeek,
+    isAdmin,
 }) => (
-// const duplicatePlayers = validatePlayer(managersSeason, selectedGameWeek) || [];
-// const allClubWarnings = managers.map((manager) => {
-//     const { clubWarnings } = validateClub(managersSeason[manager], selectedGameWeek);
-//     return clubWarnings.length ? { clubWarnings, manager } : undefined;
-// }).filter(Boolean);
-    <table className={'table'}>
+    // const duplicatePlayers = validatePlayer(managersSeason, selectedGameWeek) || [];
+    // const allClubWarnings = managers.map((manager) => {
+    //     const { clubWarnings } = validateClub(managersSeason[manager], selectedGameWeek);
+    //     return clubWarnings.length ? { clubWarnings, manager } : undefined;
+    // }).filter(Boolean);
+    <table className="table">
         {Object.keys(teams).map((managerName) => (
             // const { clubWarnings } = validateClub(managerName, selectedGameWeek);
             <Fragment key={managerName}>
                 <thead>
                     <tr>
-                        <th colSpan="4" className={'cell cell--team-manager'}>{managerName}</th>
-                        <th colSpan={24} className={'cell cell--team-season'}>Season</th>
+                        <th colSpan="4" className="cell cell--team-manager">
+                            {managerName}
+                        </th>
+                        <th colSpan={24} className="cell cell--team-season">
+                            Season
+                        </th>
                     </tr>
-                    <tr className={'row row--header'}>
-                        <th className={'cell cell--team-position'}>Position</th>
-                        <th className={'cell cell--player'}>Player</th>
-                        <th className={'cell cell--club show-850'}>Club</th>
-                        <StatsHeaders/>
+                    <tr className="row row--header">
+                        <th className="cell cell--team-position">Position</th>
+                        <th className="cell cell--player">Player</th>
+                        <th className="cell cell--club show-850">Club</th>
+                        <StatsHeaders />
                     </tr>
                 </thead>
                 <tbody>
-                    {teams[managerName].map(({
-                        player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats,
-                    }, i) => {
-                        if (!player) return null; // allow for week zero
-                        const playerLastGW = previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
-                        const className = playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
-                        // const warningClassName = isAdmin && (
-                        //     clubWarnings.indexOf(player.club) > -1 || duplicatePlayers.indexOf(player.name) > -1
-                        // ) ? 'row row--warning' : 'row';
-                        const warningClassName = 'row';
-                        return (
-                            <tr
-                                key={playerName}
-                                className={`${className} ${warningClassName}`}
-                            >
-                                <td className={'cell cell--team-position'}>
-                                    <a
-                                        href={'#'}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            onShowPositionTimeline({
-                                                position: pos,
-                                                gameWeeks: player.gameWeeks,
-                                                season: player.seasonStats,
-                                            });
-                                        }}
-                                        title={`Show ${player.teamPos} timeline`}
-                                    >
-                                        {pos}
-                                        {pos !== teamPos && (
-                                            <small> ({teamPos.toLowerCase()})</small>
-                                        )}
-                                    </a>
-                                </td>
-                                <td className={'cell cell--player'}>
-                                    <a
-                                        href={'#'}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            onShowPlayerTimeline({ player });
-                                        }}
-                                        title={`Show ${teamPos} timeline`}
-                                    >
-                                        <span className='show-625'>{playerName}</span>
-                                        <span className='hide-625'>{playerName.split(',')[0]}</span>
-                                    </a>
-                                    <small className={'hide-850'}>
-                                        <span className='show-550'>{player.club}</span>
-                                        <span
-                                            className='hide-550'>{player.club.split(' ')[0]} {(player.club.split(' ')[1] || '').charAt(0)}</span>
-                                    </small>
-                                </td>
-                                <td className={'cell cell--club show-850'}>{player.club}</td>
-                                <StatsCells seasonToGameWeek={seasonToGameWeek} gameWeekStats={gameWeekStats}/>
-                            </tr>
-                        );
-                    })}
+                    {teams[managerName].map(
+                        ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
+                            if (!player) return null; // allow for week zero
+                            const playerLastGW =
+                                previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
+                            const className =
+                                playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
+                            // const warningClassName = isAdmin && (
+                            //     clubWarnings.indexOf(player.club) > -1 || duplicatePlayers.indexOf(player.name) > -1
+                            // ) ? 'row row--warning' : 'row';
+                            const warningClassName = 'row';
+                            return (
+                                <tr key={playerName} className={`${className} ${warningClassName}`}>
+                                    <td className="cell cell--team-position">
+                                        <a
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                onShowPositionTimeline({
+                                                    position: pos,
+                                                    gameWeeks: player.gameWeeks,
+                                                    season: player.seasonStats,
+                                                });
+                                            }}
+                                            title={`Show ${player.teamPos} timeline`}
+                                        >
+                                            {pos}
+                                            {pos !== teamPos && <small> ({teamPos.toLowerCase()})</small>}
+                                        </a>
+                                    </td>
+                                    <td className="cell cell--player">
+                                        <a
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                onShowPlayerTimeline({ player });
+                                            }}
+                                            title={`Show ${teamPos} timeline`}
+                                        >
+                                            <span className="show-625">{playerName}</span>
+                                            <span className="hide-625">{playerName.split(',')[0]}</span>
+                                        </a>
+                                        <small className="hide-850">
+                                            <span className="show-550">{player.club}</span>
+                                            <span className="hide-550">
+                                                {player.club.split(' ')[0]}{' '}
+                                                {(player.club.split(' ')[1] || '').charAt(0)}
+                                            </span>
+                                        </small>
+                                    </td>
+                                    <td className="cell cell--club show-850">{player.club}</td>
+                                    <StatsCells seasonToGameWeek={seasonToGameWeek} gameWeekStats={gameWeekStats} />
+                                </tr>
+                            );
+                        },
+                    )}
                 </tbody>
                 {/* {isAdmin && clubWarnings.length > 0 && ( */}
                 {/*    <tr className={'row row--warning'}> */}
@@ -135,8 +150,7 @@ const TeamsPage = ({
                 {/*    </tr> */}
                 {/* )} */}
             </Fragment>
-        ),
-        )}
+        ))}
     </table>
 );
 

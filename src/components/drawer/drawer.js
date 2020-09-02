@@ -47,7 +47,11 @@ const Drawer = ({
     );
 
     const keyHandler = useFocusTrap({
-        hasBackdrop, isBackdropShown, isOpen, containerRef, onKeyDown: handleEscape,
+        hasBackdrop,
+        isBackdropShown,
+        isOpen,
+        containerRef,
+        onKeyDown: handleEscape,
     });
     const { height } = useUpdateHeight();
 

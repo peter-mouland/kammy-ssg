@@ -12,9 +12,7 @@ const formatTimeStamp = (timestamp = '') => {
 
 const formatTransfers = (data = [], division) => {
     try {
-        return data.map(({
-            Comment = '', Status, Timestamp, Manager, ...item
-        }) => ({
+        return data.map(({ Comment = '', Status, Timestamp, Manager, ...item }) => ({
             division,
             comment: Comment.trim(),
             status: Status.trim(),

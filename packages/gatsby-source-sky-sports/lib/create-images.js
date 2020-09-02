@@ -6,10 +6,7 @@ const { nodeTypes, mediaTypes } = require('./constants');
 
 const imageDirectory = '../../../src/assets/learn/';
 
-const getFileTypeFromDataUri = (dataUri) => dataUri
-    .split('data:image/')
-    .pop()
-    .split(';base64')[0];
+const getFileTypeFromDataUri = (dataUri) => dataUri.split('data:image/').pop().split(';base64')[0];
 const getFileDataFromDataUri = (dataUri) => dataUri.replace(/^data:image\/\w+;base64,/, '');
 
 module.exports = ({ pageId, type, image }) => {

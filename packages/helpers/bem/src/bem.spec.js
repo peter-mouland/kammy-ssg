@@ -87,14 +87,11 @@ describe('bem test', () => {
             const expand = 'xs';
             const wasExpanded = true;
             const expanded = false;
-            const className = cn(
-                null,
-                {
-                    visible: wasExpanded && expanded,
-                    hidden: wasExpanded && !expanded,
-                    [`visible-${expand}`]: !!expand,
-                },
-            );
+            const className = cn(null, {
+                visible: wasExpanded && expanded,
+                hidden: wasExpanded && !expanded,
+                [`visible-${expand}`]: !!expand,
+            });
             expect(className).toEqual('accordion accordion--hidden accordion--visible-xs');
         });
 
@@ -167,14 +164,11 @@ describe('bem test', () => {
             const expand = 'xs';
             const wasExpanded = true;
             const expanded = false;
-            const className = cn(
-                null,
-                {
-                    visible: wasExpanded && expanded,
-                    hidden: wasExpanded && !expanded,
-                    [`visible-${expand}`]: !!expand,
-                },
-            );
+            const className = cn(null, {
+                visible: wasExpanded && expanded,
+                hidden: wasExpanded && !expanded,
+                [`visible-${expand}`]: !!expand,
+            });
             expect(className).toEqual('ac-accordion ac-accordion--hidden ac-accordion--visible-xs');
         });
 

@@ -6,7 +6,7 @@ import NavBar from '.';
 
 describe('<NavBar />', () => {
     it('renders a nav', () => {
-        const wrapper = render(<NavBar/>);
+        const wrapper = render(<NavBar />);
         expect(wrapper.find('nav')).toHaveLength(1);
     });
 });

@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import NamedLink from '../../named-link';
 import './nav-item.scss';
 
-const NavItem = ({
-    label, children, className = '', to,
-}) => {
+const NavItem = ({ label, children, className = '', to }) => {
     const [open, toggleOpen] = useState(false);
     const toggle = (toggleLabel) => toggleOpen(open === toggleLabel ? null : toggleLabel);
     const close = () => toggleOpen(null);
@@ -15,13 +13,23 @@ const NavItem = ({
     const isOpenClassName = open === label ? 'nav-item--open' : '';
     return (
         <div className={`nav-item ${className} ${isOpenClassName}`}>
-            {label && to && <NamedLink className='nav-item__label' to={to}>{label}</NamedLink>}
-            {label && !to && <div className='nav-item__label' onClick={() => toggle(label)} onMouseLeave={close}>{label}</div>}
-            {links.length === 1 && (links[0])}
+            {label && to && (
+                <NamedLink className="nav-item__label" to={to}>
+                    {label}
+                </NamedLink>
+            )}
+            {label && !to && (
+                <div className="nav-item__label" onClick={() => toggle(label)} onMouseLeave={close}>
+                    {label}
+                </div>
+            )}
+            {links.length === 1 && links[0]}
             {links.length > 1 && (
-                <div className='nav-item__children'>
+                <div className="nav-item__children">
                     {links.map((child, i) => (
-                        <div key={i} className='nav-item__child'>{child}</div>
+                        <div key={i} className="nav-item__child">
+                            {child}
+                        </div>
                     ))}
                 </div>
             )}

@@ -3,12 +3,11 @@ import React from 'react';
 import bemHelper from '@kammy/bem';
 // import { withCookies, Cookies } from 'react-cookie';
 
+// import NavItem from './components/nav-item';
 import appConfig from '../../config/config';
 import NamedLink from '../named-link';
-import NavItem from './components/nav-item';
-
-import './nav-bar.scss';
 import Spacer from '../spacer';
+import './nav-bar.scss';
 
 const bem = bemHelper({ block: 'nav' });
 const linkClass = bem('link');
@@ -30,21 +29,19 @@ const linkClass = bem('link');
 const Index = () => (
     <nav className={bem()}>
         <div className={bem('content')}>
-            <Spacer all={{ right: Spacer.spacings.TINY }} tag={'span'}>
+            <Spacer all={{ right: Spacer.spacings.TINY }} tag="span">
                 <NamedLink to="homepage" />
             </Spacer>
-            <Spacer all={{ horizontal: Spacer.spacings.TINY }} tag={'span'}>
+            <Spacer all={{ horizontal: Spacer.spacings.TINY }} tag="span">
                 <NamedLink to="cup" className={linkClass} />
             </Spacer>
-            {
-                appConfig.divisionLabels.map((division) => (
-                    <Spacer key={division} all={{ horizontal: Spacer.spacings.TINY }} tag={'span'}>
-                        <div className={linkClass}>
-                            <NamedLink to={`${appConfig.divisionSheets[division]}-rankings`}>{division}</NamedLink>
-                        </div>
-                    </Spacer>
-                ))
-            }
+            {appConfig.divisionLabels.map((division) => (
+                <Spacer key={division} all={{ horizontal: Spacer.spacings.TINY }} tag="span">
+                    <div className={linkClass}>
+                        <NamedLink to={`${appConfig.divisionSheets[division]}-rankings`}>{division}</NamedLink>
+                    </div>
+                </Spacer>
+            ))}
             {/* <AdminLinks cookies={cookies} /> */}
         </div>
     </nav>

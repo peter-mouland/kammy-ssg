@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 
+// eslint-disable-next-line no-unused-vars
 exports.handler = async function skySportsScores(event, context) {
     const headers = {
         Accept: 'application/json',

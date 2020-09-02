@@ -10,18 +10,25 @@ import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 
-const inDateRange = ({ start, end }, comparison) => (
-    parseISO(comparison) < parseISO(end) && parseISO(comparison) > parseISO(start)
-);
+const inDateRange = ({ start, end }, comparison) =>
+    parseISO(comparison) < parseISO(end) && parseISO(comparison) > parseISO(start);
 
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const GameWeekTransfers = ({
-    divisionUrl, divisionLabel, divisionKey, prevGameWeek, gameWeekMinus2, selectedGameWeek, teamsByManager,
+    divisionUrl,
+    divisionLabel,
+    divisionKey,
+    prevGameWeek,
+    gameWeekMinus2,
+    selectedGameWeek,
+    teamsByManager,
 }) => {
-    const { allManagers: { nodes: managersArray } } = useStaticQuery(graphql`
+    const {
+        allManagers: { nodes: managersArray },
+    } = useStaticQuery(graphql`
         query managers {
-            allManagers(sort: {fields: division___order}) {
+            allManagers(sort: { fields: division___order }) {
                 nodes {
                     manager
                     divisionKey
@@ -31,9 +38,10 @@ const GameWeekTransfers = ({
     `);
     const { status, data: transfers = [], error } = useQuery(['transfers', divisionKey], fetchr);
     const managers = managersArray.filter(({ divisionKey: div }) => div === divisionKey).map(({ manager }) => manager);
-    const limitTransfers = (gw) => transfers
-        .filter((transfer) => (inDateRange(gw, transfer.timestamp)))
-        .map((transfer) => ({ ...transfer, gameWeek: gw.gameWeek }));
+    const limitTransfers = (gw) =>
+        transfers
+            .filter((transfer) => inDateRange(gw, transfer.timestamp))
+            .map((transfer) => ({ ...transfer, gameWeek: gw.gameWeek }));
     const showTransfers = [...limitTransfers(gameWeekMinus2), ...limitTransfers(prevGameWeek)];
     const isLoading = status === 'loading';
 
@@ -47,10 +55,7 @@ const GameWeekTransfers = ({
                 </div>
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <TransfersTable
-                    isLoading={isLoading}
-                    transfers={showTransfers}
-                />
+                <TransfersTable isLoading={isLoading} transfers={showTransfers} />
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <TransferRequest

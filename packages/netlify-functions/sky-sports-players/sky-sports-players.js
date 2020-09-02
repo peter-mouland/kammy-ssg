@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 
+// eslint-disable-next-line no-unused-vars
 exports.handler = async function skySportsScores(event, context) {
     try {
         const response = await fetch('https://fantasyfootball.skysports.com/cache/json_players.json', {

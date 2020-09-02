@@ -17,33 +17,39 @@ const sum = (total, stats = {}) => {
 const PlayerTimelineTable = ({ player }) => {
     const totals = {};
     return (
-        <table className={'table'}>
+        <table className="table">
             <thead>
                 <tr>
-                    <th className={'cell'} colSpan={3} />
+                    <th className="cell" colSpan={3} />
                     <StatsHeaders colspan={1} />
                 </tr>
             </thead>
             <tbody>
-                {
-                    player.gameWeeks.map(({ fixtures }) => (
-                        fixtures.map((fixture) => (
-                            <tr key={`${fixture.event}`}>
-                                <td className={bem('team', {
+                {player.gameWeeks.map(({ fixtures }) =>
+                    fixtures.map((fixture) => (
+                        <tr key={`${fixture.event}`}>
+                            <td
+                                className={bem('team', {
                                     home: true,
                                     'my-team': player.club === fixture.hTname,
-                                })}>{fixture.hTname} {fixture.hScore}</td>
-                                <td>vs</td>
-                                <td className={bem('team', {
+                                })}
+                            >
+                                {fixture.hTname} {fixture.hScore}
+                            </td>
+                            <td>vs</td>
+                            <td
+                                className={bem('team', {
                                     away: true,
                                     'my-team': player.club === fixture.aTname,
-                                })}>{fixture.aScore} {fixture.aTname}</td>
-                                <StatsCells seasonToGameWeek={fixture.stats} />
-                                {sum(totals, fixture.stats)}
-                            </tr>
-                        ))
-                    ))
-                }
+                                })}
+                            >
+                                {fixture.aScore} {fixture.aTname}
+                            </td>
+                            <StatsCells seasonToGameWeek={fixture.stats} />
+                            {sum(totals, fixture.stats)}
+                        </tr>
+                    )),
+                )}
             </tbody>
             <tfoot>
                 <tr>

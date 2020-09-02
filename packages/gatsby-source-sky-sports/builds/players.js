@@ -2,25 +2,28 @@ const { playerStats: getPlayerStats } = require('@kammy/data.player-stats');
 
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
-const calculateSeasonStats = (gameWeeksWithFixtures) => (
-    gameWeeksWithFixtures.reduce((totals, gw) => (
-        Object.keys(gw.stats).reduce((prev, stat) => ({
-            ...prev,
-            [stat]: gw.stats[stat] + (totals[stat] || 0),
-        }), {})
-    ), {})
-);
+const calculateSeasonStats = (gameWeeksWithFixtures) =>
+    gameWeeksWithFixtures.reduce(
+        (totals, gw) =>
+            Object.keys(gw.stats).reduce(
+                (prev, stat) => ({
+                    ...prev,
+                    [stat]: gw.stats[stat] + (totals[stat] || 0),
+                }),
+                {},
+            ),
+        {},
+    );
 const notFound = new Set();
 
-const getGameWeeksWithFixtures = ({ player, gameWeeks }) => (
+const getGameWeeksWithFixtures = ({ player, gameWeeks }) =>
     gameWeeks.map((gw) => {
         const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeeks: [gw] });
         if (!gameWeekFixtures || !gameWeekFixtures.length) {
             notFound.add(gw);
         }
         return { fixtures: gameWeekFixtures, stats: gameWeekStats };
-    })
-);
+    });
 
 const getPlayerWithStats = ({ player, gameWeeks }) => {
     const gameWeeksWithFixtures = getGameWeeksWithFixtures({ player, gameWeeks });
@@ -37,13 +40,16 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
     const start = new Date();
 
     const gameWeekData = gameWeeks.map(({ data }) => data);
-    const skyPlayersObj = skyPlayers.reduce((prev, { data: player }) => ({
-        ...prev,
-        [player.name]: {
-            ...(prev[player.name] || {}),
-            ...player,
-        },
-    }), {});
+    const skyPlayersObj = skyPlayers.reduce(
+        (prev, { data: player }) => ({
+            ...prev,
+            [player.name]: {
+                ...(prev[player.name] || {}),
+                ...player,
+            },
+        }),
+        {},
+    );
     const googlePlayersObj = googlePlayerData.reduce((prev, googlePlayer) => {
         const player = {
             ...(prev[googlePlayer.Player.trim()] || {}),
@@ -59,25 +65,24 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
             [player.name]: player,
         };
     }, {});
-    const mergedPlayers = Object.keys(skyPlayersObj)
-        .reduce((prev, playerName) => {
-            const player = {
-                isHidden: googlePlayersObj[playerName] ? googlePlayersObj[playerName].isHidden : false,
-                new: googlePlayersObj[playerName] ? googlePlayersObj[playerName].new : true,
-                pos: googlePlayersObj[playerName] ? googlePlayersObj[playerName].pos : '',
-                fixtures: skyPlayersObj[playerName].fixtures,
-                value: skyPlayersObj[playerName].value,
-                name: skyPlayersObj[playerName].name,
-                code: skyPlayersObj[playerName].code,
-                club: skyPlayersObj[playerName].club,
-                skySportsPosition: skyPlayersObj[playerName].pos,
-            };
-            const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
-            return {
-                ...prev,
-                [playerName]: playerWithStats,
-            };
-        }, {});
+    const mergedPlayers = Object.keys(skyPlayersObj).reduce((prev, playerName) => {
+        const player = {
+            isHidden: googlePlayersObj[playerName] ? googlePlayersObj[playerName].isHidden : false,
+            new: googlePlayersObj[playerName] ? googlePlayersObj[playerName].new : true,
+            pos: googlePlayersObj[playerName] ? googlePlayersObj[playerName].pos : '',
+            fixtures: skyPlayersObj[playerName].fixtures,
+            value: skyPlayersObj[playerName].value,
+            name: skyPlayersObj[playerName].name,
+            code: skyPlayersObj[playerName].code,
+            club: skyPlayersObj[playerName].club,
+            skySportsPosition: skyPlayersObj[playerName].pos,
+        };
+        const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
+        return {
+            ...prev,
+            [playerName]: playerWithStats,
+        };
+    }, {});
 
     console.log('Build: Players end: ', new Date() - start);
     console.log(...notFound);

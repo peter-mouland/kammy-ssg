@@ -3,9 +3,7 @@ const getPoints = require('./lib/calculate-division-points');
 const getRank = require('./lib/calculate-division-rank');
 const getRankChange = require('./lib/calculate-rank-change');
 
-module.exports = ({
-    divisions, managers, teams, createNodeId,
-}) => {
+module.exports = ({ divisions, managers, teams, createNodeId }) => {
     console.log('Build: League Tables start');
     const start = new Date();
     const teamData = teams.map(({ data }) => data);
@@ -93,18 +91,21 @@ module.exports = ({
    */
     const resultsWithRank = results.map((item) => {
         const findDivisionGameWeek = (rank) => rank.gameWeek === item.gameWeek && rank.divisionKey === item.divisionKey;
-        const findLastWeek = (rank) => rank.gameWeek === (item.gameWeek - 1) && rank.divisionKey === item.divisionKey;
+        const findLastWeek = (rank) => rank.gameWeek === item.gameWeek - 1 && rank.divisionKey === item.divisionKey;
         const divRankings = ranks.find(findDivisionGameWeek) || {};
         const divLastWeekRankings = ranks.find(findLastWeek) || {};
         const rankChange = getRankChange(divLastWeekRankings.rank, divRankings.rank);
-        const points = Object.keys(item.points).reduce((prev, posKey) => ({
-            ...prev,
-            [posKey]: {
-                ...prev[posKey],
-                rank: divRankings.rank[item.managerName][posKey],
-                rankChange: rankChange[item.managerName][posKey],
-            },
-        }), item.points);
+        const points = Object.keys(item.points).reduce(
+            (prev, posKey) => ({
+                ...prev,
+                [posKey]: {
+                    ...prev[posKey],
+                    rank: divRankings.rank[item.managerName][posKey],
+                    rankChange: rankChange[item.managerName][posKey],
+                },
+            }),
+            item.points,
+        );
 
         return {
             ...item,

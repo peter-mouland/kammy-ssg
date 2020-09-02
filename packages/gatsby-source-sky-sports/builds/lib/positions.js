@@ -7,8 +7,6 @@ const positions = [
     { key: 'str', label: 'STR', teamPos: ['STR', 'FWD'] },
 ];
 
-module.exports.getPositionLabel = (teamPos) => (
-    positions.find((position) => position.teamPos.includes(teamPos))
-);
+module.exports.getPositionLabel = (teamPos) => positions.find((position) => position.teamPos.includes(teamPos));
 
 module.exports.positions = positions;

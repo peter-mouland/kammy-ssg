@@ -1,4 +1,3 @@
-/* global jest */
 const xhrMockClass = jest.fn({
     open: jest.fn(),
     send: jest.fn(),

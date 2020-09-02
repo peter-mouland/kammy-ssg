@@ -3,10 +3,7 @@ module.exports = {
     testEnvironmentOptions: {
         enzymeAdapter: 'react16',
     },
-    setupFiles: [
-        '<rootDir>/tests/jest/enzymeSetup.js',
-        '<rootDir>/tests/jest/reactShim.js',
-    ],
+    setupFiles: ['<rootDir>/tests/jest/enzymeSetup.js', '<rootDir>/tests/jest/reactShim.js'],
     setupFilesAfterEnv: ['jest-enzyme'],
     coverageThreshold: {
         global: {
@@ -28,7 +25,8 @@ module.exports = {
     transformIgnorePatterns: ['/node_modules/'],
     moduleFileExtensions: ['js', 'jsx', 'json'],
     moduleNameMapper: {
-        '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/tests/jest/__mocks__/fileMock.js',
+        '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+            '<rootDir>/tests/jest/__mocks__/fileMock.js',
         '\\.(css|scss)$': '<rootDir>/tests/jest/__mocks__/styleMock.js',
     },
     collectCoverageFrom: [

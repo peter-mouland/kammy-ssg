@@ -310,13 +310,35 @@ describe('totalUpStats', () => {
         const fixtures = [];
         const result = totalUpStats(fixtures);
         expect(result).toEqual({
-            apps: 0, asts: 0, con: 0, cs: 0, gls: 0, pensv: 0, points: 0, rcard: 0, sb: 0, subs: 0, tb: 0, ycard: 0,
+            apps: 0,
+            asts: 0,
+            con: 0,
+            cs: 0,
+            gls: 0,
+            pensv: 0,
+            points: 0,
+            rcard: 0,
+            sb: 0,
+            subs: 0,
+            tb: 0,
+            ycard: 0,
         });
     });
 
     it('should return the stat object when a single stat array item', () => {
         const ffStats = {
-            apps: 1, asts: 2, con: 3, cs: 4, gls: 5, pensv: 6, points: 7, rcard: 8, sb: 9, subs: 10, tb: 11, ycard: 12,
+            apps: 1,
+            asts: 2,
+            con: 3,
+            cs: 4,
+            gls: 5,
+            pensv: 6,
+            points: 7,
+            rcard: 8,
+            sb: 9,
+            subs: 10,
+            tb: 11,
+            ycard: 12,
         };
         const fixtures = [{ stats: ffStats }];
         const result = totalUpStats(fixtures);
@@ -325,48 +347,158 @@ describe('totalUpStats', () => {
 
     it('should sum correctly when middle stats returns only zero', () => {
         const ffStats = {
-            apps: 1, asts: 2, con: 3, cs: 4, gls: 5, pensv: 6, points: 7, rcard: 8, sb: 9, subs: 10, tb: 11, ycard: 12,
+            apps: 1,
+            asts: 2,
+            con: 3,
+            cs: 4,
+            gls: 5,
+            pensv: 6,
+            points: 7,
+            rcard: 8,
+            sb: 9,
+            subs: 10,
+            tb: 11,
+            ycard: 12,
         };
         const ffStats2 = {
-            apps: 0, asts: 0, con: 0, cs: 0, gls: 0, pensv: 0, points: 0, rcard: 0, sb: 0, subs: 0, tb: 0, ycard: 0,
+            apps: 0,
+            asts: 0,
+            con: 0,
+            cs: 0,
+            gls: 0,
+            pensv: 0,
+            points: 0,
+            rcard: 0,
+            sb: 0,
+            subs: 0,
+            tb: 0,
+            ycard: 0,
         };
         const ffStats3 = {
-            apps: 5, asts: 5, con: 5, cs: 24, gls: 25, pensv: 26, points: 27, rcard: 28, sb: 29, subs: 30, tb: 31, ycard: 32,
+            apps: 5,
+            asts: 5,
+            con: 5,
+            cs: 24,
+            gls: 25,
+            pensv: 26,
+            points: 27,
+            rcard: 28,
+            sb: 29,
+            subs: 30,
+            tb: 31,
+            ycard: 32,
         };
         const fixtures = [{ stats: ffStats }, { stats: ffStats2 }, { stats: ffStats3 }];
         const result = totalUpStats(fixtures);
         expect(result).toEqual({
-            apps: 6, asts: 7, con: 8, cs: 28, gls: 30, pensv: 32, points: 34, rcard: 36, sb: 38, subs: 40, tb: 42, ycard: 44,
+            apps: 6,
+            asts: 7,
+            con: 8,
+            cs: 28,
+            gls: 30,
+            pensv: 32,
+            points: 34,
+            rcard: 36,
+            sb: 38,
+            subs: 40,
+            tb: 42,
+            ycard: 44,
         });
     });
 
     it('should never return NaN, even when there are no middle stats', () => {
         const ffStats = {
-            apps: 1, asts: 2, con: 3, cs: 4, gls: 5, pensv: 6, points: 7, rcard: 8, sb: 9, subs: 10, tb: 11, ycard: 12,
+            apps: 1,
+            asts: 2,
+            con: 3,
+            cs: 4,
+            gls: 5,
+            pensv: 6,
+            points: 7,
+            rcard: 8,
+            sb: 9,
+            subs: 10,
+            tb: 11,
+            ycard: 12,
         };
-        const ffStats2 = { };
+        const ffStats2 = {};
         const ffStats3 = {
-            apps: 2, asts: 2, con: 2, cs: 2, gls: 2, pensv: 8, points: 27, rcard: 28, sb: 29, subs: 30, tb: 31, ycard: 32,
+            apps: 2,
+            asts: 2,
+            con: 2,
+            cs: 2,
+            gls: 2,
+            pensv: 8,
+            points: 27,
+            rcard: 28,
+            sb: 29,
+            subs: 30,
+            tb: 31,
+            ycard: 32,
         };
         const fixtures = [{ stats: ffStats }, { stats: ffStats2 }, { stats: ffStats3 }];
         const result = totalUpStats(fixtures);
         expect(result).toEqual({
-            apps: 3, asts: 4, con: 5, cs: 6, gls: 7, pensv: 14, points: 34, rcard: 36, sb: 38, subs: 40, tb: 42, ycard: 44,
+            apps: 3,
+            asts: 4,
+            con: 5,
+            cs: 6,
+            gls: 7,
+            pensv: 14,
+            points: 34,
+            rcard: 36,
+            sb: 38,
+            subs: 40,
+            tb: 42,
+            ycard: 44,
         });
     });
 
     it('should never return NaN, even when there are no initial stats', () => {
-        const ffStats = { };
+        const ffStats = {};
         const ffStats2 = {
-            apps: 1, asts: 2, con: 3, cs: 4, gls: 5, pensv: 6, points: 7, rcard: 8, sb: 9, subs: 10, tb: 11, ycard: 12,
+            apps: 1,
+            asts: 2,
+            con: 3,
+            cs: 4,
+            gls: 5,
+            pensv: 6,
+            points: 7,
+            rcard: 8,
+            sb: 9,
+            subs: 10,
+            tb: 11,
+            ycard: 12,
         };
         const ffStats3 = {
-            apps: 3, asts: 3, con: 3, cs: 3, gls: 3, pensv: 3, points: 3, rcard: 28, sb: 29, subs: 30, tb: 31, ycard: 32,
+            apps: 3,
+            asts: 3,
+            con: 3,
+            cs: 3,
+            gls: 3,
+            pensv: 3,
+            points: 3,
+            rcard: 28,
+            sb: 29,
+            subs: 30,
+            tb: 31,
+            ycard: 32,
         };
         const fixtures = [{ stats: ffStats }, { stats: ffStats2 }, { stats: ffStats3 }];
         const result = totalUpStats(fixtures);
         expect(result).toEqual({
-            apps: 4, asts: 5, con: 6, cs: 7, gls: 8, pensv: 9, points: 10, rcard: 36, sb: 38, subs: 40, tb: 42, ycard: 44,
+            apps: 4,
+            asts: 5,
+            con: 6,
+            cs: 7,
+            gls: 8,
+            pensv: 9,
+            points: 10,
+            rcard: 36,
+            sb: 38,
+            subs: 40,
+            tb: 42,
+            ycard: 44,
         });
     });
 });
@@ -418,14 +550,23 @@ describe('playerStats', () => {
         expect(playerWithStats.pos).toEqual(player.pos);
         expect(playerWithStats.gameWeekFixtures).toEqual([]);
         expect(playerWithStats.gameWeekStats).toEqual({
-            apps: 0, asts: 0, con: 0, cs: 0, gls: 0, pensv: 0, points: 0, rcard: 0, sb: 0, subs: 0, tb: 0, ycard: 0,
+            apps: 0,
+            asts: 0,
+            con: 0,
+            cs: 0,
+            gls: 0,
+            pensv: 0,
+            points: 0,
+            rcard: 0,
+            sb: 0,
+            subs: 0,
+            tb: 0,
+            ycard: 0,
         });
     });
 
     it('return a single gameWeeks match', () => {
-        player.fixtures[0].stats = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ];
+        player.fixtures[0].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
         const gameWeeks = [
             {
                 gameWeek: 1,
@@ -447,25 +588,41 @@ describe('playerStats', () => {
             {
                 ...fixtures[0],
                 stats: {
-                    apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+                    apps: 1,
+                    asts: 1,
+                    con: 1,
+                    cs: 1,
+                    gls: 1,
+                    pensv: 1,
+                    points: 27,
+                    rcard: 1,
+                    sb: 2,
+                    subs: 1,
+                    tb: 2,
+                    ycard: 1,
                 },
             },
         ]);
         expect(playerWithStats.gameWeekStats).toEqual({
-            apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+            apps: 1,
+            asts: 1,
+            con: 1,
+            cs: 1,
+            gls: 1,
+            pensv: 1,
+            points: 27,
+            rcard: 1,
+            sb: 2,
+            subs: 1,
+            tb: 2,
+            ycard: 1,
         });
     });
 
     it('returns a gameWeekStats total when Sky gameweeks match a single ff gameweek', () => {
-        player.fixtures[0].stats = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ];
-        player.fixtures[1].stats = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ];
-        player.fixtures[2].stats = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        ];
+        player.fixtures[0].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        player.fixtures[1].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        player.fixtures[2].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
         const gameWeeks = [
             {
                 gameWeek: 1,
@@ -479,19 +636,52 @@ describe('playerStats', () => {
             {
                 ...fixtures[0],
                 stats: {
-                    apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+                    apps: 1,
+                    asts: 1,
+                    con: 1,
+                    cs: 1,
+                    gls: 1,
+                    pensv: 1,
+                    points: 27,
+                    rcard: 1,
+                    sb: 2,
+                    subs: 1,
+                    tb: 2,
+                    ycard: 1,
                 },
             },
             {
                 ...fixtures[1],
                 stats: {
-                    apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+                    apps: 1,
+                    asts: 1,
+                    con: 1,
+                    cs: 1,
+                    gls: 1,
+                    pensv: 1,
+                    points: 27,
+                    rcard: 1,
+                    sb: 2,
+                    subs: 1,
+                    tb: 2,
+                    ycard: 1,
                 },
             },
             {
                 ...fixtures[2],
                 stats: {
-                    apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+                    apps: 1,
+                    asts: 1,
+                    con: 1,
+                    cs: 1,
+                    gls: 1,
+                    pensv: 1,
+                    points: 27,
+                    rcard: 1,
+                    sb: 2,
+                    subs: 1,
+                    tb: 2,
+                    ycard: 1,
                 },
             },
         ]);
@@ -500,18 +690,51 @@ describe('playerStats', () => {
             {
                 ...fixtures[0],
                 stats: {
-                    apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+                    apps: 1,
+                    asts: 1,
+                    con: 1,
+                    cs: 1,
+                    gls: 1,
+                    pensv: 1,
+                    points: 27,
+                    rcard: 1,
+                    sb: 2,
+                    subs: 1,
+                    tb: 2,
+                    ycard: 1,
                 },
             },
             {
                 ...fixtures[1],
                 stats: {
-                    apps: 1, asts: 1, con: 1, cs: 1, gls: 1, pensv: 1, points: 27, rcard: 1, sb: 2, subs: 1, tb: 2, ycard: 1,
+                    apps: 1,
+                    asts: 1,
+                    con: 1,
+                    cs: 1,
+                    gls: 1,
+                    pensv: 1,
+                    points: 27,
+                    rcard: 1,
+                    sb: 2,
+                    subs: 1,
+                    tb: 2,
+                    ycard: 1,
                 },
             },
         ]);
         expect(playerWithStats.gameWeekStats).toEqual({
-            apps: 2, asts: 2, con: 2, cs: 2, gls: 2, pensv: 2, points: 54, rcard: 2, sb: 4, subs: 2, tb: 4, ycard: 2,
+            apps: 2,
+            asts: 2,
+            con: 2,
+            cs: 2,
+            gls: 2,
+            pensv: 2,
+            points: 54,
+            rcard: 2,
+            sb: 4,
+            subs: 2,
+            tb: 4,
+            ycard: 2,
         });
     });
 });

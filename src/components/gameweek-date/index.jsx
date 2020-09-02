@@ -37,38 +37,29 @@ const getDates = ({ start, end }) => {
     }
 };
 
-const Index = ({
-    gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd,
-}) => {
+const Index = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
     const { start, end, cup } = gameWeek;
 
-    const {
-        startMonth,
-        endMonth,
-        startTime,
-        endTime,
-        startDay,
-        endDay,
-    } = getDates({ start, end });
+    const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({ start, end });
     return (
-        <div className={'formatted-gameweek-container'}>
+        <div className="formatted-gameweek-container">
             {label && <div>{label}</div>}
-            <div className={'formatted-gameweek-date'}>
-                {cup && <Cup className='formatted-gameweek-cup' />}
+            <div className="formatted-gameweek-date">
+                {cup && <Cup className="formatted-gameweek-cup" />}
                 {showStart && (
-                    <span className='formatted-gameweek-date__calendar'>
-                        <span className='formatted-gameweek-date__month'>{startMonth}</span>
-                        <span className='formatted-gameweek-date__day'>{calStart || startDay}</span>
+                    <span className="formatted-gameweek-date__calendar">
+                        <span className="formatted-gameweek-date__month">{startMonth}</span>
+                        <span className="formatted-gameweek-date__day">{calStart || startDay}</span>
                         {/* <span className='formatted-gameweek-date__year'></span> */}
-                        <span className='formatted-gameweek-date__time'>{showStartTime && startTime}</span>
+                        <span className="formatted-gameweek-date__time">{showStartTime && startTime}</span>
                     </span>
                 )}
                 {showEnd && (
-                    <span className='formatted-gameweek-date__calendar'>
-                        <span className='formatted-gameweek-date__month'>{endMonth}</span>
-                        <span className='formatted-gameweek-date__day'>{calEnd || endDay}</span>
+                    <span className="formatted-gameweek-date__calendar">
+                        <span className="formatted-gameweek-date__month">{endMonth}</span>
+                        <span className="formatted-gameweek-date__day">{calEnd || endDay}</span>
                         {/* <span className='formatted-gameweek-date__year'></span> */}
-                        <span className='formatted-gameweek-date__time'>{showEndTime && endTime}</span>
+                        <span className="formatted-gameweek-date__time">{showEndTime && endTime}</span>
                     </span>
                 )}
             </div>

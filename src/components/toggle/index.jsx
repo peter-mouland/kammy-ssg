@@ -6,21 +6,19 @@ import './toggle.scss';
 
 const bem = bemHelper({ block: 'toggle' });
 
-const Index = ({
-    id, checked, label, className, onClick, ...props
-}) => (
+const Index = ({ id, checked, label, className, onClick, ...props }) => (
     <span className={className}>
         <input
-            className={ bem(null, 'ios') }
-            id={ id }
+            className={bem(null, 'ios')}
+            id={id}
             type="checkbox"
-            defaultChecked={ checked }
+            defaultChecked={checked}
             onClick={onClick}
-            { ...props }
+            {...props}
         />
-        <label className={ bem('label') } htmlFor={ id } >
+        <label className={bem('label')} htmlFor={id}>
             {label}
-            <span className={ bem('btn') } />
+            <span className={bem('btn')} />
         </label>
     </span>
 );

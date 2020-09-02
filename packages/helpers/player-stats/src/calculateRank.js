@@ -4,9 +4,8 @@ function rank(arr, pos, data) {
     const sorter = sortingFactory(pos, data);
     const sorted = arr.slice().sort(sorter);
     const ranked = arr.map((item) => sorted.findIndex((i) => sorter(item, i) === 0));
-    const adjustRankForTies = (item, i) => (
-        ranked.findIndex((rItem, rI) => rItem === item && i !== rI) > -1 ? item + 0.5 : item
-    );
+    const adjustRankForTies = (item, i) =>
+        ranked.findIndex((rItem, rI) => rItem === item && i !== rI) > -1 ? item + 0.5 : item;
     return ranked.map(adjustRankForTies);
 }
 
@@ -38,12 +37,12 @@ module.exports = (teams) => {
         };
 
         const gameWeekRankChange = {
-            gks: !gwPointsTotal ? 0 : (gwGKS[i] - sGKS[i]),
-            cb: !gwPointsTotal ? 0 : (gwCB[i] - sCB[i]),
-            fb: !gwPointsTotal ? 0 : (gwFB[i] - sFB[i]),
-            mid: !gwPointsTotal ? 0 : (gwMID[i] - sMID[i]),
-            am: !gwPointsTotal ? 0 : (gwAM[i] - sAM[i]),
-            str: !gwPointsTotal ? 0 : (gwSTR[i] - sSTR[i]),
+            gks: !gwPointsTotal ? 0 : gwGKS[i] - sGKS[i],
+            cb: !gwPointsTotal ? 0 : gwCB[i] - sCB[i],
+            fb: !gwPointsTotal ? 0 : gwFB[i] - sFB[i],
+            mid: !gwPointsTotal ? 0 : gwMID[i] - sMID[i],
+            am: !gwPointsTotal ? 0 : gwAM[i] - sAM[i],
+            str: !gwPointsTotal ? 0 : gwSTR[i] - sSTR[i],
         };
 
         return {
@@ -51,12 +50,12 @@ module.exports = (teams) => {
             gameWeekRankChange: {
                 ...gameWeekRankChange,
                 points:
-        gameWeekRankChange.cb
-          + gameWeekRankChange.fb
-          + gameWeekRankChange.am
-          + gameWeekRankChange.mid
-          + gameWeekRankChange.str
-          + gameWeekRankChange.gks,
+                    gameWeekRankChange.cb +
+                    gameWeekRankChange.fb +
+                    gameWeekRankChange.am +
+                    gameWeekRankChange.mid +
+                    gameWeekRankChange.str +
+                    gameWeekRankChange.gks,
             },
             seasonRank,
         };

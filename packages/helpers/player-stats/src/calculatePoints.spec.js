@@ -1,7 +1,17 @@
 /* eslint-env jest */
 const {
-    forTackleBonus, forStarting, forSub, forAssists, forYellowCards, forRedCards, forGoals, forSaveBonus, forCleanSheet,
-    forConceded, calculateTotalPoints, forPenaltiesSaved,
+    forTackleBonus,
+    forStarting,
+    forSub,
+    forAssists,
+    forYellowCards,
+    forRedCards,
+    forGoals,
+    forSaveBonus,
+    forCleanSheet,
+    forConceded,
+    calculateTotalPoints,
+    forPenaltiesSaved,
 } = require('./calculatePoints');
 
 let position;
@@ -76,7 +86,18 @@ describe('calculatePoints', () => {
 
         it('return a correct totals', () => {
             const stats = {
-                apps: 1, subs: 1, mom: 1, gls: 1, tb: 1, sb: 1, asts: 1, cs: 1, con: 1, pensv: 1, ycard: 1, rcard: 1,
+                apps: 1,
+                subs: 1,
+                mom: 1,
+                gls: 1,
+                tb: 1,
+                sb: 1,
+                asts: 1,
+                cs: 1,
+                con: 1,
+                pensv: 1,
+                ycard: 1,
+                rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
             expect(points.total).toEqual(23);
@@ -108,7 +129,18 @@ describe('calculatePoints', () => {
 
         it('return a correct points', () => {
             const stats = {
-                apps: 1, subs: 1, mom: 1, gls: 1, tb: 1, sb: 1, asts: 1, cs: 1, con: 1, pensv: 1, ycard: 1, rcard: 1,
+                apps: 1,
+                subs: 1,
+                mom: 1,
+                gls: 1,
+                tb: 1,
+                sb: 1,
+                asts: 1,
+                cs: 1,
+                con: 1,
+                pensv: 1,
+                ycard: 1,
+                rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
             expect(points.total).toEqual(20);
@@ -140,7 +172,18 @@ describe('calculatePoints', () => {
 
         it('return a correct points', () => {
             const stats = {
-                apps: 1, subs: 1, mom: 1, gls: 1, tb: 1, sb: 1, asts: 1, cs: 1, con: 1, pensv: 1, ycard: 1, rcard: 1,
+                apps: 1,
+                subs: 1,
+                mom: 1,
+                gls: 1,
+                tb: 1,
+                sb: 1,
+                asts: 1,
+                cs: 1,
+                con: 1,
+                pensv: 1,
+                ycard: 1,
+                rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
             expect(points.total).toEqual(20);
@@ -177,7 +220,18 @@ describe('calculatePoints', () => {
 
         it('return a correct points', () => {
             const stats = {
-                apps: 1, subs: 1, mom: 1, gls: 1, tb: 1, sb: 1, asts: 1, cs: 1, con: 1, pensv: 1, ycard: 1, rcard: 1,
+                apps: 1,
+                subs: 1,
+                mom: 1,
+                gls: 1,
+                tb: 1,
+                sb: 1,
+                asts: 1,
+                cs: 1,
+                con: 1,
+                pensv: 1,
+                ycard: 1,
+                rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
             expect(points.total).toEqual(15);
@@ -209,7 +263,18 @@ describe('calculatePoints', () => {
 
         it('return a correct points', () => {
             const stats = {
-                apps: 1, subs: 1, mom: 1, gls: 1, tb: 1, sb: 1, asts: 1, cs: 1, con: 1, pensv: 1, ycard: 1, rcard: 1,
+                apps: 1,
+                subs: 1,
+                mom: 1,
+                gls: 1,
+                tb: 1,
+                sb: 1,
+                asts: 1,
+                cs: 1,
+                con: 1,
+                pensv: 1,
+                ycard: 1,
+                rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
             expect(points.total).toEqual(10);
@@ -241,7 +306,18 @@ describe('calculatePoints', () => {
 
         it('return a correct points', () => {
             const stats = {
-                apps: 1, subs: 1, mom: 1, gls: 1, tb: 1, sb: 1, asts: 1, cs: 1, con: 1, pensv: 1, ycard: 1, rcard: 1,
+                apps: 1,
+                subs: 1,
+                mom: 1,
+                gls: 1,
+                tb: 1,
+                sb: 1,
+                asts: 1,
+                cs: 1,
+                con: 1,
+                pensv: 1,
+                ycard: 1,
+                rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
             expect(points.total).toEqual(9);

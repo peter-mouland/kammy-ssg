@@ -10,25 +10,23 @@ import TabbedMenu from '../components/tabbed-division-menu';
 const bemTable = bemHelper({ block: 'players-page-table' });
 const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
 const hiddenColumns = ['isHidden', 'value', 'code'];
-const visibleStats = [
-    'points', 'apps', 'subs', 'gls', 'asts', 'cs', 'con', 'pensv', 'sb', 'tb', 'ycard', 'rcard',
-];
+const visibleStats = ['points', 'apps', 'subs', 'gls', 'asts', 'cs', 'con', 'pensv', 'sb', 'tb', 'ycard', 'rcard'];
 
 const PlayersPage = ({ data, pageContext: { divisionLabel, divisionKey } }) => {
     const players = data.allPlayers.nodes;
-    const disabledPlayers = data.teamPlayers.nodes.reduce((prev, player) => ({
-        ...prev,
-        [player.playerName]: player,
-    }), {});
+    const disabledPlayers = data.teamPlayers.nodes.reduce(
+        (prev, player) => ({
+            ...prev,
+            [player.playerName]: player,
+        }),
+        {},
+    );
     return (
         <Layout>
             <section id="players-page" className={bemTable()} data-b-layout="container">
                 <TabbedMenu selected="players" division={divisionKey} />
                 <div className="page-content">
-                    <PlayersFilters
-                        players={players}
-                        positions={positions}
-                    >
+                    <PlayersFilters players={players} positions={positions}>
                         {(playersFiltered) => (
                             <PlayersTable
                                 positions={positions}
@@ -47,15 +45,13 @@ const PlayersPage = ({ data, pageContext: { divisionLabel, divisionKey } }) => {
 
 export const query = graphql`
     query AllPlayers($gameWeek: Int, $divisionKey: String) {
-        teamPlayers: allTeams(
-            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-        ) {
+        teamPlayers: allTeams(filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }) {
             nodes {
                 managerName
                 playerName
             }
         }
-        allPlayers(filter: {isHidden: {eq: false}}) {
+        allPlayers(filter: { isHidden: { eq: false } }) {
             nodes {
                 id
                 name

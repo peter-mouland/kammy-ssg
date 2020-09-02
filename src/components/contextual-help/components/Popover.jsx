@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import BemHelper from '@kammy/bem';
 
 import './popover.scss';
 
 const bem = BemHelper({ block: 'popover' });
 
-const Popover = ({
-    header, body, hasShadow,
-}) => (
+const Popover = ({ header, body, hasShadow }) => (
     <div className={bem(null, { shadow: hasShadow })}>
         {header ? <div className={bem('header')}>{header}</div> : null}
         <div className={bem('body')}>{body}</div>
@@ -18,6 +15,7 @@ const Popover = ({
 
 Popover.defaultProps = {
     hasShadow: false,
+    header: null,
 };
 
 Popover.propTypes = {

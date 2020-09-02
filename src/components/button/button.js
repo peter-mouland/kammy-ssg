@@ -8,6 +8,7 @@ import Loader from '../loader';
 import { types, sizes, themes } from './constants';
 import styles from './button.module.css';
 
+// eslint-disable-next-line react/prop-types
 const ButtonText = ({ isLoading, size, children }) => {
     const sizeClass = styles[`isSize${toTitleCase(size)}`];
     const loaderClass = cx(styles.loaderWrapper, sizeClass);
@@ -77,7 +78,7 @@ const Button = ({
 
     return isInternalLink ? (
         <RouterLink {...buttonProps} {...routerProps} data-id={dataId} data-qa="button" to={href}>
-            <ButtonText { ...{ isLoading, size, children } } />
+            <ButtonText {...{ isLoading, size, children }} />
         </RouterLink>
     ) : (
         <Tag
@@ -90,7 +91,7 @@ const Button = ({
             data-qa="button"
             data-id={dataId}
         >
-            <ButtonText { ...{ isLoading, size, children } } />
+            <ButtonText {...{ isLoading, size, children }} />
         </Tag>
     );
 };

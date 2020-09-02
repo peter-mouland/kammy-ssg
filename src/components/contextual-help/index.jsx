@@ -1,7 +1,6 @@
 /* eslint-disable id-length */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-
 import BemHelper from '@kammy/bem';
 
 import Caret from './components/Caret';
@@ -33,7 +32,10 @@ class Index extends PureComponent {
     open = () => {
         const { x, y } = this.getBoxPosition();
         this.setState({
-            isOpen: true, opacity: 1, x, y,
+            isOpen: true,
+            opacity: 1,
+            x,
+            y,
         });
     };
 
@@ -55,10 +57,10 @@ class Index extends PureComponent {
         let x = containerElement.width / 2;
         let y = (boxElement.height + containerElement.height) * -1;
 
-        if ((containerElement.x - (width / 2)) < 0) {
+        if (containerElement.x - width / 2 < 0) {
             x = width / 2;
-        } else if ((containerElement.x + (width / 2)) > window.innerWidth) {
-            x = ((width / 2) * -1) + containerElement.width;
+        } else if (containerElement.x + width / 2 > window.innerWidth) {
+            x = (width / 2) * -1 + containerElement.width;
         }
 
         if (containerElement.y - (boxElement.height + containerElement.height) < 0) {
@@ -74,10 +76,13 @@ class Index extends PureComponent {
 
         if (this.containerRef) {
             const w = this.containerRef.getBoundingClientRect().width / 2;
-            if (x < 0) { // off right screen
-                return (width / 2) - w;
-            } if (x > w) { // off left screen
-                return ((width / 2) * -1) + w;
+            if (x < 0) {
+                // off right screen
+                return width / 2 - w;
+            }
+            if (x > w) {
+                // off left screen
+                return (width / 2) * -1 + w;
             }
         }
         return 0;
@@ -85,9 +90,7 @@ class Index extends PureComponent {
 
     render() {
         const { isOpen, x, y } = this.state;
-        const {
-            body, header, width, Trigger,
-        } = this.props;
+        const { body, header, width, Trigger } = this.props;
 
         const boxStyle = {
             width: `${isOpen ? width : 0}px`,
@@ -98,18 +101,22 @@ class Index extends PureComponent {
         return (
             <div
                 className={bem(null, { active: isOpen })}
-                ref={(node) => { this.containerRef = node; }}
+                ref={(node) => {
+                    this.containerRef = node;
+                }}
                 onMouseOver={this.open}
                 onMouseLeave={this.close}
             >
                 {Trigger}
-                <div className={bem('box', { active: isOpen })} style={boxStyle} ref={(node) => { this.boxRef = node; }}>
+                <div
+                    className={bem('box', { active: isOpen })}
+                    style={boxStyle}
+                    ref={(node) => {
+                        this.boxRef = node;
+                    }}
+                >
                     <Caret isUp={y >= 0} x={this.caretXTranslate()} />
-                    <Popover
-                        header={header}
-                        body={body}
-                        hasShadow
-                    />
+                    <Popover header={header} body={body} hasShadow />
                 </div>
             </div>
         );

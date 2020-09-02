@@ -1,5 +1,8 @@
 /* eslint-env jest */
 const { TeamByGameWeek, UNKNOWN_PLAYER } = require('./TeamByGameWeek');
+const mockPlayer = require('./fixtures/player.json');
+const teamFixture = require('./fixtures/team.json');
+const gameWeeksFixture = require('./fixtures/gameweeks.json');
 
 let gameWeeks;
 let transfers;
@@ -8,10 +11,6 @@ let players;
 let teamSeason;
 let startOfSeason;
 let endOfSeason;
-
-const mockPlayer = require('./fixtures/player.json');
-const teamFixture = require('./fixtures/team.json');
-const gameWeeksFixture = require('./fixtures/gameweeks.json');
 
 describe('TeamByGameWeek', () => {
     beforeEach(() => {
@@ -38,7 +37,10 @@ describe('TeamByGameWeek', () => {
 
     it('returns data', () => {
         teamSeason = new TeamByGameWeek({
-            gameWeeks, draft, transfers, players,
+            gameWeeks,
+            draft,
+            transfers,
+            players,
         });
         expect(teamSeason).toHaveProperty('startOfSeason', startOfSeason);
         expect(teamSeason).toHaveProperty('endOfSeason', endOfSeason);
@@ -51,7 +53,10 @@ describe('TeamByGameWeek', () => {
     describe('getPlayer()', () => {
         beforeEach(() => {
             teamSeason = new TeamByGameWeek({
-                gameWeeks, players, transfers, draft,
+                gameWeeks,
+                players,
+                transfers,
+                draft,
             });
         });
 
@@ -79,15 +84,20 @@ describe('TeamByGameWeek', () => {
                 club: 'Manchester United',
             };
             teamSeason = new TeamByGameWeek({
-                gameWeeks, players: { 'de Gea, David': player }, transfers, draft,
+                gameWeeks,
+                players: { 'de Gea, David': player },
+                transfers,
+                draft,
             });
-            expect(teamSeason.getTransferList(player)).toEqual([{
-                end: endOfSeason,
-                start: startOfSeason,
-                player,
-                playerOut: null,
-                type: 'draft',
-            }]);
+            expect(teamSeason.getTransferList(player)).toEqual([
+                {
+                    end: endOfSeason,
+                    start: startOfSeason,
+                    player,
+                    playerOut: null,
+                    type: 'draft',
+                },
+            ]);
         });
 
         it('returns a players transfers where dates match the transfer timestamp', () => {
@@ -103,19 +113,29 @@ describe('TeamByGameWeek', () => {
                     'de Gea, David': player,
                     'Hernandez, Javier': { name: 'Hernandez, Javier' },
                 },
-                transfers: [{
-                    ...transfers[0],
-                    transferOutName: 'de Gea, David',
-                    transferInName: 'Hernandez, Javier',
-                }],
+                transfers: [
+                    {
+                        ...transfers[0],
+                        transferOutName: 'de Gea, David',
+                        transferInName: 'Hernandez, Javier',
+                    },
+                ],
                 draft,
             });
             expect(teamSeason.getTransferList(player)).toEqual([
                 {
-                    end: new Date(transfers[0].timestamp), player, playerOut: null, start: startOfSeason, type: 'draft',
+                    end: new Date(transfers[0].timestamp),
+                    player,
+                    playerOut: null,
+                    start: startOfSeason,
+                    type: 'draft',
                 },
                 {
-                    end: endOfSeason, player: { name: 'Hernandez, Javier' }, playerOut: player, start: new Date(transfers[0].timestamp), type: 'Transfer',
+                    end: endOfSeason,
+                    player: { name: 'Hernandez, Javier' },
+                    playerOut: player,
+                    start: new Date(transfers[0].timestamp),
+                    type: 'Transfer',
                 },
             ]);
         });
@@ -135,20 +155,30 @@ describe('TeamByGameWeek', () => {
                         'another player': { name: 'another player' },
                         'Hernandez, Javier': { name: 'Hernandez, Javier' },
                     },
-                    transfers: [{
-                        ...transfers[0],
-                        type: 'Swap',
-                        transferOutName: 'Hernandez, Javier',
-                        transferInName: 'de Gea, David',
-                    }],
+                    transfers: [
+                        {
+                            ...transfers[0],
+                            type: 'Swap',
+                            transferOutName: 'Hernandez, Javier',
+                            transferInName: 'de Gea, David',
+                        },
+                    ],
                     draft,
                 });
                 expect(teamSeason.getTransferList(player)).toEqual([
                     {
-                        end: new Date(transfers[0].timestamp), player, playerOut: null, start: startOfSeason, type: 'draft',
+                        end: new Date(transfers[0].timestamp),
+                        player,
+                        playerOut: null,
+                        start: startOfSeason,
+                        type: 'draft',
                     },
                     {
-                        end: endOfSeason, player: { name: 'Hernandez, Javier' }, playerOut: player, start: new Date(transfers[0].timestamp), type: 'Swap',
+                        end: endOfSeason,
+                        player: { name: 'Hernandez, Javier' },
+                        playerOut: player,
+                        start: new Date(transfers[0].timestamp),
+                        type: 'Swap',
                     },
                 ]);
             });
@@ -158,7 +188,10 @@ describe('TeamByGameWeek', () => {
     describe('getSeason', () => {
         it('should return an array of gameWeeks', () => {
             teamSeason = new TeamByGameWeek({
-                players, gameWeeks, transfers, draft,
+                players,
+                gameWeeks,
+                transfers,
+                draft,
             });
             expect(teamSeason.getSeason()).toHaveLength(gameWeeks.length);
             expect(teamSeason.getSeason()[0]).toHaveProperty('gameWeek', gameWeeksFixture[0].gameWeek);
@@ -168,14 +201,20 @@ describe('TeamByGameWeek', () => {
 
         it('should return each gameWeek with an array of team players', () => {
             teamSeason = new TeamByGameWeek({
-                players, gameWeeks, transfers, draft,
+                players,
+                gameWeeks,
+                transfers,
+                draft,
             });
             expect(teamSeason.getSeason()[0].players).toHaveLength(draft.length);
         });
 
         it('should return players', () => {
             teamSeason = new TeamByGameWeek({
-                players, gameWeeks, transfers, draft,
+                players,
+                gameWeeks,
+                transfers,
+                draft,
             });
             expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('name', 'de Gea, David');
             expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('club', 'Manchester United');

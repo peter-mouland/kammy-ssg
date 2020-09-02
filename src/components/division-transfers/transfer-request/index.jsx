@@ -23,10 +23,22 @@ const bem = bemHelper({ block: 'transfers-page' });
 // todo: update table on mutation (via react-query)
 
 const confirmTransfer = ({
-    playerIn, playerOut, changeType, manager, playerDisplaced, playerGapFiller, comment, division, saveTransfer, reset,
+    playerIn,
+    playerOut,
+    changeType,
+    manager,
+    playerDisplaced,
+    playerGapFiller,
+    comment,
+    division,
+    saveTransfer,
+    reset,
 }) => {
     const baseDetails = {
-        Division: division, Manager: manager, Status: 'TBC', 'Transfer Type': changeType,
+        Division: division,
+        Manager: manager,
+        Status: 'TBC',
+        'Transfer Type': changeType,
     };
     const transfers = [];
     if (playerDisplaced && playerGapFiller) {
@@ -45,7 +57,10 @@ const confirmTransfer = ({
         });
     } else {
         transfers.push({
-            ...baseDetails, 'Transfer In': playerIn.value, 'Transfer Out': playerOut.value, Comment: comment,
+            ...baseDetails,
+            'Transfer In': playerIn.value,
+            'Transfer Out': playerOut.value,
+            Comment: comment,
         });
     }
 
@@ -67,8 +82,11 @@ const createFilterOptions = (managers = [], manager) => {
             label: 'Managers',
             options: [
                 { value: 'available', label: 'No manager (free agents)', group: 'manager' },
-                ...managers
-                    .map((mngr) => ({ value: mngr, label: `${mngr}${mngr === manager ? '*' : ''}`, group: 'manager' })),
+                ...managers.map((mngr) => ({
+                    value: mngr,
+                    label: `${mngr}${mngr === manager ? '*' : ''}`,
+                    group: 'manager',
+                })),
             ],
         },
         {
@@ -78,9 +96,7 @@ const createFilterOptions = (managers = [], manager) => {
     ];
 };
 
-const Search = ({
-    filterOptions, onSelect, onFilter, playersArray, playerFilter, filteredPlayers,
-}) => (
+const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter, filteredPlayers }) => (
     <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.SMALL }}>
         <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
             <h3>Search:</h3>
@@ -92,25 +108,18 @@ const Search = ({
                     placeholder="player filter..."
                     options={filterOptions}
                     isMulti
-                    name={'playersFiltersOut'}
+                    name="playersFiltersOut"
                     onChange={onFilter}
                 />
             </div>
         </Spacer>
         <div style={{ position: 'relative', zIndex: '1' }}>
-            {playersArray.length > 0 && (
-                <Players
-                    onSelect={onSelect}
-                    playersArray={filteredPlayers.sortedPlayers}
-                />
-            )}
+            {playersArray.length > 0 && <Players onSelect={onSelect} playersArray={filteredPlayers.sortedPlayers} />}
         </div>
     </Spacer>
 );
 
-const TransfersPage = ({
-    divisionKey, teamsByManager, managers, isLoading,
-}) => {
+const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => {
     const [DrawerContent, setDrawerContent] = useState(undefined);
     const [initiateRequest, setInitiateRequest] = useState(false);
     const [comment, setComment] = useState('');
@@ -139,9 +148,11 @@ const TransfersPage = ({
         setInitiateRequest(false);
     };
     // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
-    const { allPlayers: { nodes: playersArray } } = useStaticQuery(graphql`
+    const {
+        allPlayers: { nodes: playersArray },
+    } = useStaticQuery(graphql`
         query TransferPlayers {
-            allPlayers(filter: {isHidden: {eq: false}}) {
+            allPlayers(filter: { isHidden: { eq: false } }) {
                 nodes {
                     id
                     name
@@ -196,7 +207,7 @@ const TransfersPage = ({
         />
     );
     return (
-        <div className={bem(null, null, 'page-content')} >
+        <div className={bem(null, null, 'page-content')}>
             <Drawer
                 isCloseable
                 hasBackdrop
@@ -205,11 +216,11 @@ const TransfersPage = ({
                 placement={Drawer.placements.RIGHT}
                 theme={Drawer.themes.LIGHT}
             >
-                {DrawerContent === 'playerIn' ? <RequestPlayerIn /> : <RequestPlayerOut /> }
+                {DrawerContent === 'playerIn' ? <RequestPlayerIn /> : <RequestPlayerOut />}
             </Drawer>
             <Accordion
-                title={'Create Request'}
-                description={'Initiate a Transfer, Loan, Swap or Trade'}
+                title="Create Request"
+                description="Initiate a Transfer, Loan, Swap or Trade"
                 type={Accordion.types.SECONDARY}
             >
                 <Accordion.Content>
@@ -217,8 +228,8 @@ const TransfersPage = ({
                         <h4>1. Who are you?</h4>
                     </Spacer>
                     <MultiToggle
-                        id={'manager'}
-                        loadingMessage={'loading teams...'}
+                        id="manager"
+                        loadingMessage="loading teams..."
                         options={managers}
                         checked={manager}
                         onChange={setManager}
@@ -229,7 +240,7 @@ const TransfersPage = ({
                         <h4>2. What type of request is it?</h4>
                     </Spacer>
                     <MultiToggle
-                        id={'change-type'}
+                        id="change-type"
                         options={Object.values(changeTypes)}
                         checked={changeType}
                         onChange={setChangeType}
@@ -241,11 +252,8 @@ const TransfersPage = ({
                         <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                             <h3>3. Who is Leaving the squad?</h3>
                         </Spacer>
-                        <div>
-                            {playerOut && playerOut.label}
-                        </div>
-                        <Button onClick={() => setDrawerContent('playerOut')
-                        }>Pick</Button>
+                        <div>{playerOut && playerOut.label}</div>
+                        <Button onClick={() => setDrawerContent('playerOut')}>Pick</Button>
                     </Accordion.Content>
                 )}
 
@@ -254,11 +262,8 @@ const TransfersPage = ({
                         <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                             <h3>4. Who is Joining the squad?</h3>
                         </Spacer>
-                        <div>
-                            {playerIn && playerIn.label}
-                        </div>
-                        <Button onClick={() => setDrawerContent('playerIn')
-                        }>Pick</Button>
+                        <div>{playerIn && playerIn.label}</div>
+                        <Button onClick={() => setDrawerContent('playerIn')}>Pick</Button>
                     </Accordion.Content>
                 )}
 
@@ -268,38 +273,45 @@ const TransfersPage = ({
                             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                                 <h3>Any Comments for the banter box?</h3>
                             </Spacer>
-                            <textarea className='transfers-page__comment' onChange={setComment} />
+                            <textarea className="transfers-page__comment" onChange={setComment} />
                         </Accordion.Content>
                         <Accordion.Content>
                             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                                 <h3>Confirm Request</h3>
                             </Spacer>
                             <GameWeekTransfers
-                            // getGameWeekFromDate={gwFromDate}
-                                transfers={[{
-                                    manager,
-                                    timestamp: new Date(),
-                                    status: 'tbc',
-                                    type: changeType,
-                                    transferIn: playerIn ? playerIn.value : '',
-                                    transferOut: playerOut ? playerOut.value : '',
-                                    comment,
-                                }]}
-                                isLoading={false}
-                                Action={(
-                                    <Button onClick={() => confirmTransfer({
-                                        playerIn,
-                                        playerOut,
-                                        changeType,
+                                // getGameWeekFromDate={gwFromDate}
+                                transfers={[
+                                    {
                                         manager,
+                                        timestamp: new Date(),
+                                        status: 'tbc',
+                                        type: changeType,
+                                        transferIn: playerIn ? playerIn.value : '',
+                                        transferOut: playerOut ? playerOut.value : '',
                                         comment,
-                                        division: divisionKey,
-                                        saveTransfer,
-                                        reset,
-                                    })} state={'buttonState'}>
+                                    },
+                                ]}
+                                isLoading={false}
+                                Action={
+                                    <Button
+                                        onClick={() =>
+                                            confirmTransfer({
+                                                playerIn,
+                                                playerOut,
+                                                changeType,
+                                                manager,
+                                                comment,
+                                                division: divisionKey,
+                                                saveTransfer,
+                                                reset,
+                                            })
+                                        }
+                                        state="buttonState"
+                                    >
                                         Confirm {changeType}
                                     </Button>
-                                )}
+                                }
                             />
                         </Accordion.Content>
                     </React.Fragment>

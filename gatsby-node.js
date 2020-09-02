@@ -55,17 +55,17 @@ exports.onCreateWebpackConfig = ({ actions, loaders }) => {
                                     features: {
                                         'focus-within-pseudo-class': false,
                                         'custom-properties':
-                                        Object.keys(tokens.properties).length > 0
-                                            ? {
-                                                preserve: false, // true: keep css-properties in the css output
-                                            }
-                                            : false,
+                                            Object.keys(tokens.properties).length > 0
+                                                ? {
+                                                      preserve: false, // true: keep css-properties in the css output
+                                                  }
+                                                : false,
                                         'custom-media-queries':
-                                        Object.keys(tokens.mediaQueries).length > 0
-                                            ? {
-                                                preserve: false,
-                                            }
-                                            : false,
+                                            Object.keys(tokens.mediaQueries).length > 0
+                                                ? {
+                                                      preserve: false,
+                                                  }
+                                                : false,
                                     },
                                     overrideBrowserslist,
                                     autoprefixer: { grid: true },
@@ -99,14 +99,14 @@ exports.onCreateBabelConfig = ({ actions }) => {
     });
 };
 
-exports.onPreBootstrap = () => {
-};
+exports.onPreBootstrap = () => {};
 
-exports.onCreateDevServer = () => {
-};
+exports.onCreateDevServer = () => {};
 
 exports.createPages = async ({ actions, graphql }) => {
-    const { data: { allGameWeeks, allDivisions } } = await graphql(`
+    const {
+        data: { allGameWeeks, allDivisions },
+    } = await graphql(`
         query {
             allGameWeeks {
                 nodes {
@@ -261,8 +261,6 @@ exports.createPages = async ({ actions, graphql }) => {
     });
 };
 
-exports.sourceNodes = async () => {
-};
+exports.sourceNodes = async () => {};
 
-exports.onPostBuild = async () => {
-};
+exports.onPostBuild = async () => {};

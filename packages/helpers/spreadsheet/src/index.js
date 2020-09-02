@@ -1,3 +1,4 @@
+/* global fetch */
 const fetchr = require('./fetch');
 const { spreadsheets } = require('./constants');
 const formatTransfers = require('./lib/formatTransfers');
@@ -17,9 +18,8 @@ const kammyProxy = async (division, data) => {
 };
 
 module.exports = {
-    fetchTransfers: (division) => (
-        fetchr(spreadsheets.TRANSFERS_ID, `/values/${division}`).then((data) => formatTransfers(data, division))
-    ),
+    fetchTransfers: (division) =>
+        fetchr(spreadsheets.TRANSFERS_ID, `/values/${division}`).then((data) => formatTransfers(data, division)),
     fetchCup: (division = 'cup') => fetchr(spreadsheets.TRANSFERS_ID, `/values/${division}`),
     fetchDraft: (worksheet) => fetchr(spreadsheets.DRAFT_ID, `/values/${worksheet}`),
     fetchSetup: (worksheet) => fetchr(spreadsheets.SETUP_ID, `/values/${worksheet}`),

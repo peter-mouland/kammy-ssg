@@ -14,8 +14,8 @@ const Index = ({ className, to, children }) => {
     if (!route) throw new Error(`Route to '${to}' not found`);
     const { path, label } = route;
     return (
-        <Link to={ path } className={ bem(null, null, className)}>
-            { children || label }
+        <Link to={path} className={bem(null, null, className)}>
+            {children || label}
         </Link>
     );
 };
@@ -24,6 +24,11 @@ Index.propTypes = {
     to: PropTypes.string.isRequired,
     className: PropTypes.string,
     children: PropTypes.node,
+};
+
+Index.defaultProps = {
+    className: '',
+    children: null,
 };
 
 Index.contextTypes = {

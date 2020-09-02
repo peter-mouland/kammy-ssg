@@ -225,25 +225,46 @@ describe('getDivisionRank()', () => {
 
         expect(getDivisionRank(divisionPoints)).toEqual({
             'GK / SUB': {
-                Olly: 2, Nick: 2, Pete: 2, Pete2: 0,
+                Olly: 2,
+                Nick: 2,
+                Pete: 2,
+                Pete2: 0,
             },
             AM: {
-                Olly: 2, Nick: 2, Pete: 2, Pete2: 0,
+                Olly: 2,
+                Nick: 2,
+                Pete: 2,
+                Pete2: 0,
             },
             CB: {
-                Olly: 2, Nick: 2, Pete: 2, Pete2: 0,
+                Olly: 2,
+                Nick: 2,
+                Pete: 2,
+                Pete2: 0,
             },
             FB: {
-                Olly: 2, Nick: 2, Pete: 2, Pete2: 0,
+                Olly: 2,
+                Nick: 2,
+                Pete: 2,
+                Pete2: 0,
             },
             MID: {
-                Olly: 2, Nick: 2, Pete: 2, Pete2: 0,
+                Olly: 2,
+                Nick: 2,
+                Pete: 2,
+                Pete2: 0,
             },
             STR: {
-                Olly: 2, Nick: 2, Pete: 2, Pete2: 0,
+                Olly: 2,
+                Nick: 2,
+                Pete: 2,
+                Pete2: 0,
             },
             total: {
-                Olly: 12, Nick: 12, Pete: 12, Pete2: 0,
+                Olly: 12,
+                Nick: 12,
+                Pete: 12,
+                Pete2: 0,
             },
         });
     });

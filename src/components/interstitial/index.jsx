@@ -7,7 +7,7 @@ import './interstitial.scss';
 const Index = ({ message }) => (
     <span className="interstitial">
         <Football />
-        { message || 'Please wait' }...
+        {message || 'Please wait'}...
     </span>
 );
 

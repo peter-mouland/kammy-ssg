@@ -12,44 +12,39 @@ import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'division-stats' });
 
-const DivisionStats = ({
-    label, teams, previousTeams, selectedGameWeek, divisionUrl,
-}) => {
+const DivisionStats = ({ label, teams, previousTeams, selectedGameWeek, divisionUrl }) => {
     const [positionTimelineProps, togglePosTimeline] = useState(null);
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     return (
         <section id="teams-page" className={bem()} data-b-layout="container">
             <div data-b-layout="vpad">
-                <GameWeekSwitcher
-                    url={`/${divisionUrl}/teams`}
-                    selectedGameWeek={selectedGameWeek}
-                />
+                <GameWeekSwitcher url={`/${divisionUrl}/teams`} selectedGameWeek={selectedGameWeek} />
             </div>
             <div data-b-layout="vpad">
                 <div className={bem(null, null, 'page-content')} data-b-layout="row vpad">
                     <div>
                         {positionTimelineProps && (
                             <Modal
-                                key={'timeline'}
-                                id={'timeline'}
+                                key="timeline"
+                                id="timeline"
                                 wide
                                 title={`${positionTimelineProps.position} Timeline`}
                                 open={!!positionTimelineProps}
                                 onClose={() => togglePosTimeline(null)}
                             >
-                                <PositionTimeline { ...positionTimelineProps } />
+                                <PositionTimeline {...positionTimelineProps} />
                             </Modal>
                         )}
                         {playerTimelineProps && (
                             <Modal
-                                key={'player-timeline'}
-                                id={'player-timeline'}
+                                key="player-timeline"
+                                id="player-timeline"
                                 wide
                                 title={`${playerTimelineProps.player.name} Timeline`}
                                 open={!!playerTimelineProps}
                                 onClose={() => togglePlayerTimeline(null)}
                             >
-                                <PlayerTimeline { ...playerTimelineProps } />
+                                <PlayerTimeline {...playerTimelineProps} />
                             </Modal>
                         )}
                         {/* {isAdmin && duplicatePlayers.length > 0 && ( */}

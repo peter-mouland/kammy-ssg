@@ -9,9 +9,8 @@ import bemHelper from '@kammy/bem';
 import '@kammy/bootstrap';
 
 import NavBar from './nav-bar';
-
-import './index.css';
 import NamedLink from './named-link';
+import './index.css';
 
 const Layout = ({ children }) => {
     const bem = bemHelper({ block: 'layout' });
@@ -19,9 +18,7 @@ const Layout = ({ children }) => {
         <div className={bem(null, 'main')}>
             <NavBar className={bem('nav')} />
             <main className={bem('content')}>
-                <section className={bem()}>
-                    {typeof children === 'function' ? children() : children}
-                </section>
+                <section className={bem()}>{typeof children === 'function' ? children() : children}</section>
             </main>
             <footer className={bem('footer')}>
                 <div className={bem('footer-content')}>

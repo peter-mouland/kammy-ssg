@@ -4,9 +4,7 @@ const { TeamSeason } = require('@kammy/data.player-stats/src/team-season');
 const { TeamByGameWeek } = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
-module.exports = ({
-    draft, transfers, gameWeeks, players, managers, createNodeId,
-}) => {
+module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId }) => {
     // toJson(draft, 'fixtures/draft.json');
     // toJson(transfers, 'fixtures/transfers.json');
     // toJson(gameWeeks, 'fixtures/gameWeeks.json');
@@ -26,15 +24,21 @@ module.exports = ({
     const validTransfers = transferData.filter((transfer) => transfer.isValid);
     const getValidManagerTransfers = (manager) => validTransfers.filter((transfer) => transfer.managerName === manager);
 
-    const draftByManager = draftData.reduce((prev, { manager }) => ({
-        ...prev,
-        [manager]: draftData.filter((pick) => pick.manager === manager),
-    }), {});
+    const draftByManager = draftData.reduce(
+        (prev, { manager }) => ({
+            ...prev,
+            [manager]: draftData.filter((pick) => pick.manager === manager),
+        }),
+        {},
+    );
 
-    const playersByName = playerData.reduce((prev, player) => ({
-        ...prev,
-        [player.name]: { ...player },
-    }), {});
+    const playersByName = playerData.reduce(
+        (prev, player) => ({
+            ...prev,
+            [player.name]: { ...player },
+        }),
+        {},
+    );
 
     const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
         if (!draftByManager[manager]) {
@@ -48,13 +52,13 @@ module.exports = ({
         });
         const seasonGameWeeks = teamByGameWeek.getSeason();
         const teamSeason = new TeamSeason({
-            manager, division, gameWeeks: seasonGameWeeks, players: playersByName,
+            manager,
+            division,
+            gameWeeks: seasonGameWeeks,
+            players: playersByName,
         });
         const season = teamSeason.getSeason();
-        return [
-            ...prev,
-            ...season,
-        ];
+        return [...prev, ...season];
     }, []);
 
     const teams = allTeamPlayers.map((item, i) => {

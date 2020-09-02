@@ -28,33 +28,30 @@ const marginTypes = {
     stack: PropTypes.string,
     stackH: PropTypes.string,
 };
-const snakeToCamel = (str) => str.replace(
-    /([-_][a-z])/g,
-    (group) => group.toUpperCase()
-        .replace('-', '')
-        .replace('_', ''),
-);
+const snakeToCamel = (str) =>
+    str.replace(/([-_][a-z])/g, (group) => group.toUpperCase().replace('-', '').replace('_', ''));
 // todo: use selector to cache results?
-const getClassNames = (breakpoints) => breakpoints.reduce(
-    (prevBP, bpConfig, bpIndex) => ({
-        ...prevBP,
-        ...Object.keys(bpConfig).reduce((prevSize, marginType) => {
-            const breakpoint = breakpointNames[bpIndex];
-            const marginSize = bpConfig[marginType];
-            // do not add @all when it is for all screen sizes
-            const classNameModifiers = snakeToCamel([marginType, marginSize, bpIndex > 0 ? breakpoint : ''].filter(Boolean).join('-'));
-            return {
-                ...prevSize,
-                [styles[classNameModifiers]]: !!styles[classNameModifiers],
-            };
-        }, {}),
-    }),
-    {},
-);
+const getClassNames = (breakpoints) =>
+    breakpoints.reduce(
+        (prevBP, bpConfig, bpIndex) => ({
+            ...prevBP,
+            ...Object.keys(bpConfig).reduce((prevSize, marginType) => {
+                const breakpoint = breakpointNames[bpIndex];
+                const marginSize = bpConfig[marginType];
+                // do not add @all when it is for all screen sizes
+                const classNameModifiers = snakeToCamel(
+                    [marginType, marginSize, bpIndex > 0 ? breakpoint : ''].filter(Boolean).join('-'),
+                );
+                return {
+                    ...prevSize,
+                    [styles[classNameModifiers]]: !!styles[classNameModifiers],
+                };
+            }, {}),
+        }),
+        {},
+    );
 
-const Spacer = ({
-    children, tag: Tag, all, small, phablet, medium, large, huge, dataId, className, ...props
-}) => {
+const Spacer = ({ children, tag: Tag, all, small, phablet, medium, large, huge, dataId, className, ...props }) => {
     const breakpointsWithAllShorthand = [all, small, phablet, medium, large, huge];
     const classNames = getClassNames(breakpointsWithAllShorthand);
     return (

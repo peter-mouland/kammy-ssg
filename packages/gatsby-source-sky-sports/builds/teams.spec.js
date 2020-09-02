@@ -4,8 +4,8 @@ const draftFixtures = require('./team-fixtures/draft.json');
 const gameWeekFixtures = require('./team-fixtures/gameWeeks.json');
 const managersFixtures = require('./team-fixtures/managers.json');
 const playersFixtures = require('./team-fixtures/players.json');
-const playerFixture = require('./team-fixtures/player.json');
-const transfersFixtures = require('./team-fixtures/transfers.json');
+// const playerFixture = require('./team-fixtures/player.json');
+// const transfersFixtures = require('./team-fixtures/transfers.json');
 
 const { log } = console;
 
