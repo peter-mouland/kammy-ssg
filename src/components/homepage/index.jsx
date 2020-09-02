@@ -7,11 +7,10 @@ import GameWeekFixtures from '../gameweek-fixtures';
 import GameWeekDate from '../gameweek-date';
 import Modal from '../modal';
 import './styles.scss';
-import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'home-page' });
 
-class Index extends React.Component {
+class Homepage extends React.Component {
     state = {
         showTransfers: false,
     };
@@ -94,14 +93,16 @@ class Index extends React.Component {
     }
 }
 
-Index.propTypes = {
+Homepage.propTypes = {
     gameWeekDates: PropTypes.object,
     statsByDivision: PropTypes.object,
     divisions: PropTypes.array,
 };
 
-Index.defaultProps = {
+Homepage.defaultProps = {
+    statsByDivision: {},
     divisions: [],
+    gameWeekDates: null,
 };
 
-export default Index;
+export default Homepage;

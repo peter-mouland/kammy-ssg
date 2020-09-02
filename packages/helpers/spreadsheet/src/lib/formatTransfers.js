@@ -1,6 +1,4 @@
-const formatTimeStamp = (timestamp = '') => {
-    return new Date(timestamp);
-};
+const formatTimeStamp = (timestamp = '') => new Date(timestamp);
 
 const formatTransfers = (data = [], division) => {
     try {

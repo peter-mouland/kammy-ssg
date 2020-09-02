@@ -6,7 +6,7 @@ import './toggle.scss';
 
 const bem = bemHelper({ block: 'toggle' });
 
-const Index = ({ id, checked, label, className, onClick, ...props }) => (
+const Toggle = ({ id, checked, label, className, onClick, ...props }) => (
     <span className={className}>
         <input
             className={bem(null, 'ios')}
@@ -23,7 +23,7 @@ const Index = ({ id, checked, label, className, onClick, ...props }) => (
     </span>
 );
 
-Index.propTypes = {
+Toggle.propTypes = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
@@ -31,9 +31,9 @@ Index.propTypes = {
     checked: PropTypes.bool,
 };
 
-Index.defaultProps = {
+Toggle.defaultProps = {
     checked: false,
     className: '',
 };
 
-export default Index;
+export default Toggle;

@@ -73,12 +73,18 @@ const GameWeekTransfers = ({
 
 GameWeekTransfers.propTypes = {
     currentGameWeek: PropTypes.object.isRequired,
-    prevGameWeek: PropTypes.object.isRequired,
-    gameWeekMinus2: PropTypes.object.isRequired,
     selectedGameWeek: PropTypes.number.isRequired,
     divisionUrl: PropTypes.string.isRequired,
     divisionKey: PropTypes.string.isRequired,
+    prevGameWeek: PropTypes.object,
+    gameWeekMinus2: PropTypes.object,
     teamsByManager: PropTypes.object,
+};
+
+GameWeekTransfers.defaultProps = {
+    prevGameWeek: null,
+    gameWeekMinus2: null,
+    teamsByManager: {},
 };
 
 export default GameWeekTransfers;

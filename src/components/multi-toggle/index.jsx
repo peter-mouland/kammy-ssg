@@ -8,7 +8,7 @@ import './multi-toggle.scss';
 
 const bem = bemHelper({ block: 'multi-toggle' });
 
-const Index = ({
+const MultiToggle = ({
     id,
     checked,
     options,
@@ -61,7 +61,7 @@ const Index = ({
     </span>
 );
 
-Index.propTypes = {
+MultiToggle.propTypes = {
     onChange: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
     options: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
@@ -74,7 +74,7 @@ Index.propTypes = {
     contextualHelp: PropTypes.func,
 };
 
-Index.defaultProps = {
+MultiToggle.defaultProps = {
     disabledOptions: [],
     options: [],
     className: '',
@@ -85,4 +85,4 @@ Index.defaultProps = {
     contextualHelp: null,
 };
 
-export default Index;
+export default MultiToggle;

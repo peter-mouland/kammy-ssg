@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
@@ -6,6 +7,7 @@ const formatTimestamp = (ts) => {
     try {
         return format(ts, 'MMM d, HH:mm:ss');
     } catch (e) {
+        // eslint-disable-next-line no-console
         console.log(ts);
         return 'unknown date';
     }
@@ -31,10 +33,9 @@ const TransferBody = ({ getGameWeekFromDate, transfers, Action }) => {
     return (
         <tbody>
             {transfers.map(({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment }) => {
-                console.log(comment)
                 const gw = 1; // timestamp && typeof getGameWeekFromDate === 'function' ? getGameWeekFromDate(timestamp) : '';
                 return (
-                    <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>
+                    <tr className={`row row--${status.toLowerCase()}`} key={`${timestamp}-${transferIn}`}>
                         <td
                             data-col-label="status"
                             className="cell cell--status cell--show-750 cell--center"

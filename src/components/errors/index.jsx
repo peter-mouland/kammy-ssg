@@ -4,17 +4,17 @@ import bemHelper from '@kammy/bem';
 
 const bem = bemHelper({ block: 'error' });
 
-const Index = ({ errors }) => (
+const Errors = ({ errors }) => (
     <div className={bem()}>
         <p>Error!</p>
-        {errors.map((error, i) => (
-            <p key={i}>{error.message}</p>
+        {errors.map((error) => (
+            <p key={error.message}>{error.message}</p>
         ))}
     </div>
 );
 
-Index.propTypes = {
+Errors.propTypes = {
     errors: PropTypes.array.isRequired,
 };
 
-export default Index;
+export default Errors;

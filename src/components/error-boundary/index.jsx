@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Index extends React.Component {
+class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
         this.state = { hasError: false };
@@ -11,6 +11,7 @@ class Index extends React.Component {
         // Display fallback UI
         this.setState({ hasError: true });
         // You can also log the error to an error reporting service
+        // eslint-disable-next-line no-console
         console.log(error, info);
     }
 
@@ -23,8 +24,12 @@ class Index extends React.Component {
     }
 }
 
-Index.propTypes = {
+ErrorBoundary.propTypes = {
     children: PropTypes.node,
 };
 
-export default Index;
+ErrorBoundary.defaultProps = {
+    children: null,
+};
+
+export default ErrorBoundary;

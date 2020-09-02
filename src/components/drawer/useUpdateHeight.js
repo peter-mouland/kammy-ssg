@@ -2,10 +2,9 @@ import { useState, useLayoutEffect } from 'react';
 import canUseDom from '@kammy/helpers.can-use-dom';
 
 const useUpdateHeight = () => {
-    if (!canUseDom()) return { height: '0' };
-
-    const [height, setHeight] = useState(window.innerHeight);
-    const setHeightToWindow = () => setHeight(window.innerHeight);
+    const innerHeight = canUseDom() ? window.innerHeight : 0;
+    const [height, setHeight] = useState(innerHeight);
+    const setHeightToWindow = () => setHeight(innerHeight);
 
     useLayoutEffect(() => {
         window.addEventListener('resize', setHeightToWindow);

@@ -33,6 +33,10 @@ SortableHeader.propTypes = {
     className: PropTypes.string,
 };
 
+SortableHeader.defaultProps = {
+    className: '',
+};
+
 class PlayerTable extends React.Component {
     state = {
         sort: [],

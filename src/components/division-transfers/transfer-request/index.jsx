@@ -330,37 +330,18 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
 };
 
 TransfersPage.propTypes = {
-    transfers: PropTypes.array,
     divisionKey: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    division: PropTypes.string.isRequired,
-    gameWeeks: PropTypes.array,
-    managers: PropTypes.array,
-    players: PropTypes.object,
-    playersArray: PropTypes.array,
+    dateIsInCurrentGameWeek: PropTypes.func.isRequired,
+    gwFromDate: PropTypes.func.isRequired,
     teamsByManager: PropTypes.object,
     pendingTransfers: PropTypes.object,
-    dateIsInCurrentGameWeek: PropTypes.func.isRequired,
-    fetchTransfers: PropTypes.func.isRequired,
-    gwFromDate: PropTypes.func.isRequired,
-    transfersSaving: PropTypes.bool,
     isLoading: PropTypes.bool,
-    playersLoaded: PropTypes.bool,
-    transfersLoading: PropTypes.bool,
-    gameWeeksLoading: PropTypes.bool,
 };
 
 TransfersPage.defaultProps = {
-    playersLoaded: false,
-    transfersSaving: false,
-    transfersLoading: false,
-    gameWeeksLoading: false,
-    transfers: [],
-    gameWeeks: [],
+    isLoading: false,
     pendingTransfers: {},
-    players: null,
-    playersArray: null,
-    teams: {},
+    teamsByManager: {},
 };
 
 export default TransfersPage;

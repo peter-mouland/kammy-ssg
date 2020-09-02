@@ -4,19 +4,19 @@ import PropTypes from 'prop-types';
 import Football from './football.svg';
 import './interstitial.scss';
 
-const Index = ({ message }) => (
+const Interstitial = ({ message }) => (
     <span className="interstitial">
         <Football />
         {message || 'Please wait'}...
     </span>
 );
 
-Index.propTypes = {
+Interstitial.propTypes = {
     message: PropTypes.string,
 };
 
-Index.defaultProps = {
+Interstitial.defaultProps = {
     message: null,
 };
 
-export default Index;
+export default Interstitial;

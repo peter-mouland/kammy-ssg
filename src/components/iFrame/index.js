@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Index = ({ src, title }) => (
+const IFrame = ({ src, title }) => (
     <section
         id="championship-draft-page"
         data-b-layout="container"
@@ -28,9 +28,9 @@ const Index = ({ src, title }) => (
     </section>
 );
 
-Index.propTypes = {
+IFrame.propTypes = {
     src: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
 };
 
-export default Index;
+export default IFrame;

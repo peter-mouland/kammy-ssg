@@ -12,7 +12,7 @@ const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
 const hiddenColumns = ['isHidden', 'value', 'code'];
 const visibleStats = ['points', 'apps', 'subs', 'gls', 'asts', 'cs', 'con', 'pensv', 'sb', 'tb', 'ycard', 'rcard'];
 
-const PlayersPage = ({ data, pageContext: { divisionLabel, divisionKey } }) => {
+const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce(
         (prev, player) => ({

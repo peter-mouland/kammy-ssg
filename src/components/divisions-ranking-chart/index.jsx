@@ -4,11 +4,20 @@ import { LineChart, Line, CartesianGrid, YAxis, XAxis, Tooltip, Legend } from 'r
 
 const strokes = ['#8884d8', '#82ca9d', '#911a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff8f00', '#a65628', '#f781bf'];
 
-class Index extends React.Component {
+class DivisionRankingChart extends React.Component {
     state = {
         width: 300,
         dataPoints: 5,
     };
+
+    componentDidMount() {
+        this.updateDimensions();
+        window.addEventListener('resize', this.updateDimensions);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateDimensions);
+    }
 
     updateDimensions = () => {
         const { width } = this.state;
@@ -22,15 +31,6 @@ class Index extends React.Component {
             if (width !== 750) this.setState({ width: 650, dataPoints: 25 });
         } else if (width !== 800) this.setState({ width: 750, dataPoints: 50 });
     };
-
-    componentDidMount() {
-        this.updateDimensions();
-        window.addEventListener('resize', this.updateDimensions);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateDimensions);
-    }
 
     render() {
         const { data, xAxis, lines, highlightManager, lineType } = this.props;
@@ -58,7 +58,7 @@ class Index extends React.Component {
     }
 }
 
-Index.lineTypes = [
+DivisionRankingChart.lineTypes = [
     'basis',
     'basisClosed',
     'basisOpen',
@@ -73,18 +73,18 @@ Index.lineTypes = [
     'stepAfter',
 ];
 
-Index.propTypes = {
+DivisionRankingChart.propTypes = {
     xAxis: PropTypes.string.isRequired,
     lines: PropTypes.array.isRequired,
     data: PropTypes.array,
     highlightManager: PropTypes.string,
-    lineType: PropTypes.oneOf(Index.lineTypes),
+    lineType: PropTypes.oneOf(DivisionRankingChart.lineTypes),
 };
 
-Index.defaultProps = {
+DivisionRankingChart.defaultProps = {
     data: [],
     highlightManager: '',
     lineType: 'basis',
 };
 
-export default Index;
+export default DivisionRankingChart;

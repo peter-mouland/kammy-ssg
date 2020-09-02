@@ -8,11 +8,10 @@ import Table from './DivisionStats.table';
 import Modal from '../modal';
 import PositionTimeline from './components/PositionTimeline.table';
 import PlayerTimeline from './components/PlayerTimeline.table';
-import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'division-stats' });
 
-const DivisionStats = ({ label, teams, previousTeams, selectedGameWeek, divisionUrl }) => {
+const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) => {
     const [positionTimelineProps, togglePosTimeline] = useState(null);
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     return (
@@ -76,7 +75,7 @@ const DivisionStats = ({ label, teams, previousTeams, selectedGameWeek, division
 };
 
 DivisionStats.propTypes = {
-    selectedGameWeek: PropTypes.number.isRequired,
+    selectedGameWeek: PropTypes.number,
     label: PropTypes.string.isRequired,
     divisionUrl: PropTypes.string.isRequired,
     teams: PropTypes.object,

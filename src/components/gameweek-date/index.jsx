@@ -37,7 +37,7 @@ const getDates = ({ start, end }) => {
     }
 };
 
-const Index = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
+const GameWeekDate = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
     const { start, end, cup } = gameWeek;
 
     const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({ start, end });
@@ -67,7 +67,7 @@ const Index = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime
     );
 };
 
-Index.propTypes = {
+GameWeekDate.propTypes = {
     showEndTime: PropTypes.bool,
     showStartTime: PropTypes.bool,
     showStart: PropTypes.bool,
@@ -82,11 +82,14 @@ Index.propTypes = {
     }).isRequired,
 };
 
-Index.defaultProps = {
+GameWeekDate.defaultProps = {
     showStartTime: true,
     showEndTime: true,
     showStart: true,
     showEnd: true,
+    label: '',
+    calStart: '',
+    calEnd: '',
 };
 
-export default Index;
+export default GameWeekDate;

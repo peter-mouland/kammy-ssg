@@ -45,7 +45,9 @@ NavItem.propTypes = {
 };
 
 NavItem.defaultProps = {
-    openOnClick: false,
+    label: '',
+    className: '',
+    to: '',
 };
 
 export default NavItem;

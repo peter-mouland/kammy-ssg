@@ -9,7 +9,7 @@ const bem = bemHelper({ block: 'named-link' });
 
 const findRoute = ({ to }) => appConfig.routes.find((rt) => rt.name === to);
 
-const Index = ({ className, to, children }) => {
+const NamedLink = ({ className, to, children }) => {
     const route = findRoute({ to });
     if (!route) throw new Error(`Route to '${to}' not found`);
     const { path, label } = route;
@@ -20,19 +20,19 @@ const Index = ({ className, to, children }) => {
     );
 };
 
-Index.propTypes = {
+NamedLink.propTypes = {
     to: PropTypes.string.isRequired,
     className: PropTypes.string,
     children: PropTypes.node,
 };
 
-Index.defaultProps = {
+NamedLink.defaultProps = {
     className: '',
     children: null,
 };
 
-Index.contextTypes = {
+NamedLink.contextTypes = {
     appConfig: PropTypes.object,
 };
 
-export default Index;
+export default NamedLink;

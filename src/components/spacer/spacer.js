@@ -77,6 +77,7 @@ Spacer.propTypes = {
 
 Spacer.defaultProps = {
     tag: 'div',
+    className: '',
     children: null,
     dataId: null,
     all: {},

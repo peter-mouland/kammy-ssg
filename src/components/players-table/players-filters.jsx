@@ -72,19 +72,14 @@ export default class PlayersFilters extends React.Component {
             showNew: false,
             isSaving: false,
             customFilterChecked: false,
-            showHiddenChecked: false,
             posFilters: props.selectedPosition ? [props.selectedPosition] : [],
             nameFilters: [],
             clubFilters: [],
-            selectFilters: [],
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.options.clubs = setClubs(nextProps);
-        if (nextProps.selectedPosition !== this.state.selectedPosition) {
-            this.setState({ posFilter: nextProps.selectedPosition });
-        }
     }
 
     showNew = (e) => {
