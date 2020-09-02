@@ -34,19 +34,22 @@
 
   .row.disabled,
   &__player--disabled {
-    background-color: grey;
+    color: #c3c3c3;
     font-style: italic;
+    text-decoration: line-through;
+
+      a {
+          color: #c3c3c3;
+      }
   }
 
   /* thead: style dup for safari bug fix */
   thead {
-    position: sticky;
     top: 0;
     z-index: 1;
   }
 
   th.cell {
-    position: sticky;
     top: 0;
     text-align: center;
     background-color: rgb(220, 228, 245);

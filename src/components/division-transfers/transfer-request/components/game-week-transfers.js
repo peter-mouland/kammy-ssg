@@ -2,6 +2,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
+import { graphql, useStaticQuery } from 'gatsby';
+import parseISO from 'date-fns/parseISO';
+
+const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
+
+const getGameWeekFromDateFact = (gameWeeks) => (date) => {
+    const gwIndex = gameWeeks.findIndex(({ start, end }) => inDateRange({ start, end }, date));
+    return gwIndex < 0 ? 1 : gwIndex;
+};
 
 const formatTimestamp = (ts) => {
     try {
@@ -28,12 +37,12 @@ const getEmoji = (status = '') => {
     }
 };
 
-const TransferBody = ({ getGameWeekFromDate, transfers, Action }) => {
+const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
     if (transfers.length < 1) return null;
     return (
         <tbody>
             {transfers.map(({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment }) => {
-                const gw = 1; // timestamp && typeof getGameWeekFromDate === 'function' ? getGameWeekFromDate(timestamp) : '';
+                const gw = timestamp && getGameWeekFromDate(timestamp);
                 return (
                     <tr className={`row row--${status.toLowerCase()}`} key={`${timestamp}-${transferIn}`}>
                         <td
@@ -84,38 +93,56 @@ TransferBody.defaultProps = {
     Action: null,
 };
 
-const GameWeekTransfers = ({ transfers, isLoading, Action, getGameWeekFromDate }) => (
-    <table className="table">
-        <thead>
-            <tr className="row">
-                <th className="cell cell--show-750">Status</th>
-                <th className="cell">GW</th>
-                <th className="cell cell--show-625">Date</th>
-                <th className="cell">Type</th>
-                <th className="cell">Manager</th>
-                <th className="cell">In</th>
-                <th className="cell">Out</th>
-                <th className="cell cell--show-925">Comment</th>
-                {Action && <th className="cell" />}
-            </tr>
-        </thead>
-        <TransferBody transfers={transfers} Action={Action} getGameWeekFromDate={getGameWeekFromDate} />
-        {transfers.length === 0 && !isLoading && (
-            <tbody>
+const GameWeekTransfers = ({ transfers, isLoading, Action }) => {
+    const {
+        allGameWeeks: { nodes: gameWeeks },
+    } = useStaticQuery(graphql`
+        query GameWeeks {
+            allGameWeeks {
+                nodes {
+                    end
+                    gameWeek
+                    start
+                    isCurrent
+                }
+            }
+        }
+    `);
+    const getGameWeekFromDate = getGameWeekFromDateFact(gameWeeks);
+
+    return (
+        <table className="table">
+            <thead>
                 <tr className="row">
-                    <td className="cell cell--center" colSpan={8}>
-                        <em>no transfers have been requested</em>
-                    </td>
+                    <th className="cell cell--show-750">Status</th>
+                    <th className="cell">GW</th>
+                    <th className="cell cell--show-625">Date</th>
+                    <th className="cell">Type</th>
+                    <th className="cell">Manager</th>
+                    <th className="cell">In</th>
+                    <th className="cell">Out</th>
+                    <th className="cell cell--show-925">Comment</th>
+                    {Action && <th className="cell" />}
                 </tr>
-            </tbody>
-        )}
-        <tfoot>
-            <tr className="row row--interstitial">
-                <td colSpan={8}>{isLoading && <Interstitial message="loading transfers..." />}</td>
-            </tr>
-        </tfoot>
-    </table>
-);
+            </thead>
+            <TransferBody transfers={transfers} Action={Action} getGameWeekFromDate={getGameWeekFromDate} />
+            {transfers.length === 0 && !isLoading && (
+                <tbody>
+                    <tr className="row">
+                        <td className="cell cell--center" colSpan={8}>
+                            <em>no transfers have been requested</em>
+                        </td>
+                    </tr>
+                </tbody>
+            )}
+            <tfoot>
+                <tr className="row row--interstitial">
+                    <td colSpan={8}>{isLoading && <Interstitial message="loading transfers..." />}</td>
+                </tr>
+            </tfoot>
+        </table>
+    );
+};
 
 GameWeekTransfers.propTypes = {
     transfers: PropTypes.arrayOf(
@@ -131,7 +158,6 @@ GameWeekTransfers.propTypes = {
     ).isRequired,
     isLoading: PropTypes.bool,
     Action: PropTypes.element,
-    getGameWeekFromDate: PropTypes.func.isRequired,
 };
 
 GameWeekTransfers.defaultProps = {

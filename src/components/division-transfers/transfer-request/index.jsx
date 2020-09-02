@@ -133,7 +133,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
         setPlayerFilter(undefined);
         setInitiateRequest(undefined);
     };
-    // const gwFromDate = gameWeekSelectors.getGameWeekFromDate(state);
+
     const {
         allPlayers: { nodes: playersArray },
     } = useStaticQuery(graphql`
@@ -192,7 +192,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
             onSelect={setPlayerInAndClose}
         />
     );
-    console.log({ changeType });
+
     return (
         <div className={bem(null, null, 'page-content')}>
             <Drawer
@@ -302,11 +302,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                             <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                                 <h3>Pending Requests</h3>
                             </Spacer>
-                            <GameWeekTransfers
-                                // getGameWeekFromDate={gwFromDate}
-                                transfers={requestedTransfers}
-                                isLoading={false}
-                            />
+                            <GameWeekTransfers transfers={requestedTransfers} isLoading={false} />
                         </Accordion.Content>
 
                         <Accordion.Content>
@@ -334,8 +330,6 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
 
 TransfersPage.propTypes = {
     divisionKey: PropTypes.string.isRequired,
-    dateIsInCurrentGameWeek: PropTypes.func.isRequired,
-    gwFromDate: PropTypes.func.isRequired,
     teamsByManager: PropTypes.object,
     pendingTransfers: PropTypes.object,
     isLoading: PropTypes.bool,

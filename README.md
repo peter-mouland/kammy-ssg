@@ -7,7 +7,7 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 ## Local Dev
 
  - `yarn start`
- - or `yarn dev` (wip: using netlify)
+ - or `yarn dev` (wip: using 'netlify functions')
 
 ## Data Sources
 
@@ -16,7 +16,6 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 
 ## Todo:
  - improve transfer page
-     - fix transfer comment box
      - fix transfer time display from google-sheets
      - update time on transfer page in real-time
      - show players selected + options
@@ -24,6 +23,8 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
      - add 'you have x transfers remaining' message
      - disable button if too many transfers
      - improve transfer page filters
+ - add pass-bonus to tables
+ - re-enable 'admin view'
  - fix teams page 'position timeline'
  - fix 'sticky' headers. ffs.
  - remove 'popup' with 'drawer'
