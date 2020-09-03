@@ -14,17 +14,19 @@ const AdminPlayerList = () => {
                     <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>
                         <h1>Admin Players</h1>
                     </Spacer>
-                    <p>
+                    <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                         The purpose of this page is to display the Players stats from the Google Spreadsheet and allow
                         you to copy new player data from SkySports, add see the differences highlighted.
-                    </p>
-                    <p>Players In SkySports :{skyOnlyPlayers.length}</p>
-                    <p>Players In Google Spreadsheets :{gSheetPlayers.length}</p>
-                    <p>
+                    </Spacer>
+                    <Spacer all={{ bottom: Spacer.spacings.TINY }}>Players In SkySports :{players.length}</Spacer>
+                    <Spacer all={{ bottom: Spacer.spacings.TINY }}>
+                        Players In Google Spreadsheets :{gSheetPlayers.length}
+                    </Spacer>
+                    <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                         {gSheetPlayers.length < skyOnlyPlayers.length && (
                             <div>{skyOnlyPlayers.length - gSheetPlayers.length} New Sky Sports players !</div>
                         )}
-                    </p>
+                    </Spacer>
                     <AdminPlayersTable players={players} />
                 </section>
             )}

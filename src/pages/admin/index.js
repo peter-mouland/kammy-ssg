@@ -1,5 +1,6 @@
 /* global fetch */
 import React, { useState } from 'react';
+import Link from 'gatsby-link';
 
 import Layout from '../../components/layout';
 import Button from '../../components/button';
@@ -25,14 +26,14 @@ const NotFoundPage = () => {
                             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                                 <p>Regenerate the site, with updated scores (takes about 10 mins).</p>
                                 {isLoading && (
-                                    <p>
+                                    <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                                         <a
                                             href="https://www.gatsbyjs.com/dashboard/organization/a81aa224-77fc-4be4-aa1a-16732e90fe97/sites"
                                             target="_gatsby"
                                         >
                                             view progress
                                         </a>{' '}
-                                    </p>
+                                    </Spacer>
                                 )}
                             </Spacer>
                             <Spacer all={{ bottom: Spacer.spacings.LARGE }}>
@@ -52,9 +53,7 @@ const NotFoundPage = () => {
                                 View the DraftFF Player list as well as the Sky Sports Players.
                             </Spacer>
                             <Spacer all={{ bottom: Spacer.spacings.LARGE }}>
-                                <Button isDisabled>
-                                    View Latest Players
-                                </Button>
+                                <Link to="players">View Latest Players</Link>
                             </Spacer>
                         </li>
                     </ul>
