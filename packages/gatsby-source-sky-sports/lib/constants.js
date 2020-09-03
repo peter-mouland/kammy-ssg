@@ -22,6 +22,7 @@ module.exports = {
         skySportsScores: 'skySportsScores',
         skySportsPlayers: 'skySportsPlayers',
         skySportsPlayerStats: 'skySportsPlayerStats',
+        adminPlayersList: 'adminPlayersList',
     },
     mediaTypes: {
         IMG: (type) => `image/${type}`,

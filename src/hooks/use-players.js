@@ -4,7 +4,7 @@ const usePlayers = () => {
     const {
         allPlayers: { nodes: players },
     } = useStaticQuery(graphql`
-        query TransferPlayers {
+        query Players {
             allPlayers(filter: { isHidden: { eq: false } }) {
                 nodes {
                     id

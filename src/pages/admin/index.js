@@ -1,9 +1,9 @@
 /* global fetch */
 import React, { useState } from 'react';
 
-import Layout from '../components/layout';
-import Button from '../components/button';
-import Spacer from '../components/spacer';
+import Layout from '../../components/layout';
+import Button from '../../components/button';
+import Spacer from '../../components/spacer';
 
 const NotFoundPage = () => {
     const [isLoading, setIsloading] = useState(false);
