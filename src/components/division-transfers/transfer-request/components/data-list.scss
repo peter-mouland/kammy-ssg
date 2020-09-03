@@ -38,8 +38,9 @@
   left: 0;
   right: 0;
 
-  /* restrict height */
-  max-height: 355px;
+  //max-height: 355px;
+  /* un-restrict height */
+    max-height: calc(100vh - 13em);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   box-shadow: rgba(0, 0, 0, .35) 5px 5px 13px;
