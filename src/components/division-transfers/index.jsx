@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import parseISO from 'date-fns/parseISO';
-import { useQuery } from 'react-query';
-import { fetchTransfers } from '@kammy/helpers.spreadsheet';
+import { useMutation, useQuery, queryCache } from 'react-query';
+import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 
 import Spacer from '../spacer';
 import GameWeekSwitcher from '../gameweek-switcher';
@@ -17,6 +17,13 @@ const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
     const { status, data: transfers = [], error } = useQuery(['transfers', divisionKey], fetchr);
+    const [saveTransfer, { status: saveStatus }] = useMutation(saveTransfers, {
+        onMutate: ({ data }) => {
+            queryCache.cancelQueries('transfers');
+            return queryCache.setQueryData(['transfers', divisionKey], (old) => [...old, ...data]);
+        },
+    });
+    const isSaving = saveStatus === 'loading';
     const { currentGameWeek } = useGameWeeks();
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
@@ -43,7 +50,8 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                 <TransferRequest
                     divisionKey={divisionKey}
                     teamsByManager={teamsByManager}
-                    isLoading={isLoading}
+                    isLoading={isSaving}
+                    saveTransfer={saveTransfer}
                     managers={managers}
                 />
             </Spacer>

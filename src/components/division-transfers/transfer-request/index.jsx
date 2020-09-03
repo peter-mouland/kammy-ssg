@@ -21,7 +21,7 @@ const bem = bemHelper({ block: 'transfers-page' });
 
 // todo: update table on mutation (via react-query)
 
-const confirmTransfer = ({ transfers, division, saveTransfer, reset }) => {
+const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => {
     // if (playerDisplaced && playerGapFiller) {
     //     // rearrange transfer to ensure positions match for the spreadsheet
     //     transfers.push({
@@ -39,6 +39,8 @@ const confirmTransfer = ({ transfers, division, saveTransfer, reset }) => {
     //
     const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
         ...transfer,
+        type,
+        manager,
         Division: division,
         Manager: manager,
         Status: 'TBC',
@@ -48,7 +50,7 @@ const confirmTransfer = ({ transfers, division, saveTransfer, reset }) => {
         Comment: comment,
     }));
 
-    saveTransfer({ division, data });
+    await saveTransfer({ division, data });
     reset();
 };
 
@@ -103,18 +105,17 @@ const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter,
     </Spacer>
 );
 
-const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => {
+const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveTransfer }) => {
     const { players: playersArray } = usePlayers();
     const [DrawerContent, setDrawerContent] = useState(undefined);
     const [initiateRequest, setInitiateRequest] = useState(false);
     const [comment, setComment] = useState('');
-    const [requestedTransfers, setRequestedTransfers] = useState([]);
     const [manager, setManager] = useState(undefined);
     const [changeType, setChangeType] = useState(undefined);
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
     const [playerFilter, setPlayerFilter] = useState(undefined);
-    const [saveTransfer] = useMutation(saveTransfers);
+
     const filterOptions = createFilterOptions(managers, manager);
 
     const setPlayerOutAndClose = (player) => {
@@ -207,7 +208,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                     </Accordion.Content>
                 )}
 
-                {manager && changeType && (
+                {changeType && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>3. Who is Leaving the squad?</h3>
@@ -221,7 +222,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                     </Accordion.Content>
                 )}
 
-                {manager && changeType && playerOut && (
+                {playerOut && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>4. Who is Joining the squad?</h3>
@@ -235,7 +236,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                     </Accordion.Content>
                 )}
 
-                {manager && changeType && playerOut && playerIn && (
+                {playerIn && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>Any Comments for the banter box?</h3>
@@ -246,50 +247,39 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
                                 onChange={(e) => setComment(e.currentTarget.value)}
                             />
                         </Spacer>
-                        <Button
-                            onClick={() => {
-                                requestedTransfers.push({
-                                    manager,
-                                    timestamp: new Date(),
-                                    status: 'tbc',
-                                    type: changeType,
-                                    playerIn,
-                                    playerOut,
-                                    transferIn: playerIn ? playerIn.value : '',
-                                    transferOut: playerOut ? playerOut.value : '',
-                                    comment,
-                                });
-                                setRequestedTransfers(requestedTransfers);
-                                reset();
-                            }}
-                        >
-                            Save Request
-                        </Button>
                     </Accordion.Content>
                 )}
-                {requestedTransfers.length > 0 && (
+                {playerIn && (
                     <React.Fragment>
                         <Accordion.Content>
                             <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                                <h3>Pending Requests</h3>
+                                <h3>Request</h3>
                             </Spacer>
-                            <GameWeekTransfers transfers={requestedTransfers} isLoading={false} />
-                        </Accordion.Content>
-
-                        <Accordion.Content>
                             <Button
                                 onClick={() => {
                                     confirmTransfer({
-                                        transfers: requestedTransfers,
+                                        transfers: [
+                                            {
+                                                manager,
+                                                timestamp: new Date(),
+                                                status: 'tbc',
+                                                type: changeType,
+                                                playerIn,
+                                                playerOut,
+                                                transferIn: playerIn ? playerIn.value : '',
+                                                transferOut: playerOut ? playerOut.value : '',
+                                                comment,
+                                            }
+                                        ],
                                         division: divisionKey,
                                         saveTransfer,
                                         reset,
                                     });
-                                    setRequestedTransfers([]);
                                 }}
                                 state="buttonState"
+                                isLoading={isLoading}
                             >
-                                Submit Pending Requests
+                                Submit Request
                             </Button>
                         </Accordion.Content>
                     </React.Fragment>

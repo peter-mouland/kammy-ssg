@@ -52,7 +52,6 @@ const GameWeekTransfers = ({ transfers, isLoading }) => (
         <thead>
             <tr className="row">
                 <th className="cell cell--show-750">Status</th>
-                <th className="cell">GW</th>
                 <th className="cell cell--show-625">Date</th>
                 <th className="cell">Type</th>
                 <th className="cell">Manager</th>

@@ -7,9 +7,9 @@ import Button from '../../components/button';
 import Spacer from '../../components/spacer';
 
 const NotFoundPage = () => {
-    const [isLoading, setIsloading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const regenerate = () => {
-        setIsloading(true);
+        setIsLoading(true);
         return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
             method: 'post',
         });
