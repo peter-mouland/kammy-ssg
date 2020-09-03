@@ -23,21 +23,21 @@ const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem }) =
     const label = indexOfMatch(searchTerm, item) < 0 ? item.label : labelWithBoldText(item, searchTerm);
     const buttonClass = isActive ? `${buttonClassName} ${buttonClassName}--active` : buttonClassName;
     return (
-        <div className="datalist-item" key={item.key}>
-            {/* {item.img && <img src={item.img} className='datalist-item__img' />} */}
-            {label}
+        <button className={`datalist-item ${buttonClass}`} key={item.key} onClick={() => onSelect(item)} type="button">
+            {item.img && <img src={item.img} className="datalist-item__img" loading="lazy" alt="" />}
+            <span className="datalist-item__label">{label}</span>
             <span className="datalist-item__additional">{item.additional}</span>
-            <span style={{ float: 'right' }}>
-                <button onClick={() => onSelect(item)} className={buttonClass}>
-                    select
-                </button>
-            </span>
-        </div>
+        </button>
     );
 };
 
 Item.propTypes = {
-    item: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string, additional: PropTypes.node }).isRequired,
+    item: PropTypes.shape({
+        key: PropTypes.string,
+        img: PropTypes.string,
+        label: PropTypes.string,
+        additional: PropTypes.node,
+    }).isRequired,
     selectedItem: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }),
     index: PropTypes.number.isRequired,
     focusIndex: PropTypes.number.isRequired,

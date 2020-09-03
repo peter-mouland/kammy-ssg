@@ -9,9 +9,6 @@ import TabbedMenu from '../components/tabbed-division-menu';
 const TransfersPage = ({
     data: {
         currentTeams: { group: currentTeams },
-        currentGameWeek,
-        prevGameWeek,
-        gameWeekMinus2,
     },
     pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
 }) => {
@@ -35,9 +32,6 @@ const TransfersPage = ({
                 divisionLabel={divisionLabel}
                 divisionKey={divisionKey}
                 divisionUrl={divisionUrl}
-                currentGameWeek={currentGameWeek}
-                prevGameWeek={prevGameWeek}
-                gameWeekMinus2={gameWeekMinus2}
                 selectedGameWeek={selectedGameWeek}
             />
         </Layout>
@@ -45,39 +39,7 @@ const TransfersPage = ({
 };
 
 export const query = graphql`
-    query DivisionTransfers($gameWeek: Int, $prevGameWeek: Int, $prev2GameWeek: Int, $divisionKey: String) {
-        currentGameWeek: gameWeeks(gameWeek: { eq: $gameWeek }) {
-            gameWeek
-            isCurrent
-            start
-            end
-            cup
-            notes
-            fixtures {
-                aScore
-                aTcode
-                aTname
-                date
-                hScore
-                hTcode
-                hTname
-                status
-            }
-        }
-        prevGameWeek: gameWeeks(gameWeek: { eq: $prevGameWeek }) {
-            gameWeek
-            start
-            end
-            cup
-            notes
-        }
-        gameWeekMinus2: gameWeeks(gameWeek: { eq: $prev2GameWeek }) {
-            gameWeek
-            start
-            end
-            cup
-            notes
-        }
+    query DivisionTransfers($gameWeek: Int, $divisionKey: String) {
         currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
             sort: { fields: managerName }

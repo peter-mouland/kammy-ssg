@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { graphql, useStaticQuery } from 'gatsby';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { useMutation } from 'react-query';
 import bemHelper from '@kammy/bem';
 import { saveTransfers } from '@kammy/helpers.spreadsheet';
 
+import usePlayers from '../../../hooks/use-players';
 import Spacer from '../../spacer';
 import Drawer from '../../drawer';
 import MultiToggle from '../../multi-toggle';
@@ -104,6 +104,7 @@ const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter,
 );
 
 const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => {
+    const { players: playersArray } = usePlayers();
     const [DrawerContent, setDrawerContent] = useState(undefined);
     const [initiateRequest, setInitiateRequest] = useState(false);
     const [comment, setComment] = useState('');
@@ -133,36 +134,6 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading }) => 
         setPlayerFilter(undefined);
         setInitiateRequest(undefined);
     };
-
-    const {
-        allPlayers: { nodes: playersArray },
-    } = useStaticQuery(graphql`
-        query TransferPlayers {
-            allPlayers(filter: { isHidden: { eq: false } }) {
-                nodes {
-                    id
-                    name
-                    club
-                    pos
-                    new
-                    season {
-                        apps
-                        subs
-                        gls
-                        asts
-                        cs
-                        con
-                        pensv
-                        ycard
-                        rcard
-                        tb
-                        sb
-                        points
-                    }
-                }
-            }
-        }
-    `);
 
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter || [],

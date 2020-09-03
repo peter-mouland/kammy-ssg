@@ -1,19 +1,11 @@
 /* eslint-disable react/no-danger */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { graphql, useStaticQuery } from 'gatsby';
-import parseISO from 'date-fns/parseISO';
 
 import formatTimestamp from '../../lib/format-timestamp';
 import getEmoji from '../../lib/get-emoji';
 import Interstitial from '../../../interstitial';
-
-const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
-
-const getGameWeekFromDateFact = (gameWeeks) => (date) => {
-    const gwIndex = gameWeeks.findIndex(({ start, end }) => inDateRange({ start, end }, date));
-    return gwIndex < 0 ? 1 : gwIndex;
-};
+import useGameWeeks from '../../../../hooks/use-game-weeks';
 
 const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
     if (transfers.length < 1) return null;
@@ -72,21 +64,7 @@ TransferBody.defaultProps = {
 };
 
 const GameWeekTransfers = ({ transfers, isLoading, Action }) => {
-    const {
-        allGameWeeks: { nodes: gameWeeks },
-    } = useStaticQuery(graphql`
-        query GameWeeks {
-            allGameWeeks {
-                nodes {
-                    end
-                    gameWeek
-                    start
-                    isCurrent
-                }
-            }
-        }
-    `);
-    const getGameWeekFromDate = getGameWeekFromDateFact(gameWeeks);
+    const { getGameWeekFromDate } = useGameWeeks();
 
     return (
         <table className="table">

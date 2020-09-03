@@ -1,31 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useStaticQuery, graphql, Link } from 'gatsby';
+import { Link } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import FormattedGameWeekDate from '../gameweek-date';
 import './gameweek-switcher.scss';
 import ContextualHelp from '../contextual-help';
 import Spacer from '../spacer';
+import useGameWeeks from '../../hooks/use-game-weeks';
 
 const bem = bemHelper({ block: 'game-week-switcher' });
 
 const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
-    const data = useStaticQuery(graphql`
-        query AllGameWeeks {
-            allGameWeeks {
-                nodes {
-                    gameWeek
-                    isCurrent
-                    start
-                    end
-                    cup
-                }
-            }
-        }
-    `);
-    const gameWeeks = data.allGameWeeks.nodes;
-    const currentGameWeek = gameWeeks.find(({ isCurrent }) => !!isCurrent);
+    const { gameWeeks, currentGameWeek } = useGameWeeks();
     const previousGameWeeks = [...gameWeeks].slice(0, selectedGameWeek + 1 + 1);
     const options =
         previousGameWeeks.length > 4

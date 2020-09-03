@@ -52,10 +52,13 @@
 }
 
 .datalist-button {
-  top: -10px;
   position: relative;
-  padding: 8px;
-  margin: 2px;
+    width: 100%;
+  //padding: 8px;
+  //margin: 2px;
+  //  align-self: center;
+  //  border-radius: 5px;
+  //  border: 1px solid #163;
 
   &--active {
     background-color: #163;
@@ -71,6 +74,8 @@
   padding: 10px;
   background-color: #fff;
   border-bottom: 1px solid #d4d4d4;
+    display: flex;
+
 
   &:hover {
     background-color: #e9e9e9;
@@ -79,11 +84,19 @@
   &__img {
     width: 40px;
     display: inline-block;
-    margin: -6px 10px -6px -6px;
   }
 
+    &__label {
+        align-self: center;
+        flex: 1;
+    }
+
   &__additional {
-    color: #888;
+      align-self: center;
+      //text-align: center;
+      color: #888;
+      width: 30px;
+      font-size: 0.75em;
   }
 
   &--active {
