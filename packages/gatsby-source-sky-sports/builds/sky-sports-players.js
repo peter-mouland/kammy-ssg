@@ -1,12 +1,12 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const logger = require('../lib/log');
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
 module.exports = ({ skySportsPlayerData }) => {
-    console.log('Build: Sky Players start');
-    const start = new Date();
+    const logEnd = logger.timed('Build: Sky Players');
 
     const skyPlayers = skySportsPlayerData.map((player) => {
         const data = {
@@ -31,6 +31,6 @@ module.exports = ({ skySportsPlayerData }) => {
             },
         };
     });
-    console.log('Build: Sky Players end: ', new Date() - start);
+    logEnd();
     return skyPlayers;
 };

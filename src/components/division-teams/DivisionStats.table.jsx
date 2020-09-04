@@ -7,49 +7,6 @@ import { StatsHeaders, StatsCells } from './components/tableHelpers';
 
 const bem = bemHelper({ block: 'table' });
 
-const validatePlayer = (managersSeason, intGameWeek) => {
-    const players = Object.keys(managersSeason).reduce(
-        (acc, manager) => [
-            ...acc,
-            ...managersSeason[manager].map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek]),
-        ],
-        [],
-    );
-    const cache = {};
-    return players
-        .reduce((acc, player = {}) => {
-            const dupe = [...acc];
-            if (cache[player.name] && !dupe.includes(player.name)) {
-                dupe.push(player.name);
-            }
-            cache[player.name] = true;
-            return dupe;
-        }, [])
-        .filter(Boolean)
-        .filter(({ club }) => !!club);
-};
-
-const validateClub = (team = [], intGameWeek) => {
-    const players = team
-        .map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek])
-        .filter(Boolean)
-        .filter(({ club }) => !!club);
-    return players.reduce(
-        (acc, player = {}) => {
-            const count = (acc[player.club] || 0) + 1;
-            const clubWarnings =
-                count > 2 && acc.clubWarnings.indexOf(player.club) < 0
-                    ? [...acc.clubWarnings, player.club]
-                    : acc.clubWarnings;
-            return {
-                ...acc,
-                [player.club]: count,
-                clubWarnings,
-            };
-        },
-        { clubWarnings: [] },
-    );
-};
 
 const TeamsPage = ({
     teams,
@@ -88,7 +45,6 @@ const TeamsPage = ({
                     {teams[managerName].map(
                         ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
                             if (!player) return null; // allow for week zero
-                            console.log(seasonToGameWeek)
                             const playerLastGW =
                                 previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
                             const className =

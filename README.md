@@ -6,7 +6,8 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 
 ## Local Dev
 
- - `yarn start`
+ - `yarn start` : use latest sky/google data
+ - `FIXTURE=1920 yarn start` : use local fixtures
  - or `yarn dev` (wip: using 'netlify functions')
 
 ## Data Sources

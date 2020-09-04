@@ -1,8 +1,8 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const logger = require('../lib/log');
 
 module.exports = ({ googleDraftData, createNodeId }) => {
-    console.log('Build: Draft start');
-    const start = new Date();
+    const logEnd = logger.timed('Build: Draft');
 
     const draft = googleDraftData.map((item) => {
         const data = {
@@ -27,6 +27,6 @@ module.exports = ({ googleDraftData, createNodeId }) => {
         };
     });
 
-    console.log('Build: Draft end: ', new Date() - start);
+    logEnd();
     return draft;
 };

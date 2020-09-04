@@ -1,6 +1,6 @@
-const { playerStats: getPlayerStats } = require('@kammy/data.player-stats');
-
+const { playerStats: getPlayerStats } = require('./lib/player-stats');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const logger = require('../lib/log');
 
 const calculateSeasonStats = (gameWeeksWithFixtures) =>
     gameWeeksWithFixtures.reduce(
@@ -36,8 +36,7 @@ const getPlayerWithStats = ({ player, gameWeeks }) => {
 };
 
 module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
-    console.log('Build: Players start');
-    const start = new Date();
+    const logEnd = logger.timed('Build: Players');
 
     const gameWeekData = gameWeeks.map(({ data }) => data);
     const skyPlayersObj = skyPlayers.reduce(
@@ -84,9 +83,9 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
         };
     }, {});
 
-    console.log('Build: Players end: ', new Date() - start);
-    console.log(...notFound);
-    console.log(`GameWeeks without Fixtures: ${notFound.size}`);
+    logEnd();
+    logger.error(...notFound);
+    logger.warn(`GameWeeks without Fixtures: ${notFound.size}`);
     return Object.values(mergedPlayers).map((player) => ({
         resourceId: `players-${player.name}`,
         data: player,

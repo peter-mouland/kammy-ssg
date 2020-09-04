@@ -5,10 +5,12 @@ import Layout from '../components/layout';
 
 const PrizeMoney = () => (
     <Layout>
-        <IFrame
-            title="Prize Money"
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTc6YcPueOZlY0YNx4W-SbcB2AwoDGfvTa1fxoBuRTmSsxHf61eujyBHkMYrxvjKuLaTbIKoAY97G2B/pubhtml"
-        />
+        <div data-b-layout="container">
+            <IFrame
+                title="Prize Money"
+                src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTc6YcPueOZlY0YNx4W-SbcB2AwoDGfvTa1fxoBuRTmSsxHf61eujyBHkMYrxvjKuLaTbIKoAY97G2B/pubhtml"
+            />
+        </div>
     </Layout>
 );
 

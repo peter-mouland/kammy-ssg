@@ -11,10 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "@kammy/helpers.spreadsheet": "1.0.0",
-    "@kammy/data.player-stats": "1.0.0",
+    "chalk": "4.1.0",
     "axios": "0.20.0",
     "node-fetch": "2.6.0",
     "date-fns": "2.16.1",
-    "p-map": "4.0.0"
+    "p-map": "4.0.0",
+    "yargs": "15.4.1"
   }
 }

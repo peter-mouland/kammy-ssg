@@ -1,8 +1,8 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const logger = require('../lib/log');
 
 module.exports = ({ googleTransferData, createNodeId }) => {
-    console.log('Build: Transfers start');
-    const start = new Date();
+    const logEnd = logger.timed('Build: Transfers');
 
     const transfers = googleTransferData
         .sort((t1, t2) => new Date(t1.timestamp) - new Date(t2.timestamp))
@@ -36,6 +36,6 @@ module.exports = ({ googleTransferData, createNodeId }) => {
                 },
             };
         });
-    console.log('Build: Transfers end: ', new Date() - start);
+    logEnd();
     return transfers;
 };

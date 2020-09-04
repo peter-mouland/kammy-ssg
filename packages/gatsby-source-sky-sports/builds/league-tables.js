@@ -2,10 +2,10 @@ const { nodeTypes, mediaTypes } = require('../lib/constants');
 const getPoints = require('./lib/calculate-division-points');
 const getRank = require('./lib/calculate-division-rank');
 const getRankChange = require('./lib/calculate-rank-change');
+const logger = require('../lib/log');
 
 module.exports = ({ divisions, managers, teams, createNodeId }) => {
-    console.log('Build: League Tables start');
-    const start = new Date();
+    const logEnd = logger.timed('Build: League Tables');
     const teamData = teams.map(({ data }) => data);
     const managerData = managers.map(({ data }) => data);
     const divisionData = divisions.map(({ data }) => data);
@@ -113,8 +113,7 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
         };
     });
 
-    const ms = new Date() - start;
-    console.log('Build: League Tables end: ', ms);
+    logEnd();
 
     return resultsWithRank.map((data, i) => ({
         resourceId: `league-tables-i${i}-${data.teamPos}-${data.manager}-${data.gameWeek}`,

@@ -1,12 +1,12 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const logger = require('../lib/log');
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
 module.exports = ({ skyPlayers, players }) => {
-    console.log('Build: Admin Players List start');
-    const start = new Date();
+    const logEnd = logger.timed('Build: Admin Players List');
 
     const allPlayers = skyPlayers.map(({ data: player }) => {
         const gsheetsPlayer = players.find(({ data: { name } }) => name === player.name) || {};
@@ -27,6 +27,6 @@ module.exports = ({ skyPlayers, players }) => {
             },
         };
     });
-    console.log('Build: Admin Players List end: ', new Date() - start);
+    logEnd();
     return allPlayers;
 };

@@ -1,18 +1,18 @@
-const { TeamSeason } = require('@kammy/data.player-stats/src/team-season');
-
-// const toJson = require('./lib/to-json');
+const { TeamSeason } = require('./lib/team-season');
 const { TeamByGameWeek } = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
+const logger = require('../lib/log');
+// const toJson = require('./lib/to-json');
 
 module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId }) => {
+    const logEnd = logger.timed('Build: Teams');
+
     // toJson(draft, 'fixtures/draft.json');
     // toJson(transfers, 'fixtures/transfers.json');
     // toJson(gameWeeks, 'fixtures/gameWeeks.json');
     // toJson(players, 'fixtures/players.json');
     // toJson(managers, 'fixtures/managers.json');
 
-    console.log('Build: Teams start');
-    const start = new Date();
     // extract the data from the node
     const gameWeekData = gameWeeks.map(({ data }) => data);
     const transferData = transfers.map(({ data }) => data);
@@ -42,7 +42,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
 
     const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
         if (!draftByManager[manager]) {
-            console.log(`Manager Mismatch: ${manager}`);
+            logger.error(`Manager Mismatch: ${manager}`);
         }
         const teamByGameWeek = new TeamByGameWeek({
             draft: draftByManager[manager],
@@ -82,6 +82,6 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
             },
         };
     });
-    console.log('Build: Teams end: ', new Date() - start);
+    logEnd();
     return teams;
 };

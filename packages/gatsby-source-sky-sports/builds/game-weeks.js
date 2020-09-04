@@ -1,5 +1,6 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const toDate = require('../lib/to-date');
+const logger = require('../lib/log');
 
 const getFixtures = (skyFixtures, { start, end }) =>
     skyFixtures
@@ -11,8 +12,10 @@ const getFixtures = (skyFixtures, { start, end }) =>
         })
         .map(({ data }) => data);
 
-module.exports = ({ googleGameWeekData, skyFixtures }) =>
-    googleGameWeekData.map((gw) => {
+module.exports = ({ googleGameWeekData, skyFixtures }) => {
+    const logEnd = logger.timed('Build: Game Weeks');
+
+    const results = googleGameWeekData.map((gw) => {
         const data = {
             notes: gw.notes || '',
             cup: ['cup', 'y', 'yes', 'Y'].includes(gw.cup || ''),
@@ -32,3 +35,6 @@ module.exports = ({ googleGameWeekData, skyFixtures }) =>
             },
         };
     });
+    logEnd();
+    return results;
+};
