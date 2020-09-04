@@ -1,10 +1,7 @@
-const validateClub = (team = [], intGameWeek) => {
-    const players = team
-        .map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek])
-        .filter(Boolean)
-        .filter(({ club }) => !!club);
-    return players.reduce(
-        (acc, player = {}) => {
+const validateClub = (team = []) =>
+    team.reduce(
+        (acc, { player } = {}) => {
+            if (!player) return acc;
             const count = (acc[player.club] || 0) + 1;
             const clubWarnings =
                 count > 2 && acc.clubWarnings.indexOf(player.club) < 0
@@ -18,6 +15,18 @@ const validateClub = (team = [], intGameWeek) => {
         },
         { clubWarnings: [] },
     );
+
+const validateClubs = (teams) => {
+    const allClubWarnings = Object.keys(teams)
+        .reduce((prev, manager) => {
+            const { clubWarnings } = validateClub(teams[manager]);
+            if (!clubWarnings.length) return prev
+            return {
+                ...prev,
+                [manager]: clubWarnings,
+            };
+        }, {})
+    return allClubWarnings;
 };
 
-export default validateClub;
+export default validateClubs;

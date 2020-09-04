@@ -10,9 +10,6 @@ const config = require('./src/config/config');
 const hostOnRoot = ['true', true].includes(process.env.NODE_ENV === 'development');
 const pathPrefix = hostOnRoot ? '/' : '/kammy-ssg';
 
-console.log(process.env.NODE_ENV);
-console.log({ pathPrefix });
-
 module.exports = {
     pathPrefix,
     assetPrefix: '/',

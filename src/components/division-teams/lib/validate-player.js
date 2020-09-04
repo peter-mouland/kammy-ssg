@@ -1,23 +1,15 @@
-const validatePlayer = (managersSeason, intGameWeek) => {
-    const players = Object.keys(managersSeason).reduce(
-        (acc, manager) => [
-            ...acc,
-            ...managersSeason[manager].map((teamSheetItem) => teamSheetItem.gameWeeks[intGameWeek]),
-        ],
-        [],
-    );
+const validatePlayer = (teams) => {
+    const players = Object.keys(teams).reduce((acc, manager) => [...acc, ...teams[manager]], []);
     const cache = {};
-    return players
-        .reduce((acc, player = {}) => {
-            const dupe = [...acc];
-            if (cache[player.name] && !dupe.includes(player.name)) {
-                dupe.push(player.name);
-            }
-            cache[player.name] = true;
-            return dupe;
-        }, [])
-        .filter(Boolean)
-        .filter(({ club }) => !!club);
+    const dupes = players.reduce((acc, player = {}) => {
+        const dupe = [...acc];
+        if (cache[player.playerName] && !dupe.includes(player.playerName)) {
+            dupe.push(player.playerName);
+        }
+        cache[player.playerName] = true;
+        return dupe;
+    }, []);
+    return dupes;
 };
 
 export default validatePlayer;

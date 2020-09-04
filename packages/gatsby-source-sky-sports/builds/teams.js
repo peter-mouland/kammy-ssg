@@ -50,6 +50,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
             gameWeeks: gameWeekData,
             players: playersByName,
         });
+
         const seasonGameWeeks = teamByGameWeek.getSeason();
         const teamSeason = new TeamSeason({
             manager,

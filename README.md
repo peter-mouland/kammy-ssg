@@ -16,6 +16,7 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
  - Saving data via [kammy-proxy project](http://github.com/peter-mouland/kammy-proxy)
 
 ## Todo:
+ - only build for past, current, and +1 GameWeek
  - re-enable 'admin view'
  - improve transfer page
      - update time on transfer page in real-time

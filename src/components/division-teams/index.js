@@ -18,14 +18,11 @@ const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
     const [positionTimelineProps, togglePosTimeline] = useState(null);
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     const isAdmin = cookies['is-admin'] === 'true' || false;
-    // const duplicatePlayers = validatePlayer(managersSeason, selectedGameWeek) || [];
-    // const allClubWarnings = managers
-    //     .map((manager) => {
-    //         const { clubWarnings } = validateClub(managersSeason[manager], selectedGameWeek);
-    //         return clubWarnings.length ? { clubWarnings, manager } : undefined;
-    //     })
-    //     .filter(Boolean);
-    console.log(teams)
+
+    const duplicatePlayers = validatePlayer(teams) || [];
+    const clubWarnings = validateClub(teams);
+    const allClubWarnings = Object.keys(clubWarnings).map((manager) => `${manager}: ${clubWarnings[manager].join(', ')}`)
+
     return (
         <section id="teams-page" className={bem()} data-b-layout="container">
             <div data-b-layout="vpad">
@@ -58,20 +55,18 @@ const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
                                 <PlayerTimeline {...playerTimelineProps} />
                             </Modal>
                         )}
-                        {/*{isAdmin && duplicatePlayers.length > 0 && (*/}
-                        {/*    <div className="row row--warning">*/}
-                        {/*        This division has the following player(s) in more than 2 teams:{' '}*/}
-                        {/*        {duplicatePlayers.join(', ')}*/}
-                        {/*    </div>*/}
-                        {/*)}*/}
-                        {/*{isAdmin && allClubWarnings.length > 0 && (*/}
-                        {/*    <div className="row row--warning">*/}
-                        {/*        This division has teams with 3+ players from the same club:*/}
-                        {/*        {allClubWarnings.map(*/}
-                        {/*            ({ manager, clubWarnings }) => `${manager}: ${clubWarnings.join(', ')}`,*/}
-                        {/*        )}*/}
-                        {/*    </div>*/}
-                        {/*)}*/}
+                        {isAdmin && duplicatePlayers.length > 0 && (
+                            <div className="row row--warning">
+                                This division has the following player(s) in more than 2 teams:{' '}
+                                {duplicatePlayers.join(', ')}
+                            </div>
+                        )}
+                        {isAdmin && allClubWarnings.length > 0 && (
+                            <div className="row row--warning">
+                                This division has teams with 3+ players from the same club:
+                                {allClubWarnings.join(', ')}
+                            </div>
+                        )}
                     </div>
                     <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
                         <Table
