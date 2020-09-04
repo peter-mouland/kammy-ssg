@@ -1,38 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import parseISO from 'date-fns/parseISO';
-import { useMutation, useQuery, queryCache } from 'react-query';
-import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 
 import Spacer from '../spacer';
 import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 import useManagers from '../../hooks/use-managers';
-import useGameWeeks from '../../hooks/use-game-weeks';
-
-const inDateRange = ({ start, end }, comparison) => {
-    return comparison < parseISO(end) && comparison > parseISO(start);
-};
-
-const fetchr = (key, division = 0) => fetchTransfers(division);
+import useTransfers from '../../hooks/use-transfers';
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
-    const { status, data: transfers = [], error } = useQuery(['transfers', divisionKey], fetchr);
-    const [saveTransfer, { isLoading: isSaving }] = useMutation(saveTransfers, {
-        onSuccess: (data) => {
-            queryCache.cancelQueries(['transfers', divisionKey]);
-            queryCache.setQueryData(['transfers', divisionKey], (old) => [...old, ...data]);
-        },
-    });
-    const { currentGameWeek } = useGameWeeks();
+    const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({ divisionKey });
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
-    const limitTransfers = (gw) => transfers.filter((transfer) => inDateRange(gw, transfer.timestamp));
-    const showTransfers = limitTransfers(currentGameWeek);
-    const isLoading = status === 'loading';
-
-    if (status === 'error') return <div>Error: {error.message}</div>;
 
     return (
         <div data-b-layout="container">
@@ -42,7 +21,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                 </div>
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <TransfersTable isLoading={isLoading} transfers={showTransfers} />
+                <TransfersTable isLoading={isLoading} transfers={transfersThisGameWeek} />
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <TransferRequest

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import { useMutation } from 'react-query';
 import bemHelper from '@kammy/bem';
-import { saveTransfers } from '@kammy/helpers.spreadsheet';
 
 import usePlayers from '../../../hooks/use-players';
 import Spacer from '../../spacer';

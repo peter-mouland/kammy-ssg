@@ -7,7 +7,7 @@ const CupScores = () => (
     <Layout>
         <IFrame
             title="Cup Scores"
-            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSWyi5ZU1jMBPmpLMJzKlZ0aA71HJk7h3Fh4p-rS6e9rw_4lymyetJsYwlaB4iMTlLQPiUYiWwfgt1n/pubhtml"
+            src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQMM8Ec6BQwZgdQOWSl9owH_RrSwQ2cpQbFBeRso1OpQb2YO2Z-OIYHLYy9r6cgxoXTcHogwlsGSVDC/pubhtml"
         />
     </Layout>
 );
