@@ -11,26 +11,24 @@ import TransferRequest from './transfer-request';
 import useManagers from '../../hooks/use-managers';
 import useGameWeeks from '../../hooks/use-game-weeks';
 
-const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
+const inDateRange = ({ start, end }, comparison) => {
+    return comparison < parseISO(end) && comparison > parseISO(start);
+};
 
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
     const { status, data: transfers = [], error } = useQuery(['transfers', divisionKey], fetchr);
-    const [saveTransfer, { status: saveStatus }] = useMutation(saveTransfers, {
-        onMutate: ({ data }) => {
-            queryCache.cancelQueries('transfers');
-            return queryCache.setQueryData(['transfers', divisionKey], (old) => [...old, ...data]);
+    const [saveTransfer, { isLoading: isSaving }] = useMutation(saveTransfers, {
+        onSuccess: (data) => {
+            queryCache.cancelQueries(['transfers', divisionKey]);
+            queryCache.setQueryData(['transfers', divisionKey], (old) => [...old, ...data]);
         },
     });
-    const isSaving = saveStatus === 'loading';
     const { currentGameWeek } = useGameWeeks();
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
-    const limitTransfers = (gw) =>
-        transfers
-            .filter((transfer) => inDateRange(gw, transfer.timestamp))
-            .map((transfer) => ({ ...transfer, gameWeek: gw.gameWeek }));
+    const limitTransfers = (gw) => transfers.filter((transfer) => inDateRange(gw, transfer.timestamp));
     const showTransfers = limitTransfers(currentGameWeek);
     const isLoading = status === 'loading';
 
@@ -60,7 +58,6 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
 };
 
 GameWeekTransfers.propTypes = {
-    currentGameWeekFixtures: PropTypes.object.isRequired,
     selectedGameWeek: PropTypes.number.isRequired,
     divisionUrl: PropTypes.string.isRequired,
     divisionKey: PropTypes.string.isRequired,

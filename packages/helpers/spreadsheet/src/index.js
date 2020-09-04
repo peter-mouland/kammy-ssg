@@ -1,4 +1,6 @@
 /* global fetch */
+const parseISO = require('date-fns/parseISO').default;
+
 const fetchr = require('./fetch');
 const { spreadsheets } = require('./constants');
 const formatTransfers = require('./lib/formatTransfers');
@@ -23,5 +25,8 @@ module.exports = {
     fetchCup: (division = 'cup') => fetchr(spreadsheets.TRANSFERS_ID, `/values/${division}`),
     fetchDraft: (worksheet) => fetchr(spreadsheets.DRAFT_ID, `/values/${worksheet}`),
     fetchSetup: (worksheet) => fetchr(spreadsheets.SETUP_ID, `/values/${worksheet}`),
-    saveTransfers: ({ division, data }) => kammyProxy(division, data),
+    saveTransfers: async ({ division, data }) => {
+        const response = await kammyProxy(division, data);
+        return response.map(({ timestamp, ...rest }) => ({ ...rest, timestamp: parseISO(timestamp) }));
+    },
 };

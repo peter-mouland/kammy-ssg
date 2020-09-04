@@ -3493,11 +3493,6 @@
   dependencies:
     tslib "^2.0.0"
 
-"@scarf/scarf@^1.0.6":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.1.0.tgz#b84b4a91cd938a688d36245b7a7db6fbc476a499"
-  integrity sha512-b2iE8kjjzzUo2WZ0xuE2N77kfnTds7ClrDxcz3Atz7h2XrNVoAPUoT75i7CY0st5x++70V91Y+c6RpBX9MX7Jg==
-
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -17755,13 +17750,10 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-query@1.5.9:
-  version "1.5.9"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.5.9.tgz#8df202a338c1875a033cc6a29d1b7f777b233237"
-  integrity sha512-RrCSSRBkFZe+AAhGFuMDvaucMIANWEbDeuVbn/bWPXuYCNYKz2HD4v7uN1FYAArFjv3i8E0PoR8ll3dBjhrObg==
-  dependencies:
-    "@scarf/scarf" "^1.0.6"
-    ts-toolbelt "^6.9.4"
+react-query@2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.15.0.tgz#e8e48a84f92ce9ee33eba59c2534fc2d26b8df92"
+  integrity sha512-DWEg4PqsLu1PBMuEZaSsBWGctgZk9AbPwXwTC6Hb/srm3zWi6/6/XaFffcybOFYy2Y4R1giiHGdaYR67gy73uw==
 
 react-reconciler@^0.24.0:
   version "0.24.0"
@@ -20583,11 +20575,6 @@ ts-pnp@^1.1.6:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
-
-ts-toolbelt@^6.9.4:
-  version "6.15.1"
-  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-6.15.1.tgz#e1f257cf06be8d7ab3b00269461f278b54e748e6"
-  integrity sha512-CdAqEjPqShG2j+YCnCeILh5y2jj6ainzvJH4NkBR6bE/WhFF1x7GGpssDeLmOshr77KsQ6twOrtK386nj5T/gQ==
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"

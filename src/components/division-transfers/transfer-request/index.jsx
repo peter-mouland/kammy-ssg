@@ -14,29 +14,11 @@ import Accordion from '../../accordion';
 import { changeTypes } from '../lib/consts';
 import createFilteredPlayers from '../lib/create-filtered-players';
 import Players from './components/Players';
-import GameWeekTransfers from './components/game-week-transfers';
 import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
 
-// todo: update table on mutation (via react-query)
-
 const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => {
-    // if (playerDisplaced && playerGapFiller) {
-    //     // rearrange transfer to ensure positions match for the spreadsheet
-    //     transfers.push({
-    //         ...baseDetails,
-    //         'Transfer In': playerGapFiller.value,
-    //         'Transfer Out': playerOut.value,
-    //         Comment: `${comment} (note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
-    //     });
-    //     transfers.push({
-    //         ...baseDetails,
-    //         'Transfer In': playerIn.value,
-    //         'Transfer Out': playerDisplaced.value,
-    //         Comment: `(note: ${changeType} deal is ${playerIn.value} for ${playerOut.value}.)`,
-    //     });
-    //
     const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
         ...transfer,
         type,
