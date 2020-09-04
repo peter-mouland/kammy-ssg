@@ -11,7 +11,7 @@ const NotFoundPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [, setCookie] = useCookies(['is-admin']);
     useEffect(() => {
-        setCookie('is-admin', 'true', { path: '/' });
+        setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
     const regenerate = () => {
         setIsLoading(true);

@@ -17,15 +17,14 @@ const validateClub = (team = []) =>
     );
 
 const validateClubs = (teams) => {
-    const allClubWarnings = Object.keys(teams)
-        .reduce((prev, manager) => {
-            const { clubWarnings } = validateClub(teams[manager]);
-            if (!clubWarnings.length) return prev
-            return {
-                ...prev,
-                [manager]: clubWarnings,
-            };
-        }, {})
+    const allClubWarnings = Object.keys(teams).reduce((prev, manager) => {
+        const { clubWarnings } = validateClub(teams[manager]);
+        if (!clubWarnings.length) return prev;
+        return {
+            ...prev,
+            [manager]: clubWarnings,
+        };
+    }, {});
     return allClubWarnings;
 };
 
