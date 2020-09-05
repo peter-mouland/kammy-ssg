@@ -1,5 +1,7 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
+const toDate = require('../lib/to-date');
+const { getGmtDate, getUtcDate } = require('@kammy/helpers.get-gmt-date');
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
@@ -17,7 +19,10 @@ module.exports = ({ skySportsPlayerData }) => {
             club: toTitleCase(player.tName),
             value: parseFloat(player.value),
             stats: player.stats,
-            fixtures: player.fixtures,
+            fixtures: player.fixtures.map((fixture) => ({
+                ...fixture,
+                date: getGmtDate(fixture.date),
+            })),
             tCode: player.tCode,
         };
 

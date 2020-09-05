@@ -23,12 +23,15 @@ function adjustDate({ date, ms = 0, sec = 0, min = 0, hrs = 0, days = 0 }) {
     return new Date(newTime); // convert back to date; in this example: 2 hours from right now
 }
 
-export function getGmtDate(date) {
-    const dateToConvert = date || new Date();
-    return (isBST() ? adjustDate({ date: dateToConvert, hrs: 1 }) : dateToConvert).toUTCString();
+function getGmtDate(date) {
+    const dateToConvert = new Date(date) || new Date();
+    return new Date((isBST() ? adjustDate({ date: dateToConvert, hrs: 1 }) : dateToConvert).toUTCString());
 }
 
-export function getUtcDate(date) {
-    const dateToConvert = date || new Date();
-    return (isBST() ? adjustDate({ date: dateToConvert, hrs: -1 }) : dateToConvert).toUTCString();
+function getUtcDate(date) {
+    const dateToConvert = new Date(date) || new Date();
+    return new Date((isBST() ? adjustDate({ date: dateToConvert, hrs: -1 }) : dateToConvert).toUTCString());
 }
+
+module.exports.getGmtDate = getGmtDate;
+module.exports.getUtcDate = getUtcDate;

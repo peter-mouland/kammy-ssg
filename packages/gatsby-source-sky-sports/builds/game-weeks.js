@@ -1,14 +1,14 @@
+const { getGmtDate, getUtcDate } = require('@kammy/helpers.get-gmt-date');
+
 const { nodeTypes, mediaTypes } = require('../lib/constants');
-const toDate = require('../lib/to-date');
 const logger = require('../lib/log');
 
 const getFixtures = (skyFixtures, { start, end }) =>
     skyFixtures
         .filter(({ data: item }) => {
-            const fixtureDate = toDate(item.date);
-            const endDate = toDate(end);
-            const startDate = toDate(start);
-            return fixtureDate <= endDate && fixtureDate >= startDate;
+            const fixtureDate = item.date;
+            const result = start <= fixtureDate && fixtureDate <= end;
+            return result;
         })
         .map(({ data }) => data);
 
@@ -20,11 +20,11 @@ module.exports = ({ googleGameWeekData, skyFixtures }) => {
             notes: gw.notes || '',
             cup: ['cup', 'y', 'yes', 'Y'].includes(gw.cup || ''),
             gameWeek: parseInt(gw.gameweek, 10),
-            start: gw.start,
-            end: gw.end,
-            isCurrent: new Date() < new Date(gw.end) && new Date() > new Date(gw.start),
-            fixtures: getFixtures(skyFixtures, gw),
+            start: getGmtDate(gw.start),
+            end: getGmtDate(gw.end),
         };
+        data.isCurrent = new Date() < data.end && new Date() > data.start;
+        data.fixtures = getFixtures(skyFixtures, data);
         return {
             resourceId: `game-weeks-${gw.gameweek}`,
             data,

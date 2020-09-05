@@ -2,7 +2,6 @@ const jsonQuery = require('json-query');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
-const parseISO = require('date-fns/parseISO');
 
 const extractFFStats = require('./extract-ff-stats');
 const { calculateTotalPoints } = require('./calculate-points');
@@ -45,10 +44,10 @@ const getGameWeekFixtures = (player, gameWeeks) =>
         data: player,
         locals: {
             date(item) {
-                const fixtureDate = parseISO(item.date);
+                const fixtureDate = item.date;
                 return gameWeeks.reduce((prev, gameWeek) => {
-                    const gameweekEnd = parseISO(gameWeek.end);
-                    const gameweekStart = parseISO(gameWeek.start);
+                    const gameweekEnd = gameWeek.end;
+                    const gameweekStart = gameWeek.start;
                     const beforeEnd = isBefore(fixtureDate, gameweekEnd) || isEqual(fixtureDate, gameweekEnd);
                     const afterStart = isAfter(fixtureDate, gameweekStart) || isEqual(fixtureDate, gameweekStart);
                     return prev || (afterStart && beforeEnd);

@@ -84,7 +84,7 @@ module.exports = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
     }, {});
 
     logEnd();
-    logger.error(...notFound);
+    logger.error(notFound);
     logger.warn(`GameWeeks without Fixtures: ${notFound.size}`);
     return Object.values(mergedPlayers).map((player) => ({
         resourceId: `players-${player.name}`,

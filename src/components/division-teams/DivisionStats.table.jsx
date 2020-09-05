@@ -6,12 +6,14 @@ import bemHelper from '@kammy/bem';
 import { StatsHeaders, StatsCells } from './components/tableHelpers';
 import validatePlayer from './lib/validate-player';
 import validateClub from './lib/validate-club';
+import validatePos from './lib/validate-pos';
 
 const bem = bemHelper({ block: 'table' });
 
 const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, isAdmin }) => {
     const duplicatePlayers = validatePlayer(teams) || [];
     const allClubWarnings = validateClub(teams);
+    const allPosWarnings = validatePos(teams);
     return (
         <table className="table">
             {Object.keys(teams).map((managerName) => (
@@ -37,6 +39,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                             ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
                                 if (!player) return null; // allow for week zero
                                 const clubWarnings = allClubWarnings[managerName] || [];
+                                const posWarnings = allPosWarnings[managerName] || [];
                                 const playerLastGW =
                                     previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
                                 const className =
@@ -44,6 +47,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                                 const warningClassName =
                                     isAdmin &&
                                     (clubWarnings.indexOf(player.club) > -1 ||
+                                        posWarnings.indexOf(player.name) > -1 ||
                                         duplicatePlayers.indexOf(player.name) > -1)
                                         ? 'row row--warning'
                                         : 'row';
@@ -93,14 +97,6 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                             },
                         )}
                     </tbody>
-                    {isAdmin && allClubWarnings[managerName] && (
-                        <tr className="row row--warning">
-                            <td colSpan={30}>
-                                This team has more than 2 players within the following clubs:{' '}
-                                {allClubWarnings[managerName].join(', ')}
-                            </td>
-                        </tr>
-                    )}
                 </Fragment>
             ))}
         </table>

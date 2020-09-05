@@ -21,7 +21,7 @@ module.exports = ({ googleTransferData, createNodeId }) => {
             delete data.transferOut;
 
             return {
-                resourceId: `transfers-${String(data.timestamp)}-${data.manager}`,
+                resourceId: `transfers-${String(data.timestamp)}-${data.managerName}`,
                 data: {
                     ...data,
                     division___NODE: createNodeId(`divisions-${data.divisionName}`),
