@@ -1,7 +1,7 @@
+const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
+
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
-const toDate = require('../lib/to-date');
-const { getGmtDate, getUtcDate } = require('@kammy/helpers.get-gmt-date');
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
