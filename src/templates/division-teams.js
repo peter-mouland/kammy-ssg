@@ -59,6 +59,7 @@ export const query = graphql`
                     player {
                         club
                         name
+                        new
                         gameWeeks {
                             fixtures {
                                 id

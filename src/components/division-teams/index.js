@@ -11,6 +11,7 @@ import PlayerTimeline from './components/PlayerTimeline.table';
 import validateClub from './lib/validate-club';
 import validatePositions from './lib/validate-pos';
 import validatePlayer from './lib/validate-player';
+import validateNewPlayers from './lib/validate-new-player';
 import Spacer from '../spacer';
 import Warning from '../icons/warning.svg';
 import styles from './styles.module.css';
@@ -19,6 +20,7 @@ const bem = bemHelper({ block: 'division-stats' });
 
 const List = ({ children }) => <ul className={styles.list}>{children}</ul>;
 const Warnings = ({ teams }) => {
+    const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
     const clubWarnings = validateClub(teams);
     const posWarnings = validatePositions(teams);
@@ -39,9 +41,21 @@ const Warnings = ({ teams }) => {
             {duplicatePlayers.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">
-                        This division has the following player(s) in more than 2 teams:{' '}
+                        The following player(s) in more than 2 teams:{' '}
                         <List>
                             {duplicatePlayers.map((player) => (
+                                <li key={player}>{player}</li>
+                            ))}
+                        </List>
+                    </div>
+                </Spacer>
+            )}
+            {newPlayers.length > 0 && (
+                <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
+                    <div className="row row--warning">
+                        The following <strong>new</strong> player(s):{' '}
+                        <List>
+                            {newPlayers.map((player) => (
                                 <li key={player}>{player}</li>
                             ))}
                         </List>
@@ -51,7 +65,7 @@ const Warnings = ({ teams }) => {
             {allClubWarnings.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">
-                        This division has teams with 3+ players from the same club:
+                        Teams with 3+ players from the same club:
                         <List>
                             {allClubWarnings.map((player) => (
                                 <li key={player}>{player}</li>
@@ -63,7 +77,7 @@ const Warnings = ({ teams }) => {
             {allPosWarnings.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">
-                        This division has teams with Mismatched players:
+                        Teams with Mismatched players:
                         <List>
                             {allPosWarnings.map((player) => (
                                 <li key={player}>{player}</li>

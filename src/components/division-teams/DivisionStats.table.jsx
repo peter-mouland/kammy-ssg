@@ -4,103 +4,101 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import { StatsHeaders, StatsCells } from './components/tableHelpers';
+import validateNewPlayers from './lib/validate-new-player';
 import validatePlayer from './lib/validate-player';
 import validateClub from './lib/validate-club';
 import validatePos from './lib/validate-pos';
+import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'table' });
 
 const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, isAdmin }) => {
+    const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
     const allClubWarnings = validateClub(teams);
     const allPosWarnings = validatePos(teams);
-    return (
-        <table className="table">
-            {Object.keys(teams).map((managerName) => (
-                <Fragment key={managerName}>
-                    <thead>
-                        <tr>
-                            <th colSpan="4" className="cell cell--team-manager">
-                                {managerName}
-                            </th>
-                            <th colSpan={24} className="cell cell--team-season">
-                                Season
-                            </th>
-                        </tr>
-                        <tr className="row row--header">
-                            <th className="cell cell--team-position">Position</th>
-                            <th className="cell cell--player">Player</th>
-                            <th className="cell cell--club show-850">Club</th>
-                            <StatsHeaders />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {teams[managerName].map(
-                            ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
-                                if (!player) return null; // allow for week zero
-                                const clubWarnings = allClubWarnings[managerName] || [];
-                                const posWarnings = allPosWarnings[managerName] || [];
-                                const playerLastGW =
-                                    previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
-                                const className =
-                                    playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
-                                const warningClassName =
-                                    isAdmin &&
-                                    (clubWarnings.indexOf(player.club) > -1 ||
-                                        posWarnings.indexOf(player.name) > -1 ||
-                                        duplicatePlayers.indexOf(player.name) > -1)
-                                        ? 'row row--warning'
-                                        : 'row';
-                                return (
-                                    <tr key={playerName} className={`${className} ${warningClassName}`}>
-                                        <td className="cell cell--team-position">
-                                            <a
-                                                href="#"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    onShowPositionTimeline({
-                                                        position: pos,
-                                                        gameWeeks: player.gameWeeks,
-                                                        season: player.seasonStats,
-                                                    });
-                                                }}
-                                                title={`Show ${player.teamPos} timeline`}
-                                            >
-                                                {pos}
-                                                {pos !== teamPos && <small> ({teamPos.toLowerCase()})</small>}
-                                            </a>
-                                        </td>
-                                        <td className="cell cell--player">
-                                            <a
-                                                href="#"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    onShowPlayerTimeline({ player });
-                                                }}
-                                                title={`Show ${teamPos} timeline`}
-                                            >
-                                                <span className="show-625">{playerName}</span>
-                                                <span className="hide-625">{playerName.split(',')[0]}</span>
-                                            </a>
-                                            <small className="hide-850">
-                                                <span className="show-550">{player.club}</span>
-                                                <span className="hide-550">
-                                                    {player.club.split(' ')[0]}{' '}
-                                                    {(player.club.split(' ')[1] || '').charAt(0)}
-                                                </span>
-                                            </small>
-                                        </td>
-                                        <td className="cell cell--club show-850">{player.club}</td>
-                                        <StatsCells seasonToGameWeek={seasonToGameWeek} gameWeekStats={gameWeekStats} />
-                                    </tr>
-                                );
-                            },
-                        )}
-                    </tbody>
-                </Fragment>
-            ))}
-        </table>
-    );
+
+    return Object.keys(teams).map((managerName) => (
+        <Fragment key={managerName}>
+            <Spacer all={{ top: Spacer.spacings.LARGE, bottom: Spacer.spacings.SMALL }}>
+                <h2>{managerName}</h2>
+            </Spacer>
+            <table className="table">
+                <thead>
+                    <tr className="row row--header">
+                        <th className="cell cell--team-position">Position</th>
+                        <th className="cell cell--player">Player</th>
+                        <th className="cell cell--club show-850">Club</th>
+                        <StatsHeaders />
+                    </tr>
+                </thead>
+                <tbody>
+                    {teams[managerName].map(
+                        ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
+                            if (!player) return null; // allow for week zero
+                            const clubWarnings = allClubWarnings[managerName] || [];
+                            const posWarnings = allPosWarnings[managerName] || [];
+                            const playerLastGW =
+                                previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
+                            const className =
+                                playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
+                            const warningClassName =
+                                isAdmin &&
+                                (clubWarnings.indexOf(player.club) > -1 ||
+                                    posWarnings.indexOf(player.name) > -1 ||
+                                    newPlayers.indexOf(player.name) > -1 ||
+                                    duplicatePlayers.indexOf(player.name) > -1)
+                                    ? 'row row--warning'
+                                    : 'row';
+                            return (
+                                <tr key={playerName} className={`${className} ${warningClassName}`}>
+                                    <td className="cell cell--team-position">
+                                        <a
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                onShowPositionTimeline({
+                                                    position: pos,
+                                                    gameWeeks: player.gameWeeks,
+                                                    season: player.seasonStats,
+                                                });
+                                            }}
+                                            title={`Show ${player.teamPos} timeline`}
+                                        >
+                                            {pos}
+                                            {pos !== teamPos && <small> ({teamPos.toLowerCase()})</small>}
+                                        </a>
+                                    </td>
+                                    <td className="cell cell--player">
+                                        <a
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                onShowPlayerTimeline({ player });
+                                            }}
+                                            title={`Show ${teamPos} timeline`}
+                                        >
+                                            <span className="show-625">{playerName}</span>
+                                            <span className="hide-625">{playerName.split(',')[0]}</span>
+                                        </a>
+                                        <small className="hide-850">
+                                            <span className="show-550">{player.club}</span>
+                                            <span className="hide-550">
+                                                {player.club.split(' ')[0]}{' '}
+                                                {(player.club.split(' ')[1] || '').charAt(0)}
+                                            </span>
+                                        </small>
+                                    </td>
+                                    <td className="cell cell--club show-850">{player.club}</td>
+                                    <StatsCells seasonToGameWeek={seasonToGameWeek} gameWeekStats={gameWeekStats} />
+                                </tr>
+                            );
+                        },
+                    )}
+                </tbody>
+            </table>
+        </Fragment>
+    ));
 };
 
 TeamsPage.propTypes = {
