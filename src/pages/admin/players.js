@@ -27,6 +27,7 @@ const AdminPlayerList = () => {
                 : {};
             const skyResponse = {
                 ...skyPlayer,
+                isHidden: false,
                 skySportsPosition: skyPlayer.group.toUpperCase(),
                 name,
                 code: parseInt(skyPlayer.id, 10),
@@ -40,7 +41,11 @@ const AdminPlayerList = () => {
             };
         })
         .filter(Boolean);
-
+    console.log(live.skyPlayers)
+console.log(livePlayers.filter(({ name, sName = '', fName = '' }) => (
+    name.toLowerCase().includes('kipre')  ||
+    name.toLowerCase().includes('avertz')
+    )));
     return (
         <Layout meta={{ title: 'Admin Players List', description: '' }}>
             <section id="admin-page" data-b-layout="container">
