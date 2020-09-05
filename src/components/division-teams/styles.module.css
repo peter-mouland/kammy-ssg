@@ -1,0 +1,20 @@
+.list {
+    list-style: circle;
+    margin: 0 2em;
+}
+
+.warnings {
+    border: 1px solid orange;
+    border-radius: 5px;
+    padding: 16px;
+
+    .title {
+        display: flex;
+        align-items: center;
+    }
+
+    svg {
+        stroke: orange;
+        fill: transparent;
+    }
+}

@@ -9,9 +9,72 @@ import Table from './DivisionStats.table';
 import PositionTimeline from './components/PositionTimeline.table';
 import PlayerTimeline from './components/PlayerTimeline.table';
 import validateClub from './lib/validate-club';
+import validatePositions from './lib/validate-pos';
 import validatePlayer from './lib/validate-player';
+import Spacer from '../spacer';
+import Warning from '../icons/warning.svg';
+import styles from './styles.module.css';
 
 const bem = bemHelper({ block: 'division-stats' });
+
+const List = ({ children }) => <ul className={styles.list}>{children}</ul>;
+const Warnings = ({ teams }) => {
+    const duplicatePlayers = validatePlayer(teams) || [];
+    const clubWarnings = validateClub(teams);
+    const posWarnings = validatePositions(teams);
+    const allClubWarnings = Object.keys(clubWarnings).map((manager) => (
+        <p>
+            <strong>{manager}</strong>: {clubWarnings[manager].join(', ')}
+        </p>
+    ));
+    const allPosWarnings = Object.keys(posWarnings).map((manager) => (
+        <p>
+            <strong>{manager}</strong>: {posWarnings[manager].join(', ')}
+        </p>
+    ));
+    if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length) return null;
+    return (
+        <div className={styles.warnings}>
+            <h2 className={styles.title}><Warning width={24} height={24} /> Admin Warnings</h2>
+            {duplicatePlayers.length > 0 && (
+                <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
+                    <div className="row row--warning">
+                        This division has the following player(s) in more than 2 teams:{' '}
+                        <List>
+                            {duplicatePlayers.map((player) => (
+                                <li key={player}>{player}</li>
+                            ))}
+                        </List>
+                    </div>
+                </Spacer>
+            )}
+            {allClubWarnings.length > 0 && (
+                <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
+                    <div className="row row--warning">
+                        This division has teams with 3+ players from the same club:
+                        <List>
+                            {allClubWarnings.map((player) => (
+                                <li key={player}>{player}</li>
+                            ))}
+                        </List>
+                    </div>
+                </Spacer>
+            )}
+            {allPosWarnings.length > 0 && (
+                <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
+                    <div className="row row--warning">
+                        This division has teams with Mismatched players:
+                        <List>
+                            {allPosWarnings.map((player) => (
+                                <li key={player}>{player}</li>
+                            ))}
+                        </List>
+                    </div>
+                </Spacer>
+            )}
+        </div>
+    );
+};
 
 const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) => {
     const [cookies] = useCookies(['is-admin']);
@@ -19,15 +82,14 @@ const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     const isAdmin = cookies['is-admin'] === 'true' || false;
 
-    const duplicatePlayers = validatePlayer(teams) || [];
-    const clubWarnings = validateClub(teams);
-    const allClubWarnings = Object.keys(clubWarnings).map((manager) => `${manager}: ${clubWarnings[manager].join(', ')}`)
-
     return (
         <section id="teams-page" className={bem()} data-b-layout="container">
             <div data-b-layout="vpad">
                 <GameWeekSwitcher url={`/${divisionUrl}/teams`} selectedGameWeek={selectedGameWeek} />
             </div>
+
+            {isAdmin && <Warnings teams={teams} />}
+
             <div data-b-layout="vpad">
                 <div className={bem(null, null, 'page-content')} data-b-layout="row vpad">
                     <div>
@@ -54,18 +116,6 @@ const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
                             >
                                 <PlayerTimeline {...playerTimelineProps} />
                             </Modal>
-                        )}
-                        {isAdmin && duplicatePlayers.length > 0 && (
-                            <div className="row row--warning">
-                                This division has the following player(s) in more than 2 teams:{' '}
-                                {duplicatePlayers.join(', ')}
-                            </div>
-                        )}
-                        {isAdmin && allClubWarnings.length > 0 && (
-                            <div className="row row--warning">
-                                This division has teams with 3+ players from the same club:
-                                {allClubWarnings.join(', ')}
-                            </div>
                         )}
                     </div>
                     <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
