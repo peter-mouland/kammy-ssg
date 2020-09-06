@@ -52,7 +52,7 @@ const PlayersPage = () => {
                             <PlayersTable
                                 positions={positions}
                                 players={playersFiltered}
-                                disabledPlayers={[]}
+                                disabledPlayers={{}}
                                 hiddenColumns={hiddenColumns}
                                 visibleStats={visibleStats}
                             />

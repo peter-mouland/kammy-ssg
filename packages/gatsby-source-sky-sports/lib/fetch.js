@@ -13,7 +13,7 @@ const getFixturePath = (url, season = 'new') => {
         .replace(constants.spreadsheets.SETUP_ID, 'SETUP')
         .replace(constants.spreadsheets.TRANSFERS_ID, 'TRANSFERS')
         .replace('?key=', '.json');
-    return path.join(process.cwd(), 'fixtures', String(season), slimUrl);
+    return path.join(__dirname, '..', 'fixtures', String(season), slimUrl);
 };
 
 const { FIXTURES, SAVE } = process.env;
