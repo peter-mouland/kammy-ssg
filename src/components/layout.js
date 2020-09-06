@@ -36,6 +36,9 @@ const Layout = ({ children }) => {
                                 <NamedLink to="cup-scores" />
                             </li>
                             <li>
+                                <a href="/players-1920">Players Pages (Season 19-20)</a>
+                            </li>
+                            <li>
                                 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
                             </li>
                         </ul>

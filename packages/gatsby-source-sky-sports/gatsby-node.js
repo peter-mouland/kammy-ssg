@@ -12,6 +12,7 @@ const buildGameWeeks = require('./builds/game-weeks');
 const buildCup = require('./builds/cup');
 const buildTransfers = require('./builds/transfers');
 const buildPlayers = require('./builds/players');
+const buildPlayersFixtures = require('./builds/players-1920');
 const buildDivisions = require('./builds/divisions');
 const buildManagers = require('./builds/managers');
 const buildDraft = require('./builds/draft');
@@ -43,6 +44,10 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         googleDivisionData,
         googleManagerData,
         googleDraftData,
+        skySportsFixtureDataFixtures,
+        skySportsPlayerDataFixtures,
+        googleGameWeekDataFixtures,
+        googlePlayerDataFixtures,
     } = await fetchAllData();
     // build all the objects which will be used to create gatsby nodes
 
@@ -53,6 +58,17 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
     const gameWeeks = buildGameWeeks({ googleGameWeekData, skyFixtures });
     const divisions = buildDivisions({ googleDivisionData });
     const players = buildPlayers({ googlePlayerData, gameWeeks, skyPlayers });
+    const skyFixturesFixtures = buildSkyFixtures({ skySportsFixtureData: skySportsFixtureDataFixtures });
+    const skyPlayersFixtures = buildSkyPlayers({ skySportsPlayerData: skySportsPlayerDataFixtures });
+    const gameWeeksFixtures = buildGameWeeks({
+        googleGameWeekData: googleGameWeekDataFixtures,
+        skyFixtures: skyFixturesFixtures,
+    });
+    const playersFixtures = buildPlayersFixtures({
+        googlePlayerData: googlePlayerDataFixtures,
+        gameWeeks: gameWeeksFixtures,
+        skyPlayers: skyPlayersFixtures,
+    });
 
     // second, all those with deps i.e. ___node
     const cup = buildCup({ googleCupData, createNodeId }); // relies on sky players
@@ -86,6 +102,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         ...(gameWeeks || []),
         ...(divisions || []),
         ...(players || []),
+        ...(playersFixtures || []),
         // second
         ...(cup || []),
         ...(managers || []),

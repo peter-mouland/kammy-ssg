@@ -21,6 +21,10 @@ module.exports = () =>
         fetchGoogleDivisionsData(),
         fetchGoogleManagersData(),
         fetchGoogleDraftData(),
+        fetchSkySportsFixtureData({ season: 1920 }),
+        fetchSkySportsPlayerData({ season: 1920 }),
+        fetchGoogleGameWeeksData({ season: 1920 }),
+        fetchGooglePlayersData({ season: 1920 }),
     ]).then(
         ([
             skySportsFixtureData,
@@ -33,6 +37,10 @@ module.exports = () =>
             googleDivisionData,
             googleManagerData,
             googleDraftData,
+            skySportsFixtureDataFixtures,
+            skySportsPlayerDataFixtures,
+            googleGameWeekDataFixtures,
+            googlePlayerDataFixtures,
         ]) => ({
             skySportsFixtureData,
             skySportsPlayerData,
@@ -44,5 +52,9 @@ module.exports = () =>
             googleDivisionData,
             googleManagerData,
             googleDraftData,
+            skySportsFixtureDataFixtures,
+            skySportsPlayerDataFixtures,
+            googleGameWeekDataFixtures,
+            googlePlayerDataFixtures,
         }),
     );

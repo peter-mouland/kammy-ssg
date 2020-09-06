@@ -17,6 +17,7 @@ module.exports = {
         managers: 'managers',
         divisions: 'divisions',
         players: 'players',
+        players1920: 'players1920',
         gameWeeks: 'gameWeeks',
         cup: 'cup',
         transfers: 'transfers',

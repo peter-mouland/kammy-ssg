@@ -13,14 +13,14 @@ const getFixturePath = (url, season = 'new') => {
         .replace(constants.spreadsheets.SETUP_ID, 'SETUP')
         .replace(constants.spreadsheets.TRANSFERS_ID, 'TRANSFERS')
         .replace('?key=', '.json');
-    return path.join(process.cwd(), 'fixtures', season, slimUrl);
+    return path.join(process.cwd(), 'fixtures', String(season), slimUrl);
 };
 
 const { FIXTURES, SAVE } = process.env;
 
-const fetch = (URL) => {
-    const fixturesPath = getFixturePath(URL, FIXTURES);
-    if (FIXTURES) {
+const fetch = (URL, { season } = {}) => {
+    const fixturesPath = getFixturePath(URL, FIXTURES || season);
+    if (FIXTURES || season) {
         try {
             const fixture = fs.readFileSync(fixturesPath, 'utf-8');
             const json = JSON.parse(fixture);

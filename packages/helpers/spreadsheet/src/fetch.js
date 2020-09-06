@@ -24,7 +24,7 @@ const GS_API = (spreadsheet, endpoint, opts = {}) => {
         (prev, opt) => `${prev}${opts[opt] === true ? `&${opt}=true` : ''}`,
         `${url}?key=${spreadsheets.ACCESS_KEY}`,
     );
-    return fetch(fullUrl)
+    return fetch(fullUrl, { season: opts.season })
         .then((response) => (response.json ? response.json() : response))
         .then(rowToObj);
 };

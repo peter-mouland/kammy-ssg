@@ -1,3 +1,3 @@
 const { fetchSetup } = require('@kammy/helpers.spreadsheet');
 
-module.exports = () => fetchSetup('GameWeeks');
+module.exports = ({ season } = {}) => fetchSetup('GameWeeks', { season });
