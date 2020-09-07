@@ -62,11 +62,11 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
         };
     }, {});
     const mergedPlayers = Object.keys(skyPlayersObj).reduce((prev, playerName) => {
-        const gPlayer = googlePlayersObj[playerName] || {};
+        const gPlayer = googlePlayersObj[playerName] || { new: false };
         const skyPlayer = skyPlayersObj[playerName] || {};
         const player = {
             isHidden: gPlayer.isHidden || false,
-            new: gPlayer.new || true,
+            new: ['true', true, 'new'].includes(gPlayer.new),
             pos: gPlayer.pos || '',
             club: gPlayer.club || skyPlayer.club,
             fixtures: skyPlayer.fixtures,
