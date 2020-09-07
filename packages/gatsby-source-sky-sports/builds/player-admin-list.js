@@ -1,10 +1,6 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
-function toTitleCase(str) {
-    return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
-}
-
 module.exports = ({ skyPlayers, players }) => {
     const logEnd = logger.timed('Build: Admin Players List');
 

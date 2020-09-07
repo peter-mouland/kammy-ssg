@@ -20,7 +20,8 @@ const useManagers = () => {
     `);
     const getManagersFromDivision = (divisionKey) =>
         managers.filter(({ divisionKey: div }) => div === divisionKey).map(({ manager }) => manager);
-    return { managers, getManagersFromDivision };
+    const managerNames = managers.map(({ manager }) => manager).sort();
+    return { managers, getManagersFromDivision, managerNames };
 };
 
 export default useManagers;

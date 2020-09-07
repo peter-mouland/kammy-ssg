@@ -47,7 +47,6 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         skySportsFixtureDataFixtures,
         skySportsPlayerDataFixtures,
         googleGameWeekDataFixtures,
-        googlePlayerDataFixtures,
     } = await fetchAllData();
     // build all the objects which will be used to create gatsby nodes
 
@@ -65,7 +64,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         skyFixtures: skyFixturesFixtures,
     });
     const playersFixtures = buildPlayersFixtures({
-        googlePlayerData: googlePlayerDataFixtures,
+        googlePlayerData,
         gameWeeks: gameWeeksFixtures,
         skyPlayers: skyPlayersFixtures,
     });

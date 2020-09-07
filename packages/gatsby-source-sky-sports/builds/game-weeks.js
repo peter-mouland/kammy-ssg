@@ -1,4 +1,4 @@
-const { getGmtDate, getUtcDate } = require('@kammy/helpers.get-gmt-date');
+const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
 
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');

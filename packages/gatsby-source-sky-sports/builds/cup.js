@@ -4,8 +4,7 @@ module.exports = ({ googleCupData, createNodeId }) =>
     googleCupData.map((cup) => {
         const gatsbyData = {
             status: cup.status,
-            timestamp: cup.timestamp,
-            // eslint-disable-next-line no-underscore-dangle
+            timestamp: cup.timestamp, // toGmt() ?
             row: cup.__row,
             group: cup.group.trim(),
             gameWeek: cup.gameweek,

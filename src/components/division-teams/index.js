@@ -37,7 +37,9 @@ const Warnings = ({ teams }) => {
     if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length) return null;
     return (
         <div className={styles.warnings}>
-            <h2 className={styles.title}><Warning width={24} height={24} /> Admin Warnings</h2>
+            <h2 className={styles.title}>
+                <Warning width={24} height={24} /> Admin Warnings
+            </h2>
             {duplicatePlayers.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">

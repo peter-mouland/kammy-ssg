@@ -1,4 +1,5 @@
 /* eslint-env jest */
+/* eslint-disable no-console */
 const buildTeams = require('./teams');
 const draftFixtures = require('./team-fixtures/draft.json');
 const gameWeekFixtures = require('./team-fixtures/gameWeeks.json');

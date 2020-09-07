@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const fetch = require('node-fetch');
 
 // eslint-disable-next-line no-unused-vars

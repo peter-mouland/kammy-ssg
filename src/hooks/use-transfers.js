@@ -18,15 +18,22 @@ const useTransfers = ({ divisionKey }) => {
         },
     });
     const { currentGameWeek } = useGameWeeks();
-    const limitTransfers = (gw) => transfers.filter((transfer) => inDateRange(gw, transfer.timestamp));
-    const showTransfers = limitTransfers(currentGameWeek);
+    const transfersThisGameWeek = transfers.filter((transfer) => inDateRange(currentGameWeek, transfer.timestamp));
+
+    // if pending is slow, update code to use filter-views
+    // premierLeague pending transfers filter view id : fvid=305296590
+    // championship pending transfers filter view id : fvid=921820010
+    // leagueOne pending transfers filter view id : fvid=395776358
+    // leagueTwo pending transfers filter view id : fvid=1011473209
+    const pendingTransfers = transfers.filter((transfer) => transfer.status === 'TBC');
     return {
         queryKey,
         isLoading,
         saveTransfer,
         isSaving,
         transfers,
-        transfersThisGameWeek: showTransfers,
+        pendingTransfers,
+        transfersThisGameWeek,
     };
 };
 

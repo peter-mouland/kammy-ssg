@@ -7,13 +7,21 @@ const constants = require('./constants');
 
 const getFixturePath = (url, season = 'new') => {
     const slimUrl = url
+        .replace(
+            /https:\/\/kammy-proxy.herokuapp.com\/skysports\/player\/(.*)/,
+            'https://fantasyfootball.skysports.com/cache/json_player_stats_$1.json',
+        )
+        .replace(
+            'https://kammy-proxy.herokuapp.com/skysports/players',
+            'https://fantasyfootball.skysports.com/cache/json_players.json',
+        )
         .replace(/\//g, '-')
         .replace(constants.spreadsheets.ACCESS_KEY, '')
         .replace(constants.spreadsheets.DRAFT_ID, 'DRAFT')
         .replace(constants.spreadsheets.SETUP_ID, 'SETUP')
         .replace(constants.spreadsheets.TRANSFERS_ID, 'TRANSFERS')
         .replace('?key=', '.json');
-    return path.join(__dirname, '..', 'fixtures', String(season), slimUrl);
+    return path.join(__dirname, '.', 'fixtures', String(season), slimUrl);
 };
 
 const { FIXTURES, SAVE } = process.env;

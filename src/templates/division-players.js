@@ -10,7 +10,21 @@ import TabbedMenu from '../components/tabbed-division-menu';
 const bemTable = bemHelper({ block: 'players-page-table' });
 const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
 const hiddenColumns = ['isHidden', 'value', 'code'];
-const visibleStats = ['points', 'apps', 'subs', 'gls', 'asts', 'cs', 'con', 'pensv', 'pb', 'tb', 'sb', 'ycard', 'rcard'];
+const visibleStats = [
+    'points',
+    'apps',
+    'subs',
+    'gls',
+    'asts',
+    'cs',
+    'con',
+    'pensv',
+    'pb',
+    'tb',
+    'sb',
+    'ycard',
+    'rcard',
+];
 
 const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
     const players = data.allPlayers.nodes;

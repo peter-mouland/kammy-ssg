@@ -62,16 +62,18 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
         };
     }, {});
     const mergedPlayers = Object.keys(skyPlayersObj).reduce((prev, playerName) => {
+        const gPlayer = googlePlayersObj[playerName] || {};
+        const skyPlayer = skyPlayersObj[playerName] || {};
         const player = {
-            isHidden: googlePlayersObj[playerName] ? googlePlayersObj[playerName].isHidden : false,
-            new: googlePlayersObj[playerName] ? googlePlayersObj[playerName].new : true,
-            pos: googlePlayersObj[playerName] ? googlePlayersObj[playerName].pos : '',
-            fixtures: skyPlayersObj[playerName].fixtures,
-            value: skyPlayersObj[playerName].value,
-            name: skyPlayersObj[playerName].name,
-            code: skyPlayersObj[playerName].code,
-            club: skyPlayersObj[playerName].club,
-            skySportsPosition: skyPlayersObj[playerName].pos,
+            isHidden: gPlayer.isHidden || false,
+            new: gPlayer.new || true,
+            pos: gPlayer.pos || '',
+            club: gPlayer.club || skyPlayer.club,
+            fixtures: skyPlayer.fixtures,
+            value: skyPlayer.value,
+            name: skyPlayer.name,
+            code: skyPlayer.code,
+            skySportsPosition: skyPlayer.pos,
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
         return {
@@ -81,7 +83,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
     }, {});
     logger.error(notFound);
     logger.warn(`GameWeeks without Fixtures: ${notFound.size}`);
-    return mergedPlayers
+    return mergedPlayers;
 };
 
 module.exports = mergePlayers;

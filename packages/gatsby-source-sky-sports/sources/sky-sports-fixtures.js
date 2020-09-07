@@ -5,6 +5,6 @@ const URL =
         : 'https://kammy-proxy.herokuapp.com/skysports/fixtures';
 // ? 'http://localhost:8888/.netlify/functions/sky-sports-fitures'
 
-const fixtures = ({ season } = {}) => fetch(URL, { season } = {}).then(({ fixtures: data }) => data);
+const fixtures = ({ season } = {}) => fetch(URL, ({ season } = {})).then(({ fixtures: data }) => data);
 
 module.exports = fixtures;

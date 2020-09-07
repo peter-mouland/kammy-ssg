@@ -249,7 +249,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                                 transferIn: playerIn ? playerIn.value : '',
                                                 transferOut: playerOut ? playerOut.value : '',
                                                 comment,
-                                            }
+                                            },
                                         ],
                                         division: divisionKey,
                                         saveTransfer,

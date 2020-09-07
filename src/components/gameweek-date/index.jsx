@@ -24,7 +24,9 @@ const getDates = ({ start, end }) => {
             endDay,
         };
     } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e);
+        // eslint-disable-next-line no-console
         console.error({ start, end });
         return {
             startMonth: '',

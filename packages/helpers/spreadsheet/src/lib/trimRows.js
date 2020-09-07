@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 const trimRows = (data = []) => {
     try {
         return data.map((keys) =>

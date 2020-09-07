@@ -15,9 +15,15 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
  - Fetches data via the [rest v4 API](https://developers.google.com/sheets/api)
  - Saving data via [kammy-proxy project](http://github.com/peter-mouland/kammy-proxy)
 
+## Season Prep
+ - ensure spreadhseets a 'published to web' to keep the REST response fresh
+ - create '[Filter Views](https://developers.google.com/sheets/api/guides/filters)' of the transfer pages for 'Pending Transfers'
+
 ## Todo:
+ - Cup page:
+    - add use-current-team hook
+    - confirm `{ pendingTransfers } = use-transfers` works
  - only build for past, current, and +1 GameWeek
- - re-enable 'admin view'
  - improve transfer page
      - update time on transfer page in real-time
      - add 'bin' button (on left) to delete transfers

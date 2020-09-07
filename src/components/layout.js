@@ -33,9 +33,6 @@ const Layout = ({ children }) => {
                                 <NamedLink to="prize-money" />
                             </li>
                             <li>
-                                <NamedLink to="cup-scores" />
-                            </li>
-                            <li>
                                 <a href="/players-1920">Players Pages (Season 19-20)</a>
                             </li>
                             <li>

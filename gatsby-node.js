@@ -127,7 +127,6 @@ exports.createPages = async ({ actions, graphql }) => {
     // a new page for each gameweek
     allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
         // HOMEPAGE (by game-week)
-        const prev2GameWeek = gameWeek - 2;
         const prevGameWeek = gameWeek - 1;
         const nextGameWeek = gameWeek + 1;
         actions.createPage({
@@ -187,7 +186,6 @@ exports.createPages = async ({ actions, graphql }) => {
                 context: {
                     gameWeek,
                     prevGameWeek,
-                    prev2GameWeek,
                     divisionKey: key,
                     divisionLabel: label,
                 },
@@ -199,6 +197,17 @@ exports.createPages = async ({ actions, graphql }) => {
                 path: '/',
                 matchPath: '/',
                 component: path.resolve('src/templates/homepage.js'),
+                context: {
+                    gameWeek,
+                    prevGameWeek,
+                    nextGameWeek,
+                },
+            });
+            //   CUP
+            actions.createPage({
+                path: `/cup`,
+                matchPath: `/cup/`, // otherwise gatsby will redirect on refresh
+                component: path.resolve('src/templates/cup-index.js'),
                 context: {
                     gameWeek,
                     prevGameWeek,
@@ -251,7 +260,6 @@ exports.createPages = async ({ actions, graphql }) => {
                     context: {
                         gameWeek,
                         prevGameWeek,
-                        prev2GameWeek,
                         divisionKey: key,
                         divisionLabel: label,
                     },

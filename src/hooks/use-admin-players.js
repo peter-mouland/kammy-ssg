@@ -5,7 +5,10 @@ import { fetchSetup } from '@kammy/helpers.spreadsheet';
 
 const URL = 'https://kammy-proxy.herokuapp.com/skysports/players';
 
-const fetchPlayers = () => fetch(URL).then((response) => (response.json ? response.json() : response)).then((response) => response.players)
+const fetchPlayers = () =>
+    fetch(URL)
+        .then((response) => (response.json ? response.json() : response))
+        .then((response) => response.players);
 const fetchr = () => fetchSetup('Players');
 
 const usePlayers = () => {

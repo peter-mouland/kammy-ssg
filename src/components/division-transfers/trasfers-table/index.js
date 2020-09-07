@@ -10,35 +10,33 @@ const TransferBody = ({ transfers }) => {
     if (transfers.length < 1) return null;
     return (
         <tbody>
-            {transfers.map(
-                ({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment, gameWeek }) => (
-                    <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>
-                        <td
-                            data-col-label="status"
-                            className="cell cell--status cell--show-750 cell--center"
-                            dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}
-                        />
-                        <td data-col-label="timestamp" className="cell cell--center cell--show-625">
-                            {formatTimestamp(timestamp, { fromGMT: true })}
-                        </td>
-                        <td data-col-label="type" className="cell cell--center">
-                            {type}
-                        </td>
-                        <td data-col-label="manager" className="cell cell--center">
-                            {mgr}
-                        </td>
-                        <td data-col-label="transfer in" className="cell cell--center">
-                            {transferIn}
-                        </td>
-                        <td data-col-label="transfer out" className="cell cell--center">
-                            {transferOut}
-                        </td>
-                        <td data-col-label="comment" className="cell cell--center cell--show-925 ">
-                            {comment}
-                        </td>
-                    </tr>
-                ),
-            )}
+            {transfers.map(({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment }) => (
+                <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>
+                    <td
+                        data-col-label="status"
+                        className="cell cell--status cell--show-750 cell--center"
+                        dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}
+                    />
+                    <td data-col-label="timestamp" className="cell cell--center cell--show-625">
+                        {formatTimestamp(timestamp, { fromGMT: true })}
+                    </td>
+                    <td data-col-label="type" className="cell cell--center">
+                        {type}
+                    </td>
+                    <td data-col-label="manager" className="cell cell--center">
+                        {mgr}
+                    </td>
+                    <td data-col-label="transfer in" className="cell cell--center">
+                        {transferIn}
+                    </td>
+                    <td data-col-label="transfer out" className="cell cell--center">
+                        {transferOut}
+                    </td>
+                    <td data-col-label="comment" className="cell cell--center cell--show-925 ">
+                        {comment}
+                    </td>
+                </tr>
+            ))}
         </tbody>
     );
 };
