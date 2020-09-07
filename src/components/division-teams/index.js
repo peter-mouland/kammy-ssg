@@ -34,7 +34,16 @@ const Warnings = ({ teams }) => {
             <strong>{manager}</strong>: {posWarnings[manager].join(', ')}
         </p>
     ));
-    if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length && !newPlayers) return null;
+    if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length && !newPlayers.length) {
+        return (
+            <p>
+                {/* eslint-disable-next-line react/no-danger */}
+                <span dangerouslySetInnerHTML={{ __html: '&#128170;' }} />{' '}
+                <em style={{ color: 'darkgreen' }}>No admin warnings</em>
+            </p>
+        );
+    }
+
     return (
         <div className={styles.warnings}>
             <h2 className={styles.title}>

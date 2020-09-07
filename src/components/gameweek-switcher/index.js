@@ -13,7 +13,9 @@ const bem = bemHelper({ block: 'game-week-switcher' });
 
 const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
     const { gameWeeks, currentGameWeek } = useGameWeeks();
-    const previousGameWeeks = [...gameWeeks].slice(0, selectedGameWeek + 1 + 1);
+    const previousGameWeeks = gameWeeks
+        .filter(({ gameWeek }) => gameWeek <= currentGameWeek.gameWeek)
+        .slice(0, selectedGameWeek + 1 + 1);
     const options =
         previousGameWeeks.length > 4
             ? previousGameWeeks.slice(previousGameWeeks.length - 4, selectedGameWeek + 1 + 1)
