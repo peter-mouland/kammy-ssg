@@ -34,7 +34,7 @@ const Warnings = ({ teams }) => {
             <strong>{manager}</strong>: {posWarnings[manager].join(', ')}
         </p>
     ));
-    if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length) return null;
+    if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length && !newPlayers) return null;
     return (
         <div className={styles.warnings}>
             <h2 className={styles.title}>
