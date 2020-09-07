@@ -7,7 +7,7 @@ const formatTransfers = require('./lib/formatTransfers');
 const trimRows = require('./lib/trimRows');
 
 // const PROXY_HOST = 'http://localhost:3000';
-const PROXY_HOST = 'http://kammy-proxy.herokuapp.com';
+const PROXY_HOST = 'https://kammy-proxy.herokuapp.com';
 
 const kammyProxy = async (division, data) => {
     const response = await fetch(`${PROXY_HOST}/spreadsheets/transfers/${division}`, {

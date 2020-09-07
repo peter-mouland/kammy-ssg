@@ -11,12 +11,14 @@ const fetchr = (key, division = 0) => fetchTransfers(division);
 const useTransfers = ({ divisionKey }) => {
     const queryKey = ['transfers', divisionKey];
     const { isLoading, data: transfers = [] } = useQuery(queryKey, fetchr);
+
     const [saveTransfer, { isLoading: isSaving }] = useMutation(saveTransfers, {
         onSuccess: (data) => {
             queryCache.cancelQueries(queryKey);
             queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
+
     const { currentGameWeek } = useGameWeeks();
     const transfersThisGameWeek = transfers.filter((transfer) => inDateRange(currentGameWeek, transfer.timestamp));
 

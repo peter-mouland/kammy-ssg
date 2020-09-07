@@ -21,9 +21,7 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 
 ## Todo:
  - Cup page:
-    - add use-current-team hook
-    - confirm `{ pendingTransfers } = use-transfers` works
- - only build for past, current, and +1 GameWeek
+     - save team to submissions sheet
  - improve transfer page
      - update time on transfer page in real-time
      - add 'bin' button (on left) to delete transfers
