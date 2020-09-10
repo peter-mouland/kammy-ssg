@@ -15,43 +15,35 @@ import TeamPicker from './team-picker';
 const bem = bemHelper({ block: 'division-stats' });
 
 const Cup = ({ currentTeams }) => {
-    const saving = false;
-    const saved = false;
     const { managerNames: managers } = useManagers();
-    const { cupTeams, saveTeam, isLoading: cupTeamIsLoading, isSaving: cupTeamIsSaving } = useCup();
+    const { saveTeam, isLoading: cupTeamIsLoading, isSaving: cupTeamIsSaving, isSaved } = useCup();
     const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
     const [progress, setProgress] = useState(0);
     const [manager, setManager] = useState('');
-    const [round] = useState(0);
     const [picked, setPicked] = useState([]);
 
     const saveCupTeam = async () => {
         const [player1, player2, player3, player4] = picked;
-        const team = cupTeams.find(({ manager: cupManager }) => manager === cupManager) || {};
         const cupTeamInput = {
             player1,
             player2,
             player3,
             player4,
             manager,
-            round,
-            group: team.group,
         };
-        await saveTeam({ data: [cupTeamInput] });
+        await saveTeam(cupTeamInput);
         setProgress(3);
     };
 
     const closeModal = () => {
         setManager('');
         setPicked([]);
-        // setRound('');
         setProgress(0);
     };
 
     const finishStep1 = (selection) => {
         setManager(selection);
         setPicked([]);
-        // setRound('');
         setProgress(2);
     };
 
@@ -81,8 +73,8 @@ const Cup = ({ currentTeams }) => {
             <Modal
                 key="pickTeam"
                 id="pickTeam"
-                title="Who do you want to pick?"
-                open={progress === 2 || saving}
+                title={`${manager}, Pick a Cup Team`}
+                open={progress === 2 || cupTeamIsSaving}
                 onClose={closeModal}
             >
                 <TeamPicker
@@ -92,10 +84,10 @@ const Cup = ({ currentTeams }) => {
                     picked={picked}
                     handleChange={pickPlayer}
                     handleSubmit={saveCupTeam}
-                    saving={saving}
+                    isSaving={cupTeamIsSaving}
                 />
             </Modal>
-            <Modal key="done" id="done" title="Team Saved" open={progress === 3 && saved} onClose={startAgain} center>
+            <Modal key="done" id="done" title="Team Saved" open={progress === 3 && isSaved} onClose={startAgain} center>
                 <span style={{ 'font-size': '3em' }}>🎖</span>
             </Modal>
         </section>

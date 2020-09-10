@@ -9,17 +9,33 @@ const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) &
 const fetchr = () => fetchCup();
 
 const useCup = () => {
+    const { currentGameWeek } = useGameWeeks();
     const queryKey = ['cup'];
     const { isLoading, data: cupTeams = [] } = useQuery(['cup'], fetchr);
-
-    const [saveTeam, { isLoading: isSaving }] = useMutation(saveCupTeam, {
-        onSuccess: (data) => {
-            queryCache.cancelQueries(queryKey);
-            queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
+    const metaByManager = cupTeams.reduce(
+        (prev, team) => ({
+            ...prev,
+            [team.manager]: team,
+        }),
+        {},
+    );
+    const [saveTeam, { isLoading: isSaving, isSuccess: isSaved }] = useMutation(
+        (team) => {
+            const teamWithMeta = {
+                ...team,
+                group: metaByManager[team.manager].group,
+                round: metaByManager[team.manager].round,
+            };
+            return saveCupTeam({ data: [teamWithMeta] });
         },
-    });
+        {
+            onSuccess: (data) => {
+                queryCache.cancelQueries(queryKey);
+                queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
+            },
+        },
+    );
 
-    const { currentGameWeek } = useGameWeeks();
     const teamsThisGameWeek = cupTeams.filter((team) => inDateRange(currentGameWeek, team.timestamp));
 
     return {
@@ -27,6 +43,7 @@ const useCup = () => {
         isLoading,
         saveTeam,
         isSaving,
+        isSaved,
         cupTeams,
         teamsThisGameWeek,
     };
