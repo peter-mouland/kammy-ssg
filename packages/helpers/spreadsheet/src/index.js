@@ -9,8 +9,8 @@ const trimRows = require('./lib/trimRows');
 // const PROXY_HOST = 'http://localhost:3000';
 const PROXY_HOST = 'https://kammy-proxy.herokuapp.com';
 
-const kammyProxy = async (division, data) => {
-    const response = await fetch(`${PROXY_HOST}/spreadsheets/transfers/${division}`, {
+const kammyProxy = async (api, data) => {
+    const response = await fetch(`${PROXY_HOST}/spreadsheets/${api}`, {
         headers: {
             'Content-Type': 'application/json',
         },
@@ -25,14 +25,18 @@ module.exports = {
         fetchr(spreadsheets.TRANSFERS_ID, `/values/${division}`, { season }).then((data) =>
             formatTransfers(data, division),
         ),
-    fetchCup: (division = 'cup', { season } = {}) =>
-        fetchr(spreadsheets.TRANSFERS_ID, `/values/${division}`, { season }),
+    fetchCupSubmissions: ({ season } = {}) => fetchr(spreadsheets.TRANSFERS_ID, `/values/cupSubmissions`, { season }),
+    fetchCup: ({ season } = {}) => fetchr(spreadsheets.TRANSFERS_ID, `/values/cup`, { season }),
     fetchDraft: (worksheet, { season } = {}) =>
         fetchr(spreadsheets.DRAFT_ID, `/values/${worksheet}`, { season }).then(trimRows),
     fetchSetup: (worksheet, { season } = {}) =>
         fetchr(spreadsheets.SETUP_ID, `/values/${worksheet}`, { season }).then(trimRows),
     saveTransfers: async ({ division, data }) => {
-        const response = await kammyProxy(division, data);
+        const response = await kammyProxy(`transfers/${division}`, data);
+        return response.map(({ timestamp, ...rest }) => ({ ...rest, timestamp: parseISO(timestamp) }));
+    },
+    saveCupTeam: async ({ data }) => {
+        const response = await kammyProxy('cup', data);
         return response.map(({ timestamp, ...rest }) => ({ ...rest, timestamp: parseISO(timestamp) }));
     },
 };

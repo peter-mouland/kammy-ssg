@@ -9,99 +9,38 @@ import Modal from '../modal';
 import MultiToggle from '../multi-toggle';
 import useAllTransfers from '../../hooks/use-all-transfers';
 import useManagers from '../../hooks/use-managers';
-import PlayerPicker from './player-picker';
+import useCup from '../../hooks/use-cup';
+import TeamPicker from './team-picker';
 
 const bem = bemHelper({ block: 'division-stats' });
-
-const PickCupTeam = ({ team, pendingTransfers, manager, handleChange, handleSubmit, picked, isSaving }) => (
-    <section>
-        {[1, 2, 3, 4].map((index) => {
-            const id = `manager-${manager}-player-${index}`;
-            return (
-                <div key={id}>
-                    <label htmlFor={id}>
-                        <span>Player {index}: </span>
-                        <PlayerPicker
-                            playerNumber={index - 1}
-                            pendingTransfers={pendingTransfers}
-                            picked={picked}
-                            id={id}
-                            team={team}
-                            handleChange={handleChange}
-                        />
-                    </label>
-                </div>
-            );
-        })}
-        <div>
-            <p>
-                <strong>Important</strong>: The order in which you pick your players matters!
-            </p>
-            <p>
-                In the event of tied scores, Player 1&apos;s score will be used as a tie break. If that fails to
-                separate teams, Player 2&apos;s score will be used... and so on until there is a clear winner.
-            </p>
-            <Button onClick={handleSubmit} isLoading={isSaving} isDisabled={isSaving}>
-                Save Cup Team
-            </Button>
-        </div>
-    </section>
-);
-
-PickCupTeam.propTypes = {
-    manager: PropTypes.string.isRequired,
-    handleChange: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
-    team: PropTypes.arrayOf(
-        PropTypes.shape({
-            playerName: PropTypes.string.isRequired,
-        }),
-    ).isRequired,
-    isSaving: PropTypes.bool,
-    picked: PropTypes.array,
-    pendingTransfers: PropTypes.array,
-};
-PickCupTeam.defaultProps = {
-    isSaving: false,
-    picked: [],
-    pendingTransfers: [],
-};
-
-PickCupTeam.defaulProps = {
-    picked: [],
-    saving: false,
-};
 
 const Cup = ({ currentTeams }) => {
     const saving = false;
     const saved = false;
     const { managerNames: managers } = useManagers();
+    const { cupTeams, saveTeam, isLoading: cupTeamIsLoading, isSaving: cupTeamIsSaving } = useCup();
     const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
     const [progress, setProgress] = useState(0);
     const [manager, setManager] = useState('');
     const [round] = useState(0);
     const [picked, setPicked] = useState([]);
 
-    const saveCupTeam = () => {
-        // const [player1, player2, player3, player4] = picked;
-        // const team = cupTeams.find(({ manager: cupManager }) => manager === cupManager) || {};
-        // const cupTeamInput = {
-        //     player1,
-        //     player2,
-        //     player3,
-        //     player4,
-        //     manager,
-        //     round,
-        //     group: team.group,
-        // };
-        // dispatch(cupActions.saveCupTeam(cupTeamInput));
-        // setProgress(3);
+    const saveCupTeam = async () => {
+        const [player1, player2, player3, player4] = picked;
+        const team = cupTeams.find(({ manager: cupManager }) => manager === cupManager) || {};
+        const cupTeamInput = {
+            player1,
+            player2,
+            player3,
+            player4,
+            manager,
+            round,
+            group: team.group,
+        };
+        await saveTeam({ data: [cupTeamInput] });
+        setProgress(3);
     };
-    // const hasFetchCup = cupLoaded || cupLoading;
-    // const hasFetchPremierLeague = premierLeagueLoaded || premierLeagueLoading;
-    // const hasFetchChampionship = championshipLoaded || championshipLoading;
-    // const hasFetchLeagueOne = leagueOneLoaded || leagueOneLoading;
-    //
+
     const closeModal = () => {
         setManager('');
         setPicked([]);
@@ -122,10 +61,7 @@ const Cup = ({ currentTeams }) => {
         setPicked(newPicked);
     };
 
-    // cupActions.fetchCup();
-
     const startAgain = () => {
-        // cupActions.resetCupSave();
         closeModal();
     };
 
@@ -149,13 +85,13 @@ const Cup = ({ currentTeams }) => {
                 open={progress === 2 || saving}
                 onClose={closeModal}
             >
-                <PickCupTeam
+                <TeamPicker
                     team={currentTeams[manager]}
                     pendingTransfers={getPendingTransfersByManager(manager)}
                     manager={manager}
                     picked={picked}
                     handleChange={pickPlayer}
-                    handleSubmit={() => {}}
+                    handleSubmit={saveCupTeam}
                     saving={saving}
                 />
             </Modal>

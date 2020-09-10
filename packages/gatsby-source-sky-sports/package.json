@@ -13,7 +13,7 @@
     "@kammy/helpers.spreadsheet": "1.0.0",
     "chalk": "4.1.0",
     "axios": "0.20.0",
-    "node-fetch": "2.6.0",
+    "node-fetch": "2.6.1",
     "date-fns": "2.16.1",
     "json-query": "2.2.2",
     "p-map": "4.0.0",
