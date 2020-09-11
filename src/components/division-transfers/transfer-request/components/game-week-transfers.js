@@ -17,13 +17,13 @@ const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
                     <tr className={`row row--${status.toLowerCase()}`} key={`${timestamp}-${transferIn}`}>
                         <td
                             data-col-label="status"
-                            className="cell cell--status cell--show-750 cell--center"
+                            className="cell cell--status show-750 cell--center"
                             dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}
                         />
                         <td data-col-label="gw" className="cell cell--center">
                             {gw}
                         </td>
-                        <td data-col-label="timestamp" className="cell cell--center cell--show-625">
+                        <td data-col-label="timestamp" className="cell cell--center show-625">
                             {formatTimestamp(timestamp)}
                         </td>
                         <td data-col-label="type" className="cell cell--center">
@@ -38,7 +38,7 @@ const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
                         <td data-col-label="transfer out" className="cell cell--center">
                             {transferOut}
                         </td>
-                        <td data-col-label="comment" className="cell cell--center cell--show-925 ">
+                        <td data-col-label="comment" className="cell cell--center show-925 ">
                             {comment}
                         </td>
                         {Action && (
@@ -70,14 +70,14 @@ const GameWeekTransfers = ({ transfers, isLoading, Action }) => {
         <table className="table">
             <thead>
                 <tr className="row">
-                    <th className="cell cell--show-750">Status</th>
+                    <th className="cell show-750">Status</th>
                     <th className="cell">GW</th>
-                    <th className="cell cell--show-625">Date</th>
+                    <th className="cell show-625">Date</th>
                     <th className="cell">Type</th>
                     <th className="cell">Manager</th>
                     <th className="cell">In</th>
                     <th className="cell">Out</th>
-                    <th className="cell cell--show-925">Comment</th>
+                    <th className="cell show-925">Comment</th>
                     {Action && <th className="cell" />}
                 </tr>
             </thead>
