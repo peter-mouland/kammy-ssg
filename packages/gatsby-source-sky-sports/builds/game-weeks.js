@@ -1,5 +1,3 @@
-const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
-
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
@@ -20,8 +18,8 @@ module.exports = ({ googleGameWeekData, skyFixtures }) => {
             notes: gw.notes || '',
             cup: ['cup', 'y', 'yes', 'Y'].includes(gw.cup || ''),
             gameWeek: parseInt(gw.gameweek, 10),
-            start: getGmtDate(gw.start),
-            end: getGmtDate(gw.end),
+            start: new Date(gw.start),
+            end: new Date(gw.end),
         };
         data.isCurrent = new Date() < data.end && new Date() > data.start;
         data.fixtures = getFixtures(skyFixtures, data);

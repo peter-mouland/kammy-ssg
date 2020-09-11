@@ -23,6 +23,13 @@ module.exports = {
             resolve: 'gatsby-plugin-react-css-modules',
         },
         {
+            resolve: 'gatsby-plugin-buildtime-timezone',
+            options: {
+                tz: 'Europe/London',
+                format: 'ddd, DD MMM YYYY HH:mm',
+            },
+        },
+        {
             resolve: 'gatsby-plugin-sass',
             options: {
                 includePaths: ['node_modules'],
