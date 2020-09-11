@@ -5,10 +5,10 @@ import DataListInput from './DataList';
 
 const playerOptions = (players) =>
     players.map((player) => ({
+        ...player,
         value: player.name,
         label: player.name,
         key: player.name,
-        club: player.club,
         img: `${`https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`}`,
         additional: (
             <small>

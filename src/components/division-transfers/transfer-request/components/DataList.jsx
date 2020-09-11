@@ -22,8 +22,20 @@ const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem }) =
     const isActive = focusIndex === index || (selectedItem && selectedItem.key === item.key);
     const label = indexOfMatch(searchTerm, item) < 0 ? item.label : labelWithBoldText(item, searchTerm);
     const buttonClass = isActive ? `${buttonClassName} ${buttonClassName}--active` : buttonClassName;
+    const pendingClass =
+        item.isPendingTransferIn || item.isPendingTransferOut
+            ? `datalist-item--pending ${item.isPendingTransferIn ? 'datalist-item--pending-in' : ''} ${
+                  item.isPendingTransferOut ? 'datalist-item--pending-out' : ''
+              }`
+            : '';
+
     return (
-        <button className={`datalist-item ${buttonClass}`} key={item.key} onClick={() => onSelect(item)} type="button">
+        <button
+            className={`datalist-item ${buttonClass} ${pendingClass}`}
+            key={item.key}
+            onClick={() => onSelect(item)}
+            type="button"
+        >
             {item.img && <img src={item.img} className="datalist-item__img" loading="lazy" alt="" />}
             <span className="datalist-item__label">
                 {label}
@@ -39,6 +51,9 @@ Item.propTypes = {
         key: PropTypes.string,
         img: PropTypes.string,
         label: PropTypes.string,
+        club: PropTypes.string,
+        isPendingTransferIn: PropTypes.bool,
+        isPendingTransferOut: PropTypes.bool,
         additional: PropTypes.node,
     }).isRequired,
     selectedItem: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }),
@@ -158,29 +173,17 @@ class DataListInput extends React.Component {
                 />
                 <div className={itemsClassName}>
                     {items.length === 0 && emptyStateMessage}
-                    {selectedItem && searchTerm && !itemsToShow.find((item) => item.key === selectedItem.key) && (
+                    {itemsToShow.map((item, i) => (
                         <Item
-                            key={selectedItem.key}
-                            item={selectedItem}
+                            key={item.key}
+                            item={item}
                             focusIndex={focusIndex}
-                            index={0}
+                            index={i}
                             onSelect={this.onSelect}
                             searchTerm={searchTerm}
                             selectedItem={selectedItem}
                         />
-                    )}
-                    {(alwaysShowItems || visible) &&
-                        itemsToShow.map((item, i) => (
-                            <Item
-                                key={item.key}
-                                item={item}
-                                focusIndex={focusIndex}
-                                index={i}
-                                onSelect={this.onSelect}
-                                searchTerm={searchTerm}
-                                selectedItem={selectedItem}
-                            />
-                        ))}
+                    ))}
                 </div>
             </div>
         );

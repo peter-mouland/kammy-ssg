@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import bemHelper from '@kammy/bem';
 
+import useAllTransfers from '../../../hooks/use-all-transfers';
 import usePlayers from '../../../hooks/use-players';
 import Spacer from '../../spacer';
 import Drawer from '../../drawer';
@@ -34,7 +35,7 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
     reset();
 };
 
-const createFilterOptions = (managers = [], manager) => {
+const createFilterOptions = ({ managers = [], manager, changeType }) => {
     const positions = [
         { value: 'GK', label: 'GK', group: 'position' },
         { value: 'CB', label: 'CB', group: 'position' },
@@ -43,8 +44,16 @@ const createFilterOptions = (managers = [], manager) => {
         { value: 'AM', label: 'AM', group: 'position' },
         { value: 'STR', label: 'STR', group: 'position' },
     ];
-    return [
+    const filters = [
         {
+            label: 'Positions',
+            options: positions,
+        },
+    ];
+
+    if (changeType !== changeTypes.SWAP) {
+        // if it's a swap, you can only select you're own players
+        filters.unshift({
             label: 'Managers',
             options: [
                 { value: 'available', label: 'No manager (free agents)', group: 'manager' },
@@ -54,12 +63,9 @@ const createFilterOptions = (managers = [], manager) => {
                     group: 'manager',
                 })),
             ],
-        },
-        {
-            label: 'Positions',
-            options: positions,
-        },
-    ];
+        });
+    }
+    return filters;
 };
 
 const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter, filteredPlayers }) => (
@@ -85,6 +91,27 @@ const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter,
     </Spacer>
 );
 
+const useValidPlayers = ({ teamsByManager, playersArray, changeType, manager }) => {
+    const team = teamsByManager[manager] || [];
+
+    const teamByPlayerName = team.reduce((prev, player) => ({ ...prev, [player.playerName]: player}), {});
+    const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
+    if (changeType === changeTypes.SWAP) {
+        const pendingTeam = getPendingTransfersByManager(manager) || [];
+        const pendingTransferOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player}), {});
+        const pendingTransferIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player}), {});
+        // only show the managers team
+        const teamPlayers = playersArray.filter(({ name }) => !!teamByPlayerName[name]);
+        const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransferIn[name])
+        return teamPlayers.concat(pendingPlayers).map((player) => ({
+            ...player,
+            isPendingTransferIn: pendingTransferIn[player.name],
+            isPendingTransferOut: pendingTransferOut[player.name],
+        }));
+    }
+    return playersArray;
+};
+
 const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveTransfer }) => {
     const { players: playersArray } = usePlayers();
     const [DrawerContent, setDrawerContent] = useState(undefined);
@@ -96,7 +123,9 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     const [playerOut, setPlayerOut] = useState(undefined);
     const [playerFilter, setPlayerFilter] = useState(undefined);
 
-    const filterOptions = createFilterOptions(managers, manager);
+    const filterOptions = createFilterOptions({ managers, manager, changeType });
+    const validPlayers = useValidPlayers({ teamsByManager, playersArray, changeType, manager });
+    console.log({validPlayers})
 
     const setPlayerOutAndClose = (player) => {
         setDrawerContent(undefined);
@@ -119,7 +148,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter || [],
         // pendingTransfers: pendingTransfers[manager], // todo
-        playersArray,
+        playersArray: validPlayers,
         team: teamsByManager[manager],
         teams: teamsByManager,
         playerIn,
@@ -130,7 +159,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
             filteredPlayers={filteredPlayers}
             playerFilter={playerFilter}
             filterOptions={filterOptions}
-            playersArray={playersArray}
+            playersArray={validPlayers}
             onFilter={setPlayerFilter}
             onSelect={setPlayerOutAndClose}
         />
@@ -139,7 +168,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
         <Search
             filteredPlayers={filteredPlayers}
             filterOptions={filterOptions}
-            playersArray={playersArray}
+            playersArray={validPlayers}
             onFilter={setPlayerFilter}
             onSelect={setPlayerInAndClose}
         />

@@ -13,7 +13,7 @@ const TransferBody = ({ transfers }) => {
     return (
         <tbody>
             {transfers.map(({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment }) => (
-                <React.Fragment>
+                <React.Fragment key={timestamp}>
                     <tr className={`row row--${status.toLowerCase()}`} key={timestamp}>
                         <td
                             data-col-label="status"

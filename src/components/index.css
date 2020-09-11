@@ -355,7 +355,8 @@ svg {
 .layout__footer {
     border-top: 1px solid #ddd;
     margin-top: 30px;
-    margin-bottom: 60px;
+    margin-bottom: calc(60px + env(safe-area-inset-bottom));
+
 }
 .layout__footer-header {
     margin: 10px 20px 0;
