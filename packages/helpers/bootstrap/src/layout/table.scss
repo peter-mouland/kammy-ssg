@@ -6,7 +6,11 @@
   border-collapse: collapse;
   border-spacing: 0;
   position: relative;
+    font-size: 0.85em;
+    @media (min-width: 650px) {
+        font-size: 1em;
 
+    }
   &--placeholder {
     &::before {
       content: " ";
@@ -55,6 +59,11 @@
     background-color: rgb(220, 228, 245);
     z-index: 1;
     font-size: .8em;
+      width: 60px;
+
+      &--player {
+          width: 300px
+      }
   }
 
   .row {

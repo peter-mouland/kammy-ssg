@@ -9,6 +9,7 @@ import validatePlayer from './lib/validate-player';
 import validateClub from './lib/validate-club';
 import validatePos from './lib/validate-pos';
 import Spacer from '../spacer';
+import styles from './styles.module.css';
 
 const bem = bemHelper({ block: 'table' });
 
@@ -26,9 +27,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
             <table className="table">
                 <thead>
                     <tr className="row row--header">
-                        <th className="cell cell--team-position">Position</th>
                         <th className="cell cell--player">Player</th>
-                        <th className="cell cell--club show-850">Club</th>
                         <StatsHeaders />
                     </tr>
                 </thead>
@@ -50,46 +49,63 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                                     duplicatePlayers.indexOf(player.name) > -1)
                                     ? 'row row--warning'
                                     : 'row';
+                            const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
+
                             return (
                                 <tr key={playerName} className={`${className} ${warningClassName}`}>
-                                    <td className="cell cell--team-position">
-                                        <a
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                onShowPositionTimeline({
-                                                    position: pos,
-                                                    gameWeeks: player.gameWeeks,
-                                                    season: player.seasonStats,
-                                                });
-                                            }}
-                                            title={`Show ${player.teamPos} timeline`}
-                                        >
-                                            {pos}
-                                            {pos !== teamPos && <small> ({teamPos.toLowerCase()})</small>}
-                                        </a>
-                                    </td>
                                     <td className="cell cell--player">
-                                        <a
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                onShowPlayerTimeline({ player });
-                                            }}
-                                            title={`Show ${teamPos} timeline`}
-                                        >
-                                            <span className="show-625">{playerName}</span>
-                                            <span className="hide-625">{playerName.split(',')[0]}</span>
-                                        </a>
-                                        <small className="hide-850">
-                                            <span className="show-550">{player.club}</span>
-                                            <span className="hide-550">
-                                                {player.club.split(' ')[0]}{' '}
-                                                {(player.club.split(' ')[1] || '').charAt(0)}
-                                            </span>
-                                        </small>
+                                        <div className={styles.player}>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    onShowPositionTimeline({
+                                                        position: pos,
+                                                        gameWeeks: player.gameWeeks,
+                                                        season: player.seasonStats,
+                                                    });
+                                                }}
+                                                title={`Show ${player.teamPos} timeline`}
+                                                className={styles.playerPosition}
+                                            >
+                                                {pos === teamPos ? (
+                                                    <div>{pos}</div>
+                                                ) : (
+                                                    <div>
+                                                        {teamPos}
+                                                        <div>
+                                                            <small> ({pos.toLowerCase()})</small>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </a>
+                                            <div className={styles.playerImage}>
+                                                <img src={img} loading="lazy" alt="" />
+                                            </div>
+                                            <div className={styles.playerName}>
+                                                <a
+                                                    href="#"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        onShowPlayerTimeline({ player });
+                                                    }}
+                                                    title={`Show ${teamPos} timeline`}
+                                                >
+                                                    <p>
+                                                        <span className="show-625">{playerName}</span>
+                                                        <span className="hide-625">{playerName.split(',')[0]}</span>
+                                                    </p>
+                                                </a>
+                                                <div className={styles.playerClub}>
+                                                    <span className="show-550">{player.club}</span>
+                                                    <span className="hide-550">
+                                                        {player.club.split(' ')[0]}{' '}
+                                                        {(player.club.split(' ')[1] || '').charAt(0)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td className="cell cell--club show-850">{player.club}</td>
                                     <StatsCells seasonToGameWeek={seasonToGameWeek} gameWeekStats={gameWeekStats} />
                                 </tr>
                             );

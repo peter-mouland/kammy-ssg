@@ -57,6 +57,7 @@ export const query = graphql`
                     pos
                     posIndex
                     player {
+                        code
                         club
                         name
                         new

@@ -8,6 +8,7 @@ const playerOptions = (players) =>
         value: player.name,
         label: player.name,
         key: player.name,
+        club: player.club,
         img: `${`https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`}`,
         additional: (
             <small>
@@ -62,7 +63,6 @@ Players.propTypes = {
 
 Players.defaultProps = {
     emptyStateMessage: null,
-    playersFilter: null,
 };
 
 export default Players;

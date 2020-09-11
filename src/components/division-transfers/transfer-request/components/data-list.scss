@@ -92,6 +92,13 @@
         flex: 1;
     }
 
+    &__club {
+        margin-top: 2px;
+        font-weight: normal;
+        font-size: 0.75em;
+        color: #888;
+    }
+
   &__additional {
       align-self: center;
       //text-align: center;

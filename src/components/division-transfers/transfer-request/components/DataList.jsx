@@ -25,7 +25,10 @@ const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem }) =
     return (
         <button className={`datalist-item ${buttonClass}`} key={item.key} onClick={() => onSelect(item)} type="button">
             {item.img && <img src={item.img} className="datalist-item__img" loading="lazy" alt="" />}
-            <span className="datalist-item__label">{label}</span>
+            <span className="datalist-item__label">
+                {label}
+                <p className="datalist-item__club">{item.club}</p>
+            </span>
             <span className="datalist-item__additional">{item.additional}</span>
         </button>
     );
