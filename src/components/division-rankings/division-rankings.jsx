@@ -31,7 +31,6 @@ class DivisionRankings extends React.Component {
             selectedGameWeek,
         } = this.props;
         const { highlightManager } = this.state;
-        const managers = stats.reduce((prev, stat) => ({ [stat.managerName]: stat }), {});
 
         return (
             <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
@@ -51,7 +50,6 @@ class DivisionRankings extends React.Component {
                                 )}
                                 <div data-b-layout="row vpad">
                                     <Table
-                                        managers={Object.keys(managers)}
                                         points={stats}
                                         type="seasonPoints"
                                         rank="rank"
@@ -69,7 +67,6 @@ class DivisionRankings extends React.Component {
                                         </h2>
                                     )}
                                     <Table
-                                        managers={Object.keys(managers)}
                                         points={stats}
                                         type="gameWeekPoints"
                                         rank="rankChange"
@@ -98,7 +95,7 @@ class DivisionRankings extends React.Component {
 }
 
 DivisionRankings.propTypes = {
-    selectedGameWeek: PropTypes.number,
+    selectedGameWeek: PropTypes.number.isRequired,
     lineType: PropTypes.string,
     divisionUrl: PropTypes.string,
     managersSeason: PropTypes.object,
@@ -114,6 +111,7 @@ DivisionRankings.defaultProps = {
     lineType: undefined,
     managersSeason: {},
     stats: [],
+    lineChartData: [],
     showGameWeekSwitcher: true,
     showWeekly: true,
     showChart: true,

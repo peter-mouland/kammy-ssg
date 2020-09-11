@@ -100,6 +100,7 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
                 ...prev,
                 [posKey]: {
                     ...prev[posKey],
+                    order: divRankings.rank[item.managerName].order,
                     rank: divRankings.rank[item.managerName][posKey],
                     rankChange: rankChange[item.managerName][posKey],
                 },

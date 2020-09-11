@@ -1,3 +1,5 @@
+const sortBy = require('@kammy/sort-columns');
+
 const { positions } = require('./positions');
 
 // comparison function: numeric order
@@ -28,6 +30,51 @@ function getRanks(values = []) {
     });
 }
 
+/* teamsWithDivisionPoints
+[
+  {
+    gameWeek: 36,
+    managerName: 'James',
+    divisionKey: 'premierLeague',
+    manager___NODE: 'f367b744-bdf5-5a3b-a600-3970eef95623',
+    points: {
+      gks: [Object],
+      cb: [Object],
+      fb: [Object],
+      mid: [Object],
+      am: [Object],
+      str: [Object],
+      total: [Object]
+    }
+  },
+  {
+    gameWeek: 36,
+    managerName: 'Johnny',
+    divisionKey: 'premierLeague',
+    manager___NODE: 'c0f25b28-93f7-5b2b-8b69-8ddc7768d9a9',
+    points: {
+      gks: [Object],
+      cb: [Object],
+      fb: [Object],
+      mid: [Object],
+      am: [Object],
+      str: [Object],
+      total: {
+          gks: { gameWeekPoints: 0, seasonPoints: 0 },
+          cb: { gameWeekPoints: 0, seasonPoints: 0 },
+          fb: { gameWeekPoints: 0, seasonPoints: 0 },
+          mid: { gameWeekPoints: 0, seasonPoints: 0 },
+          am: { gameWeekPoints: 0, seasonPoints: 0 },
+          str: { gameWeekPoints: 0, seasonPoints: 0 },
+          total: { gameWeekPoints: 0, seasonPoints: 0 }
+        }
+
+    }
+  },
+  ...
+]
+
+ */
 const getRank = (teamsWithDivisionPoints = []) => {
     const ranks = positions.reduce((prev, pos) => {
         const arr = teamsWithDivisionPoints.map((team) => ({ ...team.points, managerName: team.managerName }));
@@ -46,12 +93,30 @@ const getRank = (teamsWithDivisionPoints = []) => {
         });
         return rankings;
     }, {});
+    const division = [];
     Object.keys(ranks).forEach((managerName) => {
+        const team = teamsWithDivisionPoints.find((thisTeam) => thisTeam.managerName === managerName);
         Object.keys(ranks[managerName]).forEach((position) => {
             ranks[managerName].total = (ranks[managerName].total || 0) + ranks[managerName][position];
+            ranks[managerName].seasonPoints = team.points.total.seasonPoints;
+            ranks[managerName].managerName = managerName;
         });
+        division.push(ranks[managerName]);
     });
-    return ranks;
+    const ranksWithOrder = division
+        .sort(sortBy([`total`, 'seasonPoints']))
+        .map((div, i) => ({
+            ...div,
+            order: i,
+        }))
+        .reduce(
+            (prev, thisTeam) => ({
+                ...prev,
+                [thisTeam.managerName]: thisTeam,
+            }),
+            {},
+        );
+    return ranksWithOrder;
 };
 
 module.exports = getRank;
