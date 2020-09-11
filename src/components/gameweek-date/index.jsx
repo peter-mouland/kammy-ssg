@@ -1,27 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
-import parseISO from 'date-fns/parseISO';
 
 import Cup from './trophy.svg';
 import './GameWeekDate.scss';
 
 const getDates = ({ start, end }) => {
     try {
-        const startMonth = format(parseISO(start), 'MMM');
-        const endMonth = format(parseISO(end), 'MMM');
-        const startTime = format(parseISO(start), 'HH:mm');
-        const endTime = format(parseISO(end), 'HH:mm');
-        const startDay = format(parseISO(start), 'd');
-        const endDay = format(parseISO(end), 'd');
-
         return {
-            startMonth,
-            endMonth,
-            startTime,
-            endTime,
-            startDay,
-            endDay,
+            startMonth: format(start, 'MMM'),
+            endMonth: format(end, 'MMM'),
+            startTime: format(start, 'HH:mm'),
+            endTime: format(end, 'HH:mm'),
+            startDay: format(start, 'd'),
+            endDay: format(end, 'd'),
         };
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -42,7 +34,10 @@ const getDates = ({ start, end }) => {
 const GameWeekDate = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
     const { start, end, cup } = gameWeek;
 
-    const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({ start, end });
+    const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({
+        start: new Date(start),
+        end: new Date(end),
+    });
     return (
         <div className="formatted-gameweek-container">
             {label && <div>{label}</div>}
