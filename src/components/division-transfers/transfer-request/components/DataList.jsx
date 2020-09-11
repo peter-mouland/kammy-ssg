@@ -18,6 +18,8 @@ const labelWithBoldText = (item, searchTerm) => {
 };
 
 const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem }) => {
+    // todo: stop rerendering so much
+    // console.log({item})
     const buttonClassName = 'datalist-button';
     const isActive = focusIndex === index || (selectedItem && selectedItem.key === item.key);
     const label = indexOfMatch(searchTerm, item) < 0 ? item.label : labelWithBoldText(item, searchTerm);

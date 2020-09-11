@@ -40,7 +40,8 @@
 
   //max-height: 355px;
   /* un-restrict height */
-    max-height: calc(100vh - 13em);
+    max-height: calc(100vh - 13em - env(safe-area-inset-bottom));
+
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   box-shadow: rgba(0, 0, 0, .35) 5px 5px 13px;
@@ -54,12 +55,7 @@
 
 .datalist-button {
   position: relative;
-    width: 100%;
-  //padding: 8px;
-  //margin: 2px;
-  //  align-self: center;
-  //  border-radius: 5px;
-  //  border: 1px solid #163;
+  width: 100%;
 
   &--active {
     background-color: #163;

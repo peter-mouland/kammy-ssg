@@ -8,7 +8,7 @@ const formatTimestamp = (ts, { fromGMT = false, fromUTC = false } = {}) => {
         return format(date, 'MMM d, HH:mm:ss');
     } catch (e) {
         // eslint-disable-next-line no-console
-        console.log(ts, getUtcDate(ts), new Date(getUtcDate(ts)));
+        console.log(ts, getUtcDate(ts), getUtcDate(ts));
         return 'unknown date';
     }
 };

@@ -51,20 +51,23 @@ const createFilterOptions = ({ managers = [], manager, changeType }) => {
         },
     ];
 
-    if (changeType !== changeTypes.SWAP) {
-        // if it's a swap, you can only select you're own players
-        filters.unshift({
-            label: 'Managers',
-            options: [
-                { value: 'available', label: 'No manager (free agents)', group: 'manager' },
-                ...managers.map((mngr) => ({
-                    value: mngr,
-                    label: `${mngr}${mngr === manager ? '*' : ''}`,
-                    group: 'manager',
-                })),
-            ],
-        });
+    if (changeType === changeTypes.SWAP) {
+        // if it's a swap, you can filter by position
+        return filters;
     }
+
+    filters.unshift({
+        label: 'Managers',
+        options: [
+            { value: 'available', label: 'No manager (free agents)', group: 'manager' },
+            ...managers.map((mngr) => ({
+                value: mngr,
+                label: `${mngr}${mngr === manager ? '*' : ''}`,
+                group: 'manager',
+            })),
+        ],
+    });
+
     return filters;
 };
 
@@ -91,30 +94,35 @@ const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter,
     </Spacer>
 );
 
-const useValidPlayers = ({ teamsByManager, playersArray, changeType, manager }) => {
+const getMangersPlayers = ({ pendingTeam, team, playersArray }) => {
+    const pendingTransfersOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player}), {});
+    const pendingTransfersIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player}), {});
+    // only show the managers team
+    const teamPlayers = team.map(({ player }) => player);
+
+    const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransfersIn[name])
+    return teamPlayers.concat(pendingPlayers).map((player) => ({
+        ...player,
+        isPendingTransferIn: !!pendingTransfersIn[player.name],
+        isPendingTransferOut: !!pendingTransfersOut[player.name],
+    }));
+};
+
+const useValidPlayers = ({ teamsByManager, isExitingPlayer, playersArray, changeType, manager }) => {
+    const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
+    const pendingTeam = getPendingTransfersByManager(manager) || [];
     const team = teamsByManager[manager] || [];
 
-    const teamByPlayerName = team.reduce((prev, player) => ({ ...prev, [player.playerName]: player}), {});
-    const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
-    if (changeType === changeTypes.SWAP) {
-        const pendingTeam = getPendingTransfersByManager(manager) || [];
-        const pendingTransferOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player}), {});
-        const pendingTransferIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player}), {});
-        // only show the managers team
-        const teamPlayers = playersArray.filter(({ name }) => !!teamByPlayerName[name]);
-        const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransferIn[name])
-        return teamPlayers.concat(pendingPlayers).map((player) => ({
-            ...player,
-            isPendingTransferIn: pendingTransferIn[player.name],
-            isPendingTransferOut: pendingTransferOut[player.name],
-        }));
+    if (changeType === changeTypes.SWAP || isExitingPlayer) {
+        return getMangersPlayers({ team, pendingTeam, playersArray });
     }
+
     return playersArray;
 };
 
 const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveTransfer }) => {
     const { players: playersArray } = usePlayers();
-    const [DrawerContent, setDrawerContent] = useState(undefined);
+    const [drawerContent, setDrawerContent] = useState(undefined);
     const [initiateRequest, setInitiateRequest] = useState(false);
     const [comment, setComment] = useState('');
     const [manager, setManager] = useState(undefined);
@@ -123,9 +131,9 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     const [playerOut, setPlayerOut] = useState(undefined);
     const [playerFilter, setPlayerFilter] = useState(undefined);
 
+    const isExitingPlayer = drawerContent === 'playerOut';
     const filterOptions = createFilterOptions({ managers, manager, changeType });
-    const validPlayers = useValidPlayers({ teamsByManager, playersArray, changeType, manager });
-    console.log({validPlayers})
+    const validPlayers = useValidPlayers({ teamsByManager, isExitingPlayer, playersArray, changeType, manager });
 
     const setPlayerOutAndClose = (player) => {
         setDrawerContent(undefined);
@@ -180,11 +188,12 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                 isCloseable
                 hasBackdrop
                 onClose={() => setDrawerContent(undefined)}
-                isOpen={!!DrawerContent}
+                isOpen={!!drawerContent}
                 placement={Drawer.placements.RIGHT}
                 theme={Drawer.themes.LIGHT}
             >
-                {DrawerContent === 'playerIn' ? <RequestPlayerIn /> : <RequestPlayerOut />}
+                {drawerContent === 'playerIn' && <RequestPlayerIn />}
+                {drawerContent === 'playerOut' && <RequestPlayerOut />}
             </Drawer>
             <Accordion
                 title="Create Request"

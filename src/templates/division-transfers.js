@@ -54,6 +54,8 @@ export const query = graphql`
                     player {
                         club
                         name
+                        code
+                        pos
                     }
                 }
             }

@@ -10,14 +10,7 @@ const playerOptions = (players) =>
         label: player.name,
         key: player.name,
         img: `${`https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`}`,
-        additional: (
-            <small>
-                {` ${player.pos}`}
-                {player.teamPos && player.pos !== player.teamPos ? ' (sub)' : null}
-                {player.isTransfer ? <em> (pending transfer request)</em> : null}
-                {player.manager ? <em> ({player.manager})</em> : null}
-            </small>
-        ),
+        additional: <small>{` ${player.pos}`}</small>,
     }));
 
 // eslint-disable-next-line react/prop-types
