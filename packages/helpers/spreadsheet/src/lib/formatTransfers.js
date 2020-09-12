@@ -1,4 +1,4 @@
-const { getUtcDate } = require('@kammy/helpers.get-gmt-date');
+const { getUtcDate, getGmtDate } = require('@kammy/helpers.get-gmt-date');
 
 // timestamp is GMT, set to iso to prevent new date from changing it by an hour
 const formatTimeStamp = (timestamp = '') => getUtcDate(timestamp);

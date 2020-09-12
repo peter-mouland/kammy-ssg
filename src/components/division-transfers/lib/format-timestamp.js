@@ -1,14 +1,12 @@
 /* eslint-disable react/no-danger */
 import format from 'date-fns/format';
-import { getUtcDate, getGmtDate } from '@kammy/helpers.get-gmt-date';
 
-const formatTimestamp = (ts, { fromGMT = false, fromUTC = false } = {}) => {
+const formatTimestamp = (ts) => {
     try {
-        const date = fromGMT || fromUTC ? new Date(fromGMT ? getUtcDate(ts) : getGmtDate(ts)) : new Date(ts);
-        return format(date, 'MMM d, HH:mm:ss');
+        return format(ts, 'MMM d, HH:mm:ss');
     } catch (e) {
         // eslint-disable-next-line no-console
-        console.log(ts, getUtcDate(ts), getUtcDate(ts));
+        console.log(ts);
         return 'unknown date';
     }
 };

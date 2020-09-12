@@ -21,7 +21,7 @@ const TransferBody = ({ transfers }) => {
                             dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}
                         />
                         <td data-col-label="timestamp" className="cell cell--center show-625">
-                            {formatTimestamp(timestamp, { fromGMT: true })}
+                            {formatTimestamp(timestamp)}
                         </td>
                         <td data-col-label="type" className="cell cell--center">
                             {type}

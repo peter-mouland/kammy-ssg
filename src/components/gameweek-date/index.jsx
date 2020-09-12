@@ -6,15 +6,14 @@ import Cup from './trophy.svg';
 import './GameWeekDate.scss';
 
 const getDates = ({ start, end }) => {
-    console.log({ start, end })
     try {
         return {
             startMonth: format(start, 'MMM'),
             endMonth: format(end, 'MMM'),
             startTime: format(start, 'HH:mm'),
             endTime: format(end, 'HH:mm'),
-            startDay: format(start, 'd'),
-            endDay: format(end, 'd'),
+            startDay: format(start, 'do'),
+            endDay: format(end, 'do'),
         };
     } catch (e) {
         // eslint-disable-next-line no-console
@@ -33,7 +32,6 @@ const getDates = ({ start, end }) => {
 };
 
 const GameWeekDate = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
-    console.log({gameWeek})
     const { start, end, cup } = gameWeek;
 
     const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({
