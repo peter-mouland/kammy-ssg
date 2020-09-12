@@ -1,6 +1,7 @@
 /* eslint-disable react/no-danger */
 import { graphql, useStaticQuery } from 'gatsby';
 import parseISO from 'date-fns/parseISO';
+const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
 
 const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
 
@@ -11,7 +12,7 @@ const getGameWeekFromDateFact = (gameWeeks) => (date) => {
 
 const useGameWeeks = () => {
     const {
-        allGameWeeks: { nodes: gameWeeks },
+        allGameWeeks: { nodes: gw },
     } = useStaticQuery(graphql`
         query GameWeeks {
             allGameWeeks(sort: { fields: gameWeek, order: ASC }) {
@@ -24,15 +25,35 @@ const useGameWeeks = () => {
                     notes
                     startFromNow: start(fromNow: true)
                     endFromNow: end(fromNow: true)
+                    fixtures {
+                        aScore
+                        aTcode
+                        aTname
+                        date
+                        hScore
+                        hTcode
+                        hTname
+                        status
+                    }
                 }
             }
         }
     `);
+    const gameWeeks = gw.map((gm) => ({
+        ...gm,
+        start: getGmtDate(gm.start),
+        end: getGmtDate(gm.end),
+    }));
     const getGameWeekFromDate = getGameWeekFromDateFact(gameWeeks);
-    const currentGameWeek = gameWeeks.find(({ isCurrent }) => !!isCurrent);
+    const currentGameWeekIndex = gameWeeks.findIndex(({ isCurrent }) => !!isCurrent);
+    const currentGameWeek = gameWeeks[currentGameWeekIndex];
+    const nextGameWeek = gameWeeks[currentGameWeekIndex + 1];
+    const previousGameWeek = gameWeeks[currentGameWeekIndex - 1];
     return {
         gameWeeks,
         currentGameWeek,
+        nextGameWeek,
+        previousGameWeek,
         getGameWeekFromDate,
     };
 };

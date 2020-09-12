@@ -1,10 +1,12 @@
-import parseISO from 'date-fns/parseISO';
 import { useMutation, useQuery, queryCache } from 'react-query';
 import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 
 import useGameWeeks from './use-game-weeks';
 
-const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
+const inDateRange = ({ start, end }, comparison) => {
+    // console.log({ start, end, comparison })
+    return comparison < end && comparison > start;
+}
 
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
@@ -20,7 +22,9 @@ const useTransfers = ({ divisionKey }) => {
     });
 
     const { currentGameWeek } = useGameWeeks();
-    const transfersThisGameWeek = transfers.filter((transfer) => inDateRange(currentGameWeek, transfer.timestamp));
+    const transfersThisGameWeek = transfers.filter((transfer) => {
+        return inDateRange(currentGameWeek, transfer.timestamp)
+    });
 
     // if pending is slow, update code to use filter-views
     // premierLeague pending transfers filter view id : fvid=305296590

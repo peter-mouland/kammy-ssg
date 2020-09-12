@@ -4,12 +4,11 @@ import { graphql } from 'gatsby';
 
 import Layout from '../components/layout';
 import Homepage from '../components/homepage';
+import useGameWeeks from '../hooks/use-game-weeks';
 
 const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
+    const { previousGameWeek, currentGameWeek, nextGameWeek } = useGameWeeks();
     const {
-        prevGameWeek,
-        currentGameWeek,
-        nextGameWeek,
         allManagers: { nodes: managers },
         allDivisions: { nodes: divisions },
         allLeagueTable: { nodes: leagueStats },
@@ -17,7 +16,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
     const gameWeekDates = {
         currentGameWeek,
         nextGameWeek,
-        prevGameWeek,
+        prevGameWeek: previousGameWeek,
     };
     const statsByDivision = managers.reduce(
         (prev, { manager, division }) => ({
@@ -49,61 +48,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
 };
 
 export const query = graphql`
-    query Homepage($gameWeek: Int, $prevGameWeek: Int, $nextGameWeek: Int) {
-        currentGameWeek: gameWeeks(gameWeek: { eq: $gameWeek }) {
-            gameWeek
-            isCurrent
-            start
-            end
-            cup
-            notes
-            fixtures {
-                aScore
-                aTcode
-                aTname
-                date
-                hScore
-                hTcode
-                hTname
-                status
-            }
-        }
-        prevGameWeek: gameWeeks(gameWeek: { eq: $prevGameWeek }) {
-            gameWeek
-            isCurrent
-            start
-            end
-            cup
-            notes
-            fixtures {
-                aScore
-                aTcode
-                aTname
-                date
-                hScore
-                hTcode
-                hTname
-                status
-            }
-        }
-        nextGameWeek: gameWeeks(gameWeek: { eq: $nextGameWeek }) {
-            gameWeek
-            isCurrent
-            start
-            end
-            cup
-            notes
-            fixtures {
-                aScore
-                aTcode
-                aTname
-                date
-                hScore
-                hTcode
-                hTname
-                status
-            }
-        }
+    query Homepage($gameWeek: Int) {
         allDivisions(sort: { fields: order }) {
             nodes {
                 key

@@ -6,6 +6,7 @@ import Cup from './trophy.svg';
 import './GameWeekDate.scss';
 
 const getDates = ({ start, end }) => {
+    console.log({ start, end })
     try {
         return {
             startMonth: format(start, 'MMM'),
@@ -32,11 +33,12 @@ const getDates = ({ start, end }) => {
 };
 
 const GameWeekDate = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
+    console.log({gameWeek})
     const { start, end, cup } = gameWeek;
 
     const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({
-        start: new Date(start),
-        end: new Date(end),
+        start,
+        end,
     });
     return (
         <div className="formatted-gameweek-container">
