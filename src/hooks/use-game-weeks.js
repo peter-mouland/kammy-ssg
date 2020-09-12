@@ -41,9 +41,11 @@ const useGameWeeks = () => {
     `);
     const gameWeeks = gw.map((gm) => ({
         ...gm,
-        start: getGmtDate(gm.start),
-        end: getGmtDate(gm.end),
+        start: new Date(gm.start),
+        end: new Date(gm.end),
     }));
+    console.log(gw)
+    console.log(gameWeeks)
     const getGameWeekFromDate = getGameWeekFromDateFact(gameWeeks);
     const currentGameWeekIndex = gameWeeks.findIndex(({ isCurrent }) => !!isCurrent);
     const currentGameWeek = gameWeeks[currentGameWeekIndex];

@@ -1,3 +1,6 @@
+const parseISO = require('date-fns/parseISO');
+const { getUtcDate, getGmtDate } = require('@kammy/helpers.get-gmt-date');
+
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
@@ -18,8 +21,16 @@ module.exports = ({ googleGameWeekData, skyFixtures }) => {
             notes: gw.notes || '',
             cup: ['cup', 'y', 'yes', 'Y'].includes(gw.cup || ''),
             gameWeek: parseInt(gw.gameweek, 10),
-            start: new Date(gw.start),
+            startString: gw.start,
+            endString: gw.end,
+            start: new Date(gw.start), // 11am on gsheets, 10am as new date(), back to 11am
             end: new Date(gw.end),
+            // startParseIso: parseISO(gw.start),
+            // endParseIso: parseISO(gw.end),
+            // startUTC: getUtcDate(gw.start),
+            // endUTC: getUtcDate(gw.end),
+            // startGMT: getGmtDate(gw.start),
+            // endGMT: getGmtDate(gw.end),
         };
         data.isCurrent = new Date() < data.end && new Date() > data.start;
         data.fixtures = getFixtures(skyFixtures, data);
