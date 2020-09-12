@@ -1,7 +1,6 @@
 /* eslint-disable react/no-danger */
 import { graphql, useStaticQuery } from 'gatsby';
 import parseISO from 'date-fns/parseISO';
-const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
 
 const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
 
@@ -44,8 +43,6 @@ const useGameWeeks = () => {
         start: new Date(gm.start),
         end: new Date(gm.end),
     }));
-    console.log(gw)
-    console.log(gameWeeks)
     const getGameWeekFromDate = getGameWeekFromDateFact(gameWeeks);
     const currentGameWeekIndex = gameWeeks.findIndex(({ isCurrent }) => !!isCurrent);
     const currentGameWeek = gameWeeks[currentGameWeekIndex];
