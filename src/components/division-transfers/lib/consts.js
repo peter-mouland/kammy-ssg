@@ -11,7 +11,7 @@ export const verbs = {
     out: {
         [changeTypes.LOAN_START]: ' ...being loaned',
         [changeTypes.LOAN_END]: ' ...being loaned',
-        [changeTypes.SWAP]: ' ...being swapped',
+        [changeTypes.SWAP]: 'Who is Leaving the squad?',
         [changeTypes.TRADE]: ' ...being traded',
         [changeTypes.TRANSFER]: ' ...being transferred',
         [changeTypes.NEW_PLAYER]: ' ...being taken',
