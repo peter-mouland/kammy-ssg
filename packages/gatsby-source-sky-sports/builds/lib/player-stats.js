@@ -10,19 +10,31 @@ const logger = require('../../lib/log');
 const emptyStatsArray = Array.from(Array(26), () => 0);
 const emptyStats = extractFFStats(emptyStatsArray);
 
+const getPosStats = ({ stats, pos }) => {
+    // only show stats for those that can score points
+    const posStats = Object.keys(stats).reduce(
+        (prevPosStat, stat) => ({
+            ...prevPosStat,
+            [stat]: calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0 ? stats[stat] : null,
+        }),
+        {},
+    );
+    return posStats;
+};
+
 // exported for tests
 const addPointsToFixtures = (fixture, pos) => {
     const stats = extractFFStats(fixture.stats || emptyStatsArray);
+    const points = calculateTotalPoints({ stats, pos });
     return {
         ...fixture,
         stats: {
-            ...stats,
-            points: calculateTotalPoints({ stats, pos }).total,
+            ...getPosStats({ stats, pos }),
+            points: points.total,
         },
     };
 };
 
-// expsorted for tests
 const totalUpStats = (fixtures) =>
     fixtures.reduce(
         (totals, gw) =>
@@ -36,7 +48,6 @@ const totalUpStats = (fixtures) =>
         emptyStats,
     );
 
-// exposrted for tests
 const getGameWeekFixtures = (player, gameWeeks) =>
     // todo: don't include PENDING in production!
     jsonQuery('fixtures[*:date]', {
@@ -61,9 +72,10 @@ const playerStats = ({ player, gameWeeks }) => {
     const playerFixtures = getGameWeekFixtures(player, gameWeeks);
     const gameWeekFixtures = playerFixtures.map((fixture) => addPointsToFixtures(fixture, player.pos));
     const stats = totalUpStats(gameWeekFixtures);
+    const point = calculateTotalPoints({ stats, pos: player.pos });
     const gameWeekStats = {
-        ...stats,
-        points: calculateTotalPoints({ stats, pos: player.pos }).total,
+        ...getPosStats({ stats, pos: player.pos }),
+        points: point.total,
     };
     const fixtures = player.fixtures.map((fixture) => addPointsToFixtures(fixture, player.pos));
     if (!fixtures || !fixtures.length) {

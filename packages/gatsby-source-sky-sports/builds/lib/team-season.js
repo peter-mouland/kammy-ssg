@@ -33,7 +33,7 @@ class TeamSeason {
                 const playerGws = players[i].player || [];
                 const seasonToGameWeek = players[i].seasonToGameWeek || [];
                 playerGws[gameWeek] = getPlayerStats({ player: this.getPlayer(player), gameWeeks: [gameWeekObj] });
-                seasonToGameWeek[gameWeek] = calculateSeasonStats(playerGws.slice(0, gameWeek + 1));
+                seasonToGameWeek[gameWeek] = calculateSeasonStats(playerGws.slice(0, gameWeek + 1), player.pos);
 
                 players[i] = {
                     player: playerGws,

@@ -17,7 +17,7 @@ const fetchScores = () =>
 
 const useLiveScores = () => {
     const queryKey = 'liveStats';
-    const [intervalMs] = useState(6000);
+    const [intervalMs] = useState(60000);
 
     const { isFetching: isLiveStatsLoading, isComplete, data: liveStats = [] } = useQuery(queryKey, fetchScores, {
         refetchInterval: intervalMs,
@@ -44,11 +44,13 @@ const useLiveScores = () => {
     const playerByCode = players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {});
     const liveStatsByCode = liveStats.reduce((prev, player) => {
         const stats = extract(player, { isLive: true });
-        const points = calculateTotalPoints({ stats, pos: playerByCode[player[0]].pos });
+        const { pos } = playerByCode[player[0]];
+        const points = calculateTotalPoints({ stats, pos });
+        // only show stats for those that can score points
         const posStats = Object.keys(stats).reduce(
             (prevPosStat, stat) => ({
                 ...prevPosStat,
-                [stat]: points[stat] !== 0 ? stats[stat] : 0,
+                [stat]: calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0 ? stats[stat] : null,
             }),
             {},
         );

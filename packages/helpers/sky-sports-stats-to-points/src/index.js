@@ -1,78 +1,59 @@
 function forStarting(starts = 0) {
-    // starting a match 3 point
     return starts * 3;
 }
 
 function forSub(subs = 0) {
-    // sub = 1 point
-    return subs * 1;
+    return subs;
 }
 
 function forGoals(goals = 0, position) {
-    // depends on position
-    let multiplier = 0;
     if (position === 'GK') {
-        multiplier = 10;
+        return goals * 10;
     } else if (position === 'FB' || position === 'CB') {
-        multiplier = 8;
+        return goals * 8;
     } else if (position === 'MID') {
-        multiplier = 6;
+        return goals * 6;
     } else if (position === 'AM') {
-        multiplier = 5;
+        return goals * 5;
     } else if (position === 'STR') {
-        multiplier = 4;
+        return goals * 4;
     }
-    return goals * multiplier;
+    return 0;
 }
 
 function forAssists(assists = 0) {
-    // assist = 3 points
     return assists * 3;
 }
 
 function forYellowCards(yc = 0) {
-    // -1
     return parseInt(yc * -1, 10);
 }
 
 function forRedCards(rc = 0) {
-    // -5
     return parseInt(rc * -5, 10);
 }
 
 function forCleanSheet(cs = 0, position) {
-    // 5
-    let multiplier;
     if (position === 'FB' || position === 'CB' || position === 'GK') {
-        multiplier = 5;
-    } else {
-        multiplier = 0;
+        return cs * 5;
     }
-    return cs * multiplier;
+    return 0;
 }
 
 function forConceded(conceded = 0, position) {
-    // -1
-    let multiplier;
     if (position === 'FB' || position === 'CB' || position === 'GK') {
-        multiplier = -1;
-    } else {
-        multiplier = 0;
+        return conceded * -1;
     }
-    return parseInt(conceded * multiplier, 10);
+    return 0;
 }
 
 function forTackleBonus(bonusPoints = 0, position) {
-    // 3
-    let multiplier;
     if (position === 'MID') {
-        multiplier = 5;
+        return bonusPoints * 5;
     } else if (position === 'FB' || position === 'CB') {
-        multiplier = 3;
-    } else {
-        multiplier = 0;
+        return bonusPoints * 3;
     }
-    return parseInt(bonusPoints * multiplier, 10);
+    return 0;
 }
 
 function forPenaltiesSaved(ps = 0) {
@@ -80,13 +61,10 @@ function forPenaltiesSaved(ps = 0) {
 }
 
 function forSaveBonus(bonusPoints = 0, position) {
-    let multiplier;
     if (position === 'GK') {
-        multiplier = 2;
-    } else {
-        multiplier = 0;
+        return bonusPoints * 2;
     }
-    return parseInt(bonusPoints * multiplier, 10);
+    return 0;
 }
 
 function forPassBonus(bonusPoints = 0, position) {
