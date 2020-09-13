@@ -101,7 +101,7 @@ class PlayerTable extends React.Component {
                 <tbody>
                     {players.sort(sortColumns(sort.concat(['pos', 'name']), { pos: positions })).map((player) => {
                         const isOnMyTeam = myTeam && myTeam[player.code];
-                        const livePoints = liveStatsByCode[player.code];
+                        const livePoints = liveStatsByCode && liveStatsByCode[player.code];
                         return (
                             <tr
                                 key={player.name}
