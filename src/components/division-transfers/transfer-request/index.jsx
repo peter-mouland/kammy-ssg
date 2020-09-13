@@ -95,12 +95,12 @@ const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter,
 );
 
 const getMangersPlayers = ({ pendingTeam, team, playersArray }) => {
-    const pendingTransfersOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player}), {});
-    const pendingTransfersIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player}), {});
+    const pendingTransfersOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player }), {});
+    const pendingTransfersIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player }), {});
     // only show the managers team
     const teamPlayers = team.map(({ player }) => player);
 
-    const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransfersIn[name])
+    const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransfersIn[name]);
     return teamPlayers.concat(pendingPlayers).map((player) => ({
         ...player,
         isPendingTransferIn: !!pendingTransfersIn[player.name],
@@ -228,29 +228,40 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
 
                 {changeType && (
                     <Accordion.Content>
-                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <h3>3. Who is Leaving the squad?</h3>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} tag="h3">
+                            3. Who is Leaving the squad?
                         </Spacer>
                         {playerOut && (
-                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                                <div>{playerOut.label}</div>
+                            <Spacer all={{ bottom: Spacer.spacings.TINY }} tag="p">
+                                {playerOut.label}
                             </Spacer>
                         )}
-                        <Button onClick={() => setDrawerContent('playerOut')}>{playerOut ? 'Change' : 'Pick'}</Button>
+                        <Button onClick={() => setDrawerContent('playerOut')}>
+                            {playerOut ? 'Change' : 'Pick a player to leave'}
+                        </Button>
                     </Accordion.Content>
                 )}
 
                 {playerOut && (
                     <Accordion.Content>
-                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <h3>4. Who is Joining the squad?</h3>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} tag="h3">
+                            4. Who is Joining the squad?
                         </Spacer>
-                        {playerIn && (
-                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                                <div>{playerIn.label}</div>
-                            </Spacer>
-                        )}
-                        <Button onClick={() => setDrawerContent('playerIn')}>{playerIn ? 'Change' : 'Pick'}</Button>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} tag="p">
+                            With your {playerOut.pos} leaving, you must replace them with another {playerOut.pos}.
+                        </Spacer>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} tag="p">
+                            To enable a {changeType} of any position, you could do a 'Swap' first.
+                        </Spacer>
+                        {playerIn && <Spacer all={{ bottom: Spacer.spacings.TINY }}>{playerIn.label}</Spacer>}
+                        <Spacer all={{ right: Spacer.spacings.SMALL }} tag="span">
+                            <Button onClick={() => setDrawerContent('playerIn')}>
+                                {playerIn ? `Change ${playerOut.pos}'s` : `Pick a ${playerOut.pos} to join`}
+                            </Button>
+                        </Spacer>
+                        <Button onClick={() => setDrawerContent('playerIn')}>
+                            {playerIn ? `Change the Swaps` : `Swap`}
+                        </Button>
                     </Accordion.Content>
                 )}
 
