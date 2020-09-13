@@ -14,7 +14,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
     const managers = getManagersFromDivision(divisionKey);
 
     return (
-        <div data-b-layout="container">
+        <div>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <div style={{ position: 'relative', zIndex: 2 }}>
                     <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/transfers`} />

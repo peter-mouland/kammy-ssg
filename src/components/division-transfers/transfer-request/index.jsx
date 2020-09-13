@@ -95,12 +95,12 @@ const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter,
 );
 
 const getMangersPlayers = ({ pendingTeam, team, playersArray }) => {
-    const pendingTransfersOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player}), {});
-    const pendingTransfersIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player}), {});
+    const pendingTransfersOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player }), {});
+    const pendingTransfersIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player }), {});
     // only show the managers team
     const teamPlayers = team.map(({ player }) => player);
 
-    const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransfersIn[name])
+    const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransfersIn[name]);
     return teamPlayers.concat(pendingPlayers).map((player) => ({
         ...player,
         isPendingTransferIn: !!pendingTransfersIn[player.name],

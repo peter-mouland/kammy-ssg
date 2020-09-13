@@ -1,4 +1,4 @@
-const map = {
+const FINAL_SCORES_MAP = {
     STARTING_XI: 0,
     NA: 1,
     SUBS: 2,
@@ -27,18 +27,51 @@ const map = {
     SKY_FF_POINTS: 25,
 };
 
-module.exports = (stats) => ({
-    apps: stats[map.STARTING_XI] || 0,
-    subs: stats[map.SUBS] || 0,
-    gls: stats[map.GOALS] || 0,
-    asts: stats[map.ASSISTS] || 0,
-    cs: stats[map.CLEAN_SHEETS] || 0,
-    con: stats[map.CONCEDED] || 0,
-    pensv: stats[map.SAVED_PENALTIES] || 0,
-    ycard: stats[map.YELLOW_CARDS] || 0,
-    rcard: stats[map.RED_CARDS] || 0,
-    tb: parseInt(stats[map.TACKLE_BONUS1], 10) + parseInt(stats[map.TACKLE_BONUS2], 10) || 0,
-    sb: parseInt(stats[map.SAVE_BONUS1], 10) + parseInt(stats[map.SAVE_BONUS2], 10) || 0,
-    pb: parseInt(stats[map.PASSING_BONUS1], 10) + parseInt(stats[map.PASSING_BONUS2], 10) || 0,
-    points: 0,
-});
+// red-cards? pen-svd?
+const LIVE_SCORES_MAP = {
+    PLAYER_CODE: 0,
+    ultWeekPts: 1,
+    STARTING_XI: 2,
+    unknown3: 3,
+    CONCEDED: 4,
+    unknown5: 5,
+    YELLOW_CARDS: 6,
+    GOALS: 7,
+    ASSISTS: 8,
+    CLEAN_SHEETS: 9,
+    TACKLE_BONUS1: 10,
+    PASSING_BONUS1: 11,
+    SAVE_BONUS1: 12,
+    unknown13: 13,
+    unknown14: 14,
+    unknown15: 15,
+    unknown16: 16,
+    unknown17: 17,
+    unknown18: 18,
+    unknown19: 19,
+    unknown20: 20,
+    unknown21: 21,
+    unknown22: 22,
+    unknown23: 23,
+    unknown24: 24,
+    unknown25: 25,
+};
+
+module.exports = (stats, { isLive = false } = {}) => {
+    const map = isLive ? LIVE_SCORES_MAP : FINAL_SCORES_MAP;
+    return {
+        apps: stats[map.STARTING_XI] || 0,
+        subs: stats[map.SUBS] || 0,
+        gls: stats[map.GOALS] || 0,
+        asts: stats[map.ASSISTS] || 0,
+        cs: stats[map.CLEAN_SHEETS] || 0,
+        con: stats[map.CONCEDED] || 0,
+        pensv: stats[map.SAVED_PENALTIES] || 0,
+        ycard: stats[map.YELLOW_CARDS] || 0,
+        rcard: stats[map.RED_CARDS] || 0,
+        tb: parseInt(stats[map.TACKLE_BONUS1] || 0, 10) + parseInt(stats[map.TACKLE_BONUS2] || 0, 10) || 0,
+        sb: parseInt(stats[map.SAVE_BONUS1] || 0, 10) + parseInt(stats[map.SAVE_BONUS2] || 0, 10) || 0,
+        pb: parseInt(stats[map.PASSING_BONUS1] || 0, 10) + parseInt(stats[map.PASSING_BONUS2] || 0, 10) || 0,
+        points: 0,
+    };
+};

@@ -28,7 +28,7 @@ const visibleStats = [
 ];
 
 const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
-    const { skyScoresByCode } = useLiveScores();
+    const { liveStatsByCode } = useLiveScores();
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce(
         (prev, player) => ({
@@ -46,6 +46,7 @@ const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
                         {(playersFiltered) => (
                             <PlayersTable
                                 positions={positions}
+                                liveStatsByCode={liveStatsByCode}
                                 players={playersFiltered}
                                 disabledPlayers={disabledPlayers}
                                 hiddenColumns={hiddenColumns}
@@ -70,6 +71,7 @@ export const query = graphql`
         allPlayers(filter: { isHidden: { eq: false } }) {
             nodes {
                 id
+                code
                 name
                 club
                 pos

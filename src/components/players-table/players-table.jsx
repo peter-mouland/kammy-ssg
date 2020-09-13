@@ -64,6 +64,7 @@ class PlayerTable extends React.Component {
             myTeam,
             positions,
             disabledPlayers,
+            liveStatsByCode,
         } = this.props;
         const { sort } = this.state;
         return (
@@ -102,6 +103,7 @@ class PlayerTable extends React.Component {
                 <tbody>
                     {players.sort(sortColumns(sort.concat(['pos', 'name']), { pos: positions })).map((player) => {
                         const isOnMyTeam = myTeam && myTeam[player.code];
+                        const livePoints = liveStatsByCode[player.code];
                         return (
                             <tr
                                 key={player.name}
@@ -127,9 +129,7 @@ class PlayerTable extends React.Component {
                                 )}
                                 {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
                                 <td className="cell">{player.pos}</td>
-                                <td className="cell">
-                                    <a href="#">{player.name}</a>
-                                </td>
+                                <td className="cell">{player.name}</td>
                                 <td className="cell">
                                     <small>{player.club}</small>
                                 </td>
@@ -146,6 +146,7 @@ class PlayerTable extends React.Component {
                                         </td>
                                         <td className={`cell cell--pair cell--${stat}`}>
                                             {player.gameWeek && player.gameWeek[stat]}
+                                            <span className="cell--live">{livePoints && `${livePoints[stat]}`}</span>
                                         </td>
                                     </Fragment>
                                 ))}

@@ -66,11 +66,7 @@ class DivisionRankings extends React.Component {
                                             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>Weekly Scores</Spacer>
                                         </h2>
                                     )}
-                                    <Table
-                                        points={stats}
-                                        type="gameWeekPoints"
-                                        rank="rankChange"
-                                    />
+                                    <Table points={stats} type="gameWeekPoints" rank="rankChange" />
                                 </div>
                             </Fragment>
                         )}

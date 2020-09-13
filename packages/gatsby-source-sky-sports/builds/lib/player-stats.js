@@ -3,8 +3,8 @@ const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
 const extractFFStats = require('@kammy/helpers.extract-sky-sports-stats');
+const { calculateTotalPoints } = require('@kammy/helpers.sky-sports-stats-to-points');
 
-const { calculateTotalPoints } = require('./calculate-points');
 const logger = require('../../lib/log');
 
 const emptyStatsArray = Array.from(Array(26), () => 0);

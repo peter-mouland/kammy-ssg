@@ -1,14 +1,14 @@
-function forStarting(starts) {
+function forStarting(starts = 0) {
     // starting a match 3 point
     return starts * 3;
 }
 
-function forSub(subs) {
+function forSub(subs = 0) {
     // sub = 1 point
     return subs * 1;
 }
 
-function forGoals(goals, position) {
+function forGoals(goals = 0, position) {
     // depends on position
     let multiplier = 0;
     if (position === 'GK') {
@@ -25,22 +25,22 @@ function forGoals(goals, position) {
     return goals * multiplier;
 }
 
-function forAssists(assists) {
+function forAssists(assists = 0) {
     // assist = 3 points
     return assists * 3;
 }
 
-function forYellowCards(yc) {
+function forYellowCards(yc = 0) {
     // -1
     return parseInt(yc * -1, 10);
 }
 
-function forRedCards(rc) {
+function forRedCards(rc = 0) {
     // -5
     return parseInt(rc * -5, 10);
 }
 
-function forCleanSheet(cs, position) {
+function forCleanSheet(cs = 0, position) {
     // 5
     let multiplier;
     if (position === 'FB' || position === 'CB' || position === 'GK') {
@@ -51,7 +51,7 @@ function forCleanSheet(cs, position) {
     return cs * multiplier;
 }
 
-function forConceded(conceded, position) {
+function forConceded(conceded = 0, position) {
     // -1
     let multiplier;
     if (position === 'FB' || position === 'CB' || position === 'GK') {
@@ -62,7 +62,7 @@ function forConceded(conceded, position) {
     return parseInt(conceded * multiplier, 10);
 }
 
-function forTackleBonus(bonusPoints, position) {
+function forTackleBonus(bonusPoints = 0, position) {
     // 3
     let multiplier;
     if (position === 'MID') {
@@ -75,11 +75,11 @@ function forTackleBonus(bonusPoints, position) {
     return parseInt(bonusPoints * multiplier, 10);
 }
 
-function forPenaltiesSaved(ps) {
+function forPenaltiesSaved(ps = 0) {
     return ps * 5;
 }
 
-function forSaveBonus(bonusPoints, position) {
+function forSaveBonus(bonusPoints = 0, position) {
     let multiplier;
     if (position === 'GK') {
         multiplier = 2;
@@ -89,7 +89,7 @@ function forSaveBonus(bonusPoints, position) {
     return parseInt(bonusPoints * multiplier, 10);
 }
 
-function forPassBonus(bonusPoints, position) {
+function forPassBonus(bonusPoints = 0, position) {
     return position === 'MID' && bonusPoints > 0 ? 1 : 0;
 }
 

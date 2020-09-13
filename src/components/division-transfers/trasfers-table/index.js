@@ -39,7 +39,11 @@ const TransferBody = ({ transfers }) => {
                             {comment && (
                                 <div>
                                     <span className="hide-925">
-                                        <ContextualHelp body={comment} width={250} Trigger={<ChatIcon width="20px" />} />
+                                        <ContextualHelp
+                                            body={comment}
+                                            width={250}
+                                            Trigger={<ChatIcon width="20px" />}
+                                        />
                                     </span>
                                     <span className="show-925">{comment}</span>
                                 </div>
@@ -66,7 +70,9 @@ const GameWeekTransfers = ({ transfers, isLoading }) => (
                 <th className="cell">Manager</th>
                 <th className="cell">In</th>
                 <th className="cell">Out</th>
-                <th className="cell"><span className="show-925">Comment</span></th>
+                <th className="cell">
+                    <span className="show-925">Comment</span>
+                </th>
             </tr>
         </thead>
         <TransferBody transfers={transfers} />

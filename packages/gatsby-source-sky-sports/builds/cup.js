@@ -17,16 +17,16 @@ module.exports = ({ googleCupData, createNodeId }) =>
         };
 
         if (gatsbyData.player1Name) {
-            gatsbyData.player1___NODE = createNodeId(`skysports-players-${gatsbyData.player1Name}`)
+            gatsbyData.player1___NODE = createNodeId(`skysports-players-${gatsbyData.player1Name}`);
         }
         if (gatsbyData.player2Name) {
-            gatsbyData.player2___NODE = createNodeId(`skysports-players-${gatsbyData.player2Name}`)
+            gatsbyData.player2___NODE = createNodeId(`skysports-players-${gatsbyData.player2Name}`);
         }
         if (gatsbyData.player3Name) {
-            gatsbyData.player3___NODE = createNodeId(`skysports-players-${gatsbyData.player3Name}`)
+            gatsbyData.player3___NODE = createNodeId(`skysports-players-${gatsbyData.player3Name}`);
         }
         if (gatsbyData.player4Name) {
-            gatsbyData.player4___NODE = createNodeId(`skysports-players-${gatsbyData.player4Name}`)
+            gatsbyData.player4___NODE = createNodeId(`skysports-players-${gatsbyData.player4Name}`);
         }
 
         return {

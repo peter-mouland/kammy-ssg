@@ -1,0 +1,10 @@
+{
+  "name": "@kammy/helpers.sky-sports-stats-to-points",
+  "version": "0.3.6",
+  "description": "array to greatness",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "src": "src/index.js",
+  "author": "Peter Mouland <peter.mouland@clearscore.com> (http://www.clearscore.com)",
+  "license": "UNLICENSED"
+}

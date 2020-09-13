@@ -26,14 +26,14 @@ const TransfersPage = ({
         <Layout>
             <div data-b-layout="container">
                 <TabbedMenu selected="transfers" division={divisionKey} />
+                <DivisionTransfers
+                    teamsByManager={teamsByManager}
+                    divisionLabel={divisionLabel}
+                    divisionKey={divisionKey}
+                    divisionUrl={divisionUrl}
+                    selectedGameWeek={selectedGameWeek}
+                />
             </div>
-            <DivisionTransfers
-                teamsByManager={teamsByManager}
-                divisionLabel={divisionLabel}
-                divisionKey={divisionKey}
-                divisionUrl={divisionUrl}
-                selectedGameWeek={selectedGameWeek}
-            />
         </Layout>
     );
 };
