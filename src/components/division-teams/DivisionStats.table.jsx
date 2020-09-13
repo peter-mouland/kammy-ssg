@@ -2,7 +2,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
-import { calculateTotalPoints } from '@kammy/helpers.sky-sports-stats-to-points';
 
 import useLiveScores from '../../hooks/use-live-scores';
 import { StatsHeaders, StatsCells } from './components/tableHelpers';
@@ -16,7 +15,7 @@ import styles from './styles.module.css';
 const bem = bemHelper({ block: 'table' });
 
 const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, isAdmin }) => {
-    const { isLiveStatsLoading, liveStatsByCode, liveStats } = useLiveScores();
+    const { liveStatsByCode, liveStats } = useLiveScores();
     const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
     const allClubWarnings = validateClub(teams);
@@ -24,7 +23,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
 
     return (
         <section>
-            {!isLiveStatsLoading && liveStats.length > 0 && (
+            {liveStats.length > 0 && (
                 <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.SMALL }}>
                     <span className="table">
                         <span className="cell cell--live">Any stats in orange are live and are not final.</span>
