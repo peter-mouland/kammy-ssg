@@ -20,8 +20,9 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
  - create '[Filter Views](https://developers.google.com/sheets/api/guides/filters)' of the transfer pages for 'Pending Transfers'
 
 ## Todo:
- - Cup page:
-     - save team to submissions sheet
+ - remove stats from players who wont score points
+     - remove this : 'calculateTotalPoints({ stats: { [stat]: 9 }, pos })'
+     - removing the stat from the source data should be faster
  - improve transfer page
      - update time on transfer page in real-time
      - add 'bin' button (on left) to delete transfers

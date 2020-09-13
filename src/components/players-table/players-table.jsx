@@ -140,11 +140,11 @@ class PlayerTable extends React.Component {
                                 {visibleStats.map((stat) => (
                                     <Fragment key={stat}>
                                         <td key={stat} className={bem('stat', null, 'cell')}>
-                                            {player.season && player.season[stat]}
+                                            {player.season && (player.season[stat] ?? '-')}
                                         </td>
                                         <td className={`cell cell--pair cell--${stat}`}>
                                             {player.gameWeek && player.gameWeek[stat]}
-                                            <span className="cell--live">{livePoints && `${livePoints[stat]}`}</span>
+                                            <span className="cell--live">{livePoints && livePoints[stat]}</span>
                                         </td>
                                     </Fragment>
                                 ))}

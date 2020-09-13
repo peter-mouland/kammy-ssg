@@ -1,13 +1,21 @@
+const { calculateTotalPoints } = require('@kammy/helpers.sky-sports-stats-to-points');
+
 const { playerStats: getPlayerStats } = require('./player-stats');
 const logger = require('../../lib/log');
 
-const calculateSeasonStats = (gameWeeksWithFixtures) =>
+const calculateSeasonStats = (gameWeeksWithFixtures, pos) =>
     gameWeeksWithFixtures.reduce(
         (totals, gw) =>
             Object.keys(gw.stats).reduce(
                 (prev, stat) => ({
                     ...prev,
-                    [stat]: gw.stats[stat] + (totals[stat] || 0),
+                    // [stat]: gw.stats[stat] + (totals[stat] || 0),
+                    // todo: remove all usages of this method
+                    // todo: instead delete the stat from thos players that can't earn them
+                    [stat]:
+                        stat === 'points' || calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0
+                            ? gw.stats[stat] + (totals[stat] || 0)
+                            : null,
                 }),
                 {},
             ),
@@ -26,7 +34,7 @@ const getGameWeeksWithFixtures = ({ player, gameWeeks }) =>
 
 const getPlayerWithStats = ({ player, gameWeeks }) => {
     const gameWeeksWithFixtures = getGameWeeksWithFixtures({ player, gameWeeks });
-    const season = calculateSeasonStats(gameWeeksWithFixtures);
+    const season = calculateSeasonStats(gameWeeksWithFixtures, player.pos);
     return {
         ...player,
         gameWeeks: gameWeeksWithFixtures,
