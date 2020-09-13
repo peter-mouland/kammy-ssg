@@ -82,16 +82,19 @@ class Homepage extends React.Component {
                     </Spacer>
                 </Drawer>
                 {divisions.map(({ label, key }) => (
-                    <DivisionRankings
-                        key={key}
-                        label={label}
-                        divisionId={key}
-                        gameWeek={currentGameWeek.gameWeek}
-                        stats={statsByDivision[key]}
-                        showGameWeekSwitcher={false}
-                        showChart={false}
-                        showWeekly={false}
-                    />
+                    <div data-b-layout="container">
+                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                            <h2>{label}</h2>
+                        </Spacer>
+                        <DivisionRankings
+                            key={key}
+                            gameWeek={currentGameWeek.gameWeek}
+                            stats={statsByDivision[key]}
+                            showGameWeekSwitcher={false}
+                            showChart={false}
+                            showWeekly={false}
+                        />
+                    </div>
                 ))}
             </section>
         );

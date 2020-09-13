@@ -33,7 +33,7 @@ class DivisionRankings extends React.Component {
         const { highlightManager } = this.state;
 
         return (
-            <section id="division-ranking-page" className={bem(null, null, 'page-content')} data-b-layout="container">
+            <section id="division-ranking-page" className={bem(null, null, 'page-content')}>
                 {showGameWeekSwitcher && (
                     <div style={{ position: 'relative', zIndex: 2 }}>
                         <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/rankings`} />
