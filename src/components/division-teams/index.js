@@ -19,7 +19,7 @@ const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
     const isAdmin = cookies['is-admin'] === 'true' || false;
 
     return (
-        <section id="teams-page" className={bem()} data-b-layout="container">
+        <section id="teams-page" className={bem()}>
             <div data-b-layout="vpad">
                 <GameWeekSwitcher url={`/${divisionUrl}/teams`} selectedGameWeek={selectedGameWeek} />
             </div>

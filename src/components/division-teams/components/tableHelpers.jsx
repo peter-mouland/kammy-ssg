@@ -87,10 +87,10 @@ export const StatsCells = ({ seasonToGameWeek, gameWeekStats }) => (
         {gameWeekStats && (
             <td className="cell cell--pair cell--card hide-625">{gameWeekStats.ycard + gameWeekStats.rcard}</td>
         )}
-        {seasonToGameWeek && <td className="cell cell--tb show-625">{seasonToGameWeek.tb}</td>}
-        {gameWeekStats && <td className="cell cell--pair cell--tb show-625">{gameWeekStats.tb}</td>}
         {seasonToGameWeek && <td className="cell cell--pb show-625">{seasonToGameWeek.pb}</td>}
         {gameWeekStats && <td className="cell cell--pair cell--pb show-625">{gameWeekStats.pb}</td>}
+        {seasonToGameWeek && <td className="cell cell--tb show-625">{seasonToGameWeek.tb}</td>}
+        {gameWeekStats && <td className="cell cell--pair cell--tb show-625">{gameWeekStats.tb}</td>}
         {seasonToGameWeek && <td className="cell cell--sb show-625">{seasonToGameWeek.sb}</td>}
         {gameWeekStats && <td className="cell cell--pair cell--sb show-625">{gameWeekStats.sb}</td>}
         {seasonToGameWeek && <td className="cell cell--sb hide-625">{seasonToGameWeek.sb + seasonToGameWeek.tb}</td>}

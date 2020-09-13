@@ -15,17 +15,17 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, d
         <Layout>
             <div data-b-layout="container">
                 <TabbedMenu selected="rankings" division={divisionKey} />
+                <DivisionRankings
+                    label={`${divisionLabel}: League Table`}
+                    divisionId={divisionKey}
+                    divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
+                    stats={leagueStats}
+                    selectedGameWeek={selectedGameWeek}
+                    showGameWeekSwitcher
+                    showChart={false}
+                    showWeekly
+                />
             </div>
-            <DivisionRankings
-                label={`${divisionLabel}: League Table`}
-                divisionId={divisionKey}
-                divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
-                stats={leagueStats}
-                selectedGameWeek={selectedGameWeek}
-                showGameWeekSwitcher
-                showChart={false}
-                showWeekly
-            />
         </Layout>
     );
 };

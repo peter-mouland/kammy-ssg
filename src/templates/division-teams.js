@@ -31,14 +31,13 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
         <Layout>
             <div data-b-layout="container">
                 <TabbedMenu selected="teams" division={divisionKey} />
+                <DivisionTeams
+                    divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
+                    teams={teamsByManager}
+                    previousTeams={previousTeamsByManager}
+                    selectedGameWeek={selectedGameWeek}
+                />
             </div>
-            <DivisionTeams
-                label={`${divisionLabel}: Teams`}
-                divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
-                teams={teamsByManager}
-                previousTeams={previousTeamsByManager}
-                selectedGameWeek={selectedGameWeek}
-            />
         </Layout>
     );
 };
@@ -79,9 +78,9 @@ export const query = graphql`
                                     points
                                     rcard
                                     pb
+                                    tb
                                     sb
                                     subs
-                                    tb
                                     ycard
                                 }
                                 pTcode
