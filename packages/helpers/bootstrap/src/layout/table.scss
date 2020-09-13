@@ -108,9 +108,11 @@
     text-align: right;
     padding: .3em .15em;
 
+    &--points {
+        font-weight: bold;
+    }
     &--pair {
-      color: rgba(0, 0, 0, .75);
-      font-weight: 100;
+      color: #aaa;
       font-size: .75em;
       text-align: left;
     }
