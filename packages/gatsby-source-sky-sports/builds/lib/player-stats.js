@@ -2,8 +2,8 @@ const jsonQuery = require('json-query');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
+const extractFFStats = require('@kammy/helpers.extract-sky-sports-stats');
 
-const extractFFStats = require('./extract-ff-stats');
 const { calculateTotalPoints } = require('./calculate-points');
 const logger = require('../../lib/log');
 

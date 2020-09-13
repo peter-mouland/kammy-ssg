@@ -4,6 +4,7 @@ import { graphql } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
+import useLiveScores from '../hooks/use-live-scores';
 import Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
 
@@ -27,6 +28,7 @@ const visibleStats = [
 ];
 
 const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
+    const { skyScoresByCode } = useLiveScores();
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce(
         (prev, player) => ({

@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const extractStats = require('./extract-ff-stats');
+const extractStats = require('./index');
 
 let ffStats;
 

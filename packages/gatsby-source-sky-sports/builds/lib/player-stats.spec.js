@@ -1,9 +1,9 @@
 /* eslint-env jest */
 /* eslint-disable max-len */
 const Chance = require('chance');
+const extractFFStats = require('@kammy/helpers.extract-sky-sports-stats');
 
 const { getGameWeekFixtures, totalUpStats, playerStats } = require('./player-stats');
-const extractFFStats = require('./extract-ff-stats');
 
 const chance = new Chance();
 const getStats = (count) => new Array(count).fill(chance.integer());

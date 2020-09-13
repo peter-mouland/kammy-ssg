@@ -22,31 +22,35 @@ const DivisionRankingsTable = ({ points, type, handleRowHover, rank }) => (
             </tr>
         </thead>
         <tbody>
-            {points.sort(sortBy(['order', 'managerName'])).map(({ managerName, points: pos }) => (
-                <tr
-                    key={managerName}
-                    className="row"
-                    onMouseEnter={() => handleRowHover(managerName)}
-                    onMouseLeave={() => handleRowHover(managerName)}
-                >
-                    <td className="cell cell--manager">{managerName}</td>
-                    {positions.map((position) => {
-                        const gradient = `gradient_${parseInt(pos[position.key][rank], 10)
-                            .toString()
-                            .replace('.', '-')}`;
-                        return (
-                            <Fragment key={position.key}>
-                                <td className={`cell cell--${position.key} ${gradient}`}>{pos[position.key][rank]}</td>
-                                <td className={`cell cell--pair cell--${position.key} ${gradient}`}>
-                                    {pos[position.key][type]}
-                                </td>
-                            </Fragment>
-                        );
-                    })}
-                    <td className="cell cell--total"> {pos.total[rank]}</td>
-                    <td className="cell cell--pair cell--total">{pos.total[type]}</td>
-                </tr>
-            ))}
+            {points
+                .sort((managerA, managerB) => managerB.points.total[rank] - managerA.points.total[rank])
+                .map(({ managerName, points: pos }) => (
+                    <tr
+                        key={managerName}
+                        className="row"
+                        onMouseEnter={() => handleRowHover(managerName)}
+                        onMouseLeave={() => handleRowHover(managerName)}
+                    >
+                        <td className="cell cell--manager">{managerName}</td>
+                        {positions.map((position) => {
+                            const gradient = `gradient_${parseInt(pos[position.key][rank], 10)
+                                .toString()
+                                .replace('.', '-')}`;
+                            return (
+                                <Fragment key={position.key}>
+                                    <td className={`cell cell--${position.key} ${gradient}`}>
+                                        {pos[position.key][rank]}
+                                    </td>
+                                    <td className={`cell cell--pair cell--${position.key} ${gradient}`}>
+                                        {pos[position.key][type]}
+                                    </td>
+                                </Fragment>
+                            );
+                        })}
+                        <td className="cell cell--total"> {pos.total[rank]}</td>
+                        <td className="cell cell--pair cell--total">{pos.total[type]}</td>
+                    </tr>
+                ))}
         </tbody>
     </table>
 );
