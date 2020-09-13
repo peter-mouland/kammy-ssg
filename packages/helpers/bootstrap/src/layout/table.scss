@@ -11,6 +11,16 @@
         font-size: 1em;
 
     }
+
+  &__sort-link {
+      background: transparent;
+      font-weight: bold;
+      display: flex;
+      align-items: baseline;
+  }
+    &__sort-icon {
+        min-width: 15px
+    }
   &--placeholder {
     &::before {
       content: " ";

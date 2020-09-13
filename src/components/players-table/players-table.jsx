@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
 
-import SortIcon from './sort.svg';
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
 import New from './new.svg';
@@ -16,12 +15,11 @@ const isNotSorted = (sort, id) => !isSortUp(sort, id) && !isSortDown(sort, id);
 
 const SortableHeader = ({ id, label, sort, handleSort, className = '', ...attrs }) => (
     <th className={`cell cell--${id} ${className}`} {...attrs}>
-        <a className={bem('sort-link')} onClick={() => handleSort(id)}>
+        <button className={bem('sort-link')} onClick={() => handleSort(id)} type="submit">
             {isSortUp(sort, id) && <SortUpIcon className={bem('sort-icon', 'selected')} />}
             {isSortDown(sort, id) && <SortDownIcon className={bem('sort-icon', 'selected')} />}
-            {isNotSorted(sort, id) && <SortIcon className={bem('sort-icon')} />}
             <span className={bem('label')}>{label}</span>
-        </a>
+        </button>
     </th>
 );
 
