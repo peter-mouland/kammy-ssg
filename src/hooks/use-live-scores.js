@@ -44,9 +44,17 @@ const useLiveScores = () => {
     const playerByCode = players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {});
     const liveStatsByCode = liveStats.reduce((prev, player) => {
         const stats = extract(player, { isLive: true });
+        const points = calculateTotalPoints({ stats, pos: playerByCode[player[0]].pos });
+        const posStats = Object.keys(stats).reduce(
+            (prevPosStat, stat) => ({
+                ...prevPosStat,
+                [stat]: points[stat] !== 0 ? stats[stat] : 0,
+            }),
+            {},
+        );
         const livePlayerStats = {
-            ...stats,
-            points: calculateTotalPoints({ stats, pos: playerByCode[player[0]].pos }).total,
+            ...posStats,
+            points: points.total,
         };
         return {
             ...prev,
