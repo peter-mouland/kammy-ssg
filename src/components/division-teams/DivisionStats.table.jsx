@@ -64,7 +64,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                                             ? 'row row--warning'
                                             : 'row';
                                     const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
-                                    const livePoints = liveStatsByCode[player.code] || {};
+                                    const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
 
                                     return (
                                         <tr key={playerName} className={`${className} ${warningClassName}`}>
