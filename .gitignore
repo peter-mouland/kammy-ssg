@@ -4,6 +4,7 @@ dist
 coverage
 compiled
 public
+docs
 .DS_Store
 .swp
 .divshot-cache/

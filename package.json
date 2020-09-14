@@ -20,6 +20,7 @@
   "scripts": {
     "--- NETLIFY ---": "",
     "dev": "netlify dev",
+    "deploy": "yarn build:prod && netlify deploy --prod --open --dir ./docs",
     "--- GATSBY ---": "",
     "start": "yarn clean:dist && TZ='Europe/London' gatsby develop",
     "start:static": "cd docs; ws --spa index.html",

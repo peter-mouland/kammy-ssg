@@ -10,6 +10,26 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
  - `FIXTURE=1920 yarn start` : use local fixtures
  - or `yarn dev` (wip: using 'netlify functions')
 
+## Deployment
+
+### Netlify
+
+> yarn deploy
+
+You must have the correct environment variables; for netlify these are
+ - PATH_PREFIX=/
+ - ASSET_PREFIX=https://draftff.netlify.app/
+
+
+### Gatsby
+
+> yarn ???
+
+You must have the correct environment variables; for Gatsby these are
+ - PATH_PREFIX=/kammy-ssg
+ - ASSET_PREFIX=/
+
+
 ## Data Sources
 
  - Fetches data via the [rest v4 API](https://developers.google.com/sheets/api)

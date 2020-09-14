@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // `gatsby build` expects this file to be named .env.production since it always set to process.env=production internally
 // https://github.com/gatsbyjs/gatsby/issues/10563
 require('dotenv').config({
@@ -10,9 +11,16 @@ const config = require('./src/config/config');
 const hostOnRoot = ['true', true].includes(process.env.NODE_ENV === 'development');
 const pathPrefix = hostOnRoot ? '/' : '/kammy-ssg';
 
+console.log('process.env.NODE_ENV');
+console.log(process.env.NODE_ENV);
+console.log('process.env.PATH_PREFIX');
+console.log(process.env.PATH_PREFIX);
+console.log('process.env.ASSET_PREFIX');
+console.log(process.env.ASSET_PREFIX);
+
 module.exports = {
-    pathPrefix,
-    assetPrefix: '/',
+    pathPrefix: process.env.PATH_PREFIX || pathPrefix,
+    assetPrefix: process.env.ASSET_PREFIX || '/',
     siteMetadata: {
         title: 'Draft Fantasy Football',
         siteUrl: 'https://peter-mouland.github.io/kammy-ssg',
