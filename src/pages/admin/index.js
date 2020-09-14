@@ -13,9 +13,15 @@ const NotFoundPage = () => {
     useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
-    const regenerate = () => {
+    const regenerateGatsby = () => {
         setIsLoading(true);
         return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
+            method: 'post',
+        });
+    };
+    const regenerateNetlify = () => {
+        setIsLoading(true);
+        return fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
             method: 'post',
         });
     };
@@ -42,7 +48,7 @@ const NotFoundPage = () => {
                         </Spacer>
                         <Spacer all={{ bottom: Spacer.spacings.LARGE }}>
                             <Button
-                                onClick={regenerate}
+                                onClick={regenerateNetlify}
                                 isDisabled={isLoading}
                                 isLoading={isLoading}
                                 type={Button.types.PRIMARY}
