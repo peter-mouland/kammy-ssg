@@ -44,6 +44,11 @@ const useLiveScores = () => {
     const playerByCode = players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {});
     const liveStatsByCode = liveStats.reduce((prev, player) => {
         const stats = extract(player, { isLive: true });
+        if (!playerByCode[player[0]]) {
+            // eslint-disable-next-line no-console
+            console.error(`player ${player[0]} is not in our list`);
+            return prev;
+        }
         const { pos } = playerByCode[player[0]];
         const points = calculateTotalPoints({ stats, pos });
         // only show stats for those that can score points
