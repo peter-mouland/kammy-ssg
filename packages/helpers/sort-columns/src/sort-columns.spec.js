@@ -108,6 +108,32 @@ describe('field-sorter', () => {
                 { name: { forename: null, surname: null } },
             ]);
         });
+
+        it('bug: shuld respect minus numbers', () => {
+            const arr = [{ rank: 5 }, { rank: -5 }];
+            expect(arr.sort(sortColumns(['-rank']))).toEqual([{ rank: 5 }, { rank: -5 }]);
+        });
+
+        it('bug: shuld respect minus numbers', () => {
+            const arr = [
+                { rank: 5.5 },
+                { rank: 4.5 },
+                { rank: 0 },
+                { rank: -2.5 },
+                { rank: 3.5 },
+                { rank: -4 },
+                { rank: -7 },
+            ];
+            expect(arr.sort(sortColumns(['-rank']))).toEqual([
+                { rank: 5.5 },
+                { rank: 4.5 },
+                { rank: 3.5 },
+                { rank: 0 },
+                { rank: -2.5 },
+                { rank: -4 },
+                { rank: -7 },
+            ]);
+        });
     });
 
     describe('with overrides will order the overridden column with the supplied order', () => {

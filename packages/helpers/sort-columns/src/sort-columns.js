@@ -13,14 +13,21 @@ function sortColumns(fields, orderPreset = {}) {
                 const col = desc ? field.substring(1) : field;
                 const prevColKey = getNestedKey(prevRow, col);
                 const currColKey = getNestedKey(currRow, col);
-                const attrA = orderPreset[col] ? orderPreset[col].indexOf(prevColKey) : prevColKey;
-                const attrB = orderPreset[col] ? orderPreset[col].indexOf(currColKey) : currColKey;
-                const orderPrev = attrA < 0 ? Infinity : attrA;
-                const orderCurr = attrB < 0 ? Infinity : attrB;
-                if (orderPrev > orderCurr) return dir;
-                if (orderPrev === null) return dir;
-                if (orderCurr === null) return -dir;
-                return orderPrev < orderCurr ? -dir : 0;
+                const presetCol = orderPreset[col];
+                const attrA = presetCol ? presetCol.indexOf(prevColKey) : prevColKey;
+                const attrB = presetCol ? presetCol.indexOf(currColKey) : currColKey;
+                const orderPrev = presetCol && attrA < 0 ? Infinity : attrA;
+                const orderCurr = presetCol && attrB < 0 ? Infinity : attrB;
+                if (orderPrev > orderCurr) {
+                    return dir;
+                } else if (orderPrev < orderCurr) {
+                    return -dir;
+                } else if (attrA === null) {
+                    return dir;
+                } else if (attrB === null) {
+                    return -dir;
+                }
+                return 0;
             })
             .reduce((prev, curr) => prev || curr, 0);
 }
