@@ -7,7 +7,7 @@ const inDateRange = ({ start, end }, comparison) => comparison < end && comparis
 
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
-const useTransfers = ({ divisionKey }) => {
+const useTransfers = ({ selectedGameWeek, divisionKey }) => {
     const queryKey = ['transfers', divisionKey];
     const { isLoading, data: transfers = [] } = useQuery(queryKey, fetchr);
 
@@ -18,8 +18,10 @@ const useTransfers = ({ divisionKey }) => {
         },
     });
 
-    const { currentGameWeek } = useGameWeeks();
-    const transfersThisGameWeek = transfers.filter((transfer) => inDateRange(currentGameWeek, transfer.timestamp));
+    const { gameWeeks } = useGameWeeks();
+    const gameWeek = gameWeeks[selectedGameWeek];
+
+    const transfersThisGameWeek = transfers.filter((transfer) => inDateRange(gameWeek, transfer.timestamp));
 
     // if pending is slow, update code to use filter-views
     // premierLeague pending transfers filter view id : fvid=305296590

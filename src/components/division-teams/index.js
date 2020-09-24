@@ -12,7 +12,7 @@ import AdminWarnings from './components/admin-warnings';
 
 const bem = bemHelper({ block: 'division-stats' });
 
-const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) => {
+const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) => {
     const [cookies] = useCookies(['is-admin']);
     const [positionTimelineProps, togglePosTimeline] = useState(null);
     const [playerTimelineProps, togglePlayerTimeline] = useState(false);
@@ -70,18 +70,17 @@ const DivisionStats = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
     );
 };
 
-DivisionStats.propTypes = {
+DivisionTeams.propTypes = {
     selectedGameWeek: PropTypes.number,
-    label: PropTypes.string.isRequired,
     divisionUrl: PropTypes.string.isRequired,
     teams: PropTypes.object,
     previousTeams: PropTypes.object,
 };
 
-DivisionStats.defaultProps = {
+DivisionTeams.defaultProps = {
     selectedGameWeek: 1,
     teams: null,
     previousTeams: null,
 };
 
-export default DivisionStats;
+export default DivisionTeams;

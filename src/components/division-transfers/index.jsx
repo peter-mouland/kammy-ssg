@@ -9,7 +9,7 @@ import useManagers from '../../hooks/use-managers';
 import useTransfers from '../../hooks/use-transfers';
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
-    const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({ divisionKey });
+    const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({ selectedGameWeek, divisionKey });
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
 
