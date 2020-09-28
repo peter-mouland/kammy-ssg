@@ -1,17 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import validateClub from '../lib/validate-club';
-import validatePositions from '../lib/validate-pos';
-import validatePlayer from '../lib/validate-player';
-import validateNewPlayers from '../lib/validate-new-player';
-import Spacer from '../../spacer';
-import Warning from '../../icons/warning.svg';
-import styles from './admin-warnings.module.css';
+import Spacer from '../spacer';
+import Warning from '../icons/warning.svg';
+import validateClub from './lib/validate-club';
+import validatePositions from './lib/validate-pos';
+import validatePlayer from './lib/validate-player';
+import validateNewPlayers from './lib/validate-new-player';
+import styles from './team-warnings.module.css';
 
 const List = ({ children }) => <ul className={styles.list}>{children}</ul>;
 
-const Warnings = ({ teams }) => {
+const Warnings = ({ teams, showOnValid = true }) => {
     const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
     const clubWarnings = validateClub(teams);
@@ -26,12 +25,16 @@ const Warnings = ({ teams }) => {
             <strong>{manager}</strong>: {posWarnings[manager].join(', ')}
         </p>
     ));
-    if (!duplicatePlayers.length && !allClubWarnings.length && !allPosWarnings.length && !newPlayers.length) {
+    const hasWarnings = duplicatePlayers.length || allClubWarnings.length || allPosWarnings.length || newPlayers.length;
+    if (!hasWarnings && !showOnValid) {
+        return null;
+    }
+    if (!hasWarnings) {
         return (
             <p>
                 {/* eslint-disable-next-line react/no-danger */}
                 <span dangerouslySetInnerHTML={{ __html: '&#128170;' }} />{' '}
-                <em style={{ color: 'darkgreen' }}>No admin warnings</em>
+                <em style={{ color: 'darkgreen' }}>No Warnings</em>
             </p>
         );
     }
@@ -39,7 +42,7 @@ const Warnings = ({ teams }) => {
     return (
         <div className={styles.warnings}>
             <h2 className={styles.title}>
-                <Warning width={24} height={24} /> Admin Warnings
+                <Warning width={24} height={24} /> Team Warnings
             </h2>
             {duplicatePlayers.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
@@ -80,7 +83,7 @@ const Warnings = ({ teams }) => {
             {allPosWarnings.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">
-                        Teams with Mismatched players:
+                        Teams with players in the wrong position?
                         <List>
                             {allPosWarnings.map((player) => (
                                 <li key={player}>{player}</li>

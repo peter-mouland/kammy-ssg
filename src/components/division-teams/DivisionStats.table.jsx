@@ -5,10 +5,10 @@ import bemHelper from '@kammy/bem';
 
 import useLiveScores from '../../hooks/use-live-scores';
 import { StatsHeaders, StatsCells } from './components/tableHelpers';
-import validateNewPlayers from './lib/validate-new-player';
-import validatePlayer from './lib/validate-player';
-import validateClub from './lib/validate-club';
-import validatePos from './lib/validate-pos';
+import validateNewPlayers from '../team-warnings/lib/validate-new-player';
+import validatePlayer from '../team-warnings/lib/validate-player';
+import validateClub from '../team-warnings/lib/validate-club';
+import validatePos from '../team-warnings/lib/validate-pos';
 import Spacer from '../spacer';
 import styles from './styles.module.css';
 

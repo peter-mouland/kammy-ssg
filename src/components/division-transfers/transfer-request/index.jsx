@@ -8,13 +8,16 @@ import Drawer from '../../drawer';
 import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
 import Accordion from '../../accordion';
+import Player from '../../player';
 import { changeTypes } from '../lib/consts';
 import Search from './search';
-import Player from '../../player';
+import TransferWarnings from './transfer-warnings';
 import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
 const drawerInitialState = undefined;
+const PLAYER_IN = 'playerIn';
+const PLAYER_OUT = 'playerOut';
 
 const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => {
     const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
@@ -34,7 +37,10 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
     reset();
 };
 
-const getPlayerRequestConfig = ({ playersArray, changeType, manager }) => {
+const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPlayer }) => {
+    const positionFilter = selectedPlayer
+        ? { value: selectedPlayer.pos, label: selectedPlayer.pos, group: 'position' }
+        : null;
     switch (true) {
         case changeType === changeTypes.SWAP: {
             return {
@@ -43,7 +49,7 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager }) => {
                     defaultFilter: [
                         { value: manager, label: `${manager}*`, group: 'manager' },
                         { value: 'isSub', label: 'Sub(s)', group: 'misc' },
-                    ],
+                    ].filter(Boolean),
                     buttonText: 'player leaving SUB',
                     searchText: (
                         <span>
@@ -69,13 +75,17 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager }) => {
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }],
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
+                        Boolean,
+                    ),
                     searchText: <span>You can only drop a player currently in your team (or a pending transfer).</span>,
                     buttonText: 'Player Leaving',
                 },
                 in: {
                     players: playersArray,
-                    defaultFilter: [{ value: 'isNew', label: 'New Players', group: 'misc' }],
+                    defaultFilter: [{ value: 'isNew', label: 'New Players', group: 'misc' }, positionFilter].filter(
+                        Boolean,
+                    ),
                     buttonText: 'Player Arriving',
                     message: <span>Select from the list of new players here.</span>,
                 },
@@ -85,13 +95,15 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager }) => {
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }],
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
+                        Boolean,
+                    ),
                     searchText: null,
                     buttonText: 'Player Leaving',
                 },
                 in: {
                     players: playersArray,
-                    defaultFilter: [],
+                    defaultFilter: [positionFilter].filter(Boolean),
                     searchText: null,
                     buttonText: 'Player Arriving',
                 },
@@ -105,10 +117,11 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     const [drawerContent, setDrawerContent] = useState(drawerInitialState);
     const [changeType, setChangeType] = useState(undefined);
     const [manager, setManager] = useState(undefined);
-    const playerRequestConfig = getPlayerRequestConfig({ playersArray, changeType, manager });
     const [comment, setComment] = useState('');
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
+    const selectedPlayer = drawerContent === PLAYER_IN ? playerOut : playerIn;
+    const playerRequestConfig = getPlayerRequestConfig({ playersArray, changeType, manager, selectedPlayer });
 
     const openSearch = (playerChangeType) => {
         setDrawerContent(playerChangeType);
@@ -171,8 +184,8 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                 placement={Drawer.placements.RIGHT}
                 theme={Drawer.themes.LIGHT}
             >
-                {drawerContent === 'playerIn' && <RequestPlayerIn />}
-                {drawerContent === 'playerOut' && <RequestPlayerOut />}
+                {drawerContent === PLAYER_IN && <RequestPlayerIn />}
+                {drawerContent === PLAYER_OUT && <RequestPlayerOut />}
             </Drawer>
             <Accordion
                 title="Create Request"
@@ -181,7 +194,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
             >
                 <Accordion.Content>
                     <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                        <h4>Who are you?</h4>
+                        <h3>Who are you?</h3>
                     </Spacer>
                     <MultiToggle
                         id="manager"
@@ -194,7 +207,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                 {manager && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <h4>What type of request is it?</h4>
+                            <h3>What type of request is it?</h3>
                         </Spacer>
                         <MultiToggle
                             id="change-type"
@@ -214,29 +227,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                         <Spacer all={{ bottom: Spacer.spacings.TINY }} className={bem('player-cta')}>
                             <Spacer all={{ right: Spacer.spacings.SMALL }}>
                                 <span className={bem('player-cta-button')}>
-                                    <Button onClick={() => openSearch('playerIn')}>
-                                        {playerIn ? 'Change ' : 'Pick '} {playerRequestConfig.in.buttonText}
-                                    </Button>
-                                </span>
-                            </Spacer>
-                            <span className={bem('player-cta-label')}>
-                                {playerIn && (
-                                    <Player
-                                        name={playerIn.name}
-                                        club={playerIn.club}
-                                        pos={playerIn.pos}
-                                        img={playerIn.img}
-                                        teamPos={playerIn.teamPos}
-                                        player={{}}
-                                    />
-                                )}
-                            </span>
-                        </Spacer>
-
-                        <Spacer all={{ bottom: Spacer.spacings.TINY }} className={bem('player-cta')}>
-                            <Spacer all={{ right: Spacer.spacings.SMALL }}>
-                                <span className={bem('player-cta-button')}>
-                                    <Button onClick={() => openSearch('playerOut')}>
+                                    <Button onClick={() => openSearch(PLAYER_OUT)}>
                                         {playerOut ? 'Change ' : 'Pick '} {playerRequestConfig.out.buttonText}
                                     </Button>
                                 </span>
@@ -254,10 +245,44 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                 )}
                             </span>
                         </Spacer>
+
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} className={bem('player-cta')}>
+                            <Spacer all={{ right: Spacer.spacings.SMALL }}>
+                                <span className={bem('player-cta-button')}>
+                                    <Button onClick={() => openSearch(PLAYER_IN)}>
+                                        {playerIn ? 'Change ' : 'Pick '} {playerRequestConfig.in.buttonText}
+                                    </Button>
+                                </span>
+                            </Spacer>
+                            <span className={bem('player-cta-label')}>
+                                {playerIn && (
+                                    <Player
+                                        name={playerIn.name}
+                                        club={playerIn.club}
+                                        pos={playerIn.pos}
+                                        img={playerIn.img}
+                                        teamPos={playerIn.teamPos}
+                                        player={{}}
+                                    />
+                                )}
+                            </span>
+                        </Spacer>
+                        {playerIn && playerOut && (
+                            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                                <TransferWarnings
+                                    teams={teamsByManager}
+                                    manager={manager}
+                                    playerIn={playerIn}
+                                    playerOut={playerOut}
+                                    transfers={transfers}
+                                    changeType={changeType}
+                                />
+                            </Spacer>
+                        )}
                     </Accordion.Content>
                 )}
 
-                {playerIn && (
+                {playerIn && playerOut && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>Any Comments for the banter box?</h3>
@@ -270,40 +295,36 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                         </Spacer>
                     </Accordion.Content>
                 )}
-                {playerIn && (
-                    <React.Fragment>
-                        <Accordion.Content>
-                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                                <h3>Request</h3>
-                            </Spacer>
-                            <Button
-                                onClick={() => {
-                                    confirmTransfer({
-                                        transfers: [
-                                            {
-                                                manager,
-                                                timestamp: new Date(),
-                                                status: 'tbc',
-                                                type: changeType,
-                                                playerIn,
-                                                playerOut,
-                                                transferIn: playerIn ? playerIn.value : '',
-                                                transferOut: playerOut ? playerOut.value : '',
-                                                comment,
-                                            },
-                                        ],
-                                        division: divisionKey,
-                                        saveTransfer,
-                                        reset,
-                                    });
-                                }}
-                                state="buttonState"
-                                isLoading={isLoading}
-                            >
-                                Submit Request
-                            </Button>
-                        </Accordion.Content>
-                    </React.Fragment>
+
+                {playerIn && playerOut && (
+                    <Accordion.Content>
+                        <Button
+                            onClick={() => {
+                                confirmTransfer({
+                                    transfers: [
+                                        {
+                                            manager,
+                                            timestamp: new Date(),
+                                            status: 'tbc',
+                                            type: changeType,
+                                            playerIn,
+                                            playerOut,
+                                            transferIn: playerIn ? playerIn.value : '',
+                                            transferOut: playerOut ? playerOut.value : '',
+                                            comment,
+                                        },
+                                    ],
+                                    division: divisionKey,
+                                    saveTransfer,
+                                    reset,
+                                });
+                            }}
+                            state="buttonState"
+                            isLoading={isLoading}
+                        >
+                            Submit Request
+                        </Button>
+                    </Accordion.Content>
                 )}
             </Accordion>
         </div>

@@ -8,7 +8,7 @@ import Modal from '../modal';
 import Table from './DivisionStats.table';
 import PositionTimeline from './components/PositionTimeline.table';
 import PlayerTimeline from './components/PlayerTimeline.table';
-import AdminWarnings from './components/admin-warnings';
+import TeamWarnings from '../team-warnings';
 
 const bem = bemHelper({ block: 'division-stats' });
 
@@ -24,7 +24,7 @@ const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
                 <GameWeekSwitcher url={`/${divisionUrl}/teams`} selectedGameWeek={selectedGameWeek} />
             </div>
 
-            {isAdmin && <AdminWarnings teams={teams} />}
+            {isAdmin && <TeamWarnings teams={teams} />}
 
             <div data-b-layout="vpad">
                 <div className={bem(null, null, 'page-content')} data-b-layout="row vpad">

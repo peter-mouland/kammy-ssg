@@ -20,7 +20,7 @@ const Player = ({ pos, player, teamPos, img, name, club }) => (
             title={`Show ${teamPos} timeline`}
             className={styles.playerPosition}
         >
-            {pos === teamPos ? (
+            {pos === teamPos || !teamPos ? (
                 <div>{pos}</div>
             ) : (
                 <div>
