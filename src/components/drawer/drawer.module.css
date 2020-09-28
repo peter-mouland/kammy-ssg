@@ -5,6 +5,7 @@
     box-shadow: var(--rnb-shadow-mountain);
     visibility: hidden;
     overflow-y: auto;
+    width: 400px;
 
     &.isThemeLIGHT {
          background-color: var(--rnb-colour-white);
@@ -104,5 +105,6 @@
 .drawerContent {
     /*height: 100%;*/
     position: relative;
+    width: 400px;
     z-index: 0;
 }

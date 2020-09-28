@@ -1,0 +1,61 @@
+import React from 'react';
+
+import styles from '../division-teams/styles.module.css';
+
+const onShowPositionTimeline = () => {};
+const onShowPlayerTimeline = () => {};
+
+const Player = ({ pos, player, teamPos, img, name, club }) => (
+    <div className={styles.player}>
+        <a
+            href="#"
+            onClick={(e) => {
+                e.preventDefault();
+                onShowPositionTimeline({
+                    position: pos,
+                    gameWeeks: player.gameWeeks,
+                    season: player.seasonStats,
+                });
+            }}
+            title={`Show ${teamPos} timeline`}
+            className={styles.playerPosition}
+        >
+            {pos === teamPos ? (
+                <div>{pos}</div>
+            ) : (
+                <div>
+                    {teamPos}
+                    <div>
+                        <small> ({pos.toLowerCase()})</small>
+                    </div>
+                </div>
+            )}
+        </a>
+        <div className={styles.playerImage}>
+            <img src={img} loading="lazy" alt="" />
+        </div>
+        <div className={styles.playerName}>
+            <a
+                href="#"
+                onClick={(e) => {
+                    e.preventDefault();
+                    onShowPlayerTimeline({ player });
+                }}
+                title={`Show ${teamPos} timeline`}
+            >
+                <p>
+                    <span className="show-625">{name}</span>
+                    <span className="hide-625">{name.split(',')[0]}</span>
+                </p>
+            </a>
+            <div className={styles.playerClub}>
+                <span className="show-550">{club}</span>
+                <span className="hide-550">
+                    {club.split(' ')[0]} {(club.split(' ')[1] || '').charAt(0)}
+                </span>
+            </div>
+        </div>
+    </div>
+);
+
+export default Player;

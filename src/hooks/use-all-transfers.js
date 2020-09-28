@@ -37,10 +37,18 @@ const useAllTransfers = () => {
         transfersThisGameWeek.filter(({ manager }) => manager === managerName);
     const getPendingTransfersByManager = (managerName) =>
         pendingTransfers.filter(({ manager }) => manager === managerName);
+    const pendingTransfersByManager = pendingTransfers.reduce(
+        (prev, curr) => ({
+            ...prev,
+            [curr.manager]: curr,
+        }),
+        {},
+    );
     return {
         isLoading,
         transfers,
         pendingTransfers,
+        pendingTransfersByManager,
         transfersThisGameWeek,
         getTransfersThisGameWeekByManager,
         getPendingTransfersByManager,

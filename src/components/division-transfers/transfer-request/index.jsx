@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
 import bemHelper from '@kammy/bem';
 
-import useAllTransfers from '../../../hooks/use-all-transfers';
 import usePlayers from '../../../hooks/use-players';
 import Spacer from '../../spacer';
 import Drawer from '../../drawer';
@@ -11,11 +9,12 @@ import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
 import Accordion from '../../accordion';
 import { changeTypes } from '../lib/consts';
-import createFilteredPlayers from '../lib/create-filtered-players';
-import Players from './components/Players';
+import Search from './search';
+import Player from '../../player';
 import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
+const drawerInitialState = undefined;
 
 const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => {
     const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
@@ -35,113 +34,99 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
     reset();
 };
 
-const createFilterOptions = ({ managers = [], manager, changeType }) => {
-    const positions = [
-        { value: 'GK', label: 'GK', group: 'position' },
-        { value: 'CB', label: 'CB', group: 'position' },
-        { value: 'FB', label: 'FB', group: 'position' },
-        { value: 'MID', label: 'MID', group: 'position' },
-        { value: 'AM', label: 'AM', group: 'position' },
-        { value: 'STR', label: 'STR', group: 'position' },
-    ];
-    const filters = [
-        {
-            label: 'Positions',
-            options: positions,
-        },
-    ];
-
-    if (changeType === changeTypes.SWAP) {
-        // if it's a swap, you can filter by position
-        return filters;
+const getPlayerRequestConfig = ({ playersArray, changeType, manager }) => {
+    switch (true) {
+        case changeType === changeTypes.SWAP: {
+            return {
+                out: {
+                    players: playersArray,
+                    defaultFilter: [
+                        { value: manager, label: `${manager}*`, group: 'manager' },
+                        { value: 'isSub', label: 'Sub(s)', group: 'misc' },
+                    ],
+                    buttonText: 'player leaving SUB',
+                    searchText: (
+                        <span>
+                            You can only swap out your current SUB or a player replacing him as part of a pending
+                            transfer.
+                        </span>
+                    ),
+                },
+                in: {
+                    players: playersArray,
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }],
+                    buttonText: 'your SUB',
+                    searchText: (
+                        <span>
+                            Players moving into your SUB position must either be in your team (excluding your current
+                            SUB) or part of a pending transfer.
+                        </span>
+                    ),
+                },
+            };
+        }
+        case changeType === changeTypes.NEW_PLAYER: {
+            return {
+                out: {
+                    players: playersArray,
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }],
+                    searchText: <span>You can only drop a player currently in your team (or a pending transfer).</span>,
+                    buttonText: 'Player Leaving',
+                },
+                in: {
+                    players: playersArray,
+                    defaultFilter: [{ value: 'isNew', label: 'New Players', group: 'misc' }],
+                    buttonText: 'Player Arriving',
+                    message: <span>Select from the list of new players here.</span>,
+                },
+            };
+        }
+        default: {
+            return {
+                out: {
+                    players: playersArray,
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }],
+                    searchText: null,
+                    buttonText: 'Player Leaving',
+                },
+                in: {
+                    players: playersArray,
+                    defaultFilter: [],
+                    searchText: null,
+                    buttonText: 'Player Arriving',
+                },
+            };
+        }
     }
-
-    filters.unshift({
-        label: 'Managers',
-        options: [
-            { value: 'available', label: 'No manager (free agents)', group: 'manager' },
-            ...managers.map((mngr) => ({
-                value: mngr,
-                label: `${mngr}${mngr === manager ? '*' : ''}`,
-                group: 'manager',
-            })),
-        ],
-    });
-
-    return filters;
 };
 
-const Search = ({ filterOptions, onSelect, onFilter, playersArray, playerFilter, filteredPlayers }) => (
-    <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.SMALL }}>
-        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-            <h3>Search:</h3>
-        </Spacer>
-        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-            <div style={{ position: 'relative', zIndex: '2' }}>
-                <Select
-                    value={playerFilter}
-                    placeholder="player filter..."
-                    options={filterOptions}
-                    isMulti
-                    name="playersFiltersOut"
-                    onChange={onFilter}
-                />
-            </div>
-        </Spacer>
-        <div style={{ position: 'relative', zIndex: '1' }}>
-            {playersArray.length > 0 && <Players onSelect={onSelect} playersArray={filteredPlayers.sortedPlayers} />}
-        </div>
-    </Spacer>
-);
-
-const getMangersPlayers = ({ pendingTeam, team, playersArray }) => {
-    const pendingTransfersOut = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferOut]: player }), {});
-    const pendingTransfersIn = pendingTeam.reduce((prev, player) => ({ ...prev, [player.transferIn]: player }), {});
-    // only show the managers team
-    const teamPlayers = team.map(({ player }) => player);
-
-    const pendingPlayers = playersArray.filter(({ name }) => !!pendingTransfersIn[name]);
-    return teamPlayers.concat(pendingPlayers).map((player) => ({
-        ...player,
-        isPendingTransferIn: !!pendingTransfersIn[player.name],
-        isPendingTransferOut: !!pendingTransfersOut[player.name],
-    }));
-};
-
-const useValidPlayers = ({ teamsByManager, isExitingPlayer, playersArray, changeType, manager }) => {
-    const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
-    const pendingTeam = getPendingTransfersByManager(manager) || [];
-    const team = teamsByManager[manager] || [];
-
-    if (changeType === changeTypes.SWAP || isExitingPlayer) {
-        return getMangersPlayers({ team, pendingTeam, playersArray });
-    }
-
-    return playersArray;
-};
-
-const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveTransfer }) => {
+const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveTransfer, transfers }) => {
     const { players: playersArray } = usePlayers();
-    const [drawerContent, setDrawerContent] = useState(undefined);
-    const [initiateRequest, setInitiateRequest] = useState(false);
-    const [comment, setComment] = useState('');
-    const [manager, setManager] = useState(undefined);
+    const [drawerContent, setDrawerContent] = useState(drawerInitialState);
     const [changeType, setChangeType] = useState(undefined);
+    const [manager, setManager] = useState(undefined);
+    const playerRequestConfig = getPlayerRequestConfig({ playersArray, changeType, manager });
+    const [comment, setComment] = useState('');
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
-    const [playerFilter, setPlayerFilter] = useState(undefined);
 
-    const isExitingPlayer = drawerContent === 'playerOut';
-    const filterOptions = createFilterOptions({ managers, manager, changeType });
-    const validPlayers = useValidPlayers({ teamsByManager, isExitingPlayer, playersArray, changeType, manager });
+    const openSearch = (playerChangeType) => {
+        setDrawerContent(playerChangeType);
+    };
 
     const setPlayerOutAndClose = (player) => {
-        setDrawerContent(undefined);
+        setDrawerContent(drawerInitialState);
         setPlayerOut(player);
     };
     const setPlayerInAndClose = (player) => {
-        setDrawerContent(undefined);
+        setDrawerContent(drawerInitialState);
         setPlayerIn(player);
+    };
+
+    const changeRequestType = (type) => {
+        setPlayerIn(undefined);
+        setPlayerOut(undefined);
+        setChangeType(type);
     };
 
     const reset = () => {
@@ -149,36 +134,30 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
         setChangeType(undefined);
         setPlayerIn(undefined);
         setPlayerOut(undefined);
-        setPlayerFilter(undefined);
-        setInitiateRequest(undefined);
     };
 
-    const filteredPlayers = createFilteredPlayers({
-        selectedOptions: playerFilter || [],
-        // pendingTransfers: pendingTransfers[manager], // todo
-        playersArray: validPlayers,
-        team: teamsByManager[manager],
-        teams: teamsByManager,
-        playerIn,
-        playerOut,
-    });
     const RequestPlayerOut = () => (
         <Search
-            filteredPlayers={filteredPlayers}
-            playerFilter={playerFilter}
-            filterOptions={filterOptions}
-            playersArray={validPlayers}
-            onFilter={setPlayerFilter}
+            managers={managers}
+            manager={manager}
+            teams={teamsByManager}
+            defaultFilter={playerRequestConfig.out.defaultFilter}
+            playersArray={playerRequestConfig.out.players}
+            searchText={playerRequestConfig.out.searchText}
             onSelect={setPlayerOutAndClose}
+            transfers={transfers}
         />
     );
     const RequestPlayerIn = () => (
         <Search
-            filteredPlayers={filteredPlayers}
-            filterOptions={filterOptions}
-            playersArray={validPlayers}
-            onFilter={setPlayerFilter}
+            managers={managers}
+            manager={manager}
+            teams={teamsByManager}
+            defaultFilter={playerRequestConfig.in.defaultFilter}
+            playersArray={playerRequestConfig.in.players}
+            searchText={playerRequestConfig.in.searchText}
             onSelect={setPlayerInAndClose}
+            transfers={transfers}
         />
     );
 
@@ -187,7 +166,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
             <Drawer
                 isCloseable
                 hasBackdrop
-                onClose={() => setDrawerContent(undefined)}
+                onClose={() => setDrawerContent(drawerInitialState)}
                 isOpen={!!drawerContent}
                 placement={Drawer.placements.RIGHT}
                 theme={Drawer.themes.LIGHT}
@@ -202,7 +181,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
             >
                 <Accordion.Content>
                     <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                        <h4>1. Who are you?</h4>
+                        <h4>Who are you?</h4>
                     </Spacer>
                     <MultiToggle
                         id="manager"
@@ -215,42 +194,66 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                 {manager && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <h4>2. What type of request is it?</h4>
+                            <h4>What type of request is it?</h4>
                         </Spacer>
                         <MultiToggle
                             id="change-type"
                             options={Object.values(changeTypes)}
                             checked={changeType}
-                            onChange={setChangeType}
+                            onChange={changeRequestType}
                         />
                     </Accordion.Content>
                 )}
 
                 {changeType && (
                     <Accordion.Content>
-                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <h3>3. Who is Leaving the squad?</h3>
+                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                            <h3>How is your squad changing?</h3>
                         </Spacer>
-                        {playerOut && (
-                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                                <div>{playerOut.label}</div>
-                            </Spacer>
-                        )}
-                        <Button onClick={() => setDrawerContent('playerOut')}>{playerOut ? 'Change' : 'Pick'}</Button>
-                    </Accordion.Content>
-                )}
 
-                {playerOut && (
-                    <Accordion.Content>
-                        <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                            <h3>4. Who is Joining the squad?</h3>
-                        </Spacer>
-                        {playerIn && (
-                            <Spacer all={{ bottom: Spacer.spacings.TINY }}>
-                                <div>{playerIn.label}</div>
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} className={bem('player-cta')}>
+                            <Spacer all={{ right: Spacer.spacings.SMALL }}>
+                                <span className={bem('player-cta-button')}>
+                                    <Button onClick={() => openSearch('playerIn')}>
+                                        {playerIn ? 'Change ' : 'Pick '} {playerRequestConfig.in.buttonText}
+                                    </Button>
+                                </span>
                             </Spacer>
-                        )}
-                        <Button onClick={() => setDrawerContent('playerIn')}>{playerIn ? 'Change' : 'Pick'}</Button>
+                            <span className={bem('player-cta-label')}>
+                                {playerIn && (
+                                    <Player
+                                        name={playerIn.name}
+                                        club={playerIn.club}
+                                        pos={playerIn.pos}
+                                        img={playerIn.img}
+                                        teamPos={playerIn.teamPos}
+                                        player={{}}
+                                    />
+                                )}
+                            </span>
+                        </Spacer>
+
+                        <Spacer all={{ bottom: Spacer.spacings.TINY }} className={bem('player-cta')}>
+                            <Spacer all={{ right: Spacer.spacings.SMALL }}>
+                                <span className={bem('player-cta-button')}>
+                                    <Button onClick={() => openSearch('playerOut')}>
+                                        {playerOut ? 'Change ' : 'Pick '} {playerRequestConfig.out.buttonText}
+                                    </Button>
+                                </span>
+                            </Spacer>
+                            <span className={bem('player-cta-label')}>
+                                {playerOut && (
+                                    <Player
+                                        name={playerOut.name}
+                                        club={playerOut.club}
+                                        pos={playerOut.pos}
+                                        img={playerOut.img}
+                                        teamPos={playerOut.teamPos}
+                                        player={{}}
+                                    />
+                                )}
+                            </span>
+                        </Spacer>
                     </Accordion.Content>
                 )}
 
@@ -310,13 +313,11 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
 TransfersPage.propTypes = {
     divisionKey: PropTypes.string.isRequired,
     teamsByManager: PropTypes.object,
-    pendingTransfers: PropTypes.object,
     isLoading: PropTypes.bool,
 };
 
 TransfersPage.defaultProps = {
     isLoading: false,
-    pendingTransfers: {},
     teamsByManager: {},
 };
 
