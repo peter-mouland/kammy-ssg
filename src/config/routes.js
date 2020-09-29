@@ -99,7 +99,7 @@ module.exports = [
     },
     {
         name: 'premierLeague-rankings',
-        exact: false,
+        exact: true,
         path: '/premier-league',
         meta: {
             title: 'Draft - Premier League Rankings',
@@ -117,7 +117,7 @@ module.exports = [
     {
         name: 'premierLeague-players',
         exact: true,
-        path: '/premier-league/players/',
+        path: '/premier-league/players',
         meta: {
             title: 'Draft Admin - premier-league Players',
             description: 'Draft : Fantasy Football',
@@ -134,7 +134,7 @@ module.exports = [
     {
         name: 'premierLeague-transfers',
         exact: true,
-        path: '/premier-league/transfers/',
+        path: '/premier-league/transfers',
         meta: {
             title: 'Draft premier-league - Transfers',
             description: 'Draft : Fantasy Football',
@@ -151,7 +151,7 @@ module.exports = [
     {
         name: 'premierLeague-draft',
         exact: true,
-        path: '/premier-league/draft/',
+        path: '/premier-league/draft',
         meta: {
             title: 'Draft premier-league - Draft',
             description: 'Draft : Fantasy Football',
@@ -202,7 +202,7 @@ module.exports = [
     {
         name: 'championship-players',
         exact: true,
-        path: '/championship/players/',
+        path: '/championship/players',
         meta: {
             title: 'Draft Admin - championship Players',
             description: 'Draft : Fantasy Football',
@@ -219,7 +219,7 @@ module.exports = [
     {
         name: 'championship-transfers',
         exact: true,
-        path: '/championship/transfers/',
+        path: '/championship/transfers',
         meta: {
             title: 'Draft Championship - Transfers',
             description: 'Draft : Fantasy Football',
@@ -236,7 +236,7 @@ module.exports = [
     {
         name: 'championship-draft',
         exact: true,
-        path: '/championship/draft/',
+        path: '/championship/draft',
         meta: {
             title: 'Draft championship - Draft',
             description: 'Draft : Fantasy Football',
@@ -288,7 +288,7 @@ module.exports = [
     {
         name: 'leagueOne-players',
         exact: true,
-        path: '/league-one/players/',
+        path: '/league-one/players',
         meta: {
             title: 'Draft Admin - league-one Players',
             description: 'Draft : Fantasy Football',
@@ -305,7 +305,7 @@ module.exports = [
     {
         name: 'leagueOne-transfers',
         exact: true,
-        path: '/league-one/transfers/',
+        path: '/league-one/transfers',
         meta: {
             title: 'Draft League One - Transfers',
             description: 'Draft : Fantasy Football',
@@ -322,7 +322,7 @@ module.exports = [
     {
         name: 'leagueOne-draft',
         exact: true,
-        path: '/league-one/draft/',
+        path: '/league-one/draft',
         meta: {
             title: 'Draft league-one - Draft',
             description: 'Draft : Fantasy Football',
@@ -374,7 +374,7 @@ module.exports = [
     {
         name: 'leagueTwo-players',
         exact: true,
-        path: '/league-two/players/',
+        path: '/league-two/players',
         meta: {
             title: 'Draft Admin - league-two Players',
             description: 'Draft : Fantasy Football',
@@ -391,7 +391,7 @@ module.exports = [
     {
         name: 'leagueTwo-transfers',
         exact: true,
-        path: '/league-two/transfers/',
+        path: '/league-two/transfers',
         meta: {
             title: 'Draft League Two - Transfers',
             description: 'Draft : Fantasy Football',
@@ -408,7 +408,7 @@ module.exports = [
     {
         name: 'leagueTwo-draft',
         exact: true,
-        path: '/league-two/draft/',
+        path: '/league-two/draft',
         meta: {
             title: 'Draft league-two - Draft',
             description: 'Draft : Fantasy Football',
@@ -426,7 +426,7 @@ module.exports = [
     {
         name: 'admin-players',
         exact: true,
-        path: '/admin/players/',
+        path: '/admin/players',
         meta: {
             title: 'Draft Admin - Admin Players',
             description: 'Draft : Fantasy Football',
@@ -439,7 +439,7 @@ module.exports = [
     {
         name: 'admin',
         exact: true,
-        path: '/admin/',
+        path: '/admin',
         meta: {
             title: 'Draft Admin - Admin Homepage',
             description: 'Draft : Fantasy Football',
@@ -452,7 +452,7 @@ module.exports = [
     {
         name: 'admin-cup',
         exact: true,
-        path: '/admin/cup/',
+        path: '/admin/cup',
         meta: {
             title: 'Draft Admin - Admin Cup',
             description: 'Draft : Fantasy Football',
