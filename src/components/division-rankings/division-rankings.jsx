@@ -36,7 +36,7 @@ class DivisionRankings extends React.Component {
             <section id="division-ranking-page" className={bem(null, null, 'page-content')}>
                 {showGameWeekSwitcher && (
                     <div style={{ position: 'relative', zIndex: 2 }}>
-                        <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/rankings`} />
+                        <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}`} />
                     </div>
                 )}
                 {

@@ -185,7 +185,7 @@ module.exports = [
     {
         name: 'championship-rankings',
         exact: true,
-        path: '/championship/rankings',
+        path: '/championship',
         meta: {
             title: 'Draft - Championship Rankings',
             description: 'Draft : Fantasy Football',
@@ -271,7 +271,7 @@ module.exports = [
     {
         name: 'leagueOne-rankings',
         exact: true,
-        path: '/league-one/rankings',
+        path: '/league-one',
         meta: {
             title: 'Draft - League One Rankings',
             description: 'Draft : Fantasy Football',
@@ -357,7 +357,7 @@ module.exports = [
     {
         name: 'leagueTwo-rankings',
         exact: true,
-        path: '/league-two/rankings',
+        path: '/league-two',
         meta: {
             title: 'Draft - League Two Rankings',
             description: 'Draft : Fantasy Football',
