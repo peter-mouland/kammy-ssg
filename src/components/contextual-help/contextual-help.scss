@@ -9,6 +9,7 @@
   &__box {
     position: absolute;
     transition: opacity ease-in-out 250ms 250ms;
+    top: 0;
     width: 0;
     opacity: 0;
     z-index: -1;

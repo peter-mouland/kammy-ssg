@@ -7,8 +7,10 @@ import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 import useManagers from '../../hooks/use-managers';
 import useTransfers from '../../hooks/use-transfers';
+import useGameWeeks from "../../hooks/use-game-weeks";
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
+    const { currentGameWeek } = useGameWeeks();
     const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({
         selectedGameWeek,
         divisionKey,
@@ -26,16 +28,18 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <TransfersTable isLoading={isLoading} transfers={transfersThisGameWeek} />
             </Spacer>
-            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <TransferRequest
-                    divisionKey={divisionKey}
-                    teamsByManager={teamsByManager}
-                    isLoading={isSaving}
-                    saveTransfer={saveTransfer}
-                    transfers={transfersThisGameWeek}
-                    managers={managers}
-                />
-            </Spacer>
+            {selectedGameWeek === currentGameWeek.gameWeek && (
+                <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                    <TransferRequest
+                        divisionKey={divisionKey}
+                        teamsByManager={teamsByManager}
+                        isLoading={isSaving}
+                        saveTransfer={saveTransfer}
+                        transfers={transfersThisGameWeek}
+                        managers={managers}
+                    />
+                </Spacer>
+            )}
         </div>
     );
 };

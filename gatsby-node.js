@@ -152,8 +152,8 @@ exports.createPages = async ({ actions, graphql }) => {
             const url = label.replace(/ /g, '-').toLowerCase();
             //   DIVISION RANKINGS (by game-week)
             actions.createPage({
-                path: `/week-${gameWeek}/${url}/rankings`,
-                matchPath: `/week-${gameWeek}/${url}/rankings/`, // otherwise gatsby will redirect on refresh
+                path: `/week-${gameWeek}/${url}`,
+                matchPath: `/week-${gameWeek}/${url}/`, // otherwise gatsby will redirect on refresh
                 component: path.resolve('src/templates/division-rankings.js'),
                 context: {
                     gameWeek,
@@ -225,8 +225,8 @@ exports.createPages = async ({ actions, graphql }) => {
                 const url = label.replace(/ /g, '-').toLowerCase();
                 //   DIVISION RANKINGS
                 actions.createPage({
-                    path: `/${url}/rankings`,
-                    matchPath: `/${url}/rankings/`, // otherwise gatsby will redirect on refresh
+                    path: `/${url}`,
+                    matchPath: `/${url}/`, // otherwise gatsby will redirect on refresh
                     component: path.resolve('src/templates/division-rankings.js'),
                     context: {
                         gameWeek,

@@ -4,20 +4,30 @@
   display: flex;
   position: relative;
   z-index: 3;
+  color: grey;
 
     &__option-label {
         margin: 2px 4px;
+        border: 1px solid lightgrey;
+        border-radius: 5px;
+        padding: 2px 4px;
+        color: grey;
+
+        &:hover {
+            border-color: #4b620a;
+        }
+
+        &--isCurrent {
+            color: #4b620a;
+            border:1px solid #4b620a;
+            border-radius: 5px;
+            padding: 2px 4px;
+        }
 
         &--isSelected {
             border:1px solid transparent;
             background: #4b620a;
             color: white;
-            border-radius: 5px;
-            padding: 2px 4px;
-        }
-
-        &--isCurrent {
-            border:1px solid #4b620a;
             border-radius: 5px;
             padding: 2px 4px;
         }

@@ -99,8 +99,8 @@ module.exports = [
     },
     {
         name: 'premierLeague-rankings',
-        exact: true,
-        path: '/premier-league/rankings',
+        exact: false,
+        path: '/premier-league',
         meta: {
             title: 'Draft - Premier League Rankings',
             description: 'Draft : Fantasy Football',
