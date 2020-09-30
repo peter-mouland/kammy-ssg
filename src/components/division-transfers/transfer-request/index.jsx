@@ -10,8 +10,8 @@ import Button from '../../button';
 import Accordion from '../../accordion';
 import Player from '../../player';
 import { changeTypes } from '../lib/consts';
+import TransferWarnings from '../transfer-warnings';
 import Search from './search';
-import TransferWarnings from './transfer-warnings';
 import './transferPage.scss';
 
 const bem = bemHelper({ block: 'transfers-page' });
