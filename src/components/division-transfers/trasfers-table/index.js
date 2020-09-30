@@ -12,10 +12,8 @@ import getTransferWarnings from '../lib/get-transfer-warnings';
 import usePlayers from '../../../hooks/use-players';
 import Warning from '../../icons/warning.svg';
 
-const TransferBody = ({ transfers, teamsByManager: teams }) => {
+const TransferBody = ({ transfers, teamsByManager: teams, showWarnings }) => {
     const { players } = usePlayers();
-    const [cookies] = useCookies(['is-admin']);
-    const isAdmin = cookies['is-admin'] === 'true' || false;
     if (transfers.length < 1) return null;
     const playersByName = players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {});
     return (
@@ -23,7 +21,7 @@ const TransferBody = ({ transfers, teamsByManager: teams }) => {
             {transfers.map(({ timestamp, status = '', type, manager, transferIn, transferOut, comment }, index) => {
                 const playerIn = playersByName[transferIn];
                 const playerOut = playersByName[transferOut];
-                const warnings = isAdmin
+                const warnings = showWarnings
                     ? getTransferWarnings({
                           transfers: index === 0 ? [] : transfers.slice(0, index),
                           manager,
@@ -46,7 +44,7 @@ const TransferBody = ({ transfers, teamsByManager: teams }) => {
                 return (
                     <React.Fragment key={timestamp}>
                         <tr className={`row row--${status.toLowerCase()} ${warningClass}`} key={timestamp}>
-                            {isAdmin && (
+                            {showWarnings && (
                                 <td data-col-label="warnings" className="cell cell--warnings cell--center">
                                     {warningEl}
                                 </td>
@@ -96,19 +94,19 @@ const TransferBody = ({ transfers, teamsByManager: teams }) => {
 TransferBody.propTypes = {
     transfers: PropTypes.array.isRequired,
     teamsByManager: PropTypes.object,
+    showWarnings: PropTypes.bool,
 };
 TransferBody.defaultProps = {
     teamsByManager: {},
+    showWarnings: false,
 };
 
-const GameWeekTransfers = ({ transfers, isLoading, teamsByManager }) => {
-    const [cookies] = useCookies(['is-admin']);
-    const isAdmin = cookies['is-admin'] === 'true' || false;
+const GameWeekTransfers = ({ transfers, isLoading, teamsByManager, showWarnings }) => {
     return (
         <table className="table">
             <thead>
                 <tr className="row">
-                    {isAdmin && <th className="cell">warning</th>}
+                    {showWarnings && <th className="cell">warning</th>}
                     <th className="cell show-750">Status</th>
                     <th className="cell show-625">Date</th>
                     <th className="cell">Type</th>
@@ -120,7 +118,7 @@ const GameWeekTransfers = ({ transfers, isLoading, teamsByManager }) => {
                     </th>
                 </tr>
             </thead>
-            <TransferBody transfers={transfers} teamsByManager={teamsByManager} />
+            <TransferBody transfers={transfers} teamsByManager={teamsByManager} showWarnings={showWarnings} />
             {transfers.length === 0 && !isLoading && (
                 <tbody>
                     <tr className="row">
@@ -140,12 +138,14 @@ const GameWeekTransfers = ({ transfers, isLoading, teamsByManager }) => {
 };
 
 GameWeekTransfers.propTypes = {
+    showWarnings: PropTypes.bool,
     isLoading: PropTypes.bool,
     transfers: PropTypes.array,
     teamsByManager: PropTypes.object,
 };
 
 GameWeekTransfers.defaultProps = {
+    showWarnings: false,
     isLoading: false,
     transfers: [],
     teamsByManager: {},

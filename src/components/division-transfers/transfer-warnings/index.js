@@ -7,6 +7,11 @@ import getTransferWarnings from '../lib/get-transfer-warnings';
 import styles from './tarnsfer-warnings.module.css';
 
 const TransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, transfers }) => {
+    // todo: move warnings into transfer hook,
+    // assign warning 'types'
+    // check transfer for existing warnings,
+    // if no warnings assume it's valid, take it into account for the following transfers
+    // if warnings assume it's invalid, and ignore it for the following transfers
     const warnings = getTransferWarnings({ playerIn, playerOut, teams, manager, changeType, transfers });
     if (!warnings.length) return null;
 

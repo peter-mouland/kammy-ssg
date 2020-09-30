@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useCookies } from "react-cookie";
 
 import Spacer from '../spacer';
 import GameWeekSwitcher from '../gameweek-switcher';
@@ -10,6 +11,7 @@ import useTransfers from '../../hooks/use-transfers';
 import useGameWeeks from '../../hooks/use-game-weeks';
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
+    const [cookies] = useCookies(['is-admin']);
     const { currentGameWeek } = useGameWeeks();
     const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({
         selectedGameWeek,
@@ -17,6 +19,8 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
     });
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
+    const isCurrentGameWeek = selectedGameWeek === currentGameWeek.gameWeek;
+    const showWarnings = (isCurrentGameWeek && cookies['is-admin'] === 'true');
 
     return (
         <div>
@@ -30,9 +34,10 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                     isLoading={isLoading}
                     transfers={transfersThisGameWeek}
                     teamsByManager={teamsByManager}
+                    showWarnings={showWarnings}
                 />
             </Spacer>
-            {selectedGameWeek === currentGameWeek.gameWeek && (
+            {isCurrentGameWeek && (
                 <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                     <TransferRequest
                         divisionKey={divisionKey}
