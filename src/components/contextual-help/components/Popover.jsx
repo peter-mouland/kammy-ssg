@@ -6,12 +6,16 @@ import './popover.scss';
 
 const bem = BemHelper({ block: 'popover' });
 
-const Popover = ({ header, body, hasShadow }) => (
-    <div className={bem(null, { shadow: hasShadow })}>
-        {header ? <div className={bem('header')}>{header}</div> : null}
-        <div className={bem('body')}>{body}</div>
-    </div>
-);
+const Popover = ({ header, body, hasShadow }) => {
+    // eslint-disable-next-line react/no-danger
+    const Body = typeof body === 'string' ? <div dangerouslySetInnerHTML={{ __html: body }} /> : body
+    return (
+        <div className={bem(null, { shadow: hasShadow })}>
+            {header ? <div className={bem('header')}>{header}</div> : null}
+            <div className={bem('body')}>{Body}</div>
+        </div>
+    );
+}
 
 Popover.defaultProps = {
     hasShadow: false,
