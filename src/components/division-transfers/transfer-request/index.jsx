@@ -10,6 +10,7 @@ import Button from '../../button';
 import Accordion from '../../accordion';
 import Player from '../../player';
 import { changeTypes } from '../lib/consts';
+import getTransferWarnings from '../lib/get-transfer-warnings';
 import TransferWarnings from '../transfer-warnings';
 import Search from './search';
 import './transferPage.scss';
@@ -27,6 +28,7 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
         Division: division,
         Manager: manager,
         Status: 'TBC',
+        isPending: true,
         'Transfer Type': type,
         'Transfer In': playerIn.value,
         'Transfer Out': playerOut.value,
@@ -122,6 +124,9 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     const [playerOut, setPlayerOut] = useState(undefined);
     const selectedPlayer = drawerContent === PLAYER_IN ? playerOut : playerIn;
     const playerRequestConfig = getPlayerRequestConfig({ playersArray, changeType, manager, selectedPlayer });
+
+    const { warnings } =
+        getTransferWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
 
     const openSearch = (playerChangeType) => {
         setDrawerContent(playerChangeType);
@@ -269,14 +274,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                         </Spacer>
                         {playerIn && playerOut && (
                             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                                <TransferWarnings
-                                    teams={teamsByManager}
-                                    manager={manager}
-                                    playerIn={playerIn}
-                                    playerOut={playerOut}
-                                    transfers={transfers}
-                                    changeType={changeType}
-                                />
+                                <TransferWarnings warnings={warnings} />
                             </Spacer>
                         )}
                     </Accordion.Content>
@@ -299,7 +297,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                 {playerIn && playerOut && (
                     <Accordion.Content>
                         <Button
-                            onClick={() => {
+                            onClick={() =>
                                 confirmTransfer({
                                     transfers: [
                                         {
@@ -312,13 +310,14 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                             transferIn: playerIn ? playerIn.value : '',
                                             transferOut: playerOut ? playerOut.value : '',
                                             comment,
+                                            warnings,
                                         },
                                     ],
                                     division: divisionKey,
                                     saveTransfer,
                                     reset,
-                                });
-                            }}
+                                })
+                            }
                             state="buttonState"
                             isLoading={isLoading}
                         >

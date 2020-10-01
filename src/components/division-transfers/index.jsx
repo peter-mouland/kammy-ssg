@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useCookies } from "react-cookie";
+import { useCookies } from 'react-cookie';
 
 import Spacer from '../spacer';
 import GameWeekSwitcher from '../gameweek-switcher';
@@ -13,14 +13,15 @@ import useGameWeeks from '../../hooks/use-game-weeks';
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
     const [cookies] = useCookies(['is-admin']);
     const { currentGameWeek } = useGameWeeks();
-    const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({
+    const { isLoading, saveTransfer, isSaving, transfersThisGameWeek, teamsWithoutWarnings } = useTransfers({
         selectedGameWeek,
         divisionKey,
+        teamsByManager,
     });
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
     const isCurrentGameWeek = selectedGameWeek === currentGameWeek.gameWeek;
-    const showWarnings = (isCurrentGameWeek && cookies['is-admin'] === 'true');
+    const showWarnings = isCurrentGameWeek && cookies['is-admin'] === 'true';
 
     return (
         <div>
@@ -30,18 +31,13 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                 </div>
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <TransfersTable
-                    isLoading={isLoading}
-                    transfers={transfersThisGameWeek}
-                    teamsByManager={teamsByManager}
-                    showWarnings={showWarnings}
-                />
+                <TransfersTable isLoading={isLoading} transfers={transfersThisGameWeek} showWarnings={showWarnings} />
             </Spacer>
             {isCurrentGameWeek && (
                 <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                     <TransferRequest
                         divisionKey={divisionKey}
-                        teamsByManager={teamsByManager}
+                        teamsByManager={teamsWithoutWarnings}
                         isLoading={isSaving}
                         saveTransfer={saveTransfer}
                         transfers={transfersThisGameWeek}

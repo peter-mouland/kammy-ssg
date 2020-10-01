@@ -2,7 +2,6 @@ import React from 'react';
 
 import Layout from '../../components/layout';
 import Spacer from '../../components/spacer';
-// import useTransfers from '../../hooks/use-transfers';
 
 const AdminPlayerList = () => (
     // const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({ divisionKey });

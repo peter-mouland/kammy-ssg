@@ -1,37 +1,19 @@
 /* eslint-disable react/no-danger */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useCookies } from 'react-cookie';
 
 import formatTimestamp from '../lib/format-timestamp';
 import getEmoji from '../lib/get-emoji';
 import Interstitial from '../../interstitial';
 import ContextualHelp from '../../contextual-help';
 import ChatIcon from '../../icons/chat.svg';
-import getTransferWarnings from '../lib/get-transfer-warnings';
-import usePlayers from '../../../hooks/use-players';
 import Warning from '../../icons/warning.svg';
 
-const TransferBody = ({ transfers, teamsByManager: teams, showWarnings }) => {
-    const { players } = usePlayers();
+const TransferBody = ({ transfers, showWarnings }) => {
     if (transfers.length < 1) return null;
-    const playersByName = players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {});
     return (
         <tbody>
-            {transfers.map(({ timestamp, status = '', type, manager, transferIn, transferOut, comment }, index) => {
-                const playerIn = playersByName[transferIn];
-                const playerOut = playersByName[transferOut];
-                const warnings = showWarnings
-                    ? getTransferWarnings({
-                          transfers: index === 0 ? [] : transfers.slice(0, index),
-                          manager,
-                          changeType: type,
-                          playerIn,
-                          playerOut,
-                          teams,
-                      })
-                    : [];
-
+            {transfers.map(({ timestamp, status = '', type, manager, transferIn, transferOut, comment, warnings }) => {
                 const warningClass = warnings.length > 0 ? 'row--warning' : '';
                 const warningEl =
                     warnings.length > 0 ? (
@@ -93,15 +75,13 @@ const TransferBody = ({ transfers, teamsByManager: teams, showWarnings }) => {
 
 TransferBody.propTypes = {
     transfers: PropTypes.array.isRequired,
-    teamsByManager: PropTypes.object,
     showWarnings: PropTypes.bool,
 };
 TransferBody.defaultProps = {
-    teamsByManager: {},
     showWarnings: false,
 };
 
-const GameWeekTransfers = ({ transfers, isLoading, teamsByManager, showWarnings }) => {
+const GameWeekTransfers = ({ transfers, isLoading, showWarnings }) => {
     return (
         <table className="table">
             <thead>
@@ -118,7 +98,7 @@ const GameWeekTransfers = ({ transfers, isLoading, teamsByManager, showWarnings 
                     </th>
                 </tr>
             </thead>
-            <TransferBody transfers={transfers} teamsByManager={teamsByManager} showWarnings={showWarnings} />
+            <TransferBody transfers={transfers} showWarnings={showWarnings} />
             {transfers.length === 0 && !isLoading && (
                 <tbody>
                     <tr className="row">
@@ -141,14 +121,12 @@ GameWeekTransfers.propTypes = {
     showWarnings: PropTypes.bool,
     isLoading: PropTypes.bool,
     transfers: PropTypes.array,
-    teamsByManager: PropTypes.object,
 };
 
 GameWeekTransfers.defaultProps = {
     showWarnings: false,
     isLoading: false,
     transfers: [],
-    teamsByManager: {},
 };
 
 export default GameWeekTransfers;

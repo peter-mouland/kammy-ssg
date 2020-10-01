@@ -1,7 +1,50 @@
-const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, transfers }) => {
-    const teamPLayerOut = teams[manager].find(({ playerName }) => playerName === playerOut.name);
+const managerHasTooManyTransfers = ({ managerTransfers }) => ({
+    error: managerTransfers.length >= 2,
+    message: `It appears you have already made two transfers during this game week, so this move may exceed your limit`,
+});
 
-    const team = teams[manager]
+const newPlayerTransferWithOldPlayer = ({ playerIn, changeType }) => ({
+    error: !playerIn.new && changeType === 'New Player',
+    message: `<strong>${playerIn.name}</strong> was transferred as 'new' but he's not new, he's old!`,
+});
+
+const transferWithNewPlayer = ({ playerIn, changeType }) => ({
+    error: playerIn.new && changeType !== 'New Player',
+    message: `<strong>${playerIn.name}</strong> is marked as 'new'. You may need to make a new player request instead.`,
+});
+
+const managerHasMoreThanTwoFromOneClub = ({ playerIn, clubPlayers }) => ({
+    error: clubPlayers[playerIn.club].length > 2,
+    message: `
+        This transfer appears to make your team exceed the limit of two per club for <strong>${playerIn.club}!</strong>
+    `,
+});
+
+const playerInOtherTeam = ({ playersInOtherTeamsByName, playerIn, playersInOtherTeams }) => ({
+    error: playersInOtherTeams.includes(playerIn.name),
+    message: `<strong>${playerIn.name}</strong> is already in <strong>${
+        playersInOtherTeamsByName[playerIn.name]?.managerName
+    }</strong>'s team`,
+});
+
+const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut }) => ({
+    error: teamPLayerOut.teamPos !== 'SUB' && playerIn.pos !== playerOut.pos,
+    message: `This transfer appears to put a player in the wrong position within your team!`,
+});
+
+const playerAlreadyInValidTransfer = ({ transfers, playerIn }) => ({
+    error: transfers.find(({ transferIn, type }) => transferIn === playerIn.name && type !== 'New Player'),
+    message: `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
+});
+
+const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, transfers }) => {
+    if (!manager || !playerIn || !playerOut || !changeType) {
+        console.log('EXIT GET WARNINGS')
+        return { warnings: [] };
+    }
+    const originalTeam = teams[manager];
+    const teamPLayerOut = teams[manager].find(({ playerName }) => playerName === playerOut.name);
+    const newTeam = originalTeam
         .filter(({ playerName }) => playerName !== playerOut.name)
         .concat([
             {
@@ -11,72 +54,44 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
                 pos: playerIn.pos,
             },
         ]);
-    const managerTransfers = transfers.filter(
-        ({ manager: managerName, type }) => managerName === manager && type === 'Transfer',
-    );
-    const unavailablePlayers = Object.keys(teams).reduce((prev, managerName) => {
-        if (managerName === manager) return prev;
-        return [...prev, ...teams[managerName].map(({ playerName }) => playerName)];
-    }, []);
-    const playersInTeams = Object.keys(teams).reduce((prev, managerName) => {
+    const newTeams = { ...teams, [manager]: newTeam };
+    const playersInOtherTeamsByName = Object.keys(teams).reduce((prev, managerName) => {
         if (managerName === manager) return prev;
         return {
             ...prev,
             ...teams[managerName].reduce((acc, player) => ({ ...acc, [player.playerName]: player }), {}),
         };
     }, {});
+    const playersInOtherTeams = Object.keys(playersInOtherTeamsByName);
 
-    const clubPlayers = team.reduce(
+    const managerTransfers = transfers.filter(
+        ({ manager: managerName, type, warnings = [] }) =>
+            managerName === manager && type === 'Transfer' && warnings.length === 0,
+    );
+
+    const clubPlayers = newTeam.reduce(
         (prev, { player }) => ({
             ...prev,
             [player.club]: [...(prev[player.club] || []), player].filter(Boolean),
         }),
         {},
     );
-
-    const playerAlreadyBeingTransferred = transfers.find(({ transferIn }) => transferIn === playerIn.name);
-    const moreThanTwoFromClub = clubPlayers[playerIn.club].length > 2 ? playerIn.club : false;
-    const playerNotNew = !playerIn.new && changeType === 'New Player' ? playerIn.name : false;
-    const playerIsNew = playerIn.new && changeType !== 'New Player' ? playerIn.name : false;
-    const playerUnavailable = unavailablePlayers.includes(playerIn.name) ? playerIn.name : false;
-    const positionsDontMatch = teamPLayerOut.teamPos !== 'SUB' && playerIn.pos !== playerOut.pos;
-    const toManyTransfers = managerTransfers.length >= 2;
-
-    const warnings = [];
-    if (playerNotNew) {
-        warnings.push(
-            `The Player <strong>${playerNotNew}</strong> was transferred as 'new' but he's not new, he's old!`,
-        );
-    }
-    if (playerIsNew) {
-        warnings.push(
-            `The Player <strong>${playerIsNew}</strong> is marked as 'new'. You may need to make a new player request instead.`,
-        );
-    }
-    if (moreThanTwoFromClub) {
-        warnings.push(
-            `This transfer appears to make your team exceed the limit of two per club for <strong>${moreThanTwoFromClub}!</strong>`,
-        );
-    }
-    if (playerUnavailable) {
-        warnings.push(
-            `The player <strong>${playerUnavailable}</strong> is in more than 2 teams (${playersInTeams[playerUnavailable].managerName} has him)!`,
-        );
-    }
-    if (positionsDontMatch) {
-        warnings.push(`This transfer appears to put a player in the wrong position within your team!`);
-    }
-    if (toManyTransfers) {
-        warnings.push(
-            `It appears you have already made two transfers during this game week, so this move may exceed your limit`,
-        );
-    }
-    if (playerAlreadyBeingTransferred) {
-        warnings.push(
-            `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
-        );
-    }
-    return warnings;
+    const warnings = [
+        newPlayerTransferWithOldPlayer({ playerIn, changeType }),
+        transferWithNewPlayer({ playerIn, changeType }),
+        managerHasTooManyTransfers({ managerTransfers }),
+        managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
+        playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByName }),
+        playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut }),
+        playerAlreadyInValidTransfer({ playerIn, transfers }),
+    ]
+        .filter(({ error }) => !!error)
+        .map(({ message }) => message);
+    return {
+        warnings,
+        newTeam: warnings.length ? originalTeam : newTeam,
+        newTeams: warnings.length ? teams : newTeams,
+    };
 };
 
 export default getTransferWarnings;
