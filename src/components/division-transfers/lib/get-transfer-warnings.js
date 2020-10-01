@@ -33,13 +33,15 @@ const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut }) => ({
 });
 
 const playerAlreadyInValidTransfer = ({ transfers, playerIn }) => ({
-    error: transfers.find(({ transferIn, type }) => transferIn === playerIn.name && type !== 'New Player'),
+    error: transfers.find(
+        ({ transferIn, type, warnings = [] }) =>
+            warnings.length === 0 && transferIn === playerIn.name && type !== 'New Player',
+    ),
     message: `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
 });
 
 const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, transfers }) => {
     if (!manager || !playerIn || !playerOut || !changeType) {
-        console.log('EXIT GET WARNINGS')
         return { warnings: [] };
     }
     const originalTeam = teams[manager];
