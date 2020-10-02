@@ -27,7 +27,7 @@ const useTransfers = ({ selectedGameWeek, divisionKey, teamsByManager }) => {
     const { gameWeeks } = useGameWeeks();
     const gameWeek = gameWeeks[selectedGameWeek];
     const transfersWithWarnings = transfers.map((transfer) => {
-        if (!transfer.isPending) {
+        if (!transfer.isPending || !gameWeek.isCurrent) {
             return { ...transfer, warnings: [] };
         }
         const { warnings = [], newTeams = teamsByManager } = getTransferWarnings({
