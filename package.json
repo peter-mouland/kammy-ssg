@@ -82,7 +82,7 @@
     "url-search-params-polyfill": "8.1.0"
   },
   "devDependencies": {
-    "@clearscore/sonar": "2.0.2",
+    "@clearscore/sonar": "2.2.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "26.3.0",
     "babel-preset-gatsby": "0.5.11",

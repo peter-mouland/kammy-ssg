@@ -1,15 +1,17 @@
+import { changeTypes } from './consts';
+
 const managerHasTooManyTransfers = ({ managerTransfers }) => ({
     error: managerTransfers.length >= 2,
     message: `It appears you have already made two transfers during this game week, so this move may exceed your limit`,
 });
 
 const newPlayerTransferWithOldPlayer = ({ playerIn, changeType }) => ({
-    error: !playerIn.new && changeType === 'New Player',
+    error: !playerIn.new && changeType === changeTypes.NEW_PLAYER,
     message: `<strong>${playerIn.name}</strong> was transferred as 'new' but he's not new, he's old!`,
 });
 
 const transferWithNewPlayer = ({ playerIn, changeType }) => ({
-    error: playerIn.new && changeType !== 'New Player',
+    error: playerIn.new && changeType !== changeTypes.NEW_PLAYER,
     message: `<strong>${playerIn.name}</strong> is marked as 'new'. You may need to make a new player request instead.`,
 });
 
@@ -27,15 +29,17 @@ const playerInOtherTeam = ({ playersInOtherTeamsByName, playerIn, playersInOther
     }</strong>'s team`,
 });
 
-const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut }) => ({
-    error: teamPLayerOut.teamPos !== 'SUB' && playerIn.pos !== playerOut.pos,
+const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut, changeType }) => ({
+    error:
+        (changeType === changeTypes.SWAP && playerIn.pos !== playerOut.pos) ||
+        (changeType !== changeTypes.SWAP && teamPLayerOut.teamPos !== 'SUB' && playerIn.pos !== playerOut.pos) ,
     message: `This transfer appears to put a player in the wrong position within your team!`,
 });
 
 const playerAlreadyInValidTransfer = ({ transfers, playerIn }) => ({
     error: transfers.find(
         ({ transferIn, type, warnings = [] }) =>
-            warnings.length === 0 && transferIn === playerIn.name && type !== 'New Player',
+            warnings.length === 0 && transferIn === playerIn.name && type !== changeTypes.NEW_PLAYER,
     ),
     message: `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
 });
@@ -84,7 +88,7 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
         managerHasTooManyTransfers({ managerTransfers }),
         managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
         playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByName }),
-        playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut }),
+        playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut, changeType }),
         playerAlreadyInValidTransfer({ playerIn, transfers }),
     ]
         .filter(({ error }) => !!error)
