@@ -2,7 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import usePlayers from '../../../hooks/use-players';
 import formatTimestamp from '../lib/format-timestamp';
 import getEmoji from '../lib/get-emoji';
 import Interstitial from '../../interstitial';
@@ -10,7 +9,7 @@ import ContextualHelp from '../../contextual-help';
 import ChatIcon from '../../icons/chat.svg';
 import Warning from '../../icons/warning.svg';
 import styles from './styles.module.css';
-import Player from "../../player";
+import Player from '../../player';
 
 const TransferBody = ({ transfers, showWarnings }) => {
     if (transfers.length < 1) return null;

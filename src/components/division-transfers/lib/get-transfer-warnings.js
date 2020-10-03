@@ -72,17 +72,32 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
     const originalTeam = teams[manager];
     const teamPLayerOut = teams[manager].find(({ playerName }) => playerName === playerOut.name);
     const teamPLayerIn = teams[manager].find(({ playerName }) => playerName === playerIn.name);
+    const playerInTeamPos = teamPLayerIn ? teamPLayerIn.teamPos : null;
+    const playerOutTeamPos = teamPLayerOut ? teamPLayerOut.teamPos : null;
 
-    const newTeam = originalTeam.filter(({ playerName }) => playerName !== playerOut.name);
-    // if not already in the team i.e. swap
-    if (!teamPLayerIn) {
+    const newTeam = originalTeam.filter(({ playerName }) => {
+        if (changeType === changeTypes.SWAP) {
+            return playerName !== playerOut.name && playerName !== playerIn.name;
+        }
+        return playerName !== playerOut.name;
+    });
+    if (changeType === changeTypes.SWAP) {
         newTeam.push({
             managerName: manager,
-            player: playerIn,
-            playerName: playerIn.name,
-            pos: playerIn.pos,
+            player: playerOut,
+            playerName: playerOut.name,
+            pos: playerOut.pos,
+            teamPos: playerInTeamPos,
         });
     }
+    newTeam.push({
+        managerName: manager,
+        player: playerIn,
+        playerName: playerIn.name,
+        pos: playerIn.pos,
+        teamPos: playerOutTeamPos,
+    });
+
     const newTeams = { ...teams, [manager]: newTeam };
     const playersInOtherTeamsByName = Object.keys(teams).reduce((prev, managerName) => {
         if (managerName === manager) return prev;
