@@ -39,12 +39,14 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
     reset();
 };
 
-const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPlayer }) => {
+const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, manager, selectedPlayer }) => {
     const positionFilter = selectedPlayer
         ? { value: selectedPlayer.pos, label: selectedPlayer.pos, group: 'position' }
         : null;
     switch (true) {
         case changeType === changeTypes.SWAP: {
+            const sub =
+                (teamsByManager[manager] && teamsByManager[manager].find(({ teamPos }) => teamPos === 'SUB')) || {};
             return {
                 out: {
                     players: playersArray,
@@ -60,6 +62,7 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPla
                     ),
                 },
                 in: {
+                    preselect: sub.player,
                     players: playersArray,
                     defaultFilter: [
                         { value: manager, label: `${manager}*`, group: 'manager' },
@@ -126,7 +129,13 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
     const selectedPlayer = drawerContent === PLAYER_IN ? playerOut : playerIn;
-    const playerRequestConfig = getPlayerRequestConfig({ playersArray, changeType, manager, selectedPlayer });
+    const playerRequestConfig = getPlayerRequestConfig({
+        teamsByManager,
+        playersArray,
+        changeType,
+        manager,
+        selectedPlayer,
+    });
 
     const { warnings } =
         getTransferWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
@@ -145,7 +154,15 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
     };
 
     const changeRequestType = (type) => {
-        setPlayerIn(undefined);
+        // get up to date config for new changeType
+        const config = getPlayerRequestConfig({
+            teamsByManager,
+            playersArray,
+            changeType: type,
+            manager,
+            selectedPlayer,
+        });
+        setPlayerIn(config.in?.preselect);
         setPlayerOut(undefined);
         setChangeType(type);
     };
