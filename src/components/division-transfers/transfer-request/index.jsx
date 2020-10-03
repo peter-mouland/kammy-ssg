@@ -48,6 +48,19 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPla
             return {
                 out: {
                     players: playersArray,
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
+                        Boolean,
+                    ),
+                    buttonText: 'your new SUB',
+                    searchText: (
+                        <span>
+                            Players moving into your SUB position must either be in your team (excluding your current
+                            SUB) or part of a pending transfer.
+                        </span>
+                    ),
+                },
+                in: {
+                    players: playersArray,
                     defaultFilter: [
                         { value: manager, label: `${manager}*`, group: 'manager' },
                         { value: 'isSub', label: 'Sub(s)', group: 'misc' },
@@ -58,19 +71,6 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPla
                         <span>
                             You can only swap out your current SUB or a player replacing him as part of a pending
                             transfer.
-                        </span>
-                    ),
-                },
-                in: {
-                    players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
-                        Boolean,
-                    ),
-                    buttonText: 'your SUB',
-                    searchText: (
-                        <span>
-                            Players moving into your SUB position must either be in your team (excluding your current
-                            SUB) or part of a pending transfer.
                         </span>
                     ),
                 },
