@@ -7,24 +7,28 @@ import Layout from '../../components/layout';
 import Button from '../../components/button';
 import Spacer from '../../components/spacer';
 
+const regenerateGatsby = (setIsLoading) => {
+    setIsLoading(true);
+    return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
+        method: 'post',
+    });
+};
+
+// eslint-disable-next-line no-unused-vars
+const regenerateNetlify = (setIsLoading) => {
+    setIsLoading(true);
+    return fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
+        method: 'post',
+    });
+};
+
 const NotFoundPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [, setCookie] = useCookies(['is-admin']);
     useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
-    const regenerateGatsby = () => {
-        setIsLoading(true);
-        return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
-            method: 'post',
-        });
-    };
-    const regenerateNetlify = () => {
-        setIsLoading(true);
-        return fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
-            method: 'post',
-        });
-    };
+    const publish = () => regenerateGatsby(setIsLoading);
     return (
         <Layout meta={{ title: 'Admin Links', description: '' }}>
             <div id="admin-page" data-b-layout="container">
@@ -48,7 +52,7 @@ const NotFoundPage = () => {
                         </Spacer>
                         <Spacer all={{ bottom: Spacer.spacings.LARGE }}>
                             <Button
-                                onClick={regenerateNetlify}
+                                onClick={publish}
                                 isDisabled={isLoading}
                                 isLoading={isLoading}
                                 type={Button.types.PRIMARY}

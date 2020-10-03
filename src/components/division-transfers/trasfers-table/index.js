@@ -40,7 +40,7 @@ const TransferBody = ({ transfers, showWarnings }) => {
                                 }}
                             />
                             <td data-col-label="timestamp" className="cell cell--center show-625">
-                                <span>{formatTimestamp(timestamp, 'MMM d')}</span>
+                                <span>{formatTimestamp(timestamp, 'MMM d,')}</span>
                                 <span className={styles.additional}>{formatTimestamp(timestamp, ' HH:mm')}</span>
                             </td>
                             <td data-col-label="type" className="cell cell--center">
