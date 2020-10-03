@@ -51,6 +51,7 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPla
                     defaultFilter: [
                         { value: manager, label: `${manager}*`, group: 'manager' },
                         { value: 'isSub', label: 'Sub(s)', group: 'misc' },
+                        positionFilter,
                     ].filter(Boolean),
                     buttonText: 'player leaving SUB',
                     searchText: (
@@ -62,7 +63,9 @@ const getPlayerRequestConfig = ({ playersArray, changeType, manager, selectedPla
                 },
                 in: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }],
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
+                        Boolean,
+                    ),
                     buttonText: 'your SUB',
                     searchText: (
                         <span>

@@ -1,8 +1,19 @@
 import { changeTypes } from './consts';
 
-const managerHasTooManyTransfers = ({ managerTransfers }) => ({
-    error: managerTransfers.length >= 2,
-    message: `It appears you have already made two transfers during this game week, so this move may exceed your limit`,
+const managerHasTooManyTransfers = ({ managerTransfers, changeType }) => ({
+    error: managerTransfers.length >= 2 && changeType === changeTypes.TRANSFER,
+    message: `
+        It appears you have already made two <strong>transfers</strong> during this game week,
+        so this move may exceed your limit
+    `,
+});
+
+const managerHasTooManySwap = ({ managerSwaps, changeType }) => ({
+    error: managerSwaps.length >= 2 && changeType === changeTypes.TRANSFER,
+    message: `
+        It appears you have already made two <strong>swaps</strong> during this game week,
+        so this move may exceed your limit
+    `,
 });
 
 const newPlayerTransferWithOldPlayer = ({ playerIn, changeType }) => ({
@@ -29,10 +40,10 @@ const playerInOtherTeam = ({ playersInOtherTeamsByName, playerIn, playersInOther
     }</strong>'s team`,
 });
 
-const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut, changeType }) => ({
+const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut = {}, changeType }) => ({
     error:
         (changeType === changeTypes.SWAP && playerIn.pos !== playerOut.pos) ||
-        (changeType !== changeTypes.SWAP && teamPLayerOut.teamPos !== 'SUB' && playerIn.pos !== playerOut.pos) ,
+        (changeType !== changeTypes.SWAP && teamPLayerOut.teamPos !== 'SUB' && playerIn.pos !== playerOut.pos),
     message: `This transfer appears to put a player in the wrong position within your team!`,
 });
 
@@ -44,22 +55,34 @@ const playerAlreadyInValidTransfer = ({ transfers, playerIn }) => ({
     message: `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
 });
 
+const swapInvolvingNonTeamMember = ({ changeType, teamPLayerIn, teamPLayerOut }) => ({
+    error: (!teamPLayerIn || !teamPLayerOut) && changeType === changeTypes.SWAP,
+    message: `Both players in a swap must be from within your team`,
+});
+
+const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
+    error: !teamPLayerOut && changeType !== changeTypes.SWAP,
+    message: `Player leaving must be from within your team`,
+});
+
 const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, transfers }) => {
     if (!manager || !playerIn || !playerOut || !changeType) {
         return { warnings: [] };
     }
     const originalTeam = teams[manager];
     const teamPLayerOut = teams[manager].find(({ playerName }) => playerName === playerOut.name);
-    const newTeam = originalTeam
-        .filter(({ playerName }) => playerName !== playerOut.name)
-        .concat([
-            {
-                managerName: manager,
-                player: playerIn,
-                playerName: playerIn.name,
-                pos: playerIn.pos,
-            },
-        ]);
+    const teamPLayerIn = teams[manager].find(({ playerName }) => playerName === playerIn.name);
+
+    const newTeam = originalTeam.filter(({ playerName }) => playerName !== playerOut.name);
+    // if not already in the team i.e. swap
+    if (!teamPLayerIn) {
+        newTeam.push({
+            managerName: manager,
+            player: playerIn,
+            playerName: playerIn.name,
+            pos: playerIn.pos,
+        });
+    }
     const newTeams = { ...teams, [manager]: newTeam };
     const playersInOtherTeamsByName = Object.keys(teams).reduce((prev, managerName) => {
         if (managerName === manager) return prev;
@@ -72,7 +95,11 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
 
     const managerTransfers = transfers.filter(
         ({ manager: managerName, type, warnings = [] }) =>
-            managerName === manager && type === 'Transfer' && warnings.length === 0,
+            managerName === manager && type === changeTypes.TRANSFER && warnings.length === 0,
+    );
+    const managerSwaps = transfers.filter(
+        ({ manager: managerName, type, warnings = [] }) =>
+            managerName === manager && type === changeTypes.SWAP && warnings.length === 0,
     );
 
     const clubPlayers = newTeam.reduce(
@@ -82,10 +109,14 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
         }),
         {},
     );
+
     const warnings = [
+        nonTeamMemberLeaving({ changeType, teamPLayerOut }),
+        swapInvolvingNonTeamMember({ changeType, teamPLayerIn, teamPLayerOut }),
         newPlayerTransferWithOldPlayer({ playerIn, changeType }),
         transferWithNewPlayer({ playerIn, changeType }),
-        managerHasTooManyTransfers({ managerTransfers }),
+        managerHasTooManyTransfers({ managerTransfers, changeType }),
+        managerHasTooManySwap({ managerSwaps, changeType }),
         managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
         playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByName }),
         playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut, changeType }),

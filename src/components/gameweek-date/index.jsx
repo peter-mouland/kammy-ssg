@@ -74,8 +74,8 @@ GameWeekDate.propTypes = {
     calEnd: PropTypes.string,
     gameWeek: PropTypes.shape({
         cup: PropTypes.bool,
-        start: PropTypes.string,
-        end: PropTypes.string,
+        start: PropTypes.instanceOf(Date),
+        end: PropTypes.instanceOf(Date),
     }).isRequired,
 };
 
