@@ -70,7 +70,7 @@ const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions 
             ...player,
             isPendingTransferIn: !!transfersInByPlayer[player.name],
             isPendingTransferOut: !!transfersOutByPlayer[player.name],
-            manager: managersPlayers[player.name] ? managersPlayers[player.name].manager : undefined,
+            manager: managersPlayers[player.name] ? managersPlayers[player.name].managerName : undefined,
             teamPos: managersPlayers[player.name] ? managersPlayers[player.name].teamPos : undefined,
         }));
 };

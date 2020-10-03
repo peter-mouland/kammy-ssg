@@ -8,6 +8,7 @@ import Interstitial from '../../interstitial';
 import ContextualHelp from '../../contextual-help';
 import ChatIcon from '../../icons/chat.svg';
 import Warning from '../../icons/warning.svg';
+import styles from './styles.module.css';
 
 const TransferBody = ({ transfers, showWarnings }) => {
     if (transfers.length < 1) return null;
@@ -24,8 +25,8 @@ const TransferBody = ({ transfers, showWarnings }) => {
                         />
                     ) : null;
                 return (
-                    <React.Fragment key={timestamp}>
-                        <tr className={`row row--${status.toLowerCase()} ${warningClass}`} key={timestamp}>
+                    <React.Fragment key={`${timestamp}-${transferIn}`}>
+                        <tr className={`row row--${status.toLowerCase()} ${warningClass}`}>
                             {showWarnings && (
                                 <td data-col-label="warnings" className="cell cell--warnings cell--center">
                                     {warningEl}
@@ -34,10 +35,13 @@ const TransferBody = ({ transfers, showWarnings }) => {
                             <td
                                 data-col-label="status"
                                 className="cell cell--status show-750 cell--center"
-                                dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}
+                                dangerouslySetInnerHTML={{
+                                    __html: `${getEmoji(status)} <span class=${styles.additional}>${status}</span>`,
+                                }}
                             />
                             <td data-col-label="timestamp" className="cell cell--center show-625">
-                                {formatTimestamp(timestamp)}
+                                <span>{formatTimestamp(timestamp, 'MMM d')}</span>
+                                <span className={styles.additional}>{formatTimestamp(timestamp, ' HH:mm')}</span>
                             </td>
                             <td data-col-label="type" className="cell cell--center">
                                 {type}
@@ -61,7 +65,9 @@ const TransferBody = ({ transfers, showWarnings }) => {
                                                 Trigger={<ChatIcon width="20px" />}
                                             />
                                         </span>
-                                        <span className="show-925">{comment}</span>
+                                        <span className="show-925">
+                                            <span className={styles.additional}>{comment}</span>
+                                        </span>
                                     </div>
                                 )}
                             </td>
@@ -81,41 +87,39 @@ TransferBody.defaultProps = {
     showWarnings: false,
 };
 
-const GameWeekTransfers = ({ transfers, isLoading, showWarnings }) => {
-    return (
-        <table className="table">
-            <thead>
+const GameWeekTransfers = ({ transfers, isLoading, showWarnings }) => (
+    <table className="table">
+        <thead>
+            <tr className="row">
+                {showWarnings && <th className="cell">warning</th>}
+                <th className="cell show-750">Status</th>
+                <th className="cell show-625">Date</th>
+                <th className="cell">Type</th>
+                <th className="cell">Manager</th>
+                <th className="cell">In</th>
+                <th className="cell">Out</th>
+                <th className="cell">
+                    <span className="show-925">Comment</span>
+                </th>
+            </tr>
+        </thead>
+        <TransferBody transfers={transfers} showWarnings={showWarnings} />
+        {transfers.length === 0 && !isLoading && (
+            <tbody>
                 <tr className="row">
-                    {showWarnings && <th className="cell">warning</th>}
-                    <th className="cell show-750">Status</th>
-                    <th className="cell show-625">Date</th>
-                    <th className="cell">Type</th>
-                    <th className="cell">Manager</th>
-                    <th className="cell">In</th>
-                    <th className="cell">Out</th>
-                    <th className="cell">
-                        <span className="show-925">Comment</span>
-                    </th>
+                    <td className="cell cell--center" colSpan={7}>
+                        <em>no transfers have been requested</em>
+                    </td>
                 </tr>
-            </thead>
-            <TransferBody transfers={transfers} showWarnings={showWarnings} />
-            {transfers.length === 0 && !isLoading && (
-                <tbody>
-                    <tr className="row">
-                        <td className="cell cell--center" colSpan={7}>
-                            <em>no transfers have been requested</em>
-                        </td>
-                    </tr>
-                </tbody>
-            )}
-            <tfoot>
-                <tr className="row row--interstitial">
-                    <td colSpan={7}>{isLoading && <Interstitial message="loading transfers..." />}</td>
-                </tr>
-            </tfoot>
-        </table>
-    );
-};
+            </tbody>
+        )}
+        <tfoot>
+            <tr className="row row--interstitial">
+                <td colSpan={7}>{isLoading && <Interstitial message="loading transfers..." />}</td>
+            </tr>
+        </tfoot>
+    </table>
+);
 
 GameWeekTransfers.propTypes = {
     showWarnings: PropTypes.bool,

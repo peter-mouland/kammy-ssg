@@ -78,30 +78,6 @@
     background-color: #e9e9e9;
   }
 
-    &--pending {
-        background-color: #e9e9e9;
-        &::before {
-            display: block;
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            font-style: italic;
-            color: #888;
-            border: 1px solid #888;
-            border-radius: 5px;
-            padding: 2px 4px;
-            font-size: 0.9em;
-            background-color: aliceblue;
-            z-index: 0;
-        }
-        &-out::before{
-            content: 'pending exit';
-        }
-        &-in::before{
-            content: 'pending';
-        }
-    }
-
   &__img {
     width: 40px;
     display: inline-block;

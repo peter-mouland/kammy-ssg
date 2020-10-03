@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 
 import './data-list.scss';
+import styles from './tags.module.css';
 
 const indexOfMatch = (searchTerm, item) => item.label.toUpperCase().indexOf(searchTerm.toUpperCase());
 const match = (searchTerm, item) => indexOfMatch(searchTerm, item) > -1;
@@ -17,27 +19,27 @@ const labelWithBoldText = (item, searchTerm) => {
     );
 };
 
+const ArrivingTag = ({ item }) =>
+    item.isPendingTransferIn ? <span className={cx(styles.tag, styles.arrivingTag)}>pending</span> : null;
+const ExitTag = ({ item }) =>
+    item.isPendingTransferOut ? <span className={cx(styles.tag, styles.exitTag)}>pending exit</span> : null;
+const ManagerTag = ({ item }) =>
+    item.manager ? <span className={cx(styles.tag, styles.managerTag)}>{item.manager}</span> : null;
+const Tags = ({ item }) => (
+    <span className={styles.tags}>
+        <ExitTag item={item} /> <ArrivingTag item={item} /> <ManagerTag item={item} />
+    </span>
+);
+
 const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem }) => {
-    // todo: stop rerendering so much
-    // console.log({item})
     const buttonClassName = 'datalist-button';
     const isActive = focusIndex === index || (selectedItem && selectedItem.key === item.key);
     const label = indexOfMatch(searchTerm, item) < 0 ? item.label : labelWithBoldText(item, searchTerm);
     const buttonClass = isActive ? `${buttonClassName} ${buttonClassName}--active` : buttonClassName;
-    const pendingClass =
-        item.isPendingTransferIn || item.isPendingTransferOut
-            ? `datalist-item--pending ${item.isPendingTransferIn ? 'datalist-item--pending-in' : ''} ${
-                  item.isPendingTransferOut ? 'datalist-item--pending-out' : ''
-              }`
-            : '';
 
     return (
-        <button
-            className={`datalist-item ${buttonClass} ${pendingClass}`}
-            key={item.key}
-            onClick={() => onSelect(item)}
-            type="button"
-        >
+        <button className={`datalist-item ${buttonClass}`} key={item.key} onClick={() => onSelect(item)} type="button">
+            <Tags item={item} />
             {item.img && <img src={item.img} className="datalist-item__img" loading="lazy" alt="" />}
             <span className="datalist-item__label">
                 {label}

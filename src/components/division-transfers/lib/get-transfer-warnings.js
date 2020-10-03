@@ -8,7 +8,7 @@ const managerHasTooManyTransfers = ({ managerTransfers, changeType }) => ({
     `,
 });
 
-const managerHasTooManySwap = ({ managerSwaps, changeType }) => ({
+const managerHasTooManySwaps = ({ managerSwaps, changeType }) => ({
     error: managerSwaps.length >= 2 && changeType === changeTypes.TRANSFER,
     message: `
         It appears you have already made two <strong>swaps</strong> during this game week,
@@ -16,7 +16,7 @@ const managerHasTooManySwap = ({ managerSwaps, changeType }) => ({
     `,
 });
 
-const newPlayerTransferWithOldPlayer = ({ playerIn, changeType }) => ({
+const newPlayerRequestWithOldPlayer = ({ playerIn, changeType }) => ({
     error: !playerIn.new && changeType === changeTypes.NEW_PLAYER,
     message: `<strong>${playerIn.name}</strong> was transferred as 'new' but he's not new, he's old!`,
 });
@@ -113,10 +113,10 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
     const warnings = [
         nonTeamMemberLeaving({ changeType, teamPLayerOut }),
         swapInvolvingNonTeamMember({ changeType, teamPLayerIn, teamPLayerOut }),
-        newPlayerTransferWithOldPlayer({ playerIn, changeType }),
+        newPlayerRequestWithOldPlayer({ playerIn, changeType }),
         transferWithNewPlayer({ playerIn, changeType }),
         managerHasTooManyTransfers({ managerTransfers, changeType }),
-        managerHasTooManySwap({ managerSwaps, changeType }),
+        managerHasTooManySwaps({ managerSwaps, changeType }),
         managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
         playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByName }),
         playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut, changeType }),

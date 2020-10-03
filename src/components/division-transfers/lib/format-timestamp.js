@@ -1,9 +1,9 @@
 /* eslint-disable react/no-danger */
 import format from 'date-fns/format';
 
-const formatTimestamp = (ts) => {
+const formatTimestamp = (ts, fmt = 'MMM d, HH:mm:ss') => {
     try {
-        return format(ts, 'MMM d, HH:mm:ss');
+        return format(ts, fmt);
     } catch (e) {
         // eslint-disable-next-line no-console
         console.log(ts);
