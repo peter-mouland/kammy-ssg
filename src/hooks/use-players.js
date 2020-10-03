@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
 
 const usePlayers = () => {
@@ -33,7 +34,10 @@ const usePlayers = () => {
             }
         }
     `);
-    return { players };
+    const playersByName = useMemo(() => players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {}), [
+        players,
+    ]);
+    return { players, playersByName };
 };
 
 export default usePlayers;

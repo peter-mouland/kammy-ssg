@@ -241,16 +241,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                 </span>
                             </Spacer>
                             <span className={bem('player-cta-label')}>
-                                {playerOut && (
-                                    <Player
-                                        name={playerOut.name}
-                                        club={playerOut.club}
-                                        pos={playerOut.pos}
-                                        img={playerOut.img}
-                                        teamPos={playerOut.teamPos}
-                                        player={{}}
-                                    />
-                                )}
+                                {playerOut && <Player name={playerOut.name} teamPos={playerOut.teamPos} />}
                             </span>
                         </Spacer>
 
@@ -263,16 +254,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                 </span>
                             </Spacer>
                             <span className={bem('player-cta-label')}>
-                                {playerIn && (
-                                    <Player
-                                        name={playerIn.name}
-                                        club={playerIn.club}
-                                        pos={playerIn.pos}
-                                        img={playerIn.img}
-                                        teamPos={playerIn.teamPos}
-                                        player={{}}
-                                    />
-                                )}
+                                {playerIn && <Player name={playerIn.name} teamPos={playerIn.teamPos} />}
                             </span>
                         </Spacer>
                         {playerIn && playerOut && (
