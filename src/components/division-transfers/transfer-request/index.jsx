@@ -30,8 +30,8 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
         Status: 'TBC',
         isPending: true,
         'Transfer Type': type,
-        'Transfer In': playerIn.value,
-        'Transfer Out': playerOut.value,
+        'Transfer In': playerIn.name,
+        'Transfer Out': playerOut.name,
         Comment: comment,
     }));
 
@@ -39,7 +39,7 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
     reset();
 };
 
-const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, manager, selectedPlayer }) => {
+const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, manager, selectedPlayer, playerOut }) => {
     const positionFilter = selectedPlayer
         ? { value: selectedPlayer.pos, label: selectedPlayer.pos, group: 'position' }
         : null;
@@ -62,7 +62,7 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
                     ),
                 },
                 in: {
-                    // preselect: sub.player,
+                    preselect: sub.player,
                     players: playersArray,
                     defaultFilter: [
                         { value: manager, label: `${manager}*`, group: 'manager' },
@@ -103,10 +103,7 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [
-                        { value: manager, label: `${manager}*`, group: 'manager' },
-                        positionFilter, // dont add this filter if the player out is a sub
-                    ].filter(
+                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
                         Boolean,
                     ),
                     searchText: null,
@@ -114,7 +111,7 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
                 },
                 in: {
                     players: playersArray,
-                    defaultFilter: [positionFilter].filter(Boolean),
+                    defaultFilter: [playerOut?.teamPos === 'SUB' ? false : positionFilter].filter(Boolean),
                     searchText: null,
                     buttonText: 'Player Arriving',
                 },
@@ -138,6 +135,7 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
         changeType,
         manager,
         selectedPlayer,
+        playerOut,
     });
 
     const { warnings } =
