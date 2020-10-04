@@ -34,7 +34,7 @@ const LIVE_SCORES_MAP = {
     STARTING_XI: 2,
     unknown3: 3,
     CONCEDED: 4,
-    unknown5: 5,
+    RED_CARDS: 5,
     YELLOW_CARDS: 6,
     GOALS: 7,
     ASSISTS: 8,
