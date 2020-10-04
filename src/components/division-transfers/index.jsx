@@ -21,7 +21,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
     const isCurrentGameWeek = selectedGameWeek === currentGameWeek.gameWeek;
-    const showWarnings = isCurrentGameWeek && cookies['is-admin'] === 'true';
+    const showWarnings = cookies['is-admin'] === 'true';
 
     return (
         <div>

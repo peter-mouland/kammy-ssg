@@ -9,7 +9,7 @@ const managerHasTooManyTransfers = ({ managerTransfers, changeType }) => ({
 });
 
 const managerHasTooManySwaps = ({ managerSwaps, changeType }) => ({
-    error: managerSwaps.length >= 2 && changeType === changeTypes.TRANSFER,
+    error: managerSwaps.length >= 2 && changeType === changeTypes.SWAP,
     message: `
         It appears you have already made two <strong>swaps</strong> during this game week,
         so this move may exceed your limit

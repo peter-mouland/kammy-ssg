@@ -62,7 +62,7 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
                     ),
                 },
                 in: {
-                    preselect: sub.player,
+                    // preselect: sub.player,
                     players: playersArray,
                     defaultFilter: [
                         { value: manager, label: `${manager}*`, group: 'manager' },
@@ -103,7 +103,10 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
+                    defaultFilter: [
+                        { value: manager, label: `${manager}*`, group: 'manager' },
+                        positionFilter, // dont add this filter if the player out is a sub
+                    ].filter(
                         Boolean,
                     ),
                     searchText: null,
