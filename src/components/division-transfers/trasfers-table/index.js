@@ -16,7 +16,7 @@ const TransferBody = ({ transfers, showWarnings }) => {
     return (
         <tbody>
             {transfers.map(({ timestamp, status = '', type, manager, transferIn, transferOut, comment, warnings }) => {
-                const warningClass = warnings.length > 0 ? 'row--warning' : '';
+                const warningClass = showWarnings && warnings.length > 0 ? 'row--warning' : '';
                 const warningEl =
                     warnings.length > 0 ? (
                         <ContextualHelp

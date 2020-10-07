@@ -27,7 +27,7 @@ const transferWithNewPlayer = ({ playerIn, changeType }) => ({
 });
 
 const managerHasMoreThanTwoFromOneClub = ({ playerIn, clubPlayers }) => ({
-    error: clubPlayers[playerIn.club].length > 2,
+    error: clubPlayers[playerIn.club]?.length > 2,
     message: `
         This transfer appears to make your team exceed the limit of two per club for <strong>${playerIn.club}!</strong>
     `,
@@ -118,6 +118,8 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
     const newTeam = originalTeam.filter(({ playerName }) => {
         if (changeType === changeTypes.SWAP) {
             return playerName !== playerOut.name && playerName !== playerIn.name;
+        } else if (changeType === changeTypes.NEW_PLAYER) {
+            return true // new player should not be assumed to have been won
         }
         return playerName !== playerOut.name;
     });
@@ -130,13 +132,15 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
             teamPos: playerInTeamPos,
         });
     }
-    newTeam.push({
-        managerName: manager,
-        player: playerIn,
-        playerName: playerIn.name,
-        pos: playerIn.pos,
-        teamPos: playerOutTeamPos,
-    });
+    if (changeType !== changeTypes.NEW_PLAYER) {
+        newTeam.push({
+            managerName: manager,
+            player: playerIn,
+            playerName: playerIn.name,
+            pos: playerIn.pos,
+            teamPos: playerOutTeamPos,
+        });
+    }
 
     const newTeams = { ...teams, [manager]: newTeam };
     const playersInOtherTeamsByName = Object.keys(teams).reduce((prev, managerName) => {
@@ -164,6 +168,7 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
         }),
         {},
     );
+    console.log({newTeam, clubPlayers})
 
     const warnings = [
         nonTeamMemberLeaving({ changeType, teamPLayerOut }),

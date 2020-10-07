@@ -27,7 +27,7 @@ const FINAL_SCORES_MAP = {
     SKY_FF_POINTS: 25,
 };
 
-// red-cards? pen-svd?
+// pen-svd?
 const LIVE_SCORES_MAP = {
     PLAYER_CODE: 0,
     ultWeekPts: 1,
