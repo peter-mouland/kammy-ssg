@@ -27,7 +27,7 @@ const visibleStats = [
     'rcard',
 ];
 
-const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
+const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
     const { liveStatsByCode } = useLiveScores();
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce(
@@ -38,7 +38,7 @@ const PlayersPage = ({ data, pageContext: { divisionKey } }) => {
         {},
     );
     return (
-        <Layout>
+        <Layout title={`${divisionLabel} - Players`}>
             <section id="players-page" className={bemTable()} data-b-layout="container">
                 <TabbedMenu selected="players" division={divisionKey} />
                 <div className="page-content">

@@ -10,7 +10,7 @@ const Player = ({ teamPos, name }) => {
     const { playersByName } = usePlayers();
     const player = playersByName[name] || {};
     const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
-    const { pos, club } = player
+    const { pos, club } = player;
     return (
         <div className={styles.player}>
             <a
@@ -41,28 +41,28 @@ const Player = ({ teamPos, name }) => {
                 <img src={img} loading="lazy" alt="" />
             </div>
             <div className={styles.playerName}>
-                {/*<a*/}
+                {/* <a*/}
                 {/*    href="#"*/}
                 {/*    onClick={(e) => {*/}
                 {/*        e.preventDefault();*/}
                 {/*        onShowPlayerTimeline({ player });*/}
                 {/*    }}*/}
                 {/*    title={`Show ${teamPos} timeline`}*/}
-                {/*>*/}
-                    <p>
-                        <span className="show-625">{name}</span>
-                        <span className="hide-625">{name.split(',')[0]}</span>
-                    </p>
-                {/*</a>*/}
+                {/* >*/}
+                <p>
+                    <span className="show-625">{name}</span>
+                    <span className="hide-625">{name.split(',')[0]}</span>
+                </p>
+                {/* </a>*/}
                 <div className={styles.playerClub}>
                     <span className="show-550">{club}</span>
                     <span className="hide-550">
-                    {club.split(' ')[0]} {(club.split(' ')[1] || '').charAt(0)}
-                </span>
+                        {club.split(' ')[0]} {(club.split(' ')[1] || '').charAt(0)}
+                    </span>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default Player;

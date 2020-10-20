@@ -119,7 +119,7 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
         if (changeType === changeTypes.SWAP) {
             return playerName !== playerOut.name && playerName !== playerIn.name;
         } else if (changeType === changeTypes.NEW_PLAYER) {
-            return true // new player should not be assumed to have been won
+            return true; // new player should not be assumed to have been won
         }
         return playerName !== playerOut.name;
     });

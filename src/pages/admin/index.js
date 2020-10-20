@@ -29,22 +29,17 @@ const NotFoundPage = () => {
     useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
-    const { built, buildTime } = useMeta();
+    const { formattedTime, getFromNow } = useMeta();
     const publish = () => regenerateGatsby(setIsLoading);
     return (
-        <Layout meta={{ title: 'Admin Links', description: '' }}>
+        <Layout title="Admin - Links">
             <div id="admin-page" data-b-layout="container">
                 <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>
                     <h1>Admin</h1>
                 </Spacer>
                 <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>
-                    <p>
-                        <strong>Last Build:</strong>
-                        {' '}
-                        {buildTime}
-                        {' '}
-                        <small style={{ color: '#888', fontSize: '0.9em' }}>({built})</small>
-                    </p>
+                    <strong>Last Build:</strong> {formattedTime}{' '}
+                    <small style={{ color: '#888', fontSize: '0.9em' }}>({getFromNow()})</small>
                 </Spacer>
                 <ul>
                     <li>

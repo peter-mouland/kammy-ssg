@@ -12,7 +12,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey, d
     } = data;
 
     return (
-        <Layout>
+        <Layout title={`${divisionLabel} - Standings`}>
             <div data-b-layout="container">
                 <TabbedMenu selected="rankings" division={divisionKey} />
                 <DivisionRankings

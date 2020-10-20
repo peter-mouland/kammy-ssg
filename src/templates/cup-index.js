@@ -16,7 +16,7 @@ const CupTemplate = ({ data }) => {
         {},
     );
     return (
-        <Layout>
+        <Layout title="Cup">
             <section id="cup-page" data-b-layout="container">
                 <div data-b-layout="row vpad">Cup</div>
                 <IFrame

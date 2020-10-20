@@ -1,6 +1,7 @@
 // config *must* run before everything else
 /* eslint-disable */
 import "../config/config";
+import { Helmet } from "react-helmet"
 /* eslint-enable */
 
 import React from 'react';
@@ -13,10 +14,15 @@ import NavBar from './nav-bar';
 import NamedLink from './named-link';
 import './index.css';
 
-const Layout = ({ children }) => {
+const Layout = ({ title, description, children }) => {
     const bem = bemHelper({ block: 'layout' });
     return (
         <CookiesProvider>
+            <Helmet>
+                <meta charSet="utf-8" />
+                <title>{title}</title>
+                {description && <meta name="description" content={description} />}
+            </Helmet>
             <div className={bem(null, 'main')}>
                 <NavBar className={bem('nav')} />
                 <main className={bem('content')}>
@@ -53,6 +59,13 @@ Layout.propTypes = {
         PropTypes.func,
         PropTypes.arrayOf(PropTypes.node),
     ]).isRequired,
+    title: PropTypes.string,
+    description: PropTypes.string,
+};
+
+Layout.defaultProps = {
+    title: 'Draft FF',
+    description: '',
 };
 
 export default Layout;

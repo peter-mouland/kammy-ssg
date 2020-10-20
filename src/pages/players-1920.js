@@ -58,7 +58,7 @@ const PlayersPage = () => {
         }
     `);
     return (
-        <Layout>
+        <Layout title="Players (2019 - 2020)">
             <section id="players-page" className={bemTable()} data-b-layout="container">
                 <div className="page-content">
                     <PlayersFilters players={players} positions={positions}>

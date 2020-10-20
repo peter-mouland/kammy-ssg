@@ -4,7 +4,7 @@ import IFrame from '../components/iFrame';
 import Layout from '../components/layout';
 
 const Rules = () => (
-    <Layout>
+    <Layout title="Rules">
         <div data-b-layout="container">
             <IFrame
                 title="Rules"

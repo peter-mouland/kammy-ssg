@@ -36,7 +36,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
     );
 
     return (
-        <Layout>
+        <Layout title="Homepage">
             <Homepage
                 selectedGameWeek={selectedGameWeek}
                 gameWeekDates={gameWeekDates}

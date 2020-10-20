@@ -5,7 +5,7 @@ import Layout from '../../components/layout';
 import TabbedMenu from '../../components/tabbed-division-menu';
 
 const ChampionshipDraft = () => (
-    <Layout>
+    <Layout title="Championship - Draft">
         <div data-b-layout="container">
             <TabbedMenu selected="draft" division="championship" label="Championship" />
             <IFrame

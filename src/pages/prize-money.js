@@ -4,7 +4,7 @@ import IFrame from '../components/iFrame';
 import Layout from '../components/layout';
 
 const PrizeMoney = () => (
-    <Layout>
+    <Layout title="Prize Money">
         <div data-b-layout="container">
             <IFrame
                 title="Prize Money"

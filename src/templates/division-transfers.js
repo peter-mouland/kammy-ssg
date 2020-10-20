@@ -23,7 +23,7 @@ const TransfersPage = ({
     const divisionUrl = divisionLabel.toLowerCase().replace(/ /g, '-');
 
     return (
-        <Layout>
+        <Layout title={`${divisionLabel} - Transfers`}>
             <div data-b-layout="container">
                 <TabbedMenu selected="transfers" division={divisionKey} />
                 <DivisionTransfers

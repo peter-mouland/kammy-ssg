@@ -43,7 +43,7 @@ const AdminPlayerList = () => {
         })
         .filter(Boolean);
     return (
-        <Layout meta={{ title: 'Admin Players List', description: '' }}>
+        <Layout title="Admin - Players List">
             <section id="admin-page" data-b-layout="container">
                 <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>
                     <h1>Admin Players</h1>
