@@ -168,7 +168,6 @@ const getTransferWarnings = ({ playerIn, playerOut, teams, manager, changeType, 
         }),
         {},
     );
-    console.log({newTeam, clubPlayers})
 
     const warnings = [
         nonTeamMemberLeaving({ changeType, teamPLayerOut }),
