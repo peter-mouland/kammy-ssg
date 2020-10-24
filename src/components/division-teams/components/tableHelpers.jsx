@@ -59,9 +59,18 @@ StatsHeaders.defaultProps = {
     colspan: 2,
 };
 
+export const TeamName = ({ team = '' }) => (
+    <span>
+        <span className="show-550">{team}</span>
+        <span className="hide-550">
+            {team.split(' ')[0]} {(team.split(' ')[1] || '').charAt(0)}
+        </span>
+    </span>
+);
+
 export const StatsCells = ({ seasonToGameWeek, gameWeekStats, livePoints }) => {
     const isLive = livePoints && livePoints.points;
-    const additional = livePoints.points ? livePoints : gameWeekStats;
+    const additional = livePoints && livePoints.points ? livePoints : gameWeekStats;
     const pairClass = isLive ? `cell--pair cell--live` : 'cell--pair';
     return (
         <Fragment>

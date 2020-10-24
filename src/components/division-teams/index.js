@@ -46,7 +46,6 @@ const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
                                 key="player-timeline"
                                 id="player-timeline"
                                 wide
-                                title={`${playerTimelineProps.player.name} Timeline`}
                                 open={!!playerTimelineProps}
                                 onClose={() => togglePlayerTimeline(null)}
                             >

@@ -7,7 +7,7 @@ export default class Index extends Component {
     static propTypes = {
         children: PropTypes.node.isRequired,
         id: PropTypes.string.isRequired,
-        title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+        title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
         open: PropTypes.bool.isRequired,
         wide: PropTypes.bool,
         center: PropTypes.bool,
@@ -20,6 +20,7 @@ export default class Index extends Component {
     };
 
     static defaultProps = {
+        title: undefined,
         open: false,
         center: false,
         wide: false,
@@ -95,9 +96,9 @@ export default class Index extends Component {
                         style={style}
                     >
                         <div className="modal__header">
-                            <div className="modal__title">
+                            {title && <div className="modal__title">
                                 <h2 className="h2 uppercase">{title}</h2>
-                            </div>
+                            </div>}
                             {!disableClose && (
                                 <button className="modal__close" onClick={() => this.closeModal()}>
                                     X

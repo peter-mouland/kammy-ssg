@@ -8,6 +8,10 @@
 
 .playerName {
     flex: 1;
+
+    &.large {
+        font-size: 1.5em;
+     }
 }
 
 .playerImage {
@@ -40,6 +44,17 @@
         color: orange;
         border-color: orange;
     }
+
+    &.large {
+
+         width: 100px;
+         height: 100px;
+        .circle {
+            border-width: 3px;
+            width: 100px;
+            height: 100px;
+        }
+     }
 }
 
 @media (min-width: 650px) {

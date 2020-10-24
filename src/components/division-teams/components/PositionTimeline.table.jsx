@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import { StatsHeaders, StatsCells } from './tableHelpers';
+import { StatsHeaders, StatsCells, TeamName } from './tableHelpers';
 import './positionTimeline.scss';
 
 const bem = bemHelper({ block: 'position-timeline' });
@@ -17,7 +17,7 @@ const PositionTimelineTable = ({ gameWeeks, season }) => (
         </thead>
         <tbody>
             {gameWeeks.map((gameWeek, gw) =>
-                gameWeek.gameWeekFixtures.map((fixture, i) => (
+                gameWeek.fixtures.map((fixture, i) => (
                     <tr key={`${fixture.event}`}>
                         <th>{i === 0 && gw}</th>
                         <td>{gameWeek.name}</td>
@@ -27,7 +27,8 @@ const PositionTimelineTable = ({ gameWeeks, season }) => (
                                 'my-team': gameWeek.club === fixture.hTname,
                             })}
                         >
-                            {fixture.hTname} {fixture.hScore}
+                            <TeamName team={fixture.hTname} />
+                            {fixture.hScore}
                         </td>
                         <td>vs</td>
                         <td
@@ -36,7 +37,8 @@ const PositionTimelineTable = ({ gameWeeks, season }) => (
                                 'my-team': gameWeek.club === fixture.aTname,
                             })}
                         >
-                            {fixture.aScore} {fixture.aTname}
+                            {fixture.aScore}
+                            <TeamName team={fixture.aTname} />
                         </td>
                         <StatsCells seasonToGameWeek={fixture.stats} />
                     </tr>
