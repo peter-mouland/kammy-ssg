@@ -36,7 +36,7 @@ class ContextualHelp extends PureComponent {
         const boxElement = this.boxRef.getBoundingClientRect();
 
         let x = containerElement.width / 2;
-        let y = (boxElement.height + containerElement.height) * -1;
+        let y = (boxElement.height + 8) * -1;
 
         if (containerElement.x - width / 2 < 0) {
             x = width / 2;
@@ -45,7 +45,7 @@ class ContextualHelp extends PureComponent {
         }
 
         if (containerElement.y - (boxElement.height + containerElement.height) < 0) {
-            y = 0;
+            y = containerElement.height + 8;
         }
 
         return { x, y };
