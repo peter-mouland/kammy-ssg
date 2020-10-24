@@ -16,9 +16,12 @@ import styles from './styles.module.css';
 import ContextualHelp from '../contextual-help';
 
 const bem = bemHelper({ block: 'table' });
+const holdingImage = 'https://fantasyfootball.skysports.com/assets/img/players/blank-player.png';
 
 const getCircleClass = (player) => {
     switch (player.availStatus) {
+        case 'Available':
+            return 'high';
         case 'Doubt 75%':
             return 'high';
         case 'Doubt 50%':
@@ -32,6 +35,46 @@ const getCircleClass = (player) => {
         default:
             return '';
     }
+};
+
+const UnavailablePlayer = ({ player }) => {
+    const circleClass = getCircleClass(player);
+    const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
+    return (
+        <ContextualHelp
+            body={
+                <div>
+                    {(player.availReason || player.availStatus) && (
+                        <strong>{player.availReason || player.availStatus}</strong>
+                    )}
+                    {player.availNews && <p>{player.availNews}</p>}
+                    {player.returnDate && (
+                        <p>
+                            <strong>est-return: </strong> {player.returnDate}
+                        </p>
+                    )}
+                </div>
+            }
+            Trigger={
+                <div className={styles.imageContainer}>
+                    <div className={cx(styles.circle, styles[circleClass])}>
+                        <img src={img} loading="lazy" alt="" />
+                        <img src={holdingImage} alt="" />
+                    </div>
+                    <span
+                        style={{
+                            position: 'absolute',
+                            top: '-4px',
+                            right: '-4px',
+                        }}
+                        className={styles[circleClass]}
+                    >
+                        <InjuredIcon height={16} width={16} stroke="currentColor" fill="white" />
+                    </span>
+                </div>
+            }
+        />
+    );
 };
 
 const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, isAdmin }) => {
@@ -66,6 +109,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                             {teams[managerName].map(
                                 ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
                                     if (!player) return null; // allow for week zero
+
                                     const clubWarnings = allClubWarnings[managerName] || [];
                                     const posWarnings = allPosWarnings[managerName] || [];
                                     const playerLastGW =
@@ -84,7 +128,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                                             : 'row';
                                     const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
                                     const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
-                                    const circleClass = getCircleClass(player);
+
                                     return (
                                         <tr key={playerName} className={`${className} ${warningClassName}`}>
                                             <td className="cell cell--player">
@@ -115,53 +159,11 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                                                     </a>
                                                     <div className={styles.playerImage}>
                                                         {!player.isAvailable ? (
-                                                            <ContextualHelp
-                                                                body={
-                                                                    <div>
-                                                                        <strong>{player.availStatus}</strong>
-                                                                        {player.availReason && (
-                                                                            <p>{player.availReason}</p>
-                                                                        )}
-                                                                        {player.availNews && <p>{player.availNews}</p>}
-                                                                        {player.returnDate && (
-                                                                            <p>
-                                                                                <strong>Return Date: </strong>{' '}
-                                                                                {player.returnDate}
-                                                                            </p>
-                                                                        )}
-                                                                    </div>
-                                                                }
-                                                                Trigger={
-                                                                    <div className={styles.imageContainer}>
-                                                                        <div
-                                                                            className={cx(
-                                                                                styles.circle,
-                                                                                styles[circleClass],
-                                                                            )}
-                                                                        >
-                                                                            <img src={img} loading="lazy" alt="" />
-                                                                        </div>
-                                                                        <span
-                                                                            style={{
-                                                                                position: 'absolute',
-                                                                                top: '-4px',
-                                                                                right: '-4px',
-                                                                            }}
-                                                                            className={styles[circleClass]}
-                                                                        >
-                                                                            <InjuredIcon
-                                                                                height={16}
-                                                                                width={16}
-                                                                                stroke="currentColor"
-                                                                                fill="white"
-                                                                            />
-                                                                        </span>
-                                                                    </div>
-                                                                }
-                                                            />
+                                                            <UnavailablePlayer player={player} />
                                                         ) : (
                                                             <div className={cx(styles.circle)}>
                                                                 <img src={img} loading="lazy" alt="" />
+                                                                <img src={holdingImage} alt="" />
                                                             </div>
                                                         )}
                                                     </div>
