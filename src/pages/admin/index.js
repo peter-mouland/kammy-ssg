@@ -23,7 +23,7 @@ const regenerateNetlify = (setIsLoading) => {
     });
 };
 
-const NotFoundPage = () => {
+const AdminPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [, setCookie] = useCookies(['is-admin']);
     useEffect(() => {
@@ -82,4 +82,4 @@ const NotFoundPage = () => {
     );
 };
 
-export default NotFoundPage;
+export default AdminPage;

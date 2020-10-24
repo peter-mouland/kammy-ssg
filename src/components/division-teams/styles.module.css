@@ -11,11 +11,34 @@
 }
 
 .playerImage {
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
 
     img {
         max-width: 100%;
+    }
+    .imageContainer {
+        position: relative;
+    }
+    .circle {
+        position: relative;
+        border: 2px solid transparent;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        overflow: hidden;
+    }
+    .low {
+        color: red;
+        border-color: red;
+    }
+    .medium {
+        color: orange;
+        border-color: orange;
+    }
+    .high {
+        color: orange;
+        border-color: orange;
     }
 }
 

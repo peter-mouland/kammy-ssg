@@ -60,6 +60,12 @@ export const query = graphql`
                         club
                         name
                         new
+                        isAvailable
+                        avail
+                        availStatus
+                        availReason
+                        availNews
+                        returnDate
                         gameWeeks {
                             fixtures {
                                 id

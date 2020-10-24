@@ -5,7 +5,7 @@ import bemHelper from '@kammy/bem';
 
 import GameWeekSwitcher from '../gameweek-switcher';
 import Modal from '../modal';
-import Table from './DivisionStats.table';
+import StatsTable from './DivisionStats.table';
 import PositionTimeline from './components/PositionTimeline.table';
 import PlayerTimeline from './components/PlayerTimeline.table';
 import TeamWarnings from '../team-warnings';
@@ -55,7 +55,7 @@ const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
                         )}
                     </div>
                     <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
-                        <Table
+                        <StatsTable
                             onShowPositionTimeline={togglePosTimeline}
                             onShowPlayerTimeline={togglePlayerTimeline}
                             selectedGameWeek={selectedGameWeek}

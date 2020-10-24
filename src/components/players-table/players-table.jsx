@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
 
+import ContextualHelp from '../contextual-help';
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
 import New from './new.svg';
@@ -69,6 +70,9 @@ class PlayerTable extends React.Component {
             <table className="table">
                 <thead>
                     <tr className="row row--header">
+                        {!hiddenColumns.includes('isAvailable') && (
+                            <SortableHeader id="avail" label="Avail" sort={sort} handleSort={this.handleSort} />
+                        )}
                         {!hiddenColumns.includes('isHidden') && <th className="cell cell--hidden">isHidden</th>}
                         {!hiddenColumns.includes('new') && (
                             <SortableHeader id="new" label="New" sort={sort} handleSort={this.handleSort} />
@@ -116,6 +120,27 @@ class PlayerTable extends React.Component {
                                     'row',
                                 )}
                             >
+                                {!hiddenColumns.includes('isAvailable') && (
+                                    <td className="cell">
+                                        {!player.isAvailable && (
+                                            <ContextualHelp
+                                                body={
+                                                    <div>
+                                                        <strong>{player.availStatus}</strong>
+                                                        {player.availReason && <p>{player.availReason}</p>}
+                                                        {player.availNews && <p>{player.availNews}</p>}
+                                                        {player.returnDate && (
+                                                            <p>
+                                                                <strong>Return Date: </strong> {player.returnDate}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                }
+                                                Trigger={player.avail}
+                                            />
+                                        )}
+                                    </td>
+                                )}
                                 {!hiddenColumns.includes('isHidden') && (
                                     <td className="cell">{player.isHidden && 'hidden'}</td>
                                 )}

@@ -77,6 +77,12 @@ export const query = graphql`
                 pos
                 new
                 isHidden
+                isAvailable
+                avail
+                availStatus
+                availReason
+                availNews
+                returnDate
                 season {
                     apps
                     subs
