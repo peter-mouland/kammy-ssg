@@ -5,18 +5,16 @@ import PlayersFilters from './players-filters';
 import PlayersTable from './players-table';
 
 const Players = ({ players, positions, visibleStats }) => (
-    <div>
-        <PlayersFilters players={players} positions={positions}>
-            {(playersFiltered) => (
-                <PlayersTable
-                    positions={positions}
-                    players={playersFiltered}
-                    visibleStats={visibleStats}
-                    // onPlayerClick={this.setShowFixtures}
-                />
-            )}
-        </PlayersFilters>
-    </div>
+    <PlayersFilters players={players} positions={positions}>
+        {(playersFiltered) => (
+            <PlayersTable
+                positions={positions}
+                players={playersFiltered}
+                visibleStats={visibleStats}
+                // onPlayerClick={this.setShowFixtures}
+            />
+        )}
+    </PlayersFilters>
 );
 
 Players.propTypes = {

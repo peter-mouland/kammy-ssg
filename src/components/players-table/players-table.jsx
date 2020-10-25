@@ -63,6 +63,7 @@ class PlayerTable extends React.Component {
             positions,
             disabledPlayers,
             liveStatsByCode,
+            onShowPlayerTimeline,
         } = this.props;
         const { sort } = this.state;
         return (
@@ -116,7 +117,7 @@ class PlayerTable extends React.Component {
                                 )}
                                 {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
                                 <td className="cell">
-                                    <Player player={player} />
+                                    <Player player={player} onShowPlayerTimeline={onShowPlayerTimeline} />
                                 </td>
                                 {!hiddenColumns.includes('value') && <td className="cell">{player.value}</td>}
                                 {additionalColumns.map((col) => (
