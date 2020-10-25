@@ -1,0 +1,32 @@
+.player {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.playerName {
+    flex: 1;
+
+    &.large {
+        font-size: 1.5em;
+     }
+}
+
+.playerClub {
+    margin-top: 2px;
+    font-weight: normal;
+    font-size: 0.75em;
+    color: #888;
+}
+
+.playerPosition {
+    font-size: 0.75em;
+    color: #888;
+    width: 40px;
+
+    @media (min-width: 650px) {
+        width: 50px
+    }
+}

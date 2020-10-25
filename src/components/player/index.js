@@ -1,59 +1,64 @@
 import React from 'react';
+import cx from 'classnames';
 
-import styles from '../division-teams/styles.module.css';
-import usePlayers from '../../hooks/use-players';
+import PlayerImage, { Availability } from '../player-image';
+import styles from './styles.module.css';
 
-const onShowPositionTimeline = () => {};
-const onShowPlayerTimeline = () => {};
+const Player = ({ teamPos, large, player, onShowPositionTimeline, onShowPlayerTimeline }) => {
+    const { pos, club, seasonStats, name, isAvailable, gameWeeks } = player;
 
-const Player = ({ teamPos, name }) => {
-    const { playersByName } = usePlayers();
-    const player = playersByName[name] || {};
-    const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
-    const { pos, club } = player;
-    return (
-        <div className={styles.player}>
-            <a
-                href="#"
-                onClick={(e) => {
-                    e.preventDefault();
-                    onShowPositionTimeline({
-                        position: pos,
-                        gameWeeks: player.gameWeeks,
-                        season: player.seasonStats,
-                    });
-                }}
-                title={`Show ${teamPos} timeline`}
-                className={styles.playerPosition}
-            >
-                {pos === teamPos || !teamPos ? (
-                    <div>{pos}</div>
-                ) : (
-                    <div>
-                        {teamPos}
-                        <div>
-                            <small> ({pos.toLowerCase()})</small>
-                        </div>
-                    </div>
-                )}
-            </a>
-            <div className={styles.playerImage}>
-                <img src={img} loading="lazy" alt="" />
+    const Pos = () =>
+        !teamPos || (pos === teamPos) ? (
+            <div>{pos}</div>
+        ) : (
+            <div>
+                {teamPos}
+                <div>
+                    <small> ({pos.toLowerCase()})</small>
+                </div>
             </div>
-            <div className={styles.playerName}>
-                {/* <a*/}
-                {/*    href="#"*/}
-                {/*    onClick={(e) => {*/}
-                {/*        e.preventDefault();*/}
-                {/*        onShowPlayerTimeline({ player });*/}
-                {/*    }}*/}
-                {/*    title={`Show ${teamPos} timeline`}*/}
-                {/* >*/}
-                <p>
-                    <span className="show-625">{name}</span>
-                    <span className="hide-625">{name.split(',')[0]}</span>
-                </p>
-                {/* </a>*/}
+        );
+    const PosLink = () => (
+        <a
+            href="#"
+            onClick={(e) => {
+                e.preventDefault();
+                onShowPositionTimeline({
+                    position: pos,
+                    gameWeeks,
+                    season: seasonStats,
+                });
+            }}
+            title={`Show ${teamPos} timeline`}
+            className={styles.playerPosition}
+        >
+            <Pos />
+        </a>
+    );
+    const PlayerName = () => (
+        <p>
+            <span className="show-625">{name}</span>
+            <span className="hide-625">{name.split(',')[0]}</span>
+        </p>
+    );
+    const PlayerNameLink = () => (
+        <a
+            href="#"
+            onClick={(e) => {
+                e.preventDefault();
+                onShowPlayerTimeline({ player });
+            }}
+            title={`Show ${teamPos} timeline`}
+        >
+            <PlayerName />
+        </a>
+    );
+    return (
+        <div className={cx(styles.player, { [styles.large]: large })}>
+            {onShowPositionTimeline ? <PosLink /> : <Pos />}
+            <PlayerImage player={player} large={large} />
+            <div className={cx(styles.playerName, { [styles.large]: large })}>
+                {onShowPlayerTimeline ? <PlayerNameLink /> : <PlayerName />}
                 <div className={styles.playerClub}>
                     <span className="show-550">{club}</span>
                     <span className="hide-550">
@@ -61,6 +66,7 @@ const Player = ({ teamPos, name }) => {
                     </span>
                 </div>
             </div>
+            {large && !isAvailable && <Availability player={player} />}
         </div>
     );
 };

@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import cx from 'classnames';
 import bemHelper from '@kammy/bem';
 
 import useLiveScores from '../../hooks/use-live-scores';
@@ -11,11 +10,9 @@ import validatePlayer from '../team-warnings/lib/validate-player';
 import validateClub from '../team-warnings/lib/validate-club';
 import validatePos from '../team-warnings/lib/validate-pos';
 import Spacer from '../spacer';
-import UnavailablePlayer from './components/unavailable-player';
-import styles from './styles.module.css';
+import Player from '../player';
 
 const bem = bemHelper({ block: 'table' });
-const holdingImage = 'https://fantasyfootball.skysports.com/assets/img/players/blank-player.png';
 
 const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, isAdmin }) => {
     const { liveStatsByCode, liveStats } = useLiveScores();
@@ -46,102 +43,43 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                             </tr>
                         </thead>
                         <tbody>
-                            {teams[managerName].map(
-                                ({ player, playerName, teamPos, pos, seasonToGameWeek, gameWeekStats }, i) => {
-                                    if (!player) return null; // allow for week zero
+                            {teams[managerName].map((teamPlayer, i) => {
+                                if (!teamPlayer.player) return null; // allow for week zero
+                                const { player, teamPos, playerName, seasonToGameWeek, gameWeekStats } = teamPlayer;
+                                const clubWarnings = allClubWarnings[managerName] || [];
+                                const posWarnings = allPosWarnings[managerName] || [];
+                                const playerLastGW =
+                                    previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
+                                const className =
+                                    playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
+                                const warningClassName =
+                                    isAdmin &&
+                                    (clubWarnings.indexOf(player.club) > -1 ||
+                                        posWarnings.indexOf(playerName) > -1 ||
+                                        newPlayers.indexOf(playerName) > -1 ||
+                                        duplicatePlayers.indexOf(playerName) > -1)
+                                        ? 'row row--warning'
+                                        : 'row';
+                                const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
 
-                                    const clubWarnings = allClubWarnings[managerName] || [];
-                                    const posWarnings = allPosWarnings[managerName] || [];
-                                    const playerLastGW =
-                                        previousTeams && previousTeams[managerName]
-                                            ? previousTeams[managerName][i]
-                                            : {};
-                                    const className =
-                                        playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
-                                    const warningClassName =
-                                        isAdmin &&
-                                        (clubWarnings.indexOf(player.club) > -1 ||
-                                            posWarnings.indexOf(player.name) > -1 ||
-                                            newPlayers.indexOf(player.name) > -1 ||
-                                            duplicatePlayers.indexOf(player.name) > -1)
-                                            ? 'row row--warning'
-                                            : 'row';
-                                    const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
-                                    const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
-
-                                    return (
-                                        <tr key={playerName} className={`${className} ${warningClassName}`}>
-                                            <td className="cell cell--player">
-                                                <div className={styles.player}>
-                                                    <a
-                                                        href="#"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            onShowPositionTimeline({
-                                                                position: pos,
-                                                                gameWeeks: player.gameWeeks,
-                                                                season: player.seasonStats,
-                                                            });
-                                                        }}
-                                                        title={`Show ${player.teamPos} timeline`}
-                                                        className={styles.playerPosition}
-                                                    >
-                                                        {pos === teamPos ? (
-                                                            <div>{pos}</div>
-                                                        ) : (
-                                                            <div>
-                                                                {teamPos}
-                                                                <div>
-                                                                    <small> ({pos.toLowerCase()})</small>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </a>
-                                                    <div className={styles.playerImage}>
-                                                        {!player.isAvailable ? (
-                                                            <UnavailablePlayer player={player} />
-                                                        ) : (
-                                                            <div className={cx(styles.circle)}>
-                                                                <img src={img} loading="lazy" alt="" />
-                                                                <img src={holdingImage} alt="" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className={styles.playerName}>
-                                                        <a
-                                                            href="#"
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                onShowPlayerTimeline({ player });
-                                                            }}
-                                                            title={`Show ${teamPos} timeline`}
-                                                        >
-                                                            <p>
-                                                                <span className="show-625">{playerName}</span>
-                                                                <span className="hide-625">
-                                                                    {playerName.split(',')[0]}
-                                                                </span>
-                                                            </p>
-                                                        </a>
-                                                        <div className={styles.playerClub}>
-                                                            <span className="show-550">{player.club}</span>
-                                                            <span className="hide-550">
-                                                                {player.club.split(' ')[0]}{' '}
-                                                                {(player.club.split(' ')[1] || '').charAt(0)}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <StatsCells
-                                                seasonToGameWeek={seasonToGameWeek}
-                                                gameWeekStats={gameWeekStats}
-                                                livePoints={livePoints}
+                                return (
+                                    <tr key={playerName} className={`${className} ${warningClassName}`}>
+                                        <td className="cell cell--player">
+                                            <Player
+                                                teamPos={teamPos}
+                                                player={player}
+                                                onShowPositionTimeline={onShowPositionTimeline}
+                                                onShowPlayerTimeline={onShowPlayerTimeline}
                                             />
-                                        </tr>
-                                    );
-                                },
-                            )}
+                                        </td>
+                                        <StatsCells
+                                            seasonToGameWeek={seasonToGameWeek}
+                                            gameWeekStats={gameWeekStats}
+                                            livePoints={livePoints}
+                                        />
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </Fragment>

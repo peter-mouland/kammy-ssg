@@ -24,18 +24,22 @@ const applyFilters = ({
     clubFilters,
     player,
     showHidden,
-    showNew,
+    miscFilters,
     customFilter,
     customFilterChecked,
 }) => {
     const customFiltered = !customFilter || !customFilterChecked || customFilter.fn(player);
     const nameFiltered = !nameFilters.length || nameFilters.includes(player.name);
     const posFiltered = !posFilters.length || posFilters.includes(player.pos);
+    const miscFiltered =
+        !miscFilters.length ||
+        (miscFilters.includes('isNew') && player.new) ||
+        (miscFilters.includes('isAvail') && player.isAvailable);
     const hiddenFiltered = player.isHidden === showHidden;
-    const newFiltered = !showNew || player.new === showNew;
     const clubFiltered = !clubFilters.length || clubFilters.includes(player.club);
     // || (clubFilters === MY_TEAM && myTeam && [player.code])
-    return nameFiltered && posFiltered && clubFiltered && hiddenFiltered && newFiltered && customFiltered;
+
+    return nameFiltered && posFiltered && clubFiltered && hiddenFiltered && miscFiltered && customFiltered;
 };
 
 export default class PlayersFilters extends React.Component {
@@ -47,7 +51,6 @@ export default class PlayersFilters extends React.Component {
         customFilter: PropTypes.object,
         selectedPosition: PropTypes.string,
         showHiddenToggle: PropTypes.bool,
-        showNewToggle: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -55,7 +58,6 @@ export default class PlayersFilters extends React.Component {
         customFilter: null,
         selectedPosition: null,
         showHiddenToggle: false,
-        showNewToggle: false,
     };
 
     options = {
@@ -69,21 +71,17 @@ export default class PlayersFilters extends React.Component {
         this.options.positions = props.positions;
         this.state = {
             showHidden: false,
-            showNew: false,
             customFilterChecked: false,
             posFilters: props.selectedPosition ? [props.selectedPosition] : [],
             nameFilters: [],
             clubFilters: [],
+            miscFilters: [],
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.options.clubs = setClubs(nextProps);
     }
-
-    showNew = (e) => {
-        this.setState({ showNew: e.target.checked });
-    };
 
     showHidden = (e) => {
         this.setState({ showHidden: e.target.checked });
@@ -97,6 +95,7 @@ export default class PlayersFilters extends React.Component {
         const posFilters = [];
         const clubFilters = [];
         const nameFilters = [];
+        const miscFilters = [];
 
         (options || []).forEach(({ group, value }) => {
             if (group === 'position') {
@@ -108,12 +107,16 @@ export default class PlayersFilters extends React.Component {
             if (group === 'player') {
                 nameFilters.push(value);
             }
+            if (group === 'misc') {
+                miscFilters.push(value);
+            }
         });
         this.setState({
             selectedFilters: options,
             posFilters,
             nameFilters,
             clubFilters,
+            miscFilters,
         });
     };
 
@@ -125,8 +128,8 @@ export default class PlayersFilters extends React.Component {
             clubFilters,
             nameFilters,
             showHidden,
-            showNew,
             customFilterChecked,
+            miscFilters,
         } = this.state;
         const teamPlayers = myTeam
             ? Object.keys(myTeam).reduce(
@@ -145,16 +148,16 @@ export default class PlayersFilters extends React.Component {
                 customFilter,
                 customFilterChecked,
                 myTeam: teamPlayers,
+                miscFilters,
                 showHidden,
-                showNew,
             }),
         );
         return filtered;
     };
 
     render() {
-        const { customFilter, showHiddenToggle, showNewToggle, players } = this.props;
-        const { customFilterChecked, showHidden, showNew } = this.state;
+        const { customFilter, showHiddenToggle, players } = this.props;
+        const { customFilterChecked, showHidden } = this.state;
         const { clubs, positions } = this.options;
         // if the user cant show hidden players,  don't show hidden players in the select box
         const filteredPlayers = showHiddenToggle ? players : players.filter((player) => player.isHidden === showHidden);
@@ -173,11 +176,6 @@ export default class PlayersFilters extends React.Component {
                                 />
                             </div>
                         )}
-                        {showNewToggle && (
-                            <div>
-                                <Toggle label="New Players" id="new-filter" onClick={this.showNew} checked={showNew} />
-                            </div>
-                        )}
                         {showHiddenToggle && (
                             <div>
                                 <Toggle
@@ -192,6 +190,15 @@ export default class PlayersFilters extends React.Component {
                             <Select
                                 placeholder="filter..."
                                 options={[
+                                    {
+                                        label: 'Misc',
+                                        options: [
+                                            { value: 'isNew', label: 'New Players', group: 'misc' },
+                                            // { value: 'isSub', label: 'Sub(s)', group: 'misc' },
+                                            // { value: 'isPending', label: 'Pending transfers', group: 'misc' },
+                                            { value: 'isAvail', label: 'Available', group: 'misc' },
+                                        ],
+                                    },
                                     {
                                         label: 'Positions',
                                         options: positions.map((position) => ({

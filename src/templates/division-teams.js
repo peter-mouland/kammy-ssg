@@ -59,6 +59,7 @@ export const query = graphql`
                         code
                         club
                         name
+                        pos
                         new
                         isAvailable
                         avail

@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
 
-import ContextualHelp from '../contextual-help';
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
-import New from './new.svg';
+import Player from '../player';
 
 const bem = bemHelper({ block: 'table' });
 
@@ -70,17 +69,9 @@ class PlayerTable extends React.Component {
             <table className="table">
                 <thead>
                     <tr className="row row--header">
-                        {!hiddenColumns.includes('isAvailable') && (
-                            <SortableHeader id="avail" label="Avail" sort={sort} handleSort={this.handleSort} />
-                        )}
                         {!hiddenColumns.includes('isHidden') && <th className="cell cell--hidden">isHidden</th>}
-                        {!hiddenColumns.includes('new') && (
-                            <SortableHeader id="new" label="New" sort={sort} handleSort={this.handleSort} />
-                        )}
                         {!hiddenColumns.includes('code') && <th className="cell cell--code">Code</th>}
-                        <SortableHeader id="pos" label="Pos" sort={sort} handleSort={this.handleSort} />
-                        <SortableHeader id="name" label="Player" sort={sort} handleSort={this.handleSort} />
-                        <SortableHeader id="club" label="Club" sort={sort} handleSort={this.handleSort} />
+                        <th className="cell cell--player">Player</th>
                         {!hiddenColumns.includes('value') && (
                             <SortableHeader id="value" label="Value" sort={sort} handleSort={this.handleSort} />
                         )}
@@ -120,41 +111,12 @@ class PlayerTable extends React.Component {
                                     'row',
                                 )}
                             >
-                                {!hiddenColumns.includes('isAvailable') && (
-                                    <td className="cell">
-                                        {!player.isAvailable && (
-                                            <ContextualHelp
-                                                body={
-                                                    <div>
-                                                        <strong>{player.availStatus}</strong>
-                                                        {player.availReason && <p>{player.availReason}</p>}
-                                                        {player.availNews && <p>{player.availNews}</p>}
-                                                        {player.returnDate && (
-                                                            <p>
-                                                                <strong>Return Date: </strong> {player.returnDate}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                }
-                                                Trigger={player.avail}
-                                            />
-                                        )}
-                                    </td>
-                                )}
                                 {!hiddenColumns.includes('isHidden') && (
                                     <td className="cell">{player.isHidden && 'hidden'}</td>
                                 )}
-                                {!hiddenColumns.includes('new') && (
-                                    <td className="cell">
-                                        {player.new && <New className={bem('new-icon')} />}
-                                        {player.new && <span className="sr-only">new</span>}
-                                    </td>
-                                )}
                                 {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
-                                <td className="cell">{player.pos}</td>
-                                <td className="cell">{player.name}</td>
                                 <td className="cell">
-                                    <small>{player.club}</small>
+                                    <Player player={player} />
                                 </td>
                                 {!hiddenColumns.includes('value') && <td className="cell">{player.value}</td>}
                                 {additionalColumns.map((col) => (
