@@ -15,6 +15,11 @@ const usePlayers = () => {
                     new
                     code
                     value
+                    isAvailable
+                    avail
+                    availStatus
+                    availReason
+                    availNews
                     season {
                         apps
                         subs

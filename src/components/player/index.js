@@ -1,14 +1,17 @@
 import React from 'react';
 import cx from 'classnames';
 
+import usePlayers from '../../hooks/use-players';
 import PlayerImage, { Availability } from '../player-image';
 import styles from './styles.module.css';
 
-const Player = ({ teamPos, large, player, onShowPositionTimeline, onShowPlayerTimeline }) => {
-    const { pos, club, seasonStats, name, isAvailable, gameWeeks } = player;
+const Player = ({ teamPos, large, name: playerName, player, onShowPositionTimeline, onShowPlayerTimeline }) => {
+    const { playersByName } = usePlayers(); // todo: pick a freaking method. hook or props. not both!
+    const playerDetails = playersByName[playerName] || player;
+    const { pos, club, seasonStats, name, isAvailable, gameWeeks } = playerDetails;
 
     const Pos = () =>
-        !teamPos || (pos === teamPos) ? (
+        !teamPos || pos === teamPos ? (
             <div>{pos}</div>
         ) : (
             <div>
@@ -56,7 +59,7 @@ const Player = ({ teamPos, large, player, onShowPositionTimeline, onShowPlayerTi
     return (
         <div className={cx(styles.player, { [styles.large]: large })}>
             {onShowPositionTimeline ? <PosLink /> : <Pos />}
-            <PlayerImage player={player} large={large} />
+            <PlayerImage player={playerDetails} large={large} />
             <div className={cx(styles.playerName, { [styles.large]: large })}>
                 {onShowPlayerTimeline ? <PlayerNameLink /> : <PlayerName />}
                 <div className={styles.playerClub}>
@@ -66,7 +69,7 @@ const Player = ({ teamPos, large, player, onShowPositionTimeline, onShowPlayerTi
                     </span>
                 </div>
             </div>
-            {large && !isAvailable && <Availability player={player} />}
+            {large && !isAvailable && <Availability player={playerDetails} />}
         </div>
     );
 };
