@@ -54,8 +54,8 @@ const Image = ({ player }) => {
 // {player.new && <New className={bem('new-icon')} />}
 // {player.new && <span className="sr-only">new</span>}
 
-const PlayerImage = ({ player, large = false }) => (
-    <div className={cx(styles.playerImage, {[styles.large]: large})}>
+const PlayerImage = ({ player, large = false, small = false }) => (
+    <div className={cx(styles.playerImage, { [styles.large]: large, [styles.small]: small })}>
         {player.isAvailable ? (
             <Image player={player} />
         ) : (

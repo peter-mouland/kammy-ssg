@@ -1,14 +1,11 @@
 import React from 'react';
 import cx from 'classnames';
 
-import usePlayers from '../../hooks/use-players';
 import PlayerImage, { Availability } from '../player-image';
 import styles from './styles.module.css';
 
-const Player = ({ teamPos, large, name: playerName, player, onShowPositionTimeline, onShowPlayerTimeline }) => {
-    const { playersByName } = usePlayers(); // todo: pick a freaking method. hook or props. not both!
-    const playerDetails = playersByName[playerName] || player;
-    const { pos, club, seasonStats, name, isAvailable, gameWeeks } = playerDetails;
+const Player = ({ teamPos, large, small, player, onShowPositionTimeline, onShowPlayerTimeline }) => {
+    const { pos, club, seasonStats, name, isAvailable, gameWeeks } = player;
 
     const Pos = () =>
         !teamPos || pos === teamPos ? (
@@ -57,10 +54,10 @@ const Player = ({ teamPos, large, name: playerName, player, onShowPositionTimeli
         </a>
     );
     return (
-        <div className={cx(styles.player, { [styles.large]: large })}>
+        <div className={cx(styles.player, { [styles.large]: large, [styles.small]: small })}>
             {onShowPositionTimeline ? <PosLink /> : <Pos />}
-            <PlayerImage player={playerDetails} large={large} />
-            <div className={cx(styles.playerName, { [styles.large]: large })}>
+            <PlayerImage player={player} large={large} small={small} />
+            <div className={cx(styles.playerName, { [styles.large]: large, [styles.small]: small })}>
                 {onShowPlayerTimeline ? <PlayerNameLink /> : <PlayerName />}
                 <div className={styles.playerClub}>
                     <span className="show-550">{club}</span>
@@ -69,7 +66,7 @@ const Player = ({ teamPos, large, name: playerName, player, onShowPositionTimeli
                     </span>
                 </div>
             </div>
-            {large && !isAvailable && <Availability player={playerDetails} />}
+            {large && !isAvailable && <Availability player={player} />}
         </div>
     );
 };

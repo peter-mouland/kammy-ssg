@@ -9,6 +9,7 @@ import TransferRequest from './transfer-request';
 import useManagers from '../../hooks/use-managers';
 import useTransfers from '../../hooks/use-transfers';
 import useGameWeeks from '../../hooks/use-game-weeks';
+import usePlayers from '../../hooks/use-players';
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
     const [cookies] = useCookies(['is-admin']);
@@ -18,6 +19,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
         divisionKey,
         teamsByManager,
     });
+    const { playersByName } = usePlayers();
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
     const isCurrentGameWeek = selectedGameWeek === currentGameWeek.gameWeek;
@@ -31,11 +33,17 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                 </div>
             </Spacer>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <TransfersTable isLoading={isLoading} transfers={transfersThisGameWeek} showWarnings={showWarnings} />
+                <TransfersTable
+                    isLoading={isLoading}
+                    transfers={transfersThisGameWeek}
+                    showWarnings={showWarnings}
+                    playersByName={playersByName}
+                />
             </Spacer>
             {isCurrentGameWeek && (
                 <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                     <TransferRequest
+                        playersByName={playersByName}
                         divisionKey={divisionKey}
                         teamsByManager={teamsWithoutWarnings}
                         isLoading={isSaving}

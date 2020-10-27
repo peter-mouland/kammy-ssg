@@ -120,7 +120,15 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
     }
 };
 
-const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveTransfer, transfers }) => {
+const TransfersPage = ({
+    divisionKey,
+    teamsByManager,
+    managers,
+    isLoading,
+    saveTransfer,
+    transfers,
+    playersByName,
+}) => {
     const { players: playersArray } = usePlayers();
     const [drawerContent, setDrawerContent] = useState(drawerInitialState);
     const [changeType, setChangeType] = useState(undefined);
@@ -259,7 +267,9 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                 </span>
                             </Spacer>
                             <span className={bem('player-cta-label')}>
-                                {playerOut && <Player name={playerOut.name} teamPos={playerOut.teamPos} />}
+                                {playerOut && (
+                                    <Player player={playersByName[playerOut.name]} teamPos={playerOut.teamPos} />
+                                )}
                             </span>
                         </Spacer>
 
@@ -272,7 +282,9 @@ const TransfersPage = ({ divisionKey, teamsByManager, managers, isLoading, saveT
                                 </span>
                             </Spacer>
                             <span className={bem('player-cta-label')}>
-                                {playerIn && <Player name={playerIn.name} teamPos={playerIn.teamPos} />}
+                                {playerIn && (
+                                    <Player player={playersByName[playerIn.name]} teamPos={playerIn.teamPos} />
+                                )}
                             </span>
                         </Spacer>
                         {playerIn && playerOut && (

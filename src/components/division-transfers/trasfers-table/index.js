@@ -11,7 +11,7 @@ import Warning from '../../icons/warning.svg';
 import styles from './styles.module.css';
 import Player from '../../player';
 
-const TransferBody = ({ transfers, showWarnings }) => {
+const TransferBody = ({ transfers, showWarnings, playersByName }) => {
     if (transfers.length < 1) return null;
     return (
         <tbody>
@@ -51,10 +51,10 @@ const TransferBody = ({ transfers, showWarnings }) => {
                                 {manager}
                             </td>
                             <td data-col-label="transfer in" className="cell cell--center">
-                                {transferIn && <Player name={transferIn} />}
+                                {transferIn && <Player player={playersByName[transferIn]} small />}
                             </td>
                             <td data-col-label="transfer out" className="cell cell--center">
-                                {transferOut && <Player name={transferOut} />}
+                                {transferOut && <Player player={playersByName[transferOut]} small />}
                             </td>
                             <td data-col-label="comment" className="cell cell--center">
                                 {comment && (
@@ -88,7 +88,7 @@ TransferBody.defaultProps = {
     showWarnings: false,
 };
 
-const GameWeekTransfers = ({ transfers, isLoading, showWarnings }) => (
+const TransfersTable = ({ transfers, isLoading, showWarnings, playersByName }) => (
     <table className="table">
         <thead>
             <tr className="row">
@@ -104,7 +104,7 @@ const GameWeekTransfers = ({ transfers, isLoading, showWarnings }) => (
                 </th>
             </tr>
         </thead>
-        <TransferBody transfers={transfers} showWarnings={showWarnings} />
+        <TransferBody transfers={transfers} showWarnings={showWarnings} playersByName={playersByName} />
         {transfers.length === 0 && !isLoading && (
             <tbody>
                 <tr className="row">
@@ -122,16 +122,16 @@ const GameWeekTransfers = ({ transfers, isLoading, showWarnings }) => (
     </table>
 );
 
-GameWeekTransfers.propTypes = {
+TransfersTable.propTypes = {
     showWarnings: PropTypes.bool,
     isLoading: PropTypes.bool,
     transfers: PropTypes.array,
 };
 
-GameWeekTransfers.defaultProps = {
+TransfersTable.defaultProps = {
     showWarnings: false,
     isLoading: false,
     transfers: [],
 };
 
-export default GameWeekTransfers;
+export default TransfersTable;
