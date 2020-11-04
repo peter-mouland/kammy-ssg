@@ -31,7 +31,10 @@ const Layout = ({ title, description, children }) => {
                 <footer className={bem('footer')}>
                     <div className={bem('footer-content')}>
                         <h2 className={bem('footer-header')}>Relevant Links</h2>
-                        <ul className={bem('footer-links')}>
+                        <ul className={bem('footer-links', 'misc')}>
+                            {/*<li>*/}
+                            {/*    <a href="/game-weeks">Game Weeks</a>*/}
+                            {/*</li>*/}
                             <li>
                                 <NamedLink to="rules" />
                             </li>
@@ -39,10 +42,26 @@ const Layout = ({ title, description, children }) => {
                                 <NamedLink to="prize-money" />
                             </li>
                             <li>
-                                <a href="/players-1920">Players Pages (Season 19-20)</a>
+                                <a href="/players-1920">Players (2019-2020)</a>
                             </li>
                             <li>
                                 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
+                            </li>
+                        </ul>
+
+                        <h2 className={bem('footer-header', 'draft')}>Drafts</h2>
+                        <ul className={bem('footer-links', 'draft')}>
+                            <li>
+                                <NamedLink to="premierLeague-draft">Premier League</NamedLink>
+                            </li>
+                            <li>
+                                <NamedLink to="championship-draft">Championship</NamedLink>
+                            </li>
+                            <li>
+                                <NamedLink to="leagueOne-draft">League One</NamedLink>
+                            </li>
+                            <li>
+                                <NamedLink to="leagueTwo-draft">League Two</NamedLink>
                             </li>
                         </ul>
                     </div>

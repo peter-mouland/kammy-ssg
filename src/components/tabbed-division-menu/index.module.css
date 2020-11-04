@@ -2,30 +2,30 @@
     display: block;
     align-items: center;
 }
-@media (--rnb-mq-phablet) {
+@media (--rnb-mq-medium) {
     .container {
         display: flex;
     }
 }
 
 .tabs {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 0 auto;
     display: flex;
+    padding: 4px;
+    border-top: 1px solid #ddd;
+    border-radius: 5px;
     flex-direction: row;
     justify-content: space-evenly;
     background: #eee;
-    border-top: 1px solid #ddd;
-    padding: 4px;
-    border-radius: 5px;
-    position: fixed;
     z-index: 2;
-    bottom: 0;
-    left: 0;
-    width: 100%;
     height: calc(60px + env(safe-area-inset-bottom));
-    max-width: 650px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 768px;
 }
-@media (--rnb-mq-phablet) {
+@media (--rnb-mq-medium) {
     .tabs {
         position: relative;
         border: 0;

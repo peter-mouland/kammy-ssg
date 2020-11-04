@@ -153,10 +153,10 @@ module.exports = [
         exact: true,
         path: '/premier-league/draft',
         meta: {
-            title: 'Draft premier-league - Draft',
+            title: 'Premier League Draft',
             description: 'Draft : Fantasy Football',
         },
-        label: 'Draft',
+        label: 'Premier League Draft',
         props: {
             division: 'premierLeague',
             src: '',
@@ -241,7 +241,7 @@ module.exports = [
             title: 'Draft championship - Draft',
             description: 'Draft : Fantasy Football',
         },
-        label: 'Draft',
+        label: 'Championship Draft',
         props: {
             division: 'championship',
             src:
@@ -327,7 +327,7 @@ module.exports = [
             title: 'Draft league-one - Draft',
             description: 'Draft : Fantasy Football',
         },
-        label: 'Draft',
+        label: 'League 1 Draft',
         props: {
             division: 'leagueOne',
             src:
@@ -413,7 +413,7 @@ module.exports = [
             title: 'Draft league-two - Draft',
             description: 'Draft : Fantasy Football',
         },
-        label: 'Draft',
+        label: 'League 2 Draft',
         props: {
             division: 'leagueTwo',
             src:

@@ -32,11 +32,6 @@ const tabs = [
         label: 'Transfers',
         Icon: TransfersIcon,
     },
-    {
-        id: 'draft',
-        label: 'Draft',
-        Icon: DraftIcon,
-    },
 ];
 
 const TabbedDivisionMenu = ({ division, selected }) => (
