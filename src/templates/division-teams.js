@@ -143,36 +143,6 @@ export const query = graphql`
                     teamPos
                     pos
                     posIndex
-                    seasonToGameWeek {
-                        apps
-                        subs
-                        gls
-                        asts
-                        cs
-                        con
-                        pensv
-                        ycard
-                        rcard
-                        pb
-                        tb
-                        sb
-                        points
-                    }
-                    gameWeekStats {
-                        apps
-                        subs
-                        gls
-                        asts
-                        cs
-                        con
-                        pensv
-                        ycard
-                        rcard
-                        pb
-                        tb
-                        sb
-                        points
-                    }
                 }
             }
         }

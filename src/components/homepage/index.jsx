@@ -8,6 +8,7 @@ import GameWeekDate from '../gameweek-date';
 import Drawer from '../drawer';
 import './styles.scss';
 import Spacer from '../spacer';
+import NamedLink from '../named-link';
 
 const bem = bemHelper({ block: 'home-page' });
 
@@ -84,7 +85,9 @@ class Homepage extends React.Component {
                 {divisions.map(({ label, key }) => (
                     <div data-b-layout="container">
                         <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                            <h2>{label}</h2>
+                            <h2>
+                                <NamedLink to={`${key}-rankings`}>{label}</NamedLink>
+                            </h2>
                         </Spacer>
                         <DivisionRankings
                             key={key}

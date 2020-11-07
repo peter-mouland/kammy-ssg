@@ -171,17 +171,6 @@ exports.createPages = async ({ actions, graphql }) => {
                     divisionLabel: label,
                 },
             });
-            // DIVISION PLAYERS
-            pageNodesToBuild.push({
-                path: `/week-${gameWeek}/${url}/players`,
-                component: path.resolve('src/templates/division-players.js'),
-                context: {
-                    gameWeek,
-                    prevGameWeek,
-                    divisionKey: key,
-                    divisionLabel: label,
-                },
-            });
             // DIVISION TRANSFERS
             pageNodesToBuild.push({
                 path: `/week-${gameWeek}/${url}/transfers`,
