@@ -88,6 +88,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, skyPlayers }) => {
             availReason: skyPlayer.availReason,
             availNews: skyPlayer.availNews,
             returnDate: skyPlayer.returnDate,
+            url: playerName.toLowerCase().trim().replace(/ /g, '-').replace(/,/g, ''),
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
         return {

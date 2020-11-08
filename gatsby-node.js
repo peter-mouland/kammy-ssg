@@ -105,7 +105,7 @@ exports.onCreateDevServer = () => {};
 
 exports.createPages = async ({ actions, graphql }) => {
     const {
-        data: { allGameWeeks, allDivisions },
+        data: { allGameWeeks, allDivisions, allPlayers },
     } = await graphql(`
         query {
             allGameWeeks {
@@ -119,6 +119,13 @@ exports.createPages = async ({ actions, graphql }) => {
                     key
                     label
                     order
+                }
+            }
+            allPlayers {
+                nodes {
+                    code
+                    name
+                    url
                 }
             }
         }
@@ -204,6 +211,18 @@ exports.createPages = async ({ actions, graphql }) => {
                     nextGameWeek,
                 },
             });
+            //   PLAYER
+            allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
+                pageNodesToBuild.push({
+                    path: `/player/${url}`,
+                    component: path.resolve('src/templates/player.js'),
+                    context: {
+                        gameWeek,
+                        playerName,
+                        code,
+                    },
+                });
+            })
 
             allDivisions.nodes.forEach(({ key, label }) => {
                 const url = label.replace(/ /g, '-').toLowerCase();

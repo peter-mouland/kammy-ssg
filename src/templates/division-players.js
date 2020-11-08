@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, {useState} from 'react';
+import React from 'react';
 import { graphql } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
@@ -7,8 +7,6 @@ import { PlayersFilters, PlayersTable } from '../components/players-table';
 import useLiveScores from '../hooks/use-live-scores';
 import Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
-import Modal from "../components/modal";
-import PlayerTimeline from "../components/division-teams/components/PlayerTimeline.table";
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
@@ -30,8 +28,6 @@ const visibleStats = [
 ];
 
 const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
-    const [positionTimelineProps, togglePosTimeline] = useState(null);
-    const [playerTimelineProps, togglePlayerTimeline] = useState(false);
     const { liveStatsByCode } = useLiveScores();
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce(
@@ -49,7 +45,6 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
                     <PlayersFilters players={players} positions={positions}>
                         {(playersFiltered) => (
                             <PlayersTable
-                                onShowPlayerTimeline={togglePlayerTimeline}
                                 positions={positions}
                                 liveStatsByCode={liveStatsByCode}
                                 players={playersFiltered}
@@ -61,17 +56,6 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
                     </PlayersFilters>
                 </div>
             </section>
-            {playerTimelineProps && (
-                <Modal
-                    key="player-timeline"
-                    id="player-timeline"
-                    wide
-                    open={!!playerTimelineProps}
-                    onClose={() => togglePlayerTimeline(null)}
-                >
-                    <PlayerTimeline {...playerTimelineProps} />
-                </Modal>
-            )}
         </Layout>
     );
 };
@@ -99,6 +83,7 @@ export const query = graphql`
                 availReason
                 availNews
                 returnDate
+                url
                 season {
                     apps
                     subs
@@ -113,37 +98,6 @@ export const query = graphql`
                     pb
                     sb
                     points
-                }
-                gameWeeks {
-                    fixtures {
-                        id
-                        aScore
-                        aTcode
-                        aTname
-                        week
-                        status
-                        stats {
-                            apps
-                            asts
-                            con
-                            cs
-                            pensv
-                            gls
-                            points
-                            rcard
-                            pb
-                            tb
-                            sb
-                            subs
-                            ycard
-                        }
-                        pTcode
-                        hTname
-                        hTcode
-                        hScore
-                        event
-                        date
-                    }
                 }
             }
         }

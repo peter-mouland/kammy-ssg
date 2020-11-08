@@ -1,11 +1,12 @@
 import React from 'react';
 import cx from 'classnames';
+import Link from 'gatsby-link';
 
 import PlayerImage, { Availability } from '../player-image';
 import styles from './styles.module.css';
 
-const Player = ({ teamPos, large, small, player, onShowPositionTimeline, onShowPlayerTimeline }) => {
-    const { pos, club, seasonStats, name, isAvailable, gameWeeks } = player;
+const Player = ({ teamPos, large, small, player }) => {
+    const { pos, club, name, isAvailable, url } = player;
 
     const Pos = () =>
         !teamPos || pos === teamPos ? (
@@ -18,23 +19,6 @@ const Player = ({ teamPos, large, small, player, onShowPositionTimeline, onShowP
                 </div>
             </div>
         );
-    const PosLink = () => (
-        <a
-            href="#"
-            onClick={(e) => {
-                e.preventDefault();
-                onShowPositionTimeline({
-                    position: pos,
-                    gameWeeks,
-                    season: seasonStats,
-                });
-            }}
-            title={`Show ${teamPos} timeline`}
-            className={styles.playerPosition}
-        >
-            <Pos />
-        </a>
-    );
     const PlayerName = () => (
         <p>
             <span className="show-625">{name}</span>
@@ -42,23 +26,16 @@ const Player = ({ teamPos, large, small, player, onShowPositionTimeline, onShowP
         </p>
     );
     const PlayerNameLink = () => (
-        <a
-            href="#"
-            onClick={(e) => {
-                e.preventDefault();
-                onShowPlayerTimeline({ player });
-            }}
-            title={`Show ${teamPos} timeline`}
-        >
+        <Link to={`/player/${url}`} title={`Show ${teamPos} timeline`}>
             <PlayerName />
-        </a>
+        </Link>
     );
     return (
         <div className={cx(styles.player, { [styles.large]: large, [styles.small]: small })}>
-            {onShowPositionTimeline ? <PosLink /> : <Pos />}
+            <Pos />
             <PlayerImage player={player} large={large} small={small} />
             <div className={cx(styles.playerName, { [styles.large]: large, [styles.small]: small })}>
-                {onShowPlayerTimeline ? <PlayerNameLink /> : <PlayerName />}
+                <PlayerNameLink />
                 <div className={styles.playerClub}>
                     <span className="show-550">{club}</span>
                     <span className="hide-550">

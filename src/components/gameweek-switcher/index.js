@@ -15,11 +15,11 @@ const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
     const { gameWeeks, currentGameWeek, nextGameWeek } = useGameWeeks();
     const previousGameWeeks = gameWeeks
         .filter(({ gameWeek }) => gameWeek <= currentGameWeek.gameWeek)
-        .slice(0, selectedGameWeek + 1 + 1);
+        .slice(0, selectedGameWeek + 1);
 
     const options =
-        previousGameWeeks.length > 4
-            ? previousGameWeeks.slice(previousGameWeeks.length - 4, selectedGameWeek + 1 + 1)
+        previousGameWeeks.length > 2
+            ? previousGameWeeks.slice(previousGameWeeks.length - 2, selectedGameWeek + 1)
             : previousGameWeeks;
 
     if (!options.includes(currentGameWeek)) {

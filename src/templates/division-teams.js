@@ -67,37 +67,7 @@ export const query = graphql`
                         availReason
                         availNews
                         returnDate
-                        gameWeeks {
-                            fixtures {
-                                id
-                                aScore
-                                aTcode
-                                aTname
-                                week
-                                status
-                                stats {
-                                    apps
-                                    asts
-                                    con
-                                    cs
-                                    pensv
-                                    gls
-                                    points
-                                    rcard
-                                    pb
-                                    tb
-                                    sb
-                                    subs
-                                    ycard
-                                }
-                                pTcode
-                                hTname
-                                hTcode
-                                hScore
-                                event
-                                date
-                            }
-                        }
+                        url
                     }
                     seasonToGameWeek {
                         apps

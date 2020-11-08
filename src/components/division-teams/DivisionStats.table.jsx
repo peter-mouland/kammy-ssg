@@ -14,7 +14,7 @@ import Player from '../player';
 
 const bem = bemHelper({ block: 'table' });
 
-const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerTimeline, isAdmin }) => {
+const TeamsPage = ({ teams, previousTeams, isAdmin }) => {
     const { liveStatsByCode, liveStats } = useLiveScores();
     const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
@@ -65,12 +65,7 @@ const TeamsPage = ({ teams, previousTeams, onShowPositionTimeline, onShowPlayerT
                                 return (
                                     <tr key={playerName} className={`${className} ${warningClassName}`}>
                                         <td className="cell cell--player">
-                                            <Player
-                                                teamPos={teamPos}
-                                                player={player}
-                                                onShowPositionTimeline={onShowPositionTimeline}
-                                                onShowPlayerTimeline={onShowPlayerTimeline}
-                                            />
+                                            <Player teamPos={teamPos} player={player} />
                                         </td>
                                         <StatsCells
                                             seasonToGameWeek={seasonToGameWeek}
