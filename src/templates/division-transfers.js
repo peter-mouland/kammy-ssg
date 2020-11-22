@@ -56,6 +56,7 @@ export const query = graphql`
                         name
                         code
                         pos
+                        url
                     }
                 }
             }

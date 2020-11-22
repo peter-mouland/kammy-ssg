@@ -9,6 +9,7 @@ const usePlayers = () => {
             allPlayers(filter: { isHidden: { eq: false } }) {
                 nodes {
                     id
+                    url
                     name
                     club
                     pos
