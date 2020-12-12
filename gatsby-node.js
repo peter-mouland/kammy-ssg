@@ -40,6 +40,7 @@ exports.onCreateWebpackConfig = ({ actions, loaders }) => {
         plugins: [
             new webpack.DefinePlugin({
                 'process.env.RELEASE': JSON.stringify(new Date().toISOString()),
+                'process.env.FUNCTIONS_HOST': JSON.stringify(process.env.FUNCTIONS_HOST),
             }),
         ],
         module: {
@@ -222,7 +223,7 @@ exports.createPages = async ({ actions, graphql }) => {
                         code,
                     },
                 });
-            })
+            });
 
             allDivisions.nodes.forEach(({ key, label }) => {
                 const url = label.replace(/ /g, '-').toLowerCase();

@@ -28,8 +28,11 @@ const AdminPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [, setCookie] = useCookies(['is-admin']);
     const info = useQuery(['func'], async () => {
-        const response = await fetch('http://localhost:8888/.netlify/functions/sky-sports-fixtures', {
-            method: 'get',
+        const response = await fetch(`/.netlify/functions/sky-sports`, {
+            method: 'post',
+            body: JSON.stringify({
+                type: 'fixtures',
+            }),
         });
         return response.json();
     });
