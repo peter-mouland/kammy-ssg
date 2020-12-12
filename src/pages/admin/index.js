@@ -30,7 +30,7 @@ const AdminPage = () => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
     const { formattedTime, getFromNow } = useMeta();
-    const publish = () => regenerateGatsby(setIsLoading);
+    const publish = () => regenerateNetlify(setIsLoading);
     return (
         <Layout title="Admin - Links">
             <div id="admin-page" data-b-layout="container">
