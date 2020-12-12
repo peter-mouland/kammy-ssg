@@ -17,10 +17,20 @@ exports.handler = async function skySportsScores(event, context) {
             return { statusCode: response.status, body: response.statusText };
         }
         const data = await response.json();
+        const body = JSON.stringify(data);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(data),
+            headers: {
+                /* Required for CORS support to work */
+                'Access-Control-Allow-Origin': '*',
+                /* Required for cookies, authorization headers with HTTPS */
+                'Access-Control-Allow-Credentials': true,
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'GET',
+                'Content-Length': body.length.toString(),
+            },
+            body,
         };
     } catch (err) {
         console.log(err); // output to netlify function log
