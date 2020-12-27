@@ -43,23 +43,6 @@ const applyFilters = ({
 };
 
 export default class PlayersFilters extends React.Component {
-    static propTypes = {
-        players: PropTypes.array.isRequired,
-        positions: PropTypes.array.isRequired,
-        children: PropTypes.func.isRequired,
-        myTeam: PropTypes.object,
-        customFilter: PropTypes.object,
-        selectedPosition: PropTypes.string,
-        showHiddenToggle: PropTypes.bool,
-    };
-
-    static defaultProps = {
-        myTeam: null,
-        customFilter: null,
-        selectedPosition: null,
-        showHiddenToggle: false,
-    };
-
     options = {
         clubs: [],
         positions: [],
@@ -232,3 +215,20 @@ export default class PlayersFilters extends React.Component {
         );
     }
 }
+
+PlayersFilters.propTypes = {
+    players: PropTypes.array.isRequired,
+    positions: PropTypes.array.isRequired,
+    children: PropTypes.func.isRequired,
+    myTeam: PropTypes.object,
+    customFilter: PropTypes.object,
+    selectedPosition: PropTypes.string,
+    showHiddenToggle: PropTypes.bool,
+};
+
+PlayersFilters.defaultProps = {
+    myTeam: null,
+    customFilter: null,
+    selectedPosition: null,
+    showHiddenToggle: false,
+};

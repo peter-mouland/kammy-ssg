@@ -12,7 +12,7 @@
   "dependencies": {
     "@kammy/helpers.spreadsheet": "1.0.0",
     "chalk": "4.1.0",
-    "axios": "0.21.0",
+    "axios": "0.21.1",
     "node-fetch": "2.6.1",
     "date-fns": "2.16.1",
     "json-query": "2.2.2",

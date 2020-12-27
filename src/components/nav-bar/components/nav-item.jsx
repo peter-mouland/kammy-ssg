@@ -26,8 +26,8 @@ const NavItem = ({ label, children, className = '', to }) => {
             {links.length === 1 && links[0]}
             {links.length > 1 && (
                 <div className="nav-item__children">
-                    {links.map((child, i) => (
-                        <div key={i} className="nav-item__child">
+                    {links.map((child) => (
+                        <div key={child} className="nav-item__child">
                             {child}
                         </div>
                     ))}

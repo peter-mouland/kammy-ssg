@@ -9,12 +9,12 @@ import Button from '../../components/button';
 import Spacer from '../../components/spacer';
 import useMeta from '../../hooks/use-meta';
 
-const regenerateGatsby = (setIsLoading) => {
-    setIsLoading(true);
-    return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
-        method: 'post',
-    });
-};
+// const regenerateGatsby = (setIsLoading) => {
+//     setIsLoading(true);
+//     return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
+//         method: 'post',
+//     });
+// };
 
 // eslint-disable-next-line no-unused-vars
 const regenerateNetlify = (setIsLoading) => {
@@ -36,7 +36,7 @@ const AdminPage = () => {
         });
         return response.json();
     });
-    console.log({ info });
+    // console.log({ info });
     useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });

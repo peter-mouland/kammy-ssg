@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 import NamedLink from '../named-link';
-import DraftIcon from '../icons/draft.svg';
+// import DraftIcon from '../icons/draft.svg';
 import GroupIcon from '../icons/group.svg';
 import PlayersIcon from '../icons/players.svg';
 import TransfersIcon from '../icons/transfers.svg';

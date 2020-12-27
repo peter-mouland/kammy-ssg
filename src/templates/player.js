@@ -4,7 +4,6 @@ import { graphql } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import Layout from '../components/layout';
-import TabbedMenu from '../components/tabbed-division-menu';
 import PlayerTimeline from '../components/division-teams/components/PlayerTimeline.table';
 
 const bemTable = bemHelper({ block: 'players-page-table' });

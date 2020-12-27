@@ -58,7 +58,6 @@ const DivisionRankingsTable = ({ points, type, handleRowHover, rank }) => (
 DivisionRankingsTable.propTypes = {
     handleRowHover: PropTypes.func,
     points: PropTypes.array,
-    managers: PropTypes.array,
     type: PropTypes.oneOf(['seasonPoints', 'gameWeekPoints']).isRequired,
     rank: PropTypes.oneOf(['rank', 'rankChange']).isRequired,
 };
@@ -66,7 +65,6 @@ DivisionRankingsTable.propTypes = {
 DivisionRankingsTable.defaultProps = {
     handleRowHover: () => {},
     points: [],
-    managers: [],
 };
 
 export default DivisionRankingsTable;

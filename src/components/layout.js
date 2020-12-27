@@ -32,9 +32,9 @@ const Layout = ({ title, description, children }) => {
                     <div className={bem('footer-content')}>
                         <h2 className={bem('footer-header')}>Relevant Links</h2>
                         <ul className={bem('footer-links', 'misc')}>
-                            {/*<li>*/}
+                            {/* <li>*/}
                             {/*    <a href="/game-weeks">Game Weeks</a>*/}
-                            {/*</li>*/}
+                            {/* </li>*/}
                             <li>
                                 <NamedLink to="rules" />
                             </li>

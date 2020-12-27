@@ -16,12 +16,10 @@ export default class Index extends Component {
         focusElement: PropTypes.string,
         onOpen: PropTypes.func,
         onClose: PropTypes.func,
-        style: PropTypes.object,
     };
 
     static defaultProps = {
         title: undefined,
-        open: false,
         center: false,
         wide: false,
         disableClose: false,
@@ -76,7 +74,7 @@ export default class Index extends Component {
     }
 
     render() {
-        const { disableClose, disableOverlay, open, id, title, wide, children, style, center } = this.props;
+        const { disableClose, disableOverlay, open, id, title, wide, children, center } = this.props;
 
         const className = `modal modal--${open ? 'show' : 'hide'} font-standard modal--${wide ? 'wide' : 'default'}`;
         return (
@@ -93,14 +91,15 @@ export default class Index extends Component {
                         className={`modal__content ${
                             center ? 'modal__content--center' : 'modal__content--mobile-full'
                         }`}
-                        style={style}
                     >
                         <div className="modal__header">
-                            {title && <div className="modal__title">
-                                <h2 className="h2 uppercase">{title}</h2>
-                            </div>}
+                            {title && (
+                                <div className="modal__title">
+                                    <h2 className="h2 uppercase">{title}</h2>
+                                </div>
+                            )}
                             {!disableClose && (
-                                <button className="modal__close" onClick={() => this.closeModal()}>
+                                <button type="button" className="modal__close" onClick={() => this.closeModal()}>
                                     X
                                 </button>
                             )}
