@@ -78,6 +78,7 @@
     "react-helmet": "6.1.0",
     "react-query": "2.26.4",
     "react-select": "3.1.1",
+    "react-table": "^7.6.2",
     "recharts": "1.8.5",
     "reselect": "4.0.0",
     "rimraf": "3.0.2",
