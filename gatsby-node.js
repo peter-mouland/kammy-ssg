@@ -106,7 +106,7 @@ exports.onCreateDevServer = () => {};
 
 exports.createPages = async ({ actions, graphql }) => {
     const {
-        data: { allGameWeeks, allDivisions, allPlayers },
+        data: { allGameWeeks, allDivisions, allPlayers, allManagers },
     } = await graphql(`
         query {
             allGameWeeks {
@@ -127,6 +127,14 @@ exports.createPages = async ({ actions, graphql }) => {
                     code
                     name
                     url
+                }
+            }
+            allManagers(sort: { fields: managerKey }) {
+                nodes {
+                    manager
+                    managerKey
+                    url
+                    divisionKey
                 }
             }
         }
@@ -215,12 +223,25 @@ exports.createPages = async ({ actions, graphql }) => {
             //   PLAYER
             allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
                 pageNodesToBuild.push({
-                    path: `/player/${url}`,
+                    path: url,
                     component: path.resolve('src/templates/player.js'),
                     context: {
                         gameWeek,
                         playerName,
                         code,
+                    },
+                });
+            });
+            //   MANAGER
+            allManagers.nodes.forEach(({ divisionKey, manager: managerName, managerKey, url }) => {
+                pageNodesToBuild.push({
+                    path: url,
+                    component: path.resolve('src/templates/manager.js'),
+                    context: {
+                        gameWeek,
+                        managerName,
+                        managerKey,
+                        divisionKey,
                     },
                 });
             });

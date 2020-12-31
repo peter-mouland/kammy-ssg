@@ -1,7 +1,7 @@
 /* global fetch */
 import React, { useState, useEffect } from 'react';
 import Link from 'gatsby-link';
-import { useQuery } from 'react-query';
+// import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 
 import Layout from '../../components/layout';
@@ -27,15 +27,15 @@ const regenerateNetlify = (setIsLoading) => {
 const AdminPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [, setCookie] = useCookies(['is-admin']);
-    const info = useQuery(['func'], async () => {
-        const response = await fetch(`/.netlify/functions/sky-sports`, {
-            method: 'post',
-            body: JSON.stringify({
-                type: 'fixtures',
-            }),
-        });
-        return response.json();
-    });
+    // const info = useQuery(['func'], async () => {
+    //     const response = await fetch(`/.netlify/functions/sky-sports`, {
+    //         method: 'post',
+    //         body: JSON.stringify({
+    //             type: 'fixtures',
+    //         }),
+    //     });
+    //     return response.json();
+    // });
     // console.log({ info });
     useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });

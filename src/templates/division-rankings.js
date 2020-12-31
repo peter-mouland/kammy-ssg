@@ -82,9 +82,9 @@ export const query = graphql`
                         rankChange
                     }
                 }
-                managerName
                 manager {
-                    manager
+                    key: managerKey
+                    name: manager
                     division {
                         key
                         label

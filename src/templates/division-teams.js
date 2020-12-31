@@ -15,14 +15,14 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
     const teamsByManager = currentTeams.reduce(
         (prev, { nodes: team }) => ({
             ...prev,
-            [team[0].managerName]: team,
+            [team[0].manager.name]: team,
         }),
         {},
     );
     const previousTeamsByManager = (previousTeams || []).reduce(
         (prev, { nodes: team }) => ({
             ...prev,
-            [team[0].managerName]: team,
+            [team[0].manager.name]: team,
         }),
         {},
     );
@@ -50,7 +50,10 @@ export const query = graphql`
         ) {
             group(field: managerName) {
                 nodes {
-                    managerName
+                    manager {
+                        key: managerKey
+                        name: manager
+                    }
                     playerName
                     teamPos
                     pos
@@ -108,7 +111,10 @@ export const query = graphql`
         ) {
             group(field: managerName) {
                 nodes {
-                    managerName
+                    manager {
+                        key: managerKey
+                        name: manager
+                    }
                     playerName
                     teamPos
                     pos

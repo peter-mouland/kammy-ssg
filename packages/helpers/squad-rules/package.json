@@ -1,0 +1,10 @@
+{
+  "name": "@kammy/helpers.squad-rules",
+  "version": "0.3.11",
+  "description": "squad shizzle",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "src": "src/index.js",
+  "author": "Peter Mouland <peter.mouland@clearscore.com> (http://www.clearscore.com)",
+  "license": "UNLICENSED"
+}

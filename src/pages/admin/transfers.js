@@ -4,7 +4,6 @@ import Layout from '../../components/layout';
 import Spacer from '../../components/spacer';
 
 const AdminPlayerList = () => (
-    // const { isLoading, saveTransfer, isSaving, transfersThisGameWeek } = useTransfers({ divisionKey });
     <Layout title="Admin - Transfers List" description="">
         <section id="admin-page" data-b-layout="container">
             <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>

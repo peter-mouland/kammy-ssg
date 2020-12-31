@@ -7,14 +7,14 @@ import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 import useManagers from '../../hooks/use-managers';
-import useTransfers from '../../hooks/use-transfers';
+import useSquadChanges from '../../hooks/use-squad-changes';
 import useGameWeeks from '../../hooks/use-game-weeks';
 import usePlayers from '../../hooks/use-players';
 
 const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager }) => {
     const [cookies] = useCookies(['is-admin']);
     const { currentGameWeek } = useGameWeeks();
-    const { isLoading, saveTransfer, isSaving, transfersThisGameWeek, teamsWithoutWarnings } = useTransfers({
+    const { isLoading, saveSquadChange, isSaving, changesThisGameWeek, newTeams } = useSquadChanges({
         selectedGameWeek,
         divisionKey,
         teamsByManager,
@@ -35,7 +35,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                 <TransfersTable
                     isLoading={isLoading}
-                    transfers={transfersThisGameWeek}
+                    transfers={changesThisGameWeek}
                     showWarnings={showWarnings}
                     playersByName={playersByName}
                 />
@@ -45,10 +45,10 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                     <TransferRequest
                         playersByName={playersByName}
                         divisionKey={divisionKey}
-                        teamsByManager={teamsWithoutWarnings}
+                        teamsByManager={newTeams}
                         isLoading={isSaving}
-                        saveTransfer={saveTransfer}
-                        transfers={transfersThisGameWeek}
+                        saveSquadChange={saveSquadChange}
+                        transfers={changesThisGameWeek}
                         managers={managers}
                     />
                 </Spacer>

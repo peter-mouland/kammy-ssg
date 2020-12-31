@@ -10,9 +10,9 @@
   "license": "ISC",
   "homepage": "https://github.com/peter-mouland/kammy-ssg#readme",
   "engines": {
-    "node": ">=12.0.0",
+    "node": ">=14.0.0",
     "npm": ">=6.0.0",
-    "yarn": ">=1.9.0"
+    "yarn": ">=1.22.0"
   },
   "bugs": {
     "url": "https://github.com/peter-mouland/kammy-ssg/issues"
@@ -20,7 +20,7 @@
   "scripts": {
     "--- NETLIFY ---": "",
     "dev": "netlify dev",
-    "deploy": "yarn build:prod && netlify deploy --prod --open --dir ./docs",
+    "deploy": "netlify deploy --prod --open --dir ./docs",
     "deploy:hard": "yarn clean:dist && yarn build:prod && netlify deploy --prod --open --dir ./docs",
     "--- GATSBY ---": "",
     "start": "yarn clean:dist && TZ='Europe/London' gatsby develop",
@@ -54,17 +54,17 @@
     "classnames": "2.2.6",
     "express-ws": "4.0.0",
     "fromnow": "3.0.1",
-    "gatsby": "2.29.2",
-    "gatsby-link": "2.8.0",
+    "gatsby": "2.32.4",
+    "gatsby-link": "2.11.0",
     "gatsby-plugin-buildtime-timezone": "1.0.3",
     "gatsby-plugin-google-analytics": "^2.3.15",
     "gatsby-plugin-react-css-modules": "^2.3.10",
     "gatsby-plugin-react-svg": "3.0.0",
     "gatsby-plugin-remove-trailing-slashes": "^2.3.13",
     "gatsby-plugin-sass": "2.8.0",
-    "gatsby-plugin-svgr": "2.0.2",
-    "gatsby-plugin-webpack-bundle-analyser-v2": "1.1.18",
-    "gatsby-source-filesystem": "2.8.1",
+    "gatsby-plugin-svgr": "2.1.0",
+    "gatsby-plugin-webpack-bundle-analyser-v2": "1.1.20",
+    "gatsby-source-filesystem": "2.11.0",
     "mini-css-extract-plugin": "0.11.2",
     "node-sass": "4.14.1",
     "postcss-hexrgba": "2.0.1",
@@ -84,22 +84,22 @@
     "url-search-params-polyfill": "8.1.0"
   },
   "devDependencies": {
-    "@clearscore/sonar": "2.2.0",
+    "@clearscore/sonar": "2.5.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "26.6.3",
-    "babel-preset-gatsby": "0.9.1",
+    "babel-preset-gatsby": "0.12.1",
     "enzyme": "3.11.0",
-    "enzyme-adapter-react-16": "1.15.5",
-    "eslint": "7.16.0",
+    "enzyme-adapter-react-16": "1.15.6",
+    "eslint": "7.20.0",
     "eslint-config-airbnb": "18.2.1",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-react": "7.21.5",
+    "eslint-plugin-react": "7.22.0",
     "husky": "4.3.6",
     "jest": "26.6.3",
     "jest-enzyme": "7.1.2",
     "jest-junit": "12.0.0",
     "lerna": "3.22.1",
     "local-web-server": "4.2.1",
-    "netlify-cli": "2.69.11"
+    "netlify-cli": "2.70.0"
   }
 }
