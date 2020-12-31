@@ -13,9 +13,12 @@ import { CookiesProvider } from 'react-cookie';
 import NavBar from './nav-bar';
 import NamedLink from './named-link';
 import './index.css';
+import useMeta from '../hooks/use-meta';
+import Spacer from './spacer';
 
 const Layout = ({ title, description, children }) => {
     const bem = bemHelper({ block: 'layout' });
+    const { formattedTime, getFromNow } = useMeta();
     return (
         <CookiesProvider>
             <Helmet>
@@ -30,6 +33,13 @@ const Layout = ({ title, description, children }) => {
                 </main>
                 <footer className={bem('footer')}>
                     <div className={bem('footer-content')}>
+                        <Spacer
+                            all={{ vertical: Spacer.spacings.MEDIUM, horizontal: Spacer.spacings.LARGE }}
+                            style={{ fontSize: '0.9em' }}
+                        >
+                            <strong style={{ color: '#888', fontSize: '0.9em' }}>Last Build:</strong> {formattedTime}{' '}
+                            <small style={{ color: '#888', fontSize: '0.9em' }}>({getFromNow()})</small>
+                        </Spacer>
                         <h2 className={bem('footer-header')}>Relevant Links</h2>
                         <ul className={bem('footer-links', 'misc')}>
                             {/* <li>*/}
@@ -48,7 +58,6 @@ const Layout = ({ title, description, children }) => {
                                 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
                             </li>
                         </ul>
-
                         <h2 className={bem('footer-header', 'draft')}>Drafts</h2>
                         <ul className={bem('footer-links', 'draft')}>
                             <li>

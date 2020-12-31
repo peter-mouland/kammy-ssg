@@ -6,7 +6,7 @@ import Layout from '../components/layout';
 import Homepage from '../components/homepage';
 import useGameWeeks from '../hooks/use-game-weeks';
 
-const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
+const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
     const { previousGameWeek, currentGameWeek, nextGameWeek } = useGameWeeks();
     const {
         allManagers: { nodes: managers },
@@ -19,16 +19,17 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
         prevGameWeek: previousGameWeek,
     };
     const statsByDivision = managers.reduce(
-        (prev, { manager, division }) => ({
+        (prev, { manager, managerKey, divisionKey }) => ({
             ...prev,
-            [division.key]: [
-                ...(prev[division.key] || []),
+            [divisionKey]: [
+                ...(prev[divisionKey] || []),
                 {
-                    managerName: manager,
-                    points: leagueStats.find((stats) => stats.managerName === manager).points,
-                    division: division.key,
-                    divisionLabel: division.label,
-                    divisionOrder: division.order,
+                    manager: {
+                        name: manager,
+                        key: managerKey,
+                    },
+                    points: leagueStats.find((stats) => stats.manager.name === manager).points,
+                    division: divisionKey,
                 },
             ],
         }),
@@ -96,9 +97,9 @@ export const query = graphql`
                         rank
                     }
                 }
-                managerName
                 manager {
-                    manager
+                    key: managerKey
+                    name: manager
                     division {
                         key
                         label
@@ -110,12 +111,11 @@ export const query = graphql`
         allManagers(sort: { fields: division___order }) {
             nodes {
                 manager
-                division {
-                    key
-                }
+                managerKey
+                divisionKey
             }
         }
     }
 `;
 
-export default Index;
+export default HomepageIndex;

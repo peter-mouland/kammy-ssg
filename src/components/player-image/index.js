@@ -1,10 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 import ContextualHelp from '../contextual-help';
 import styles from './styles.module.css';
 import InjuredIcon from '../icons/warning.svg';
-import New from '../icons/new.svg';
 
 const holdingImage = 'https://fantasyfootball.skysports.com/assets/img/players/blank-player.png';
 
@@ -38,24 +38,45 @@ export const Availability = ({ player }) => (
         )}
     </div>
 );
+Availability.propTypes = {
+    player: PropTypes.shape({
+        isAvailable: PropTypes.bool,
+        returnDate: PropTypes.string,
+        availNews: PropTypes.string,
+        availStatus: PropTypes.string,
+        availReason: PropTypes.string,
+    }).isRequired,
+};
 
 const Image = ({ player }) => {
     const circleClass = getCircleClass(player);
     const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
     return (
         <div className={cx(styles.circle, !player.isAvailable && styles[circleClass])}>
-            <img src={img} loading="lazy" alt="" />
+            {player.code > 0 && <img src={img} loading="lazy" alt="" />}
             <img src={holdingImage} alt="" className={styles.placeholder} />
         </div>
     );
+};
+Image.propTypes = {
+    player: PropTypes.shape({
+        code: PropTypes.number.isRequired,
+        isAvailable: PropTypes.bool,
+    }).isRequired,
 };
 
 // new
 // {player.new && <New className={bem('new-icon')} />}
 // {player.new && <span className="sr-only">new</span>}
 
-const PlayerImage = ({ player, large = false, small = false }) => (
-    <div className={cx(styles.playerImage, { [styles.large]: large, [styles.small]: small })}>
+const PlayerImage = ({ player, large, small, medium }) => (
+    <div
+        className={cx(styles.playerImage, {
+            [styles.large]: large,
+            [styles.mediumSize]: medium,
+            [styles.small]: small,
+        })}
+    >
         {player.isAvailable ? (
             <Image player={player} />
         ) : (
@@ -85,5 +106,20 @@ const PlayerImage = ({ player, large = false, small = false }) => (
         )}
     </div>
 );
+
+PlayerImage.propTypes = {
+    large: PropTypes.bool,
+    medium: PropTypes.bool,
+    small: PropTypes.bool,
+    player: PropTypes.shape({
+        isAvailable: PropTypes.bool,
+    }).isRequired,
+};
+
+PlayerImage.defaultProps = {
+    large: false,
+    medium: false,
+    small: false,
+};
 
 export default PlayerImage;

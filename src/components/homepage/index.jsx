@@ -12,97 +12,90 @@ import NamedLink from '../named-link';
 
 const bem = bemHelper({ block: 'home-page' });
 
-class Homepage extends React.Component {
-    state = {
+const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
+    const [{ showTransfers, selectedGameWeek }, setState] = React.useState({
         showTransfers: false,
-    };
+    });
 
-    showFixtures = (selectedGameWeek) => {
-        this.setState({ showTransfers: true, selectedGameWeek });
-    };
+    const showFixtures = (gameWeek) => setState({ showTransfers: true, selectedGameWeek: gameWeek });
+    const { currentGameWeek, nextGameWeek, prevGameWeek } = gameWeekDates;
 
-    render() {
-        const { gameWeekDates, divisions, statsByDivision } = this.props;
-        if (!gameWeekDates) return null;
-        const { currentGameWeek, nextGameWeek, prevGameWeek } = gameWeekDates;
-        const { showTransfers, selectedGameWeek } = this.state;
-
-        return (
-            <section id="home-page" className={bem()}>
-                <div className="homepage-dates">
-                    <div className="homepage__prev-date">
-                        {prevGameWeek && (
-                            <a onClick={() => this.showFixtures(prevGameWeek)}>
-                                <GameWeekDate
-                                    gameWeek={prevGameWeek}
-                                    calStart={`
+    if (!gameWeekDates) return null;
+    return (
+        <section id="home-page" className={bem()}>
+            <div className="homepage-dates">
+                <div className="homepage__prev-date">
+                    {prevGameWeek && (
+                        <a onClick={() => showFixtures(prevGameWeek)}>
+                            <GameWeekDate
+                                gameWeek={prevGameWeek}
+                                calStart={`
                       GW${prevGameWeek.gameWeek}
                   `}
-                                    showEnd={false}
-                                    showStartTime={false}
-                                />
-                            </a>
-                        )}
-                    </div>
-                    <div className="homepage__gw-date">
-                        <a onClick={() => this.showFixtures(currentGameWeek)}>
-                            <GameWeekDate gameWeek={currentGameWeek} />
+                                showEnd={false}
+                                showStartTime={false}
+                            />
                         </a>
-                    </div>
-                    <div className="homepage__next-date">
-                        <a onClick={() => this.showFixtures(nextGameWeek)}>
-                            {nextGameWeek ? (
-                                <GameWeekDate
-                                    gameWeek={nextGameWeek}
-                                    calEnd={`GW${nextGameWeek.gameWeek}`}
-                                    showStart={false}
-                                    showEndTime={false}
-                                />
-                            ) : (
-                                <GameWeekDate
-                                    gameWeek={currentGameWeek}
-                                    calEnd="fin."
-                                    showStart={false}
-                                    showEndTime={false}
-                                />
-                            )}
-                        </a>
-                    </div>
+                    )}
                 </div>
-                <Drawer
-                    id="GameWeekFixtures"
-                    isOpen={showTransfers}
-                    placement={Drawer.placements.RIGHT}
-                    onClose={() => this.setState({ showTransfers: false })}
-                >
-                    <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.MEDIUM }}>
-                        <Spacer all={{ bottom: Spacer.spacings.MEDIUM }}>
-                            <h2>GW{selectedGameWeek && selectedGameWeek.gameWeek} Fixtures</h2>
-                        </Spacer>
-                        <GameWeekFixtures {...selectedGameWeek} />
+                <div className="homepage__gw-date">
+                    <a onClick={() => showFixtures(currentGameWeek)}>
+                        <GameWeekDate gameWeek={currentGameWeek} />
+                    </a>
+                </div>
+                <div className="homepage__next-date">
+                    <a onClick={() => showFixtures(nextGameWeek)}>
+                        {nextGameWeek ? (
+                            <GameWeekDate
+                                gameWeek={nextGameWeek}
+                                calEnd={`GW${nextGameWeek.gameWeek}`}
+                                showStart={false}
+                                showEndTime={false}
+                            />
+                        ) : (
+                            <GameWeekDate
+                                gameWeek={currentGameWeek}
+                                calEnd="fin."
+                                showStart={false}
+                                showEndTime={false}
+                            />
+                        )}
+                    </a>
+                </div>
+            </div>
+            <Drawer
+                id="GameWeekFixtures"
+                isOpen={showTransfers}
+                placement={Drawer.placements.RIGHT}
+                onClose={() => setState({ showTransfers: false })}
+            >
+                <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.MEDIUM }}>
+                    <Spacer all={{ bottom: Spacer.spacings.MEDIUM }}>
+                        <h2>GW{selectedGameWeek && selectedGameWeek.gameWeek} Fixtures</h2>
                     </Spacer>
-                </Drawer>
-                {divisions.map(({ label, key }) => (
-                    <div data-b-layout="container">
-                        <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                            <h2>
-                                <NamedLink to={`${key}-rankings`}>{label}</NamedLink>
-                            </h2>
-                        </Spacer>
-                        <DivisionRankings
-                            key={key}
-                            gameWeek={currentGameWeek.gameWeek}
-                            stats={statsByDivision[key]}
-                            showGameWeekSwitcher={false}
-                            showChart={false}
-                            showWeekly={false}
-                        />
-                    </div>
-                ))}
-            </section>
-        );
-    }
-}
+                    <GameWeekFixtures {...selectedGameWeek} />
+                </Spacer>
+            </Drawer>
+            {divisions.map(({ label, key }) => (
+                <div data-b-layout="container" key={key}>
+                    <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                        <h2>
+                            <NamedLink to={`${key}-rankings`}>{label}</NamedLink>
+                        </h2>
+                    </Spacer>
+                    <DivisionRankings
+                        key={key}
+                        gameWeek={currentGameWeek.gameWeek}
+                        stats={statsByDivision[key]}
+                        showGameWeekSwitcher={false}
+                        selectedGameWeek={selectedGameWeek}
+                        showWeekly={false}
+                    />
+                </div>
+            ))}
+        </section>
+    );
+};
 
 Homepage.propTypes = {
     gameWeekDates: PropTypes.object,

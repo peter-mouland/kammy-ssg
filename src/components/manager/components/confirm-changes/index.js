@@ -1,0 +1,98 @@
+/* eslint-disable react/prop-types */
+import React, { useState } from 'react';
+
+import useSquadChanges from '../../../../hooks/use-squad-changes';
+import usePlayers from '../../../../hooks/use-players';
+import Spacer from '../../../spacer';
+import Button from '../../../button';
+import styles from './confirm-changes.module.css';
+import Player from '../../../player';
+import Accordion from '../accordion';
+
+const confirmChange = async ({ comment, newChanges, divisionKey, saveSquadChange, reset }) => {
+    const timestamp = new Date();
+    const data = newChanges.map(({ type, playerIn, playerOut, manager, ...transfer }) => ({
+        ...transfer,
+        timestamp,
+        type,
+        manager,
+        Division: divisionKey,
+        Manager: manager,
+        Status: transfer.status,
+        isPending: false,
+        'Transfer Type': type,
+        'Transfer In': playerIn.name,
+        'Transfer Out': playerOut.name,
+        Comment: comment,
+    }));
+
+    await saveSquadChange({ division: divisionKey, data });
+    reset();
+};
+
+const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChanges }) => {
+    const [comment, setComment] = useState('');
+    const { playersByName } = usePlayers();
+    const { isLoading, isSaving, saveSquadChange, hasPendingChanges } = useSquadChanges({
+        selectedGameWeek: gameWeek,
+        divisionKey,
+        teamsByManager,
+    });
+
+    const note = hasPendingChanges ? (
+        <span>🤔 due to other unconfirmed changes, you will have to wait to see this applied</span>
+    ) : (
+        <span>🎉 this change will be confirm immediately</span>
+    );
+    const highlights = newChanges.length ? [note] : [];
+
+    return (
+        <Accordion title="Confirm Changes" count={newChanges.length} highlights={highlights} rules={{}}>
+            <Spacer all={{ stack: Spacer.spacings.MEDIUM }} className={styles.preview}>
+                <div className={styles.out}>
+                    <h3>Players Leaving</h3>
+
+                    {newChanges.map(({ transferOut }) =>
+                        transferOut ? <Player key={transferOut} player={playersByName[transferOut]} small /> : null,
+                    )}
+                </div>
+                <div className={styles.icon} />
+                <div className={styles.in}>
+                    <h3>Players Arriving</h3>
+                    {newChanges.map(({ transferIn }) =>
+                        transferIn ? <Player key={transferIn} player={playersByName[transferIn]} small /> : null,
+                    )}
+                </div>
+                <div className={styles.comments}>
+                    <Spacer all={{ stack: Spacer.spacings.TINY }}>
+                        <h3>Comments</h3>
+                        <textarea
+                            className="transfers-page__comment"
+                            onChange={(e) => setComment(e.currentTarget.value)}
+                        />
+                    </Spacer>
+                </div>
+                <div className={styles.cta}>
+                    <Button
+                        isDisabled={newChanges.length === 0}
+                        onClick={() =>
+                            confirmChange({
+                                comment,
+                                newChanges,
+                                divisionKey,
+                                saveSquadChange,
+                                reset: () => {},
+                            })
+                        }
+                        state="buttonState"
+                        isLoading={isLoading || isSaving}
+                    >
+                        Save {newChanges.length} Change(s)
+                    </Button>
+                </div>
+            </Spacer>
+        </Accordion>
+    );
+};
+
+export default Manager;

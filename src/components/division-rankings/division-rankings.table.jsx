@@ -1,12 +1,13 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import sortBy from '@kammy/sort-columns';
+import { Link } from 'gatsby';
 
 import positions from './lib/positions';
 
 import './division-rankings.scss';
 
-const DivisionRankingsTable = ({ points, type, handleRowHover, rank }) => (
+const DivisionRankingsTable = ({ points, type, rank }) => (
     <table className={`table ${points.length === 0 && 'table--placeholder'}`}>
         <thead>
             <tr className="row row--header">
@@ -24,14 +25,12 @@ const DivisionRankingsTable = ({ points, type, handleRowHover, rank }) => (
         <tbody>
             {points
                 .sort(sortBy([`-points.total.${rank}`, '-points.total.seasonPoints']))
-                .map(({ managerName, points: pos }) => (
-                    <tr
-                        key={managerName}
-                        className="row"
-                        onMouseEnter={() => handleRowHover(managerName)}
-                        onMouseLeave={() => handleRowHover(managerName)}
-                    >
-                        <td className="cell cell--manager">{managerName}</td>
+                .map(({ manager, points: pos }) => (
+                    <tr key={manager.key} className="row">
+                        {/* <td className="cell cell--manager">*/}
+                        {/*    <Link to={`/manager/${manager.key}`}>{manager.name}</Link>*/}
+                        {/* </td>*/}
+                        <td className="cell cell--manager">{manager.name}</td>
                         {positions.map((position) => {
                             const gradient = `gradient_${parseInt(pos[position.key][rank], 10)
                                 .toString()
@@ -56,14 +55,12 @@ const DivisionRankingsTable = ({ points, type, handleRowHover, rank }) => (
 );
 
 DivisionRankingsTable.propTypes = {
-    handleRowHover: PropTypes.func,
     points: PropTypes.array,
     type: PropTypes.oneOf(['seasonPoints', 'gameWeekPoints']).isRequired,
     rank: PropTypes.oneOf(['rank', 'rankChange']).isRequired,
 };
 
 DivisionRankingsTable.defaultProps = {
-    handleRowHover: () => {},
     points: [],
 };
 

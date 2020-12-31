@@ -1,0 +1,37 @@
+.preview {
+    display: grid;
+    grid-template-areas: 'title title title'
+    'out icon in'
+    'comments comments comments'
+    'cta cta cta'
+    'notes notes notes'
+;
+    grid-template-columns: 1fr 75px 1fr;
+    grid-template-rows: min-content;
+
+    .title {
+        grid-area: title;
+        padding: 0.5em  0;
+        font-size: 1.5em;
+    }
+    .out {
+        grid-area: out;
+    }
+    .icon {
+        grid-area: icon;
+    }
+    .in {
+        grid-area: in;
+    }
+    .notes {
+        grid-area: notes;
+        color: grey;
+        font-size: 0.8em;
+    }
+    .comments {
+        grid-area: comments;
+    }
+    .cta {
+        grid-area: cta;
+    }
+}

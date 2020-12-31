@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
+import { getSquadWarnings, consts } from '@kammy/helpers.squad-rules';
 
 import usePlayers from '../../../hooks/use-players';
 import Spacer from '../../spacer';
@@ -9,23 +10,22 @@ import MultiToggle from '../../multi-toggle';
 import Button from '../../button';
 import Accordion from '../../accordion';
 import Player from '../../player';
-import { changeTypes } from '../lib/consts';
-import getTransferWarnings from '../lib/get-transfer-warnings';
 import TransferWarnings from '../transfer-warnings';
 import Search from './search';
 import './transferPage.scss';
 
+const { changeTypes } = consts;
 const bem = bemHelper({ block: 'transfers-page' });
 const drawerInitialState = undefined;
 const PLAYER_IN = 'playerIn';
 const PLAYER_OUT = 'playerOut';
 
-const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => {
+const confirmTransfer = async ({ transfers, divisionKey, saveSquadChange, reset }) => {
     const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
         ...transfer,
         type,
         manager,
-        Division: division,
+        Division: divisionKey,
         Manager: manager,
         Status: 'TBC',
         isPending: true,
@@ -35,7 +35,7 @@ const confirmTransfer = async ({ transfers, division, saveTransfer, reset }) => 
         Comment: comment,
     }));
 
-    await saveTransfer({ division, data });
+    await saveSquadChange({ division: divisionKey, data });
     reset();
 };
 
@@ -125,7 +125,7 @@ const TransfersPage = ({
     teamsByManager,
     managers,
     isLoading,
-    saveTransfer,
+    saveSquadChange,
     transfers,
     playersByName,
 }) => {
@@ -147,7 +147,7 @@ const TransfersPage = ({
     });
 
     const { warnings } =
-        getTransferWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
+        getSquadWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
 
     const openSearch = (playerChangeType) => {
         setDrawerContent(playerChangeType);
@@ -322,14 +322,14 @@ const TransfersPage = ({
                                             type: changeType,
                                             playerIn,
                                             playerOut,
-                                            transferIn: playerIn ? playerIn.value : '',
-                                            transferOut: playerOut ? playerOut.value : '',
+                                            transferIn: playerIn ? playerIn.name : '',
+                                            transferOut: playerOut ? playerOut.name : '',
                                             comment,
                                             warnings,
                                         },
                                     ],
-                                    division: divisionKey,
-                                    saveTransfer,
+                                    divisionKey,
+                                    saveSquadChange,
                                     reset,
                                 })
                             }

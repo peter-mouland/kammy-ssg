@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Link from 'gatsby-link';
 
@@ -26,7 +27,7 @@ const Player = ({ teamPos, large, small, player }) => {
         </p>
     );
     const PlayerNameLink = () => (
-        <Link to={`/player/${url}`} title={`Show ${teamPos} timeline`}>
+        <Link to={url} title={`Show ${teamPos} timeline`}>
             <PlayerName />
         </Link>
     );
@@ -46,6 +47,29 @@ const Player = ({ teamPos, large, small, player }) => {
             {large && !isAvailable && <Availability player={player} />}
         </div>
     );
+};
+
+Player.propTypes = {
+    teamPos: PropTypes.string,
+    large: PropTypes.bool,
+    small: PropTypes.bool,
+    player: PropTypes.shape({
+        pos: PropTypes.string.isRequired,
+        club: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        url: PropTypes.string,
+        isAvailable: PropTypes.bool,
+        returnDate: PropTypes.string,
+        availNews: PropTypes.string,
+        availStatus: PropTypes.string,
+        availReason: PropTypes.string,
+    }).isRequired,
+};
+
+Player.defaultProps = {
+    teamPos: '',
+    large: false,
+    small: false,
 };
 
 export default Player;
