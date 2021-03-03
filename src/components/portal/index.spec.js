@@ -1,9 +1,9 @@
 import React from 'react';
-import canUseDom from '@clearscore/helpers.can-use-dom';
+import canUseDom from '@kammy/helpers.can-use-dom';
 
 import Portal from '.';
 
-jest.mock('@clearscore/helpers.can-use-dom', () => jest.fn());
+jest.mock('@kammy/helpers.can-use-dom', () => jest.fn());
 
 describe('Portal', () => {
     beforeEach(() => {
