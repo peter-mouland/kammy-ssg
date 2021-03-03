@@ -1,4 +1,4 @@
-import { useMutation, useQuery, queryCache } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 import { getSquadWarnings, consts } from '@kammy/helpers.squad-rules';
 
@@ -8,11 +8,12 @@ import useGameWeeks from './use-game-weeks';
 
 const inDateRange = ({ start, end }, comparison) => comparison < end && comparison > start;
 
-const fetchr = (key, division = 0) => fetchTransfers(division);
+const fetchr = ({ queryKey }) => fetchTransfers(queryKey[1]);
 
 const { changeTypes } = consts;
 
 const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} }) => {
+    const queryClient = useQueryClient();
     const queryKey = ['transfers', divisionKey];
     const { isLoading, data: changeData = [] } = useQuery(queryKey, fetchr);
     const alltstuff = useAllTransfers();
@@ -20,10 +21,10 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
     const playersByName = players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {});
     const transferWithoutWarnings = [];
     let updatedTeams = teamsByManager;
-    const [saveSquadChange, { isLoading: isSaving }] = useMutation(saveTransfers, {
+    const { mutate: saveSquadChange, isLoading: isSaving } = useMutation(saveTransfers, {
         onSuccess: (data) => {
-            queryCache.cancelQueries(queryKey);
-            queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
+            queryClient.cancelQueries(queryKey);
+            queryClient.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
     console.log({ alltstuff });

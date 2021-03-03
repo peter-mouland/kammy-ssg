@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 import './data-list.scss';
-import styles from './tags.module.css';
+import * as styles from './tags.module.css';
 
 const indexOfMatch = (searchTerm, item) => item.label.toUpperCase().indexOf(searchTerm.toUpperCase());
 const match = (searchTerm, item) => indexOfMatch(searchTerm, item) > -1;

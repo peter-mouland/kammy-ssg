@@ -3,8 +3,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import Interstitial from './';
-import Interstitial from "../interstitial";
+import ContextualHelp from './';
 
 describe('ContextualHelp component', () => {
   let component;
@@ -18,19 +17,19 @@ describe('ContextualHelp component', () => {
       handleClick: jest.fn(),
     };
     wrapper = mount(
-      <Interstitial {...props} />,
+      <ContextualHelp {...props} />,
     );
   });
 
   describe('defaultProps', () => {
     it('should set the default width to 310', () => {
-      expect(Interstitial.defaultProps.width).toBe(250);
+      expect(ContextualHelp.defaultProps.width).toBe(250);
     });
   });
 
   describe('default state', () => {
     it('should set isOpen to false', () => {
-      expect((new Interstitial()).state.isOpen).toBe(false);
+      expect((new ContextualHelp()).state.isOpen).toBe(false);
     });
   });
 
@@ -55,7 +54,7 @@ describe('ContextualHelp component', () => {
   describe('close()', () => {
     it('should call setState with isOpen as false and opacity 0', () => {
       const fn = jest.fn();
-      component = new Interstitial();
+      component = new ContextualHelp();
       component.setState = jest.fn();
       component.close(fn);
       expect(component.setState).toHaveBeenCalledWith({ isOpen: false, opacity: 0 });
@@ -65,7 +64,7 @@ describe('ContextualHelp component', () => {
   describe('open()', () => {
     it('should call setState with isOpen as true and opacity 1', () => {
       const fn = jest.fn();
-      component = new Interstitial();
+      component = new ContextualHelp();
       component.setState = jest.fn();
       component.open(fn);
       expect(component.setState).toHaveBeenCalledWith({ isOpen: true, opacity: 1 });
@@ -74,7 +73,7 @@ describe('ContextualHelp component', () => {
 
   describe('getBoxPosition()', () => {
     it('should return when boxRef is undefined', () => {
-      component = new Interstitial();
+      component = new ContextualHelp();
       component.setState = jest.fn();
       component.boxRef = undefined;
       expect(component.getBoxPosition()).toEqual({});
@@ -83,7 +82,7 @@ describe('ContextualHelp component', () => {
     it('should set a positive x transform when box is outside the left side of viewport', () => {
       window.innerWidth = 1000;
       window.innerHeight = 1000;
-      component = new Interstitial({ width: 200 });
+      component = new ContextualHelp({ width: 200 });
       component.setState = jest.fn();
       component.boxRef = {
         getBoundingClientRect: jest.fn().mockReturnValue({
@@ -103,7 +102,7 @@ describe('ContextualHelp component', () => {
     it('should set a negative x transform when box is outside the right side of viewport', () => {
       window.innerWidth = 1000;
       window.innerHeight = 1000;
-      component = new Interstitial({ width: 200 });
+      component = new ContextualHelp({ width: 200 });
       component.setState = jest.fn();
       component.boxRef = {
         getBoundingClientRect: jest.fn().mockReturnValue({
@@ -123,7 +122,7 @@ describe('ContextualHelp component', () => {
     it('should set a negative y transform when box is outside viewport bottom', () => {
       window.innerWidth = 1000;
       window.innerHeight = 1000;
-      component = new Interstitial({ width: 200 });
+      component = new ContextualHelp({ width: 200 });
       component.setState = jest.fn();
       component.boxRef = {
         getBoundingClientRect: jest.fn().mockReturnValue({

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 import ChevronDownIcon from '../icons/chevron.svg';
-import styles from './accordion.module.css';
+import * as styles from './accordion.module.css';
 import { types } from './constants';
 import AccordionContent from './components/accordion-content';
 

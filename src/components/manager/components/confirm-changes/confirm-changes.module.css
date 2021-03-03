@@ -20,7 +20,7 @@
     .icon {
         grid-area: icon;
     }
-    .in {
+    ._in {
         grid-area: in;
     }
     .notes {

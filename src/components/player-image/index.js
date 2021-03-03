@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 import ContextualHelp from '../contextual-help';
-import styles from './styles.module.css';
+import * as styles from './styles.module.css';
 import InjuredIcon from '../icons/warning.svg';
 
 const holdingImage = 'https://fantasyfootball.skysports.com/assets/img/players/blank-player.png';

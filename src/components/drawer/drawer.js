@@ -4,7 +4,7 @@ import cx from 'classnames';
 
 import Icon from '../icons/cross.svg';
 import Portal from '../portal';
-import styles from './drawer.module.css';
+import * as styles from './drawer.module.css';
 import { placements, themes } from './constants';
 import useFocusTrap from './useFocusTrap';
 import useUpdateHeight from './useUpdateHeight';

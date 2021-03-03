@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import styles from './spacer.module.css';
+import * as styles from './spacer.module.css';
 
 const breakpointNames = ['all', 'small', 'phablet', 'medium', 'large', 'huge'];
 

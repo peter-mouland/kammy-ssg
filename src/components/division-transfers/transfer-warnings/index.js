@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Warning from '../../icons/warning.svg';
 import Spacer from '../../spacer';
-import styles from './tarnsfer-warnings.module.css';
+import * as styles from './tarnsfer-warnings.module.css';
 
 const TransferWarnings = ({ warnings }) => {
     if (!warnings.length) return null;

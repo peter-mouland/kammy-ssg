@@ -4,7 +4,7 @@ import cx from 'classnames';
 import Link from 'gatsby-link';
 
 import PlayerImage, { Availability } from '../player-image';
-import styles from './styles.module.css';
+import * as styles from './styles.module.css';
 
 const Player = ({ teamPos, large, small, player }) => {
     const { pos, club, name, isAvailable, url } = player;

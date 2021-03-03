@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cs from 'classnames';
 
-import styles from './grid-container.css';
+import * as styles from './grid-container.css';
 
 const GridContainer = ({ children, isFullWidth }) => (
     <div className={cs(styles.component, { [styles.fullWidth]: isFullWidth })}>{children}</div>
