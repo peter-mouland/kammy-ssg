@@ -9,7 +9,7 @@ import PlayersIcon from '../icons/players.svg';
 import TransfersIcon from '../icons/transfers.svg';
 import TableIcon from '../icons/table.svg';
 import Spacer from '../spacer';
-import styles from './index.module.css';
+import * as styles from './index.module.css';
 
 const tabs = [
     {

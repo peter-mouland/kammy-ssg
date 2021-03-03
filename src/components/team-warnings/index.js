@@ -6,7 +6,7 @@ import validateClub from './lib/validate-club';
 import validatePositions from './lib/validate-pos';
 import validatePlayer from './lib/validate-player';
 import validateNewPlayers from './lib/validate-new-player';
-import styles from './team-warnings.module.css';
+import * as styles from './team-warnings.module.css';
 
 const List = ({ children }) => <ul className={styles.list}>{children}</ul>;
 

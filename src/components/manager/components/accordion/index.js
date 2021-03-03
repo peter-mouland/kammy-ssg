@@ -4,7 +4,7 @@ import cx from 'classnames';
 
 import Spacer from '../../../spacer';
 import Arrow from '../../../icons/arrow-circle-right.svg';
-import styles from './accordion.module.css';
+import * as styles from './accordion.module.css';
 
 const Accordion = ({ count, rules, highlights, title, children }) => {
     const [isShown, setIsShown] = React.useState(false);

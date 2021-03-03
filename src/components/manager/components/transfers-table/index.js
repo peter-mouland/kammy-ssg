@@ -9,7 +9,7 @@ import Warning from '../../../icons/warning.svg';
 import Player from '../../../player';
 import formatTimestamp from '../../lib/format-timestamp';
 import getEmoji from '../../lib/get-emoji';
-import styles from './styles.module.css';
+import * as styles from './styles.module.css';
 
 const TransferBody = ({ changes, showWarnings, playersByName }) => {
     if (changes.length < 1) return null;

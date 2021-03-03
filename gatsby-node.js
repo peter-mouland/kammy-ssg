@@ -18,15 +18,6 @@ require('dotenv').config({
     debug: process.env.DEBUG,
 });
 
-const overrideBrowserslist = [
-    'last 2 Chrome versions',
-    'last 2 Firefox versions',
-    'last 2 Edge versions',
-    'safari >= 12',
-    'ios_saf >= 12',
-    'Android >= 9',
-];
-
 // eslint-disable-next-line no-unused-vars
 exports.onCreateWebpackConfig = ({ actions, loaders }) => {
     actions.setWebpackConfig({
@@ -68,8 +59,6 @@ exports.onCreateWebpackConfig = ({ actions, loaders }) => {
                                                   }
                                                 : false,
                                     },
-                                    overrideBrowserslist,
-                                    autoprefixer: { grid: true },
                                     importFrom: {
                                         customProperties: addCssPrefix(tokens.properties),
                                         customMedia: addCssPrefix(tokens.mediaQueries),

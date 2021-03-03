@@ -4,7 +4,7 @@ import cx from 'classnames';
 
 import PitchIcon from '../../../icons/pitch.svg';
 import PlayerImage from '../../../player-image';
-import styles from './manager.module.css';
+import * as styles from './manager.module.css';
 
 const Pos = ({ children, isInteractive, onSelect, teamPos, squadMember, posIndex }) =>
     isInteractive ? (

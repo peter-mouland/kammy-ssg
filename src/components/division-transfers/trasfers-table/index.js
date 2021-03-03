@@ -8,7 +8,7 @@ import Interstitial from '../../interstitial';
 import ContextualHelp from '../../contextual-help';
 import ChatIcon from '../../icons/chat.svg';
 import Warning from '../../icons/warning.svg';
-import styles from './styles.module.css';
+import * as styles from './styles.module.css';
 import Player from '../../player';
 
 const TransferBody = ({ transfers, showWarnings, playersByName }) => {

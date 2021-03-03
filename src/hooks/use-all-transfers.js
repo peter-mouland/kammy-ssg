@@ -6,7 +6,7 @@ import useGameWeeks from './use-game-weeks';
 
 const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
 
-const fetchr = (key, division = 0) => fetchTransfers(division);
+const fetchr = ({ queryKey }) => fetchTransfers(queryKey[1]);
 
 const useAllTransfers = () => {
     const queryKey1 = ['transfers', 'premierLeague'];

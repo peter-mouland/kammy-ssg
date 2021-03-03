@@ -6,7 +6,7 @@ import toTitleCase from '@kammy/helpers.title-case';
 
 import Loader from '../loader';
 import { types, sizes, themes } from './constants';
-import styles from './button.module.css';
+import * as styles from './button.module.css';
 
 // eslint-disable-next-line react/prop-types
 const ButtonText = ({ isLoading, size, children }) => {

@@ -5,7 +5,7 @@ import toTitleCase from '@kammy/helpers.title-case';
 import { timing } from '@kammy/tokens';
 
 import { sizes } from './constants';
-import styles from './loader.module.css';
+import * as styles from './loader.module.css';
 
 const Loader = ({ size, animationDuration }) => {
     const inlineStyles = {

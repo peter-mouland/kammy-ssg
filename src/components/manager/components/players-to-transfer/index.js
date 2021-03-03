@@ -4,7 +4,7 @@ import cx from 'classnames';
 
 import Spacer from '../../../spacer';
 import Arrow from '../../../icons/arrow-circle-right.svg';
-import styles from '../players-to-swap/players-to-swap.module.css';
+import * as styles from '../players-to-swap/players-to-swap.module.css';
 
 const PlayersToSwap = ({ selectedPlayers, team, teamsByManager, playersByName }) => {
     const [isShown, setIsShown] = React.useState(false);

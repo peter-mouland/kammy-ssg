@@ -1,5 +1,5 @@
 /* global fetch */
-const parseISO = require('date-fns/parseISO').default;
+const parseISO = require('date-fns/parseISO');
 
 const fetchr = require('./fetch');
 const { spreadsheets } = require('./constants');

@@ -5,7 +5,7 @@ import useSquadChanges from '../../../../hooks/use-squad-changes';
 import usePlayers from '../../../../hooks/use-players';
 import Spacer from '../../../spacer';
 import Button from '../../../button';
-import styles from './confirm-changes.module.css';
+import * as styles from './confirm-changes.module.css';
 import Player from '../../../player';
 import Accordion from '../accordion';
 
@@ -57,7 +57,7 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChange
                     )}
                 </div>
                 <div className={styles.icon} />
-                <div className={styles.in}>
+                <div className={styles._in}>
                     <h3>Players Arriving</h3>
                     {newChanges.map(({ transferIn }) =>
                         transferIn ? <Player key={transferIn} player={playersByName[transferIn]} small /> : null,

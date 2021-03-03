@@ -1,6 +1,6 @@
 /* global fetch */
 import { useState } from 'react';
-import { useQuery, queryCache } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { graphql, useStaticQuery } from 'gatsby';
 import extract from '@kammy/helpers.extract-sky-sports-stats';
 import { calculateTotalPoints } from '@kammy/helpers.sky-sports-stats-to-points';
@@ -18,13 +18,14 @@ const fetchScores = () =>
 const useLiveScores = () => {
     const queryKey = 'liveStats';
     const [intervalMs] = useState(60000);
+    const queryClient = useQueryClient();
 
     const { isFetching: isLiveStatsLoading, isComplete, data: liveStats = [] } = useQuery(queryKey, fetchScores, {
         refetchInterval: intervalMs,
     });
 
     if (isComplete) {
-        queryCache.invalidateQueries(queryKey);
+        queryClient.invalidateQueries(queryKey);
     }
 
     const {
