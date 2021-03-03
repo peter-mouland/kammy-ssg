@@ -17,7 +17,6 @@ module.exports = {
     'react/destructuring-assignment': 0,
     'react/jsx-one-expression-per-line': 0,
     'react/jsx-filename-extension': 0,
-    'jsx-control-statements/jsx-use-if-tag': 0,
     /*
      Everything below here has been 'ignored' temporarily.
      Please feel to delete any of the following lines and fix any errors.

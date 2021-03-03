@@ -3,9 +3,9 @@ const reactRules = require('./rules');
 
 module.exports = {
     ...base,
-    plugins: base.plugins.slice(0).concat(['react', 'jsx-control-statements', 'react-hooks']),
+    plugins: base.plugins.slice(0).concat(['react', 'react-hooks']),
     settings: { react: { version: 'detect' } },
-    extends: ['plugin:react/recommended', 'plugin:jsx-control-statements/recommended'].concat(base.extends), // this is last as ordering is important here
+    extends: ['plugin:react/recommended'].concat(base.extends), // this is last as ordering is important here
     globals: {
         ...base.globals,
         document: true,
