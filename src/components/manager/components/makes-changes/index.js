@@ -80,7 +80,7 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
         saveSquadChange,
         hasPendingChanges,
     } = useSquadChanges({
-        selectedGameWeek: gameWeek + 1, // todo: use separate hook for showing transfers
+        selectedGameWeek: gameWeek, // todo: use separate hook for showing transfers
         divisionKey,
         teamsByManager,
     });

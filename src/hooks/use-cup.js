@@ -1,5 +1,5 @@
 import parseISO from 'date-fns/parseISO';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, queryCache } from 'react-query';
 import { fetchCup, saveCupTeam } from '@kammy/helpers.spreadsheet';
 
 import useGameWeeks from './use-game-weeks';
@@ -9,7 +9,6 @@ const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) &
 const fetchr = () => fetchCup();
 
 const useCup = () => {
-    const queryClient = useQueryClient();
     const { currentGameWeek } = useGameWeeks();
     const queryKey = ['cup'];
     const { isLoading, data: cupTeams = [] } = useQuery(['cup'], fetchr);
@@ -20,7 +19,7 @@ const useCup = () => {
         }),
         {},
     );
-    const { mutate: saveTeam, isLoading: isSaving, isSuccess: isSaved } = useMutation(
+    const [saveTeam, { isLoading: isSaving, isSuccess: isSaved }] = useMutation(
         (team) => {
             const teamWithMeta = {
                 ...team,
@@ -31,8 +30,8 @@ const useCup = () => {
         },
         {
             onSuccess: (data) => {
-                queryClient.cancelQueries(queryKey);
-                queryClient.setQueryData(queryKey, (old) => [...old, ...data]);
+                queryCache.cancelQueries(queryKey);
+                queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
             },
         },
     );

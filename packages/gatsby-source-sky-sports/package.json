@@ -17,7 +17,7 @@
     "@kammy/sort-columns": "1.0.0",
     "chalk": "4.1.0",
     "chance": "^1.0.18",
-    "date-fns": "2.18.0",
+    "date-fns": "2.19.0",
     "json-query": "2.2.2",
     "p-map": "4.0.0"
   }

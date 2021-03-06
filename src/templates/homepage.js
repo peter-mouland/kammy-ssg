@@ -5,8 +5,11 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import Homepage from '../components/homepage';
 import useGameWeeks from '../hooks/use-game-weeks';
+import useMeta from '../hooks/use-meta';
+import Spacer from './spacer';
 
 const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
+    const { formattedTime, getFromNow } = useMeta();
     const { previousGameWeek, currentGameWeek, nextGameWeek } = useGameWeeks();
     const {
         allManagers: { nodes: managers },
@@ -36,8 +39,18 @@ const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) =>
         {},
     );
 
+    const footer = (
+        <Spacer
+            all={{ vertical: Spacer.spacings.MEDIUM, horizontal: Spacer.spacings.LARGE }}
+            style={{ fontSize: '0.9em' }}
+        >
+            <strong style={{ color: '#888', fontSize: '0.9em' }}>Last Build:</strong> {formattedTime}{' '}
+            <small style={{ color: '#888', fontSize: '0.9em' }}>({getFromNow()})</small>
+        </Spacer>
+    );
+
     return (
-        <Layout title="Homepage">
+        <Layout title="Homepage" footer={footer}>
             <Homepage
                 selectedGameWeek={selectedGameWeek}
                 gameWeekDates={gameWeekDates}
