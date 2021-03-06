@@ -33,12 +33,15 @@ const confirmChange = async ({ comment, newChanges, divisionKey, saveSquadChange
 const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChanges }) => {
     const [comment, setComment] = useState('');
     const { playersByName } = usePlayers();
-    const { isLoading, isSaving, saveSquadChange, hasPendingChanges } = useSquadChanges({
+    const { isLoading, isSaving, saveSquadChange, pendingChanges, hasPendingChanges } = useSquadChanges({
         selectedGameWeek: gameWeek,
         divisionKey,
         teamsByManager,
     });
+    const managerChanges = pendingChanges.filter(({ manager }) => manager === managerName);
 
+    // can't auto-confirm changes if any one in the lague has pending changes
+    // even subs due to potential loan and trades
     const note = hasPendingChanges ? (
         <span>🤔 due to other unconfirmed changes, you will have to wait to see this applied</span>
     ) : (

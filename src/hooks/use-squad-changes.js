@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, queryCache } from 'react-query';
 import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 import { getSquadWarnings, consts } from '@kammy/helpers.squad-rules';
 
@@ -8,12 +8,11 @@ import useGameWeeks from './use-game-weeks';
 
 const inDateRange = ({ start, end }, comparison) => comparison < end && comparison > start;
 
-const fetchr = ({ queryKey }) => fetchTransfers(queryKey[1]);
+const fetchr = (key, division = 0) => fetchTransfers(division);
 
 const { changeTypes } = consts;
 
 const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} }) => {
-    const queryClient = useQueryClient();
     const queryKey = ['transfers', divisionKey];
     const { isLoading, data: changeData = [] } = useQuery(queryKey, fetchr);
     const alltstuff = useAllTransfers();
@@ -21,19 +20,19 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
     const playersByName = players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {});
     const transferWithoutWarnings = [];
     let updatedTeams = teamsByManager;
-    const { mutate: saveSquadChange, isLoading: isSaving } = useMutation(saveTransfers, {
+    const [saveSquadChange, { isLoading: isSaving }] = useMutation(saveTransfers, {
         onSuccess: (data) => {
-            queryClient.cancelQueries(queryKey);
-            queryClient.setQueryData(queryKey, (old) => [...old, ...data]);
+            queryCache.cancelQueries(queryKey);
+            queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
-    console.log({ alltstuff });
+    // console.log({ alltstuff });
     const { gameWeeks } = useGameWeeks();
     const gameWeek = gameWeeks[selectedGameWeek];
     const applyChange = (changesToApply) =>
         changesToApply.map((change) => {
             if (!change.isPending) {
-                console.log({ change });
+                // console.log({ change });
                 // todo:    add hasBeenBuilt to transfers gra[h
                 //          add function to return new-valid-transfers
                 // if (change.isValid && !hasBeenBuilt) {
@@ -58,7 +57,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
                 warnings,
             };
         });
-    console.log(changeData);
+    // console.log(changeData);
     const changes = applyChange(changeData);
 
     // if pending is slow, update code to use filter-views
@@ -69,7 +68,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
     const changesThisGameWeek = changes.filter(({ timestamp }) => inDateRange(gameWeek, timestamp));
     const pendingChanges = changes.filter(({ isPending }) => !!isPending);
     const confirmedChanges = changes.filter(({ isPending }) => !isPending);
-    console.log({ changesThisGameWeek, pendingChanges, confirmedChanges });
+    // console.log({ changesThisGameWeek, pendingChanges, confirmedChanges });
     const changesByType = Object.entries(changeTypes).reduce(
         (prev, [key, value]) => ({
             ...prev,
@@ -77,7 +76,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
         }),
         {},
     );
-
+    // console.log({ pendingChanges });
     return {
         queryKey,
         isLoading,
