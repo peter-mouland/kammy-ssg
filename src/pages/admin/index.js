@@ -9,20 +9,20 @@ import Button from '../../components/button';
 import Spacer from '../../components/spacer';
 import useMeta from '../../hooks/use-meta';
 
-// const regenerateGatsby = (setIsLoading) => {
-//     setIsLoading(true);
-//     return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
-//         method: 'post',
-//     });
-// };
-
-// eslint-disable-next-line no-unused-vars
-const regenerateNetlify = (setIsLoading) => {
+const regenerateGatsby = (setIsLoading) => {
     setIsLoading(true);
-    return fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
+    return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
         method: 'post',
     });
 };
+
+// eslint-disable-next-line no-unused-vars
+// const regenerateNetlify = (setIsLoading) => {
+//     setIsLoading(true);
+//     return fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
+//         method: 'post',
+//     });
+// };
 
 const AdminPage = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,7 @@ const AdminPage = () => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
     const { formattedTime, getFromNow } = useMeta();
-    const publish = () => regenerateNetlify(setIsLoading);
+    const publish = () => regenerateGatsby(setIsLoading);
     return (
         <Layout title="Admin - Links">
             <div id="admin-page" data-b-layout="container">
