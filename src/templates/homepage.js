@@ -6,7 +6,7 @@ import Layout from '../components/layout';
 import Homepage from '../components/homepage';
 import useGameWeeks from '../hooks/use-game-weeks';
 import useMeta from '../hooks/use-meta';
-import Spacer from './spacer';
+import Spacer from '../components/spacer';
 
 const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
     const { formattedTime, getFromNow } = useMeta();
