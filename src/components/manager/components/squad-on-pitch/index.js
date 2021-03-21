@@ -35,9 +35,10 @@ Pos.defaultProps = {
     isInteractive: false,
 };
 
+const positions = ['GK', 'FB', 'FB', 'CB', 'CB', 'MID', 'MID', 'AM', 'AM', 'STR', 'STR', 'SUB'];
+
 const SquadOnPitch = ({ squad, onSelect }) => {
     const isInteractive = onSelect !== null;
-    const positions = ['GK', 'FB', 'FB', 'CB', 'CB', 'MID', 'MID', 'AM', 'AM', 'STR', 'STR', 'SUB'];
     return (
         <div className={styles.teamContainer}>
             <div className={styles.iconContainer}>

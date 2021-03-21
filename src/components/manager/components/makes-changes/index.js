@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { consts } from '@kammy/helpers.squad-rules';
 
 import useSquadChanges from '../../../../hooks/use-squad-changes';
@@ -7,9 +7,6 @@ import usePlayers from '../../../../hooks/use-players';
 import Spacer from '../../../spacer';
 import TransfersTable from '../transfers-table';
 import PlayersToSwap from '../players-to-swap';
-import PlayersToTransfer from '../players-to-transfer';
-import PlayersToTrade from '../players-to-trade';
-import NewPlayersToTransfer from '../new-players-to-transfer';
 import ConfirmChanges from '../confirm-changes';
 import SquadOnPitch from '../squad-on-pitch';
 
@@ -66,29 +63,26 @@ const createApplySwap = ({ newTeam, setNewChanges, newChanges, setNewTeam, manag
     setNewTeam(updatedSquad);
 };
 
-// todo: show next gameweeks team
-// todo: but show this gameweeks change-requests
-
 const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
     const [newChanges, setNewChanges] = React.useState([]);
     const { playersByName } = usePlayers();
-    const {
-        changesThisGameWeek,
-        newTeams,
-        changesByType,
-        isLoading,
-        saveSquadChange,
-        hasPendingChanges,
-    } = useSquadChanges({
-        selectedGameWeek: gameWeek, // todo: use separate hook for showing transfers
+    const [newTeam, setNewTeam] = React.useState([]);
+
+    // to show squad changes, bump the game-week by one so they're applied.
+    const { changesApplied, newTeams, changesByType, isLoading, saveSquadChange, hasPendingChanges } = useSquadChanges({
+        selectedGameWeek: gameWeek + 1,
         divisionKey,
         teamsByManager,
     });
-    // console.log({ newTeams });
 
-    const [newTeam, setNewTeam] = React.useState(newTeams[managerName]);
+    useEffect(() => {
+        if (!newTeam.length && !isLoading && newTeams[managerName].length) {
+            setNewTeam(newTeams[managerName]);
+        }
+    }, [...newTeams[managerName]]);
+
     const getManagerChanges = (changes) => changes.filter((change) => change.manager === managerName);
-    const allManagerChanges = getManagerChanges(changesThisGameWeek);
+    const allManagerChanges = getManagerChanges(changesApplied);
     const swaps = getManagerChanges(changesByType.SWAP);
     const newSwaps = newChanges.filter(({ type }) => type === SWAP);
     const selectSquadPosition = (squadMember) => setNewTeam(selectSquadMember(newTeam, squadMember));
@@ -104,15 +98,17 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
     return (
         <Spacer all={{ stack: Spacer.spacings.MEDIUM }}>
             <TransfersTable changes={allManagerChanges} isLoading={isLoading} playersByName={playersByName} />
-            <SquadOnPitch squad={newTeam} onSelect={selectSquadPosition} />
-            <PlayersToSwap
-                applyChange={applySwap}
-                swaps={[...swaps, ...newSwaps]}
-                saveSquadChange={saveSquadChange}
-                team={newTeam}
-                teamsByManager={newTeams}
-                playersByName={playersByName}
-            />
+            {newTeam.length ? <SquadOnPitch squad={newTeam} onSelect={selectSquadPosition} /> : null}
+            {newTeam.length ? (
+                <PlayersToSwap
+                    applyChange={applySwap}
+                    swaps={[...swaps, ...newSwaps]}
+                    saveSquadChange={saveSquadChange}
+                    team={newTeam}
+                    teamsByManager={newTeams}
+                    playersByName={playersByName}
+                />
+            ) : null}
             {/* <PlayersToTransfer*/}
             {/*    selectedPlayers={[]}*/}
             {/*    team={newTeam}*/}
@@ -137,6 +133,7 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
                 managerName={managerName}
                 newChanges={newChanges}
                 teamsByManager={teamsByManager}
+                reset={() => setNewChanges([])}
             />
         </Spacer>
     );
