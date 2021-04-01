@@ -5,9 +5,6 @@ import { graphql } from 'gatsby';
 import Layout from '../components/layout';
 import Manager from '../components/manager';
 
-// todo:
-//    1. need all manager teams to work out valid transfers
-//    2. auto validate swap
 const ManagerPage = ({ data, pageContext: { managerName, managerKey, divisionKey, gameWeek } }) => (
     <Layout title={managerName}>
         <Manager

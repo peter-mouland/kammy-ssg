@@ -8,10 +8,12 @@ import GameWeekSwitcher from '../gameweek-switcher';
 import StatsTable from './DivisionStats.table';
 // import PositionTimeline from './components/PositionTimeline.table';
 import TeamWarnings from '../team-warnings';
+import useSquadChanges from '../../hooks/use-squad-changes';
 
 const bem = bemHelper({ block: 'division-stats' });
 
-const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) => {
+const DivisionTeams = ({ teamsByManager, previousTeams, selectedGameWeek, divisionUrl, divisionKey }) => {
+    const { newTeams } = useSquadChanges({ selectedGameWeek, divisionKey, teamsByManager });
     const [cookies] = useCookies(['is-admin']);
     // const [positionTimelineProps, togglePosTimeline] = useState(null);
     const isAdmin = cookies['is-admin'] === 'true' || false;
@@ -22,14 +24,14 @@ const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
                 <GameWeekSwitcher url={`/${divisionUrl}/teams`} selectedGameWeek={selectedGameWeek} />
             </div>
 
-            {isAdmin && <TeamWarnings teams={teams} />}
+            {isAdmin && <TeamWarnings teams={newTeams} />}
 
             <div data-b-layout="vpad">
                 <div className={bem(null, null, 'page-content')} data-b-layout="row vpad">
                     <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
                         <StatsTable
                             selectedGameWeek={selectedGameWeek}
-                            teams={teams}
+                            teams={newTeams}
                             previousTeams={previousTeams}
                             isAdmin={isAdmin}
                         />
@@ -41,15 +43,16 @@ const DivisionTeams = ({ teams, previousTeams, selectedGameWeek, divisionUrl }) 
 };
 
 DivisionTeams.propTypes = {
-    selectedGameWeek: PropTypes.number,
     divisionUrl: PropTypes.string.isRequired,
-    teams: PropTypes.object,
+    divisionKey: PropTypes.string.isRequired,
+    selectedGameWeek: PropTypes.number,
+    teamsByManager: PropTypes.object,
     previousTeams: PropTypes.object,
 };
 
 DivisionTeams.defaultProps = {
     selectedGameWeek: 1,
-    teams: null,
+    teamsByManager: null,
     previousTeams: null,
 };
 

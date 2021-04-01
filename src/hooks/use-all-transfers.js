@@ -8,6 +8,7 @@ const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) &
 
 const fetchr = (key, division = 0) => fetchTransfers(division);
 
+// todo : change to use multiple queries in a single useQuery
 const useAllTransfers = () => {
     const queryKey1 = ['transfers', 'premierLeague'];
     const queryKey2 = ['transfers', 'championship'];

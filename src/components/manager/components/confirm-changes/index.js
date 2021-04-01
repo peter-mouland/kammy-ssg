@@ -30,15 +30,14 @@ const confirmChange = async ({ comment, newChanges, divisionKey, saveSquadChange
     reset();
 };
 
-const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChanges }) => {
+const Manager = ({ teamsByManager, gameWeek, divisionKey, newChanges, reset }) => {
     const [comment, setComment] = useState('');
     const { playersByName } = usePlayers();
-    const { isLoading, isSaving, saveSquadChange, pendingChanges, hasPendingChanges } = useSquadChanges({
+    const { isLoading, isSaving, saveSquadChange, hasPendingChanges } = useSquadChanges({
         selectedGameWeek: gameWeek,
         divisionKey,
         teamsByManager,
     });
-    const managerChanges = pendingChanges.filter(({ manager }) => manager === managerName);
 
     // can't auto-confirm changes if any one in the lague has pending changes
     // even subs due to potential loan and trades
@@ -71,6 +70,7 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChange
                         <h3>Comments</h3>
                         <textarea
                             className="transfers-page__comment"
+                            value={comment}
                             onChange={(e) => setComment(e.currentTarget.value)}
                         />
                     </Spacer>
@@ -84,7 +84,10 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChange
                                 newChanges,
                                 divisionKey,
                                 saveSquadChange,
-                                reset: () => {},
+                                reset: () => {
+                                    setComment('');
+                                    reset();
+                                },
                             })
                         }
                         state="buttonState"
