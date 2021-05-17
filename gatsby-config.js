@@ -28,6 +28,9 @@ module.exports = {
     },
     plugins: [
         {
+            resolve: `gatsby-plugin-gatsby-cloud`,
+        },
+        {
             resolve: 'gatsby-plugin-react-css-modules',
         },
         {

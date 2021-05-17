@@ -21,6 +21,7 @@ aws
 .cache
 /junit.xml
 /.env.development
+.npmrc
 
 # Local Netlify folder
 .netlify
