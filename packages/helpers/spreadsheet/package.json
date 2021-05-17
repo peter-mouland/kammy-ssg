@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "date-fns": "2.19.0"
+    "date-fns": "2.21.3"
   },
   "peerDependencies": {}
 }

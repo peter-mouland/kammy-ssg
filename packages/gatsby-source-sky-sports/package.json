@@ -15,9 +15,9 @@
     "@kammy/helpers.sky-sports-stats-to-points": "0.3.6",
     "@kammy/helpers.spreadsheet": "1.0.0",
     "@kammy/sort-columns": "1.0.0",
-    "chalk": "4.1.0",
+    "chalk": "4.1.1",
     "chance": "^1.0.18",
-    "date-fns": "2.19.0",
+    "date-fns": "2.21.3",
     "json-query": "2.2.2",
     "p-map": "4.0.0"
   }
