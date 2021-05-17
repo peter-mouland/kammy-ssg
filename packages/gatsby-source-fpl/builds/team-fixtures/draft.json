@@ -1,0 +1,4610 @@
+[
+  {
+    "resourceId": "draft-Craig-Arrizabalaga, Kepa",
+    "data": {
+      "manager": "Craig",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Arrizabalaga, Kepa",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "e2e92980-2bc2-5807-a6d6-7bf8c53a130e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Luiz, David",
+    "data": {
+      "manager": "Craig",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Luiz, David",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "e35288f0-ef75-53f5-a753-a5a3ba9d5354"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Matip, Joel",
+    "data": {
+      "manager": "Craig",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Matip, Joel",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "748a05d9-033b-5f3f-b9ef-24d9e28db77a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Kolasinac, Sead",
+    "data": {
+      "manager": "Craig",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Kolasinac, Sead",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "12e90240-5fd2-5dc5-909f-c84f81280981"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Mendy, Benjamin",
+    "data": {
+      "manager": "Craig",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Mendy, Benjamin",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "5e1bb52a-dffa-568d-932f-8cfefcd78cba"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Pogba, Paul",
+    "data": {
+      "manager": "Craig",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Pogba, Paul",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "13df783f-6522-5124-85bb-77c6c6a3e53a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Ndombele, Tanguy",
+    "data": {
+      "manager": "Craig",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Ndombele, Tanguy",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "4fe6c282-2a7c-5860-bc80-68949b7635c4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Eriksen, Christian",
+    "data": {
+      "manager": "Craig",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Eriksen, Christian",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "7ca0f1c9-0269-5711-a4b7-6f1d9a0eb937"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Mane, Sadio",
+    "data": {
+      "manager": "Craig",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Mane, Sadio",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "ab79f031-f682-5304-84a1-21b3471788a9"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Lacazette, Alexandre",
+    "data": {
+      "manager": "Craig",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Lacazette, Alexandre",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "b861fe00-9f37-5bdd-aaef-a7c45cf905fc"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Perez, Ayoze",
+    "data": {
+      "manager": "Craig",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Perez, Ayoze",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "8e201924-52ea-5b31-823a-c7319f41ed3b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Craig-Lukaku, Romelu",
+    "data": {
+      "manager": "Craig",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Lukaku, Romelu",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "3cf6e360-00e5-56a9-b9fb-d8a6cce0da4b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Alisson,",
+    "data": {
+      "manager": "James",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Alisson,",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "fe61ebf0-2c37-5a7c-b3d3-8481dc452a4b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Keane, Michael",
+    "data": {
+      "manager": "James",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Keane, Michael",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "b86675fb-52a2-54fb-8418-36f821028dd3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Ake, Nathan",
+    "data": {
+      "manager": "James",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Ake, Nathan",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "08e57b7a-2638-5f0b-b95f-9dd70fa65139"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Pereira, Ricardo",
+    "data": {
+      "manager": "James",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Pereira, Ricardo",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "ae01c8d9-5a4a-5b48-910a-f965faf0db8b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Coleman, Seamus",
+    "data": {
+      "manager": "James",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Coleman, Seamus",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "e9fb8e10-46ba-595b-8855-4c1d9ad2da5c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Fabinho,",
+    "data": {
+      "manager": "James",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Fabinho,",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "e41114f0-992b-56eb-a688-d0ed6e6d9509"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Ceballos, Dani",
+    "data": {
+      "manager": "James",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Ceballos, Dani",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "f16fa483-a7b1-5be8-b941-d13340d9d5f0"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Sterling, Raheem",
+    "data": {
+      "manager": "James",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Sterling, Raheem",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "1fddcb62-198e-5430-bfc1-dafa56451839"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-de Bruyne, Kevin",
+    "data": {
+      "manager": "James",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "de Bruyne, Kevin",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "9f8fda6b-9135-5b5c-9116-b4f5fe389c8a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Pukki, Teemu",
+    "data": {
+      "manager": "James",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Pukki, Teemu",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "a733cfda-18d3-5d70-9a08-87989d4aea94"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Jimenez, Raul",
+    "data": {
+      "manager": "James",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Jimenez, Raul",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "54b58b0b-d933-559f-9ac2-a5cb58f919d4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-James-Pepe, Nicolas",
+    "data": {
+      "manager": "James",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Pepe, Nicolas",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "31fbe2b5-0ee2-526d-8e17-339c8617e40f"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Ederson,",
+    "data": {
+      "manager": "Luke",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Ederson,",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "120790fd-4d41-5fe1-ab6a-1336ee34561b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-van Dijk, Virgil",
+    "data": {
+      "manager": "Luke",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "van Dijk, Virgil",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "430c3cea-1883-5c6d-a97d-972bc7e9f8d7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Papastathopoulos, Sokrati",
+    "data": {
+      "manager": "Luke",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Papastathopoulos, Sokrati",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "bf607b8e-1664-503a-91d4-27b456eea692"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Shaw, Luke",
+    "data": {
+      "manager": "Luke",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Shaw, Luke",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "3774e679-cc08-5ac7-82e4-22baf8e39509"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Chilwell, Ben",
+    "data": {
+      "manager": "Luke",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Chilwell, Ben",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "7add1512-0f89-50b9-9c3a-8d4e1bfabee3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Kante, N'Golo",
+    "data": {
+      "manager": "Luke",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Kante, N'Golo",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "f0170230-51cf-5eba-8297-a449412b879e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Delph, Fabian",
+    "data": {
+      "manager": "Luke",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Delph, Fabian",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "7ebdf1b4-b0ca-5626-bcdd-49b01335def2"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Heung-min, Son",
+    "data": {
+      "manager": "Luke",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Heung-min, Son",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "a48d44c5-33a6-52f9-827e-cdaa44e538d3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Martial, Anthony",
+    "data": {
+      "manager": "Luke",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Martial, Anthony",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "30988653-4db9-5809-8a5b-cd02df83157d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Giroud, Olivier",
+    "data": {
+      "manager": "Luke",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Giroud, Olivier",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "8b287ac6-5355-5d03-9df5-8026e22d32c6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Origi, Divock",
+    "data": {
+      "manager": "Luke",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Origi, Divock",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "d80c05ff-27bf-5635-ad49-b93f14dcaa7e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Luke-Gundogan, Ilkay",
+    "data": {
+      "manager": "Luke",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Gundogan, Ilkay",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "aaa6d528-a547-5481-8fb9-b134788d5443"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Foster, Ben",
+    "data": {
+      "manager": "Olly",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Foster, Ben",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "a83a213b-e0e3-557d-9c7b-19ccef0e476e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Stones, John",
+    "data": {
+      "manager": "Olly",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Stones, John",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "d0fd8794-2f32-535d-8440-2fb8a84f38e4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Alderweireld, Toby",
+    "data": {
+      "manager": "Olly",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Alderweireld, Toby",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "6a1c785d-5379-58e3-bb32-b17b89dda9ba"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Robertson, Andrew",
+    "data": {
+      "manager": "Olly",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Robertson, Andrew",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "251fe800-1561-590f-8eb2-1393151f9548"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Doherty, Matthew",
+    "data": {
+      "manager": "Olly",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Doherty, Matthew",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "993d539e-d727-58ca-a778-cd4a62b5ff6d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Tielemans, Youri",
+    "data": {
+      "manager": "Olly",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Tielemans, Youri",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "a1a17fea-f7c0-5f38-8d27-eed9e7056c99"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Doucoure, Abdoulaye",
+    "data": {
+      "manager": "Olly",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Doucoure, Abdoulaye",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "a94b41c7-a1aa-5b81-b387-b1447ba5ccae"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Anderson, Felipe",
+    "data": {
+      "manager": "Olly",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Anderson, Felipe",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "8d70ac40-b6c3-5e53-9fb9-911f5907814b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Fraser, Ryan",
+    "data": {
+      "manager": "Olly",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Fraser, Ryan",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "cbbafb86-43cf-5e93-81db-5e01f3324c36"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Rashford, Marcus",
+    "data": {
+      "manager": "Olly",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Rashford, Marcus",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "83e615f8-7105-56bb-9230-1f5c12dcfeb1"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Aubameyang, Pierre-Emeric",
+    "data": {
+      "manager": "Olly",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Aubameyang, Pierre-Emeric",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "793841e5-5efa-5270-b789-05bb35964448"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Olly-Abraham, Tammy",
+    "data": {
+      "manager": "Olly",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Abraham, Tammy",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "428262f6-5750-539a-a9e3-5a16ce02bb4a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Pickford, Jordan",
+    "data": {
+      "manager": "Rich T",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Pickford, Jordan",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "ef4ab7d0-5720-532a-8005-053e1da51cfb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Laporte, Aymeric",
+    "data": {
+      "manager": "Rich T",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Laporte, Aymeric",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "37283d89-0812-5f1b-894b-b74c94adba73"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Lindelof, Victor",
+    "data": {
+      "manager": "Rich T",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Lindelof, Victor",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "5847b0ce-ff77-51e2-a57f-2a5674fb6b49"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-van Aanholt, Patrick",
+    "data": {
+      "manager": "Rich T",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "van Aanholt, Patrick",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "83b76fd1-86eb-5e5e-a49a-e9d59a9718f7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Alonso, Marcos",
+    "data": {
+      "manager": "Rich T",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Alonso, Marcos",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "53e1dd37-d9ed-503e-8632-f7e0397db5a6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Ox-Chamberlain, Alex",
+    "data": {
+      "manager": "Rich T",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Ox-Chamberlain, Alex",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "b1674920-5f73-5e05-ae1c-2177946ce0eb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Neves, Ruben",
+    "data": {
+      "manager": "Rich T",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Neves, Ruben",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "5a8920bb-2297-592d-ad38-f0e2047a64af"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Zaha, Wilfried",
+    "data": {
+      "manager": "Rich T",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Zaha, Wilfried",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "580e3110-6edb-5e57-9de8-b3a751a12642"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Deulofeu, Gerard",
+    "data": {
+      "manager": "Rich T",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Deulofeu, Gerard",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "8e66356e-17b2-51ad-a078-542aaa171572"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Aguero, Sergio",
+    "data": {
+      "manager": "Rich T",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Aguero, Sergio",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "17669777-8872-5c91-b60a-c497e3ec2524"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Deeney, Troy",
+    "data": {
+      "manager": "Rich T",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Deeney, Troy",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "bd7a8df4-5351-591a-8e34-87266e5f1696"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich T-Alli, Dele",
+    "data": {
+      "manager": "Rich T",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Alli, Dele",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "0fcf24ea-8f19-5acd-a4a8-698d09226c4d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Fabianski, Lukasz",
+    "data": {
+      "manager": "Sav",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Fabianski, Lukasz",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "3b393c4f-257e-5d8d-b794-74517047f8cb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Zouma, Kurt",
+    "data": {
+      "manager": "Sav",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Zouma, Kurt",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "f06a5594-eb73-50e4-a024-d49d462a118c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Vertonghen, Jan",
+    "data": {
+      "manager": "Sav",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Vertonghen, Jan",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "82c4167c-151a-5ff3-907c-06e941bee1b7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Alexander-Arnold, Trent",
+    "data": {
+      "manager": "Sav",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Alexander-Arnold, Trent",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "64abb088-35ad-5867-a83b-851fbab6380c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Wan-Bissaka, Aaron",
+    "data": {
+      "manager": "Sav",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Wan-Bissaka, Aaron",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "fc9847e6-7829-5184-b54b-df5d9653eecb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Milivojevic, Luka",
+    "data": {
+      "manager": "Sav",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Milivojevic, Luka",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "1703dea3-fee9-57a0-a4be-a09aa5253f84"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Schlupp, Jeff",
+    "data": {
+      "manager": "Sav",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Schlupp, Jeff",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "dc5e8c9a-1d19-5ebc-ac80-fc458366a78b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Sigurdsson, Gylfi",
+    "data": {
+      "manager": "Sav",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Sigurdsson, Gylfi",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "91ff9f06-2531-5ee4-b615-02137225d43d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Moura, Lucas",
+    "data": {
+      "manager": "Sav",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Moura, Lucas",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "7e22638a-4663-5d5c-ba10-7b823c7e55e4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Vardy, Jamie",
+    "data": {
+      "manager": "Sav",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Vardy, Jamie",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "0a0b3586-3b88-5f72-b72f-08c658bb8d6b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-Haller, Sebastien",
+    "data": {
+      "manager": "Sav",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Haller, Sebastien",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "cceb9638-8f89-5d37-b69c-b3c3f2b72fb5"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Sav-King, Joshua",
+    "data": {
+      "manager": "Sav",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "King, Joshua",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "5cecd9cf-ee2a-5631-a979-9cd5eab3d031"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Lloris, Hugo",
+    "data": {
+      "manager": "Tim",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "Lloris, Hugo",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "fc3607aa-32d3-5541-9d83-be334a42a0d1"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Gomez, Joe",
+    "data": {
+      "manager": "Tim",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Gomez, Joe",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "33b81249-ec29-5fc6-ade8-03b49491d15b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Boly, Willy",
+    "data": {
+      "manager": "Tim",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Boly, Willy",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "27564ee1-3714-51da-b37e-1bbf29147a3b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Zinchenko, Oleksandr",
+    "data": {
+      "manager": "Tim",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Zinchenko, Oleksandr",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "9512ca06-1f67-5b22-b046-bfeb3d3d84bd"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Azpilicueta, Cesar",
+    "data": {
+      "manager": "Tim",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Azpilicueta, Cesar",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "e9ec377a-319f-5f06-852c-6b24ebff57f6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Ndidi, Wilfred",
+    "data": {
+      "manager": "Tim",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Ndidi, Wilfred",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "84a0d862-749f-5358-8baa-4940b3add9a4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Moutinho, Joao",
+    "data": {
+      "manager": "Tim",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Moutinho, Joao",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "9c16c263-c13b-5a83-8992-9f3f72191fef"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Salah, Mohamed",
+    "data": {
+      "manager": "Tim",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Salah, Mohamed",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "a18e99b3-c6cc-5f66-b7d9-4fb79bcfdf4a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Pulisic, Christian",
+    "data": {
+      "manager": "Tim",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Pulisic, Christian",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "96b2ef83-4a96-544b-b5a6-8b4311a8ea64"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Murray, Glenn",
+    "data": {
+      "manager": "Tim",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Murray, Glenn",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "1507ac69-481a-594d-a38e-64818ffc4318"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Wilson, Callum",
+    "data": {
+      "manager": "Tim",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Wilson, Callum",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "68904506-4271-5be8-b75d-237d048ba7fe"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tim-Richarlison,",
+    "data": {
+      "manager": "Tim",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Richarlison,",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "8224988c-2a60-5616-9259-9d6cd4822611"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-de Gea, David",
+    "data": {
+      "manager": "Tom S",
+      "position": "GK",
+      "division___string": "premierLeague",
+      "player___string": "de Gea, David",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "6b50332e-a11c-57b2-a12b-b898f3ce7d21"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Dunk, Lewis",
+    "data": {
+      "manager": "Tom S",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Dunk, Lewis",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "28fb871d-426c-5ea0-9f77-3ea1b8c5be37"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Maguire, Harry",
+    "data": {
+      "manager": "Tom S",
+      "position": "CB",
+      "division___string": "premierLeague",
+      "player___string": "Maguire, Harry",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "b3d4e6be-da14-5ccc-a093-eba5beead431"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Digne, Lucas",
+    "data": {
+      "manager": "Tom S",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Digne, Lucas",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "28bb0c61-5e77-5f34-a00a-31a6e05bffd9"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Walker, Kyle",
+    "data": {
+      "manager": "Tom S",
+      "position": "FB",
+      "division___string": "premierLeague",
+      "player___string": "Walker, Kyle",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "1058e32b-f22d-52e3-a3e9-61953dfdfacd"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Ward-Prowse, James",
+    "data": {
+      "manager": "Tom S",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Ward-Prowse, James",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "cd91c210-f6ca-5cdb-8f00-e7327ecc8b72"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Henderson, Jordan",
+    "data": {
+      "manager": "Tom S",
+      "position": "MID",
+      "division___string": "premierLeague",
+      "player___string": "Henderson, Jordan",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "0ab98217-0462-5383-80a6-bf14ebc53ac7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Silva, Bernardo",
+    "data": {
+      "manager": "Tom S",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Silva, Bernardo",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "5a554523-ee0a-50d4-b468-c974c30a2f57"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Maddison, James",
+    "data": {
+      "manager": "Tom S",
+      "position": "AM",
+      "division___string": "premierLeague",
+      "player___string": "Maddison, James",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "ac5a592c-7962-556d-a5cc-b27e5ac17d07"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Firmino, Roberto",
+    "data": {
+      "manager": "Tom S",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Firmino, Roberto",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "44cda9e0-cda1-5eb2-9fc1-5ee5ee9147e7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Kane, Harry",
+    "data": {
+      "manager": "Tom S",
+      "position": "STR",
+      "division___string": "premierLeague",
+      "player___string": "Kane, Harry",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "5871b772-91ba-59b9-bc2d-06df5f8a9597"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom S-Jota, Diogo",
+    "data": {
+      "manager": "Tom S",
+      "position": "SUB",
+      "division___string": "premierLeague",
+      "player___string": "Jota, Diogo",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346",
+      "player___NODE": "eeead291-b363-5e0e-940c-48c9c05b1693"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Ederson,",
+    "data": {
+      "manager": "Dave G",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Ederson,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "120790fd-4d41-5fe1-ab6a-1336ee34561b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Lascelles, Jamaal",
+    "data": {
+      "manager": "Dave G",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Lascelles, Jamaal",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "bde5981f-ce7f-57dd-869d-bd441eeccf62"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Cathcart, Craig",
+    "data": {
+      "manager": "Dave G",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Cathcart, Craig",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "4408725e-1b18-5a79-84b1-9ead77266f1a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Wan-Bissaka, Aaron",
+    "data": {
+      "manager": "Dave G",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Wan-Bissaka, Aaron",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "fc9847e6-7829-5184-b54b-df5d9653eecb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Zinchenko, Oleksandr",
+    "data": {
+      "manager": "Dave G",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Zinchenko, Oleksandr",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "9512ca06-1f67-5b22-b046-bfeb3d3d84bd"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Fabinho,",
+    "data": {
+      "manager": "Dave G",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Fabinho,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "e41114f0-992b-56eb-a688-d0ed6e6d9509"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Ceballos, Dani",
+    "data": {
+      "manager": "Dave G",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Ceballos, Dani",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "f16fa483-a7b1-5be8-b941-d13340d9d5f0"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Mane, Sadio",
+    "data": {
+      "manager": "Dave G",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Mane, Sadio",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "ab79f031-f682-5304-84a1-21b3471788a9"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Pulisic, Christian",
+    "data": {
+      "manager": "Dave G",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Pulisic, Christian",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "96b2ef83-4a96-544b-b5a6-8b4311a8ea64"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Jimenez, Raul",
+    "data": {
+      "manager": "Dave G",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Jimenez, Raul",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "54b58b0b-d933-559f-9ac2-a5cb58f919d4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Batshuayi, Michy",
+    "data": {
+      "manager": "Dave G",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Batshuayi, Michy",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "4ef61e0d-28cd-56b5-9364-833e272720cb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Dave G-Fornals, Pablo",
+    "data": {
+      "manager": "Dave G",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Fornals, Pablo",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "3d2889d9-2c8b-5b80-af40-6f143186e9aa"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Pickford, Jordan",
+    "data": {
+      "manager": "Johnny",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Pickford, Jordan",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "ef4ab7d0-5720-532a-8005-053e1da51cfb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Zouma, Kurt",
+    "data": {
+      "manager": "Johnny",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Zouma, Kurt",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "f06a5594-eb73-50e4-a024-d49d462a118c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-van Dijk, Virgil",
+    "data": {
+      "manager": "Johnny",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "van Dijk, Virgil",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "430c3cea-1883-5c6d-a97d-972bc7e9f8d7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Doherty, Matthew",
+    "data": {
+      "manager": "Johnny",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Doherty, Matthew",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "993d539e-d727-58ca-a778-cd4a62b5ff6d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Alexander-Arnold, Trent",
+    "data": {
+      "manager": "Johnny",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Alexander-Arnold, Trent",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "64abb088-35ad-5867-a83b-851fbab6380c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Tielemans, Youri",
+    "data": {
+      "manager": "Johnny",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Tielemans, Youri",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "a1a17fea-f7c0-5f38-8d27-eed9e7056c99"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Sissoko, Moussa",
+    "data": {
+      "manager": "Johnny",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Sissoko, Moussa",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "0d240fa9-0b61-55d1-8aa2-cee36144a131"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Maddison, James",
+    "data": {
+      "manager": "Johnny",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Maddison, James",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "ac5a592c-7962-556d-a5cc-b27e5ac17d07"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Zaha, Wilfried",
+    "data": {
+      "manager": "Johnny",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Zaha, Wilfried",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "580e3110-6edb-5e57-9de8-b3a751a12642"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Abraham, Tammy",
+    "data": {
+      "manager": "Johnny",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Abraham, Tammy",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "428262f6-5750-539a-a9e3-5a16ce02bb4a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Rashford, Marcus",
+    "data": {
+      "manager": "Johnny",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Rashford, Marcus",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "83e615f8-7105-56bb-9230-1f5c12dcfeb1"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Johnny-Jota, Diogo",
+    "data": {
+      "manager": "Johnny",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Jota, Diogo",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "eeead291-b363-5e0e-940c-48c9c05b1693"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Alisson,",
+    "data": {
+      "manager": "Naked",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Alisson,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "fe61ebf0-2c37-5a7c-b3d3-8481dc452a4b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Vertonghen, Jan",
+    "data": {
+      "manager": "Naked",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Vertonghen, Jan",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "82c4167c-151a-5ff3-907c-06e941bee1b7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Rudiger, Antonio",
+    "data": {
+      "manager": "Naked",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Rudiger, Antonio",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "8ff3426f-bef5-59c8-8bb7-5035ca88f361"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Azpilicueta, Cesar",
+    "data": {
+      "manager": "Naked",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Azpilicueta, Cesar",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "e9ec377a-319f-5f06-852c-6b24ebff57f6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Shaw, Luke",
+    "data": {
+      "manager": "Naked",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Shaw, Luke",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "3774e679-cc08-5ac7-82e4-22baf8e39509"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Pogba, Paul",
+    "data": {
+      "manager": "Naked",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Pogba, Paul",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "13df783f-6522-5124-85bb-77c6c6a3e53a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Wijnaldum, Georginio",
+    "data": {
+      "manager": "Naked",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Wijnaldum, Georginio",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "77033f34-adff-53ba-a6ac-96915c025da2"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Fraser, Ryan",
+    "data": {
+      "manager": "Naked",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Fraser, Ryan",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "cbbafb86-43cf-5e93-81db-5e01f3324c36"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-de Bruyne, Kevin",
+    "data": {
+      "manager": "Naked",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "de Bruyne, Kevin",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "9f8fda6b-9135-5b5c-9116-b4f5fe389c8a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Adams, Che",
+    "data": {
+      "manager": "Naked",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Adams, Che",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "affa97f6-97cb-51ad-93c4-94e22c5932b7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Haller, Sebastien",
+    "data": {
+      "manager": "Naked",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Haller, Sebastien",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "cceb9638-8f89-5d37-b69c-b3c3f2b72fb5"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Naked-Neves, Ruben",
+    "data": {
+      "manager": "Naked",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Neves, Ruben",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "5a8920bb-2297-592d-ad38-f0e2047a64af"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Foster, Ben",
+    "data": {
+      "manager": "Nick",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Foster, Ben",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "a83a213b-e0e3-557d-9c7b-19ccef0e476e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Ake, Nathan",
+    "data": {
+      "manager": "Nick",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Ake, Nathan",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "08e57b7a-2638-5f0b-b95f-9dd70fa65139"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Laporte, Aymeric",
+    "data": {
+      "manager": "Nick",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Laporte, Aymeric",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "37283d89-0812-5f1b-894b-b74c94adba73"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-van Aanholt, Patrick",
+    "data": {
+      "manager": "Nick",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "van Aanholt, Patrick",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "83b76fd1-86eb-5e5e-a49a-e9d59a9718f7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Coleman, Seamus",
+    "data": {
+      "manager": "Nick",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Coleman, Seamus",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "e9fb8e10-46ba-595b-8855-4c1d9ad2da5c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Milivojevic, Luka",
+    "data": {
+      "manager": "Nick",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Milivojevic, Luka",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "1703dea3-fee9-57a0-a4be-a09aa5253f84"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Ndidi, Wilfred",
+    "data": {
+      "manager": "Nick",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Ndidi, Wilfred",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "84a0d862-749f-5358-8baa-4940b3add9a4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Heung-min, Son",
+    "data": {
+      "manager": "Nick",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Heung-min, Son",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "a48d44c5-33a6-52f9-827e-cdaa44e538d3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Alli, Dele",
+    "data": {
+      "manager": "Nick",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Alli, Dele",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "0fcf24ea-8f19-5acd-a4a8-698d09226c4d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Vardy, Jamie",
+    "data": {
+      "manager": "Nick",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Vardy, Jamie",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "0a0b3586-3b88-5f72-b72f-08c658bb8d6b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-Aubameyang, Pierre-Emeric",
+    "data": {
+      "manager": "Nick",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Aubameyang, Pierre-Emeric",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "793841e5-5efa-5270-b789-05bb35964448"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Nick-King, Joshua",
+    "data": {
+      "manager": "Nick",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "King, Joshua",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "5cecd9cf-ee2a-5631-a979-9cd5eab3d031"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Lloris, Hugo",
+    "data": {
+      "manager": "Phil",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Lloris, Hugo",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "fc3607aa-32d3-5541-9d83-be334a42a0d1"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Alderweireld, Toby",
+    "data": {
+      "manager": "Phil",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Alderweireld, Toby",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "6a1c785d-5379-58e3-bb32-b17b89dda9ba"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Luiz, David",
+    "data": {
+      "manager": "Phil",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Luiz, David",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "e35288f0-ef75-53f5-a753-a5a3ba9d5354"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Walker, Kyle",
+    "data": {
+      "manager": "Phil",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Walker, Kyle",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "1058e32b-f22d-52e3-a3e9-61953dfdfacd"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Pereira, Ricardo",
+    "data": {
+      "manager": "Phil",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Pereira, Ricardo",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "ae01c8d9-5a4a-5b48-910a-f965faf0db8b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Noble, Mark",
+    "data": {
+      "manager": "Phil",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Noble, Mark",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "1af57f8c-dcba-50e3-ad7e-93acb57723ce"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Gomes, Andre",
+    "data": {
+      "manager": "Phil",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Gomes, Andre",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "90591652-71b6-5e3f-8a63-c5e82558951d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Martial, Anthony",
+    "data": {
+      "manager": "Phil",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Martial, Anthony",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "30988653-4db9-5809-8a5b-cd02df83157d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Salah, Mohamed",
+    "data": {
+      "manager": "Phil",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Salah, Mohamed",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "a18e99b3-c6cc-5f66-b7d9-4fb79bcfdf4a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Wilson, Callum",
+    "data": {
+      "manager": "Phil",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Wilson, Callum",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "68904506-4271-5be8-b75d-237d048ba7fe"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Perez, Ayoze",
+    "data": {
+      "manager": "Phil",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Perez, Ayoze",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "8e201924-52ea-5b31-823a-c7319f41ed3b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Phil-Silva, David",
+    "data": {
+      "manager": "Phil",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Silva, David",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "2969d60a-b83a-5f33-bcdd-d54e65445d22"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Arrizabalaga, Kepa",
+    "data": {
+      "manager": "Rich W",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Arrizabalaga, Kepa",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "e2e92980-2bc2-5807-a6d6-7bf8c53a130e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Keane, Michael",
+    "data": {
+      "manager": "Rich W",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Keane, Michael",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "b86675fb-52a2-54fb-8418-36f821028dd3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Boly, Willy",
+    "data": {
+      "manager": "Rich W",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Boly, Willy",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "27564ee1-3714-51da-b37e-1bbf29147a3b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Rose, Danny",
+    "data": {
+      "manager": "Rich W",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Rose, Danny",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "642735ce-a400-5793-96b0-da40f5677854"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Alonso, Marcos",
+    "data": {
+      "manager": "Rich W",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Alonso, Marcos",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "53e1dd37-d9ed-503e-8632-f7e0397db5a6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Moutinho, Joao",
+    "data": {
+      "manager": "Rich W",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Moutinho, Joao",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "9c16c263-c13b-5a83-8992-9f3f72191fef"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Doucoure, Abdoulaye",
+    "data": {
+      "manager": "Rich W",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Doucoure, Abdoulaye",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "a94b41c7-a1aa-5b81-b387-b1447ba5ccae"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Pepe, Nicolas",
+    "data": {
+      "manager": "Rich W",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Pepe, Nicolas",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "31fbe2b5-0ee2-526d-8e17-339c8617e40f"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Sterling, Raheem",
+    "data": {
+      "manager": "Rich W",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Sterling, Raheem",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "1fddcb62-198e-5430-bfc1-dafa56451839"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Jesus, Gabriel",
+    "data": {
+      "manager": "Rich W",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Jesus, Gabriel",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "aa0713d9-7b34-59fe-aac0-676d8d56b848"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Lacazette, Alexandre",
+    "data": {
+      "manager": "Rich W",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Lacazette, Alexandre",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "b861fe00-9f37-5bdd-aaef-a7c45cf905fc"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Rich W-Greenwood, Mason",
+    "data": {
+      "manager": "Rich W",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Greenwood, Mason",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "22b452f1-2ead-571d-bc13-d8e0c6855bb6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-de Gea, David",
+    "data": {
+      "manager": "Stuart",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "de Gea, David",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "6b50332e-a11c-57b2-a12b-b898f3ce7d21"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Gomez, Joe",
+    "data": {
+      "manager": "Stuart",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Gomez, Joe",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "33b81249-ec29-5fc6-ade8-03b49491d15b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Maguire, Harry",
+    "data": {
+      "manager": "Stuart",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Maguire, Harry",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "b3d4e6be-da14-5ccc-a093-eba5beead431"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Robertson, Andrew",
+    "data": {
+      "manager": "Stuart",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Robertson, Andrew",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "251fe800-1561-590f-8eb2-1393151f9548"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Digne, Lucas",
+    "data": {
+      "manager": "Stuart",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Digne, Lucas",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "28bb0c61-5e77-5f34-a00a-31a6e05bffd9"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Rodri,",
+    "data": {
+      "manager": "Stuart",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Rodri,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "85411b42-cb22-5f32-a3a3-b803a49d710d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Ward-Prowse, James",
+    "data": {
+      "manager": "Stuart",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Ward-Prowse, James",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "cd91c210-f6ca-5cdb-8f00-e7327ecc8b72"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Richarlison,",
+    "data": {
+      "manager": "Stuart",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Richarlison,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "8224988c-2a60-5616-9259-9d6cd4822611"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Eriksen, Christian",
+    "data": {
+      "manager": "Stuart",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Eriksen, Christian",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "7ca0f1c9-0269-5711-a4b7-6f1d9a0eb937"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Cutrone, Patrick",
+    "data": {
+      "manager": "Stuart",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Cutrone, Patrick",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "1934b8c7-d755-57f1-91ac-443132277c6d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Aguero, Sergio",
+    "data": {
+      "manager": "Stuart",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Aguero, Sergio",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "17669777-8872-5c91-b60a-c497e3ec2524"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Stuart-Joelinton,",
+    "data": {
+      "manager": "Stuart",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Joelinton,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "5b21b609-f96d-5748-8fea-e4665022acea"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Leno, Bernd",
+    "data": {
+      "manager": "Tony",
+      "position": "GK",
+      "division___string": "championship",
+      "player___string": "Leno, Bernd",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "62658e2f-8351-562e-88ed-5f156e75edc7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Matip, Joel",
+    "data": {
+      "manager": "Tony",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Matip, Joel",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "748a05d9-033b-5f3f-b9ef-24d9e28db77a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Stones, John",
+    "data": {
+      "manager": "Tony",
+      "position": "CB",
+      "division___string": "championship",
+      "player___string": "Stones, John",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "d0fd8794-2f32-535d-8440-2fb8a84f38e4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Chilwell, Ben",
+    "data": {
+      "manager": "Tony",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Chilwell, Ben",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "7add1512-0f89-50b9-9c3a-8d4e1bfabee3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Otto, Jonny",
+    "data": {
+      "manager": "Tony",
+      "position": "FB",
+      "division___string": "championship",
+      "player___string": "Otto, Jonny",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "8d30d81b-ae39-55ab-bcb6-85be2b34e7e6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Kante, N'Golo",
+    "data": {
+      "manager": "Tony",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Kante, N'Golo",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "f0170230-51cf-5eba-8297-a449412b879e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Ndombele, Tanguy",
+    "data": {
+      "manager": "Tony",
+      "position": "MID",
+      "division___string": "championship",
+      "player___string": "Ndombele, Tanguy",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "4fe6c282-2a7c-5860-bc80-68949b7635c4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Sigurdsson, Gylfi",
+    "data": {
+      "manager": "Tony",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Sigurdsson, Gylfi",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "91ff9f06-2531-5ee4-b615-02137225d43d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Silva, Bernardo",
+    "data": {
+      "manager": "Tony",
+      "position": "AM",
+      "division___string": "championship",
+      "player___string": "Silva, Bernardo",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "5a554523-ee0a-50d4-b468-c974c30a2f57"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Kane, Harry",
+    "data": {
+      "manager": "Tony",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Kane, Harry",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "5871b772-91ba-59b9-bc2d-06df5f8a9597"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Firmino, Roberto",
+    "data": {
+      "manager": "Tony",
+      "position": "STR",
+      "division___string": "championship",
+      "player___string": "Firmino, Roberto",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "44cda9e0-cda1-5eb2-9fc1-5ee5ee9147e7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tony-Jorginho,",
+    "data": {
+      "manager": "Tony",
+      "position": "SUB",
+      "division___string": "championship",
+      "player___string": "Jorginho,",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3",
+      "player___NODE": "4524fa38-26db-5836-85af-680efbe40992"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Leno, Bernd",
+    "data": {
+      "manager": "Chris",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Leno, Bernd",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "62658e2f-8351-562e-88ed-5f156e75edc7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-van Dijk, Virgil",
+    "data": {
+      "manager": "Chris",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "van Dijk, Virgil",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "430c3cea-1883-5c6d-a97d-972bc7e9f8d7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Dunk, Lewis",
+    "data": {
+      "manager": "Chris",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Dunk, Lewis",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "28fb871d-426c-5ea0-9f77-3ea1b8c5be37"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Alexander-Arnold, Trent",
+    "data": {
+      "manager": "Chris",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Alexander-Arnold, Trent",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "64abb088-35ad-5867-a83b-851fbab6380c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Alonso, Marcos",
+    "data": {
+      "manager": "Chris",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Alonso, Marcos",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "53e1dd37-d9ed-503e-8632-f7e0397db5a6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Milivojevic, Luka",
+    "data": {
+      "manager": "Chris",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Milivojevic, Luka",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "1703dea3-fee9-57a0-a4be-a09aa5253f84"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Ndombele, Tanguy",
+    "data": {
+      "manager": "Chris",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Ndombele, Tanguy",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "4fe6c282-2a7c-5860-bc80-68949b7635c4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Sigurdsson, Gylfi",
+    "data": {
+      "manager": "Chris",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Sigurdsson, Gylfi",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "91ff9f06-2531-5ee4-b615-02137225d43d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Anderson, Felipe",
+    "data": {
+      "manager": "Chris",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Anderson, Felipe",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "8d70ac40-b6c3-5e53-9fb9-911f5907814b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Perez, Ayoze",
+    "data": {
+      "manager": "Chris",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Perez, Ayoze",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "8e201924-52ea-5b31-823a-c7319f41ed3b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Haller, Sebastien",
+    "data": {
+      "manager": "Chris",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Haller, Sebastien",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "cceb9638-8f89-5d37-b69c-b3c3f2b72fb5"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Chris-Fraser, Ryan",
+    "data": {
+      "manager": "Chris",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Fraser, Ryan",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "cbbafb86-43cf-5e93-81db-5e01f3324c36"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Lloris, Hugo",
+    "data": {
+      "manager": "Ed",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Lloris, Hugo",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "fc3607aa-32d3-5541-9d83-be334a42a0d1"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Mings, Tyrone",
+    "data": {
+      "manager": "Ed",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Mings, Tyrone",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "0fd4df5f-b478-579d-a82f-0bd2c0d7c99b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Mustafi, Shkodran",
+    "data": {
+      "manager": "Ed",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Mustafi, Shkodran",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "a9985960-61f3-53c6-ad68-b1042eb481f2"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Robertson, Andrew",
+    "data": {
+      "manager": "Ed",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Robertson, Andrew",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "251fe800-1561-590f-8eb2-1393151f9548"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Chilwell, Ben",
+    "data": {
+      "manager": "Ed",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Chilwell, Ben",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "7add1512-0f89-50b9-9c3a-8d4e1bfabee3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Gundogan, Ilkay",
+    "data": {
+      "manager": "Ed",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Gundogan, Ilkay",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "aaa6d528-a547-5481-8fb9-b134788d5443"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Jorginho,",
+    "data": {
+      "manager": "Ed",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Jorginho,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "4524fa38-26db-5836-85af-680efbe40992"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Heung-min, Son",
+    "data": {
+      "manager": "Ed",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Heung-min, Son",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "a48d44c5-33a6-52f9-827e-cdaa44e538d3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Mane, Sadio",
+    "data": {
+      "manager": "Ed",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Mane, Sadio",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "ab79f031-f682-5304-84a1-21b3471788a9"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Jesus, Gabriel",
+    "data": {
+      "manager": "Ed",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Jesus, Gabriel",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "aa0713d9-7b34-59fe-aac0-676d8d56b848"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Lukaku, Romelu",
+    "data": {
+      "manager": "Ed",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Lukaku, Romelu",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "3cf6e360-00e5-56a9-b9fb-d8a6cce0da4b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Ed-Barkley, Ross",
+    "data": {
+      "manager": "Ed",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Barkley, Ross",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "c0b5b2cb-e519-5bba-8363-b09f1494c95d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Ederson,",
+    "data": {
+      "manager": "Howie",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Ederson,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "120790fd-4d41-5fe1-ab6a-1336ee34561b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Ake, Nathan",
+    "data": {
+      "manager": "Howie",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Ake, Nathan",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "08e57b7a-2638-5f0b-b95f-9dd70fa65139"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Laporte, Aymeric",
+    "data": {
+      "manager": "Howie",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Laporte, Aymeric",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "37283d89-0812-5f1b-894b-b74c94adba73"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Pereira, Ricardo",
+    "data": {
+      "manager": "Howie",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Pereira, Ricardo",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "ae01c8d9-5a4a-5b48-910a-f965faf0db8b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Doherty, Matthew",
+    "data": {
+      "manager": "Howie",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Doherty, Matthew",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "993d539e-d727-58ca-a778-cd4a62b5ff6d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Neves, Ruben",
+    "data": {
+      "manager": "Howie",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Neves, Ruben",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "5a8920bb-2297-592d-ad38-f0e2047a64af"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Guendouzi, Matteo",
+    "data": {
+      "manager": "Howie",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Guendouzi, Matteo",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "4276ef7b-76ee-53ed-ab8a-f7687b11bb20"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Eriksen, Christian",
+    "data": {
+      "manager": "Howie",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Eriksen, Christian",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "7ca0f1c9-0269-5711-a4b7-6f1d9a0eb937"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Salah, Mohamed",
+    "data": {
+      "manager": "Howie",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Salah, Mohamed",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "a18e99b3-c6cc-5f66-b7d9-4fb79bcfdf4a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Vardy, Jamie",
+    "data": {
+      "manager": "Howie",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Vardy, Jamie",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "0a0b3586-3b88-5f72-b72f-08c658bb8d6b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Deeney, Troy",
+    "data": {
+      "manager": "Howie",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Deeney, Troy",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "bd7a8df4-5351-591a-8e34-87266e5f1696"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Howie-Richarlison,",
+    "data": {
+      "manager": "Howie",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Richarlison,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "8224988c-2a60-5616-9259-9d6cd4822611"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Roberto,",
+    "data": {
+      "manager": "Jezz",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Roberto,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "f298fd3a-adf8-5ffe-932d-8e312ae09d1a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Alderweireld, Toby",
+    "data": {
+      "manager": "Jezz",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Alderweireld, Toby",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "6a1c785d-5379-58e3-bb32-b17b89dda9ba"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Zouma, Kurt",
+    "data": {
+      "manager": "Jezz",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Zouma, Kurt",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "f06a5594-eb73-50e4-a024-d49d462a118c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Walker, Kyle",
+    "data": {
+      "manager": "Jezz",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Walker, Kyle",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "1058e32b-f22d-52e3-a3e9-61953dfdfacd"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Coleman, Seamus",
+    "data": {
+      "manager": "Jezz",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Coleman, Seamus",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "e9fb8e10-46ba-595b-8855-4c1d9ad2da5c"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Ox-Chamberlain, Alex",
+    "data": {
+      "manager": "Jezz",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Ox-Chamberlain, Alex",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "b1674920-5f73-5e05-ae1c-2177946ce0eb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Moutinho, Joao",
+    "data": {
+      "manager": "Jezz",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Moutinho, Joao",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "9c16c263-c13b-5a83-8992-9f3f72191fef"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Martial, Anthony",
+    "data": {
+      "manager": "Jezz",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Martial, Anthony",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "30988653-4db9-5809-8a5b-cd02df83157d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Sane, Leroy",
+    "data": {
+      "manager": "Jezz",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Sane, Leroy",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "17fdaf10-7866-554e-bdd7-06b718db9774"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Wilson, Callum",
+    "data": {
+      "manager": "Jezz",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Wilson, Callum",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "68904506-4271-5be8-b75d-237d048ba7fe"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Kane, Harry",
+    "data": {
+      "manager": "Jezz",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Kane, Harry",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "5871b772-91ba-59b9-bc2d-06df5f8a9597"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jezz-Pedro,",
+    "data": {
+      "manager": "Jezz",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Pedro,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "ed0c8c3e-fd6b-59ec-9cdc-0aaa3265e83f"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Foster, Ben",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Foster, Ben",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "a83a213b-e0e3-557d-9c7b-19ccef0e476e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Boly, Willy",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Boly, Willy",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "27564ee1-3714-51da-b37e-1bbf29147a3b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Stones, John",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Stones, John",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "d0fd8794-2f32-535d-8440-2fb8a84f38e4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Shaw, Luke",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Shaw, Luke",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "3774e679-cc08-5ac7-82e4-22baf8e39509"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Rose, Danny",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Rose, Danny",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "642735ce-a400-5793-96b0-da40f5677854"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Ndidi, Wilfred",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Ndidi, Wilfred",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "84a0d862-749f-5358-8baa-4940b3add9a4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Kante, N'Golo",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Kante, N'Golo",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "f0170230-51cf-5eba-8297-a449412b879e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Pepe, Nicolas",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Pepe, Nicolas",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "31fbe2b5-0ee2-526d-8e17-339c8617e40f"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Silva, David",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Silva, David",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "2969d60a-b83a-5f33-bcdd-d54e65445d22"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Rashford, Marcus",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Rashford, Marcus",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "83e615f8-7105-56bb-9230-1f5c12dcfeb1"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Wood, Chris",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Wood, Chris",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "f230b4f6-45dc-5d64-af7b-cb71a0e78e6b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Jim Bob-Patricio, Rui",
+    "data": {
+      "manager": "Jim Bob",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Patricio, Rui",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "9933bf9c-26d6-5be2-a6d5-f98dcfac0305"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Arrizabalaga, Kepa",
+    "data": {
+      "manager": "Matt",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Arrizabalaga, Kepa",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "e2e92980-2bc2-5807-a6d6-7bf8c53a130e"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Vertonghen, Jan",
+    "data": {
+      "manager": "Matt",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Vertonghen, Jan",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "82c4167c-151a-5ff3-907c-06e941bee1b7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Lindelof, Victor",
+    "data": {
+      "manager": "Matt",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Lindelof, Victor",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "5847b0ce-ff77-51e2-a57f-2a5674fb6b49"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Wan-Bissaka, Aaron",
+    "data": {
+      "manager": "Matt",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Wan-Bissaka, Aaron",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "fc9847e6-7829-5184-b54b-df5d9653eecb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-van Aanholt, Patrick",
+    "data": {
+      "manager": "Matt",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "van Aanholt, Patrick",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "83b76fd1-86eb-5e5e-a49a-e9d59a9718f7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Tielemans, Youri",
+    "data": {
+      "manager": "Matt",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Tielemans, Youri",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "a1a17fea-f7c0-5f38-8d27-eed9e7056c99"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Gomes, Andre",
+    "data": {
+      "manager": "Matt",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Gomes, Andre",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "90591652-71b6-5e3f-8a63-c5e82558951d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Pulisic, Christian",
+    "data": {
+      "manager": "Matt",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Pulisic, Christian",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "96b2ef83-4a96-544b-b5a6-8b4311a8ea64"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Silva, Bernardo",
+    "data": {
+      "manager": "Matt",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Silva, Bernardo",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "5a554523-ee0a-50d4-b468-c974c30a2f57"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Aguero, Sergio",
+    "data": {
+      "manager": "Matt",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Aguero, Sergio",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "17669777-8872-5c91-b60a-c497e3ec2524"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Adams, Che",
+    "data": {
+      "manager": "Matt",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Adams, Che",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "affa97f6-97cb-51ad-93c4-94e22c5932b7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Matt-Moura, Lucas",
+    "data": {
+      "manager": "Matt",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Moura, Lucas",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "7e22638a-4663-5d5c-ba10-7b823c7e55e4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Alisson,",
+    "data": {
+      "manager": "Paul",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "Alisson,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "fe61ebf0-2c37-5a7c-b3d3-8481dc452a4b"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Keane, Michael",
+    "data": {
+      "manager": "Paul",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Keane, Michael",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "b86675fb-52a2-54fb-8418-36f821028dd3"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Luiz, David",
+    "data": {
+      "manager": "Paul",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Luiz, David",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "e35288f0-ef75-53f5-a753-a5a3ba9d5354"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Azpilicueta, Cesar",
+    "data": {
+      "manager": "Paul",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Azpilicueta, Cesar",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "e9ec377a-319f-5f06-852c-6b24ebff57f6"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Taylor, Charlie",
+    "data": {
+      "manager": "Paul",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Taylor, Charlie",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "733740ab-18bc-522d-932a-fe99c282dde0"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Pogba, Paul",
+    "data": {
+      "manager": "Paul",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Pogba, Paul",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "13df783f-6522-5124-85bb-77c6c6a3e53a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Doucoure, Abdoulaye",
+    "data": {
+      "manager": "Paul",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Doucoure, Abdoulaye",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "a94b41c7-a1aa-5b81-b387-b1447ba5ccae"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Sterling, Raheem",
+    "data": {
+      "manager": "Paul",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Sterling, Raheem",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "1fddcb62-198e-5430-bfc1-dafa56451839"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Zaha, Wilfried",
+    "data": {
+      "manager": "Paul",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Zaha, Wilfried",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "580e3110-6edb-5e57-9de8-b3a751a12642"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Jimenez, Raul",
+    "data": {
+      "manager": "Paul",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Jimenez, Raul",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "54b58b0b-d933-559f-9ac2-a5cb58f919d4"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Lacazette, Alexandre",
+    "data": {
+      "manager": "Paul",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Lacazette, Alexandre",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "b861fe00-9f37-5bdd-aaef-a7c45cf905fc"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Paul-Pickford, Jordan",
+    "data": {
+      "manager": "Paul",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Pickford, Jordan",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "ef4ab7d0-5720-532a-8005-053e1da51cfb"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-de Gea, David",
+    "data": {
+      "manager": "Tom F",
+      "position": "GK",
+      "division___string": "leagueOne",
+      "player___string": "de Gea, David",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "6b50332e-a11c-57b2-a12b-b898f3ce7d21"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Maguire, Harry",
+    "data": {
+      "manager": "Tom F",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Maguire, Harry",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "b3d4e6be-da14-5ccc-a093-eba5beead431"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Rudiger, Antonio",
+    "data": {
+      "manager": "Tom F",
+      "position": "CB",
+      "division___string": "leagueOne",
+      "player___string": "Rudiger, Antonio",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "8ff3426f-bef5-59c8-8bb7-5035ca88f361"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Davies, Ben",
+    "data": {
+      "manager": "Tom F",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Davies, Ben",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "1590d1af-4a08-5cd2-a4b4-387f45421602"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Digne, Lucas",
+    "data": {
+      "manager": "Tom F",
+      "position": "FB",
+      "division___string": "leagueOne",
+      "player___string": "Digne, Lucas",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "28bb0c61-5e77-5f34-a00a-31a6e05bffd9"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Wijnaldum, Georginio",
+    "data": {
+      "manager": "Tom F",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Wijnaldum, Georginio",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "77033f34-adff-53ba-a6ac-96915c025da2"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Ward-Prowse, James",
+    "data": {
+      "manager": "Tom F",
+      "position": "MID",
+      "division___string": "leagueOne",
+      "player___string": "Ward-Prowse, James",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "cd91c210-f6ca-5cdb-8f00-e7327ecc8b72"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Alli, Dele",
+    "data": {
+      "manager": "Tom F",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "Alli, Dele",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "0fcf24ea-8f19-5acd-a4a8-698d09226c4d"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-de Bruyne, Kevin",
+    "data": {
+      "manager": "Tom F",
+      "position": "AM",
+      "division___string": "leagueOne",
+      "player___string": "de Bruyne, Kevin",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "9f8fda6b-9135-5b5c-9116-b4f5fe389c8a"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Firmino, Roberto",
+    "data": {
+      "manager": "Tom F",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Firmino, Roberto",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "44cda9e0-cda1-5eb2-9fc1-5ee5ee9147e7"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Aubameyang, Pierre-Emeric",
+    "data": {
+      "manager": "Tom F",
+      "position": "STR",
+      "division___string": "leagueOne",
+      "player___string": "Aubameyang, Pierre-Emeric",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "793841e5-5efa-5270-b789-05bb35964448"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  },
+  {
+    "resourceId": "draft-Tom F-Joelinton,",
+    "data": {
+      "manager": "Tom F",
+      "position": "SUB",
+      "division___string": "leagueOne",
+      "player___string": "Joelinton,",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45",
+      "player___NODE": "5b21b609-f96d-5748-8fea-e4665022acea"
+    },
+    "internal": {
+      "description": "Draft",
+      "mediaType": "application/json",
+      "type": "draft"
+    }
+  }
+]

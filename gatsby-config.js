@@ -56,7 +56,7 @@ module.exports = {
             },
         },
         {
-            resolve: '@kammy/gatsby-source-sky-sports',
+            resolve: '@kammy/gatsby-source-fpl',
             options: config,
         },
         {

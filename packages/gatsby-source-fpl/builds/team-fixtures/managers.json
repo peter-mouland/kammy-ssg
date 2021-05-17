@@ -1,0 +1,314 @@
+[
+  {
+    "resourceId": "managers-Craig",
+    "data": {
+      "manager": "Craig",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-James",
+    "data": {
+      "manager": "James",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Luke",
+    "data": {
+      "manager": "Luke",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Olly",
+    "data": {
+      "manager": "Olly",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Rich T",
+    "data": {
+      "manager": "Rich T",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Sav",
+    "data": {
+      "manager": "Sav",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Tim",
+    "data": {
+      "manager": "Tim",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Tom S",
+    "data": {
+      "manager": "Tom S",
+      "divisionKey": "premierLeague",
+      "division___NODE": "dce83e5d-e82e-5787-b7ce-116a75dae346"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Dave G",
+    "data": {
+      "manager": "Dave G",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Johnny",
+    "data": {
+      "manager": "Johnny",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Naked",
+    "data": {
+      "manager": "Naked",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Nick",
+    "data": {
+      "manager": "Nick",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Phil",
+    "data": {
+      "manager": "Phil",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Rich W",
+    "data": {
+      "manager": "Rich W",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Stuart",
+    "data": {
+      "manager": "Stuart",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Tony",
+    "data": {
+      "manager": "Tony",
+      "divisionKey": "championship",
+      "division___NODE": "a96879fa-00c7-52f5-84fa-5e4d5520b5c3"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Chris",
+    "data": {
+      "manager": "Chris",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Ed",
+    "data": {
+      "manager": "Ed",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Howie",
+    "data": {
+      "manager": "Howie",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Jezz",
+    "data": {
+      "manager": "Jezz",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Jim Bob",
+    "data": {
+      "manager": "Jim Bob",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Matt",
+    "data": {
+      "manager": "Matt",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Paul",
+    "data": {
+      "manager": "Paul",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  },
+  {
+    "resourceId": "managers-Tom F",
+    "data": {
+      "manager": "Tom F",
+      "divisionKey": "leagueOne",
+      "division___NODE": "1420dc32-f5ea-585f-ba77-bbed46443e45"
+    },
+    "internal": {
+      "description": "Managers",
+      "mediaType": "application/json",
+      "type": "managers"
+    }
+  }
+]
