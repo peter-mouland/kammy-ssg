@@ -4,8 +4,8 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
-const getFixtures = (skyFixtures, { start, end }) =>
-    skyFixtures
+const getFixtures = (fplFixtures, { start, end }) =>
+    fplFixtures
         .filter(({ data: item }) => {
             const fixtureDate = item.kickoff_time;
             const result = start <= fixtureDate && fixtureDate <= end;
@@ -27,7 +27,7 @@ module.exports = ({ googleGameWeekData, fplFixtures }) => {
             end: new Date(gw.end),
         };
         data.isCurrent = new Date() < data.end && new Date() > data.start;
-        data.fixtures = getFixtures(fplFixtures, data);
+        data.fixtures = getFixtures(fplFixtures, data) || [];
         return {
             resourceId: `game-weeks-${gw.gameweek}`,
             data,

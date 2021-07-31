@@ -4,10 +4,10 @@ const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 module.exports = ({ fixtures }) =>
     fixtures.map((data) => ({
-        resourceId: `fpl-fixtures-${data.id}-${data.locale}`,
+        resourceId: `fpl-fixtures-${data.id}`,
         data: {
             ...data,
-            date: getGmtDate(data.date),
+            date: getGmtDate(data.kickoff_time),
         },
         internal: {
             description: 'Fantasy Premier League Fixtures',

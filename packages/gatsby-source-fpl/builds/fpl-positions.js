@@ -1,5 +1,3 @@
-const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
-
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 
 // eslint-disable-next-line camelcase
@@ -8,7 +6,7 @@ module.exports = ({ element_types }) =>
         resourceId: `fpl-positions-${data.id}-${data.locale}`,
         data: {
             ...data,
-            date: getGmtDate(data.date),
+            pos: data.singular_name_short,
         },
         internal: {
             description: 'Fantasy Premier League positions',

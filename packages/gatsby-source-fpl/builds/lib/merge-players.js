@@ -44,16 +44,6 @@ const getPlayerWithStats = ({ player, gameWeeks }) => {
 
 const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
     const gameWeekData = gameWeeks.map(({ data }) => data);
-    const fplPlayersObj = fplPlayers.reduce(
-        (prev, { data: player }) => ({
-            ...prev,
-            [player.name]: {
-                ...(prev[player.name] || {}),
-                ...player,
-            },
-        }),
-        {},
-    );
     const googlePlayersObj = googlePlayerData.reduce((prev, googlePlayer) => {
         const player = {
             ...(prev[googlePlayer.Player.trim()] || {}),
@@ -69,25 +59,31 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
             [player.name]: player,
         };
     }, {});
-    const mergedPlayers = Object.keys(fplPlayers).reduce((prev, playerName) => {
+    const mergedPlayers = fplPlayers.reduce((prev, { data: fplPlayer }) => {
+        const playerName = fplPlayer.name;
+        if (!playerName) {
+            console.log(fplPlayer);
+            logger.error('What player?');
+        }
         const gPlayer = googlePlayersObj[playerName] || { new: false, isHidden: true };
-        const fplPlayer = fplPlayersObj[playerName] || {};
         const player = {
             isHidden: gPlayer.isHidden,
             new: ['true', true, 'new'].includes(gPlayer.new),
             pos: gPlayer.pos || '',
             club: gPlayer.club || fplPlayer.club,
             fixtures: fplPlayer.fixtures,
-            value: fplPlayer.value,
+            value: fplPlayer.value_season,
+            value_form: fplPlayer.value_form,
             name: fplPlayer.name,
             code: fplPlayer.code,
-            skySportsPosition: fplPlayer.pos,
+            fplPosition: fplPlayer.pos,
             isAvailable: fplPlayer.avail === 'Available',
-            avail: fplPlayer.avail,
-            availStatus: fplPlayer.availStatus, // todo: fpl equivalent?
-            availReason: fplPlayer.availReason,
-            availNews: fplPlayer.availNews,
-            returnDate: fplPlayer.returnDate,
+            avail: fplPlayer.avail || '',
+            availStatus: fplPlayer.availStatus || '', // todo: fpl equivalent?
+            availReason: fplPlayer.availReason || '',
+            availNews: fplPlayer.availNews || '',
+            returnDate: fplPlayer.returnDate || '',
+            photo: fplPlayer.photo,
             url: `/player/${playerName.toLowerCase().trim().replace(/ /g, '-').replace(/,/g, '')}`,
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
