@@ -18,7 +18,7 @@ const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
     });
 
     const showFixtures = (gameWeek) => setState({ showTransfers: true, selectedGameWeek: gameWeek });
-    const { currentGameWeek, nextGameWeek, prevGameWeek } = gameWeekDates;
+    const { currentGameWeek = {}, nextGameWeek = {}, prevGameWeek = {} } = gameWeekDates;
 
     if (!gameWeekDates) return null;
     return (
@@ -85,7 +85,6 @@ const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
                     </Spacer>
                     <DivisionRankings
                         key={key}
-                        gameWeek={currentGameWeek.gameWeek}
                         stats={statsByDivision[key]}
                         showGameWeekSwitcher={false}
                         selectedGameWeek={selectedGameWeek}

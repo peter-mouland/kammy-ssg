@@ -26,7 +26,7 @@ const PlayersPageTable = ({ players }) => {
                         <PlayersTable
                             positions={positions}
                             players={playersFiltered}
-                            additionalColumns={['skySportsPosition']}
+                            additionalColumns={['fplPosition']}
                         />
                     )}
                 </PlayersFilters>

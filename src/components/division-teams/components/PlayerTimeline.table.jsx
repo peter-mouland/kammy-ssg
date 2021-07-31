@@ -29,7 +29,7 @@ const PlayerTimelineTable = ({ player }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {player.gameWeeks.map(({ fixtures }) =>
+                    {(player.gameWeeks || []).map(({ fixtures }) =>
                         fixtures.map((fixture) => (
                             <tr key={`${fixture.event}`}>
                                 <td className={bem('team', { home: true })}>

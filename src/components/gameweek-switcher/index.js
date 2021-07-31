@@ -12,7 +12,7 @@ import useGameWeeks from '../../hooks/use-game-weeks';
 const bem = bemHelper({ block: 'game-week-switcher' });
 
 const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
-    const { gameWeeks, currentGameWeek, nextGameWeek } = useGameWeeks();
+    const { gameWeeks, currentGameWeek = {}, nextGameWeek } = useGameWeeks();
     const previousGameWeeks = gameWeeks
         .filter(({ gameWeek }) => gameWeek <= currentGameWeek.gameWeek)
         .slice(0, selectedGameWeek + 1);

@@ -24,16 +24,16 @@ const useGameWeeks = () => {
                     notes
                     startFromNow: start(fromNow: true)
                     endFromNow: end(fromNow: true)
-                    fixtures {
-                        aScore
-                        aTcode
-                        aTname
-                        date
-                        hScore
-                        hTcode
-                        hTname
-                        status
-                    }
+                    #                    fixtures {
+                    #                        aScore
+                    #                        aTcode
+                    #                        aTname
+                    #                        date
+                    #                        hScore
+                    #                        hTcode
+                    #                        hTname
+                    #                        status
+                    #                    }
                 }
             }
         }

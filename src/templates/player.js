@@ -54,37 +54,37 @@ export const query = graphql`
                 sb
                 points
             }
-            gameWeeks {
-                fixtures {
-                    id
-                    aScore
-                    aTcode
-                    aTname
-                    week
-                    status
-                    stats {
-                        apps
-                        asts
-                        con
-                        cs
-                        pensv
-                        gls
-                        points
-                        rcard
-                        pb
-                        tb
-                        sb
-                        subs
-                        ycard
-                    }
-                    pTcode
-                    hTname
-                    hTcode
-                    hScore
-                    event
-                    date
-                }
-            }
+            #            gameWeeks {
+            #                fixtures {
+            #                    id
+            #                    aScore
+            #                    aTcode
+            #                    aTname
+            #                    week
+            #                    status
+            #                    stats {
+            #                        apps
+            #                        asts
+            #                        con
+            #                        cs
+            #                        pensv
+            #                        gls
+            #                        points
+            #                        rcard
+            #                        pb
+            #                        tb
+            #                        sb
+            #                        subs
+            #                        ycard
+            #                    }
+            #                    pTcode
+            #                    hTname
+            #                    hTcode
+            #                    hScore
+            #                    event
+            #                    date
+            #                }
+            #            }
         }
     }
 `;

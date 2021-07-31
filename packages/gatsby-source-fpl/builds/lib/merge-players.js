@@ -84,7 +84,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
             availNews: fplPlayer.availNews || '',
             returnDate: fplPlayer.returnDate || '',
             photo: fplPlayer.photo,
-            url: `/player/${playerName.toLowerCase().trim().replace(/ /g, '-').replace(/,/g, '')}`,
+            url: `/player/${playerName.toLowerCase().trim().replace(/'/g, '-').replace(/ /g, '-').replace(/,/g, '')}`,
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
         return {
