@@ -35,6 +35,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
 
     const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
         if (!draftByManager[manager]) {
+            console.log(draftByManager);
             logger.error(`Manager Mismatch: ${manager}`);
         }
 

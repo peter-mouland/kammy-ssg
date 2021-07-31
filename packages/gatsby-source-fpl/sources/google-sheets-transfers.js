@@ -5,10 +5,10 @@ module.exports = () =>
         fetchTransfers('premierLeague'),
         fetchTransfers('championship'),
         fetchTransfers('leagueOne'),
-        fetchTransfers('leagueTwo'),
-    ]).then(([premierLeague, championship, leagueOne, leagueTwo]) => [
+        // fetchTransfers('leagueTwo'),
+    ]).then(([premierLeague, championship, leagueOne]) => [
         ...premierLeague,
         ...championship,
         ...leagueOne,
-        ...leagueTwo,
+        // ...leagueTwo,
     ]);

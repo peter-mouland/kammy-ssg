@@ -1,4 +1,4 @@
-// const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
+const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
 
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
@@ -7,22 +7,32 @@ module.exports = ({ teams, teamsByCode, elements, elementTypesById, events }) =>
     const logEnd = logger.timed('Build: FPL');
 
     const skyPlayers = elements.map((element) => {
+        if (!elementTypesById[element.element_type]) {
+            logger.error('POS not found');
+            logger.error(element.element_type);
+            console.log(elementTypesById);
+        }
+        if (!teamsByCode[element.team_code]) {
+            logger.error('Team not found');
+            logger.error(element.team_code);
+            console.log(teamsByCode);
+        }
+
         const data = {
-            ...elements,
+            ...element,
             name: `${element.second_name}, ${element.first_name}`.trim(),
-            code: parseInt(elements.code, 10),
-            pos: elementTypesById[elements.emlement_type],
-            club: teamsByCode[elements.team_code],
+            code: parseInt(element.code, 10),
+            pos: elementTypesById[element.element_type].pos,
+            club: teamsByCode[element.team_code].name,
             stats: [],
-            // fixtures: elements.fixtures.map((fixture) => ({
-            //     ...fixture,
-            //     date: getGmtDate(fixture.date),
-            // })),
-            tCode: elements.tCode,
+            fixtures: element.fixtures.map((fixture) => ({
+                ...fixture,
+                date: getGmtDate(fixture.kickoff_time),
+            })),
         };
 
         return {
-            resourceId: `fpl-players-${data.name}`,
+            resourceId: `fpl-players-${data.code}`,
             data,
             internal: {
                 description: 'FPL data',

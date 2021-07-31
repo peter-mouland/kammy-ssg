@@ -69,6 +69,10 @@ const getGameWeekFixtures = (player, gameWeeks) =>
 
 const playerStats = ({ player, gameWeeks }) => {
     if (!player) return {};
+    if (!player.name) {
+        console.log(player);
+        process.exit(1);
+    }
     const playerFixtures = getGameWeekFixtures(player, gameWeeks);
     const gameWeekFixtures = playerFixtures.map((fixture) => addPointsToFixtures(fixture, player.pos));
     const stats = totalUpStats(gameWeekFixtures);
@@ -79,7 +83,7 @@ const playerStats = ({ player, gameWeeks }) => {
     };
     const fixtures = (player.fixtures || []).map((fixture) => addPointsToFixtures(fixture, player.pos));
     if (!fixtures || !fixtures.length) {
-        logger.warn(`PLAYER NOT FOUND: ${player.name}`);
+        logger.warn(`PLAYER FIXTURES NOT FOUND: ${player.name}`);
     }
     return {
         ...player,
