@@ -29,8 +29,8 @@ const usePlayers = () => {
                     name
                     club
                     value
-                    pts
-                    skySportsPosition
+                    #                    pts
+                    #                    fplPosition
                 }
             }
         }

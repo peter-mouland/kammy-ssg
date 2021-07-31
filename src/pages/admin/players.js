@@ -29,7 +29,7 @@ const AdminPlayerList = () => {
                 ...skyPlayer,
                 // new: true, ?? should we do this, or leave new as a gsheets thing?
                 isHidden: false,
-                skySportsPosition: skyPlayer.group.toUpperCase(),
+                fplPosition: skyPlayer.group.toUpperCase(),
                 name,
                 code: parseInt(skyPlayer.id, 10),
                 club: toTitleCase(skyPlayer.tName),

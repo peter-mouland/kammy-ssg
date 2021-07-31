@@ -46,6 +46,12 @@ const SquadOnPitch = ({ squad, onSelect }) => {
             <div className={styles.team}>
                 {positions.map((pos, index) => {
                     const squadMember = squad.find((item) => item.posIndex === index);
+                    if (!squadMember.player) {
+                        console.log('squadMember player not found');
+                        console.log('This likely means gsheets does not match FPL spelling');
+                        console.log(squadMember);
+                        return null;
+                    }
                     return (
                         <Pos key={index} {...{ squadMember, teamPos: pos, posIndex: index, onSelect, isInteractive }}>
                             <PlayerImage player={{ ...squadMember.player, teamPos: pos }} medium />

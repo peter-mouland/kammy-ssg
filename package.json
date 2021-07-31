@@ -24,7 +24,7 @@
     "deploy:hard": "yarn clean:deploy && yarn build:prod && netlify deploy --prod --open --dir ./docs",
     "--- GATSBY ---": "",
     "start": "yarn clean:deploy && TZ='Europe/London' gatsby develop",
-    "start:static": "cd docs; ws --spa index.html",
+    "start:static": "cd public; ws --spa index.html",
     "serve": "gatsby serve",
     "start:preview": "yarn clean:deploy && CI=true gatsby develop -p ${NOMAD_PORT_HTTP} --host 0.0.0.0",
     "playground": "GATSBY_GRAPHQL_IDE=playground gatsby develop",
