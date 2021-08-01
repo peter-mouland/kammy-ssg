@@ -8,13 +8,19 @@ module.exports = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
     const mergedPlayers = mergePlayers({ googlePlayerData, gameWeeks, fplPlayers });
 
     logEnd();
-    return Object.values(mergedPlayers).map((player) => ({
-        resourceId: `players-${player.code}`,
-        data: player,
-        internal: {
-            description: 'Players',
-            mediaType: mediaTypes.JSON,
-            type: nodeTypes.players,
-        },
-    }));
+    return Object.values(mergedPlayers).map((player) => {
+        if (typeof player.season.bp === 'undefined') {
+            console.log(player);
+            console.log('No BP, what?');
+        }
+        return {
+            resourceId: `players-${player.code}`,
+            data: player,
+            internal: {
+                description: 'Players',
+                mediaType: mediaTypes.JSON,
+                type: nodeTypes.players,
+            },
+        };
+    });
 };

@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { useQuery, queryCache } from 'react-query';
 import { graphql, useStaticQuery } from 'gatsby';
-import extract from '@kammy/helpers.extract-sky-sports-stats';
-import { calculateTotalPoints } from '@kammy/helpers.sky-sports-stats-to-points';
+import extract from '@kammy/helpers.extract-fpl-stats';
+import { calculateTotalPoints } from '@kammy/helpers.fpl-stats-to-points';
 
 // import json from './test-resources/live-scores.json'
 

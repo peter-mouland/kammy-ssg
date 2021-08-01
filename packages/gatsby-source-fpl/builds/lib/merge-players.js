@@ -15,7 +15,7 @@ const calculateSeasonStats = (gameWeeksWithFixtures, pos) =>
                     [stat]:
                         stat === 'points' || calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0
                             ? gw.stats[stat] + (totals[stat] || 0)
-                            : null,
+                            : 0,
                 }),
                 {},
             ),

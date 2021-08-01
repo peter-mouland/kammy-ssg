@@ -45,7 +45,6 @@ export const query = graphql`
                     }
                     seasonToGameWeek {
                         apps
-                        subs
                         gls
                         asts
                         cs
@@ -53,8 +52,7 @@ export const query = graphql`
                         pensv
                         ycard
                         rcard
-                        pb
-                        tb
+                        bp
                         sb
                         points
                     }

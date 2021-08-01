@@ -2,12 +2,26 @@ const jsonQuery = require('json-query');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
-const extractFFStats = require('@kammy/helpers.extract-sky-sports-stats');
-const { calculateTotalPoints } = require('@kammy/helpers.sky-sports-stats-to-points');
+const extractFFStats = require('@kammy/helpers.extract-fpl-stats');
+const { calculateTotalPoints } = require('@kammy/helpers.fpl-stats-to-points');
 
 const logger = require('../../lib/log');
 
-const emptyStatsArray = Array.from(Array(26), () => 0);
+const emptyStatsArray = {
+    minutes: 0,
+    goals_scored: 0,
+    assists: 0,
+    clean_sheets: 0,
+    goals_conceded: 0,
+    own_goals: 0,
+    penalties_saved: 0,
+    penalties_missed: 0,
+    yellow_cards: 0,
+    red_cards: 0,
+    saves: 0,
+    bonus: 0,
+    bps: 0,
+};
 const emptyStats = extractFFStats(emptyStatsArray);
 
 const getPosStats = ({ stats, pos }) => {
@@ -15,7 +29,7 @@ const getPosStats = ({ stats, pos }) => {
     const posStats = Object.keys(stats).reduce(
         (prevPosStat, stat) => ({
             ...prevPosStat,
-            [stat]: calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0 ? stats[stat] : null,
+            [stat]: calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0 ? stats[stat] : 0,
         }),
         {},
     );
@@ -85,6 +99,7 @@ const playerStats = ({ player, gameWeeks }) => {
         ...getPosStats({ stats, pos: player.pos }),
         points: point.total,
     };
+
     const fixtures = (player.fixtures || []).map((fixture) => addPointsToFixtures(fixture, player.pos));
     if (!fixtures || !fixtures.length) {
         logger.warn(`PLAYER FIXTURES NOT FOUND: ${player.name}`);
