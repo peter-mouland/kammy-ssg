@@ -41,7 +41,6 @@ export const query = graphql`
             url
             season {
                 apps
-                subs
                 gls
                 asts
                 cs
@@ -49,42 +48,39 @@ export const query = graphql`
                 pensv
                 ycard
                 rcard
-                tb
-                pb
+                bp
                 sb
                 points
             }
-            #            gameWeeks {
-            #                fixtures {
-            #                    id
-            #                    aScore
-            #                    aTcode
-            #                    aTname
-            #                    week
-            #                    status
-            #                    stats {
-            #                        apps
-            #                        asts
-            #                        con
-            #                        cs
-            #                        pensv
-            #                        gls
-            #                        points
-            #                        rcard
-            #                        pb
-            #                        tb
-            #                        sb
-            #                        subs
-            #                        ycard
-            #                    }
-            #                    pTcode
-            #                    hTname
-            #                    hTcode
-            #                    hScore
-            #                    event
-            #                    date
-            #                }
-            #            }
+            gameWeeks {
+                fixtures {
+                    id
+                    aScore
+                    aTcode
+                    aTname
+                    week
+                    status
+                    stats {
+                        apps
+                        asts
+                        con
+                        cs
+                        pensv
+                        gls
+                        points
+                        rcard
+                        bp
+                        sb
+                        ycard
+                    }
+                    #                    pTcode
+                    #                    hTname
+                    #                    hTcode
+                    #                    hScore
+                    #                    event
+                    date
+                }
+            }
         }
     }
 `;

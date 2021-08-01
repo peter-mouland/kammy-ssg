@@ -10,7 +10,7 @@ const calculateSeasonStats = (playerGameWeeks, pos) =>
                         // only add stats of those that can score points
                         stat === 'points' || calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0
                             ? gw.gameWeekStats[stat] + (totals[stat] || 0)
-                            : null,
+                            : 0,
                 }),
                 {},
             ),

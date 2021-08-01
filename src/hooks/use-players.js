@@ -23,7 +23,6 @@ const usePlayers = () => {
                     availNews
                     season {
                         apps
-                        subs
                         gls
                         asts
                         cs
@@ -31,8 +30,7 @@ const usePlayers = () => {
                         pensv
                         ycard
                         rcard
-                        pb
-                        tb
+                        bp
                         sb
                         points
                     }
