@@ -27,7 +27,7 @@ export const query = graphql`
         players(code: { eq: $code }) {
             id
             code
-            name
+            name: web_name
             club
             pos
             new

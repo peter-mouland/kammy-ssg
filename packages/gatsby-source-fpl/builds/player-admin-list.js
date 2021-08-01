@@ -5,7 +5,7 @@ module.exports = ({ fplPlayers, players }) => {
     const logEnd = logger.timed('Build: Admin Players List');
 
     const allPlayers = fplPlayers.map(({ data: player }) => {
-        const gsheetsPlayer = players.find(({ data: { name } }) => name === player.name) || {};
+        const gsheetsPlayer = players.find(({ data: { code } }) => code === player.code) || {};
 
         const data = {
             ...player,
@@ -14,7 +14,7 @@ module.exports = ({ fplPlayers, players }) => {
         };
 
         return {
-            resourceId: `admin-players-list-${data.name}`,
+            resourceId: `admin-players-list-${data.code}`,
             data,
             internal: {
                 description: 'FPL data With GSheets Data',

@@ -25,10 +25,10 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
         {},
     );
 
-    const playersByName = playerData.reduce(
+    const playersByCode = playerData.reduce(
         (prev, player) => ({
             ...prev,
-            [player.name]: { ...player },
+            [player.code]: player,
         }),
         {},
     );
@@ -43,7 +43,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
             draft: draftByManager[manager],
             transfers: getValidManagerTransfers(manager),
             gameWeeks: gameWeekData,
-            players: playersByName,
+            playersByCode,
         });
 
         const seasonGameWeeks = teamByGameWeek.getSeason();
@@ -51,7 +51,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
             manager,
             division,
             gameWeeks: seasonGameWeeks,
-            players: playersByName,
+            playersByCode,
         });
         const season = teamSeason.getSeason();
         return [...prev, ...season];
@@ -65,11 +65,11 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
         delete data.manager;
 
         return {
-            resourceId: `teams-${i}-${data.managerName}-${data.playerName}`,
+            resourceId: `teams-${i}-${data.managerName}-${data.playerCode}`,
             data: {
                 ...data,
                 manager___NODE: createNodeId(`managers-${data.managerName}`),
-                player___NODE: createNodeId(`players-${data.playerName}`),
+                player___NODE: createNodeId(`players-${data.playerCode}`),
             },
             internal: {
                 description: 'Teams',

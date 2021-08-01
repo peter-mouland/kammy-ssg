@@ -18,7 +18,6 @@ module.exports = {
     spreadsheets: {
         ACCESS_KEY: 'AIzaSyDA7UXEi96G7qFNIdgMg6nVJW9OajORO-I', // key to get json
         TRANSFERS_ID: '1B5WBkm7bHmRsee3eCk7-X2e-lzqnXEWNnc7H55oULYo', // transfers
-        DRAFT_ID: '1UKOeKiApAoNMXj8id3wfaTq9HrO2zHz5_yO2TqCah7c', // teams + draft picks
-        SETUP_ID: '1TbZVhvjOD8noHCQ-LkKZYWPTdb7DDmoY13xIQSINn2g', // game-weeks + players
+        SETUP_ID: '1UKOeKiApAoNMXj8id3wfaTq9HrO2zHz5_yO2TqCah7c', // game-weeks, players, teams + draft picks
     },
 };

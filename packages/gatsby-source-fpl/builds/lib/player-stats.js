@@ -68,9 +68,13 @@ const getGameWeekFixtures = (player, gameWeeks) =>
     }).value || [];
 
 const playerStats = ({ player, gameWeeks }) => {
-    if (!player) return {};
-    if (!player.name) {
+    if (!player) {
+        console.log('no player!');
+        return {};
+    }
+    if (!player.pos) {
         console.log(player);
+        console.log('no player pos!');
         process.exit(1);
     }
     const playerFixtures = getGameWeekFixtures(player, gameWeeks);

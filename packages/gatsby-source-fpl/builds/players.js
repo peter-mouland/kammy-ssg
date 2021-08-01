@@ -9,7 +9,7 @@ module.exports = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
 
     logEnd();
     return Object.values(mergedPlayers).map((player) => ({
-        resourceId: `players-${player.name}`,
+        resourceId: `players-${player.code}`,
         data: player,
         internal: {
             description: 'Players',

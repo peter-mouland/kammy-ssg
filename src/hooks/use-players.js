@@ -10,12 +10,12 @@ const usePlayers = () => {
                 nodes {
                     id
                     url
-                    name
+                    name: web_name
                     club
                     pos
                     new
                     code
-                    value
+                    value: value_season
                     isAvailable
                     avail
                     availStatus
@@ -40,9 +40,10 @@ const usePlayers = () => {
             }
         }
     `);
-    const playersByName = useMemo(() => players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {}), [
-        players,
-    ]);
+    const playersByName = useMemo(
+        () => players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {}),
+        [players],
+    );
     return { players, playersByName };
 };
 

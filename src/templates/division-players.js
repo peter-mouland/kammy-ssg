@@ -33,7 +33,7 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
     const disabledPlayers = data.teamPlayers.nodes.reduce(
         (prev, player) => ({
             ...prev,
-            [player.playerName]: player,
+            [player.code]: player,
         }),
         {},
     );
@@ -65,14 +65,17 @@ export const query = graphql`
         teamPlayers: allTeams(filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }) {
             nodes {
                 managerName
-                playerName
+                playerCode
+                player {
+                    web_name
+                }
             }
         }
         allPlayers(filter: { isHidden: { eq: false } }) {
             nodes {
                 id
                 code
-                name
+                name: web_name
                 club
                 pos
                 new
