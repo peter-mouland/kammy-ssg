@@ -19,7 +19,11 @@ const useLiveScores = () => {
     const queryKey = 'liveStats';
     const [intervalMs] = useState(60000);
 
-    const { isFetching: isLiveStatsLoading, isComplete, data: liveStats = [] } = useQuery(queryKey, fetchScores, {
+    const {
+        isFetching: isLiveStatsLoading,
+        isComplete,
+        data: liveStats = [],
+    } = useQuery(queryKey, fetchScores, {
         refetchInterval: intervalMs,
     });
 
@@ -35,7 +39,7 @@ const useLiveScores = () => {
                 nodes {
                     pos
                     code
-                    name
+                    name: web_name
                 }
             }
         }

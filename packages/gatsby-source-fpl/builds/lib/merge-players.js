@@ -45,51 +45,39 @@ const getPlayerWithStats = ({ player, gameWeeks }) => {
 const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
     const gameWeekData = gameWeeks.map(({ data }) => data);
     const googlePlayersObj = googlePlayerData.reduce((prev, googlePlayer) => {
-        const player = {
-            ...(prev[googlePlayer.Player.trim()] || {}),
-            isHidden: ['hidden', 'y', 'Y'].includes(googlePlayer.isHidden),
-            new: ['new', 'y', 'Y'].includes(googlePlayer.new),
-            code: parseInt(googlePlayer.Code, 10),
-            club: googlePlayer.Club,
-            pos: googlePlayer.Pos.toUpperCase(), // Pos = dff pos, Position = ss pos
-            name: googlePlayer.Player.trim(),
-        };
+        const code = parseInt(googlePlayer.code, 10);
         return {
             ...prev,
-            [player.name]: player,
+            [code]: {
+                code,
+                isHidden: ['true', true, 'hidden', 'y', 'Y', 'TRUE', 'yes', 'YES'].includes(googlePlayer.isHidden),
+                new: ['true', true, 'new', 'y', 'Y', 'TRUE', 'yes', 'YES'].includes(googlePlayer.new),
+                pos: googlePlayer.position.toUpperCase() || '#N/A', // Pos = dff pos, Position = ss pos
+                club: googlePlayer.team_name,
+            },
         };
     }, {});
     const mergedPlayers = fplPlayers.reduce((prev, { data: fplPlayer }) => {
-        const playerName = fplPlayer.name;
-        if (!playerName) {
+        const gPlayer = googlePlayersObj[fplPlayer.code] || { new: false, isHidden: true, pos: '#N/A' };
+        if (!googlePlayersObj[fplPlayer.code]) {
             console.log(fplPlayer);
             logger.error('What player?');
         }
-        const gPlayer = googlePlayersObj[playerName] || { new: false, isHidden: true };
         const player = {
-            isHidden: gPlayer.isHidden,
-            new: ['true', true, 'new'].includes(gPlayer.new),
-            pos: gPlayer.pos || '',
-            club: gPlayer.club || fplPlayer.club,
-            fixtures: fplPlayer.fixtures,
-            value: fplPlayer.value_season,
-            value_form: fplPlayer.value_form,
-            name: fplPlayer.name,
-            code: fplPlayer.code,
-            fplPosition: fplPlayer.pos,
-            isAvailable: fplPlayer.avail === 'Available',
+            ...fplPlayer,
+            ...gPlayer,
+            isAvailable: ['null', null].includes(fplPlayer.chance_of_playing_next_round),
             avail: fplPlayer.avail || '',
             availStatus: fplPlayer.availStatus || '', // todo: fpl equivalent?
             availReason: fplPlayer.availReason || '',
             availNews: fplPlayer.availNews || '',
             returnDate: fplPlayer.returnDate || '',
-            photo: fplPlayer.photo,
-            url: `/player/${playerName.toLowerCase().trim().replace(/'/g, '-').replace(/ /g, '-').replace(/,/g, '')}`,
+            url: `/player/${gPlayer.code}`,
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
         return {
             ...prev,
-            [playerName]: playerWithStats,
+            [fplPlayer.code]: playerWithStats,
         };
     }, {});
     logger.error(notFound);

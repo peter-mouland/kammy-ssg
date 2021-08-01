@@ -6,22 +6,22 @@ const UNKNOWN_PLAYER = (name) => ({
 });
 
 class TeamByGameWeek {
-    constructor({ gameWeeks, players, transfers, draft }) {
+    constructor({ gameWeeks, playersByCode, transfers, draft }) {
         this.transfers = transfers || []; // not all managers would have made transfers
         this.gameWeeks = gameWeeks;
-        this.players = players;
+        this.players = playersByCode;
         this.draft = draft;
         this.endOfSeason = new Date(gameWeeks[gameWeeks.length - 1].end).setHours(23, 59, 59, 999);
         this.startOfSeason = new Date(gameWeeks[0].start).setHours(0, 0, 0, 0);
     }
 
     getPlayer = (Player) => {
-        const playerName = Player.playerName || Player.player || Player.name;
+        const playerCode = Player.playerCode || Player.code;
         const player = {
-            ...(this.players[playerName] || UNKNOWN_PLAYER(playerName)),
+            ...(this.players[playerCode] || UNKNOWN_PLAYER(playerCode)),
         };
         return {
-            name: playerName,
+            name: player.web_name,
             club: player.club,
             code: player.code,
             pos: player.pos,

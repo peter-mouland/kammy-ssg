@@ -20,9 +20,8 @@ module.exports = ({ teams, teamsByCode, elements, elementTypesById, events }) =>
 
         const data = {
             ...element,
-            name: `${element.second_name}, ${element.first_name}`.trim(),
             code: parseInt(element.code, 10),
-            pos: elementTypesById[element.element_type].pos,
+            fplPosition: elementTypesById[element.element_type].pos,
             club: teamsByCode[element.team_code].name,
             stats: [],
             fixtures: element.fixtures.map((fixture) => ({

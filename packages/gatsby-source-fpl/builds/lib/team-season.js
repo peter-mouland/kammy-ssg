@@ -10,15 +10,15 @@ const UNKNOWN_PLAYER = (player) => ({
 });
 
 class TeamSeason {
-    constructor({ manager, division, gameWeeks, players }) {
-        this.players = players;
+    constructor({ manager, division, gameWeeks, playersByCode }) {
+        this.players = playersByCode;
         this.manager = manager;
         this.gameWeeks = gameWeeks;
         this.division = division;
     }
 
     getPlayer(player) {
-        return this.players[player.name || player.player] || UNKNOWN_PLAYER(player);
+        return this.players[player.code] || UNKNOWN_PLAYER(player);
     }
 
     getSeason() {
@@ -46,7 +46,7 @@ class TeamSeason {
                     manager,
                     division,
                     gameWeek,
-                    playerName: players[i].player[gameWeek].name,
+                    playerCode: players[i].player[gameWeek].code,
                     gameWeekStats: players[i].player[gameWeek].gameWeekStats,
                     seasonToGameWeek: players[i].seasonToGameWeek[gameWeek],
                 });

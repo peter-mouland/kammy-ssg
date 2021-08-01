@@ -114,7 +114,7 @@ exports.createPages = async ({ actions, graphql }) => {
             allPlayers {
                 nodes {
                     code
-                    name
+                    name: web_name
                     url
                 }
             }

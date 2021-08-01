@@ -1,11 +1,11 @@
-const { fetchDraft } = require('@kammy/helpers.spreadsheet');
+const { fetchSetup } = require('@kammy/helpers.spreadsheet');
 
 module.exports = () =>
     Promise.all([
-        fetchDraft('premierLeague'),
-        fetchDraft('championship'),
-        fetchDraft('leagueOne'),
-        fetchDraft('leagueTwo'),
+        fetchSetup('premierLeague'),
+        fetchSetup('championship'),
+        fetchSetup('leagueOne'),
+        fetchSetup('leagueTwo'),
     ]).then(([premierLeague, championship, leagueOne, leagueTwo]) => [
         ...premierLeague.map((row) => ({ ...row, division: 'premierLeague' })),
         ...championship.map((row) => ({ ...row, division: 'championship' })),

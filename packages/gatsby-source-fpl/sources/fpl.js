@@ -1,7 +1,7 @@
 /* global fetch */
 const pMap = require('p-map');
 
-const CONCURRENCY = 4; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
+const CONCURRENCY = 3; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
 const bootstrapURL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 // process.env.NODE_ENV === 'development'
 //     ? 'https://fantasy.premierleague.com/api/bootstrap-static/'

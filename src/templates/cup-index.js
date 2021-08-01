@@ -35,13 +35,12 @@ export const query = graphql`
             group(field: managerName) {
                 nodes {
                     managerName
-                    playerName
                     teamPos
                     pos
                     posIndex
                     player {
                         club
-                        name
+                        name: web_name
                         new
                     }
                     seasonToGameWeek {

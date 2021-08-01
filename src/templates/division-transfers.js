@@ -47,13 +47,13 @@ export const query = graphql`
             group(field: managerName) {
                 nodes {
                     managerName
-                    playerName
+                    playerCode
                     teamPos
                     pos
                     posIndex
                     player {
                         club
-                        name
+                        name: web_name
                         code
                         pos
                         url

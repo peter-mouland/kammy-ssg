@@ -17,7 +17,6 @@ const getFixturePath = (url, season = 'new') => {
         )
         .replace(/\//g, '-')
         .replace(constants.spreadsheets.ACCESS_KEY, '')
-        .replace(constants.spreadsheets.DRAFT_ID, 'DRAFT')
         .replace(constants.spreadsheets.SETUP_ID, 'SETUP')
         .replace(constants.spreadsheets.TRANSFERS_ID, 'TRANSFERS')
         .replace('?key=', '.json');

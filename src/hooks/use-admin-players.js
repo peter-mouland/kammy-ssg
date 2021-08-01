@@ -21,14 +21,15 @@ const usePlayers = () => {
         query AdminPlayersList {
             allAdminPlayersList {
                 nodes {
+                    code
                     isHidden
                     new
                     isInGSheets
                     code
                     pos
-                    name
+                    name: web_name
                     club
-                    value
+                    value: value_season
                     #                    pts
                     #                    fplPosition
                 }

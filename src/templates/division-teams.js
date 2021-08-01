@@ -54,14 +54,14 @@ export const query = graphql`
                         key: managerKey
                         name: manager
                     }
-                    playerName
+                    playerCode
                     teamPos
                     pos
                     posIndex
                     player {
                         code
                         club
-                        name
+                        name: web_name
                         pos
                         new
                         isAvailable
@@ -115,10 +115,14 @@ export const query = graphql`
                         key: managerKey
                         name: manager
                     }
-                    playerName
+                    playerCode
                     teamPos
                     pos
                     posIndex
+                    player {
+                        code
+                        web_name
+                    }
                 }
             }
         }

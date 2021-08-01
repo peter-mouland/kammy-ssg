@@ -27,8 +27,6 @@ module.exports = {
         ),
     fetchCupSubmissions: ({ season } = {}) => fetchr(spreadsheets.TRANSFERS_ID, `/values/cupSubmissions`, { season }),
     fetchCup: ({ season } = {}) => fetchr(spreadsheets.TRANSFERS_ID, `/values/cup`, { season }),
-    fetchDraft: (worksheet, { season } = {}) =>
-        fetchr(spreadsheets.DRAFT_ID, `/values/${worksheet}`, { season }).then(trimRows),
     fetchSetup: (worksheet, { season } = {}) =>
         fetchr(spreadsheets.SETUP_ID, `/values/${worksheet}`, { season }).then(trimRows),
     saveTransfers: async ({ division, data }) => {

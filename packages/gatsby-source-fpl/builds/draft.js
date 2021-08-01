@@ -9,15 +9,15 @@ module.exports = ({ googleDraftData, createNodeId }) => {
             manager: item.manager,
             position: item.position,
             divisionName: item.division,
-            playerName: item.player,
+            playerCode: item.code,
         };
 
         return {
-            resourceId: `draft-${data.manager}-${data.playerName}`,
+            resourceId: `draft-${data.manager}-${data.playerCode}`,
             data: {
                 ...data,
                 division___NODE: createNodeId(`divisions-${data.divisionName}`),
-                player___NODE: createNodeId(`players-${data.playerName}`),
+                player___NODE: createNodeId(`players-${data.playerCode}`),
             },
             internal: {
                 description: 'Draft',

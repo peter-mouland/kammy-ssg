@@ -27,7 +27,7 @@ export const query = graphql`
             sort: { fields: managerName }
         ) {
             nodes {
-                playerName
+                playerCode
                 teamPos
                 pos
                 posIndex
@@ -37,7 +37,7 @@ export const query = graphql`
                 }
                 player {
                     club
-                    name
+                    name: web_name
                     code
                     pos
                     url
