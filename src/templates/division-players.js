@@ -67,11 +67,7 @@ export const query = graphql`
                 new
                 isHidden
                 isAvailable
-                avail
-                availStatus
-                availReason
                 availNews
-                returnDate
                 url
                 season {
                     apps

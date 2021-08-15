@@ -25,14 +25,14 @@ const useGameWeeks = () => {
                     startFromNow: start(fromNow: true)
                     endFromNow: end(fromNow: true)
                     #                    fixtures {
-                    #                        aScore
-                    #                        aTcode
+                    #                        aScore // team_a_score
+                    #                        aTcode // team_a
                     #                        aTname
-                    #                        date
-                    #                        hScore
-                    #                        hTcode
+                    #                        date   // kickoff_time:
+                    #                        hScore // team_h_score
+                    #                        hTcode // team_h
                     #                        hTname
-                    #                        status
+                    #                        status // finished
                     #                    }
                 }
             }

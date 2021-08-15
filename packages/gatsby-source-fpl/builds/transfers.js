@@ -8,12 +8,11 @@ module.exports = ({ googleTransferData, createNodeId }) => {
         .sort((t1, t2) => new Date(t1.timestamp) - new Date(t2.timestamp))
         .map((transfer) => {
             const data = transfer;
-
             // save keys as ___string for node ids
             data.divisionName = transfer.division;
             data.managerName = transfer.manager;
-            data.transferInName = transfer.transferIn;
-            data.transferOutName = transfer.transferOut;
+            data.transferInCode = transfer.codeIn;
+            data.transferOutCode = transfer.codeOut;
             // delete dupes to ensure other errors get through
             delete data.division;
             delete data.manager;
@@ -26,8 +25,8 @@ module.exports = ({ googleTransferData, createNodeId }) => {
                     ...data,
                     division___NODE: createNodeId(`divisions-${data.divisionName}`),
                     manager___NODE: createNodeId(`managers-${data.managerName}`),
-                    transferIn___NODE: createNodeId(`players-${data.transferInName}`),
-                    transferOut___NODE: createNodeId(`players-${data.transferOutName}`),
+                    transferIn___NODE: createNodeId(`players-${data.transferInCode}`),
+                    transferOut___NODE: createNodeId(`players-${data.transferOutCode}`),
                 },
                 internal: {
                     description: 'Transfers',

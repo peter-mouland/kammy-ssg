@@ -27,24 +27,11 @@ export const getCircleClass = (player) => {
     }
 };
 
-export const Availability = ({ player }) => (
-    <div>
-        {(player.availReason || player.availStatus) && <strong>{player.availReason || player.availStatus}</strong>}
-        {player.availNews && <p>{player.availNews}</p>}
-        {player.returnDate && (
-            <p>
-                <strong>est-return: </strong> {player.returnDate}
-            </p>
-        )}
-    </div>
-);
+export const Availability = ({ player }) => <div>{player.availNews && <p>{player.availNews}</p>}</div>;
 Availability.propTypes = {
     player: PropTypes.shape({
         isAvailable: PropTypes.bool,
-        returnDate: PropTypes.string,
         availNews: PropTypes.string,
-        availStatus: PropTypes.string,
-        availReason: PropTypes.string,
     }).isRequired,
 };
 

@@ -17,9 +17,6 @@ const usePlayers = () => {
                     code
                     value: value_season
                     isAvailable
-                    avail
-                    availStatus
-                    availReason
                     availNews
                     season {
                         apps
@@ -42,7 +39,11 @@ const usePlayers = () => {
         () => players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {}),
         [players],
     );
-    return { players, playersByName };
+    const playersByCode = useMemo(
+        () => players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {}),
+        [players],
+    );
+    return { players, playersByName, playersByCode };
 };
 
 export default usePlayers;

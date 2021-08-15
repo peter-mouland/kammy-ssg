@@ -19,7 +19,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
         divisionKey,
         teamsByManager,
     });
-    const { playersByName } = usePlayers();
+    const { playersByCode } = usePlayers();
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);
     const isCurrentGameWeek = selectedGameWeek === currentGameWeek.gameWeek;
@@ -37,13 +37,13 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
                     isLoading={isLoading}
                     transfers={changesThisGameWeek}
                     showWarnings={showWarnings}
-                    playersByName={playersByName}
+                    playersByCode={playersByCode}
                 />
             </Spacer>
             {isCurrentGameWeek && (
                 <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                     <TransferRequest
-                        playersByName={playersByName}
+                        playersByCode={playersByCode}
                         divisionKey={divisionKey}
                         teamsByManager={newTeams}
                         isLoading={isSaving}

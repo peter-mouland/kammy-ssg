@@ -60,18 +60,14 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
     const mergedPlayers = fplPlayers.reduce((prev, { data: fplPlayer }) => {
         const gPlayer = googlePlayersObj[fplPlayer.code] || { new: false, isHidden: true, pos: '#N/A' };
         if (!googlePlayersObj[fplPlayer.code]) {
-            console.log(fplPlayer);
-            logger.error('What player?');
+            // console.log(fplPlayer);
+            logger.error(`What player? ${fplPlayer.web_name} ${fplPlayer.code}`);
         }
         const player = {
             ...fplPlayer,
             ...gPlayer,
             isAvailable: ['null', null].includes(fplPlayer.chance_of_playing_next_round),
-            avail: fplPlayer.avail || '',
-            availStatus: fplPlayer.availStatus || '', // todo: fpl equivalent?
-            availReason: fplPlayer.availReason || '',
-            availNews: fplPlayer.availNews || '',
-            returnDate: fplPlayer.returnDate || '',
+            availNews: fplPlayer.news || '',
             url: `/player/${gPlayer.code}`,
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });

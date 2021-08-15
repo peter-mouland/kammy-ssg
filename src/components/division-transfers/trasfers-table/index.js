@@ -11,71 +11,90 @@ import Warning from '../../icons/warning.svg';
 import * as styles from './styles.module.css';
 import Player from '../../player';
 
-const TransferBody = ({ transfers, showWarnings, playersByName }) => {
+const TransferBody = ({ transfers, showWarnings, playersByCode }) => {
     if (transfers.length < 1) return null;
+    console.log(playersByCode);
+    console.log(transfers);
     return (
         <tbody>
-            {transfers.map(({ timestamp, status = '', type, manager, transferIn, transferOut, comment, warnings }) => {
-                const warningClass = showWarnings && warnings.length > 0 ? 'row--warning' : '';
-                const warningEl =
-                    warnings.length > 0 ? (
-                        <ContextualHelp
-                            body={warnings.join('; ')}
-                            width={250}
-                            Trigger={<Warning width={24} height={24} />}
-                        />
-                    ) : null;
-                return (
-                    <React.Fragment key={`${timestamp}-${transferIn}`}>
-                        <tr className={`row row--${status.toLowerCase()} ${warningClass}`}>
-                            {showWarnings && (
-                                <td data-col-label="warnings" className="cell cell--warnings cell--center">
-                                    {warningEl}
-                                </td>
-                            )}
-                            <td
-                                data-col-label="status"
-                                className="cell cell--status show-750 cell--center"
-                                dangerouslySetInnerHTML={{
-                                    __html: `${getEmoji(status)} <span class=${styles.additional}>${status}</span>`,
-                                }}
+            {transfers.map(
+                ({
+                    timestamp,
+                    status = '',
+                    type,
+                    manager,
+                    transferIn,
+                    codeIn,
+                    transferOut,
+                    codeOut,
+                    comment,
+                    warnings,
+                }) => {
+                    const warningClass = showWarnings && warnings.length > 0 ? 'row--warning' : '';
+                    const warningEl =
+                        warnings.length > 0 ? (
+                            <ContextualHelp
+                                body={warnings.join('; ')}
+                                width={250}
+                                Trigger={<Warning width={24} height={24} />}
                             />
-                            <td data-col-label="timestamp" className="cell cell--center show-625">
-                                <span>{formatTimestamp(timestamp, 'MMM d,')}</span>
-                                <span className={styles.additional}>{formatTimestamp(timestamp, ' HH:mm')}</span>
-                            </td>
-                            <td data-col-label="type" className="cell cell--center">
-                                {type}
-                            </td>
-                            <td data-col-label="manager" className="cell cell--center">
-                                {manager}
-                            </td>
-                            <td data-col-label="transfer in" className="cell cell--center">
-                                {transferIn && <Player player={playersByName[transferIn]} small />}
-                            </td>
-                            <td data-col-label="transfer out" className="cell cell--center">
-                                {transferOut && <Player player={playersByName[transferOut]} small />}
-                            </td>
-                            <td data-col-label="comment" className="cell cell--center">
-                                {comment && (
-                                    <div>
-                                        <span className="hide-925">
-                                            <ContextualHelp
-                                                body={comment}
-                                                width={250}
-                                                Trigger={<ChatIcon width="20px" />}
-                                            />
-                                        </span>
-                                        <span className="show-925">
-                                            <span className={styles.additional}>{comment}</span>
-                                        </span>
-                                    </div>
+                        ) : null;
+
+                    // todo: use transferIn
+                    const playerIn = playersByCode[codeIn];
+                    const playerOut = playersByCode[codeOut];
+                    return (
+                        <React.Fragment key={`${timestamp}-${transferIn}`}>
+                            <tr className={`row row--${status.toLowerCase()} ${warningClass}`}>
+                                {showWarnings && (
+                                    <td data-col-label="warnings" className="cell cell--warnings cell--center">
+                                        {warningEl}
+                                    </td>
                                 )}
-                            </td>
-                        </tr>
-                    </React.Fragment>
-                );
-            })}
+                                <td
+                                    data-col-label="status"
+                                    className="cell cell--status show-750 cell--center"
+                                    dangerouslySetInnerHTML={{
+                                        __html: `${getEmoji(status)} <span class=${styles.additional}>${status}</span>`,
+                                    }}
+                                />
+                                <td data-col-label="timestamp" className="cell cell--center show-625">
+                                    <span>{formatTimestamp(timestamp, 'MMM d,')}</span>
+                                    <span className={styles.additional}>{formatTimestamp(timestamp, ' HH:mm')}</span>
+                                </td>
+                                <td data-col-label="type" className="cell cell--center">
+                                    {type}
+                                </td>
+                                <td data-col-label="manager" className="cell cell--center">
+                                    {manager}
+                                </td>
+                                <td data-col-label="transfer in" className="cell cell--center">
+                                    {transferIn && <Player player={playerIn} small />}
+                                </td>
+                                <td data-col-label="transfer out" className="cell cell--center">
+                                    {transferOut && <Player player={playerOut} small />}
+                                </td>
+                                <td data-col-label="comment" className="cell cell--center">
+                                    {comment && (
+                                        <div>
+                                            <span className="hide-925">
+                                                <ContextualHelp
+                                                    body={comment}
+                                                    width={250}
+                                                    Trigger={<ChatIcon width="20px" />}
+                                                />
+                                            </span>
+                                            <span className="show-925">
+                                                <span className={styles.additional}>{comment}</span>
+                                            </span>
+                                        </div>
+                                    )}
+                                </td>
+                            </tr>
+                        </React.Fragment>
+                    );
+                },
+            )}
         </tbody>
     );
 };
@@ -88,7 +107,7 @@ TransferBody.defaultProps = {
     showWarnings: false,
 };
 
-const TransfersTable = ({ transfers, isLoading, showWarnings, playersByName }) => (
+const TransfersTable = ({ transfers, isLoading, showWarnings, playersByCode }) => (
     <table className="table">
         <thead>
             <tr className="row">
@@ -104,7 +123,7 @@ const TransfersTable = ({ transfers, isLoading, showWarnings, playersByName }) =
                 </th>
             </tr>
         </thead>
-        <TransferBody transfers={transfers} showWarnings={showWarnings} playersByName={playersByName} />
+        <TransferBody transfers={transfers} showWarnings={showWarnings} playersByCode={playersByCode} />
         {transfers.length === 0 && !isLoading && (
             <tbody>
                 <tr className="row">

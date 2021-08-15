@@ -65,11 +65,7 @@ export const query = graphql`
                         pos
                         new
                         isAvailable
-                        avail
-                        availStatus
-                        availReason
                         availNews
-                        returnDate
                         url
                     }
                     seasonToGameWeek {

@@ -42,11 +42,7 @@ export const query = graphql`
                     pos
                     url
                     isAvailable
-                    avail
-                    availStatus
-                    availReason
                     availNews
-                    returnDate
                 }
             }
         }

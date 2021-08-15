@@ -26,7 +26,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
             queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
-    // console.log({ alltstuff });
+    console.log({ alltstuff });
     const { gameWeeks } = useGameWeeks();
     const gameWeek = gameWeeks[selectedGameWeek];
     const applyChange = (changesToApply) =>
@@ -59,7 +59,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
         });
     // console.log(changeData);
     const changes = applyChange(changeData);
-
+    console.log({ changes, gameWeek });
     // if pending is slow, update code to use filter-views
     // premierLeague pending transfers filter view id : fvid=305296590
     // championship pending transfers filter view id : fvid=921820010
