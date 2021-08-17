@@ -32,6 +32,8 @@ const confirmTransfer = async ({ transfers, divisionKey, saveSquadChange, reset 
         'Transfer Type': type,
         'Transfer In': playerIn.name,
         'Transfer Out': playerOut.name,
+        'Code In': playerIn.code,
+        'Code Out': playerOut.code,
         Comment: comment,
     }));
 
@@ -127,7 +129,7 @@ const TransfersPage = ({
     isLoading,
     saveSquadChange,
     transfers,
-    playersByName,
+    playersByCode,
 }) => {
     const { players: playersArray } = usePlayers();
     const [drawerContent, setDrawerContent] = useState(drawerInitialState);
@@ -268,7 +270,7 @@ const TransfersPage = ({
                             </Spacer>
                             <span className={bem('player-cta-label')}>
                                 {playerOut && (
-                                    <Player player={playersByName[playerOut.name]} teamPos={playerOut.teamPos} />
+                                    <Player player={playersByCode[playerOut.code]} teamPos={playerOut.teamPos} />
                                 )}
                             </span>
                         </Spacer>
@@ -283,7 +285,7 @@ const TransfersPage = ({
                             </Spacer>
                             <span className={bem('player-cta-label')}>
                                 {playerIn && (
-                                    <Player player={playersByName[playerIn.name]} teamPos={playerIn.teamPos} />
+                                    <Player player={playersByCode[playerIn.code]} teamPos={playerIn.teamPos} />
                                 )}
                             </span>
                         </Spacer>
@@ -324,6 +326,8 @@ const TransfersPage = ({
                                             playerOut,
                                             transferIn: playerIn ? playerIn.name : '',
                                             transferOut: playerOut ? playerOut.name : '',
+                                            codeOut: playerIn ? playerIn.code : '',
+                                            codeIn: playerOut ? playerOut.code : '',
                                             comment,
                                             warnings,
                                         },

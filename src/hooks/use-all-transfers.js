@@ -12,17 +12,14 @@ const useAllTransfers = () => {
     const queryKey1 = ['transfers', 'premierLeague'];
     const queryKey2 = ['transfers', 'championship'];
     const queryKey3 = ['transfers', 'leagueOne'];
-    const queryKey4 = ['transfers', 'leagueTwo'];
     const { isLoading: isPremierLeagueLoading, data: premierLeagueTransfers = [] } = useQuery(queryKey1, fetchr);
     const { isLoading: isChampionshipLoading, data: championshipTransfers = [] } = useQuery(queryKey2, fetchr);
     const { isLoading: isLeagueOneLoading, data: leagueOneTransfers = [] } = useQuery(queryKey3, fetchr);
-    const { isLoading: isLeagueTwoLoading, data: leagueTwoTransfers = [] } = useQuery(queryKey4, fetchr);
-    const isLoading = isPremierLeagueLoading || isChampionshipLoading || isLeagueOneLoading || isLeagueTwoLoading;
+    const isLoading = isPremierLeagueLoading || isChampionshipLoading || isLeagueOneLoading;
     const transfers = [
         ...premierLeagueTransfers,
         ...championshipTransfers,
         ...leagueOneTransfers,
-        ...leagueTwoTransfers,
     ];
     const { currentGameWeek } = useGameWeeks();
     const transfersThisGameWeek = transfers.filter((transfer) => inDateRange(currentGameWeek, transfer.timestamp));

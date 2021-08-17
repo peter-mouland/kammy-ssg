@@ -60,9 +60,6 @@ const Layout = ({ title, description, children, footer }) => {
                             <li>
                                 <NamedLink to="leagueOne-draft">League One</NamedLink>
                             </li>
-                            <li>
-                                <NamedLink to="leagueTwo-draft">League Two</NamedLink>
-                            </li>
                         </ul>
                     </div>
                 </footer>

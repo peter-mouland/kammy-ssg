@@ -6,9 +6,9 @@ import DataListInput from './DataList';
 const playerOptions = (players) =>
     players.map((player) => ({
         ...player,
-        value: player.name,
+        value: player.code,
         label: player.name,
-        key: player.name,
+        key: player.id,
         img: `${`https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`}`,
         additional: <small>{` ${player.pos}`}</small>,
     }));
