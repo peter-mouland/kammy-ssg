@@ -19,6 +19,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
         divisionKey,
         teamsByManager,
     });
+    console.log({ divisionUrl, divisionKey, selectedGameWeek, teamsByManager });
     const { playersByCode } = usePlayers();
     const { getManagersFromDivision } = useManagers();
     const managers = getManagersFromDivision(divisionKey);

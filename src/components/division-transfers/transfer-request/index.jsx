@@ -147,7 +147,7 @@ const TransfersPage = ({
         selectedPlayer,
         playerOut,
     });
-
+    console.log(playerRequestConfig.out.players);
     const { warnings } =
         getSquadWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
 

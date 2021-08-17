@@ -26,7 +26,7 @@ const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions 
 
     const managersPlayers = Object.values(teams)
         .flatMap((name) => name)
-        .reduce((prev, curr) => ({ ...prev, [curr.playerName]: curr }), {});
+        .reduce((prev, curr) => ({ ...prev, [curr.playerCode]: curr }), {});
 
     const selectedManagersTransfers = selectedManagers
         .map((manager) => transfersByManager[manager])
@@ -45,33 +45,33 @@ const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions 
         : selectedManagers
               .map((manager) => teams[manager])
               .flatMap((name) => name)
-              .map(({ playerName }) => playerName)
+              .map(({ playerCode }) => playerCode)
               .concat(selectedManagersTransfers);
 
     const unavailablePlayers = Object.keys(teams)
         .reduce((prev, curr) => [...prev, ...teams[curr]], [])
-        .map(({ playerName }) => playerName)
+        .map(({ playerCode }) => playerCode)
         .concat();
 
     return playersArray
         .filter(
-            ({ pos, name, new: isNew }) =>
+            ({ pos, new: isNew, code }) =>
                 (selectedPositions.includes(pos) || !selectedPositions.length) &&
-                (selectedManagersPlayers.includes(name) || !selectedManagersPlayers.length) &&
-                (selectedPlayers.includes(name) || !selectedPlayers.length) &&
-                ((includeAvailablePlayers && !unavailablePlayers.includes(name)) || !includeAvailablePlayers) &&
+                (selectedManagersPlayers.includes(code) || !selectedManagersPlayers.length) &&
+                (selectedPlayers.includes(code) || !selectedPlayers.length) &&
+                ((includeAvailablePlayers && !unavailablePlayers.includes(code)) || !includeAvailablePlayers) &&
                 ((includeNewPlayers && isNew) || !includeNewPlayers) &&
-                ((includeSub && managersPlayers[name]?.teamPos === 'SUB') || !includeSub) &&
-                ((includePendingPlayers && (!!transfersInByPlayer[name] || !!transfersOutByPlayer[name])) ||
+                ((includeSub && managersPlayers[code]?.teamPos === 'SUB') || !includeSub) &&
+                ((includePendingPlayers && (!!transfersInByPlayer[code] || !!transfersOutByPlayer[code])) ||
                     !includePendingPlayers),
         )
         .sort(sortBy(['pos', 'name'], { pos: positionsOrder }))
         .map((player) => ({
             ...player,
-            isPendingTransferIn: !!transfersInByPlayer[player.name],
-            isPendingTransferOut: !!transfersOutByPlayer[player.name],
-            manager: managersPlayers[player.name] ? managersPlayers[player.name].managerName : undefined,
-            teamPos: managersPlayers[player.name] ? managersPlayers[player.name].teamPos : undefined,
+            isPendingTransferIn: !!transfersInByPlayer[player.code],
+            isPendingTransferOut: !!transfersOutByPlayer[player.code],
+            manager: managersPlayers[player.code] ? managersPlayers[player.code].managerName : undefined,
+            teamPos: managersPlayers[player.code] ? managersPlayers[player.code].teamPos : undefined,
         }));
 };
 
