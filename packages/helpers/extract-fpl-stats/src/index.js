@@ -1,7 +1,7 @@
 module.exports = (stats) => {
     if (typeof stats.goals_scored === 'undefined') {
-        console.log(stats);
-        process.exit(1);
+        // console.log(stats);
+        // process.exit(1);
     }
     return {
         apps: stats.minutes || 0,

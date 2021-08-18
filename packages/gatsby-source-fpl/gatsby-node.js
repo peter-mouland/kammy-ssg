@@ -10,7 +10,6 @@ const buildFplFixtures = require('./builds/fpl-fixtures');
 const buildFplPlayers = require('./builds/fpl-players');
 const buildFplPositions = require('./builds/fpl-positions');
 const buildFplTeams = require('./builds/fpl-teams');
-// const buildFpl = require('./builds/fpl-scores');
 const buildGameWeeks = require('./builds/game-weeks');
 const buildCup = require('./builds/cup');
 const buildTransfers = require('./builds/transfers');
@@ -88,7 +87,6 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         ...(fplTeams || []),
         ...(fplFPositions || []),
         ...(fplEvents || []),
-        // ...(fplScores || []),
         ...(gameWeeks || []),
         ...(divisions || []),
         ...(players || []),

@@ -2,12 +2,12 @@ const jsonQuery = require('json-query');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
-const extractFFStats = require('@kammy/helpers.extract-fpl-stats');
+const extractFplStats = require('@kammy/helpers.extract-fpl-stats');
 const { calculateTotalPoints } = require('@kammy/helpers.fpl-stats-to-points');
 
 const logger = require('../../lib/log');
 
-const emptyStatsArray = {
+const emptyStatsRaw = {
     minutes: 0,
     goals_scored: 0,
     assists: 0,
@@ -22,7 +22,7 @@ const emptyStatsArray = {
     bonus: 0,
     bps: 0,
 };
-const emptyStats = extractFFStats(emptyStatsArray);
+const emptyStats = extractFplStats(emptyStatsRaw);
 
 const getPosStats = ({ stats, pos }) => {
     // only show stats for those that can score points
@@ -37,13 +37,15 @@ const getPosStats = ({ stats, pos }) => {
 };
 
 // exported for tests
-const addPointsToFixtures = (fixture, pos) => {
-    const stats = extractFFStats(fixture.stats || emptyStatsArray);
-    const points = calculateTotalPoints({ stats, pos });
+const addPointsToFixtures = (fixture, player) => {
+    // console.log('fixture');
+    // console.log(Object.keys(fixture));
+    const stats = extractFplStats(fixture || emptyStatsRaw);
+    const points = calculateTotalPoints({ stats, pos: player.pos });
     return {
         ...fixture,
         stats: {
-            ...getPosStats({ stats, pos }),
+            ...getPosStats({ stats, pos: player.pos }),
             points: points.total,
         },
     };
@@ -63,9 +65,7 @@ const totalUpStats = (fixtures) =>
     );
 
 const getGameWeekFixtures = (player, gameWeeks) =>
-    // todo: don't include PENDING in production!
-    jsonQuery('fixtures[*:date]', {
-        // [*status!=PENDING]
+    jsonQuery('stats[*:date]', {
         data: player,
         locals: {
             date(item) {
@@ -81,6 +81,7 @@ const getGameWeekFixtures = (player, gameWeeks) =>
         },
     }).value || [];
 
+const counter = 0;
 const playerStats = ({ player, gameWeeks }) => {
     if (!player) {
         console.log('no player!');
@@ -91,8 +92,21 @@ const playerStats = ({ player, gameWeeks }) => {
         console.log('no player pos!');
         process.exit(1);
     }
+
+    if (!player.stats) {
+        console.log(player);
+        console.log('no player stats!');
+        process.exit(1);
+    }
+    // console.log('player');
+    // console.log(Object.keys(player));
     const playerFixtures = getGameWeekFixtures(player, gameWeeks);
-    const gameWeekFixtures = playerFixtures.map((fixture) => addPointsToFixtures(fixture, player.pos));
+    // console.log('playerFixtures');
+    // console.log(playerFixtures);
+    // console.log(player);
+    const gameWeekFixtures = playerFixtures.map((fixture) => addPointsToFixtures(fixture, player));
+    // counter++;
+    // if (counter > 2) process.exit(1);
     const stats = totalUpStats(gameWeekFixtures);
     const point = calculateTotalPoints({ stats, pos: player.pos });
     const gameWeekStats = {
@@ -100,9 +114,9 @@ const playerStats = ({ player, gameWeeks }) => {
         points: point.total,
     };
 
-    const fixtures = (player.fixtures || []).map((fixture) => addPointsToFixtures(fixture, player.pos));
+    const fixtures = (player.fixtures || []).map((fixture) => addPointsToFixtures(fixture, player));
     if (!fixtures || !fixtures.length) {
-        logger.warn(`PLAYER FIXTURES NOT FOUND: ${player.name}`);
+        logger.warn(`PLAYER FIXTURES NOT FOUND: ${player.web_name}`);
     }
     return {
         ...player,

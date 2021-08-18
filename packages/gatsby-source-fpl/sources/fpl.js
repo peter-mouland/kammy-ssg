@@ -21,8 +21,8 @@ const fixturesURL = 'https://fantasy.premierleague.com/api/fixtures/';
 
 const fetchPlayersFixtures = async (elements) => {
     const mapper = async (element) => {
-        const { fixtures } = await fetch(getElementsUrl(element.id));
-        return { ...element, fixtures };
+        const { fixtures, history } = await fetch(getElementsUrl(element.id));
+        return { ...element, fixtures, stats: history };
     };
     return pMap(elements, mapper, { concurrency: CONCURRENCY });
 };
@@ -33,8 +33,16 @@ const fetchPlayers = async () => {
     const teamsByCode = teams.reduce((prev, t) => ({ ...prev, [t.code]: t }), {});
     const elementTypesById = element_types.reduce((prev, e) => ({ ...prev, [e.id]: e }), {});
     const fixtures = await fetch(fixturesURL);
-    const elementsWithFixtures = await fetchPlayersFixtures(elements);
-    return { events, elements: elementsWithFixtures, elementTypesById, teams, teamsByCode, fixtures, element_types };
+    const elementsWithFixturesAndStats = await fetchPlayersFixtures(elements);
+    return {
+        events,
+        elements: elementsWithFixturesAndStats,
+        elementTypesById,
+        teams,
+        teamsByCode,
+        fixtures,
+        element_types,
+    };
 };
 
 module.exports = fetchPlayers;

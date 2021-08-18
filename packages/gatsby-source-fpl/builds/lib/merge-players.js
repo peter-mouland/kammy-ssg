@@ -60,7 +60,6 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
     const mergedPlayers = fplPlayers.reduce((prev, { data: fplPlayer }) => {
         const gPlayer = googlePlayersObj[fplPlayer.code] || { new: false, isHidden: true, pos: '#N/A' };
         if (!googlePlayersObj[fplPlayer.code]) {
-            // console.log(fplPlayer);
             logger.error(`What player? ${fplPlayer.web_name} ${fplPlayer.code}`);
         }
         const player = {
