@@ -37,7 +37,7 @@ Availability.propTypes = {
 
 const Image = ({ player }) => {
     const circleClass = getCircleClass(player);
-    const img = `https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`;
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
     return (
         <div className={cx(styles.circle, !player.isAvailable && styles[circleClass])}>
             {player.code > 0 && <img src={img} loading="lazy" alt="" />}

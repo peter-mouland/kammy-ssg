@@ -9,7 +9,7 @@ const playerOptions = (players) =>
         value: player.code,
         label: player.name,
         key: player.id,
-        img: `${`https://fantasyfootball.skysports.com/assets/img/players/${player.code}.png`}`,
+        img: `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`,
         additional: <small>{` ${player.pos}`}</small>,
     }));
 
