@@ -61,9 +61,9 @@ function forPenaltiesSaved(ps = 0) {
     return ps * 5;
 }
 
-function forSaveBonus(bonusPoints = 0, position) {
-    if (position === 'GK') {
-        return bonusPoints * 2;
+function forSaveBonus(saves = 0, position) {
+    if (position === 'GK' && saves >= 3) {
+        return 2;
     }
     return 0;
 }
