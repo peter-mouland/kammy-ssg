@@ -24,11 +24,11 @@ function forAssists(assists = 0) {
 }
 
 function forYellowCards(yc = 0) {
-    return parseInt(yc * -1, 10);
+    return yc * -1;
 }
 
 function forRedCards(rc = 0) {
-    return parseInt(rc * -5, 10);
+    return rc * -5;
 }
 
 function forCleanSheet(cs = 0, position) {
@@ -44,15 +44,6 @@ function forCleanSheet(cs = 0, position) {
 function forConceded(conceded = 0, position) {
     if (position === 'FB' || position === 'CB' || position === 'GK') {
         return conceded * -1;
-    }
-    return 0;
-}
-
-function forTackleBonus(bonusPoints = 0, position) {
-    if (position === 'MID') {
-        return bonusPoints * 5;
-    } else if (position === 'FB' || position === 'CB') {
-        return bonusPoints * 3;
     }
     return 0;
 }
@@ -110,7 +101,6 @@ module.exports = {
     forRedCards,
     forCleanSheet,
     forConceded,
-    forTackleBonus,
     forPenaltiesSaved,
     forSaveBonus,
     forBonus,

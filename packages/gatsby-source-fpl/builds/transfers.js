@@ -11,8 +11,8 @@ module.exports = ({ googleTransferData, createNodeId }) => {
             // save keys as ___string for node ids
             data.divisionName = transfer.division;
             data.managerName = transfer.manager;
-            data.transferInCode = transfer.codeIn;
-            data.transferOutCode = transfer.codeOut;
+            data.transferInCode = parseInt(transfer.codeIn, 10);
+            data.transferOutCode = parseInt(transfer.codeOut, 10);
             // delete dupes to ensure other errors get through
             delete data.division;
             delete data.manager;

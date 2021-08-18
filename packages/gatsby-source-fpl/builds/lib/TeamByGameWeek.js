@@ -68,28 +68,29 @@ class TeamByGameWeek {
                     transfer.type !== 'Waiver Request' &&
                     transfer.type !== 'Waiver' &&
                     transfer.type !== 'New Player' &&
-                    players[transfer.transferInName] &&
-                    players[transfer.transferOutName],
+                    players[transfer.transferInCode] &&
+                    players[transfer.transferOutCode],
             )
             .forEach((transfer) => {
-                if (transfer.type === 'Swap' && transfer.transferInName === playerInPosition.name) {
+                // console.log(transfer.transferInCode, playerInPosition.code);
+                if (transfer.type === 'Swap' && String(transfer.transferInCode) === String(playerInPosition.code)) {
                     playerTransfers[playerTransfers.length - 1].end = new Date(transfer.timestamp);
                     playerTransfers.push({
-                        player: players[transfer.transferOutName],
-                        playerOut: players[transfer.transferInName],
+                        player: players[transfer.transferOutCode],
+                        playerOut: players[transfer.transferInCode],
                         start: new Date(transfer.timestamp),
                         type: transfer.type,
                     });
-                    playerInPosition = players[transfer.transferOutName];
-                } else if (transfer.transferOutName === playerInPosition.name) {
+                    playerInPosition = players[transfer.transferOutCode];
+                } else if (String(transfer.transferOutCode) === String(playerInPosition.code)) {
                     playerTransfers[playerTransfers.length - 1].end = new Date(transfer.timestamp);
                     playerTransfers.push({
-                        player: players[transfer.transferInName],
-                        playerOut: players[transfer.transferOutName],
+                        player: players[transfer.transferInCode],
+                        playerOut: players[transfer.transferOutCode],
                         start: new Date(transfer.timestamp),
                         type: transfer.type,
                     });
-                    playerInPosition = players[transfer.transferInName];
+                    playerInPosition = players[transfer.transferInCode];
                 }
             });
 
