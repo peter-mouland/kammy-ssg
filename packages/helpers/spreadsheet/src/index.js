@@ -1,5 +1,5 @@
 /* global fetch */
-const parseISO = require('date-fns/parseISO');
+const parseISOimport = require('date-fns/parseISO');
 
 const fetchr = require('./fetch');
 const { spreadsheets } = require('./constants');
@@ -8,6 +8,7 @@ const trimRows = require('./lib/trimRows');
 
 // const PROXY_HOST = 'http://localhost:3000';
 const PROXY_HOST = 'https://kammy-proxy.herokuapp.com';
+const parseISO = parseISOimport.default || parseISOimport;
 
 const kammyProxy = async (api, data) => {
     const response = await fetch(`${PROXY_HOST}/spreadsheets/${api}`, {

@@ -23,7 +23,9 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
     const [saveSquadChange, { isLoading: isSaving }] = useMutation(saveTransfers, {
         onSuccess: (data) => {
             queryCache.cancelQueries(queryKey);
-            queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
+
+            console.log({ queryKey, data });
+            queryCache.setQueryData(queryKey, (old) => console.log({ old }) || [...old, ...data]);
         },
     });
     const { gameWeeks } = useGameWeeks();
