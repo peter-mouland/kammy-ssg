@@ -19,7 +19,7 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
     const disabledPlayers = data.teamPlayers.nodes.reduce(
         (prev, player) => ({
             ...prev,
-            [player.code]: player,
+            [player.playerCode]: player,
         }),
         {},
     );
@@ -53,6 +53,7 @@ export const query = graphql`
                 managerName
                 playerCode
                 player {
+                    code
                     web_name
                 }
             }

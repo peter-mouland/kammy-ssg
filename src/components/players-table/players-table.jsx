@@ -64,6 +64,7 @@ class PlayerTable extends React.Component {
             disabledPlayers,
             liveStatsByCode,
         } = this.props;
+
         const { sort } = this.state;
         return (
             <table className="table">
@@ -99,14 +100,14 @@ class PlayerTable extends React.Component {
                         const livePoints = liveStatsByCode && liveStatsByCode[player.code];
                         return (
                             <tr
-                                key={player.name}
+                                key={player.code}
                                 id={player.code}
                                 className={bem(
                                     'player',
                                     {
                                         selected: isOnMyTeam,
                                         new: !!player.new,
-                                        disabled: !!disabledPlayers[player.name],
+                                        disabled: !!disabledPlayers[player.code],
                                     },
                                     'row',
                                 )}
