@@ -122,7 +122,7 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
     }
 };
 
-const TransfersPage = ({
+const TransfersRequests = ({
     divisionKey,
     teamsByManager,
     managers,
@@ -147,7 +147,6 @@ const TransfersPage = ({
         selectedPlayer,
         playerOut,
     });
-    console.log(playerRequestConfig.out.players);
     const { warnings } =
         getSquadWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
 
@@ -349,15 +348,15 @@ const TransfersPage = ({
     );
 };
 
-TransfersPage.propTypes = {
+TransfersRequests.propTypes = {
     divisionKey: PropTypes.string.isRequired,
     teamsByManager: PropTypes.object,
     isLoading: PropTypes.bool,
 };
 
-TransfersPage.defaultProps = {
+TransfersRequests.defaultProps = {
     isLoading: false,
     teamsByManager: {},
 };
 
-export default TransfersPage;
+export default TransfersRequests;

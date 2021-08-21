@@ -15,9 +15,9 @@ const { changeTypes } = consts;
 const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} }) => {
     const queryKey = ['transfers', divisionKey];
     const { isLoading, data: changeData = [] } = useQuery(queryKey, fetchr);
-    const alltstuff = useAllTransfers();
+    // const alltstuff = useAllTransfers();
     const { players } = usePlayers();
-    const playersByName = players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {});
+    const playersByCode = players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {});
     const transferWithoutWarnings = [];
     let updatedTeams = teamsByManager;
     const [saveSquadChange, { isLoading: isSaving }] = useMutation(saveTransfers, {
@@ -26,7 +26,6 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
             queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
-    console.log({ alltstuff });
     const { gameWeeks } = useGameWeeks();
     const gameWeek = gameWeeks[selectedGameWeek];
     const applyChange = (changesToApply) =>
@@ -44,8 +43,8 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
                 transfers: transferWithoutWarnings,
                 manager: change.manager,
                 changeType: change.type,
-                playerIn: playersByName[change.transferIn],
-                playerOut: playersByName[change.transferOut],
+                playerIn: playersByCode[change.codeIn],
+                playerOut: playersByCode[change.codeOut],
                 teams: updatedTeams,
             });
             if (!transferHasWarnings) {
@@ -59,7 +58,6 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
         });
     // console.log(changeData);
     const changes = applyChange(changeData);
-    console.log({ changes, gameWeek });
     // if pending is slow, update code to use filter-views
     // premierLeague pending transfers filter view id : fvid=305296590
     // championship pending transfers filter view id : fvid=921820010
