@@ -3,10 +3,10 @@ const validatePlayer = (teams) => {
     const cache = {};
     const dupes = players.reduce((acc, player = {}) => {
         const dupe = [...acc];
-        if (cache[player.playerName] && !dupe.includes(player.playerName)) {
-            dupe.push(player.playerName);
+        if (cache[player.playerCode] && !dupe.includes(player.playerCode)) {
+            dupe.push(player.playerCode);
         }
-        cache[player.playerName] = true;
+        cache[player.playerCode] = true;
         return dupe;
     }, []);
     return dupes;

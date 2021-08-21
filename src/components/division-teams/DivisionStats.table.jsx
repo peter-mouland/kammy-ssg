@@ -43,38 +43,44 @@ const TeamsPage = ({ teams, previousTeams, isAdmin }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {teams[managerName].map((teamPlayer, i) => {
-                                if (!teamPlayer.player) return null; // allow for week zero
-                                const { player, teamPos, playerName, seasonToGameWeek, gameWeekStats } = teamPlayer;
-                                const clubWarnings = allClubWarnings[managerName] || [];
-                                const posWarnings = allPosWarnings[managerName] || [];
-                                const playerLastGW =
-                                    previousTeams && previousTeams[managerName] ? previousTeams[managerName][i] : {};
-                                const className =
-                                    playerLastGW && playerLastGW.playerName !== playerName ? bem('transfer') : '';
-                                const warningClassName =
-                                    isAdmin &&
-                                    (clubWarnings.indexOf(player.club) > -1 ||
-                                        posWarnings.indexOf(playerName) > -1 ||
-                                        newPlayers.indexOf(playerName) > -1 ||
-                                        duplicatePlayers.indexOf(playerName) > -1)
-                                        ? 'row row--warning'
-                                        : 'row';
-                                const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
+                            {teams[managerName]
+                                .sort((a, z) => a.posIndex - z.posIndex)
+                                .map((teamPlayer, i) => {
+                                    if (!teamPlayer.player) return null; // allow for week zero
+                                    const { player, teamPos, seasonToGameWeek, gameWeekStats } = teamPlayer;
+                                    const clubWarnings = allClubWarnings[managerName] || [];
+                                    const posWarnings = allPosWarnings[managerName] || [];
+                                    const playerLastGW =
+                                        previousTeams && previousTeams[managerName]
+                                            ? previousTeams[managerName].sort((a, z) => a.posIndex - z.posIndex)[i]
+                                            : {};
+                                    const className =
+                                        playerLastGW && playerLastGW?.player?.code !== player.code
+                                            ? bem('transfer')
+                                            : '';
+                                    const warningClassName =
+                                        isAdmin &&
+                                        (clubWarnings.indexOf(player.club) > -1 ||
+                                            posWarnings.indexOf(player.code) > -1 ||
+                                            newPlayers.indexOf(player.code) > -1 ||
+                                            duplicatePlayers.indexOf(player.code) > -1)
+                                            ? 'row row--warning'
+                                            : 'row';
+                                    const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
 
-                                return (
-                                    <tr key={playerName} className={`${className} ${warningClassName}`}>
-                                        <td className="cell cell--player">
-                                            <Player teamPos={teamPos} player={player} />
-                                        </td>
-                                        <StatsCells
-                                            seasonToGameWeek={seasonToGameWeek}
-                                            gameWeekStats={gameWeekStats}
-                                            livePoints={livePoints}
-                                        />
-                                    </tr>
-                                );
-                            })}
+                                    return (
+                                        <tr key={player.code} className={`${className} ${warningClassName}`}>
+                                            <td className="cell cell--player">
+                                                <Player teamPos={teamPos} player={player} />
+                                            </td>
+                                            <StatsCells
+                                                seasonToGameWeek={seasonToGameWeek}
+                                                gameWeekStats={gameWeekStats}
+                                                livePoints={livePoints}
+                                            />
+                                        </tr>
+                                    );
+                                })}
                         </tbody>
                     </table>
                 </Fragment>

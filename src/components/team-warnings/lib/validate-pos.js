@@ -1,6 +1,6 @@
 const validatePosition = (team = []) =>
     team.reduce((acc, item = {}) => {
-        const err = item.pos !== item.teamPos && item.teamPos !== 'SUB' ? [item.playerName] : [];
+        const err = item.pos !== item.teamPos && item.teamPos !== 'SUB' ? [item.playerCode] : [];
         return [...acc, ...err];
     }, []);
 

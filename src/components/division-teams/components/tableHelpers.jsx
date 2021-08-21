@@ -33,8 +33,14 @@ export const StatsHeaders = ({ colspan }) => (
         <th className="cell cell--rcard hide-625" colSpan={colspan}>
             Cards
         </th>
-        <th className="cell cell--sb" colSpan={colspan}>
+        <th className="cell cell--sb show-625" colSpan={colspan}>
             Sb
+        </th>
+        <th className="cell cell--bp show-625" colSpan={colspan}>
+            bp
+        </th>
+        <th className="cell cell--sb hide-625" colSpan={colspan}>
+            b
         </th>
     </Fragment>
 );
@@ -60,6 +66,7 @@ export const StatsCells = ({ seasonToGameWeek, gameWeekStats, livePoints }) => {
     const isLive = livePoints && livePoints.points;
     const additional = livePoints && livePoints.points ? livePoints : gameWeekStats;
     const pairClass = isLive ? `cell--pair cell--live` : 'cell--pair';
+
     return (
         <Fragment>
             {seasonToGameWeek && <td className="cell cell--points">{seasonToGameWeek.points}</td>}
@@ -80,14 +87,28 @@ export const StatsCells = ({ seasonToGameWeek, gameWeekStats, livePoints }) => {
             {additional && <td className={`cell ${pairClass} cell--ycard show-625`}>{additional.ycard}</td>}
             {seasonToGameWeek && <td className="cell cell--rcard show-625">{seasonToGameWeek.rcard}</td>}
             {additional && <td className={`cell ${pairClass} cell--rcard show-625`}>{additional.rcard}</td>}
-            {seasonToGameWeek && (
+            {seasonToGameWeek ? (
                 <td className="cell cell--card hide-625">{seasonToGameWeek.ycard + seasonToGameWeek.rcard}</td>
-            )}
-            {additional && (
+            ) : null}
+            {additional ? (
                 <td className={`cell ${pairClass} cell--card hide-625`}>{additional.ycard + additional.rcard}</td>
-            )}
-            {seasonToGameWeek && <td className="cell cell--sb">{seasonToGameWeek.sb ?? '-'}</td>}
-            {additional && <td className={`cell ${pairClass} cell--sb`}>{additional.sb}</td>}
+            ) : null}
+            {seasonToGameWeek && <td className="cell cell--sb show-625">{seasonToGameWeek.sb ?? '-'}</td>}
+            {additional && <td className={`cell ${pairClass} cell--sb show-625`}>{additional.sb}</td>}
+            {seasonToGameWeek && <td className="cell cell--bp show-625">{seasonToGameWeek.bp ?? '-'}</td>}
+            {additional && <td className={`cell ${pairClass} cell--bp show-625`}>{additional.bp}</td>}
+            {seasonToGameWeek ? (
+                <td className="cell cell--sb hide-625">
+                    {seasonToGameWeek.sb === null && seasonToGameWeek.bp === null
+                        ? '-'
+                        : seasonToGameWeek.sb + seasonToGameWeek.bp}
+                </td>
+            ) : null}
+            {additional ? (
+                <td className={`cell ${pairClass} cell--sb hide-625`}>
+                    {additional.sb === null && additional.bp === null ? '' : additional.sb + additional.bp}
+                </td>
+            ) : null}
         </Fragment>
     );
 };

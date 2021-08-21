@@ -8,7 +8,7 @@ const validateNewPlayer = (teams) => {
         if (!player) {
             console.log('No _new_ player!');
         }
-        return player?.new ? [...acc, player.name] : acc;
+        return player?.new ? [...acc, player.code] : acc;
     }, []);
 };
 
