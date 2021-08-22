@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 const PlayerPicker = ({ team, pendingTransfers, handleChange, picked, playerNumber, ...props }) => (
     <select {...props} onChange={(e) => handleChange(e.target.value, playerNumber)}>
         <option> - </option>
-        {team.map(({ playerName }) => (
-            <option key={playerName} disabled={picked.includes(playerName)}>
-                {playerName}
+        {team.map(({ playerCode, player }) => (
+            <option key={playerCode} disabled={picked.includes(playerCode)}>
+                {player.name}
             </option>
         ))}
         {pendingTransfers.length &&

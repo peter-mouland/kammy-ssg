@@ -8,7 +8,7 @@ import PlayerTimeline from '../components/division-teams/components/PlayerTimeli
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 
-const PlayerPage = ({ data, pageContext: { playerName } }) => {
+const PlayerPage = ({ data, pageContext: { playerName, code } }) => {
     const player = data.players;
 
     return (
@@ -48,35 +48,36 @@ export const query = graphql`
                 sb
                 points
             }
-            #            gameWeeks {
-            #                fixtures {
-            #                    id
-            #                    aScore
-            #                    aTcode
-            #                    aTname
-            #                    week
-            #                    status
-            #                    stats {
-            #                        apps
-            #                        asts
-            #                        con
-            #                        cs
-            #                        pensv
-            #                        gls
-            #                        points
-            #                        rcard
-            #                        bp
-            #                        sb
-            #                        ycard
-            #                    }
-            #                    pTcode
-            #                    hTname
-            #                    hTcode
-            #                    hScore
-            #                    event
-            #                    date
-            #                }
-            #            }
+            gameWeeks {
+                fixtures {
+                    #                                id
+                    #                                aScore
+                    #                                aTcode
+                    #                                aTname
+                    #                                week
+                    #                                status
+                    stats {
+                        apps
+                        gls
+                        asts
+                        cs
+                        con
+                        pensv
+                        ycard
+                        rcard
+                        sb
+                        bp
+                        points
+                    }
+                    #                                pTcode
+                    #                                hTname
+                    #                                hTcode
+                    #                                team_h_score
+                    #                                team_a_score
+                    #                                event
+                    #                                date
+                }
+            }
         }
     }
 `;

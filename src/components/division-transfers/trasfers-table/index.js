@@ -13,8 +13,6 @@ import Player from '../../player';
 
 const TransferBody = ({ transfers, showWarnings, playersByCode }) => {
     if (transfers.length < 1) return null;
-    console.log(playersByCode);
-    console.log(transfers);
     return (
         <tbody>
             {transfers.map(

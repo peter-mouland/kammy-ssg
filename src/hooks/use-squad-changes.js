@@ -39,7 +39,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
                 // }
                 return { ...change, warnings: [] };
             }
-            console.log({ change });
+
             const { transferHasWarnings, warnings, teamsWithTransfer } = getSquadWarnings({
                 transfers: transferWithoutWarnings,
                 manager: change.manager,
