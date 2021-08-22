@@ -26,10 +26,10 @@ const managerHasMoreThanTwoFromOneClub = ({ playerIn, clubPlayers }) => ({
     `,
 });
 
-const playerInOtherTeam = ({ playersInOtherTeamsByName, playerIn, playersInOtherTeams, changeType }) => {
+const playerInOtherTeam = ({ playersInOtherTeamsByCode, playerIn, playersInOtherTeams, changeType }) => {
     let message;
     const playerMessage = `It looks like <strong>${playerIn.name}</strong> is already in <strong>${
-        playersInOtherTeamsByName[playerIn.name]?.managerName
+        playersInOtherTeamsByCode[playerIn.code]?.managerName
     }</strong>'s team`;
 
     if (changeType === changeTypes.NEW_PLAYER) {
@@ -42,7 +42,7 @@ const playerInOtherTeam = ({ playersInOtherTeamsByName, playerIn, playersInOther
     }
     return {
         error:
-            playersInOtherTeams.includes(playerIn.name) &&
+            playersInOtherTeams.includes(playerIn.code) &&
             changeType !== changeTypes.LOAN_END &&
             changeType !== changeTypes.LOAN_START,
         message,
@@ -51,7 +51,7 @@ const playerInOtherTeam = ({ playersInOtherTeamsByName, playerIn, playersInOther
 
 const loanPlayerNotInOtherTeam = ({ playerIn, playersInOtherTeams, changeType }) => ({
     error:
-        !playersInOtherTeams.includes(playerIn.name) &&
+        !playersInOtherTeams.includes(playerIn.code) &&
         (changeType === changeTypes.LOAN_END || changeType === changeTypes.LOAN_START),
     message: `
         It looks like <strong>${playerIn.name}</strong> is not in anyone's team. A Loan must involve other managers`,
@@ -67,7 +67,7 @@ const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut = {}, cha
 const playerAlreadyInValidTransfer = ({ transfers, playerIn }) => ({
     error: transfers.find(
         ({ transferIn, type, warnings = [] }) =>
-            warnings.length === 0 && transferIn === playerIn.name && type !== changeTypes.NEW_PLAYER,
+            warnings.length === 0 && transferIn === playerIn.code && type !== changeTypes.NEW_PLAYER,
     ),
     message: `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
 });
@@ -103,25 +103,25 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         return { warnings: [] };
     }
     const originalTeam = teams[manager];
-    const teamPLayerOut = originalTeam.find(({ playerName }) => playerName === playerOut.name);
-    const teamPLayerIn = originalTeam.find(({ playerName }) => playerName === playerIn.name);
+    const teamPLayerOut = originalTeam.find(({ player }) => player.code === playerOut.code);
+    const teamPLayerIn = originalTeam.find(({ player }) => player.code === playerIn.code);
     const playerInTeamPos = teamPLayerIn ? teamPLayerIn.teamPos : null;
     const playerOutTeamPos = teamPLayerOut ? teamPLayerOut.teamPos : null;
 
-    const newTeam = originalTeam.filter(({ playerName }) => {
+    const newTeam = originalTeam.filter(({ player }) => {
         if (changeType === changeTypes.SWAP) {
-            return playerName !== playerOut.name && playerName !== playerIn.name;
+            return player.code !== playerOut.code && player.code !== playerIn.code;
         } else if (changeType === changeTypes.NEW_PLAYER) {
-            return true; // new player should not be assumed to have been won
+            return true; // new player  not be assumed to have been won
         }
-        return playerName !== playerOut.name;
+        return player.code !== playerOut.code;
     });
     if (changeType === changeTypes.SWAP) {
         newTeam.push({
             managerName: manager,
             posIndex: teamPLayerIn?.posIndex,
             player: playerOut,
-            playerName: playerOut.name,
+            playerCode: playerOut.code,
             pos: playerOut.pos,
             teamPos: playerInTeamPos,
         });
@@ -131,21 +131,22 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
             managerName: manager,
             posIndex: teamPLayerOut?.posIndex,
             player: playerIn,
-            playerName: playerIn.name,
+            playerCode: playerIn.code,
             pos: playerIn.pos,
             teamPos: playerOutTeamPos,
         });
     }
 
     const newTeams = { ...teams, [manager]: newTeam.sort((a, b) => (a.posIndex < b.posIndex ? -1 : 1)) };
-    const playersInOtherTeamsByName = Object.keys(teams).reduce((prev, managerName) => {
+    const playersInOtherTeamsByCode = Object.keys(teams).reduce((prev, managerName) => {
         if (managerName === manager) return prev;
         return {
             ...prev,
-            ...teams[managerName].reduce((acc, player) => ({ ...acc, [player.playerName]: player }), {}),
+            ...teams[managerName].reduce((acc, player) => ({ ...acc, [player.player.code]: player }), {}),
         };
     }, {});
-    const playersInOtherTeams = Object.keys(playersInOtherTeamsByName);
+
+    const playersInOtherTeams = Object.keys(playersInOtherTeamsByCode).map((c) => parseInt(c, 10));
 
     const managerTransfers = transfers.filter(
         ({ manager: managerName, type }) => managerName === manager && type === changeTypes.TRANSFER,
@@ -170,8 +171,8 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         managerHasTooManyTransfers({ managerTransfers, changeType }),
         changeType === changeTypes.SWAP ? maxSwaps({ managerSwaps }) : {},
         managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
-        loanPlayerNotInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByName }),
-        playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByName, changeType }),
+        loanPlayerNotInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByCode }),
+        playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByCode, changeType }),
         playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut, changeType }),
         playerAlreadyInValidTransfer({ playerIn, transfers }),
 
@@ -185,6 +186,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
     ]
         .filter(({ error }) => !!error)
         .map(({ message }) => message);
+
     return {
         originalTeam,
         originalTeams: teams,

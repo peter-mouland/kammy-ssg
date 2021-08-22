@@ -23,9 +23,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
     const [saveSquadChange, { isLoading: isSaving }] = useMutation(saveTransfers, {
         onSuccess: (data) => {
             queryCache.cancelQueries(queryKey);
-
-            console.log({ queryKey, data });
-            queryCache.setQueryData(queryKey, (old) => console.log({ old }) || [...old, ...data]);
+            queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
     const { gameWeeks } = useGameWeeks();
@@ -41,6 +39,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
                 // }
                 return { ...change, warnings: [] };
             }
+            console.log({ change });
             const { transferHasWarnings, warnings, teamsWithTransfer } = getSquadWarnings({
                 transfers: transferWithoutWarnings,
                 manager: change.manager,
