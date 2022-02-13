@@ -1,4 +1,4 @@
-const { calculateTotalPoints } = require('@kammy/helpers.sky-sports-stats-to-points');
+const { calculate } = require('@kammy/helpers.fpl-stats-to-points');
 
 const calculateSeasonStats = (playerGameWeeks, pos) =>
     playerGameWeeks.reduce(
@@ -8,7 +8,7 @@ const calculateSeasonStats = (playerGameWeeks, pos) =>
                     ...prev,
                     [stat]:
                         // only add stats of those that can score points
-                        stat === 'points' || calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0
+                        ['points', 'apps'].includes(stat) || calculate[stat](9, pos) !== 0
                             ? gw.gameWeekStats[stat] + (totals[stat] || 0)
                             : 0,
                 }),

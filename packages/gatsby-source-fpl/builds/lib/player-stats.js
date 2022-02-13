@@ -3,7 +3,7 @@ const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
 const isEqual = require('date-fns/isEqual');
 const extractFplStats = require('@kammy/helpers.extract-fpl-stats');
-const { calculateTotalPoints } = require('@kammy/helpers.fpl-stats-to-points');
+const { calculateTotalPoints, calculate } = require('@kammy/helpers.fpl-stats-to-points');
 
 const logger = require('../../lib/log');
 
@@ -29,7 +29,7 @@ const getPosStats = ({ stats, pos }) => {
     const posStats = Object.keys(stats).reduce(
         (prevPosStat, stat) => ({
             ...prevPosStat,
-            [stat]: calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0 ? stats[stat] : 0,
+            [stat]: ['points', 'apps'].includes(stat) || calculate[stat](9, pos) !== 0 ? stats[stat] : 0,
         }),
         {},
     );
@@ -41,7 +41,7 @@ const addPointsToFixtures = (fixture, player) => {
     // console.log('fixture');
     // console.log(Object.keys(fixture));
     const stats = extractFplStats(fixture || emptyStatsRaw);
-    const points = calculateTotalPoints({ stats, pos: player.pos });
+    const points = calculateTotalPoints({ stats, pos: player.pos, gameWeekFixtures: [fixture] });
     return {
         ...fixture,
         stats: {
@@ -108,7 +108,7 @@ const playerStats = ({ player, gameWeeks }) => {
     // counter++;
     // if (counter > 2) process.exit(1);
     const stats = totalUpStats(gameWeekFixtures);
-    const point = calculateTotalPoints({ stats, pos: player.pos });
+    const point = calculateTotalPoints({ stats, pos: player.pos, gameWeekFixtures });
     const gameWeekStats = {
         ...getPosStats({ stats, pos: player.pos }),
         points: point.total,

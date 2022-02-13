@@ -1,7 +1,10 @@
-function forMinutes(minutes = 0) {
-    if (minutes === 0) return 0;
-    if (minutes < 45) return 1;
-    return 3;
+function forMinutes(gameWeekFixtures = []) {
+    // cumulative minutes doesnt work, we need to know the individual minutes for each game fixture in that game week
+    return gameWeekFixtures.filter(Boolean).reduce((prev, { minutes }) => {
+        if (minutes === 0) return prev;
+        if (minutes < 45) return prev + 1;
+        return prev + 3;
+    }, 0);
 }
 
 function forGoals(goals = 0, position) {
@@ -66,8 +69,9 @@ function forBonus(bonusPoints = 0, position) {
     return 0;
 }
 
-function calculateTotalPoints({ stats, pos }) {
-    const apps = forMinutes(stats.apps, pos);
+function calculateTotalPoints({ stats, pos, gameWeekFixtures }) {
+    // if (stats.apps_array) console.log(Object.keys(stats));
+    const apps = forMinutes(gameWeekFixtures);
     const gls = forGoals(stats.gls, pos);
     const asts = forAssists(stats.asts, pos);
     const cs = forCleanSheet(stats.cs, pos);
@@ -94,6 +98,18 @@ function calculateTotalPoints({ stats, pos }) {
 }
 
 module.exports = {
+    calculate: {
+        apps: forMinutes,
+        gls: forGoals,
+        asts: forAssists,
+        cs: forCleanSheet,
+        con: forConceded,
+        pensv: forPenaltiesSaved,
+        ycard: forYellowCards,
+        rcard: forRedCards,
+        sb: forSaveBonus,
+        bp: forBonus,
+    },
     forMinutes,
     forGoals,
     forAssists,

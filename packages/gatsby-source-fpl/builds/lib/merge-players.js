@@ -1,4 +1,4 @@
-const { calculateTotalPoints } = require('@kammy/helpers.sky-sports-stats-to-points');
+const { calculate } = require('@kammy/helpers.fpl-stats-to-points');
 
 const { playerStats: getPlayerStats } = require('./player-stats');
 const logger = require('../../lib/log');
@@ -13,7 +13,7 @@ const calculateSeasonStats = (gameWeeksWithFixtures, pos) =>
                     // todo: remove all usages of this method
                     // todo: instead delete the stat from thos players that can't earn them
                     [stat]:
-                        stat === 'points' || calculateTotalPoints({ stats: { [stat]: 9 }, pos }).total !== 0
+                        ['points', 'apps'].includes(stat) || calculate[stat](9, pos) !== 0
                             ? gw.stats[stat] + (totals[stat] || 0)
                             : 0,
                 }),
