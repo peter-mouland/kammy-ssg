@@ -7,7 +7,8 @@ const formatTransfers = require('./lib/formatTransfers');
 const trimRows = require('./lib/trimRows');
 
 // const PROXY_HOST = 'http://localhost:3000';
-const PROXY_HOST = 'https://kammy-proxy.herokuapp.com';
+// const PROXY_HOST = 'https://kammy-proxy.herokuapp.com';
+const PROXY_HOST = 'https://kammy-proxy.vercel.app/api';
 const parseISO = parseISOimport.default || parseISOimport;
 
 const kammyProxy = async (api, data) => {
