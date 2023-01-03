@@ -1,1 +1,0 @@
-web: yarn gatsby serve
