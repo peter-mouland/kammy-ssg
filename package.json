@@ -12,11 +12,11 @@
   "engines": {
     "node": "18.12.1",
     "npm": "7.0.0",
-    "yarn": "1.22.10"
+    "yarn": "3.3.1"
   },
   "volta": {
     "node": "18.12.1",
-    "yarn": "1.22.10"
+    "yarn": "3.3.1"
   },
   "bugs": {
     "url": "https://github.com/peter-mouland/kammy-ssg/issues"
