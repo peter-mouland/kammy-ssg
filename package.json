@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "UI components + lambdas Kammy using lerna",
   "private": true,
-  "packageManager": "yarn@3.3.1",
   "publishConfig": {
     "access": "public"
   },
@@ -13,11 +12,11 @@
   "engines": {
     "node": "18.12.1",
     "npm": "7.0.0",
-    "yarn": "3.3.1"
+    "yarn": "1.22.10"
   },
   "volta": {
     "node": "18.12.1",
-    "yarn": "3.3.1"
+    "yarn": "1.22.10"
   },
   "bugs": {
     "url": "https://github.com/peter-mouland/kammy-ssg/issues"
