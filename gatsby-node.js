@@ -94,9 +94,7 @@ exports.onPreBootstrap = () => {};
 exports.onCreateDevServer = () => {};
 
 exports.createPages = async ({ actions, graphql }) => {
-    const {
-        data: { allGameWeeks, allDivisions, allPlayers, allManagers },
-    } = await graphql(`
+    const { data } = await graphql(`
         query {
             allGameWeeks {
                 nodes {
@@ -133,7 +131,7 @@ exports.createPages = async ({ actions, graphql }) => {
     let maxGameweek = 99;
     const pageNodesToBuild = [];
 
-    allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
+    data?.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
         if (gameWeek > maxGameweek) return;
         if (isCurrent) maxGameweek = gameWeek + 1;
         if (isCurrent) {
@@ -153,7 +151,7 @@ exports.createPages = async ({ actions, graphql }) => {
             },
         });
         // a new page for each division
-        allDivisions.nodes.forEach(({ key, label }) => {
+        data?.allDivisions.nodes.forEach(({ key, label }) => {
             const url = label.replace(/ /g, '-').toLowerCase();
             //   DIVISION RANKINGS (by game-week)
             pageNodesToBuild.push({
@@ -210,7 +208,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 },
             });
             //   PLAYER
-            allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
+            data?.allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
                 pageNodesToBuild.push({
                     path: url,
                     component: path.resolve('src/templates/player.js'),
@@ -222,7 +220,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 });
             });
             //   MANAGER
-            allManagers.nodes.forEach(({ divisionKey, manager: managerName, managerKey, url }) => {
+            data?.allManagers.nodes.forEach(({ divisionKey, manager: managerName, managerKey, url }) => {
                 pageNodesToBuild.push({
                     path: url,
                     component: path.resolve('src/templates/manager.js'),
@@ -235,7 +233,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 });
             });
 
-            allDivisions.nodes.forEach(({ key, label }) => {
+            data?.allDivisions.nodes.forEach(({ key, label }) => {
                 const url = label.replace(/ /g, '-').toLowerCase();
                 //   DIVISION RANKINGS
                 pageNodesToBuild.push({
