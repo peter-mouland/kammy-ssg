@@ -1,4 +1,3 @@
-/* global fetch */
 import { graphql, useStaticQuery } from 'gatsby';
 import { useQuery } from 'react-query';
 import { fetchSetup } from '@kammy/helpers.spreadsheet';

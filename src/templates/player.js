@@ -8,7 +8,7 @@ import PlayerTimeline from '../components/division-teams/components/PlayerTimeli
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 
-const PlayerPage = ({ data, pageContext: { playerName, code } }) => {
+const PlayerPage = ({ data, pageContext: { playerName } }) => {
     const player = data.players;
 
     return (

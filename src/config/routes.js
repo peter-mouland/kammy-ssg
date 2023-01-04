@@ -25,8 +25,7 @@ module.exports = [
             description: 'Kammy : Fantasy Football',
         },
         props: {
-            src:
-                'https://docs.google.com/document/d/e/2PACX-1vTFlrJtsgbHsNScMLEDyAy1KnSclQmghRXLMdZV7T3L0phP2gp4r71GCzaAGPs6Z4kyw8UvyhD3axmr/pub',
+            src: 'https://docs.google.com/document/d/e/2PACX-1vTFlrJtsgbHsNScMLEDyAy1KnSclQmghRXLMdZV7T3L0phP2gp4r71GCzaAGPs6Z4kyw8UvyhD3axmr/pub',
         },
         label: 'Rules',
         requiresAuthentication: false,
@@ -42,8 +41,7 @@ module.exports = [
             description: 'Kammy : Fantasy Football',
         },
         props: {
-            src:
-                'https://docs.google.com/spreadsheets/d/e/2PACX-1vTc6YcPueOZlY0YNx4W-SbcB2AwoDGfvTa1fxoBuRTmSsxHf61eujyBHkMYrxvjKuLaTbIKoAY97G2B/pubhtml',
+            src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTc6YcPueOZlY0YNx4W-SbcB2AwoDGfvTa1fxoBuRTmSsxHf61eujyBHkMYrxvjKuLaTbIKoAY97G2B/pubhtml',
         },
         label: 'Prize Money',
         requiresAuthentication: false,
@@ -72,8 +70,7 @@ module.exports = [
             description: 'Draft : Fantasy Football',
         },
         props: {
-            src:
-                'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWyi5ZU1jMBPmpLMJzKlZ0aA71HJk7h3Fh4p-rS6e9rw_4lymyetJsYwlaB4iMTlLQPiUYiWwfgt1n/pubhtml',
+            src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWyi5ZU1jMBPmpLMJzKlZ0aA71HJk7h3Fh4p-rS6e9rw_4lymyetJsYwlaB4iMTlLQPiUYiWwfgt1n/pubhtml',
         },
         label: 'Cup Scores',
         requiresAuthentication: false,
@@ -244,8 +241,7 @@ module.exports = [
         label: 'Championship Draft',
         props: {
             division: 'championship',
-            src:
-                'https://docs.google.com/spreadsheets/d/e/2PACX-1vTLwqJA5bCMEeBr6N8IUQK-F2Cmx_-O-yBkp6JlnyKiuy08bPWyEEXSJa2ErJgS-OkcMkZgIZGntmB5/pubhtml?gid=0&single=true',
+            src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTLwqJA5bCMEeBr6N8IUQK-F2Cmx_-O-yBkp6JlnyKiuy08bPWyEEXSJa2ErJgS-OkcMkZgIZGntmB5/pubhtml?gid=0&single=true',
         },
         requiresAuthentication: false,
         component: 'iFrame',
@@ -330,8 +326,7 @@ module.exports = [
         label: 'League 1 Draft',
         props: {
             division: 'leagueOne',
-            src:
-                'https://docs.google.com/spreadsheets/d/e/2PACX-1vTd7NQ2Iu4P7zzjwpHtHwLFacDKTwpmLO08R90fFdYurxEh-LJlYFGjoNM79sPi6iBpV3owLf7mXwOm/pubhtml?gid=0&single=true',
+            src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTd7NQ2Iu4P7zzjwpHtHwLFacDKTwpmLO08R90fFdYurxEh-LJlYFGjoNM79sPi6iBpV3owLf7mXwOm/pubhtml?gid=0&single=true',
         },
         requiresAuthentication: false,
         component: 'iFrame',

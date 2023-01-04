@@ -16,8 +16,8 @@ const bem = bemHelper({ block: 'division-stats' });
 
 const Cup = ({ currentTeams }) => {
     const { managerNames: managers } = useManagers();
-    const { saveTeam, isLoading: cupTeamIsLoading, isSaving: cupTeamIsSaving, isSaved } = useCup();
-    const { isLoading: isTransfersLoading, getPendingTransfersByManager } = useAllTransfers();
+    const { saveTeam, isSaving: cupTeamIsSaving, isSaved } = useCup();
+    const { getPendingTransfersByManager } = useAllTransfers();
     const [progress, setProgress] = useState(0);
     const [manager, setManager] = useState('');
     const [picked, setPicked] = useState([]);
@@ -94,8 +94,8 @@ const Cup = ({ currentTeams }) => {
     );
 };
 
-Cup.contextTypes = {
-    appConfig: PropTypes.object,
+Cup.propTypes = {
+    currentTeams: PropTypes.object.isRequired,
 };
 
 export default Cup;

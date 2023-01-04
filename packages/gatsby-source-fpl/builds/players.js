@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const mergePlayers = require('./lib/merge-players');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');

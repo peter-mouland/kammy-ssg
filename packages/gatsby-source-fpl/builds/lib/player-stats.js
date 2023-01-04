@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const jsonQuery = require('json-query');
 const isBefore = require('date-fns/isBefore');
 const isAfter = require('date-fns/isAfter');
@@ -81,7 +82,7 @@ const getGameWeekFixtures = (player, gameWeeks) =>
         },
     }).value || [];
 
-const counter = 0;
+// const counter = 0;
 const playerStats = ({ player, gameWeeks }) => {
     if (!player) {
         console.log('no player!');

@@ -19,6 +19,7 @@ aws
 .env
 .env.production
 .cache
+.yarn/cache
 /junit.xml
 /.env.development
 .npmrc

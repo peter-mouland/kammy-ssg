@@ -153,9 +153,11 @@ PlayerTable.propTypes = {
     disabledPlayers: PropTypes.object,
     additionalColumns: PropTypes.arrayOf(PropTypes.string),
     myTeam: PropTypes.object,
+    liveStatsByCode: PropTypes.object,
 };
 
 PlayerTable.defaultProps = {
+    liveStatsByCode: null,
     myTeam: null,
     hiddenColumns: [],
     disabledPlayers: {},

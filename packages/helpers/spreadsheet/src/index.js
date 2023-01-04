@@ -1,4 +1,3 @@
-/* global fetch */
 const parseISOimport = require('date-fns/parseISO');
 
 const fetchr = require('./fetch');

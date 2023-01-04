@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { getGmtDate } = require('@kammy/helpers.get-gmt-date');
 
 const { nodeTypes, mediaTypes } = require('../lib/constants');

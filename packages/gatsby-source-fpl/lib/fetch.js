@@ -24,7 +24,6 @@ const getFixturePath = (url, season = 'new') => {
 };
 
 const { FIXTURES, SAVE } = process.env;
-console.log({ FIXTURES, SAVE });
 
 const fetch = (URL, { season } = {}) => {
     const fixturesPath = getFixturePath(URL, FIXTURES || season);

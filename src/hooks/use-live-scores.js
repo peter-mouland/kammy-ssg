@@ -1,4 +1,3 @@
-/* global fetch */
 import { useState } from 'react';
 import { useQuery, queryCache } from 'react-query';
 import { graphql, useStaticQuery } from 'gatsby';

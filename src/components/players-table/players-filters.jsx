@@ -105,15 +105,8 @@ export default class PlayersFilters extends React.Component {
 
     onFilter = () => {
         const { players, myTeam, customFilter } = this.props;
-        const {
-            selectedFilters,
-            posFilters,
-            clubFilters,
-            nameFilters,
-            showHidden,
-            customFilterChecked,
-            miscFilters,
-        } = this.state;
+        const { selectedFilters, posFilters, clubFilters, nameFilters, showHidden, customFilterChecked, miscFilters } =
+            this.state;
         const teamPlayers = myTeam
             ? Object.keys(myTeam).reduce(
                   (prev, curr) => myTeam[curr] && { ...prev, [myTeam[curr].code]: { ...myTeam[curr], teamPos: curr } },

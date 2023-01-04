@@ -1,4 +1,3 @@
-/* global fetch */
 const pMap = require('p-map');
 
 const CONCURRENCY = 3; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;

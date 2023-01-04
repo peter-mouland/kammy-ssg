@@ -1,4 +1,3 @@
-/* global fetch */
 const { spreadsheets } = require('./constants');
 
 const rowToObj = ({ values = [] }) => {

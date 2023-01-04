@@ -83,15 +83,21 @@ const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
 });
 
 // todo: NEW PLAYER
-// - Be warned! If you win this new player, your team may exceed the limit of two per club. You will need to fix this by the next deadline
-// - Oops! This player is marked as new but has already been selected by another manager in a pending transfer. Please submit but check with your friendly admins
+// - Be warned! If you win this new player, your team may exceed the limit of two per club.
+//      You will need to fix this by the next deadline
+// - Oops! This player is marked as new but has already been selected by another manager in a pending transfer.
+//      Please submit but check with your friendly admins
 // - Be warned! If you win this new player, you may be putting him into your team in the wrong position (that’s bad)
 
 // todo : LOAN END
-// - The deadline to end loan deals is 24 hours before the weekly transfer deadline. If you end the loan now, this will not take effect until game week commencing {date}
-// - This Loan End appears to make your team exceed the limit of two per club. You will need to transfer out or trade a player from that club in order to successfully end this loan deal
-// - A player you have selected is not currently on loan. Please ensure you have the correct details, including transaction type.
-// - This Loan End appears to put a player into your team in the wrong position. You may need to fix this with your weekly transfers.
+// - The deadline to end loan deals is 24 hours before the weekly transfer deadline.
+//      If you end the loan now, this will not take effect until game week commencing {date}
+// - This Loan End appears to make your team exceed the limit of two per club.
+//      You will need to transfer out or trade a player from that club in order to successfully end this loan deal
+// - A player you have selected is not currently on loan.
+//      Please ensure you have the correct details, including transaction type.
+// - This Loan End appears to put a player into your team in the wrong position.
+//      You may need to fix this with your weekly transfers.
 
 // todo : LOANs
 // todo (somewhen): know who is on loan

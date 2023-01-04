@@ -1,7 +1,0 @@
-{
-  "error": {
-    "code": 400,
-    "message": "Unable to parse range: leagueTwo",
-    "status": "INVALID_ARGUMENT"
-  }
-}

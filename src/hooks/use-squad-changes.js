@@ -2,7 +2,7 @@ import { useMutation, useQuery, queryCache } from 'react-query';
 import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 import { getSquadWarnings, consts } from '@kammy/helpers.squad-rules';
 
-import useAllTransfers from './use-all-transfers';
+// import useAllTransfers from './use-all-transfers';
 import usePlayers from './use-players';
 import useGameWeeks from './use-game-weeks';
 

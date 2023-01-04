@@ -1,8 +1,14 @@
-[build] # Make sure you don't have a duplicate [build] context!
-  functions = "packages/netlify-functions/"
-
+[[plugins]]
+  package = "./.netlify/plugin"
+  [plugins.inputs]
+    # Optional (but highly recommended). Defaults to [".cache"].
+    paths = [".cache", ".yarn/cache"]
 [dev]
   framework = "gatsby"
   command = "yarn start" # Command to start your dev server
   port = 8888 # The port that the netlify dev will be accessible on
   publish = "public" # If you use a _redirect file, provide the path to your static content folder
+[build.environment]
+  NODE_VERSION = "18.12.1"
+  NETLIFY_USE_YARN = "true"
+  YARN_VERSION = "3.3.1" #or other version

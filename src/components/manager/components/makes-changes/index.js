@@ -7,9 +7,9 @@ import usePlayers from '../../../../hooks/use-players';
 import Spacer from '../../../spacer';
 import TransfersTable from '../transfers-table';
 import PlayersToSwap from '../players-to-swap';
-import PlayersToTransfer from '../players-to-transfer';
-import PlayersToTrade from '../players-to-trade';
-import NewPlayersToTransfer from '../new-players-to-transfer';
+// import PlayersToTransfer from '../players-to-transfer';
+// import PlayersToTrade from '../players-to-trade';
+// import NewPlayersToTransfer from '../new-players-to-transfer';
 import ConfirmChanges from '../confirm-changes';
 import SquadOnPitch from '../squad-on-pitch';
 
@@ -24,47 +24,44 @@ const selectSquadMember = (squad, squadMember) =>
         isSelected: member.posIndex === squadMember.posIndex,
     }));
 
-const createApplySwap = ({ newTeam, setNewChanges, newChanges, setNewTeam, managerName, hasPendingChanges }) => ({
-    type,
-    teamPos,
-    player,
-    posIndex,
-}) => {
-    // type === SWAP
-    const memberToSwap = newTeam.find((squadMember) => squadMember.player.name === player.name);
-    const sub = newTeam.find((squadMember) => squadMember.teamPos === SUB);
-    const updatedSquad = newTeam.map((squadMember) => {
-        if (squadMember.player.name === player.name) {
-            return {
-                ...squadMember,
-                posIndex: sub.posIndex,
-                teamPos: sub.teamPos,
-                hasChanged: true,
-            };
-        } else if (squadMember.teamPos === SUB) {
-            return {
-                ...squadMember,
-                posIndex: memberToSwap.posIndex,
-                teamPos: memberToSwap.teamPos,
-                hasChanged: true,
-            };
-        }
-        return squadMember;
-    });
-    setNewChanges([
-        ...newChanges,
-        {
-            manager: managerName,
-            status: hasPendingChanges ? CHANGE_TBC : CHANGE_CONFIRMED,
-            type: SWAP,
-            playerIn: memberToSwap.player,
-            playerOut: sub.player,
-            transferIn: memberToSwap.player.name,
-            transferOut: sub.player.name,
-        },
-    ]);
-    setNewTeam(updatedSquad);
-};
+const createApplySwap =
+    ({ newTeam, setNewChanges, newChanges, setNewTeam, managerName, hasPendingChanges }) =>
+    ({ type, teamPos, player, posIndex }) => {
+        // type === SWAP
+        const memberToSwap = newTeam.find((squadMember) => squadMember.player.name === player.name);
+        const sub = newTeam.find((squadMember) => squadMember.teamPos === SUB);
+        const updatedSquad = newTeam.map((squadMember) => {
+            if (squadMember.player.name === player.name) {
+                return {
+                    ...squadMember,
+                    posIndex: sub.posIndex,
+                    teamPos: sub.teamPos,
+                    hasChanged: true,
+                };
+            } else if (squadMember.teamPos === SUB) {
+                return {
+                    ...squadMember,
+                    posIndex: memberToSwap.posIndex,
+                    teamPos: memberToSwap.teamPos,
+                    hasChanged: true,
+                };
+            }
+            return squadMember;
+        });
+        setNewChanges([
+            ...newChanges,
+            {
+                manager: managerName,
+                status: hasPendingChanges ? CHANGE_TBC : CHANGE_CONFIRMED,
+                type: SWAP,
+                playerIn: memberToSwap.player,
+                playerOut: sub.player,
+                transferIn: memberToSwap.player.name,
+                transferOut: sub.player.name,
+            },
+        ]);
+        setNewTeam(updatedSquad);
+    };
 
 // todo: show next gameweeks team
 // todo: but show this gameweeks change-requests
@@ -72,18 +69,12 @@ const createApplySwap = ({ newTeam, setNewChanges, newChanges, setNewTeam, manag
 const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
     const [newChanges, setNewChanges] = React.useState([]);
     const { playersByName } = usePlayers();
-    const {
-        changesThisGameWeek,
-        newTeams,
-        changesByType,
-        isLoading,
-        saveSquadChange,
-        hasPendingChanges,
-    } = useSquadChanges({
-        selectedGameWeek: gameWeek, // todo: use separate hook for showing transfers
-        divisionKey,
-        teamsByManager,
-    });
+    const { changesThisGameWeek, newTeams, changesByType, isLoading, saveSquadChange, hasPendingChanges } =
+        useSquadChanges({
+            selectedGameWeek: gameWeek, // todo: use separate hook for showing transfers
+            divisionKey,
+            teamsByManager,
+        });
     // console.log({ newTeams });
 
     const [newTeam, setNewTeam] = React.useState(newTeams[managerName]);
