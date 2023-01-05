@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './modal.scss';
+import './modal.css';
 
 export default class Index extends Component {
     static propTypes = {

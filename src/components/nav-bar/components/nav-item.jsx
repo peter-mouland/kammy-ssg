@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import NamedLink from '../../named-link';
-import './nav-item.scss';
+import './nav-item.css';
 
 const NavItem = ({ label, children, className = '', to }) => {
     const [open, toggleOpen] = useState(false);

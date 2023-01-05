@@ -1,12 +1,11 @@
-@import '~@kammy/bootstrap/src/abstracts/variables';
+.contextualHelp {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    color: var(--brand--dark);
+}
 
-.contextual-help {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-  color: $brand--dark;
-
-  &__box {
+.box {
     position: absolute;
     transition: opacity ease-in-out 250ms 250ms;
     top: 0;
@@ -15,11 +14,10 @@
     z-index: -1;
     visibility: hidden;
     text-align: center;
+}
 
-    &--active {
+.active {
       z-index: 30;
       opacity: 1;
       visibility: visible;
-    }
-  }
 }

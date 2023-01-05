@@ -6,7 +6,7 @@ import DivisionRankings from '../division-rankings';
 import GameWeekFixtures from '../gameweek-fixtures';
 import GameWeekDate from '../gameweek-date';
 import Drawer from '../drawer';
-import './styles.scss';
+import './styles.css';
 import Spacer from '../spacer';
 import NamedLink from '../named-link';
 

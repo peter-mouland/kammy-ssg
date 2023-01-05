@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import { StatsHeaders, StatsCells, TeamName } from './tableHelpers';
-import './positionTimeline.scss';
+import './positionTimeline.css';
 
 const bem = bemHelper({ block: 'position-timeline' });
 

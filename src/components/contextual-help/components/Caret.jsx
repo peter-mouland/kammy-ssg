@@ -1,17 +1,12 @@
 /* eslint-disable id-length */
 import React from 'react';
 import PropTypes from 'prop-types';
-import BemHelper from '@kammy/bem';
 
-import './caret.scss';
-
-const bem = BemHelper({ block: 'caret' });
+import * as styles from './caret.module.css';
 
 export default function Caret({ x, isUp }) {
-    const caretClass = bem(null, {
-        up: isUp,
-        down: !isUp,
-    });
+    const caretClass = `${styles.caret} ${isUp ? styles.up : styles.down}`;
+    console.log(caretClass);
     return <div style={{ transform: `translate(${x || 0}px)` }} className={caretClass} />;
 }
 

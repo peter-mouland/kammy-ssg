@@ -1,19 +1,15 @@
-@import '~@kammy/bootstrap/src/abstracts/variables';
-
-.players-filters {
-  &__filters {
+.players-filters__filters {
     display: flex;
     position: relative;
     z-index: 2;
   }
 
-  &__content {
+.players-filters__content {
     position: relative;
     z-index: 1;
   }
 
-  &__group {
+.players-filters__group {
     flex: 1;
     margin-right: 2em;
-  }
 }

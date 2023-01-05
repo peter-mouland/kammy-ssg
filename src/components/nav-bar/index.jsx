@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import appConfig from '../../config/config';
 import NamedLink from '../named-link';
 import Spacer from '../spacer';
-import './nav-bar.scss';
+import './nav-bar.css';
 
 const bem = bemHelper({ block: 'nav' });
 const linkClass = bem('link');

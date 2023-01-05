@@ -1,8 +1,6 @@
-@import '~@kammy/bootstrap/src/abstracts/variables';
-
-$modal-md: 725px;
-
 .modal {
+ --modal-md: 725px;
+
   position: fixed;
   z-index: 10001;
   top: 0;
@@ -19,31 +17,28 @@ $modal-md: 725px;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: $darken;
+  background-color: var(--darken);
 }
 
 .modal__content {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: $white;
-  box-shadow: 0 0 10px $dark;
-  width: 90%;
-  max-height: 90%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  //-webkit-font-smoothing: antialiased;
-  //-moz-osx-font-smoothing: grayscale;
-  max-width: $modal-md;
-  padding: 15px;
-
-  &--center {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--white);
+    box-shadow: 0 0 10px var(--dark);
+    width: 90%;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-width: var(--modal-md);
+    padding: 15px;
+}
+.modal__content--center {
     max-width: 450px;
     text-align: center;
-  }
 }
 
 .modal__inner {
@@ -60,11 +55,11 @@ $modal-md: 725px;
 }
 
 .modal__controls {
-  background-color: $white;
+  background-color: var(--white);
   padding: 15px;
   width: 100%;
   align-self: flex-end;
-  border-top: 1px solid $dark-grey;
+  border-top: 1px solid var(--dark-grey);
   position: absolute;
   bottom: 0;
 }
@@ -79,7 +74,7 @@ $modal-md: 725px;
 
 .modal__close {
   line-height: 1;
-  background-color: $white;
+  background-color: var(--white);
   border: 0;
   z-index: 1;
   cursor: pointer;
@@ -94,8 +89,8 @@ $modal-md: 725px;
 .modal__close.modal__close--overlay {
   top: 20px;
   right: 20px;
-  color: $brand;
-  box-shadow: 0 0 5px $darker;
+  color: var(--brand);
+  box-shadow: 0 0 5px var(--darker);
 }
 
 .modal__footer {
@@ -105,7 +100,6 @@ $modal-md: 725px;
   justify-content: center;
 }
 
-// modal option - LARGE
 .modal__content.modal__content--lg {
   width: 90%;
   height: 90%;
@@ -113,7 +107,6 @@ $modal-md: 725px;
   max-height: 90%;
 }
 
-//modal option - MOBILE FULL
 .modal__content.modal__content--mobile-full {
   width: 100%;
   height: 100%;
@@ -136,27 +129,26 @@ $modal-md: 725px;
 
 @media only screen and (min-width: 550px) {
   .modal__content {
-    min-width: initial;
-    width: 90%;
-    max-height: 90%;
-    max-width: 90%;
-
-    &--default {
-      max-width: $modal-md;
+      min-width: initial;
+      width: 90%;
+      max-height: 90%;
+      max-width: 90%;
+  }
+    .modal__content--default {
+      max-width: var(--modal-md);
     }
 
-    &--center {
+    .modal__content&--center {
       max-width: 450px;
       text-align: center;
     }
-  }
 
   .modal__content.modal__content--mobile-full {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
-    max-width: 90%; //$modal-md;
+    max-width: 90%;
     height: auto;
     max-height: 90%;
   }

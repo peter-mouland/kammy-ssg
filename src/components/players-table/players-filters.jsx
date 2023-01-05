@@ -5,7 +5,7 @@ import bemHelper from '@kammy/bem';
 import Select from 'react-select';
 
 import Toggle from '../toggle';
-import './players-filters.scss';
+import './players-filters.css';
 
 const bem = bemHelper({ block: 'players-filters' });
 const MY_TEAM = 'My Team';

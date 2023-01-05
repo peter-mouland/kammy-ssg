@@ -1,11 +1,9 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import sortBy from '@kammy/sort-columns';
-import { Link } from 'gatsby';
 
 import positions from './lib/positions';
-
-import './division-rankings.scss';
+import * as styles from './division-rankings.module.css';
 
 const DivisionRankingsTable = ({ points, type, rank }) => (
     <table className={`table ${points.length === 0 && 'table--placeholder'}`}>
@@ -34,13 +32,14 @@ const DivisionRankingsTable = ({ points, type, rank }) => (
                         {positions.map((position) => {
                             const gradient = `gradient_${parseInt(pos[position.key][rank], 10)
                                 .toString()
-                                .replace('.', '-')}`;
+                                .replace('.', '_')
+                                .replace('-', '_')}`;
                             return (
                                 <Fragment key={position.key}>
-                                    <td className={`cell cell--${position.key} ${gradient}`}>
+                                    <td className={`cell cell--${position.key} ${styles[gradient]}`}>
                                         {pos[position.key][rank]}
                                     </td>
-                                    <td className={`cell cell--pair cell--${position.key} ${gradient}`}>
+                                    <td className={`cell cell--pair cell--${position.key} ${styles[gradient]}`}>
                                         {pos[position.key][type]}
                                     </td>
                                 </Fragment>

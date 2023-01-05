@@ -1,0 +1,243 @@
+.table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  position: relative;
+  font-size: 0.85em;
+
+    @media (min-width: 650px) {
+        font-size: 1em;
+    }
+}
+
+.table__sort-link {
+    background: transparent;
+    font-weight: bold;
+    display: flex;
+    align-items: baseline;
+}
+.table__sort-icon {
+    min-width: 15px
+}
+
+.table--placeholder::before {
+      content: " ";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      width: 100%;
+      animation: phAnimation 1s linear infinite;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 46%, rgba(255, 255, 255, .35) 50%, rgba(255, 255, 255, 0) 54%) 50% 50%;
+    }
+
+.table--placeholder .cell {
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+    height: 1.6em;
+    background-color: lightgrey;
+}
+
+.table__transfer {
+    background-color: lavender;
+}
+
+.table .row.disabled,
+.table__player--disabled {
+    color: #c3c3c3;
+    font-style: italic;
+    text-decoration: line-through;
+
+      & a {
+          color: #c3c3c3;
+      }
+  }
+
+.table {
+    /* thead: style dup for safari bug fix */
+  & thead {
+    top: 0;
+    z-index: 1;
+  }
+
+    & th.cell {
+        top: 0;
+        text-align: center;
+        background-color: rgb(220, 228, 245);
+        z-index: 1;
+        font-size: .8em;
+        width: 60px;
+    }
+
+    & th.cell--player {
+        width: 300px
+    }
+
+    & .row--tbc {
+      font-style: italic;
+    }
+
+    & .row--y {
+      background-color: #eee;
+      color: #163;
+    }
+
+    & .row--e {
+      background-color: #eee;
+      color: #a52a2a;
+
+        & .cell {
+            text-decoration: line-through;
+        }
+
+        & .cell--status {
+            text-decoration: none;
+        }
+    }
+
+    & .row--interstitial {
+      text-align: center;
+      opacity: .8;
+    }
+
+  tr.row:hover {
+    background-color: aliceblue;
+  }
+
+  tr.row.row--header .cell { /* stylelint-disable-line no-descending-specificity */
+    top: 1.7em;
+  }
+
+  & .cell { /* stylelint-disable-line no-descending-specificity */
+        border-bottom: 1px solid rgba(0, 0, 0, .2);
+        text-align: right;
+        padding: .3em .15em;
+    }
+    & .cell--points {
+            font-weight: bold;
+        }
+    & .cell--pair {
+          color: #888;
+          font-size: .75em;
+          text-align: left;
+        }
+    & .cell--live{
+              color: orange;
+          }
+
+    & .cell--left {
+          text-align: left;
+    }
+
+    & .cell--center,
+    & .cell--manager,
+    & .cell--position,
+    & .cell--team-position {
+      text-align: center;
+    }
+
+    & .cell--cta,
+    & .cell--team-position {
+      width: 75px;
+    }
+
+    @media only screen and (min-width: 625px) {
+      .cell {
+        min-width: 25px;
+      }
+    }
+
+  & .row--warning,
+  & .cell--warning {
+    background: rgb(255, 235, 205);
+  }
+}
+
+.table__new-icon {
+    fill: var(--error);
+}
+
+.table__label {
+    display: inline-block;
+}
+
+.table__sort-link {
+    display: flex;
+}
+
+.table__sort-icon {
+    width: 20px;
+    display: inline-block;
+    margin-right: 8px;
+}
+.table__sort-icon--selected {
+    fill: #0c509f;
+}
+
+.show-1000,
+.show-925,
+.show-850,
+.show-750,
+.show-625,
+.show-550,
+.show-450 {
+  display: none;
+}
+
+.hide-1000,
+.hide-925,
+.hide-850,
+.hide-750,
+.hide-625,
+.hide-550,
+.hide-450 {
+  display: revert;
+}
+
+@media only screen and (min-width: 450px) {
+  .show-450 { display: revert; }
+  .hide-450 { display: none; }
+}
+
+@media only screen and (min-width: 550px) {
+  .show-550 { display: revert; }
+  span.show-550 { display: revert; }
+  .hide-550 { display: none; }
+}
+
+@media only screen and (min-width: 625px) {
+  .show-625 { display: revert; }
+  .hide-625 { display: none; }
+}
+
+@media only screen and (min-width: 750px) {
+  .show-750 { display: revert; }
+  .hide-750 { display: none; }
+}
+
+@media only screen and (min-width: 850px) {
+  .show-850 { display: revert; }
+  .hide-850 { display: none; }
+}
+
+@media only screen and (min-width: 925px) {
+  .show-925 { display: revert; }
+  .hide-925 { display: none; }
+}
+
+@media only screen and (min-width: 1000px) {
+  .show-1000 { display: revert; }
+  .hide-1000 { display: none; }
+}
+
+@keyframes phAnimation {
+  0% {
+    transform: translate3d(-30%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(30%, 0, 0);
+  }
+}

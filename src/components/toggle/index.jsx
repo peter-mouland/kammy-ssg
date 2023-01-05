@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import './toggle.scss';
+import './toggle.css';
 
 const bem = bemHelper({ block: 'toggle' });
 

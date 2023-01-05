@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Football from './football.svg';
-import './interstitial.scss';
+import './interstitial.css';
 
 const Interstitial = ({ message }) => (
     <span className="interstitial">

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 
 import Cup from './trophy.svg';
-import './GameWeekDate.scss';
+import './GameWeekDate.css';
 
 const getDates = ({ start, end }) => {
     try {

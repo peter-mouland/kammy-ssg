@@ -12,7 +12,7 @@ import Accordion from '../../accordion';
 import Player from '../../player';
 import TransferWarnings from '../transfer-warnings';
 import Search from './search';
-import './transferPage.scss';
+import './transferPage.css';
 
 const { changeTypes } = consts;
 const bem = bemHelper({ block: 'transfers-page' });

@@ -4,7 +4,7 @@ import bemHelper from '@kammy/bem';
 
 import ContextualHelp from '../contextual-help';
 import Interstitial from '../interstitial';
-import './multi-toggle.scss';
+import './multi-toggle.css';
 
 const bem = bemHelper({ block: 'multi-toggle' });
 

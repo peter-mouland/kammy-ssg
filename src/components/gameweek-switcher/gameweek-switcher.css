@@ -1,0 +1,33 @@
+.game-week-switcher {
+    display: flex;
+    position: relative;
+    z-index: 3;
+    color: grey;
+
+}
+.game-week-switcher__option-label {
+    margin: 2px 4px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    padding: 2px 4px;
+    color: grey;
+}
+.game-week-switcher__option-label:hover {
+    border-color: #4b620a;
+}
+
+.game-week-switcher__option-label--isCurrent {
+            color: #4b620a;
+            border:1px solid #4b620a;
+            border-radius: 5px;
+            padding: 2px 4px;
+}
+
+.game-week-switcher__option-label--isSelected {
+            border:1px solid transparent;
+            background: #4b620a;
+            color: white;
+            border-radius: 5px;
+            padding: 2px 4px;
+}
+

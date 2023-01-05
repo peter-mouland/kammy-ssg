@@ -1,65 +1,60 @@
-@import '~@kammy/bootstrap/src/abstracts/variables';
-
-.club-fixtures {
-  &__event,
-  &__home-or-away {
+.club-fixtures__event,
+.club-fixtures__home-or-away {
     display: inline-block;
     min-width: 28px;
   }
 
-  &__fixtures {
-      &--theme-0 {
-          background: #fff;
-      }
-      &--theme-1 {
-          background: #eee;
-      }
+.club-fixtures__fixtures--theme-0 {
+      background: #fff;
   }
-  &__fixture {
+.club-fixtures__fixtures--theme-1 {
+      background: #eee;
+  }
+.club-fixtures__fixture {
     display: inline-block;
     width: 100%;
     min-width: 300px;
-
-    &--desktop {
+}
+.club-fixtures__fixture--desktop {
       min-width: 500px;
       display: none;
     }
 
-    @media only screen and (min-width: 550px) {
-      &--desktop {
+@media only screen and (min-width: 550px) {
+    .club-fixtures__fixture--desktop {
         display: inline-block;
       }
 
-      &--mobile {
+    .club-fixtures__fixture--mobile {
         display: none;
       }
-    }
-  }
+}
 
-  &__team {
+.club-fixtures__team {
     display: inline-block;
     width: 40%;
     margin: 2px 8px;
-
+}
     @media only screen and (min-width: 550px) {
-      width: 45%;
+        .club-fixtures__team {
+            width: 45%;
+        }
     }
 
-    &--home {
+.club-fixtures__team--home {
       text-align: right;
     }
 
-    &--away {
+.club-fixtures__team--away {
       text-align: left;
-    }
   }
 
-  &__stats-header {
+.club-fixtures__stats-header {
     padding: 0 5px;
     min-width: 50px;
   }
 
-  &__stats {
+.club-fixtures__stats {
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -67,22 +62,19 @@
     cursor: help;
   }
 
-  &__stat {
-    &--total {
+.club-fixtures__stat--total {
       flex: 1 1 50%;
       font-weight: bold;
       font-size: 1.5em;
     }
 
-    &--group {
+.club-fixtures__stat--group {
       flex: 1 1 50%;
       display: flex;
       flex-flow: column;
-      color: $text--light;
-    }
+      color: var(--text--light);
   }
 
-  &__live {
-    color: $warning;
-  }
+.club-fixtures__stat__live {
+    color: var(--warning);
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import './game-week-fixtures.scss';
+import './game-week-fixtures.css';
 import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'club-fixtures' });

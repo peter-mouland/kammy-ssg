@@ -1,0 +1,21 @@
+.popover {
+    color: var(--brand--dark);
+    background: var(--color-grey-light);
+    border: 2px solid currentcolor;
+    padding: 0 8px;
+    border-radius: 5px;
+    z-index: 100;
+}
+.shadow {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .1);
+  }
+
+.header {
+    margin: 0 0 4px;
+    padding: 0;
+    line-height: 1;
+  }
+
+.body {
+    line-height: 1.35em;
+}

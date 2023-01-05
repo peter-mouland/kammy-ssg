@@ -1,0 +1,114 @@
+.datalist {
+    /* the container must be positioned relative: */
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+
+}
+.datalist__input {
+    border: 1px solid #163;
+    background-color: #e2e2e2;
+    width: 100%;
+    border-radius: .4em;
+    padding: 4px 8px;
+    color: #163;
+    font-size: .8em;
+    height: 2.35em;
+  }
+
+.datalist--on {
+    min-height: 385px;
+    background-color: rgba(0, 0, 0, .1);
+  }
+
+.datalist--on .datalist__input {
+    border-radius: .4em .4em 0 0;
+}
+
+.datalist-items {
+    position: absolute;
+    border: 1px solid #163;
+    border-bottom-width: 0;
+    border-top-width: 0;
+    z-index: 99;
+
+    /* position the autocomplete items to be the same width as the container: */
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    //max-height: 355px;
+    /* un-restrict height */
+    max-height: calc(100vh - 13em - env(safe-area-inset-bottom));
+
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: rgba(0, 0, 0, .35) 5px 5px 13px;
+}
+.datalist-items--on {
+    border-bottom-width: 1px;
+    box-shadow: none;
+    position: relative;
+}
+
+.datalist-button {
+    position: relative;
+    width: 100%;
+}
+
+.datalist-button--active {
+    background-color: #163;
+    color: #fff;
+}
+.datalist-button--active:hover {
+  background-color: #052;
+}
+
+.datalist-item {
+    padding: 10px;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+    display: flex;
+
+}
+.datalist-item:hover {
+    background-color: #e9e9e9;
+  }
+
+.datalist-item__img {
+    width: 40px;
+    display: inline-block;
+  }
+
+.datalist-item__label {
+        align-self: center;
+        flex: 1;
+    }
+
+.datalist-item__club {
+        margin-top: 2px;
+        font-weight: normal;
+        font-size: 0.9em;
+        color: #888;
+    }
+
+.datalist-item__additional {
+      align-self: center;
+      //text-align: center;
+      color: #888;
+      width: 30px;
+      font-size: 0.9em;
+  }
+
+.datalist-item--active {
+    background-color: #163;
+    color: #fff;
+}
+    .datalist-item--active:hover {
+      background-color: #052;
+    }
+
+.datalist-item--active .datalist-item__additional {
+    color: #eee;
+}

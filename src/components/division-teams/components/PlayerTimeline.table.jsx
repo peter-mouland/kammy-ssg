@@ -4,7 +4,7 @@ import bemHelper from '@kammy/bem';
 
 import { StatsHeaders, StatsCells, TeamName } from './tableHelpers';
 import Player from '../../player';
-import './positionTimeline.scss';
+import './positionTimeline.css';
 
 const bem = bemHelper({ block: 'position-timeline' });
 

@@ -4,7 +4,7 @@ import { Link } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import FormattedGameWeekDate from '../gameweek-date';
-import './gameweek-switcher.scss';
+import './gameweek-switcher.css';
 import ContextualHelp from '../contextual-help';
 import Spacer from '../spacer';
 import useGameWeeks from '../../hooks/use-game-weeks';

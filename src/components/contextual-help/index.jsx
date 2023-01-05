@@ -1,14 +1,10 @@
 /* eslint-disable id-length */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import BemHelper from '@kammy/bem';
 
 import Caret from './components/Caret';
 import Popover from './components/Popover';
-
-import './contextual-help.scss';
-
-const bem = BemHelper({ block: 'contextual-help' });
+import * as styles from './contextual-help.module.css';
 
 class ContextualHelp extends PureComponent {
     state = {
@@ -81,7 +77,7 @@ class ContextualHelp extends PureComponent {
 
         return (
             <div
-                className={bem(null, { active: isOpen })}
+                className={`${styles.contextualHelp} ${isOpen ? styles.active : ''}`}
                 ref={(node) => {
                     this.containerRef = node;
                 }}
@@ -90,7 +86,7 @@ class ContextualHelp extends PureComponent {
             >
                 {Trigger}
                 <div
-                    className={bem('box', { active: isOpen })}
+                    className={`${styles.box} ${isOpen ? styles.active : ''}`}
                     style={boxStyle}
                     ref={(node) => {
                         this.boxRef = node;

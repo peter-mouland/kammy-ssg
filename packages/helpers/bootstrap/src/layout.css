@@ -1,0 +1,324 @@
+[data-b-layout^='container'] {
+    width: calc(100% - 30px);
+    max-width: 1200px;
+    min-width: 320px;
+    margin: 0 auto; }
+
+[data-b-layout~='v-space'] {
+    margin-top: 1em; }
+
+[data-b-layout~='row'] {
+    flex-wrap: wrap;
+    display: flex;
+    flex-basis: 100%;
+    max-width: 100%; }
+
+[data-b-layout~='negative'] {
+    max-width: calc(100% + 30px);
+    margin-left: -15px;
+    margin-right: -15px; }
+
+[data-b-layout~='middle'] {
+    align-items: center; }
+
+[data-b-layout~='start'] {
+    align-items: flex-start; }
+
+[data-b-layout~='end'] {
+    align-items: flex-end; }
+
+[data-b-layout~='reverse'] {
+    flex-direction: row-reverse; }
+
+[data-b-layout~='around'] {
+    justify-content: space-around; }
+
+[data-b-layout~='between'] {
+    justify-content: space-between; }
+
+[data-b-layout~='stretch'] {
+    align-items: stretch;
+    flex-flow: row wrap; }
+
+[data-b-layout~='stretch'] > [data-b-layout~='col'] {
+    display: flex; }
+
+[data-b-layout^='col'] {
+    flex: 1 1;
+    width: 100%; }
+
+[data-b-layout~='flex'] {
+    display: flex; }
+
+@media only screen and (max-width: 575px) {
+    [data-b-layout~='hide@xs-only'] {
+        display: none !important; } }
+
+@media only screen and (min-width: 576px) and (max-width: 767px) {
+    [data-b-layout~='hide@sm-only'] {
+        display: none !important; } }
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    [data-b-layout~='hide@md-only'] {
+        display: none !important; } }
+
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+    [data-b-layout~='hide@lg-only'] {
+        display: none !important; } }
+
+[data-b-layout~='nowrap'] {
+    flex-wrap: nowrap; }
+
+[data-b-layout~='1/4'] {
+    flex-basis: 25%;
+    max-width: 25%; }
+
+[data-b-layout~='3/4'] {
+    flex-basis: 75%;
+    max-width: 75%; }
+
+[data-b-layout~='1/3'] {
+    flex-basis: 33.33333%;
+    max-width: 33.33333%; }
+
+[data-b-layout~='2/3'] {
+    flex-basis: 66.66667%;
+    max-width: 66.66667%; }
+
+[data-b-layout~='7/12'] {
+    flex-basis: 58.33333%;
+    max-width: 58.33333%; }
+
+[data-b-layout~='1/2'] {
+    flex-basis: 50%;
+    max-width: 50%; }
+
+[data-b-layout~='offset-1/4'] {
+    margin-left: 25%; }
+
+[data-b-layout~='offset-1/3'] {
+    margin-left: 33.33333%; }
+
+[data-b-layout~='offset-1/2'] {
+    margin-left: 50%; }
+
+[data-b-layout~='hide'] {
+    display: none !important; }
+
+[data-b-layout~='first'] {
+    order: -1; }
+
+[data-b-layout~='last'] {
+    order: 1; }
+
+[data-b-layout~='full'] {
+    flex-basis: 100%;
+    max-width: 100%; }
+
+[data-b-layout~='fill'] {
+    flex: 1 1;
+    flex-basis: 0%;
+    max-width: none; }
+
+[data-b-layout~='fit'] {
+    flex-basis: auto; }
+
+[data-b-layout~='center'] {
+    justify-content: center; }
+
+[data-b-layout~='text-left'] {
+    text-align: left; }
+
+[data-b-layout~='text-right'] {
+    text-align: right; }
+
+[data-b-layout~='text-center'] {
+    text-align: center; }
+
+[data-b-layout~='pad'] {
+    padding-left: 15px;
+    padding-right: 15px; }
+
+[data-b-layout~='vpad'] {
+    padding-bottom: 15px; }
+
+[data-b-layout~='margin'] {
+    margin-left: 15px;
+    margin-right: 15px; }
+
+@media only screen and (min-width: 576px) {
+    [data-b-layout~='nowrap@sm'] {
+        flex-wrap: nowrap; }
+    [data-b-layout~='1/4@sm'] {
+        flex-basis: 25%;
+        max-width: 25%; }
+    [data-b-layout~='3/4@sm'] {
+        flex-basis: 75%;
+        max-width: 75%; }
+    [data-b-layout~='1/3@sm'] {
+        flex-basis: 33.33333%;
+        max-width: 33.33333%; }
+    [data-b-layout~='2/3@sm'] {
+        flex-basis: 66.66667%;
+        max-width: 66.66667%; }
+    [data-b-layout~='7/12@sm'] {
+        flex-basis: 58.33333%;
+        max-width: 58.33333%; }
+    [data-b-layout~='1/2@sm'] {
+        flex-basis: 50%;
+        max-width: 50%; }
+    [data-b-layout~='offset-1/4@sm'] {
+        margin-left: 25%; }
+    [data-b-layout~='offset-1/3@sm'] {
+        margin-left: 33.33333%; }
+    [data-b-layout~='offset-1/2@sm'] {
+        margin-left: 50%; }
+    [data-b-layout~='hide@sm'] {
+        display: none !important; }
+    [data-b-layout~='first@sm'] {
+        order: -1; }
+    [data-b-layout~='last@sm'] {
+        order: 1; }
+    [data-b-layout~='full@sm'] {
+        flex-basis: 100%;
+        max-width: 100%; }
+    [data-b-layout~='fill@sm'] {
+        flex: 1 1;
+        flex-basis: 0%;
+        max-width: none; }
+    [data-b-layout~='fit@sm'] {
+        flex-basis: auto; }
+    [data-b-layout~='center@sm'] {
+        justify-content: center; }
+    [data-b-layout~='text-left@sm'] {
+        text-align: left; }
+    [data-b-layout~='text-right@sm'] {
+        text-align: right; }
+    [data-b-layout~='text-center@sm'] {
+        text-align: center; }
+    [data-b-layout~='pad@sm'] {
+        padding-left: 15px;
+        padding-right: 15px; }
+    [data-b-layout~='vpad@sm'] {
+        padding-bottom: 15px; }
+    [data-b-layout~='margin@sm'] {
+        margin-left: 15px;
+        margin-right: 15px; } }
+
+@media only screen and (min-width: 768px) {
+    [data-b-layout~='nowrap@md'] {
+        flex-wrap: nowrap; }
+    [data-b-layout~='1/4@md'] {
+        flex-basis: 25%;
+        max-width: 25%; }
+    [data-b-layout~='3/4@md'] {
+        flex-basis: 75%;
+        max-width: 75%; }
+    [data-b-layout~='1/3@md'] {
+        flex-basis: 33.33333%;
+        max-width: 33.33333%; }
+    [data-b-layout~='2/3@md'] {
+        flex-basis: 66.66667%;
+        max-width: 66.66667%; }
+    [data-b-layout~='7/12@md'] {
+        flex-basis: 58.33333%;
+        max-width: 58.33333%; }
+    [data-b-layout~='1/2@md'] {
+        flex-basis: 50%;
+        max-width: 50%; }
+    [data-b-layout~='offset-1/4@md'] {
+        margin-left: 25%; }
+    [data-b-layout~='offset-1/3@md'] {
+        margin-left: 33.33333%; }
+    [data-b-layout~='offset-1/2@md'] {
+        margin-left: 50%; }
+    [data-b-layout~='hide@md'] {
+        display: none !important; }
+    [data-b-layout~='first@md'] {
+        order: -1; }
+    [data-b-layout~='last@md'] {
+        order: 1; }
+    [data-b-layout~='full@md'] {
+        flex-basis: 100%;
+        max-width: 100%; }
+    [data-b-layout~='fill@md'] {
+        flex: 1 1;
+        flex-basis: 0%;
+        max-width: none; }
+    [data-b-layout~='fit@md'] {
+        flex-basis: auto; }
+    [data-b-layout~='center@md'] {
+        justify-content: center; }
+    [data-b-layout~='text-left@md'] {
+        text-align: left; }
+    [data-b-layout~='text-right@md'] {
+        text-align: right; }
+    [data-b-layout~='text-center@md'] {
+        text-align: center; }
+    [data-b-layout~='pad@md'] {
+        padding-left: 15px;
+        padding-right: 15px; }
+    [data-b-layout~='vpad@md'] {
+        padding-bottom: 15px; }
+    [data-b-layout~='margin@md'] {
+        margin-left: 15px;
+        margin-right: 15px; } }
+
+@media only screen and (min-width: 992px) {
+    [data-b-layout~='nowrap@lg'] {
+        flex-wrap: nowrap; }
+    [data-b-layout~='1/4@lg'] {
+        flex-basis: 25%;
+        max-width: 25%; }
+    [data-b-layout~='3/4@lg'] {
+        flex-basis: 75%;
+        max-width: 75%; }
+    [data-b-layout~='1/3@lg'] {
+        flex-basis: 33.33333%;
+        max-width: 33.33333%; }
+    [data-b-layout~='2/3@lg'] {
+        flex-basis: 66.66667%;
+        max-width: 66.66667%; }
+    [data-b-layout~='7/12@lg'] {
+        flex-basis: 58.33333%;
+        max-width: 58.33333%; }
+    [data-b-layout~='1/2@lg'] {
+        flex-basis: 50%;
+        max-width: 50%; }
+    [data-b-layout~='offset-1/4@lg'] {
+        margin-left: 25%; }
+    [data-b-layout~='offset-1/3@lg'] {
+        margin-left: 33.33333%; }
+    [data-b-layout~='offset-1/2@lg'] {
+        margin-left: 50%; }
+    [data-b-layout~='hide@lg'] {
+        display: none !important; }
+    [data-b-layout~='first@lg'] {
+        order: -1; }
+    [data-b-layout~='last@lg'] {
+        order: 1; }
+    [data-b-layout~='full@lg'] {
+        flex-basis: 100%;
+        max-width: 100%; }
+    [data-b-layout~='fill@lg'] {
+        flex: 1 1;
+        flex-basis: 0%;
+        max-width: none; }
+    [data-b-layout~='fit@lg'] {
+        flex-basis: auto; }
+    [data-b-layout~='center@lg'] {
+        justify-content: center; }
+    [data-b-layout~='text-left@lg'] {
+        text-align: left; }
+    [data-b-layout~='text-right@lg'] {
+        text-align: right; }
+    [data-b-layout~='text-center@lg'] {
+        text-align: center; }
+    [data-b-layout~='pad@lg'] {
+        padding-left: 15px;
+        padding-right: 15px; }
+    [data-b-layout~='vpad@lg'] {
+        padding-bottom: 15px; }
+    [data-b-layout~='margin@lg'] {
+        margin-left: 15px;
+        margin-right: 15px; } }
