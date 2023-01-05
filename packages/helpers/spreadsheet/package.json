@@ -4,20 +4,9 @@
   "description": "Kammy Helper: fetch/save data for google spreadsheets",
   "main": "src/index.js",
   "src": "src/index.js",
-  "engines": {
-    "node": ">=8",
-    "npm": ">=5",
-    "yarn": ">=1"
-  },
-  "keywords": [
-    "kammy"
-  ],
   "author": "Peter Mouland",
   "license": "ISC",
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
-    "date-fns": "2.21.3"
+    "date-fns": "2.29.3"
   }
 }

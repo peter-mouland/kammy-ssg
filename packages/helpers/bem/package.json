@@ -4,21 +4,9 @@
   "description": "Kammy UI Helper: BEM",
   "main": "src/bem.js",
   "src": "src/bem.js",
-  "engines": {
-    "node": ">=8",
-    "npm": ">=5",
-    "yarn": ">=1"
-  },
-  "keywords": [
-    "react",
-    "ui-components"
-  ],
   "author": "Peter Mouland",
   "license": "ISC",
-  "publishConfig": {
-    "access": "public"
-  },
   "devDependencies": {
-    "chance": "^1.0.18"
+    "chance": "1.1.9"
   }
 }

@@ -4,17 +4,6 @@
   "description": "Kammy UI Helper: Sort-Columns",
   "main": "src/sort-columns.js",
   "src": "src/sort-columns.js",
-  "engines": {
-    "node": ">=8",
-    "npm": ">=5",
-    "yarn": ">=1"
-  },
-  "keywords": [
-    "kammy"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "author": "Peter Mouland",
   "license": "ISC"
 }
