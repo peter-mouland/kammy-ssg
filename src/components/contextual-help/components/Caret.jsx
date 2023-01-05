@@ -6,7 +6,6 @@ import * as styles from './caret.module.css';
 
 export default function Caret({ x, isUp }) {
     const caretClass = `${styles.caret} ${isUp ? styles.up : styles.down}`;
-    console.log(caretClass);
     return <div style={{ transform: `translate(${x || 0}px)` }} className={caretClass} />;
 }
 

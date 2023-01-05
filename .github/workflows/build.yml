@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.13.0]
+        node-version: [18.12.1]
 
     steps:
       - uses: actions/checkout@v1
@@ -34,7 +34,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          yarn install --frozen-lockfile
+          yarn install --immutable
         env:
           CI: true
 
