@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import useLiveScores from '../../hooks/use-live-scores';
+// import useLiveScores from '../../hooks/use-live-scores';
 import { StatsHeaders, StatsCells } from './components/tableHelpers';
 import validateNewPlayers from '../team-warnings/lib/validate-new-player';
 import validatePlayer from '../team-warnings/lib/validate-player';
@@ -15,21 +15,21 @@ import Player from '../player';
 const bem = bemHelper({ block: 'table' });
 
 const TeamsPage = ({ teams, previousTeams, isAdmin }) => {
-    const { liveStatsByCode, liveStats } = useLiveScores();
+    // const { liveStatsByCode, liveStats } = useLiveScores();
     const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
     const allClubWarnings = validateClub(teams);
     const allPosWarnings = validatePos(teams);
 
+    // {liveStats.length > 0 && (
+    //     <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.SMALL }}>
+    //         <span className="table">
+    //             <span className="cell cell--live">Any stats in orange are live and are not final.</span>
+    //         </span>
+    //     </Spacer>
+    // )}
     return (
         <section>
-            {liveStats.length > 0 && (
-                <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.SMALL }}>
-                    <span className="table">
-                        <span className="cell cell--live">Any stats in orange are live and are not final.</span>
-                    </span>
-                </Spacer>
-            )}
             {Object.keys(teams).map((managerName) => (
                 <Fragment key={managerName}>
                     <Spacer all={{ top: Spacer.spacings.LARGE, bottom: Spacer.spacings.SMALL }}>
@@ -66,7 +66,7 @@ const TeamsPage = ({ teams, previousTeams, isAdmin }) => {
                                             duplicatePlayers.indexOf(player.code) > -1)
                                             ? 'row row--warning'
                                             : 'row';
-                                    const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
+                                    // const livePoints = (liveStatsByCode && liveStatsByCode[player.code]) || {};
 
                                     return (
                                         <tr key={player.code} className={`${className} ${warningClassName}`}>
@@ -76,7 +76,7 @@ const TeamsPage = ({ teams, previousTeams, isAdmin }) => {
                                             <StatsCells
                                                 seasonToGameWeek={seasonToGameWeek}
                                                 gameWeekStats={gameWeekStats}
-                                                livePoints={livePoints}
+                                                // livePoints={livePoints}
                                             />
                                         </tr>
                                     );

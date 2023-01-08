@@ -4,7 +4,7 @@ import { graphql } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
-import useLiveScores from '../hooks/use-live-scores';
+// import useLiveScores from '../hooks/use-live-scores';
 import Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
 
@@ -14,7 +14,7 @@ const hiddenColumns = ['isHidden', 'isAvailable', 'new', 'value', 'code'];
 const visibleStats = ['points', 'apps', 'gls', 'asts', 'cs', 'con', 'pensv', 'bp', 'sb', 'ycard', 'rcard'];
 
 const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
-    const { liveStatsByCode } = useLiveScores();
+    // const { liveStatsByCode } = useLiveScores();
     const players = data.allPlayers.nodes;
     const disabledPlayers = data.teamPlayers.nodes.reduce(
         (prev, player) => ({
@@ -32,7 +32,7 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
                         {(playersFiltered) => (
                             <PlayersTable
                                 positions={positions}
-                                liveStatsByCode={liveStatsByCode}
+                                // liveStatsByCode={liveStatsByCode}
                                 players={playersFiltered}
                                 disabledPlayers={disabledPlayers}
                                 hiddenColumns={hiddenColumns}
