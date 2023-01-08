@@ -3,7 +3,7 @@ const { TeamByGameWeek } = require('./lib/TeamByGameWeek');
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
-module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId }) => {
+module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, createNodeId }) => {
     const logEnd = logger.timed('Build: Teams');
 
     // extract the data from the node
@@ -52,6 +52,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, createNodeId
             division,
             gameWeeks: seasonGameWeeks,
             playersByCode,
+            fplTeams,
         });
         const season = teamSeason.getSeason();
         return [...prev, ...season];

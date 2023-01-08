@@ -83,7 +83,7 @@ const getGameWeekFixtures = (player, gameWeeks) =>
     }).value || [];
 
 // const counter = 0;
-const playerStats = ({ player, gameWeeks }) => {
+const playerStats = ({ player, gameWeeks, fplTeams }) => {
     if (!player) {
         console.log('no player!');
         return {};
@@ -105,7 +105,19 @@ const playerStats = ({ player, gameWeeks }) => {
     // console.log('playerFixtures');
     // console.log(playerFixtures);
     // console.log(player);
-    const gameWeekFixtures = playerFixtures.map((fixture) => addPointsToFixtures(fixture, player));
+    const gameWeekFixtures = playerFixtures.map((fixture) => {
+        const { data: aTeam } = fplTeams.find(({ data: { id } }) => fixture.opponent_team === id) || {};
+        if (!aTeam) console.log(fixture);
+        return {
+            ...addPointsToFixtures(fixture, player),
+            aTid: aTeam?.id,
+            aTcode: aTeam?.code,
+            aTname: aTeam?.name,
+            aTshortName: aTeam?.short_name,
+            aScore: fixture.team_a_score,
+            hScore: fixture.team_h_score,
+        };
+    });
     // counter++;
     // if (counter > 2) process.exit(1);
     const stats = totalUpStats(gameWeekFixtures);

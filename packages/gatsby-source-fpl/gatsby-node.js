@@ -54,7 +54,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
     const fplEvents = buildFplEvents(fplData);
     const gameWeeks = buildGameWeeks({ googleGameWeekData, fplFixtures, fplTeams });
     const divisions = buildDivisions({ googleDivisionData });
-    const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers });
+    const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers, fplTeams });
 
     // second, all those with deps i.e. ___node
     const cup = buildCup({ googleCupData, createNodeId }); // relies on sky players
@@ -67,6 +67,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         transfers,
         gameWeeks,
         players,
+        fplTeams,
         createNodeId,
     }); // relies on players + managers
     const playerAdminList = buildPlayerAdminList({ fplPlayers, players });

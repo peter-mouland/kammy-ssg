@@ -49,34 +49,31 @@ export const query = graphql`
                 points
             }
             gameWeeks {
-                #fixtures {
-                #                                id
-                #                                aScore
-                #                                aTcode
-                #                                aTname
-                #                                week
-                #                                status
-                stats {
-                    apps
-                    gls
-                    asts
-                    cs
-                    con
-                    pensv
-                    ycard
-                    rcard
-                    sb
-                    bp
-                    points
+                fixtures {
+                    aScore
+                    aTcode
+                    aTname
+                    aTshortName
+                    # week
+                    # status
+                    team_h_score
+                    team_a_score
+                    # event
+                    date
+                    stats {
+                        apps
+                        gls
+                        asts
+                        cs
+                        con
+                        pensv
+                        ycard
+                        rcard
+                        sb
+                        bp
+                        points
+                    }
                 }
-                #                                pTcode
-                #                                hTname
-                #                                hTcode
-                #                                team_h_score
-                #                                team_a_score
-                #                                event
-                #                                date
-                #}
             }
         }
     }

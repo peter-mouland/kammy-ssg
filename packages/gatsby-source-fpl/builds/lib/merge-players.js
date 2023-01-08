@@ -23,17 +23,17 @@ const calculateSeasonStats = (gameWeeksWithFixtures, pos) =>
     );
 const notFound = new Set();
 
-const getGameWeeksWithFixtures = ({ player, gameWeeks }) =>
+const getGameWeeksWithFixtures = ({ player, gameWeeks, fplTeams }) =>
     gameWeeks.map((gw) => {
-        const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeeks: [gw] });
+        const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeeks: [gw], fplTeams });
         if (!gameWeekFixtures || !gameWeekFixtures.length) {
             notFound.add(gw);
         }
         return { fixtures: gameWeekFixtures, stats: gameWeekStats };
     });
 
-const getPlayerWithStats = ({ player, gameWeeks }) => {
-    const gameWeeksWithFixtures = getGameWeeksWithFixtures({ player, gameWeeks });
+const getPlayerWithStats = ({ player, gameWeeks, fplTeams }) => {
+    const gameWeeksWithFixtures = getGameWeeksWithFixtures({ player, gameWeeks, fplTeams });
     const season = calculateSeasonStats(gameWeeksWithFixtures, player.pos);
     return {
         ...player,
@@ -42,7 +42,7 @@ const getPlayerWithStats = ({ player, gameWeeks }) => {
     };
 };
 
-const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
+const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => {
     const gameWeekData = gameWeeks.map(({ data }) => data);
     const googlePlayersObj = googlePlayerData.reduce((prev, googlePlayer) => {
         const code = parseInt(googlePlayer.code, 10);
@@ -69,7 +69,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers }) => {
             availNews: fplPlayer.news || '',
             url: `/player/${gPlayer.code}`,
         };
-        const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData });
+        const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData, fplTeams });
         return {
             ...prev,
             [fplPlayer.code]: playerWithStats,
