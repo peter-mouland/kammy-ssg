@@ -13,11 +13,11 @@ import NamedLink from '../named-link';
 const bem = bemHelper({ block: 'home-page' });
 
 const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
-    const [{ showTransfers, selectedGameWeek }, setState] = React.useState({
-        showTransfers: false,
+    const [{ showFixtures, selectedGameWeek }, setState] = React.useState({
+        showFixtures: false,
     });
 
-    const showFixtures = (gameWeek) => setState({ showTransfers: true, selectedGameWeek: gameWeek });
+    const setShowFixtures = (gameWeek) => setState({ showFixtures: true, selectedGameWeek: gameWeek });
     const { currentGameWeek = {}, nextGameWeek = {}, prevGameWeek = {} } = gameWeekDates;
 
     if (!gameWeekDates) return null;
@@ -26,7 +26,7 @@ const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
             <div className="homepage-dates">
                 <div className="homepage__prev-date">
                     {prevGameWeek && (
-                        <a onClick={() => showFixtures(prevGameWeek)}>
+                        <a onClick={() => setShowFixtures(prevGameWeek)}>
                             <GameWeekDate
                                 gameWeek={prevGameWeek}
                                 calStart={`
@@ -39,12 +39,12 @@ const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
                     )}
                 </div>
                 <div className="homepage__gw-date">
-                    <a onClick={() => showFixtures(currentGameWeek)}>
+                    <a onClick={() => setShowFixtures(currentGameWeek)}>
                         <GameWeekDate gameWeek={currentGameWeek} />
                     </a>
                 </div>
                 <div className="homepage__next-date">
-                    <a onClick={() => showFixtures(nextGameWeek)}>
+                    <a onClick={() => setShowFixtures(nextGameWeek)}>
                         {nextGameWeek ? (
                             <GameWeekDate
                                 gameWeek={nextGameWeek}
@@ -65,9 +65,9 @@ const Homepage = ({ gameWeekDates, divisions, statsByDivision }) => {
             </div>
             <Drawer
                 id="GameWeekFixtures"
-                isOpen={showTransfers}
+                isOpen={showFixtures}
                 placement={Drawer.placements.RIGHT}
-                onClose={() => setState({ showTransfers: false })}
+                onClose={() => setState({ showFixtures: false })}
             >
                 <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.MEDIUM }}>
                     <Spacer all={{ bottom: Spacer.spacings.MEDIUM }}>

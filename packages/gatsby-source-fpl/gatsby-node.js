@@ -52,7 +52,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
     const fplTeams = buildFplTeams(fplData);
     const fplFPositions = buildFplPositions(fplData);
     const fplEvents = buildFplEvents(fplData);
-    const gameWeeks = buildGameWeeks({ googleGameWeekData, fplFixtures });
+    const gameWeeks = buildGameWeeks({ googleGameWeekData, fplFixtures, fplTeams });
     const divisions = buildDivisions({ googleDivisionData });
     const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers });
 

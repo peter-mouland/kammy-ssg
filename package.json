@@ -71,9 +71,9 @@
     "postcss-nested": "5.0.5",
     "postcss-preset-env": "6.7.0",
     "prop-types": "15.8.1",
-    "react": "17.0.2",
+    "react": "18.2.0",
     "react-cookie": "4.1.1",
-    "react-dom": "17.0.2",
+    "react-dom": "18.2.0",
     "react-helmet": "6.1.0",
     "react-query": "2.26.4",
     "react-select": "4.3.1",
@@ -89,7 +89,7 @@
     "jest": "26.6.3",
     "jest-enzyme": "7.1.2",
     "jest-junit": "15.0.0",
-    "lerna": "6.3.0",
+    "lerna": "6.4.0",
     "local-web-server": "5.2.1",
     "netlify-cli": "12.5.0"
   }

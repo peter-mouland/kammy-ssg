@@ -29,6 +29,7 @@ const GameWeekFixtures = ({ fixtures }) => {
         <div>
             {fixtures &&
                 fixtures.map((fixture) => {
+                    if (!fixture || !fixture.date) return;
                     const date = toDate(fixture.date);
                     const fullDate = `${date.getFullYear()} ${months[date.getMonth()]} ${date.getDate()}`;
                     const dateStr = fullDate === previousFullDate ? null : <h2 title={fixture.date}>{fullDate}</h2>;
@@ -57,11 +58,11 @@ const GameWeekFixtures = ({ fixtures }) => {
                             </span>
                             <span className={bem('fixture', 'mobile')}>
                                 <span className={bem('team', 'home')}>
-                                    {fixture.hTcode} <span className={hScoreClass}>{hScore}</span>
+                                    {fixture.hTshortName} <span className={hScoreClass}>{hScore}</span>
                                 </span>
                                 vs
                                 <span className={bem('team', 'away')}>
-                                    <span className={aScoreClass}>{aScore}</span> {fixture.aTcode}
+                                    <span className={aScoreClass}>{aScore}</span> {fixture.aTshortName}
                                 </span>
                             </span>
                         </div>

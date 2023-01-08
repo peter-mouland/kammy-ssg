@@ -7,7 +7,7 @@ module.exports = ({ fixtures }) =>
         resourceId: `fpl-fixtures-${data.id}`,
         data: {
             ...data,
-            date: getGmtDate(data.kickoff_time),
+            date: new Date(getGmtDate(data.kickoff_time)),
         },
         internal: {
             description: 'Fantasy Premier League Fixtures',

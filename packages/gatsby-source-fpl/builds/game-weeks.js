@@ -4,16 +4,36 @@
 const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
-const getFixtures = (fplFixtures, { start, end }) =>
+// eslint-disable-next-line no-unused-vars
+const getFixtures = (fplFixtures, fplTeams, { isCurrent, gameWeek, start, end }) =>
     fplFixtures
         .filter(({ data: item }) => {
-            const fixtureDate = item.kickoff_time;
+            const fixtureDate = item.date;
             const result = start <= fixtureDate && fixtureDate <= end;
             return result;
         })
-        .map(({ data }) => data);
+        .map(({ data }) => {
+            const { data: aTeam } = fplTeams.find(({ data: { id } }) => data.team_a === id) || {};
+            if (!aTeam) console.log(data);
+            const { data: hTeam } = fplTeams.find(({ data: { id } }) => data.team_h === id) || {};
+            if (!aTeam) console.log(data);
+            return {
+                ...data,
+                aTid: aTeam?.id,
+                aTcode: aTeam?.code,
+                aScore: data.team_a_score,
+                aTname: aTeam?.name,
+                aTshortName: aTeam?.short_name,
+                hTid: hTeam?.id,
+                hTcode: hTeam?.code,
+                hTname: hTeam?.name,
+                hTshortName: hTeam?.short_name,
+                hScore: data.team_h_score,
+                status: data.finished,
+            };
+        });
 
-module.exports = ({ googleGameWeekData, fplFixtures }) => {
+module.exports = ({ googleGameWeekData, fplFixtures, fplTeams }) => {
     const logEnd = logger.timed('Build: Game Weeks');
 
     const results = googleGameWeekData.map((gw) => {
@@ -27,7 +47,7 @@ module.exports = ({ googleGameWeekData, fplFixtures }) => {
             end: new Date(gw.end),
         };
         data.isCurrent = new Date() < data.end && new Date() > data.start;
-        data.fixtures = getFixtures(fplFixtures, data) || [];
+        data.fixtures = getFixtures(fplFixtures, fplTeams, data) || [];
         return {
             resourceId: `game-weeks-${gw.gameweek}`,
             data,
