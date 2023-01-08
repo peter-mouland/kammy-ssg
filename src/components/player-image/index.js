@@ -9,29 +9,43 @@ import InjuredIcon from '../icons/warning.svg';
 const holdingImage = 'https://fantasyfootball.skysports.com/assets/img/players/blank-player.png';
 
 export const getCircleClass = (player) => {
-    switch (player.availStatus) {
-        case 'Available':
+    switch (player.chance_of_playing_this_round) {
+        case 100:
             return 'high';
-        case 'Doubt 75%':
+        case 75:
             return 'high';
-        case 'Doubt 50%':
+        case 50:
             return 'medium';
-        case 'Doubt 25%':
+        case 25:
             return 'low';
-        case 'Suspended':
-            return 'low';
-        case 'Injured':
+        case 0:
+        case null:
             return 'low';
         default:
             return '';
     }
 };
 
-export const Availability = ({ player }) => <div>{player.availNews && <p>{player.availNews}</p>}</div>;
+export const Availability = ({ player }) => (
+    <div>
+        {player.availNews ? <p>{player.availNews}</p> : null}
+        {!player.isAvailable ? (
+            <p>
+                Chance of playing:
+                {player.chance_of_playing_this_round}%{' '}
+                <p>
+                    <span style={{ color: 'grey' }}>({player.chance_of_playing_next_round}% next round)</span>
+                </p>
+            </p>
+        ) : null}
+    </div>
+);
 Availability.propTypes = {
     player: PropTypes.shape({
         isAvailable: PropTypes.bool,
         availNews: PropTypes.string,
+        chance_of_playing_this_round: PropTypes.number,
+        chance_of_playing_next_round: PropTypes.number,
     }).isRequired,
 };
 
