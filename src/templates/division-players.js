@@ -63,6 +63,8 @@ export const query = graphql`
                 id
                 code
                 name: web_name
+                chance_of_playing_this_round
+                chance_of_playing_next_round
                 club
                 pos
                 new
