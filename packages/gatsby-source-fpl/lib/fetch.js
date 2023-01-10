@@ -5,27 +5,32 @@ const fs = require('fs');
 const logger = require('./log');
 const constants = require('./constants');
 
-const getFixturePath = (url, season = 'new') => {
-    const slimUrl = url
-        .replace(
-            /https:\/\/kammy-proxy.herokuapp.com\/skysports\/player\/(.*)/,
-            'https://fantasyfootball.skysports.com/cache/json_player_stats_$1.json',
-        )
-        .replace(
-            'https://kammy-proxy.herokuapp.com/skysports/players',
-            'https://fantasyfootball.skysports.com/cache/json_players.json',
-        )
-        .replace(/\//g, '-')
+const getFixturePath = (url, season = '2223') => {
+    let slimUrl = url
+        .replace('https://fantasy.premierleague.com/api/', '')
+        .replace('https://sheets.googleapis.com/v4/spreadsheets/', '')
         .replace(constants.spreadsheets.ACCESS_KEY, '')
-        .replace(constants.spreadsheets.SETUP_ID, 'SETUP')
-        .replace(constants.spreadsheets.TRANSFERS_ID, 'TRANSFERS')
+        .replace(constants.spreadsheets.SETUP_ID, 'setup')
+        .replace(constants.spreadsheets.TRANSFERS_ID, 'transfers')
         .replace('?key=', '.json');
-    return path.join(__dirname, '.', 'fixtures', String(season), slimUrl);
+    if (slimUrl.endsWith('/')) {
+        slimUrl = slimUrl.replace(/\/$/, '.json');
+    }
+    const subdir = url.includes('google') ? 'spreadsheets' : 'fpl';
+    return path.join(__dirname, '..', 'fixtures', String(season), subdir, slimUrl);
 };
 
 const { FIXTURES, SAVE } = process.env;
 
-const fetch = (URL, { season } = {}) => {
+function ensureDirectoryExistence(filePath) {
+    const dirname = path.dirname(filePath);
+    if (!fs.existsSync(dirname)) {
+        ensureDirectoryExistence(dirname);
+        fs.mkdirSync(dirname);
+    }
+}
+
+const fetch = async (URL, { season } = {}) => {
     const fixturesPath = getFixturePath(URL, FIXTURES || season);
     if (FIXTURES || season) {
         try {
@@ -49,6 +54,8 @@ const fetch = (URL, { season } = {}) => {
                 try {
                     const json = JSON.parse(data);
                     if (SAVE) {
+                        logger.info('Saving: ', fixturesPath);
+                        ensureDirectoryExistence(fixturesPath);
                         fs.writeFileSync(fixturesPath, data, 'utf-8');
                     }
                     resolve(json);

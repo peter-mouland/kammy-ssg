@@ -40,6 +40,24 @@ You must have the correct environment variables; for Gatsby these are
  - create '[Filter Views](https://developers.google.com/sheets/api/guides/filters)' of the transfer pages for 'Pending Transfers'
 
 ## Todo:
+ - create data sources
+   - create new v2 graph-tables w/ minimal mutations + manipulations
+   - create new v2 pages to replace current
+   - use static queries using new data sources using tanstack-query + selectors
+ - merge events + gameWeeks
+   - { ...events, isCup }
+   - use date as end date
+   - is start_date needed with is_current and finished?
+   - remove jsonQuery code + dep
+ - create **use-events** `{ id, event_name, end, is_current etc}` (instead of game-weeks)
+ - create **use-players** `(playerId?, teamId?) { id, web_name, team_code }`
+ - create **use-teams**  `(teamId?) { id, name, short_name }`
+ - create **use-fixtures** `(eventId?, playerId?, teamId?) { id, event_id }`
+ - create **use-stats** `(eventId?, playerId?) { id, event_id }`
+ - Use fplTeams as source instead of manual loops + mutations
+   - create graphql function to return { id, name, short_name, fixtures?, players? }
+
+## Legacy Todo:
  - remove stats from players who wont score points
      - remove this : 'calculateTotalPoints({ stats: { [stat]: 9 }, pos })'
      - removing the stat from the source data should be faster
