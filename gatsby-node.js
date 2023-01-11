@@ -140,7 +140,7 @@ exports.createPages = async ({ actions, graphql }) => {
         const nextGameWeek = gameWeek + 1;
         pageNodesToBuild.push({
             path: `/week-${gameWeek}`,
-            component: path.resolve('src/templates/homepage.js'),
+            component: path.resolve('src/templates/homepage.jsx'),
             context: {
                 gameWeek,
                 prevGameWeek,
@@ -153,7 +153,7 @@ exports.createPages = async ({ actions, graphql }) => {
             //   DIVISION RANKINGS (by game-week)
             pageNodesToBuild.push({
                 path: `/week-${gameWeek}/${url}`,
-                component: path.resolve('src/templates/division-rankings.js'),
+                component: path.resolve('src/templates/division-rankings.jsx'),
                 context: {
                     gameWeek,
                     divisionKey: key,
@@ -163,7 +163,7 @@ exports.createPages = async ({ actions, graphql }) => {
             //   DIVISION TEAMS (by game-week)
             pageNodesToBuild.push({
                 path: `/week-${gameWeek}/${url}/teams`,
-                component: path.resolve('src/templates/division-teams.js'),
+                component: path.resolve('src/templates/division-teams.jsx'),
                 context: {
                     gameWeek,
                     prevGameWeek,
@@ -174,7 +174,7 @@ exports.createPages = async ({ actions, graphql }) => {
             // DIVISION TRANSFERS
             pageNodesToBuild.push({
                 path: `/week-${gameWeek}/${url}/transfers`,
-                component: path.resolve('src/templates/division-transfers.js'),
+                component: path.resolve('src/templates/division-transfers.jsx'),
                 context: {
                     gameWeek,
                     prevGameWeek,
@@ -187,7 +187,7 @@ exports.createPages = async ({ actions, graphql }) => {
             // HOMEPAGE
             pageNodesToBuild.push({
                 path: '/',
-                component: path.resolve('src/templates/homepage.js'),
+                component: path.resolve('src/templates/homepage.jsx'),
                 context: {
                     gameWeek,
                     prevGameWeek,
@@ -197,7 +197,7 @@ exports.createPages = async ({ actions, graphql }) => {
             //   CUP
             pageNodesToBuild.push({
                 path: `/cup`,
-                component: path.resolve('src/templates/cup-index.js'),
+                component: path.resolve('src/templates/cup-index.jsx'),
                 context: {
                     gameWeek,
                     prevGameWeek,
@@ -208,7 +208,7 @@ exports.createPages = async ({ actions, graphql }) => {
             data?.allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
                 pageNodesToBuild.push({
                     path: url,
-                    component: path.resolve('src/templates/player.js'),
+                    component: path.resolve('src/templates/player.jsx'),
                     context: {
                         gameWeek,
                         playerName,
@@ -220,7 +220,7 @@ exports.createPages = async ({ actions, graphql }) => {
             data?.allManagers.nodes.forEach(({ divisionKey, manager: managerName, managerKey, url }) => {
                 pageNodesToBuild.push({
                     path: url,
-                    component: path.resolve('src/templates/manager.js'),
+                    component: path.resolve('src/templates/manager.jsx'),
                     context: {
                         gameWeek,
                         managerName,
@@ -235,7 +235,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 //   DIVISION RANKINGS
                 pageNodesToBuild.push({
                     path: `/${url}`,
-                    component: path.resolve('src/templates/division-rankings.js'),
+                    component: path.resolve('src/templates/division-rankings.jsx'),
                     context: {
                         gameWeek,
                         prevGameWeek,
@@ -246,7 +246,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 //   DIVISION TEAMS
                 pageNodesToBuild.push({
                     path: `/${url}/teams`,
-                    component: path.resolve('src/templates/division-teams.js'),
+                    component: path.resolve('src/templates/division-teams.jsx'),
                     context: {
                         gameWeek,
                         prevGameWeek,
@@ -257,7 +257,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 //   DIVISION PLAYERS
                 pageNodesToBuild.push({
                     path: `/${url}/players`,
-                    component: path.resolve('src/templates/division-players.js'),
+                    component: path.resolve('src/templates/division-players.jsx'),
                     context: {
                         gameWeek,
                         prevGameWeek,
@@ -268,7 +268,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 //   DIVISION TRANSFERS
                 pageNodesToBuild.push({
                     path: `/${url}/transfers`,
-                    component: path.resolve('src/templates/division-transfers.js'),
+                    component: path.resolve('src/templates/division-transfers.jsx'),
                     context: {
                         gameWeek,
                         prevGameWeek,

@@ -11,6 +11,13 @@ module.exports = [
             '**/*.func.js',
             '**/*.routes.js',
             '**/*.actions.js',
+            '**/*.spec.jsx',
+            '**/*.page.jsx',
+            '**/*.e2e.jsx',
+            'cypress/**/**.jsx',
+            '**/*.func.jsx',
+            '**/*.routes.jsx',
+            '**/*.actions.jsx',
         ],
         plugins: ['prettier', 'mocha'],
         globals: Object.assign(globals.browser, globals.mocha, {
@@ -31,7 +38,7 @@ module.exports = [
     },
     // Jest
     {
-        files: ['**/*.test.js'],
+        files: ['**/*.test.js', '**/*.test.jsx'],
         env: {
             jest: true,
         },

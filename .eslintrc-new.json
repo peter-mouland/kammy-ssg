@@ -1,0 +1,50 @@
+{
+  "extends": [
+    "canonical"
+  ],
+  "overrides": [
+    {
+      "extends": [
+        "canonical/typescript"
+      ],
+      "files": "*.ts"
+    },
+    {
+      "extends": [
+        "canonical/react",
+        "canonical/jsx-a11y",
+        "canonical/typescript"
+      ],
+      "files": ["*.jsx", "*.tsx"],
+      "rules": {
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+        "@typescript-eslint/indent": ["error", 4],
+        "object-curly-newline": ["error", { "consistent": true, "multiline": true }
+        ]
+      }
+    },
+    {
+      "extends": [
+        "canonical/json"
+      ],
+      "files": "*.json"
+    },
+    {
+      "extends": [
+        "canonical/yaml"
+      ],
+      "files": "*.yaml"
+    },
+    {
+      "extends": [
+        "canonical/graphql"
+      ],
+      "files": "*.graphql"
+    }
+  ],
+  "root": true,
+  "rules": {
+    "indent": ["error", 4]
+  }
+}

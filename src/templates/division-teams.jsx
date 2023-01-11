@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
 import { graphql } from 'gatsby';
+import React from 'react';
 
-import Layout from '../components/layout';
 import DivisionTeams from '../components/division-teams';
+import Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
 
 const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey } }) => {
@@ -13,15 +13,15 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
     } = data;
 
     const teamsByManager = currentTeams.reduce(
-        (prev, { nodes: team }) => ({
-            ...prev,
+        (previous, { nodes: team }) => ({
+            ...previous,
             [team[0].manager.name]: team,
         }),
         {},
     );
     const previousTeamsByManager = (previousTeams || []).reduce(
-        (prev, { nodes: team }) => ({
-            ...prev,
+        (previous, { nodes: team }) => ({
+            ...previous,
             [team[0].manager.name]: team,
         }),
         {},
@@ -30,12 +30,12 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
     return (
         <Layout title={`${divisionLabel} - Teams`}>
             <div data-b-layout="container">
-                <TabbedMenu selected="teams" division={divisionKey} />
+                <TabbedMenu division={divisionKey} selected="teams" />
                 <DivisionTeams
-                    divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}
-                    teams={teamsByManager}
+                    divisionUrl={divisionLabel.toLowerCase().replaceAll(' ', '-')}
                     previousTeams={previousTeamsByManager}
                     selectedGameWeek={selectedGameWeek}
+                    teams={teamsByManager}
                 />
             </div>
         </Layout>
