@@ -7,8 +7,25 @@ Uses [Gatsby](https://www.gatsbyjs.com/docs/) and [GatsbyCloud](https://www.gats
 ## Local Dev
 
  - `yarn start` : use latest sky/google data
- - `FIXTURE=1920 yarn start` : use local fixtures
- - or `yarn dev` (wip: using 'netlify functions')
+ - `FIXTURE=2223 yarn start` : use local fixtures
+
+### .env.developer file
+
+```shell
+IS_LOCAL=true
+SPREADSHEET_ACCESS_KEY=REDACTED
+
+#PROXY_HOST=https://kammy-proxy.herokuapp.com
+PROXY_HOST=http://localhost:3000
+URL=http://localhost:8888
+NODE_TLS_REJECT_UNAUTHORIZED=0;
+PATH_PREFIX=/
+ASSET_PREFIX=/
+
+SAVE=false # save remote fixtures locally [false || 2023]
+FIXTURES=false # where to save and read local fixture from. [false || 2023]
+
+```
 
 ## Deployment
 
@@ -23,7 +40,7 @@ You must have the correct environment variables; for netlify these are
 
 ### Gatsby
 
-> yarn ???
+> yarn start
 
 You must have the correct environment variables; for Gatsby these are
  - PATH_PREFIX=/kammy-ssg
@@ -34,6 +51,8 @@ You must have the correct environment variables; for Gatsby these are
 
  - Fetches data via the [rest v4 API](https://developers.google.com/sheets/api)
  - Saving data via [kammy-proxy project](http://github.com/peter-mouland/kammy-proxy)
+ - Data source is https://fantasy.premierleague.com/api/
+   - [more info on api](https://medium.com/@frenzelts/fantasy-premier-league-api-endpoints-a-detailed-guide-acbd5598eb19)
 
 ## Season Prep
  - ensure spreadhseets a 'published to web' to keep the REST response fresh

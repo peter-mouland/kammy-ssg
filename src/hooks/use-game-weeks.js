@@ -25,6 +25,8 @@ const useGameWeeks = () => {
                     startFromNow: start(fromNow: true)
                     endFromNow: end(fromNow: true)
                     fixtures {
+                        id
+                        event
                         aScore
                         aTcode
                         aTname

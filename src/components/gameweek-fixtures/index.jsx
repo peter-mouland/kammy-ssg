@@ -41,7 +41,7 @@ const GameWeekFixtures = ({ fixtures }) => {
                     if (dateStr) theme = 1 - theme;
                     const themeClass = `theme-${theme}`;
                     return (
-                        <div key={`${fixture.date}-${fixture.hTname}`} className={bem('fixtures', themeClass)}>
+                        <div key={fixture.id} className={bem('fixtures', themeClass)}>
                             {dateStr && (
                                 <Spacer all={{ vertical: Spacer.spacings.LARGE, bottom: Spacer.spacings.SMALL }}>
                                     {dateStr}
