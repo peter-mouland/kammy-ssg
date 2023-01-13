@@ -2,13 +2,10 @@
 const calculateSeasonStats = require('./calculate-season');
 
 describe('calculateSeason.calculateSeasonStats', () => {
-    it('for a single gameweek', () => {
+    it('for a single gameweek for gk', () => {
         const stats = {
             apps: 1,
-            subs: 1,
-            mom: 1,
             gls: 1,
-            tb: 1,
             sb: 1,
             asts: 1,
             cs: 1,
@@ -18,16 +15,13 @@ describe('calculateSeason.calculateSeasonStats', () => {
             rcard: 1,
         };
         const gameWeeks = [{ gameWeekStats: stats }];
-        expect(calculateSeasonStats(gameWeeks)).toEqual(stats);
+        expect(calculateSeasonStats(gameWeeks, 'GK')).toEqual(stats);
     });
 
-    it('for 2 gameweeks', () => {
+    it('for 2 gameweeks [GK]', () => {
         const stats = {
             apps: 1,
-            subs: 1,
-            mom: 1,
             gls: 1,
-            tb: 1,
             sb: 1,
             asts: 1,
             cs: 1,
@@ -37,12 +31,9 @@ describe('calculateSeason.calculateSeasonStats', () => {
             rcard: 1,
         };
         const gameWeeks = [{ gameWeekStats: stats }, { gameWeekStats: stats }];
-        expect(calculateSeasonStats(gameWeeks)).toEqual({
+        expect(calculateSeasonStats(gameWeeks, 'GK')).toEqual({
             apps: 2,
-            subs: 2,
-            mom: 2,
             gls: 2,
-            tb: 2,
             sb: 2,
             asts: 2,
             cs: 2,
@@ -56,10 +47,7 @@ describe('calculateSeason.calculateSeasonStats', () => {
     it('for multiple gameweeks', () => {
         const stats = {
             apps: 1,
-            subs: 1,
-            mom: 1,
             gls: 1,
-            tb: 1,
             sb: 1,
             asts: 1,
             cs: 1,
@@ -70,10 +58,7 @@ describe('calculateSeason.calculateSeasonStats', () => {
         };
         const stats2 = {
             apps: 2,
-            subs: 2,
-            mom: 2,
             gls: 2,
-            tb: 2,
             sb: 2,
             asts: 2,
             cs: 2,
@@ -84,10 +69,7 @@ describe('calculateSeason.calculateSeasonStats', () => {
         };
         const stats3 = {
             apps: 3,
-            subs: 3,
-            mom: 3,
             gls: 3,
-            tb: 3,
             sb: 3,
             asts: 3,
             cs: 3,
@@ -97,12 +79,9 @@ describe('calculateSeason.calculateSeasonStats', () => {
             rcard: 3,
         };
         const gameWeeks = [{ gameWeekStats: stats }, { gameWeekStats: stats2 }, { gameWeekStats: stats3 }];
-        expect(calculateSeasonStats(gameWeeks)).toEqual({
+        expect(calculateSeasonStats(gameWeeks, 'GK')).toEqual({
             apps: 6,
-            subs: 6,
-            mom: 6,
             gls: 6,
-            tb: 6,
             sb: 6,
             asts: 6,
             cs: 6,

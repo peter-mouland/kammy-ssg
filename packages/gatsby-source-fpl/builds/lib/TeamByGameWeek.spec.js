@@ -7,7 +7,7 @@ const gameWeeksFixture = require('./fixtures/gameweeks.json');
 let gameWeeks;
 let transfers;
 let draft;
-let players;
+let playersByCode;
 let teamSeason;
 let startOfSeason;
 let endOfSeason;
@@ -15,7 +15,7 @@ let endOfSeason;
 describe('TeamByGameWeek', () => {
     beforeEach(() => {
         draft = teamFixture;
-        players = {
+        playersByCode = {
             ...mockPlayer,
         };
         gameWeeks = gameWeeksFixture;
@@ -40,7 +40,7 @@ describe('TeamByGameWeek', () => {
             gameWeeks,
             draft,
             transfers,
-            players,
+            playersByCode,
         });
         expect(teamSeason).toHaveProperty('startOfSeason', startOfSeason);
         expect(teamSeason).toHaveProperty('endOfSeason', endOfSeason);
@@ -54,24 +54,23 @@ describe('TeamByGameWeek', () => {
         beforeEach(() => {
             teamSeason = new TeamByGameWeek({
                 gameWeeks,
-                players,
+                playersByCode,
                 transfers,
                 draft,
             });
         });
 
         it('returns a default unknown player is passed', () => {
-            expect(teamSeason.getPlayer({ name: '' })).toEqual(UNKNOWN_PLAYER(''));
+            expect(teamSeason.getPlayer({ code: '' })).toEqual(UNKNOWN_PLAYER(''));
         });
 
         it('returns a known player if matched', () => {
-            const player = {
+            expect(teamSeason.getPlayer({ code: '36' })).toEqual({
                 name: 'de Gea, David',
                 pos: 'GK',
                 code: 36,
                 club: 'Manchester United',
-            };
-            expect(teamSeason.getPlayer({ name: 'de Gea, David' })).toEqual(player);
+            });
         });
     });
 
@@ -85,7 +84,7 @@ describe('TeamByGameWeek', () => {
             };
             teamSeason = new TeamByGameWeek({
                 gameWeeks,
-                players: { 'de Gea, David': player },
+                playersByCode: { 36: player },
                 transfers,
                 draft,
             });
@@ -110,8 +109,8 @@ describe('TeamByGameWeek', () => {
             teamSeason = new TeamByGameWeek({
                 gameWeeks,
                 players: {
-                    'de Gea, David': player,
-                    'Hernandez, Javier': { name: 'Hernandez, Javier' },
+                    36: player,
+                    99: { name: 'Hernandez, Javier' },
                 },
                 transfers: [
                     {
@@ -150,10 +149,10 @@ describe('TeamByGameWeek', () => {
                 };
                 teamSeason = new TeamByGameWeek({
                     gameWeeks,
-                    players: {
-                        'de Gea, David': player,
-                        'another player': { name: 'another player' },
-                        'Hernandez, Javier': { name: 'Hernandez, Javier' },
+                    playersByCode: {
+                        36: player,
+                        99: { name: 'another player' },
+                        999: { name: 'Hernandez, Javier' },
                     },
                     transfers: [
                         {
@@ -188,7 +187,7 @@ describe('TeamByGameWeek', () => {
     describe('getSeason', () => {
         it('should return an array of gameWeeks', () => {
             teamSeason = new TeamByGameWeek({
-                players,
+                playersByCode,
                 gameWeeks,
                 transfers,
                 draft,
@@ -201,7 +200,7 @@ describe('TeamByGameWeek', () => {
 
         it('should return each gameWeek with an array of team players', () => {
             teamSeason = new TeamByGameWeek({
-                players,
+                playersByCode,
                 gameWeeks,
                 transfers,
                 draft,
@@ -211,7 +210,7 @@ describe('TeamByGameWeek', () => {
 
         it('should return players', () => {
             teamSeason = new TeamByGameWeek({
-                players,
+                playersByCode,
                 gameWeeks,
                 transfers,
                 draft,

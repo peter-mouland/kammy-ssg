@@ -1,19 +1,19 @@
 /* eslint-env jest */
 const { TeamSeason, UNKNOWN_PLAYER } = require('./team-season');
-const mockPlayer = require('../fixtures/player.json');
-const teamFixture = require('../fixtures/team.json');
-const gameWeeksFixture = require('../fixtures/gameweeks.json');
+const mockPlayer = require('./fixtures/player.json');
+const teamFixture = require('./fixtures/team.json');
+const gameWeeksFixture = require('./fixtures/gameweeks.json');
 
 const manager = 'Olly';
 let gameWeeks;
-let players;
+let playersByCode;
 let team;
 let teamSeason;
 
 describe('TeamSeason', () => {
     beforeEach(() => {
         team = teamFixture;
-        players = {
+        playersByCode = {
             ...mockPlayer,
         };
         gameWeeks = gameWeeksFixture.map((gw) => ({ ...gw, players: teamFixture }));
@@ -23,10 +23,10 @@ describe('TeamSeason', () => {
         teamSeason = new TeamSeason({
             manager,
             gameWeeks,
-            players,
+            playersByCode,
         });
         expect(teamSeason).toHaveProperty('gameWeeks', gameWeeks);
-        expect(teamSeason).toHaveProperty('players', players);
+        expect(teamSeason).toHaveProperty('players', playersByCode);
         expect(teamSeason).toHaveProperty('getSeason');
         expect(teamSeason).toHaveProperty('getPlayer');
     });
@@ -36,7 +36,7 @@ describe('TeamSeason', () => {
             teamSeason = new TeamSeason({
                 manager,
                 gameWeeks,
-                players: { 'de Gea, David': 'found' },
+                playersByCode: { 32: 'found' },
             });
         });
 
@@ -54,7 +54,7 @@ describe('TeamSeason', () => {
             teamSeason = new TeamSeason({
                 manager,
                 gameWeeks,
-                players,
+                playersByCode,
             });
             expect(teamSeason.getSeason()).toHaveLength(team.length);
         });
@@ -63,7 +63,7 @@ describe('TeamSeason', () => {
             teamSeason = new TeamSeason({
                 manager,
                 gameWeeks,
-                players,
+                playersByCode,
             });
             expect(teamSeason.getSeason()[0].gameWeeks).toHaveLength(gameWeeks.length);
         });
@@ -72,7 +72,7 @@ describe('TeamSeason', () => {
             teamSeason = new TeamSeason({
                 manager,
                 gameWeeks,
-                players,
+                playersByCode,
             });
             expect(teamSeason.getSeason()[0].seasonToGameWeek).toHaveLength(gameWeeks.length);
         });
@@ -81,7 +81,7 @@ describe('TeamSeason', () => {
             teamSeason = new TeamSeason({
                 manager,
                 gameWeeks,
-                players,
+                playersByCode,
             });
             expect(teamSeason.getSeason()[0]).toHaveProperty('seasonStats');
         });
@@ -90,7 +90,7 @@ describe('TeamSeason', () => {
             teamSeason = new TeamSeason({
                 manager,
                 gameWeeks,
-                players,
+                playersByCode,
             });
             expect(teamSeason.getSeason()[0]).toHaveProperty('stats');
             expect(teamSeason.getSeason()[0]).toHaveProperty('gameWeekStats');
