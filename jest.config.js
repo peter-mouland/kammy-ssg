@@ -1,10 +1,10 @@
 module.exports = {
-    testEnvironment: 'enzyme',
+    testEnvironment: 'jsdom',
     testEnvironmentOptions: {
-        enzymeAdapter: 'react16',
+        url: 'http://localhost/',
     },
-    setupFiles: ['<rootDir>/tests/jest/enzymeSetup.js', '<rootDir>/tests/jest/reactShim.js'],
-    setupFilesAfterEnv: ['jest-enzyme'],
+    setupFiles: ['<rootDir>/tests/jest/reactShim.js'],
+    setupFilesAfterEnv: ['<rootDir>/tests/jest/setup-tests.js'],
     coverageThreshold: {
         global: {
             statements: 15,
@@ -20,7 +20,7 @@ module.exports = {
     transform: {
         '^.+\\.jsx?$': '<rootDir>/jest-preprocess.js',
     },
-    testRegex: '.spec.jsx?$',
+    testRegex: '.(spec|test).jsx?$',
     testPathIgnorePatterns: ['/node_modules/', '/compiled/'],
     transformIgnorePatterns: ['/node_modules/'],
     moduleFileExtensions: ['js', 'jsx', 'json'],

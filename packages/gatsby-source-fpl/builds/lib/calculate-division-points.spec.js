@@ -4,45 +4,37 @@ const getTeamPoints = require('./calculate-division-points');
 const teams = {
   "Olly":[{
     teamPos: 'GK',
-    "gameWeekStats":{"points":0},
+    "gameWeekStats":{"points": 0},
     seasonToGameWeek: {"points":0},
-    seasonStats: {"points":1},
   },{
     teamPos: 'SUB',
     "gameWeekStats":{"points":0},
     seasonToGameWeek: {"points":0},
-    seasonStats: {"points":1},
   },{
     teamPos: 'FB',
     "gameWeekStats":{"points":0},
     seasonToGameWeek: {"points":0},
-    seasonStats: {"points":2},
   },{
     teamPos: 'FB',
     "gameWeekStats":{"points":0},
     seasonToGameWeek: {"points":0},
-    seasonStats: {"points":2},
   }],
   "Nick":[{
     teamPos: 'GK',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
-    seasonStats: {"points":1},
   },{
     teamPos: 'SUB',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
-    seasonStats: {"points":1},
   },{
     teamPos: 'FB',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
-    seasonStats: {"points":7},
   },{
     teamPos: 'FB',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
-    seasonStats: {"points":7},
   }],
 };
 
@@ -72,7 +64,17 @@ describe('getTeamPoints()', () => {
     });
 
     it('should return the aggregate POSITION (GK/SUB) points for the gameWeekPoints and seasonPoints', () => {
-      const divisionPoints = getTeamPoints(teams["Olly"]);
+      const divisionPoints = getTeamPoints(
+          [{
+              teamPos: 'GK',
+              "gameWeekStats":{"points": 1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'SUB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          }]
+      );
       expect(divisionPoints).toHaveProperty('gks', {
         gameWeekPoints: 2,
         seasonPoints: 2,
@@ -80,7 +82,15 @@ describe('getTeamPoints()', () => {
     });
 
     it('should return the aggregate POSITION (fb) points for the gameWeekPoints and seasonPoints', () => {
-      const divisionPoints = getTeamPoints(teams["Olly"]);
+      const divisionPoints = getTeamPoints([{
+          teamPos: 'FB',
+          "gameWeekStats":{"points":1},
+          seasonToGameWeek: {"points":1},
+      },{
+          teamPos: 'FB',
+          "gameWeekStats":{"points":1},
+          seasonToGameWeek: {"points":1},
+      }]);
       expect(divisionPoints).toHaveProperty('fb', {
         gameWeekPoints: 2,
         seasonPoints: 2,
@@ -104,11 +114,67 @@ describe('getTeamPoints()', () => {
     });
 
     it('should calculate the total points for all positions', () => {
-      const divisionPoints = getTeamPoints(teams["Olly"]);
+      const divisionPoints = getTeamPoints([{
+          teamPos: 'GK',
+          "gameWeekStats":{"points": 1},
+          seasonToGameWeek: {"points":1},
+      },{
+          teamPos: 'SUB',
+          "gameWeekStats":{"points":1},
+          seasonToGameWeek: {"points":1},
+      },{
+          teamPos: 'FB',
+          "gameWeekStats":{"points":1},
+          seasonToGameWeek: {"points":1},
+      },{
+          teamPos: 'FB',
+          "gameWeekStats":{"points":1},
+          seasonToGameWeek: {"points":1},
+      }]);
       expect(divisionPoints).toHaveProperty('total', {
         gameWeekPoints: 4,
         seasonPoints: 4,
       });
     });
+
+      it('should calculate the total points for all positions for multiple gameweeks', () => {
+          const divisionPoints = getTeamPoints([{
+              teamPos: 'GK',
+              "gameWeekStats":{"points": 1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'SUB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'FB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'FB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'GK',
+              "gameWeekStats":{"points": 1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'SUB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'FB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          },{
+              teamPos: 'FB',
+              "gameWeekStats":{"points":1},
+              seasonToGameWeek: {"points":1},
+          }]);
+          expect(divisionPoints).toHaveProperty('total', {
+              gameWeekPoints: 8,
+              seasonPoints: 8,
+          });
+      });
   });
 });

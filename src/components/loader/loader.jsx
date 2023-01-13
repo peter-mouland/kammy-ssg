@@ -8,13 +8,11 @@ import { sizes } from './constants';
 import * as styles from './loader.module.css';
 
 const Loader = ({ size, animationDuration }) => {
-    const inlineStyles = {
-        animationDuration,
-    };
+    const inlineStyles = { animationDuration };
 
     return (
         <div
-            data-qa="loader"
+            data-testid="loader"
             className={cx(styles.component, styles[`isSize${toTitleCase(size)}`])}
             style={inlineStyles}
         />

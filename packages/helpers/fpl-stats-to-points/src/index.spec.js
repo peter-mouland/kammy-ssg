@@ -1,8 +1,6 @@
 /* eslint-env jest */
 const {
-    forTackleBonus,
-    forStarting,
-    forSub,
+    forMinutes,
     forAssists,
     forYellowCards,
     forRedCards,
@@ -12,22 +10,23 @@ const {
     forConceded,
     calculateTotalPoints,
     forPenaltiesSaved,
-} = require('./calculate-points');
+} = require('.');
 
 let position;
 
 describe('calculatePoints', () => {
     describe('for any player', () => {
-        it('returns 3 points for each start', () => {
-            expect(forStarting(1)).toEqual(3);
-            expect(forStarting(0)).toEqual(0);
-            expect(forStarting(10)).toEqual(30);
-        });
-
-        it('returns 1 points for each sub', () => {
-            expect(forSub(1)).toEqual(1);
-            expect(forSub(0)).toEqual(0);
-            expect(forSub(10)).toEqual(10);
+        it('returns 3 points for each game over 45 mins', () => {
+            // one game
+            expect(forMinutes([{ minutes: 0 }])).toEqual(0);
+            expect(forMinutes([{ minutes: 1 }])).toEqual(1);
+            expect(forMinutes([{ minutes: 10 }])).toEqual(1);
+            expect(forMinutes([{ minutes: 45 }])).toEqual(3);
+            // two games are added together
+            expect(forMinutes([{ minutes: 0 }, { minutes: 0 }])).toEqual(0);
+            expect(forMinutes([{ minutes: 1 }, { minutes: 1 }])).toEqual(2);
+            expect(forMinutes([{ minutes: 10 }, { minutes: 10 }])).toEqual(2);
+            expect(forMinutes([{ minutes: 45 }, { minutes: 45 }])).toEqual(6);
         });
 
         it('returns 3 points for each assist', () => {
@@ -36,15 +35,15 @@ describe('calculatePoints', () => {
             expect(forAssists(10)).toEqual(30);
         });
 
-        it('returns -2 points for each yellow card', () => {
-            expect(forYellowCards(1)).toEqual(-2);
-            expect(forYellowCards(0)).toEqual(0);
-            expect(forYellowCards(10)).toEqual(-20);
+        it('returns -1 points for each yellow card', () => {
+            expect(forYellowCards(1)).toEqual(-1);
+            expect(forYellowCards(0)).toEqual(-0);
+            expect(forYellowCards(10)).toEqual(-10);
         });
 
         it('returns -5 points for each red card', () => {
             expect(forRedCards(1)).toEqual(-5);
-            expect(forRedCards(0)).toEqual(0);
+            expect(forRedCards(0)).toEqual(-0);
             expect(forRedCards(10)).toEqual(-50);
         });
     });
@@ -60,10 +59,10 @@ describe('calculatePoints', () => {
             expect(forGoals(10, position)).toEqual(100);
         });
 
-        it('returns 4 points for save bonus', () => {
-            expect(forSaveBonus(1, position)).toEqual(4);
+        it('returns 2 points for save bonus', () => {
+            expect(forSaveBonus(1, position)).toEqual(0);
             expect(forSaveBonus(0, position)).toEqual(0);
-            expect(forSaveBonus(10, position)).toEqual(40);
+            expect(forSaveBonus(10, position)).toEqual(2);
         });
 
         it('returns 5 points for each clean sheet', () => {
@@ -72,9 +71,9 @@ describe('calculatePoints', () => {
             expect(forCleanSheet(10, position)).toEqual(50);
         });
 
-        it('returns -1 points for each conceeded', () => {
+        it('returns -1 points for each conceded', () => {
             expect(forConceded(1, position)).toEqual(-1);
-            expect(forConceded(0, position)).toEqual(0);
+            expect(forConceded(0, position)).toEqual(-0);
             expect(forConceded(10, position)).toEqual(-10);
         });
 
@@ -100,7 +99,7 @@ describe('calculatePoints', () => {
                 rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
-            expect(points.total).toEqual(23);
+            expect(points.total).toEqual(16);
         });
     });
 
@@ -123,7 +122,7 @@ describe('calculatePoints', () => {
 
         it('returns -1 points for each clean sheet', () => {
             expect(forConceded(1, position)).toEqual(-1);
-            expect(forConceded(0, position)).toEqual(0);
+            expect(forConceded(0, position)).toEqual(-0);
             expect(forConceded(10, position)).toEqual(-10);
         });
 
@@ -143,7 +142,7 @@ describe('calculatePoints', () => {
                 rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
-            expect(points.total).toEqual(20);
+            expect(points.total).toEqual(14);
         });
     });
 
@@ -166,7 +165,7 @@ describe('calculatePoints', () => {
 
         it('returns -1 points for each clean sheet', () => {
             expect(forConceded(1, position)).toEqual(-1);
-            expect(forConceded(0, position)).toEqual(0);
+            expect(forConceded(0, position)).toEqual(-0);
             expect(forConceded(10, position)).toEqual(-10);
         });
 
@@ -186,7 +185,7 @@ describe('calculatePoints', () => {
                 rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
-            expect(points.total).toEqual(20);
+            expect(points.total).toEqual(14);
         });
     });
 
@@ -200,16 +199,10 @@ describe('calculatePoints', () => {
             expect(forGoals(10, position)).toEqual(60);
         });
 
-        it('returns 4 points for Tackle Bonus', () => {
-            expect(forTackleBonus(1, position)).toEqual(4);
-            expect(forTackleBonus(0, position)).toEqual(0);
-            expect(forTackleBonus(10, position)).toEqual(40);
-        });
-
-        it('returns 0 points for each clean sheet', () => {
-            expect(forCleanSheet(1, position)).toEqual(0);
+        it('returns 3 points for each clean sheet', () => {
+            expect(forCleanSheet(1, position)).toEqual(3);
             expect(forCleanSheet(0, position)).toEqual(0);
-            expect(forCleanSheet(10, position)).toEqual(0);
+            expect(forCleanSheet(10, position)).toEqual(30);
         });
 
         it('returns 0 points for each conceded', () => {
@@ -234,7 +227,7 @@ describe('calculatePoints', () => {
                 rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
-            expect(points.total).toEqual(15);
+            expect(points.total).toEqual(11);
         });
     });
 
@@ -277,7 +270,7 @@ describe('calculatePoints', () => {
                 rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
-            expect(points.total).toEqual(10);
+            expect(points.total).toEqual(7);
         });
     });
 
@@ -320,7 +313,7 @@ describe('calculatePoints', () => {
                 rcard: 1,
             };
             const points = calculateTotalPoints({ stats, pos: position });
-            expect(points.total).toEqual(9);
+            expect(points.total).toEqual(6);
         });
     });
 });
