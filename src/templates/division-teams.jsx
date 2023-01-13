@@ -46,9 +46,9 @@ export const query = graphql`
     query Teams($gameWeek: Int, $prevGameWeek: Int, $divisionKey: String) {
         currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { fields: managerName }
+            sort: { managerName: ASC }
         ) {
-            group(field: managerName) {
+            group(field: { managerName: SELECT }) {
                 nodes {
                     manager {
                         key: managerKey
@@ -101,9 +101,9 @@ export const query = graphql`
         }
         previousTeams: allTeams(
             filter: { gameWeek: { eq: $prevGameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { fields: managerName }
+            sort: { managerName: ASC }
         ) {
-            group(field: managerName) {
+            group(field: { managerName: SELECT }) {
                 nodes {
                     manager {
                         key: managerKey

@@ -63,14 +63,14 @@ const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) =>
 
 export const query = graphql`
     query Homepage($gameWeek: Int) {
-        allDivisions(sort: { fields: order }) {
+        allDivisions(sort: { order: ASC }) {
             nodes {
                 key
                 label
                 order
             }
         }
-        allLeagueTable(filter: { gameWeek: { eq: $gameWeek } }, sort: { fields: manager___division___order }) {
+        allLeagueTable(filter: { gameWeek: { eq: $gameWeek } }, sort: { manager: { division: { order: ASC } } }) {
             nodes {
                 gameWeek
                 points {
@@ -121,7 +121,7 @@ export const query = graphql`
                 }
             }
         }
-        allManagers(sort: { fields: division___order }) {
+        allManagers(sort: { division: { order: ASC } }) {
             nodes {
                 manager
                 managerKey

@@ -14,7 +14,7 @@ const useGameWeeks = () => {
         allGameWeeks: { nodes: gw },
     } = useStaticQuery(graphql`
         query GameWeeks {
-            allGameWeeks(sort: { fields: gameWeek, order: ASC }) {
+            allGameWeeks(sort: { gameWeek: ASC }) {
                 nodes {
                     gameWeek
                     isCurrent

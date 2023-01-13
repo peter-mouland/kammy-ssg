@@ -31,8 +31,8 @@ const CupTemplate = ({ data }) => {
 
 export const query = graphql`
     query CurrentTeams($gameWeek: Int) {
-        currentTeams: allTeams(filter: { gameWeek: { eq: $gameWeek } }, sort: { fields: managerName }) {
-            group(field: managerName) {
+        currentTeams: allTeams(filter: { gameWeek: { eq: $gameWeek } }, sort: { managerName: ASC }) {
+            group(field: { managerName: SELECT }) {
                 nodes {
                     managerName
                     teamPos

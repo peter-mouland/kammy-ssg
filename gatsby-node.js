@@ -95,14 +95,14 @@ exports.onCreateDevServer = () => {};
 
 exports.createPages = async ({ actions, graphql }) => {
     const { data } = await graphql(`
-        query {
+        {
             allGameWeeks {
                 nodes {
                     gameWeek
                     isCurrent
                 }
             }
-            allDivisions(sort: { fields: order }) {
+            allDivisions(sort: { order: ASC }) {
                 nodes {
                     key
                     label
@@ -116,7 +116,7 @@ exports.createPages = async ({ actions, graphql }) => {
                     url
                 }
             }
-            allManagers(sort: { fields: managerKey }) {
+            allManagers(sort: { managerKey: ASC }) {
                 nodes {
                     manager
                     managerKey

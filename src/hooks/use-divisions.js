@@ -5,7 +5,7 @@ const useDivisions = () => {
         allDivisions: { nodes: divisions },
     } = useStaticQuery(graphql`
         query Divisions {
-            allDivisions(sort: { fields: order }) {
+            allDivisions(sort: { order: ASC }) {
                 nodes {
                     key
                     label

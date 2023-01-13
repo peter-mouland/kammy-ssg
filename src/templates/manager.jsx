@@ -24,7 +24,7 @@ export const query = graphql`
     query CurrentTeam($gameWeek: Int, $divisionKey: String) {
         currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { fields: managerName }
+            sort: { managerName: ASC }
         ) {
             nodes {
                 playerCode

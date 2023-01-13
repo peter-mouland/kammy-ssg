@@ -34,7 +34,11 @@ export const query = graphql`
     query DivisionRankings($gameWeek: Int, $divisionKey: String) {
         allLeagueTable(
             filter: { gameWeek: { eq: $gameWeek }, divisionKey: { eq: $divisionKey } }
-            sort: { fields: [manager___division___order, points___total___rank, points___total___seasonPoints] }
+            sort: [
+                { manager: { division: { order: ASC } } }
+                { points: { total: { rank: ASC } } }
+                { points: { total: { seasonPoints: ASC } } }
+            ]
         ) {
             nodes {
                 gameWeek

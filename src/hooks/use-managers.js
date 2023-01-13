@@ -5,7 +5,7 @@ const useManagers = () => {
         allManagers: { nodes: managers },
     } = useStaticQuery(graphql`
         query managers {
-            allManagers(sort: { fields: division___order }) {
+            allManagers(sort: { division: { order: ASC } }) {
                 nodes {
                     manager
                     divisionKey

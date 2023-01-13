@@ -42,9 +42,9 @@ export const query = graphql`
     query DivisionTransfers($gameWeek: Int, $divisionKey: String) {
         currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { fields: managerName }
+            sort: { managerName: ASC }
         ) {
-            group(field: managerName) {
+            group(field: { managerName: SELECT }) {
                 nodes {
                     managerName
                     playerCode
