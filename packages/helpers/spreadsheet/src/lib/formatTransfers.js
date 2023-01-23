@@ -1,9 +1,14 @@
 const formatTransfers = (data = [], division) => {
     try {
-        return data.map(({ Comment = '', Status, Timestamp, Manager, ...item }) => ({
+        const completeRows = data.filter((item) => item.Status);
+        if (completeRows.length !== data.length) {
+            // eslint-disable-next-line no-console
+            console.log(`processing ${completeRows.length} rows out of ${data.length}`);
+        }
+        return completeRows.map(({ Comment = '', Status, Timestamp, Manager, ...item }, i) => ({
             division,
             comment: Comment.trim(),
-            status: Status.trim(),
+            status: Status.trim() || '',
             isValid: Status === 'Y',
             isPending: Status === 'TBC',
             isFailed: Status === 'E',
