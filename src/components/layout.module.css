@@ -5,6 +5,7 @@
     @media (--rnb-mq-phablet) {
         min-height: calc(100vh - 19em - env(safe-area-inset-bottom) - 60px);
     }
+
     @media (--rnb-mq-medium) {
         min-height: calc(100vh - 15em - env(safe-area-inset-bottom));
     }
@@ -52,9 +53,9 @@
     grid-area: misc-links;
 
     & li {
-          margin: 10px;
-          padding: 0 10px;
-      }
+        margin: 10px;
+        padding: 0 10px;
+    }
 
     @media (--rnb-mq-phablet) {
         flex-direction: row;
@@ -69,8 +70,8 @@
     grid-area: draft-links;
 
     & li {
-          margin-left: 0;
-          padding-left: 0;
+        margin-left: 0;
+        padding-left: 0;
 
         @media (--rnb-mq-phablet) {
             margin-left: 20px;
