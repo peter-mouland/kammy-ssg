@@ -13,6 +13,7 @@ import { CookiesProvider } from 'react-cookie';
 import NavBar from './nav-bar';
 import NamedLink from './named-link';
 import './index.css';
+import * as styles from './layout.module.css';
 
 const Layout = ({ title, description, children, footer }) => {
     const bem = bemHelper({ block: 'layout' });
@@ -25,14 +26,14 @@ const Layout = ({ title, description, children, footer }) => {
             </Helmet>
             <div className={bem(null, 'main')}>
                 <NavBar className={bem('nav')} />
-                <main className={bem('content')}>
+                <main className={styles.content}>
                     <section className={bem()}>{typeof children === 'function' ? children() : children}</section>
                 </main>
-                <footer className={bem('footer')}>
-                    <div className={bem('footer-content')}>
+                <footer className={styles.footer}>
+                    <div className={styles.footerContent}>
                         {footer}
-                        <h2 className={bem('footer-header')}>Relevant Links</h2>
-                        <ul className={bem('footer-links', 'misc')}>
+                        <h2 className={styles.footerHeader}>Relevant Links</h2>
+                        <ul className={styles.footerLinks}>
                             {/* <li>*/}
                             {/*    <a href="/game-weeks">Game Weeks</a>*/}
                             {/* </li>*/}
@@ -49,8 +50,8 @@ const Layout = ({ title, description, children, footer }) => {
                                 <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
                             </li>
                         </ul>
-                        <h2 className={bem('footer-header', 'draft')}>Drafts</h2>
-                        <ul className={bem('footer-links', 'draft')}>
+                        <h2 className={`${styles.footerHeader} ${styles.footerHeaderDraft}`}>Drafts</h2>
+                        <ul className={`${styles.footerLinks} ${styles.footerLinksDraft}`}>
                             <li>
                                 <NamedLink to="premierLeague-draft">Premier League</NamedLink>
                             </li>
@@ -60,6 +61,7 @@ const Layout = ({ title, description, children, footer }) => {
                             <li>
                                 <NamedLink to="leagueOne-draft">League One</NamedLink>
                             </li>
+                            <li />
                         </ul>
                     </div>
                 </footer>
