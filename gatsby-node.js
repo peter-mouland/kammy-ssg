@@ -132,6 +132,7 @@ exports.createPages = async ({ actions, graphql }) => {
     const pageNodesToBuild = [];
 
     data?.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
+        if (!isCurrent) return;
         if (gameWeek > maxGameweek) return;
         if (isCurrent) maxGameweek = gameWeek + 1;
 
