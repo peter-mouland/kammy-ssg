@@ -128,7 +128,7 @@ const playerStats = ({ player, gameWeeks, fplTeams }) => {
     };
 
     const fixtures = (player.fixtures || []).map((fixture) => addPointsToFixtures(fixture, player));
-    if (!fixtures || !fixtures.length) {
+    if (!fixtures) {
         logger.warn(`PLAYER FIXTURES NOT FOUND: ${player.web_name}`);
     }
     return {
