@@ -132,7 +132,7 @@ exports.createPages = async ({ actions, graphql }) => {
     const pageNodesToBuild = [];
 
     data?.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
-        if (!isCurrent) return;
+        // if (!isCurrent) return;
         if (gameWeek > maxGameweek) return;
         if (isCurrent) maxGameweek = gameWeek + 1;
 
@@ -206,17 +206,17 @@ exports.createPages = async ({ actions, graphql }) => {
                 },
             });
             //   PLAYER
-            // data?.allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
-            //     pageNodesToBuild.push({
-            //         path: url,
-            //         component: path.resolve('src/templates/player.jsx'),
-            //         context: {
-            //             gameWeek,
-            //             playerName,
-            //             code,
-            //         },
-            //     });
-            // });
+            data?.allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
+                pageNodesToBuild.push({
+                    path: url,
+                    component: path.resolve('src/templates/player.jsx'),
+                    context: {
+                        gameWeek,
+                        playerName,
+                        code,
+                    },
+                });
+            });
             //   MANAGER
             data?.allManagers.nodes.forEach(({ divisionKey, manager: managerName, managerKey, url }) => {
                 pageNodesToBuild.push({
