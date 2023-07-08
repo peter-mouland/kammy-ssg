@@ -26,3 +26,5 @@ aws
 
 # Local Netlify folder
 .netlify
+
+.yarn/cache
