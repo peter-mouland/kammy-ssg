@@ -3,7 +3,7 @@ const { calculate } = require('@kammy/helpers.fpl-stats-to-points');
 const calculateSeasonStats = (playerGameWeeks, pos) =>
     playerGameWeeks.reduce(
         (totals, gw) =>
-            Object.keys(gw.gameWeekStats).reduce((prev, stat) => {
+            Object.keys(gw.gameWeekStats || {}).reduce((prev, stat) => {
                 if (!calculate[stat] && stat !== 'points') {
                     // eslint-disable-next-line no-console
                     console.log(`unknown stat: ${stat}`);

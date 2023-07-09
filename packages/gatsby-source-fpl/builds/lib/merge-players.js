@@ -6,7 +6,7 @@ const logger = require('../../lib/log');
 const calculateSeasonStats = (gameWeeksWithFixtures, pos) =>
     gameWeeksWithFixtures.reduce(
         (totals, gw) =>
-            Object.keys(gw.stats).reduce(
+            Object.keys(gw.stats || {}).reduce(
                 (prev, stat) => ({
                     ...prev,
                     // [stat]: gw.stats[stat] + (totals[stat] || 0),
@@ -60,6 +60,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
     const mergedPlayers = fplPlayers.reduce((prev, { data: fplPlayer }) => {
         const gPlayer = googlePlayersObj[fplPlayer.code] || { new: false, isHidden: true, pos: '#N/A' };
         if (!googlePlayersObj[fplPlayer.code]) {
+            // player is in the fpl list, but not in the google sheet
             logger.error(`What player? ${fplPlayer.web_name} ${fplPlayer.code}`);
         }
         const player = {

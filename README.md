@@ -22,8 +22,8 @@ NODE_TLS_REJECT_UNAUTHORIZED=0;
 PATH_PREFIX=/
 ASSET_PREFIX=/
 
-SAVE=false # save remote fixtures locally [false || 2023]
-FIXTURES=false # where to save and read local fixture from. [false || 2023]
+SAVE=false # save remote fixtures locally [false || 2223]
+FIXTURES=false # where to save and read local fixture from. [false || 2223]
 
 ```
 

@@ -69,6 +69,16 @@ export const query = graphql`
                         isAvailable
                         availNews
                         url
+                        value_season
+                        value_form
+                        gameWeeks {
+                            fixtures {
+                                opponent_team
+                                date
+                                aTname
+                                was_home
+                            }
+                        }
                     }
                     seasonToGameWeek {
                         apps

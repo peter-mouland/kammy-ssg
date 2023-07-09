@@ -32,7 +32,7 @@ module.exports = ({ teamsByCode, elements, elementTypesById }) => {
                 date: getGmtDate(fixture.kickoff_time),
             })),
         };
-        console.log(`create node: fpl-players-${data.code}`);
+
         return {
             resourceId: `fpl-players-${data.code}`,
             data,

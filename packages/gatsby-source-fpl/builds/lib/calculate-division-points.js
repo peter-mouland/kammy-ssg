@@ -21,7 +21,7 @@ const getTotal = (posPoints = {}) =>
     );
 
 const getPoints = (team = []) => {
-    const posPoints = team.reduce((prev, { gameWeekStats, seasonToGameWeek, teamPos }) => {
+    const posPoints = team.reduce((prev, { gameWeekStats = {}, seasonToGameWeek = {}, teamPos }) => {
         const { key } = getPositionLabel(teamPos) || {};
         const gameWeek = prev[key] ? prev[key].gameWeekPoints + gameWeekStats.points : gameWeekStats.points;
         const season = prev[key] ? prev[key].seasonPoints + seasonToGameWeek.points : seasonToGameWeek.points;

@@ -33,8 +33,9 @@ class TeamSeason {
             managerPlayers.forEach((player, i) => {
                 const playerGws = players[i].player || [];
                 const seasonToGameWeek = players[i].seasonToGameWeek || [];
+                const player1 = this.getPlayer(player);
                 playerGws[gameWeek] = getPlayerStats({
-                    player: this.getPlayer(player),
+                    player: player1,
                     gameWeeks: [gameWeekObj],
                     fplTeams,
                 });
