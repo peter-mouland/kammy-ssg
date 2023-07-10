@@ -51,12 +51,14 @@ const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) =>
 
     return (
         <Layout title="Homepage" footer={footer}>
-            <Homepage
-                selectedGameWeek={selectedGameWeek}
-                gameWeekDates={gameWeekDates}
-                divisions={divisions}
-                statsByDivision={statsByDivision}
-            />
+            <Spacer all={{ top: Spacer.spacings.SMALL }}>
+                <Homepage
+                    selectedGameWeek={selectedGameWeek}
+                    gameWeekDates={gameWeekDates}
+                    divisions={divisions}
+                    statsByDivision={statsByDivision}
+                />
+            </Spacer>
         </Layout>
     );
 };

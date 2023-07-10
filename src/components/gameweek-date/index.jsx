@@ -31,48 +31,37 @@ const getDates = ({ start, end }) => {
     }
 };
 
-const GameWeekDate = ({ gameWeek, label, showStart, showEnd, showStartTime, showEndTime, calStart, calEnd }) => {
-    const { start, end, cup } = gameWeek;
-
-    const { startMonth, endMonth, startTime, endTime, startDay, endDay } = getDates({
-        start,
-        end,
-    });
+const GameWeekDate = ({ gameWeek, isSelected, isCurrent }) => {
+    const { start, end, cup, gameWeek: GW } = gameWeek;
+    const { startMonth, startTime, startDay, endMonth, endDay, endTime } = getDates({ start, end });
     return (
-        <div className="formatted-gameweek-container">
-            {label && <div>{label}</div>}
+        <div className={isSelected ? `formatted-gameweek-container isSelected` : `formatted-gameweek-container`}>
             <div className="formatted-gameweek-date">
                 {cup && <Cup className="formatted-gameweek-cup" />}
-                {showStart && (
-                    <span className="formatted-gameweek-date__calendar">
-                        <span className="formatted-gameweek-date__month">{startMonth}</span>
-                        <span className="formatted-gameweek-date__day">{calStart || startDay}</span>
-                        {/* <span className='formatted-gameweek-date__year'></span> */}
-                        <span className="formatted-gameweek-date__time">{showStartTime && startTime}</span>
+                <span className="formatted-gameweek-date__calendar">
+                    <span className="formatted-gameweek-date__month">
+                        <div>gw{GW}</div>
                     </span>
-                )}
-                {showEnd && (
-                    <span className="formatted-gameweek-date__calendar">
-                        <span className="formatted-gameweek-date__month">{endMonth}</span>
-                        <span className="formatted-gameweek-date__day">{calEnd || endDay}</span>
-                        {/* <span className='formatted-gameweek-date__year'></span> */}
-                        <span className="formatted-gameweek-date__time">{showEndTime && endTime}</span>
+                    <span className="formatted-gameweek-date__time">
+                        <div>
+                            {startMonth} {startDay} {startTime}
+                        </div>
+                        <div style={{ lineHeight: '0.5em' }}>-</div>
+                        <div>
+                            {endMonth} {endDay} {endTime}
+                        </div>
                     </span>
-                )}
+                </span>
             </div>
         </div>
     );
 };
 
 GameWeekDate.propTypes = {
-    showEndTime: PropTypes.bool,
-    showStartTime: PropTypes.bool,
-    showStart: PropTypes.bool,
-    showEnd: PropTypes.bool,
-    label: PropTypes.string,
-    calStart: PropTypes.string,
-    calEnd: PropTypes.string,
+    isSelected: PropTypes.bool,
+    isCurrent: PropTypes.bool,
     gameWeek: PropTypes.shape({
+        gameWeek: PropTypes.number,
         cup: PropTypes.bool,
         start: PropTypes.instanceOf(Date),
         end: PropTypes.instanceOf(Date),
@@ -80,13 +69,8 @@ GameWeekDate.propTypes = {
 };
 
 GameWeekDate.defaultProps = {
-    showStartTime: true,
-    showEndTime: true,
-    showStart: true,
-    showEnd: true,
-    label: '',
-    calStart: '',
-    calEnd: '',
+    isSelected: false,
+    isCurrent: false,
 };
 
 export default GameWeekDate;

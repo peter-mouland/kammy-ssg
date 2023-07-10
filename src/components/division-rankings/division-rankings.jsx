@@ -8,48 +8,34 @@ import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'division-stats' });
 
-const DivisionRankings = ({
-    stats = [],
-    divisionUrl,
-    showStandings,
-    showWeekly,
-    showGameWeekSwitcher,
-    selectedGameWeek,
-}) => (
+const DivisionRankings = ({ stats = [], showStandings, showWeekly }) => (
     <section id="division-ranking-page" className={bem(null, null, 'page-content')}>
-        {showGameWeekSwitcher && (
-            <div style={{ position: 'relative', zIndex: 2 }}>
-                <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}`} />
-            </div>
-        )}
-        {
-            <div style={{ position: 'relative', zIndex: 1 }}>
-                {showStandings && (
-                    <Fragment>
-                        {showWeekly && (
-                            <h2 data-b-layout="v-space">
-                                <Spacer all={{ bottom: Spacer.spacings.SMALL }}>Overall Standings</Spacer>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+            {showStandings && (
+                <Fragment>
+                    {showWeekly && (
+                        <h2 data-b-layout="v-space">
+                            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>Overall Standings</Spacer>
+                        </h2>
+                    )}
+                    <div data-b-layout="row vpad">
+                        <Table points={stats} type="seasonPoints" rank="rank" />
+                    </div>
+                </Fragment>
+            )}
+            {showWeekly && (
+                <Fragment>
+                    <div data-b-layout="row vpad">
+                        {showStandings && (
+                            <h2>
+                                <Spacer all={{ bottom: Spacer.spacings.SMALL }}>Weekly Scores</Spacer>
                             </h2>
                         )}
-                        <div data-b-layout="row vpad">
-                            <Table points={stats} type="seasonPoints" rank="rank" />
-                        </div>
-                    </Fragment>
-                )}
-                {showWeekly && (
-                    <Fragment>
-                        <div data-b-layout="row vpad">
-                            {showStandings && (
-                                <h2>
-                                    <Spacer all={{ bottom: Spacer.spacings.SMALL }}>Weekly Scores</Spacer>
-                                </h2>
-                            )}
-                            <Table points={stats} type="gameWeekPoints" rank="rankChange" />
-                        </div>
-                    </Fragment>
-                )}
-            </div>
-        }
+                        <Table points={stats} type="gameWeekPoints" rank="rankChange" />
+                    </div>
+                </Fragment>
+            )}
+        </div>
     </section>
 );
 

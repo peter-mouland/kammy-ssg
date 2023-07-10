@@ -30,7 +30,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel,
     return (
         <Layout title={`${divisionLabel} - Teams`}>
             <div data-b-layout="container">
-                <TabbedMenu division={divisionKey} selected="teams" />
+                <TabbedMenu division={divisionKey} selected="teams" selectedGameWeek={selectedGameWeek} />
                 <DivisionTeams
                     divisionUrl={divisionLabel.toLowerCase().replaceAll(' ', '-')}
                     previousTeams={previousTeamsByManager}

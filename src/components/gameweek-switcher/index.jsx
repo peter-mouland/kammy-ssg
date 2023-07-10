@@ -1,58 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
-import bemHelper from '@kammy/bem';
 
 import FormattedGameWeekDate from '../gameweek-date';
 import './gameweek-switcher.css';
-import ContextualHelp from '../contextual-help';
-import Spacer from '../spacer';
 import useGameWeeks from '../../hooks/use-game-weeks';
 
-const bem = bemHelper({ block: 'game-week-switcher' });
-
 const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
-    const { gameWeeks, currentGameWeek = {}, nextGameWeek } = useGameWeeks();
-    const previousGameWeeks = gameWeeks
-        .filter(({ gameWeek }) => gameWeek <= currentGameWeek.gameWeek)
-        .slice(0, selectedGameWeek + 1);
-
-    const options =
-        previousGameWeeks.length > 2
-            ? previousGameWeeks.slice(previousGameWeeks.length - 2, selectedGameWeek + 1)
-            : previousGameWeeks;
-
-    if (!options.includes(currentGameWeek)) {
-        options.push(currentGameWeek);
-    }
-    if (!options.includes(nextGameWeek)) {
-        options.push(nextGameWeek);
-    }
+    const [showSwitcher, toggleSwitcher] = React.useState(false);
+    const { currentGameWeek = {}, gameWeeks } = useGameWeeks();
     return (
-        <section id="gameweek-switcher" className={bem()}>
-            <Spacer tag="span" all={{ top: Spacer.spacings.SMALL }}>
-                <Spacer tag="span" all={{ right: Spacer.spacings.MEDIUM }}>
-                    GameWeek:
-                </Spacer>
-                {options.map(({ gameWeek, isCurrent }) => (
-                    <Link key={gameWeek} to={`/week-${gameWeek}${url}`} className="">
-                        <ContextualHelp
-                            body={<FormattedGameWeekDate gameWeek={gameWeeks[gameWeek]} />}
-                            Trigger={
-                                <span
-                                    className={bem('option-label', {
-                                        isCurrent: !!isCurrent,
-                                        isSelected: selectedGameWeek === gameWeek,
-                                    })}
-                                >
-                                    {gameWeek}
-                                </span>
-                            }
-                        />
-                    </Link>
-                ))}
-            </Spacer>
-        </section>
+        <div>
+            <button
+                style={{ display: 'inline-block', width: '150px', fontSize: '1.3em', padding: 0 }}
+                onClick={() => toggleSwitcher(!showSwitcher)}
+                type="button"
+            >
+                <FormattedGameWeekDate gameWeek={gameWeeks[selectedGameWeek]} isCurrent isSelected />
+            </button>
+            {showSwitcher ? (
+                <div
+                    style={{
+                        maxHeight: '300%',
+                        overflowY: 'scroll',
+                        background: 'white',
+                        boxShadow:
+                            'rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset',
+                    }}
+                >
+                    {gameWeeks.map(({ gameWeek }) => (
+                        <div style={{ margin: '0.15em 0' }} key={gameWeek}>
+                            <Link to={`/week-${gameWeek}${url}`} className="">
+                                <FormattedGameWeekDate
+                                    isSelected={false}
+                                    gameWeek={gameWeeks[gameWeek]}
+                                    isCurrent={gameWeek === currentGameWeek.gameWeek}
+                                />
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+            ) : null}
+        </div>
     );
 };
 

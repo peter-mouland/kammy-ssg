@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useCookies } from 'react-cookie';
 
 import Spacer from '../spacer';
-import GameWeekSwitcher from '../gameweek-switcher';
 import TransfersTable from './trasfers-table';
 import TransferRequest from './transfer-request';
 import useManagers from '../../hooks/use-managers';
@@ -27,12 +26,7 @@ const GameWeekTransfers = ({ divisionUrl, divisionKey, selectedGameWeek, teamsBy
 
     return (
         <div>
-            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                <div style={{ position: 'relative', zIndex: 2 }}>
-                    <GameWeekSwitcher selectedGameWeek={selectedGameWeek} url={`/${divisionUrl}/transfers`} />
-                </div>
-            </Spacer>
-            <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+            <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.SMALL }}>
                 <TransfersTable
                     isLoading={isLoading}
                     transfers={changesThisGameWeek}
