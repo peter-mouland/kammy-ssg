@@ -30,13 +30,13 @@ export const Availability = ({ player }) => (
     <div>
         {player.availNews ? <p>{player.availNews}</p> : null}
         {!player.isAvailable ? (
-            <p>
+            <div>
                 Chance of playing:
                 {player.chance_of_playing_this_round}%{' '}
-                <p>
+                <div>
                     <span style={{ color: 'grey' }}>({player.chance_of_playing_next_round}% next round)</span>
-                </p>
-            </p>
+                </div>
+            </div>
         ) : null}
     </div>
 );

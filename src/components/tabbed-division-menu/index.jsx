@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
+import Button from '../button';
 import NamedLink from '../named-link';
 import GameWeekFixtures from '../gameweek-fixtures';
 import GroupIcon from '../icons/group.svg';
@@ -36,15 +37,23 @@ const tabs = [
     },
 ];
 
-const TabbedDivisionMenu = ({ division, selected, selectedGameWeek }) => {
-    const { gameWeeks } = useGameWeeks();
+const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
+    const { gameWeeks, currentGameWeek } = useGameWeeks();
+    const displayGW = selectedGameWeek || currentGameWeek.gameWeek;
+    const [showFixture, onShowFixture] = React.useState(null);
+    const fixtures = {
+        thisWeek: gameWeeks[displayGW],
+        nextWeek: gameWeeks[displayGW + 1],
+    };
+
     return (
         <div>
             <div className={styles.container}>
                 <Spacer tag="ul" all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
-                    {selectedGameWeek ? (
-                        <GameWeekSwitcher url={`/${division}/${selected}`} selectedGameWeek={selectedGameWeek} />
-                    ) : null}
+                    <GameWeekSwitcher
+                        to={selectedGameWeek ? `${division}-${selected}` : null}
+                        selectedGameWeek={displayGW}
+                    />
                     {tabs.map(({ id, label, Icon }) => (
                         <li key={id} className={cx(styles.tab)}>
                             <NamedLink
@@ -62,17 +71,47 @@ const TabbedDivisionMenu = ({ division, selected, selectedGameWeek }) => {
                     ))}
                 </Spacer>
             </div>
-            <div>
-                <GameWeekFixtures {...gameWeeks[selectedGameWeek]} />
-                <GameWeekFixtures {...gameWeeks[selectedGameWeek + 1]} />
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    maxWidth: '408px',
+                    margin: '0 auto',
+                    background: '#eee',
+                    borderRadius: '0 0 5px 5px',
+                }}
+            >
+                <Spacer all={{ horizontal: Spacer.spacings.SMALL }} tag="div">
+                    <Button
+                        type="TERTIARY"
+                        onClick={() => onShowFixture(showFixture === 'thisWeek' ? null : 'thisWeek')}
+                    >
+                        GW Fixtures
+                    </Button>
+                </Spacer>
+                <Spacer all={{ horizontal: Spacer.spacings.SMALL }} tag="div">
+                    <Button
+                        type="TERTIARY"
+                        onClick={() => onShowFixture(showFixture === 'nextWeek' ? null : 'nextWeek')}
+                    >
+                        Next GW Fixtures
+                    </Button>
+                </Spacer>
             </div>
+
+            {showFixture ? (
+                <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+                    <GameWeekFixtures {...fixtures[showFixture]} />
+                </div>
+            ) : null}
         </div>
     );
 };
 
-TabbedDivisionMenu.propTypes = {
+TabbedMenu.propTypes = {
+    selectedGameWeek: PropTypes.number.isRequired,
     division: PropTypes.string.isRequired,
     selected: PropTypes.string.isRequired,
 };
 
-export default TabbedDivisionMenu;
+export default TabbedMenu;

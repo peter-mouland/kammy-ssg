@@ -7,7 +7,7 @@ import appConfig from '../../config/config';
 
 const bem = bemHelper({ block: 'named-link' });
 
-const findRoute = ({ to }) => appConfig.routes.find((rt) => rt.name === to);
+export const findRoute = ({ to }) => appConfig.routes.find((rt) => rt.name === to);
 const isPartiallyActive =
     (className) =>
     ({ isPartiallyCurrent }) =>

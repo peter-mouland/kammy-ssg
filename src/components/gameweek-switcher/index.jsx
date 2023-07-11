@@ -2,18 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'gatsby';
 
+import { findRoute } from '../named-link';
 import FormattedGameWeekDate from '../gameweek-date';
 import './gameweek-switcher.css';
 import useGameWeeks from '../../hooks/use-game-weeks';
 
-const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
+const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
     const [showSwitcher, toggleSwitcher] = React.useState(false);
     const { currentGameWeek = {}, gameWeeks } = useGameWeeks();
+    const route = findRoute({ to });
     return (
         <div>
             <button
                 style={{ display: 'inline-block', width: '150px', fontSize: '1.3em', padding: 0 }}
-                onClick={() => toggleSwitcher(!showSwitcher)}
+                onClick={() => (to ? toggleSwitcher(!showSwitcher) : null)}
                 type="button"
             >
                 <FormattedGameWeekDate gameWeek={gameWeeks[selectedGameWeek]} isCurrent isSelected />
@@ -30,7 +32,7 @@ const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
                 >
                     {gameWeeks.map(({ gameWeek }) => (
                         <div style={{ margin: '0.15em 0' }} key={gameWeek}>
-                            <Link to={`/week-${gameWeek}${url}`} className="">
+                            <Link to={`/week-${gameWeek}${route.path}`} className="">
                                 <FormattedGameWeekDate
                                     isSelected={false}
                                     gameWeek={gameWeeks[gameWeek]}
@@ -46,12 +48,8 @@ const GameWeekSwitcher = ({ url, selectedGameWeek }) => {
 };
 
 GameWeekSwitcher.propTypes = {
-    url: PropTypes.string,
+    to: PropTypes.string.isRequired,
     selectedGameWeek: PropTypes.number.isRequired,
-};
-
-GameWeekSwitcher.defaultProps = {
-    url: '',
 };
 
 export default GameWeekSwitcher;
