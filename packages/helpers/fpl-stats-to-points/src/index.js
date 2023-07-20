@@ -13,7 +13,7 @@ function forGoals(goals = 0, position) {
     } else if (position === 'FB' || position === 'CB') {
         return goals * 8;
     } else if (position === 'MID') {
-        return goals * 6;
+        return goals * 5;
     } else if (position === 'AM') {
         return goals * 5;
     } else if (position === 'STR') {

@@ -193,10 +193,10 @@ describe('calculatePoints', () => {
         beforeEach(() => {
             position = 'MID';
         });
-        it('returns 6 points for each goal', () => {
-            expect(forGoals(1, position)).toEqual(6);
+        it('returns 5 points for each goal', () => {
+            expect(forGoals(1, position)).toEqual(5);
             expect(forGoals(0, position)).toEqual(0);
-            expect(forGoals(10, position)).toEqual(60);
+            expect(forGoals(10, position)).toEqual(50);
         });
 
         it('returns 3 points for each clean sheet', () => {
