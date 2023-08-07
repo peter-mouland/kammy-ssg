@@ -1,9 +1,9 @@
 {
-  "plugins": {
-    "autoprefixer": {
-      cascade: false,
-      add: true,
-      remove: true
+    "plugins": {
+        "autoprefixer": {
+            "cascade": false,
+            "add": true,
+            "remove": true
+        }
     }
-  }
 }
