@@ -46,13 +46,16 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
     const gameWeekData = gameWeeks.map(({ data }) => data);
     const googlePlayersObj = googlePlayerData.reduce((prev, googlePlayer) => {
         const code = parseInt(googlePlayer.code, 10);
+        if (!googlePlayer.position) {
+            console.error('no position', googlePlayer.name, googlePlayer.code);
+        }
         return {
             ...prev,
             [code]: {
                 code,
                 isHidden: ['true', true, 'hidden', 'y', 'Y', 'TRUE', 'yes', 'YES'].includes(googlePlayer.isHidden),
                 new: ['true', true, 'new', 'y', 'Y', 'TRUE', 'yes', 'YES'].includes(googlePlayer.new),
-                pos: googlePlayer.position.toUpperCase() || '#N/A', // Pos = dff pos, Position = ss pos
+                pos: googlePlayer.position?.toUpperCase() || '#N/A', // Pos = dff pos, Position = ss pos
                 club: googlePlayer.team_name,
             },
         };
