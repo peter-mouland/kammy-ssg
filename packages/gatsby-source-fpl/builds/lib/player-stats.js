@@ -114,8 +114,8 @@ const playerStats = ({ player, gameWeeks, fplTeams }) => {
             aTcode: aTeam?.code,
             aTname: aTeam?.name,
             aTshortName: aTeam?.short_name,
-            aScore: fixture.team_a_score,
-            hScore: fixture.team_h_score,
+            aScore: fixture.team_a_score || 0,
+            hScore: fixture.team_h_score || 0,
         };
     });
     // counter++;

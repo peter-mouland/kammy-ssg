@@ -3,6 +3,7 @@ const fetch = require('./lib/fetch');
 
 global.fetch = fetch;
 
+const { createSchemaCustomization } = require('./create-schema-customization');
 const hashContent = require('./lib/hash-content');
 const fetchAllData = require('./sources/fetch-all');
 const buildFplEvents = require('./builds/fpl-events');
@@ -33,6 +34,7 @@ const createNode = ({ actions, createNodeId, node }) =>
         },
     });
 
+exports.createSchemaCustomization = createSchemaCustomization;
 exports.sourceNodes = async ({ actions, createNodeId }) => {
     const {
         fplData,
