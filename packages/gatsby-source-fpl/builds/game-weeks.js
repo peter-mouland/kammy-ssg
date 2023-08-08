@@ -16,20 +16,20 @@ const getFixtures = (fplFixtures, fplTeams, { isCurrent, gameWeek, start, end })
             const { data: aTeam } = fplTeams.find(({ data: { id } }) => data.team_a === id) || {};
             if (!aTeam) console.log(data);
             const { data: hTeam } = fplTeams.find(({ data: { id } }) => data.team_h === id) || {};
-            if (!aTeam) console.log(data);
+            if (!hTeam) console.log(data);
             return {
                 ...data,
                 aTid: aTeam?.id,
                 aTcode: aTeam?.code,
-                aScore: data.team_a_score,
+                aScore: data.team_a_score || 0, // must have default for start of season so gatsby inferred schemas don't fuck up
                 aTname: aTeam?.name,
                 aTshortName: aTeam?.short_name,
                 hTid: hTeam?.id,
                 hTcode: hTeam?.code,
                 hTname: hTeam?.name,
                 hTshortName: hTeam?.short_name,
-                hScore: data.team_h_score,
-                status: data.finished,
+                hScore: data.team_h_score || 0,
+                status: data.finished || false,
             };
         });
 
