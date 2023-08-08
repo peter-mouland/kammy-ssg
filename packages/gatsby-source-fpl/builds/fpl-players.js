@@ -20,6 +20,8 @@ module.exports = ({ teamsByCode, elements, elementTypesById }) => {
 
         const data = {
             ...element,
+            chance_of_playing_next_round: element.chance_of_playing_next_round || 100, // for inferred schema
+            chance_of_playing_this_round: element.chance_of_playing_this_round || 100,
             code: parseInt(element.code, 10),
             fplPosition: elementTypesById[element.element_type].pos,
             club: teamsByCode[element.team_code].name,
