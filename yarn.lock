@@ -12009,7 +12009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-link@npm:5.10.0, gatsby-link@npm:^5.10.0":
+"gatsby-link@npm:^5.10.0":
   version: 5.10.0
   resolution: "gatsby-link@npm:5.10.0"
   dependencies:
@@ -15407,7 +15407,6 @@ __metadata:
     eslint-config-canonical: 41.0.4
     fromnow: 3.0.1
     gatsby: 5.10.0
-    gatsby-link: 5.10.0
     gatsby-plugin-buildtime-timezone: 1.0.3
     gatsby-plugin-gatsby-cloud: 5.11.0
     gatsby-plugin-google-analytics: 5.11.0

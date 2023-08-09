@@ -19,6 +19,7 @@ const rowToObj = ({ values = [] }) => {
 
 const GS_API = (spreadsheet, endpoint, opts = {}) => {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet}${endpoint}`;
+    console.log(url, opts);
     const fullUrl = Object.keys(opts).reduce(
         (prev, opt) => `${prev}${opts[opt] === true ? `&${opt}=true` : ''}`,
         `${url}?key=${spreadsheets.ACCESS_KEY}`,

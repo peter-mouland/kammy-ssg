@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import RouterLink from 'gatsby-link';
+import { Link as RouterLink } from 'gatsby';
 import toTitleCase from '@kammy/helpers.title-case';
 
 import Loader from '../loader';

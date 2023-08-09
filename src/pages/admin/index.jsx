@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'gatsby-link';
+import { Link } from 'gatsby';
 // import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 

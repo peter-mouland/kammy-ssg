@@ -6,13 +6,14 @@ const UNKNOWN_PLAYER = (name) => ({
 });
 
 class TeamByGameWeek {
-    constructor({ gameWeeks, playersByCode, transfers, draft }) {
+    constructor({ gameWeeks, playersByCode, transfers, draft, debug = false }) {
         this.transfers = transfers || []; // not all managers would have made transfers
         this.gameWeeks = gameWeeks;
         this.players = playersByCode;
         this.draft = draft;
         this.endOfSeason = new Date(gameWeeks[gameWeeks.length - 1].end).setHours(23, 59, 59, 999);
         this.startOfSeason = new Date(gameWeeks[0].start).setHours(0, 0, 0, 0);
+        if (debug) console.log(this.transfers);
     }
 
     getPlayer = (Player) => {
@@ -53,6 +54,7 @@ class TeamByGameWeek {
     getTransferList = (player) => {
         const { players, startOfSeason, endOfSeason, transfers } = this;
         let playerInPosition = this.getPlayer(player);
+        if (this.debug) console.log(playerInPosition);
         const playerTransfers = [
             {
                 player: playerInPosition,

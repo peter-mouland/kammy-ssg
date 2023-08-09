@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { Link } from 'gatsby-link';
+import { Link } from 'gatsby';
 
 import PlayerImage, { Availability } from '../player-image';
 import * as styles from './styles.module.css';
