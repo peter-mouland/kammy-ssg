@@ -2,7 +2,7 @@ exports.createSchemaCustomization = async ({ actions }) => {
     const { createTypes } = actions;
     createTypes(`
       type Players implements Node {
-        gameWeeks: playersGameWeeks
+        gameWeeks: [playersGameWeeks]
       }
 
       type playersGameWeeks {
@@ -19,8 +19,7 @@ exports.createSchemaCustomization = async ({ actions }) => {
         date: String
         opponent_team: String
         was_home: Boolean
-        stats: [playersGameWeeksFixturesStats]
-
+        stats: playersGameWeeksFixturesStats
       }
 
       type playersGameWeeksFixturesStats {
