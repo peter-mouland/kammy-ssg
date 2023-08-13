@@ -72,7 +72,7 @@ const TeamsPage = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
                                             ? bem('transfer')
                                             : '';
                                     const opoThisGw = player.gameWeeks[selectedGameWeek].fixtures;
-                                    const opoNextGw = player.gameWeeks[selectedGameWeek + 1].fixtures;
+                                    const opoNextGw = player.gameWeeks[selectedGameWeek + 1]?.fixtures || [];
                                     const warningClassName =
                                         isAdmin &&
                                         (clubWarnings.indexOf(player.club) > -1 ||
