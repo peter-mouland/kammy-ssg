@@ -14,7 +14,7 @@ const formatTransfers = (data = [], division) => {
             isFailed: Status === 'E',
             timestamp: new Date(Timestamp),
             date: Timestamp,
-            manager: Manager.trim(),
+            manager: Manager?.trim(),
             transferIn: item['Transfer In'],
             codeIn: item['Code In'],
             transferOut: item['Transfer Out'],
