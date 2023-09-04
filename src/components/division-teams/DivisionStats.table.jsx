@@ -13,7 +13,7 @@ import Player from '../player';
 
 const bem = bemHelper({ block: 'table' });
 
-const TeamsPage = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
+const DivisionStats = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
     // const { liveStatsByCode, liveStats } = useLiveScores();
     const newPlayers = validateNewPlayers(teams) || [];
     const duplicatePlayers = validatePlayer(teams) || [];
@@ -73,6 +73,7 @@ const TeamsPage = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
                                             : '';
                                     const opoThisGw = player.gameWeeks[selectedGameWeek].fixtures;
                                     const opoNextGw = player.gameWeeks[selectedGameWeek + 1]?.fixtures || [];
+                                    console.log(opoNextGw);
                                     const warningClassName =
                                         isAdmin &&
                                         (clubWarnings.indexOf(player.club) > -1 ||
@@ -109,7 +110,7 @@ const TeamsPage = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
                                                 <em>
                                                     {opoNextGw.map((f) => (
                                                         <div>
-                                                            {f.aTname}{' '}
+                                                            {f.is_home || f.was_home ? f.aTname : f.hTname}{' '}
                                                             <small
                                                                 style={{
                                                                     fontSize: '0.8em',
@@ -133,7 +134,7 @@ const TeamsPage = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
     );
 };
 
-TeamsPage.propTypes = {
+DivisionStats.propTypes = {
     teams: PropTypes.object,
     previousTeams: PropTypes.object,
     isAdmin: PropTypes.bool,

@@ -76,6 +76,7 @@ export const query = graphql`
                                 opponent_team
                                 date
                                 aTname
+                                hTname
                                 was_home
                                 is_home
                             }
