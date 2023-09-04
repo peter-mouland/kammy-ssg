@@ -4,12 +4,6 @@
     min-width: 28px;
   }
 
-.club-fixtures__fixtures--theme-0 {
-      background: #fff;
-  }
-.club-fixtures__fixtures--theme-1 {
-      background: #eee;
-  }
 .club-fixtures__fixture {
     display: inline-block;
     width: 100%;

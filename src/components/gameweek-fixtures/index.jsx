@@ -29,21 +29,18 @@ const toFullDate = (fixture) => {
 const GameWeekFixtures = ({ fixtures }) => {
     let previousFullDate = '';
     return (
-        <div>
+        <div style={{ fontSize: '0.8em', position: 'relative' }}>
             {fixtures &&
                 fixtures.map((fixture) => {
                     if (!fixture || !fixture.date) return null;
                     const fullDate = toFullDate(fixture);
-                    const dateStr = fullDate === previousFullDate ? null : <h2 title={fixture.date}>{fullDate}</h2>;
+                    const dateStr =
+                        fullDate === previousFullDate ? null : <h2 style={{ position: 'absolute' }}>{fullDate}</h2>;
                     const { aScore, hScore } = fixture;
                     previousFullDate = fullDate;
                     return (
                         <div key={fixture.id} className={bem('fixtures', 'theme-0')}>
-                            {dateStr && (
-                                <Spacer all={{ vertical: Spacer.spacings.LARGE, bottom: Spacer.spacings.SMALL }}>
-                                    {dateStr}
-                                </Spacer>
-                            )}
+                            {dateStr}
                             <span className={bem('fixture')}>
                                 <span className={bem('team', 'home')}>
                                     {fixture.hTname} <span>{hScore}</span>

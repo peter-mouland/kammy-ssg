@@ -35,21 +35,21 @@ const GameWeekDate = ({ gameWeek, isSelected, isCurrent }) => {
     const { start, end, cup, gameWeek: GW } = gameWeek;
     const { startMonth, startTime, startDay, endMonth, endDay, endTime } = getDates({ start, end });
     return (
-        <div className={isSelected ? `formatted-gameweek-container isSelected` : `formatted-gameweek-container`}>
+        <div className={isCurrent ? `formatted-gameweek-container isSelected` : `formatted-gameweek-container`}>
             <div className="formatted-gameweek-date">
                 {cup && <Cup className="formatted-gameweek-cup" />}
                 <span className="formatted-gameweek-date__calendar">
                     <span className="formatted-gameweek-date__month">
-                        <div>gw{GW}</div>
+                        <div style={{ padding: '0.2em' }}>gw{GW}</div>
                     </span>
                     <span className="formatted-gameweek-date__time">
-                        <div>
+                        <span>
                             {startMonth} {startDay} {startTime}
-                        </div>
-                        <div style={{ lineHeight: '0.5em' }}>-</div>
-                        <div>
+                        </span>
+                        <span style={{ lineHeight: '0.5em', padding: '0.2em' }}>-</span>
+                        <span>
                             {endMonth} {endDay} {endTime}
-                        </div>
+                        </span>
                     </span>
                 </span>
             </div>

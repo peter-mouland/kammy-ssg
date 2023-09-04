@@ -47,10 +47,9 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
     };
 
     return (
-        <div>
+        <div style={{ borderBottom: '1px solid var(--brand)', background: '#eee' }}>
             <div className={styles.container}>
                 <Spacer tag="ul" all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
-                    <GameWeekSwitcher to={`${division}-${selected}`} selectedGameWeek={displayGW} />
                     {tabs.map(({ id, label, Icon }) => (
                         <li key={id} className={cx(styles.tab)}>
                             <NamedLink
@@ -68,37 +67,30 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
                     ))}
                 </Spacer>
             </div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    maxWidth: '408px',
-                    margin: '0 auto',
-                    background: '#eee',
-                    borderRadius: '0 0 5px 5px',
-                }}
-            >
-                <Spacer all={{ horizontal: Spacer.spacings.SMALL }} tag="div">
+            <div>
+                <span>
+                    <GameWeekSwitcher to={`${division}-${selected}`} selectedGameWeek={displayGW} />
+                </span>
+                <span>
                     <Button
                         type="TERTIARY"
                         onClick={() => onShowFixture(showFixture === 'thisWeek' ? null : 'thisWeek')}
                     >
-                        GW Fixtures
+                        {showFixture ? 'Hide' : 'Show'} Fixtures
                     </Button>
-                </Spacer>
-                <Spacer all={{ horizontal: Spacer.spacings.SMALL }} tag="div">
-                    <Button
-                        type="TERTIARY"
-                        onClick={() => onShowFixture(showFixture === 'nextWeek' ? null : 'nextWeek')}
-                    >
-                        Next GW Fixtures
-                    </Button>
-                </Spacer>
+                </span>
             </div>
 
             {showFixture ? (
                 <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-                    <GameWeekFixtures {...fixtures[showFixture]} />
+                    <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.MICRO }}>
+                        <h3>Game Week {displayGW}</h3>
+                    </Spacer>
+                    <GameWeekFixtures {...fixtures.thisWeek} />
+                    <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.MICRO }}>
+                        <h3>Next Game week</h3>
+                    </Spacer>
+                    <GameWeekFixtures {...fixtures.nextWeek} />
                 </div>
             ) : null}
         </div>

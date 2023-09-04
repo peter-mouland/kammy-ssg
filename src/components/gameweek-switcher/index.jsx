@@ -12,9 +12,9 @@ const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
     const { currentGameWeek = {}, gameWeeks } = useGameWeeks();
     const route = findRoute({ to });
     return (
-        <div>
+        <span style={{ position: 'relative', zIndex: 10 }}>
             <button
-                style={{ display: 'inline-block', width: '150px', fontSize: '1.3em', padding: 0 }}
+                style={{ display: 'inline-block', fontSize: '1.3em', padding: 0 }}
                 onClick={() => (to ? toggleSwitcher(!showSwitcher) : null)}
                 type="button"
             >
@@ -23,7 +23,9 @@ const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
             {showSwitcher ? (
                 <div
                     style={{
-                        maxHeight: '300%',
+                        position: 'absolute',
+                        zIndex: '1',
+                        maxHeight: '150px',
                         overflowY: 'scroll',
                         background: 'white',
                         boxShadow:
@@ -34,7 +36,7 @@ const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
                         <div style={{ margin: '0.15em 0' }} key={gameWeek}>
                             <Link to={`/week-${gameWeek}${route.path}`} className="">
                                 <FormattedGameWeekDate
-                                    isSelected={false}
+                                    isSelected={selectedGameWeek === gameWeek}
                                     gameWeek={gameWeeks[gameWeek]}
                                     isCurrent={gameWeek === currentGameWeek.gameWeek}
                                 />
@@ -43,7 +45,7 @@ const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
                     ))}
                 </div>
             ) : null}
-        </div>
+        </span>
     );
 };
 
