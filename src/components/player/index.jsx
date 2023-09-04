@@ -32,10 +32,10 @@ const Player = ({ teamPos, large, small, player = {} }) => {
         </Link>
     );
     return (
-        <div className={cx(styles.player, { [styles.large]: large, [styles.small]: small })}>
+        <div className={cx(styles.player, { [styles.large]: large })}>
             <Pos />
             <PlayerImage player={player} large={large} small={small} />
-            <div className={cx(styles.playerName, { [styles.large]: large, [styles.small]: small })}>
+            <div className={cx(styles.playerName, { [styles.large]: large })}>
                 <PlayerNameLink />
                 <div className={styles.playerClub}>
                     <span className="show-550">{club}</span>

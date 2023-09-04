@@ -25,7 +25,7 @@ const notFound = new Set();
 
 const getGameWeeksWithFixtures = ({ player, gameWeeks, fplTeams }) =>
     gameWeeks.map((gw) => {
-        const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeeks: [gw], fplTeams });
+        const { gameWeekFixtures, gameWeekStats } = getPlayerStats({ player, gameWeek: gw, fplTeams });
         if (!gameWeekFixtures || !gameWeekFixtures.length) {
             notFound.add(gw);
         }
@@ -64,7 +64,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
         const gPlayer = googlePlayersObj[fplPlayer.code] || { new: false, isHidden: true, pos: '#N/A' };
         if (!googlePlayersObj[fplPlayer.code]) {
             // player is in the fpl list, but not in the google sheet
-            logger.error(`What player? ${fplPlayer.web_name} ${fplPlayer.code}`);
+            logger.error(`Player not in gsheet? ${fplPlayer.web_name} ${fplPlayer.code}`);
         }
         const player = {
             ...fplPlayer,

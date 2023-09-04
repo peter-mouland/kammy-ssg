@@ -21,7 +21,6 @@ const useGameWeeks = () => {
                     cup
                     start
                     end
-                    notes
                     startFromNow: start(fromNow: true)
                     endFromNow: end(fromNow: true)
                     fixtures {

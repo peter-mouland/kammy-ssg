@@ -39,9 +39,10 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, cr
             logger.error(`Manager Mismatch: ${manager}`);
         }
         const debug = false; // manager === 'Tom F';
+        const validManagerTransfers = getValidManagerTransfers(manager);
         const teamByGameWeek = new TeamByGameWeek({
             draft: draftByManager[manager],
-            transfers: getValidManagerTransfers(manager),
+            transfers: validManagerTransfers,
             gameWeeks: gameWeekData,
             playersByCode,
             debug,

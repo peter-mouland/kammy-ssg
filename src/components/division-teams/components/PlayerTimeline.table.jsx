@@ -33,7 +33,7 @@ const PlayerTimelineTable = ({ player }) => {
                         (fixtures || []).map((fixture) => (
                             <tr key={`${fixture.event}`}>
                                 <td className={bem('team', { home: true })}>
-                                    {player.club === fixture.hTname ? (
+                                    {fixture.is_home || fixture.was_home ? (
                                         <strong>
                                             <TeamName team={fixture.hTname} />
                                         </strong>
@@ -47,7 +47,7 @@ const PlayerTimelineTable = ({ player }) => {
                                 </td>
                                 <td className={bem('team', { away: true })}>
                                     <span style={{ color: 'grey' }}>{fixture.aScore}</span>{' '}
-                                    {player.club === fixture.aTname ? (
+                                    {!fixture.is_home && !fixture.was_home ? (
                                         <strong>
                                             <TeamName team={fixture.aTname} />
                                         </strong>

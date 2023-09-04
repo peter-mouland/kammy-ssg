@@ -24,7 +24,7 @@ class TeamByGameWeek {
         return {
             name: player.web_name,
             club: player.club,
-            code: player.code,
+            code: parseInt(player.code, 10),
             pos: player.pos,
             seasonStats: player.season, // Stats: points, sb, tb, rcard, ycard, pensv, con, cs, asts, gls, subs, apps
             gameWeekStats: player.gameWeek, // Stats:points, sb, tb, rcard, ycard, pensv, con, cs, asts, gls, subs, apps

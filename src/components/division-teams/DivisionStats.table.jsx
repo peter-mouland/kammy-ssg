@@ -116,7 +116,7 @@ const TeamsPage = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
                                                                     color: 'grey',
                                                                 }}
                                                             >
-                                                                {f.was_home ? '(h)' : '(a)'}
+                                                                {f.is_home || f.was_home ? '(h)' : '(a)'}
                                                             </small>
                                                         </div>
                                                     ))}

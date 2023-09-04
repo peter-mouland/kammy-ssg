@@ -36,7 +36,7 @@ class TeamSeason {
                 const player1 = this.getPlayer(player);
                 playerGws[gameWeek] = getPlayerStats({
                     player: player1,
-                    gameWeeks: [gameWeekObj],
+                    gameWeek: gameWeekObj,
                     fplTeams,
                 });
                 seasonToGameWeek[gameWeek] = calculateSeasonStats(playerGws.slice(0, gameWeek + 1), player.pos);

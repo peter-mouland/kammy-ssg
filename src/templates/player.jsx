@@ -54,8 +54,14 @@ export const query = graphql`
                     aTcode
                     aTname
                     aTshortName
+                    hScore
+                    hTcode
+                    hTname
+                    hTshortName
                     # week
                     # status
+                    is_home
+                    was_home
                     team_h_score
                     team_a_score
                     # event

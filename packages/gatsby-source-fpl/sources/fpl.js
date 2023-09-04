@@ -26,7 +26,7 @@ const fetchPlayersFixtures = async (elements) => {
     return pMap(elements, mapper, { concurrency: CONCURRENCY });
 };
 
-const fetchPlayers = async () => {
+const fetchFplData = async () => {
     // eslint-disable-next-line camelcase
     const { events, elements, teams, element_types } = await fetch(bootstrapURL);
     const teamsByCode = teams.reduce((prev, t) => ({ ...prev, [t.code]: t }), {});
@@ -44,4 +44,4 @@ const fetchPlayers = async () => {
     };
 };
 
-module.exports = fetchPlayers;
+module.exports = fetchFplData;

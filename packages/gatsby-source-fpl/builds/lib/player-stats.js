@@ -1,12 +1,6 @@
 /* eslint-disable no-console */
-const jsonQuery = require('json-query');
-const isBefore = require('date-fns/isBefore');
-const isAfter = require('date-fns/isAfter');
-const isEqual = require('date-fns/isEqual');
 const extractFplStats = require('@kammy/helpers.extract-fpl-stats');
 const { calculateTotalPoints, calculate } = require('@kammy/helpers.fpl-stats-to-points');
-
-const logger = require('../../lib/log');
 
 const emptyStatsRaw = {
     minutes: 0,
@@ -39,8 +33,6 @@ const getPosStats = ({ stats, pos }) => {
 
 // exported for tests
 const addPointsToFixtures = (fixture, player) => {
-    // console.log('fixture');
-    // console.log(Object.keys(fixture));
     const stats = extractFplStats(fixture || emptyStatsRaw);
     const points = calculateTotalPoints({ stats, pos: player.pos, gameWeekFixtures: [fixture] });
     return {
@@ -65,25 +57,8 @@ const totalUpStats = (fixtures) =>
         emptyStats,
     );
 
-const getGameWeekFixtures = (player, gameWeeks) =>
-    jsonQuery('stats[*:date]', {
-        data: player,
-        locals: {
-            date(item) {
-                const fixtureDate = item.date;
-                return gameWeeks.reduce((prev, gameWeek) => {
-                    const gameweekEnd = gameWeek.end;
-                    const gameweekStart = gameWeek.start;
-                    const beforeEnd = isBefore(fixtureDate, gameweekEnd) || isEqual(fixtureDate, gameweekEnd);
-                    const afterStart = isAfter(fixtureDate, gameweekStart) || isEqual(fixtureDate, gameweekStart);
-                    return prev || (afterStart && beforeEnd);
-                }, false);
-            },
-        },
-    }).value || [];
-
 // const counter = 0;
-const playerStats = ({ player, gameWeeks, fplTeams }) => {
+const playerStats = ({ player, gameWeek, fplTeams }) => {
     if (!player) {
         console.log('no player!');
         return {};
@@ -99,25 +74,24 @@ const playerStats = ({ player, gameWeeks, fplTeams }) => {
         console.log('no player stats!');
         process.exit(1);
     }
-    // console.log('player');
-    // console.log(Object.keys(player));
-    const playerFixtures = getGameWeekFixtures(player, gameWeeks);
-    // console.log('playerFixtures');
-    // console.log(playerFixtures);
-    // console.log(player);
-    const gameWeekFixtures = playerFixtures.map((fixture) => {
-        const { data: aTeam } = fplTeams.find(({ data: { id } }) => fixture.opponent_team === id) || {};
-        if (!aTeam) console.log(fixture);
-        return {
-            ...addPointsToFixtures(fixture, player),
-            aTid: aTeam?.id,
-            aTcode: aTeam?.code,
-            aTname: aTeam?.name,
-            aTshortName: aTeam?.short_name,
-            aScore: fixture.team_a_score || 0,
-            hScore: fixture.team_h_score || 0,
-        };
-    });
+
+    const gameWeekFixtures = gameWeek.fixtures
+        .filter(
+            (fixture) =>
+                player.stats.find((stats) => stats.fixture === fixture.fixture_id) ||
+                player.fixtures.find((fix) => fix.id === fixture.fixture_id),
+        )
+        .map((gwFixture) => {
+            const { data: aTeam } = fplTeams.find(({ data: { id } }) => gwFixture.team_a === id) || {};
+            const playerFixture = player.fixtures.find((fix) => fix.id === gwFixture.fixture_id);
+            const playerFixtureStats = player.stats.find((stats) => stats.fixture === gwFixture.fixture_id);
+            if (!aTeam) console.log(gwFixture);
+            return {
+                ...playerFixture,
+                ...gwFixture,
+                ...addPointsToFixtures(playerFixtureStats, player),
+            };
+        });
     // counter++;
     // if (counter > 2) process.exit(1);
     const stats = totalUpStats(gameWeekFixtures);
@@ -127,13 +101,8 @@ const playerStats = ({ player, gameWeeks, fplTeams }) => {
         points: point.total,
     };
 
-    const fixtures = (player.fixtures || []).map((fixture) => addPointsToFixtures(fixture, player));
-    if (!fixtures) {
-        logger.warn(`PLAYER FIXTURES NOT FOUND: ${player.web_name}`);
-    }
     return {
         ...player,
-        fixtures,
         gameWeekFixtures,
         gameWeekStats,
     };

@@ -55,7 +55,7 @@ const Image = ({ player }) => {
     return (
         <div className={cx(styles.circle, !player.isAvailable && styles[circleClass])}>
             {player.code > 0 && <img src={img} loading="lazy" alt="" />}
-            <img src={holdingImage} alt="" className={styles.placeholder} />
+            <img src={holdingImage} alt="" />
         </div>
     );
 };

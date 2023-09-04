@@ -7,6 +7,7 @@ module.exports = ({ fixtures }) =>
         resourceId: `fpl-fixtures-${data.id}`,
         data: {
             ...data,
+            fixture_id: data.id,
             date: new Date(getGmtDate(data.kickoff_time)),
         },
         internal: {

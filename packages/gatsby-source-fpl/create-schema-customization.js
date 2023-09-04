@@ -17,6 +17,7 @@ exports.createSchemaCustomization = async ({ actions }) => {
         team_h_score: Int
         team_a_score: Int
         date: String
+        is_home: Boolean
         opponent_team: String
         was_home: Boolean
         stats: playersGameWeeksFixturesStats

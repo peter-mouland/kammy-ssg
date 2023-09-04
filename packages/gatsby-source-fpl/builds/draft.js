@@ -9,7 +9,8 @@ module.exports = ({ googleDraftData, createNodeId }) => {
             manager: item.manager,
             position: item.position,
             divisionName: item.division,
-            playerCode: item.code,
+            playerCode: parseInt(item.code, 10),
+            code: parseInt(item.code, 10),
         };
 
         return {

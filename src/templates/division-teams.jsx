@@ -77,6 +77,7 @@ export const query = graphql`
                                 date
                                 aTname
                                 was_home
+                                is_home
                             }
                         }
                     }

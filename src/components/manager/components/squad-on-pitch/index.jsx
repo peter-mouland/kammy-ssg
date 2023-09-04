@@ -58,7 +58,7 @@ const SquadOnPitch = ({ squad, onSelect }) => {
                             <PlayerImage player={{ ...squadMember.player, teamPos: pos }} medium />
                             <div className={styles.meta}>
                                 <div className={styles.name}>
-                                    <span className={styles.last}>{squadMember.player.name.split(',')[0]}</span>
+                                    <span>{squadMember.player.name.split(',')[0]}</span>
                                     <span className={styles.first}>{squadMember.player.name.split(',')[1]}</span>
                                 </div>
                                 <div className={styles.club}>{squadMember.player.club}</div>

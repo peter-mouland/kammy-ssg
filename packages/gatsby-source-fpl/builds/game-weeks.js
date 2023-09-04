@@ -5,13 +5,9 @@ const { nodeTypes, mediaTypes } = require('../lib/constants');
 const logger = require('../lib/log');
 
 // eslint-disable-next-line no-unused-vars
-const getFixtures = (fplFixtures, fplTeams, { isCurrent, gameWeek, start, end }) =>
+const getFixtures = (fplFixtures, fplTeams, gameWeek) =>
     fplFixtures
-        .filter(({ data: item }) => {
-            const fixtureDate = item.date;
-            const result = start <= fixtureDate && fixtureDate <= end;
-            return result;
-        })
+        .filter(({ data: item }) => item.event === gameWeek)
         .map(({ data }) => {
             const { data: aTeam } = fplTeams.find(({ data: { id } }) => data.team_a === id) || {};
             if (!aTeam) console.log(data);
@@ -22,6 +18,7 @@ const getFixtures = (fplFixtures, fplTeams, { isCurrent, gameWeek, start, end })
                 aTid: aTeam?.id,
                 aTcode: aTeam?.code,
                 aScore: data.team_a_score || 0, // must have default for start of season so gatsby inferred schemas don't fuck up
+                team_a_score: data.team_a_score || 0,
                 aTname: aTeam?.name,
                 aTshortName: aTeam?.short_name,
                 hTid: hTeam?.id,
@@ -29,27 +26,31 @@ const getFixtures = (fplFixtures, fplTeams, { isCurrent, gameWeek, start, end })
                 hTname: hTeam?.name,
                 hTshortName: hTeam?.short_name,
                 hScore: data.team_h_score || 0,
+                team_h_score: data.team_h_score || 0,
                 status: data.finished || false,
             };
         });
 
-module.exports = ({ googleGameWeekData, fplFixtures, fplTeams }) => {
+module.exports = ({ googleGameWeekData, fplFixtures, fplEvents, fplTeams }) => {
     const logEnd = logger.timed('Build: Game Weeks');
 
-    const results = googleGameWeekData.map((gw) => {
+    const results = fplEvents.map(({ data: event }, i) => {
+        const start = new Date(fplEvents[i - 1]?.data?.deadline_time || '2023-07-30T11:00:00.000Z');
+        const ggw = googleGameWeekData.find((googleGameWeek) => String(googleGameWeek.gameweek) === String(i));
+        const end = new Date(event.deadline_time);
         const data = {
-            notes: gw.notes || '',
-            cup: ['cup', 'y', 'yes', 'Y'].includes(gw.cup || ''),
-            gameWeek: parseInt(gw.gameweek, 10),
-            startString: gw.start,
-            endString: gw.end,
-            start: new Date(gw.start), // 11am on gsheets, 10am as new date(), back to 11am
-            end: new Date(gw.end),
+            ...event,
+            cup: ['cup', 'y', 'yes', 'Y'].includes(ggw.cup || ''),
+            gameWeek: i,
+            startString: start,
+            endString: event.deadline_time,
+            start, // 11am on gsheets, 10am as new date(), back to 11am
+            end,
+            isCurrent: new Date() < end && new Date() > start,
+            fixtures: getFixtures(fplFixtures, fplTeams, i) || [],
         };
-        data.isCurrent = new Date() < data.end && new Date() > data.start;
-        data.fixtures = getFixtures(fplFixtures, fplTeams, data) || [];
         return {
-            resourceId: `game-weeks-${gw.gameweek}`,
+            resourceId: `game-weeks-${i}`,
             data,
             internal: {
                 description: 'Game Weeks',

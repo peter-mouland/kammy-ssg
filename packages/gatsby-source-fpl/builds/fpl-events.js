@@ -7,6 +7,7 @@ module.exports = ({ events }) =>
         resourceId: `fpl-events-${data.id}`,
         data: {
             ...data,
+            event_id: data.id,
             date: getGmtDate(data.deadline_time),
         },
         internal: {

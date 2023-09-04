@@ -20,7 +20,6 @@ const buildManagers = require('./builds/managers');
 const buildDraft = require('./builds/draft');
 const buildTeams = require('./builds/teams');
 const buildLeagueTables = require('./builds/league-tables');
-const buildPlayerAdminList = require('./builds/player-admin-list');
 
 const createNode = ({ actions, createNodeId, node }) =>
     actions.createNode({
@@ -54,7 +53,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
     const fplTeams = buildFplTeams(fplData);
     const fplFPositions = buildFplPositions(fplData);
     const fplEvents = buildFplEvents(fplData);
-    const gameWeeks = buildGameWeeks({ googleGameWeekData, fplFixtures, fplTeams });
+    const gameWeeks = buildGameWeeks({ googleGameWeekData, fplEvents, fplFixtures, fplTeams });
     const divisions = buildDivisions({ googleDivisionData });
     const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers, fplTeams });
 
@@ -72,7 +71,6 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         fplTeams,
         createNodeId,
     }); // relies on players + managers
-    const playerAdminList = buildPlayerAdminList({ fplPlayers, players });
 
     // last - the tables
     const leagueTables = buildLeagueTables({
@@ -99,7 +97,6 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         ...(draft || []),
         ...(transfers || []),
         ...(teams || []),
-        ...(playerAdminList || []),
         // last
         ...(leagueTables || []),
     ].map((node) => createNode({ actions, createNodeId, node }));

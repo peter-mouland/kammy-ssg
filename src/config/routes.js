@@ -333,19 +333,6 @@ module.exports = [
         template: 'default',
     },
     {
-        name: 'admin-players',
-        exact: true,
-        path: '/admin/players',
-        meta: {
-            title: 'Draft Admin - Admin Players',
-            description: 'Draft : Fantasy Football',
-        },
-        label: 'Players',
-        requiresAuthentication: false,
-        component: 'AdminPlayersPage',
-        template: 'default',
-    },
-    {
         name: 'admin',
         exact: true,
         path: '/admin',
