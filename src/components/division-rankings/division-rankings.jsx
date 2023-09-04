@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
-import GameWeekSwitcher from '../gameweek-switcher';
 import Table from './division-rankings.table';
 import Spacer from '../spacer';
 

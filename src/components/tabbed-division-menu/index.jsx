@@ -39,7 +39,7 @@ const tabs = [
 
 const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
     const { gameWeeks, currentGameWeek } = useGameWeeks();
-    const displayGW = selectedGameWeek || currentGameWeek.gameWeek;
+    const displayGW = selectedGameWeek ?? currentGameWeek.gameWeek;
     const [showFixture, onShowFixture] = React.useState(null);
     const fixtures = {
         thisWeek: gameWeeks[displayGW],
@@ -50,10 +50,7 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
         <div>
             <div className={styles.container}>
                 <Spacer tag="ul" all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
-                    <GameWeekSwitcher
-                        to={selectedGameWeek ? `${division}-${selected}` : null}
-                        selectedGameWeek={displayGW}
-                    />
+                    <GameWeekSwitcher to={`${division}-${selected}`} selectedGameWeek={displayGW} />
                     {tabs.map(({ id, label, Icon }) => (
                         <li key={id} className={cx(styles.tab)}>
                             <NamedLink
