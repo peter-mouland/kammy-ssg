@@ -22,7 +22,6 @@ module.exports = ({ teamsByCode, elements, elementTypesById }) => {
             ...element,
             element_id: element.id,
             chance_of_playing_next_round: element.chance_of_playing_next_round || 100, // for inferred schema
-            chance_of_playing_this_round: element.chance_of_playing_this_round || 100,
             code: parseInt(element.code, 10),
             club: teamsByCode[element.team_code].name,
             fixtures: element.fixtures.map((fixture) => ({

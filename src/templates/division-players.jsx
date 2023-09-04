@@ -10,7 +10,7 @@ import TabbedMenu from '../components/tabbed-division-menu';
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
-const hiddenColumns = ['isHidden', 'isAvailable', 'new', 'value', 'code'];
+const hiddenColumns = ['isHidden', 'new', 'value', 'code'];
 const visibleStats = ['points', 'apps', 'gls', 'asts', 'cs', 'con', 'pensv', 'bp', 'sb', 'ycard', 'rcard'];
 
 const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
@@ -63,14 +63,10 @@ export const query = graphql`
                 id
                 code
                 name: web_name
-                chance_of_playing_this_round
-                chance_of_playing_next_round
                 club
                 pos
                 new
                 isHidden
-                isAvailable
-                availNews
                 url
                 season {
                     apps

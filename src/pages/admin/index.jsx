@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'gatsby';
-// import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 
 import Layout from '../../components/layout';

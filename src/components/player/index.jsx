@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { Link } from 'gatsby';
 
-import PlayerImage, { Availability } from '../player-image';
+import { useElements } from '../../hooks/use-fpl';
+import PlayerImage from '../player-image';
 import * as styles from './styles.module.css';
 
 const Player = ({ teamPos, large, small, player = {} }) => {
-    const { pos, club = '', name = '', isAvailable, url } = player;
-
+    const { pos, club = '', name = '', url } = player;
+    const query = useElements(player.code);
     const Pos = () =>
         !teamPos || pos === teamPos ? (
             <div>{pos}</div>
@@ -34,7 +35,7 @@ const Player = ({ teamPos, large, small, player = {} }) => {
     return (
         <div className={cx(styles.player, { [styles.large]: large })}>
             <Pos />
-            <PlayerImage player={player} large={large} small={small} />
+            <PlayerImage player={player} liveQuery={query} large={large} small={small} />
             <div className={cx(styles.playerName, { [styles.large]: large })}>
                 <PlayerNameLink />
                 <div className={styles.playerClub}>
@@ -44,7 +45,10 @@ const Player = ({ teamPos, large, small, player = {} }) => {
                     </span>
                 </div>
             </div>
-            {large && !isAvailable && <Availability player={player} />}
+            {large && query.isFetching && 'updating'}
+            {large && query.isPaused && '...offline!'}
+            {large && query.isError && query.error}
+            {large && query.data ? <p>{query.data.news} </p> : null}
         </div>
     );
 };
@@ -58,8 +62,6 @@ Player.propTypes = {
         club: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         url: PropTypes.string,
-        isAvailable: PropTypes.bool,
-        availNews: PropTypes.string,
     }).isRequired,
 };
 

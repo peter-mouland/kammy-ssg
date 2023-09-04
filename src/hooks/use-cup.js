@@ -1,5 +1,5 @@
 import parseISO from 'date-fns/parseISO';
-import { useMutation, useQuery, queryCache } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchCup, saveCupTeam } from '@kammy/helpers.spreadsheet';
 
 import useGameWeeks from './use-game-weeks';
@@ -9,9 +9,10 @@ const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) &
 const fetchr = () => fetchCup();
 
 const useCup = () => {
+    const queryClient = useQueryClient();
     const { currentGameWeek } = useGameWeeks();
     const queryKey = ['cup'];
-    const { isLoading, data: cupTeams = [] } = useQuery(['cup'], fetchr);
+    const { isLoading, data: cupTeams = [] } = useQuery({ queryKey, queryFn: fetchr });
     const metaByManager = cupTeams.reduce(
         (prev, team) => ({
             ...prev,
@@ -19,8 +20,12 @@ const useCup = () => {
         }),
         {},
     );
-    const [saveTeam, { isLoading: isSaving, isSuccess: isSaved }] = useMutation(
-        (team) => {
+    const {
+        mutate: saveTeam,
+        isPending: isSaving,
+        isSuccess: isSaved,
+    } = useMutation({
+        mutationFn: (team) => {
             const teamWithMeta = {
                 ...team,
                 group: metaByManager[team.manager].group,
@@ -28,13 +33,11 @@ const useCup = () => {
             };
             return saveCupTeam({ data: [teamWithMeta] });
         },
-        {
-            onSuccess: (data) => {
-                queryCache.cancelQueries(queryKey);
-                queryCache.setQueryData(queryKey, (old) => [...old, ...data]);
-            },
+        onSuccess: async (data) => {
+            await queryClient.cancelQueries(queryKey);
+            queryClient.setQueryData(queryKey, (old) => [...old, ...data]);
         },
-    );
+    });
 
     const teamsThisGameWeek = cupTeams.filter((team) => inDateRange(currentGameWeek, team.timestamp));
 

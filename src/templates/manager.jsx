@@ -41,8 +41,6 @@ export const query = graphql`
                     code
                     pos
                     url
-                    isAvailable
-                    availNews
                 }
             }
         }

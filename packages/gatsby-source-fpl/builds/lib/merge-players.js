@@ -69,8 +69,6 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
         const player = {
             ...fplPlayer,
             ...gPlayer,
-            isAvailable: ['null', null, 100, '100'].includes(fplPlayer.chance_of_playing_this_round),
-            availNews: fplPlayer.news || '',
             url: `/player/${gPlayer.code}`,
         };
         const playerWithStats = getPlayerWithStats({ player, gameWeeks: gameWeekData, fplTeams });

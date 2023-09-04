@@ -1,20 +1,29 @@
 import parseISO from 'date-fns/parseISO';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchTransfers } from '@kammy/helpers.spreadsheet';
 
 import useGameWeeks from './use-game-weeks';
 
 const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
 
-const fetchr = (key, division = 0) => fetchTransfers(division);
+const fetchr = ({ queryKey }) => fetchTransfers(queryKey[1]);
 
 const useAllTransfers = () => {
     const queryKey1 = ['transfers', 'premierLeague'];
     const queryKey2 = ['transfers', 'championship'];
     const queryKey3 = ['transfers', 'leagueOne'];
-    const { isLoading: isPremierLeagueLoading, data: premierLeagueTransfers = [] } = useQuery(queryKey1, fetchr);
-    const { isLoading: isChampionshipLoading, data: championshipTransfers = [] } = useQuery(queryKey2, fetchr);
-    const { isLoading: isLeagueOneLoading, data: leagueOneTransfers = [] } = useQuery(queryKey3, fetchr);
+    const { isLoading: isPremierLeagueLoading, data: premierLeagueTransfers = [] } = useQuery({
+        queryKey: queryKey1,
+        queryFn: fetchr,
+    });
+    const { isLoading: isChampionshipLoading, data: championshipTransfers = [] } = useQuery({
+        queryKey: queryKey2,
+        queryFn: fetchr,
+    });
+    const { isLoading: isLeagueOneLoading, data: leagueOneTransfers = [] } = useQuery({
+        queryKey: queryKey3,
+        queryFn: fetchr,
+    });
     const isLoading = isPremierLeagueLoading || isChampionshipLoading || isLeagueOneLoading;
     const transfers = [...premierLeagueTransfers, ...championshipTransfers, ...leagueOneTransfers];
     const { currentGameWeek } = useGameWeeks();

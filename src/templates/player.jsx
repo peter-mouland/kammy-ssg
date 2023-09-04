@@ -32,8 +32,6 @@ export const query = graphql`
             pos
             new
             isHidden
-            isAvailable
-            availNews
             url
             season {
                 apps

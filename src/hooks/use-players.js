@@ -16,8 +16,6 @@ const usePlayers = () => {
                     new
                     code
                     value: value_season
-                    isAvailable
-                    availNews
                     season {
                         apps
                         gls

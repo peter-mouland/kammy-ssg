@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, queryCache } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { graphql, useStaticQuery } from 'gatsby';
 import extract from '@kammy/helpers.extract-fpl-stats';
 import { calculateTotalPoints } from '@kammy/helpers.fpl-stats-to-points';
@@ -17,17 +17,16 @@ const fetchScores = () =>
 const useLiveScores = () => {
     const queryKey = 'liveStats';
     const [intervalMs] = useState(60000);
+    const queryClient = useQueryClient();
 
     const {
         isFetching: isLiveStatsLoading,
         isComplete,
         data: liveStats = [],
-    } = useQuery(queryKey, fetchScores, {
-        refetchInterval: intervalMs,
-    });
+    } = useQuery({ queryKey, queryFn: fetchScores, refetchInterval: intervalMs });
 
     if (isComplete) {
-        queryCache.invalidateQueries(queryKey);
+        queryClient.invalidateQueries(queryKey);
     }
 
     const {

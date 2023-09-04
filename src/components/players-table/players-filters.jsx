@@ -31,13 +31,9 @@ const applyFilters = ({
     const customFiltered = !customFilter || !customFilterChecked || customFilter.fn(player);
     const nameFiltered = !nameFilters.length || nameFilters.includes(player.name);
     const posFiltered = !posFilters.length || posFilters.includes(player.pos);
-    const miscFiltered =
-        !miscFilters.length ||
-        (miscFilters.includes('isNew') && player.new) ||
-        (miscFilters.includes('isAvail') && player.isAvailable);
+    const miscFiltered = !miscFilters.length || (miscFilters.includes('isNew') && player.new); // ||
     const hiddenFiltered = player.isHidden === showHidden;
     const clubFiltered = !clubFilters.length || clubFilters.includes(player.club);
-    // || (clubFilters === MY_TEAM && myTeam && [player.code])
 
     return nameFiltered && posFiltered && clubFiltered && hiddenFiltered && miscFiltered && customFiltered;
 };
@@ -172,7 +168,7 @@ export default class PlayersFilters extends React.Component {
                                             { value: 'isNew', label: 'New Players', group: 'misc' },
                                             // { value: 'isSub', label: 'Sub(s)', group: 'misc' },
                                             // { value: 'isPending', label: 'Pending transfers', group: 'misc' },
-                                            { value: 'isAvail', label: 'Available', group: 'misc' },
+                                            // { value: 'isAvail', label: 'Available', group: 'misc' },
                                         ],
                                     },
                                     {

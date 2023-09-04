@@ -81,8 +81,9 @@ class ContextualHelp extends PureComponent {
                 ref={(node) => {
                     this.containerRef = node;
                 }}
-                onMouseOver={this.open}
-                onMouseLeave={this.close}
+                onFocus={body ? this.open : null}
+                onMouseOver={body ? this.open : null}
+                onMouseLeave={body ? this.close : null}
             >
                 {Trigger}
                 <div

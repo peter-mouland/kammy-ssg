@@ -5,28 +5,42 @@
     img {
         max-width: 100%;
     }
-    .imageContainer {
-        position: relative;
-    }
     .circle {
         position: relative;
         border: 2px solid transparent;
         border-radius: 50%;
         width: 35px;
         height: 35px;
-        overflow: hidden;
-    }
-    .low {
-        color: red;
-        border-color: red;
-    }
-    .medium {
-        color: orange;
-        border-color: orange;
-    }
-    .high {
-        color: orange;
-        border-color: orange;
+        transition: all ease 1s;
+
+        .icon {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            transition: all ease 1s;
+            opacity: 0;
+        }
+
+        &.loading {
+            color: lightgray;
+            border-color: lightgray;
+            .icon { opacity: 0; }
+        }
+        &.low {
+            color: red;
+            border-color: red;
+            .icon { opacity: 1; }
+        }
+        &.medium {
+            color: orange;
+            border-color: orange;
+            .icon { opacity: 1; }
+        }
+        &.high {
+            color: orange;
+            border-color: orange;
+            .icon { opacity: 1; }
+        }
     }
 
     &.large {

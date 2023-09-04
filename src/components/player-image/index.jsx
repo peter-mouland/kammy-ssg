@@ -8,10 +8,11 @@ import InjuredIcon from '../icons/warning.svg';
 
 const holdingImage = 'https://fantasyfootball.skysports.com/assets/img/players/blank-player.png';
 
-export const getCircleClass = (player) => {
-    switch (player.chance_of_playing_this_round) {
+export const getCircleClass = (live, isLoading) => {
+    if (isLoading || !live) return 'loading';
+    switch (live.chance_of_playing_next_round) {
         case 100:
-            return 'high';
+            return '100';
         case 75:
             return 'high';
         case 50:
@@ -19,102 +20,44 @@ export const getCircleClass = (player) => {
         case 25:
             return 'low';
         case 0:
-        case null:
             return 'low';
+        case null:
         default:
             return '';
     }
 };
 
-export const Availability = ({ player }) => (
-    <div>
-        {player.availNews ? <p>{player.availNews}</p> : null}
-        {!player.isAvailable ? (
-            <div>
-                Chance of playing:
-                {player.chance_of_playing_this_round}%{' '}
-                <div>
-                    <span style={{ color: 'grey' }}>({player.chance_of_playing_next_round}% next round)</span>
-                </div>
-            </div>
-        ) : null}
-    </div>
-);
-Availability.propTypes = {
-    player: PropTypes.shape({
-        isAvailable: PropTypes.bool,
-        availNews: PropTypes.string,
-        chance_of_playing_this_round: PropTypes.number,
-        chance_of_playing_next_round: PropTypes.number,
-    }).isRequired,
-};
-
-const Image = ({ player }) => {
-    const circleClass = getCircleClass(player);
+const PlayerImage = ({ player, large, small, medium, liveQuery }) => {
+    const circleClass = getCircleClass(liveQuery.data, liveQuery.isLoading);
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
-    return (
-        <div className={cx(styles.circle, !player.isAvailable && styles[circleClass])}>
+
+    const trigger = (
+        <div className={cx(styles.circle, styles[circleClass])}>
             {player.code > 0 && <img src={img} loading="lazy" alt="" />}
             <img src={holdingImage} alt="" />
+            <span className={cx(styles.icon)}>
+                <InjuredIcon height={large ? 32 : 16} width={large ? 32 : 16} stroke="currentColor" fill="white" />
+            </span>
+        </div>
+    );
+    return (
+        <div
+            className={cx(styles.playerImage, {
+                [styles.large]: large,
+                [styles.mediumSize]: medium,
+                [styles.small]: small,
+            })}
+        >
+            <ContextualHelp body={liveQuery.data?.news} Trigger={trigger} />
         </div>
     );
 };
-Image.propTypes = {
-    player: PropTypes.shape({
-        code: PropTypes.number.isRequired,
-        isAvailable: PropTypes.bool,
-    }).isRequired,
-};
-
-// new
-// {player.new && <New className={bem('new-icon')} />}
-// {player.new && <span className="sr-only">new</span>}
-
-const PlayerImage = ({ player, large, small, medium }) => (
-    <div
-        className={cx(styles.playerImage, {
-            [styles.large]: large,
-            [styles.mediumSize]: medium,
-            [styles.small]: small,
-        })}
-    >
-        {player.isAvailable ? (
-            <Image player={player} />
-        ) : (
-            <ContextualHelp
-                body={<Availability player={player} />}
-                Trigger={
-                    <div className={styles.imageContainer}>
-                        <Image player={player} />
-                        <span
-                            style={{
-                                position: 'absolute',
-                                top: '-4px',
-                                right: '-4px',
-                            }}
-                            className={styles[getCircleClass(player)]}
-                        >
-                            <InjuredIcon
-                                height={large ? 32 : 16}
-                                width={large ? 32 : 16}
-                                stroke="currentColor"
-                                fill="white"
-                            />
-                        </span>
-                    </div>
-                }
-            />
-        )}
-    </div>
-);
 
 PlayerImage.propTypes = {
     large: PropTypes.bool,
     medium: PropTypes.bool,
     small: PropTypes.bool,
-    player: PropTypes.shape({
-        isAvailable: PropTypes.bool,
-    }).isRequired,
+    player: PropTypes.shape({}).isRequired,
 };
 
 PlayerImage.defaultProps = {

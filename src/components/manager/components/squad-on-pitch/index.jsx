@@ -55,7 +55,7 @@ const SquadOnPitch = ({ squad, onSelect }) => {
                     }
                     return (
                         <Pos key={index} {...{ squadMember, teamPos: pos, posIndex: index, onSelect, isInteractive }}>
-                            <PlayerImage player={{ ...squadMember.player, teamPos: pos }} medium />
+                            <PlayerImage player={{ ...squadMember.player, teamPos: pos }} medium liveQuery={{}} />
                             <div className={styles.meta}>
                                 <div className={styles.name}>
                                     <span>{squadMember.player.name.split(',')[0]}</span>
