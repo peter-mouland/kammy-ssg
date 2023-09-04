@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
 import './game-week-fixtures.css';
-import Spacer from '../spacer';
 
 const bem = bemHelper({ block: 'club-fixtures' });
 const months = [
@@ -39,7 +38,7 @@ const GameWeekFixtures = ({ fixtures }) => {
                     const { aScore, hScore } = fixture;
                     previousFullDate = fullDate;
                     return (
-                        <div key={fixture.id} className={bem('fixtures', 'theme-0')}>
+                        <div key={fixture.id} className={bem('fixtures')}>
                             {dateStr}
                             <span className={bem('fixture')}>
                                 <span className={bem('team', 'home')}>

@@ -83,3 +83,7 @@
         display: flex;
     }
 }
+
+.gwContainer {
+    text-align: center;
+}

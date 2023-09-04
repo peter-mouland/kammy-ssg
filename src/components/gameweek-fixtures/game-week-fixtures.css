@@ -6,22 +6,9 @@
 
 .club-fixtures__fixture {
     display: inline-block;
-    width: 100%;
-    min-width: 300px;
-}
-.club-fixtures__fixture--desktop {
-      min-width: 500px;
-      display: none;
-    }
-
-@media only screen and (min-width: 550px) {
-    .club-fixtures__fixture--desktop {
-        display: inline-block;
-      }
-
-    .club-fixtures__fixture--mobile {
-        display: none;
-      }
+    left: 25%;
+    position: relative;
+    width: 75%;
 }
 
 .club-fixtures__team {
@@ -31,7 +18,7 @@
 }
     @media only screen and (min-width: 550px) {
         .club-fixtures__team {
-            width: 45%;
+            width: 35%;
         }
     }
 

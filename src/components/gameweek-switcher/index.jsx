@@ -24,6 +24,7 @@ const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
                 <div
                     style={{
                         position: 'absolute',
+                        left: 0,
                         zIndex: '1',
                         maxHeight: '150px',
                         overflowY: 'scroll',

@@ -73,7 +73,6 @@ const DivisionStats = ({ selectedGameWeek, teams, previousTeams, isAdmin }) => {
                                             : '';
                                     const opoThisGw = player.gameWeeks[selectedGameWeek].fixtures;
                                     const opoNextGw = player.gameWeeks[selectedGameWeek + 1]?.fixtures || [];
-                                    console.log(opoNextGw);
                                     const warningClassName =
                                         isAdmin &&
                                         (clubWarnings.indexOf(player.club) > -1 ||
@@ -140,10 +139,10 @@ DivisionStats.propTypes = {
     isAdmin: PropTypes.bool,
 };
 
-TeamsPage.defaultProps = {
+DivisionStats.defaultProps = {
     isAdmin: false,
     teams: {},
     previousTeams: {},
 };
 
-export default TeamsPage;
+export default DivisionStats;

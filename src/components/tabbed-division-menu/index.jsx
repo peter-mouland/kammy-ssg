@@ -67,7 +67,7 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
                     ))}
                 </Spacer>
             </div>
-            <div>
+            <div className={styles.gwContainer}>
                 <span>
                     <GameWeekSwitcher to={`${division}-${selected}`} selectedGameWeek={displayGW} />
                 </span>
