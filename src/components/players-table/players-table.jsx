@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
+import { withDefault, useQueryParams, ArrayParam } from 'use-query-params';
 
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
@@ -35,115 +36,110 @@ SortableHeader.defaultProps = {
     className: '',
 };
 
-class PlayerTable extends React.Component {
-    state = {
-        sort: [],
-    };
+// create a custom parameter with a default value
+const EmptyArrayParam = withDefault(ArrayParam, []);
+const PlayerTable = ({
+    players,
+    visibleStats,
+    additionalColumns,
+    hiddenColumns,
+    myTeam,
+    positions,
+    disabledPlayers,
+    liveStatsByCode,
+}) => {
+    const [state, setState] = useQueryParams({
+        sort: EmptyArrayParam,
+    });
 
-    handleSort = (column) => {
-        const { sort } = this.state;
+    const handleSort = (column) => {
         switch (true) {
-            case isSortUp(sort, column):
-                return this.setState({ sort: [`-${column}`] });
-            case isSortDown(sort, column):
-                return this.setState({ sort: [] });
-            case isNotSorted(sort, column):
+            case isSortUp(state.sort, column):
+                return setState({ sort: [`-${column}`] });
+            case isSortDown(state.sort, column):
+                return setState({ sort: [] });
+            case isNotSorted(state.sort, column):
             default:
-                return this.setState({ sort: [column] });
+                return setState({ sort: [column] });
         }
     };
-
-    render() {
-        const {
-            players,
-            visibleStats,
-            additionalColumns,
-            hiddenColumns,
-            myTeam,
-            positions,
-            disabledPlayers,
-            liveStatsByCode,
-        } = this.props;
-
-        const { sort } = this.state;
-        return (
-            <table className="table">
-                <thead>
-                    <tr className="row row--header">
-                        {!hiddenColumns.includes('isHidden') && <th className="cell cell--hidden">isHidden</th>}
-                        {!hiddenColumns.includes('code') && <th className="cell cell--code">Code</th>}
-                        <th className="cell cell--player">Player</th>
-                        {!hiddenColumns.includes('value') && (
-                            <SortableHeader id="value" label="Value" sort={sort} handleSort={this.handleSort} />
-                        )}
-                        {additionalColumns.map((col) => (
-                            <th key={col} className={`cell cell--${col}`}>
-                                {col}
-                            </th>
-                        ))}
-                        {visibleStats.map((stat) => (
-                            <SortableHeader
-                                id={`season.${stat}`}
-                                label={stat}
-                                key={stat}
-                                sort={sort}
-                                handleSort={this.handleSort}
-                                className="cell--stat"
-                                colSpan={2}
-                            />
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {players.sort(sortColumns(sort.concat(['pos', 'name']), { pos: positions })).map((player) => {
-                        const isOnMyTeam = myTeam && myTeam[player.code];
-                        const livePoints = liveStatsByCode && liveStatsByCode[player.code];
-                        return (
-                            <tr
-                                key={player.code}
-                                id={player.code}
-                                className={bem(
-                                    'player',
-                                    {
-                                        selected: isOnMyTeam,
-                                        new: !!player.new,
-                                        disabled: !!disabledPlayers[player.code],
-                                    },
-                                    'row',
-                                )}
-                            >
-                                {!hiddenColumns.includes('isHidden') && (
-                                    <td className="cell">{player.isHidden && 'hidden'}</td>
-                                )}
-                                {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
-                                <td className="cell">
-                                    <Player player={player} />
+    return (
+        <table className="table">
+            <thead>
+                <tr className="row row--header">
+                    {!hiddenColumns.includes('isHidden') && <th className="cell cell--hidden">isHidden</th>}
+                    {!hiddenColumns.includes('code') && <th className="cell cell--code">Code</th>}
+                    <th className="cell cell--player">Player</th>
+                    {!hiddenColumns.includes('value') && (
+                        <SortableHeader id="value" label="Value" sort={state.sort} handleSort={handleSort} />
+                    )}
+                    {additionalColumns.map((col) => (
+                        <th key={col} className={`cell cell--${col}`}>
+                            {col}
+                        </th>
+                    ))}
+                    {visibleStats.map((stat) => (
+                        <SortableHeader
+                            id={`season.${stat}`}
+                            label={stat}
+                            key={stat}
+                            sort={state.sort}
+                            handleSort={handleSort}
+                            className="cell--stat"
+                            colSpan={2}
+                        />
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {players.sort(sortColumns(state.sort.concat(['pos', 'name']), { pos: positions })).map((player) => {
+                    const isOnMyTeam = myTeam && myTeam[player.code];
+                    const livePoints = liveStatsByCode && liveStatsByCode[player.code];
+                    return (
+                        <tr
+                            key={player.code}
+                            id={player.code}
+                            className={bem(
+                                'player',
+                                {
+                                    selected: isOnMyTeam,
+                                    new: !!player.new,
+                                    disabled: !!disabledPlayers[player.code],
+                                },
+                                'row',
+                            )}
+                        >
+                            {!hiddenColumns.includes('isHidden') && (
+                                <td className="cell">{player.isHidden && 'hidden'}</td>
+                            )}
+                            {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
+                            <td className="cell">
+                                <Player player={player} />
+                            </td>
+                            {!hiddenColumns.includes('value') && <td className="cell">{player.value}</td>}
+                            {additionalColumns.map((col) => (
+                                <td key={col} className={bem('stat', null, 'cell')}>
+                                    {String(player[col])}
                                 </td>
-                                {!hiddenColumns.includes('value') && <td className="cell">{player.value}</td>}
-                                {additionalColumns.map((col) => (
-                                    <td key={col} className={bem('stat', null, 'cell')}>
-                                        {String(player[col])}
+                            ))}
+                            {visibleStats.map((stat) => (
+                                <Fragment key={stat}>
+                                    <td key={state.stat} className={bem('stat', null, 'cell')}>
+                                        {player.season && (player.season[stat] ?? '-')}
                                     </td>
-                                ))}
-                                {visibleStats.map((stat) => (
-                                    <Fragment key={stat}>
-                                        <td key={stat} className={bem('stat', null, 'cell')}>
-                                            {player.season && (player.season[stat] ?? '-')}
-                                        </td>
-                                        <td className={`cell cell--pair cell--${stat}`}>
-                                            {player.gameWeek && player.gameWeek[stat]}
-                                            <span className="cell--live">{livePoints && livePoints[stat]}</span>
-                                        </td>
-                                    </Fragment>
-                                ))}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        );
-    }
-}
+                                    <td className={`cell cell--pair cell--${stat}`}>
+                                        {player.gameWeek && player.gameWeek[stat]}
+                                        <span className="cell--live">{livePoints && livePoints[stat]}</span>
+                                    </td>
+                                </Fragment>
+                            ))}
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </table>
+    );
+};
 
 PlayerTable.propTypes = {
     players: PropTypes.array.isRequired,

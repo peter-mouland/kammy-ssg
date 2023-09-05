@@ -98,9 +98,12 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
 };
 
 TabbedMenu.propTypes = {
-    selectedGameWeek: PropTypes.number.isRequired,
+    selectedGameWeek: PropTypes.number,
     division: PropTypes.string.isRequired,
     selected: PropTypes.string.isRequired,
+};
+TabbedMenu.defaultProps = {
+    selectedGameWeek: null,
 };
 
 export default TabbedMenu;

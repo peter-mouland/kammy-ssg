@@ -12442,6 +12442,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gatsby-plugin-use-query-params@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "gatsby-plugin-use-query-params@npm:1.0.1"
+  peerDependencies:
+    gatsby: ">=2.0"
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+    use-query-params: ">=0.4.3"
+  checksum: 62027d909966595196c8546a5bb438961165566f0584d9d6a8fa9ed33072cfeced9a88df1044ba7261322e187e3182fcc610cd3e269b87395a762604eba15c38
+  languageName: node
+  linkType: hard
+
 "gatsby-plugin-utils@npm:^4.12.0":
   version: 4.12.0
   resolution: "gatsby-plugin-utils@npm:4.12.0"
@@ -15736,6 +15748,7 @@ __metadata:
     gatsby-plugin-react-svg: 3.3.0
     gatsby-plugin-remove-trailing-slashes: 4.19.0
     gatsby-plugin-sass: 6.11.0
+    gatsby-plugin-use-query-params: ^1.0.1
     gatsby-source-filesystem: 5.12.0
     husky: 8.0.3
     identity-obj-proxy: ^3.0.0
@@ -15756,6 +15769,7 @@ __metadata:
     react-select: 4.3.1
     recharts: 2.0.9
     rimraf: 3.0.2
+    use-query-params: ^2.2.1
   languageName: unknown
   linkType: soft
 
@@ -22003,6 +22017,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"serialize-query-params@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "serialize-query-params@npm:2.0.2"
+  checksum: 6dccdbd68cbec44c99599c4f77968e8685a74cc597f473ed93b15a8d03c3a67f50c958af9af3d186e64aabd7f98b59d674a05aa4e69d997ed86a5478cf133b27
+  languageName: node
+  linkType: hard
+
 "serve-index-75lb@npm:^2.0.1":
   version: 2.0.1
   resolution: "serve-index-75lb@npm:2.0.1"
@@ -23923,6 +23944,25 @@ __metadata:
     querystringify: ^2.1.1
     requires-port: ^1.0.0
   checksum: fbdba6b1d83336aca2216bbdc38ba658d9cfb8fc7f665eb8b17852de638ff7d1a162c198a8e4ed66001ddbf6c9888d41e4798912c62b4fd777a31657989f7bdf
+  languageName: node
+  linkType: hard
+
+"use-query-params@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "use-query-params@npm:2.2.1"
+  dependencies:
+    serialize-query-params: ^2.0.2
+  peerDependencies:
+    "@reach/router": ^1.2.1
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+    react-router-dom: ">=5"
+  peerDependenciesMeta:
+    "@reach/router":
+      optional: true
+    react-router-dom:
+      optional: true
+  checksum: 5bf16511a561cf09902c3526950c6c88999767a1990619a322685448abbd09f5d71a17289d0f727bb3e68d5baced36b3fc0bbf855664b3dd5046d5d553204d28
   languageName: node
   linkType: hard
 

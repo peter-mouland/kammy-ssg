@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 import '@kammy/bootstrap';
 import { CookiesProvider } from 'react-cookie';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryParamProvider } from 'use-query-params';
+import { ReachAdapter } from 'use-query-params/adapters/reach';
 
 import NavBar from './nav-bar';
 import NamedLink from './named-link';
@@ -18,54 +20,56 @@ import * as styles from './layout.module.css';
 const queryClient = new QueryClient();
 
 const Layout = ({ title, description, children, footer }) => (
-    <QueryClientProvider client={queryClient}>
-        <CookiesProvider>
-            <Helmet>
-                <meta charSet="utf-8" />
-                <title>{title}</title>
-                {description && <meta name="description" content={description} />}
-            </Helmet>
-            <div>
-                <NavBar />
-                <main className={styles.content}>
-                    <section>{typeof children === 'function' ? children() : children}</section>
-                </main>
-                <footer className={styles.footer}>
-                    <div className={styles.footerContent}>
-                        {footer}
-                        <h2 className={styles.footerHeader}>Relevant Links</h2>
-                        <ul className={styles.footerLinks}>
-                            <li>
-                                <NamedLink to="rules" />
-                            </li>
-                            <li>
-                                <NamedLink to="prize-money" />
-                            </li>
-                            <li>
-                                <a href="/players-1920">Players (2019-2020)</a>
-                            </li>
-                            <li>
-                                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
-                            </li>
-                        </ul>
-                        <h2 className={`${styles.footerHeader} ${styles.footerHeaderDraft}`}>Drafts</h2>
-                        <ul className={`${styles.footerLinks} ${styles.footerLinksDraft}`}>
-                            <li>
-                                <NamedLink to="premierLeague-draft">Premier League</NamedLink>
-                            </li>
-                            <li>
-                                <NamedLink to="championship-draft">Championship</NamedLink>
-                            </li>
-                            <li>
-                                <NamedLink to="leagueOne-draft">League One</NamedLink>
-                            </li>
-                            <li />
-                        </ul>
-                    </div>
-                </footer>
-            </div>
-        </CookiesProvider>
-    </QueryClientProvider>
+    <QueryParamProvider adapter={ReachAdapter}>
+        <QueryClientProvider client={queryClient}>
+            <CookiesProvider>
+                <Helmet>
+                    <meta charSet="utf-8" />
+                    <title>{title}</title>
+                    {description && <meta name="description" content={description} />}
+                </Helmet>
+                <div>
+                    <NavBar />
+                    <main className={styles.content}>
+                        <section>{typeof children === 'function' ? children() : children}</section>
+                    </main>
+                    <footer className={styles.footer}>
+                        <div className={styles.footerContent}>
+                            {footer}
+                            <h2 className={styles.footerHeader}>Relevant Links</h2>
+                            <ul className={styles.footerLinks}>
+                                <li>
+                                    <NamedLink to="rules" />
+                                </li>
+                                <li>
+                                    <NamedLink to="prize-money" />
+                                </li>
+                                <li>
+                                    <a href="/players-1920">Players (2019-2020)</a>
+                                </li>
+                                <li>
+                                    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
+                                </li>
+                            </ul>
+                            <h2 className={`${styles.footerHeader} ${styles.footerHeaderDraft}`}>Drafts</h2>
+                            <ul className={`${styles.footerLinks} ${styles.footerLinksDraft}`}>
+                                <li>
+                                    <NamedLink to="premierLeague-draft">Premier League</NamedLink>
+                                </li>
+                                <li>
+                                    <NamedLink to="championship-draft">Championship</NamedLink>
+                                </li>
+                                <li>
+                                    <NamedLink to="leagueOne-draft">League One</NamedLink>
+                                </li>
+                                <li />
+                            </ul>
+                        </div>
+                    </footer>
+                </div>
+            </CookiesProvider>
+        </QueryClientProvider>
+    </QueryParamProvider>
 );
 
 Layout.propTypes = {

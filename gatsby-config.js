@@ -27,6 +27,7 @@ module.exports = {
         description: 'Draft Fantasy Football game',
     },
     plugins: [
+        'gatsby-plugin-use-query-params',
         {
             resolve: `gatsby-plugin-gatsby-cloud`,
         },
