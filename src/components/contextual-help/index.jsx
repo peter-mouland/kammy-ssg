@@ -102,7 +102,7 @@ class ContextualHelp extends PureComponent {
 }
 
 ContextualHelp.propTypes = {
-    Trigger: PropTypes.node.isRequired,
+    Trigger: PropTypes.node,
     /** @type {string} body text content of the popover */
     body: PropTypes.node.isRequired,
     /** @type {string} title text content of the popover */
@@ -112,6 +112,7 @@ ContextualHelp.propTypes = {
 };
 
 ContextualHelp.defaultProps = {
+    body: '',
     header: '',
     width: 250,
 };

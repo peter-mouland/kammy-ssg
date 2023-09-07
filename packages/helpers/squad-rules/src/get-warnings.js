@@ -49,13 +49,13 @@ const playerInOtherTeam = ({ playersInOtherTeamsByCode, playerIn, playersInOther
     };
 };
 
-const loanPlayerNotInOtherTeam = ({ playerIn, playersInOtherTeams, changeType }) => ({
-    error:
-        !playersInOtherTeams.includes(playerIn.code) &&
-        (changeType === changeTypes.LOAN_END || changeType === changeTypes.LOAN_START),
-    message: `
-        It looks like <strong>${playerIn.name}</strong> is not in anyone's team. A Loan must involve other managers`,
-});
+const loanPlayerNotInOtherTeam = ({ playerIn, playerOut, playersInOtherTeams, newTeam, changeType }) => {
+    const playOutWithinNewTeam = newTeam.find(({ player }) => player.code === playerOut.code);
+    return {
+        error: !playOutWithinNewTeam && changeType === changeTypes.LOAN_START,
+        message: `It looks like <strong>${playerOut.name}</strong> is not in your team. A "Loan Start" must involve <em>your</em> players`,
+    };
+};
 
 const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut = {}, changeType }) => ({
     error:
@@ -104,6 +104,68 @@ const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
 // todo (somewhen): one loan at a time
 // todo (somewhen): when loan ends, complete the 'paired' loan agreement too
 
+//
+// // loans
+// const loans = changeData.filter((change) => {
+//     if (!playersByCode[change.playerOut].loans) playersByCode[change.playerOut].loans = [];
+//     if (!playersByCode[change.playerOut].transfers) playersByCode[change.playerOut].transfers = [];
+//
+//     if (change.type === 'Loan Start') {
+//         const loanStart = {
+//             startGameWeek: getGameWeekFromDate(change.date),
+//             start: change.date,
+//             loanedBy: change.manager,
+//         };
+//         playersByCode[change.playerOut].loans.push(loanStart);
+//     } else if (change.type === 'Loan End') {
+//         playersByCode[change.playerOut].loans.at(-1).end = change.date;
+//         playersByCode[change.playerOut].loans.at(-1).endGameWeek = getGameWeekFromDate(change.date);
+//     } else if (change.type === 'Transfer') {
+//         playersByCode[change.playerIn].loans.at(-1).end = change.date;
+//         playersByCode[change.playerIn].loans.at(-1).endGameWeek = getGameWeekFromDate(change.date);
+//     }
+//     return change.type === 'Loan Start' || change.type === 'Loan End';
+// });
+//
+// console.log({ gameWeek });
+// console.log({ changeData });
+// console.log({ loans });
+// console.log({ playersByCode });
+// const loanPairings = loans.map((loan) => {
+//     // status: (_all_ has 'loan start')
+//     // - invalid: has no manager picking up in the same game-week as 'loan start'. not in current game-week
+//     // - new loan proposal: has no "loan end", has no manager picking up in the same game-week. in current game week
+//     // - new loan accepted: has no "loan end", has manager picking up in the same game-week. in current game week
+//     // - on-loan: has no "loan end", has manager picking up in the same game-week. loan not in current game week
+//     // - loan end proposal: has manager picking up in the same game-week, has "loan end" in current game week
+//     // - loan ended: has manager picking up in the same game-week, has "loan end" in previous game-week
+//
+//     // class TeamChange {
+//     //      category 'Transfer' | 'Loan' | 'Trade' | 'Swap' | 'New Player'
+//     //      isPending
+//     //      isValid
+//     //      isFailed
+//     //
+//     //      loanStarted
+//     //      loanEnded
+//     //      player
+//     // }
+//     // class Player {
+//     //      web_name: string
+//     //      code: number
+//     //      fpl_metrics: { FPLMetrics }
+//     //      fixtures: { season: [Fixture], gameWeek: [[Fixture]] }
+//     //      stats : { season: Stats, gameWeek: [Stats] }
+//     //      club: string
+//     //      currentSquad: Manager
+//     //      OwnedByManager: Manager
+//     // }
+//
+//     // eslint-disable-next-line no-param-reassign
+//     loan.status = '';
+//     return loan;
+// });
+
 const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, transfers }) => {
     if (!manager || !playerIn || !playerOut || !changeType) {
         return { warnings: [] };
@@ -114,7 +176,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
     const playerInTeamPos = teamPLayerIn ? teamPLayerIn.teamPos : null;
     const playerOutTeamPos = teamPLayerOut ? teamPLayerOut.teamPos : null;
 
-    const newTeam = originalTeam.filter(({ player }) => {
+    const newTeamUnsorted = originalTeam.filter(({ player }) => {
         if (changeType === changeTypes.SWAP) {
             return player.code !== playerOut.code && player.code !== playerIn.code;
         } else if (changeType === changeTypes.NEW_PLAYER) {
@@ -123,7 +185,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         return player.code !== playerOut.code;
     });
     if (changeType === changeTypes.SWAP) {
-        newTeam.push({
+        newTeamUnsorted.push({
             managerName: manager,
             posIndex: teamPLayerIn?.posIndex,
             player: playerOut,
@@ -133,7 +195,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         });
     }
     if (changeType !== changeTypes.NEW_PLAYER) {
-        newTeam.push({
+        newTeamUnsorted.push({
             managerName: manager,
             posIndex: teamPLayerOut?.posIndex,
             player: playerIn,
@@ -143,7 +205,8 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         });
     }
 
-    const newTeams = { ...teams, [manager]: newTeam.sort((a, b) => (a.posIndex < b.posIndex ? -1 : 1)) };
+    const newTeam = newTeamUnsorted.sort((a, b) => (a.posIndex < b.posIndex ? -1 : 1));
+    const newTeams = { ...teams, [manager]: newTeam };
     const playersInOtherTeamsByCode = Object.keys(teams).reduce((prev, managerName) => {
         if (managerName === manager) return prev;
         return {
@@ -177,7 +240,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         managerHasTooManyTransfers({ managerTransfers, changeType }),
         changeType === changeTypes.SWAP ? maxSwaps({ managerSwaps }) : {},
         managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
-        loanPlayerNotInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByCode }),
+        loanPlayerNotInOtherTeam({ playerIn, playerOut, playersInOtherTeams, newTeam, changeType }),
         playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByCode, changeType }),
         playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut, changeType }),
         playerAlreadyInValidTransfer({ playerIn, transfers }),
@@ -198,7 +261,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, manager, changeType, tra
         originalTeams: teams,
         warnings,
         transferHasWarnings: !!warnings.length,
-        teamWithTransfer: newTeam.sort((a, b) => (a.posIndex < b.posIndex ? -1 : 1)),
+        teamWithTransfer: newTeam,
         teamsWithTransfer: newTeams,
     };
 };

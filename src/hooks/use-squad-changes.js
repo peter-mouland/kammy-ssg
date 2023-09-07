@@ -13,12 +13,29 @@ const fetchr = ({ queryKey }) => fetchTransfers(queryKey[1]);
 const { changeTypes } = consts;
 
 const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} }) => {
-    const queryClient = useQueryClient();
-    const queryKey = ['transfers', divisionKey];
-    const { isLoading, data: changeData = [] } = useQuery({ queryKey, queryFn: fetchr });
+    const { gameWeeks } = useGameWeeks();
+    const gameWeek = gameWeeks[selectedGameWeek];
 
     const { players } = usePlayers();
     const playersByCode = players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {});
+
+    const queryKey = ['transfers', divisionKey];
+    const { isLoading, data: changeData = [] } = useQuery({
+        queryKey,
+        queryFn: fetchr,
+        select: (transfers) =>
+            transfers.map((transfer) => ({
+                ...transfer,
+                codeIn: parseInt(transfer.codeIn, 10),
+                codeOut: parseInt(transfer.codeOut, 10),
+                date: new Date(transfer.date),
+                isValid: transfer.status === 'Y',
+                isPending: transfer.status === 'TBC',
+                isFailed: transfer.status === 'E',
+            })),
+    });
+
+    const queryClient = useQueryClient();
     const transferWithoutWarnings = [];
     let updatedTeams = teamsByManager;
     const { mutate: saveSquadChange, isPending: isSaving } = useMutation({
@@ -28,8 +45,6 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
             queryClient.setQueryData(queryKey, (old) => [...old, ...data]);
         },
     });
-    const { gameWeeks } = useGameWeeks();
-    const gameWeek = gameWeeks[selectedGameWeek];
     const applyChange = (changesToApply) =>
         changesToApply.map((change) => {
             if (!change.isPending) {
@@ -69,7 +84,6 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
     const changesThisGameWeek = changes.filter(({ timestamp }) => inDateRange(gameWeek, timestamp));
     const pendingChanges = changes.filter(({ isPending }) => !!isPending);
     const confirmedChanges = changes.filter(({ isPending }) => !isPending);
-    // console.log({ changesThisGameWeek, pendingChanges, confirmedChanges });
     const changesByType = Object.entries(changeTypes).reduce(
         (prev, [key, value]) => ({
             ...prev,
@@ -77,7 +91,6 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
         }),
         {},
     );
-    // console.log({ pendingChanges });
     return {
         queryKey,
         isLoading,
