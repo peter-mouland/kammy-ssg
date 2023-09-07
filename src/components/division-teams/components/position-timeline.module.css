@@ -1,0 +1,45 @@
+
+/* LAYOUT */
+.player {
+    display: grid;
+    grid-template-areas: 'image name pos'
+                         'image club pos'
+                         'news news news';
+    grid-template-columns: 100px 2fr 1fr;
+    align-items: center;
+}
+.gridTeamPos {
+    grid-area: teamPos;
+}
+
+.gridImage {
+    grid-area: image;
+    align-self: baseline;
+    justify-self: center;
+}
+
+.gridName {
+    grid-area: name;
+}
+.gridClub {
+    grid-area: club;
+}
+
+.gridNews {
+    grid-row: 3;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    background-color: rgba(255,255,255,0.75);
+    z-index: 1;
+    display: grid;
+    &:empty { display: none}
+}
+
+.home {
+      text-align: right;
+}
+
+.my-team {
+  font-weight: bold;
+}
+

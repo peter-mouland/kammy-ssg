@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import ContextualHelp from '../contextual-help';
 import * as styles from './styles.module.css';
 import InjuredIcon from '../icons/warning.svg';
 
@@ -31,15 +30,6 @@ const PlayerImage = ({ player, large, small, medium, liveQuery }) => {
     const circleClass = getCircleClass(liveQuery.data, liveQuery.isLoading);
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
 
-    const trigger = (
-        <div className={cx(styles.circle, styles[circleClass])}>
-            {player.code > 0 && <img src={img} loading="lazy" alt="" />}
-            <img src={holdingImage} alt="" />
-            <span className={cx(styles.icon)}>
-                <InjuredIcon height={large ? 32 : 16} width={large ? 32 : 16} stroke="currentColor" fill="white" />
-            </span>
-        </div>
-    );
     return (
         <div
             className={cx(styles.playerImage, {
@@ -48,7 +38,13 @@ const PlayerImage = ({ player, large, small, medium, liveQuery }) => {
                 [styles.small]: small,
             })}
         >
-            <ContextualHelp body={liveQuery.data?.news} Trigger={trigger} />
+            <div className={cx(styles.circle, styles[circleClass])}>
+                {player.code > 0 && <img src={img} loading="lazy" alt="" />}
+                <img src={holdingImage} alt="" />
+                <span className={cx(styles.icon)}>
+                    <InjuredIcon height={large ? 32 : 16} width={large ? 32 : 16} stroke="currentColor" fill="white" />
+                </span>
+            </div>
         </div>
     );
 };

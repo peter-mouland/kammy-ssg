@@ -7,53 +7,42 @@ import { useElements } from '../../hooks/use-fpl';
 import PlayerImage from '../player-image';
 import * as styles from './styles.module.css';
 
-const Player = ({ teamPos, large, small, player = {} }) => {
-    const { pos, club = '', name = '', url } = player;
+export const Name = ({ children }) => <div className={styles.name}>{children}</div>;
+export const Club = ({ children }) => <div className={styles.club}>{children}</div>;
+export const Pos = ({ teamPos, pos }) => (
+    <div className={styles.pos}>
+        <div className={styles.teamPos}>{teamPos || pos}</div>
+        <div className={cx(styles.pos, { [styles.hidden]: pos === teamPos || !teamPos })}>({pos})</div>
+    </div>
+);
+export const News = ({ children }) => <div className={styles.news}>{children}</div>;
+export const Image = PlayerImage;
+
+export const AllInfo = ({ teamPos, large, small, player = {} }) => {
     const query = useElements(player.code);
-    const Pos = () =>
-        !teamPos || pos === teamPos ? (
-            <div>{pos}</div>
-        ) : (
-            <div>
-                {teamPos}
-                <div>
-                    <small> ({pos.toLowerCase()})</small>
-                </div>
-            </div>
-        );
-    const PlayerName = () => (
-        <p>
-            <span className="show-625">{name}</span>
-            <span className="hide-625">{name.split(',')[0]}</span>
-        </p>
-    );
-    const PlayerNameLink = () => (
-        <Link to={url} title={`Show ${teamPos} timeline`}>
-            <PlayerName />
-        </Link>
-    );
     return (
         <div className={cx(styles.player, { [styles.large]: large })}>
-            <Pos />
-            <PlayerImage player={player} liveQuery={query} large={large} small={small} />
-            <div className={cx(styles.playerName, { [styles.large]: large })}>
-                <PlayerNameLink />
-                <div className={styles.playerClub}>
-                    <span className="show-550">{club}</span>
-                    <span className="hide-550">
-                        {club.split(' ')[0]} {(club.split(' ')[1] || '').charAt(0)}
-                    </span>
-                </div>
+            <div className={styles.gridTeamPos}>
+                <Pos pos={player.pos} teamPos={teamPos} />
             </div>
-            {large && query.isFetching && 'updating'}
-            {large && query.isPaused && '...offline!'}
-            {large && query.isError && query.error}
-            {large && query.data ? <p>{query.data.news} </p> : null}
+            <div className={styles.gridImage}>
+                <Link to={player.url}>
+                    <Image player={player} liveQuery={query} large={large} small={small} />
+                </Link>
+            </div>
+            <div className={cx(styles.gridName)}>
+                <Link to={player.url}>
+                    <Name to={player.url}>{player.name}</Name>
+                </Link>
+            </div>
+            <div className={styles.gridClub}>
+                <Club>{player.club}</Club>
+            </div>
         </div>
     );
 };
 
-Player.propTypes = {
+AllInfo.propTypes = {
     teamPos: PropTypes.string,
     large: PropTypes.bool,
     small: PropTypes.bool,
@@ -65,10 +54,10 @@ Player.propTypes = {
     }).isRequired,
 };
 
-Player.defaultProps = {
+AllInfo.defaultProps = {
     teamPos: '',
     large: false,
     small: false,
 };
 
-export default Player;
+export default AllInfo;

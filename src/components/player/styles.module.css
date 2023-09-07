@@ -1,32 +1,77 @@
+
+/* LAYOUT */
 .player {
-    text-align: center;
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-areas: 'teamPos image name'
+                         'teamPos image club'
+                         '- image --';
+    grid-template-columns: 40px 1fr 2fr;
     align-items: center;
-
+}
+.gridTeamPos {
+    grid-area: teamPos;
 }
 
-.playerName {
-    flex: 1;
-
-    &.large {
-        font-size: 1.5em;
-     }
+.gridImage {
+    grid-area: image;
+    align-self: baseline;
+    justify-self: center;
 }
 
-.playerClub {
+.gridName {
+    grid-area: name;
+}
+.gridClub {
+    grid-area: club;
+}
+
+.gridNews {
+    grid-row: 3;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    background-color: rgba(255,255,255,0.75);
+    z-index: 1;
+    display: grid;
+    &:empty { display: none}
+}
+
+
+/* STYLING */
+
+.club {
     margin-top: 2px;
     font-weight: normal;
     font-size: 0.75em;
     color: #888;
 }
 
-.playerPosition {
+.teamPos{
+    font-size: 0.85em;
+    color: #333;
+}
+.pos {
     font-size: 0.75em;
     color: #888;
-    width: 40px;
+    &:empty { display: none }
+}
 
-    @media (min-width: 650px) {
-        width: 50px
+.news {
+    font-size: 0.75em;
+    color: #95664c;
+    font-style: italic;
+}
+
+/* VARIANTS */
+.large {
+    .name {
+        font-size: 1.5em;
     }
+}
+
+/* UTILS */
+.hidden {
+    display: none;
+}
+.block {
+    display: none;
 }

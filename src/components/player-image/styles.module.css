@@ -11,13 +11,13 @@
         border-radius: 50%;
         width: 35px;
         height: 35px;
-        transition: all ease 1s;
+        transition: color ease 1s, background-color ease 1s;
 
         .icon {
             position: absolute;
             top: -4px;
             right: -4px;
-            transition: all ease 1s;
+            transition: opacity ease 1s;
             opacity: 0;
         }
 

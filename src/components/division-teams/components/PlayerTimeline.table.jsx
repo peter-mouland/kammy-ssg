@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import bemHelper from '@kammy/bem';
 
+import { useElements } from '../../../hooks/use-fpl';
+import * as Player from '../../player';
 import { StatsHeaders, StatsCells, TeamName } from './tableHelpers';
-import Player from '../../player';
-import './positionTimeline.css';
-
-const bem = bemHelper({ block: 'position-timeline' });
+import * as styles from './position-timeline.module.css';
 
 const sum = (total, stats = {}) => {
     Object.keys(stats || {}).forEach((key) => {
@@ -16,10 +14,29 @@ const sum = (total, stats = {}) => {
 };
 
 const PlayerTimelineTable = ({ player }) => {
+    const elementQuery = useElements(player.code);
     const totals = {};
     return (
         <div>
-            <Player player={player} large />
+            <div className={styles.player}>
+                <div className={styles.gridImage}>
+                    <Player.Image player={player} large liveQuery={elementQuery} />
+                </div>
+
+                <div className={styles.gridTeamPos}>
+                    <Player.Pos pos={player.pos} />
+                </div>
+
+                <div className={styles.gridClub}>
+                    <Player.Club>{player.club}</Player.Club>
+                </div>
+                <div className={styles.gridName}>
+                    <Player.Name to={player.url}>{player.name}</Player.Name>
+                </div>
+                <div className={styles.gridNews}>
+                    <Player.News>{elementQuery.data?.news}</Player.News>
+                </div>
+            </div>
 
             <table className="table">
                 <thead>
@@ -32,7 +49,7 @@ const PlayerTimelineTable = ({ player }) => {
                     {(player.gameWeeks || []).map(({ fixtures }) =>
                         (fixtures || []).map((fixture) => (
                             <tr key={`${fixture.event}`}>
-                                <td className={bem('team', { home: true })}>
+                                <td className={styles.home}>
                                     {fixture.is_home || fixture.was_home ? (
                                         <strong>
                                             <TeamName team={fixture.hTname} />
@@ -45,7 +62,7 @@ const PlayerTimelineTable = ({ player }) => {
                                 <td>
                                     <span style={{ padding: '0 4px' }}>vs</span>
                                 </td>
-                                <td className={bem('team', { away: true })}>
+                                <td className={styles.away}>
                                     <span style={{ color: 'grey' }}>{fixture.aScore}</span>{' '}
                                     {!fixture.is_home && !fixture.was_home ? (
                                         <strong>

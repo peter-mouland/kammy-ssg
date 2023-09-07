@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
@@ -6,7 +6,8 @@ import { withDefault, useQueryParams, ArrayParam } from 'use-query-params';
 
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
-import Player from '../player';
+import * as Player from '../player';
+import { AllInfo } from '../player';
 
 const bem = bemHelper({ block: 'table' });
 
@@ -46,7 +47,7 @@ const PlayerTable = ({
     myTeam,
     positions,
     disabledPlayers,
-    liveStatsByCode,
+    // liveStatsByCode,
 }) => {
     const [state, setState] = useQueryParams({
         sort: EmptyArrayParam,
@@ -69,7 +70,9 @@ const PlayerTable = ({
                 <tr className="row row--header">
                     {!hiddenColumns.includes('isHidden') && <th className="cell cell--hidden">isHidden</th>}
                     {!hiddenColumns.includes('code') && <th className="cell cell--code">Code</th>}
+                    <th className="cell cell--pos show-1000">Pos</th>
                     <th className="cell cell--player">Player</th>
+                    <th className="cell cell--club show-1000">Club</th>
                     {!hiddenColumns.includes('value') && (
                         <SortableHeader id="value" label="Value" sort={state.sort} handleSort={handleSort} />
                     )}
@@ -86,7 +89,6 @@ const PlayerTable = ({
                             sort={state.sort}
                             handleSort={handleSort}
                             className="cell--stat"
-                            colSpan={2}
                         />
                     ))}
                 </tr>
@@ -94,7 +96,7 @@ const PlayerTable = ({
             <tbody>
                 {players.sort(sortColumns(state.sort.concat(['pos', 'name']), { pos: positions })).map((player) => {
                     const isOnMyTeam = myTeam && myTeam[player.code];
-                    const livePoints = liveStatsByCode && liveStatsByCode[player.code];
+                    // const livePoints = liveStatsByCode && liveStatsByCode[player.code];
                     return (
                         <tr
                             key={player.code}
@@ -113,8 +115,19 @@ const PlayerTable = ({
                                 <td className="cell">{player.isHidden && 'hidden'}</td>
                             )}
                             {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
-                            <td className="cell">
-                                <Player player={player} />
+
+                            <td className="cell hide-1000">
+                                <Player.AllInfo player={player} />
+                            </td>
+                            <td className="cell show-1000">
+                                <Player.Pos pos={player.pos} />
+                            </td>
+                            <td className="cell show-1000">
+                                <Player.Image player={player} small liveQuery={{}} />
+                                <Player.Name>{player.name}</Player.Name>
+                            </td>
+                            <td className="cell show-1000">
+                                <Player.Club>{player.club}</Player.Club>
                             </td>
                             {!hiddenColumns.includes('value') && <td className="cell">{player.value}</td>}
                             {additionalColumns.map((col) => (
@@ -123,15 +136,9 @@ const PlayerTable = ({
                                 </td>
                             ))}
                             {visibleStats.map((stat) => (
-                                <Fragment key={stat}>
-                                    <td key={state.stat} className={bem('stat', null, 'cell')}>
-                                        {player.season && (player.season[stat] ?? '-')}
-                                    </td>
-                                    <td className={`cell cell--pair cell--${stat}`}>
-                                        {player.gameWeek && player.gameWeek[stat]}
-                                        <span className="cell--live">{livePoints && livePoints[stat]}</span>
-                                    </td>
-                                </Fragment>
+                                <td key={state.stat} className={bem('stat', null, 'cell')}>
+                                    {player.season && (player.season[stat] ?? '-')}
+                                </td>
                             ))}
                         </tr>
                     );
@@ -149,11 +156,11 @@ PlayerTable.propTypes = {
     disabledPlayers: PropTypes.object,
     additionalColumns: PropTypes.arrayOf(PropTypes.string),
     myTeam: PropTypes.object,
-    liveStatsByCode: PropTypes.object,
+    // liveStatsByCode: PropTypes.object,
 };
 
 PlayerTable.defaultProps = {
-    liveStatsByCode: null,
+    // liveStatsByCode: null,
     myTeam: null,
     hiddenColumns: [],
     disabledPlayers: {},
