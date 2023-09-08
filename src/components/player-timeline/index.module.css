@@ -38,8 +38,38 @@
 .home {
       text-align: right;
 }
+.away {
+      text-align: left;
+}
 
 .my-team {
   font-weight: bold;
 }
 
+
+.table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    position: relative;
+    font-size: 0.85em;
+
+    @media (min-width: 650px) {
+        font-size: 1em;
+    }
+}
+
+th.cell {
+    text-align: center;
+    background-color: rgb(220, 228, 245);
+    padding: .3em .15em;
+    font-size: .8em;
+    width: 60px;
+}
+td.cell {
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+    text-align: center;
+    padding: .3em .15em;
+    vertical-align: middle;
+}

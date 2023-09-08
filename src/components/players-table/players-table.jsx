@@ -117,13 +117,13 @@ const PlayerTable = ({
                             {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
 
                             <td className="cell hide-1000">
-                                <Player.AllInfo player={player} />
+                                <Player.AllInfo SquadPlayer={player} />
                             </td>
                             <td className="cell show-1000">
                                 <Player.Pos pos={player.pos} />
                             </td>
                             <td className="cell show-1000">
-                                <Player.Image player={player} small liveQuery={{}} />
+                                <Player.Image code={player.code} small liveQuery={{}} />
                                 <Player.Name>{player.name}</Player.Name>
                             </td>
                             <td className="cell show-1000">
