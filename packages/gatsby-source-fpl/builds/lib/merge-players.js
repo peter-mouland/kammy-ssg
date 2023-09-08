@@ -29,14 +29,18 @@ const getGameWeeksWithFixtures = ({ player, gameWeeks, fplTeams }) =>
         if (!gameWeekFixtures || !gameWeekFixtures.length) {
             notFound.add(gw);
         }
-        return { fixtures: gameWeekFixtures, stats: gameWeekStats };
+        return { gameWeekIndex: gw.gameWeek, fixtures: gameWeekFixtures, stats: gameWeekStats };
     });
 
 const getPlayerWithStats = ({ player, gameWeeks, fplTeams }) => {
     const gameWeeksWithFixtures = getGameWeeksWithFixtures({ player, gameWeeks, fplTeams });
     const season = calculateSeasonStats(gameWeeksWithFixtures, player.pos);
+    const currentGameWeekIndex = gameWeeks.findIndex(({ isCurrent }) => !!isCurrent);
+    const nextGameWeekIndex = currentGameWeekIndex + 1;
     return {
         ...player,
+        currentGameWeekFixture: gameWeeksWithFixtures[currentGameWeekIndex],
+        nextGameWeekFixture: gameWeeksWithFixtures[nextGameWeekIndex],
         gameWeeks: gameWeeksWithFixtures,
         season,
     };

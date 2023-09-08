@@ -26,9 +26,9 @@ export const getCircleClass = (live, isLoading) => {
     }
 };
 
-const PlayerImage = ({ player, large, small, medium, liveQuery }) => {
+const PlayerImage = ({ code, large, small, medium, liveQuery }) => {
     const circleClass = getCircleClass(liveQuery.data, liveQuery.isLoading);
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`}`;
 
     return (
         <div
@@ -39,7 +39,7 @@ const PlayerImage = ({ player, large, small, medium, liveQuery }) => {
             })}
         >
             <div className={cx(styles.circle, styles[circleClass])}>
-                {player.code > 0 && <img src={img} loading="lazy" alt="" />}
+                {code > 0 && <img src={img} loading="lazy" alt="" />}
                 <img src={holdingImage} alt="" />
                 <span className={cx(styles.icon)}>
                     <InjuredIcon height={large ? 32 : 16} width={large ? 32 : 16} stroke="currentColor" fill="white" />
@@ -53,7 +53,7 @@ PlayerImage.propTypes = {
     large: PropTypes.bool,
     medium: PropTypes.bool,
     small: PropTypes.bool,
-    player: PropTypes.shape({}).isRequired,
+    code: PropTypes.number.isRequired,
 };
 
 PlayerImage.defaultProps = {

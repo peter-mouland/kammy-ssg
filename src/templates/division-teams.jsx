@@ -1,79 +1,137 @@
 /* eslint-disable react/prop-types */
 import { graphql } from 'gatsby';
 import React from 'react';
+import { useCookies } from 'react-cookie';
 
-import DivisionTeams from '../components/division-teams';
-import Layout from '../components/layout';
+import * as Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
+import TeamWarnings from '../components/team-warnings';
+import * as StatsTable from '../components/division-teams/division-stats.table';
+import CSquads, { Stats } from '../models/squads';
+import CPositions from '../models/position';
+import CDivisions from '../models/division';
+import CManagers from '../models/managers';
+import Player from '../components/player';
+import * as styles from '../components/division-teams/division-stats.module.css';
 
-const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey } }) => {
+const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } }) => {
+    const [cookies] = useCookies(['is-admin']);
+    const isAdmin = cookies['is-admin'] === 'true' || false;
     const {
+        allManagers: { nodes: allManagers },
         currentTeams: { group: currentTeams },
-        previousTeams: { group: previousTeams },
     } = data;
 
-    const teamsByManager = currentTeams.reduce(
-        (previous, { nodes: team }) => ({
-            ...previous,
-            [team[0].manager.name]: team,
-        }),
-        {},
-    );
-    const previousTeamsByManager = (previousTeams || []).reduce(
-        (previous, { nodes: team }) => ({
-            ...previous,
-            [team[0].manager.name]: team,
-        }),
-        {},
-    );
-
+    const Positions = new CPositions();
+    const Divisions = new CDivisions();
+    const Division = Divisions.byId[divisionKey];
+    const Managers = new CManagers(allManagers);
+    const Squads = new CSquads(currentTeams);
+    const StatsList = new Stats();
     return (
-        <Layout title={`${divisionLabel} - Teams`}>
-            <div data-b-layout="container">
+        <Layout.Container title={`${Division.label} - Teams`}>
+            <Layout.Body>
                 <TabbedMenu division={divisionKey} selected="teams" selectedGameWeek={selectedGameWeek} />
-                <DivisionTeams
-                    divisionUrl={divisionLabel.toLowerCase().replaceAll(' ', '-')}
-                    previousTeams={previousTeamsByManager}
-                    selectedGameWeek={selectedGameWeek}
-                    teams={teamsByManager}
-                />
-            </div>
-        </Layout>
+                {isAdmin && <TeamWarnings warnings={Squads.warnings} />}
+
+                <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
+                    {Squads.all.map((Squad) => (
+                        <React.Fragment key={Squad.managerId}>
+                            <StatsTable.Title>{Managers.byId[Squad.managerId].label}</StatsTable.Title>
+                            <StatsTable.Table>
+                                <StatsTable.Thead>
+                                    <StatsTable.Th>Player</StatsTable.Th>
+                                    <StatsTable.Th>Points</StatsTable.Th>
+                                    {/* remove first item, 'points', so we can make it bold, above*/}
+                                    {StatsList.all.slice(1).map((Stat) => (
+                                        <StatsTable.Th desktopOnly key={Stat.id}>
+                                            {Stat.label}
+                                        </StatsTable.Th>
+                                    ))}
+                                    <StatsTable.Th separator>Next Gw</StatsTable.Th>
+                                </StatsTable.Thead>
+                                <StatsTable.Tbody>
+                                    {Squad.players.map((SquadPlayer) => (
+                                        <StatsTable.Tr
+                                            key={SquadPlayer.code}
+                                            className="cell cell--player"
+                                            hasChanged={SquadPlayer.hasChanged}
+                                            hasWarning={
+                                                isAdmin && SquadPlayer.hasWarnings(Squad.warnings, Squads.warnings)
+                                            }
+                                        >
+                                            <StatsTable.Td>
+                                                <Player SquadPlayer={SquadPlayer} />
+                                            </StatsTable.Td>
+                                            <StatsTable.Td>
+                                                <strong>{SquadPlayer.gameWeekStats.points.value}</strong>
+                                            </StatsTable.Td>
+
+                                            {/* remove first item, 'points', so we can make it bold, above*/}
+                                            {StatsList.all.slice(1).map((Stat) => (
+                                                <StatsTable.Td key={Stat.id}>
+                                                    {SquadPlayer.gameWeekStats[Stat.id].value}
+                                                </StatsTable.Td>
+                                            ))}
+                                            <StatsTable.Td separator>
+                                                <em>
+                                                    {SquadPlayer.nextGameWeekFixtures.map((f) => (
+                                                        <React.Fragment>
+                                                            {f.is_home ? f.aTname : f.hTname}{' '}
+                                                            <span className={styles.small}>
+                                                                {f.is_home ? '(h)' : '(a)'}
+                                                            </span>
+                                                        </React.Fragment>
+                                                    ))}
+                                                </em>
+                                            </StatsTable.Td>
+                                        </StatsTable.Tr>
+                                    ))}
+                                </StatsTable.Tbody>
+                            </StatsTable.Table>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </Layout.Body>
+        </Layout.Container>
     );
 };
 
 export const query = graphql`
-    query Teams($gameWeek: Int, $prevGameWeek: Int, $divisionKey: String) {
+    query Teams($gameWeek: Int, $divisionKey: String) {
+        allManagers(filter: { divisionKey: { eq: $divisionKey } }, sort: { division: { order: ASC } }) {
+            nodes {
+                label: manager
+                id: managerKey
+                divisionId: divisionKey
+            }
+        }
+
         currentTeams: allTeams(
             filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
             sort: { managerName: ASC }
         ) {
             group(field: { managerName: SELECT }) {
-                nodes {
+                squadPlayers: nodes {
                     manager {
-                        key: managerKey
-                        name: manager
+                        id: managerKey
                     }
-                    playerCode
-                    teamPos
-                    pos
-                    posIndex
                     player {
                         code
-                        club
                         name: web_name
-                        pos
-                        new
+                        club
                         url
-                        value_season
-                        value_form
-                        gameWeeks {
+                    }
+                    hasChanged
+                    positionId: pos
+                    squadPositionId: teamPos
+                    squadPositionIndex: posIndex
+                    player {
+                        nextGameWeekFixture {
                             fixtures {
-                                opponent_team
-                                date
-                                aTname
+                                fixture_id
                                 hTname
-                                was_home
+                                aTname
                                 is_home
                             }
                         }
@@ -103,27 +161,6 @@ export const query = graphql`
                         bp
                         sb
                         points
-                    }
-                }
-            }
-        }
-        previousTeams: allTeams(
-            filter: { gameWeek: { eq: $prevGameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { managerName: ASC }
-        ) {
-            group(field: { managerName: SELECT }) {
-                nodes {
-                    manager {
-                        key: managerKey
-                        name: manager
-                    }
-                    playerCode
-                    teamPos
-                    pos
-                    posIndex
-                    player {
-                        code
-                        web_name
                     }
                 }
             }

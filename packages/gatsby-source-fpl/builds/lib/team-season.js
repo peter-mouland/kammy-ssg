@@ -27,13 +27,20 @@ class TeamSeason {
         const players = Array(12).fill({});
         const results = [];
 
-        gameWeeks.forEach(({ players: gwPlayers, ...gameWeekObj }) => {
+        gameWeeks.forEach(({ players: gwPlayers, ...gameWeekObj }, gameweekIndex) => {
             const { gameWeek } = gameWeekObj;
+            const previousWeek = gameWeeks[gameweekIndex - 1];
             const managerPlayers = gwPlayers.filter(({ manager: playerManager }) => manager === playerManager);
+            const previousSquad = previousWeek?.players.filter(
+                ({ manager: playerManager }) => manager === playerManager,
+            );
+
             managerPlayers.forEach((player, i) => {
+                const playerChanged = !previousWeek ? false : previousSquad[i]?.code !== player.code;
                 const playerGws = players[i].player || [];
                 const seasonToGameWeek = players[i].seasonToGameWeek || [];
                 const player1 = this.getPlayer(player);
+
                 playerGws[gameWeek] = getPlayerStats({
                     player: player1,
                     gameWeek: gameWeekObj,
@@ -49,6 +56,7 @@ class TeamSeason {
                     teamPos: player.teamPos,
                     posIndex: i,
                     pos: player.pos,
+                    hasChanged: playerChanged,
                     manager,
                     division,
                     gameWeek,
