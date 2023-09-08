@@ -4,30 +4,20 @@ import { graphql } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
-// import useLiveScores from '../hooks/use-live-scores';
 import Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
+import { Players } from '../models/players';
+import CPositions from '../models/position';
+import { Stats } from '../models/stats';
 
 const bemTable = bemHelper({ block: 'players-page-table' });
-const positions = ['GK', 'CB', 'FB', 'MID', 'AM', 'STR'];
-const hiddenColumns = ['isHidden', 'new', 'value', 'code'];
-const visibleStats = ['points', 'apps', 'gls', 'asts', 'cs', 'con', 'pensv', 'bp', 'sb', 'ycard', 'rcard'];
 
-const setClubs = ({ players = [] }) => {
-    const clubs = new Set();
-    players.forEach((player) => clubs.add(player.club));
-    const clubsArr = [...clubs.keys()].sort();
-    return clubsArr.filter((item) => item);
-};
-
-const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
-    // const { liveStatsByCode } = useLiveScores();
-    const allPlayers = useMemo(
-        () => data.allPlayers.nodes.filter((player) => !player.isHidden),
-        [data.allPlayers.nodes],
-    );
+const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel, gameWeek: selectedGameWeek } }) => {
+    const { clubs } = data.allClubs;
+    const Positions = new CPositions();
+    const StatsList = new Stats();
+    const allPlayers = new Players(data.allPlayers.nodes);
     const teamPlayers = data.teamPlayers.nodes;
-    const clubs = useMemo(() => setClubs({ players: allPlayers }), [allPlayers]);
     const disabledPlayers = useMemo(
         () =>
             teamPlayers.reduce(
@@ -42,17 +32,15 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
     return (
         <Layout title={`${divisionLabel} - Players`}>
             <section id="players-page" className={bemTable()} data-b-layout="container">
-                <TabbedMenu selected="players" division={divisionKey} />
+                <TabbedMenu selected="players" division={divisionKey} selectedGameWeek={selectedGameWeek} />
                 <div className="page-content">
-                    <PlayersFilters players={allPlayers} positions={positions} clubs={clubs}>
+                    <PlayersFilters players={allPlayers.all} positions={Positions} clubs={clubs}>
                         {(playersFiltered) => (
                             <PlayersTable
-                                positions={positions}
-                                // liveStatsByCode={liveStatsByCode}
+                                Positions={Positions}
                                 players={playersFiltered}
                                 disabledPlayers={disabledPlayers}
-                                hiddenColumns={hiddenColumns}
-                                visibleStats={visibleStats}
+                                Stats={StatsList}
                             />
                         )}
                     </PlayersFilters>
@@ -64,6 +52,9 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel } }) => {
 
 export const query = graphql`
     query AllPlayers($gameWeek: Int, $divisionKey: String) {
+        allClubs: allPlayers {
+            clubs: distinct(field: { club: SELECT })
+        }
         teamPlayers: allTeams(filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }) {
             nodes {
                 managerName
@@ -76,13 +67,11 @@ export const query = graphql`
         }
         allPlayers(filter: { isHidden: { eq: false } }) {
             nodes {
-                id
                 code
                 name: web_name
                 club
-                pos
+                positionId: pos
                 new
-                isHidden
                 url
                 season {
                     apps

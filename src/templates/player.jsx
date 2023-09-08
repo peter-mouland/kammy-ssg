@@ -65,7 +65,7 @@ export const query = graphql`
             code
             name: web_name
             club
-            position: pos
+            positionId: pos
             new
             url
             season {

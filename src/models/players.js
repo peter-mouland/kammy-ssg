@@ -35,7 +35,7 @@ class PlayerGameWeek {
 
 class PlayerGameWeeks {
     all = [];
-    constructor(playerGameWeeks) {
+    constructor(playerGameWeeks = []) {
         playerGameWeeks.forEach((playerGameWeek) => {
             const gw = new PlayerGameWeek(playerGameWeek);
             this.all.push(gw);
@@ -50,7 +50,6 @@ export class Player {
     //     return elements.find((el) => el.id == args.id);
     // },
 
-    totals = {};
     gameWeeks = [];
     fixtures = [];
 
@@ -58,7 +57,7 @@ export class Player {
         this.code = player.code;
         this.name = player.name;
         this.club = player.club;
-        this.position = player.position;
+        this.positionId = player.positionId;
         this.new = player.new;
         this.url = player.url;
         this.season = new Stats(player.season);

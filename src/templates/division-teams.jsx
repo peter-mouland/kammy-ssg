@@ -77,7 +77,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } 
                                             <StatsTable.Td separator>
                                                 <em>
                                                     {SquadPlayer.nextGameWeekFixtures.map((f) => (
-                                                        <React.Fragment>
+                                                        <React.Fragment key={f.fixture_id}>
                                                             {f.is_home ? f.aTname : f.hTname}{' '}
                                                             <span className={styles.small}>
                                                                 {f.is_home ? '(h)' : '(a)'}
