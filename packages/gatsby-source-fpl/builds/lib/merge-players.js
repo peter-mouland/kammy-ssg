@@ -51,7 +51,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
     const googlePlayersObj = googlePlayerData.reduce((prev, googlePlayer) => {
         const code = parseInt(googlePlayer.code, 10);
         if (!googlePlayer.position) {
-            console.error('no position', googlePlayer.name, googlePlayer.code);
+            console.error('no position', googlePlayer.name, googlePlayer.code, googlePlayer);
         }
         return {
             ...prev,

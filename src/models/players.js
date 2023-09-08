@@ -1,39 +1,93 @@
-export default class Player {
+// eslint-disable-next-line max-classes-per-file
+import { Stats } from './stats';
+
+class PlayerFixture {
+    constructor(playerFixture) {
+        this.aScore = playerFixture.aScore;
+        this.aTname = playerFixture.aTname;
+        this.aTcode = playerFixture.aTcode;
+        this.hScore = playerFixture.hScore;
+        this.hTname = playerFixture.hTname;
+        this.hTcode = playerFixture.hTcode;
+        this.is_home = playerFixture.is_home;
+        this.was_home = playerFixture.was_home;
+        this.homeGame = playerFixture.was_home || playerFixture.is_home;
+        this.team_h_score = playerFixture.team_h_score;
+        this.team_a_score = playerFixture.team_a_score;
+        this.stats = new Stats(playerFixture.stats);
+    }
+}
+
+class PlayerFixtures {
+    all = [];
+    constructor(playerFixtures) {
+        playerFixtures.forEach((playerFixture) => {
+            this.all.push(new PlayerFixture(playerFixture));
+        });
+    }
+}
+
+class PlayerGameWeek {
+    constructor(playerGameWeek) {
+        this.fixtures = new PlayerFixtures(playerGameWeek.fixtures);
+    }
+}
+
+class PlayerGameWeeks {
+    all = [];
+    constructor(playerGameWeeks) {
+        playerGameWeeks.forEach((playerGameWeek) => {
+            const gw = new PlayerGameWeek(playerGameWeek);
+            this.all.push(gw);
+        });
+    }
+}
+
+export class Player {
     // live: async (_, args) => {
     //     data = await request(`${baseURI}/event/${args.event}/live/`);
     //     elements = data.elements;
     //     return elements.find((el) => el.id == args.id);
     // },
 
-    constructor({ fplStats, url, webName, Club, currentGwPoints }) {
-        this.fplStats = fplStats;
-        this.url = `/${url}`;
-        this.web_name = webName;
-        this.Club = Club;
-        this.currentGwPoints = currentGwPoints;
+    totals = {};
+    gameWeeks = [];
+    fixtures = [];
+
+    constructor(player) {
+        this.code = player.code;
+        this.name = player.name;
+        this.club = player.club;
+        this.position = player.position;
+        this.new = player.new;
+        this.url = player.url;
+        this.season = new Stats(player.season);
+        this.gameWeeks = new PlayerGameWeeks(player.gameWeeks);
+        this.fixtures = this.gameWeeks.all.reduce((prev, curr) => {
+            curr.fixtures.all.forEach((fixture) => {
+                prev.push(fixture);
+            });
+            return prev;
+        }, []);
     }
 
-    getDivisionLabel() {
-        return this.Division.label;
+    getGameWeekFixtures(gameWeekIndex) {
+        return this.gameWeeks[gameWeekIndex].fixtures;
     }
 
-    getManagers() {
-        return this.managers;
+    getSeasonPoints() {
+        return this.season;
     }
+}
 
-    getStanding({ managerId, positionId }) {
-        return { rank: 0, seasonPoints: 0 };
-    }
-
-    getStandings() {
-        return [[{ rank: 0, points: 0, manager: undefined, squadPos: 0 }]];
-    }
-
-    getGameWeekScore({ managerId, positionId }) {
-        return { rankChange: 0, gWPoints: 0 };
-    }
-
-    getGameWeekScores() {
-        return [[{ rankChange: 0, gWPoints: 0, manager: undefined, squadPos: 0 }]];
+export class Players {
+    all = [];
+    byCode = {};
+    constructor(players) {
+        players.forEach((player) => {
+            const player1 = new Player(player);
+            this.all.push(player1);
+            this.byCode[player1.code] = player1;
+        });
     }
 }

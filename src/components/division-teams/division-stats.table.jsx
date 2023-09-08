@@ -19,7 +19,7 @@ export const Td = ({ children, desktopOnly = false, separator = false }) => (
 );
 export const Thead = ({ children }) => (
     <thead>
-        <tr className="row row--header">{children}</tr>
+        <tr>{children}</tr>
     </thead>
 );
 
