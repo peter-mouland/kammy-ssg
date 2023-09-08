@@ -7,7 +7,6 @@ import { withDefault, useQueryParams, ArrayParam } from 'use-query-params';
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
 import * as Player from '../player';
-import { AllInfo } from '../player';
 
 const bem = bemHelper({ block: 'table' });
 
@@ -39,20 +38,10 @@ SortableHeader.defaultProps = {
 
 // create a custom parameter with a default value
 const EmptyArrayParam = withDefault(ArrayParam, []);
-const PlayerTable = ({
-    players,
-    visibleStats,
-    additionalColumns,
-    hiddenColumns,
-    myTeam,
-    positions,
-    disabledPlayers,
-    // liveStatsByCode,
-}) => {
+const PlayerTable = ({ players, Stats, myTeam, Positions, disabledPlayers }) => {
     const [state, setState] = useQueryParams({
         sort: EmptyArrayParam,
     });
-
     const handleSort = (column) => {
         switch (true) {
             case isSortUp(state.sort, column):
@@ -61,31 +50,21 @@ const PlayerTable = ({
                 return setState({ sort: [] });
             case isNotSorted(state.sort, column):
             default:
-                return setState({ sort: [column] });
+                return setState({ sort: [`${column}`] });
         }
     };
     return (
         <table className="table">
             <thead>
                 <tr className="row row--header">
-                    {!hiddenColumns.includes('isHidden') && <th className="cell cell--hidden">isHidden</th>}
-                    {!hiddenColumns.includes('code') && <th className="cell cell--code">Code</th>}
                     <th className="cell cell--pos show-1000">Pos</th>
                     <th className="cell cell--player">Player</th>
                     <th className="cell cell--club show-1000">Club</th>
-                    {!hiddenColumns.includes('value') && (
-                        <SortableHeader id="value" label="Value" sort={state.sort} handleSort={handleSort} />
-                    )}
-                    {additionalColumns.map((col) => (
-                        <th key={col} className={`cell cell--${col}`}>
-                            {col}
-                        </th>
-                    ))}
-                    {visibleStats.map((stat) => (
+                    {Stats.all.map((stat) => (
                         <SortableHeader
-                            id={`season.${stat}`}
-                            label={stat}
-                            key={stat}
+                            key={stat.id}
+                            id={`season.${stat.id}.value`}
+                            label={stat.label}
                             sort={state.sort}
                             handleSort={handleSort}
                             className="cell--stat"
@@ -94,55 +73,49 @@ const PlayerTable = ({
                 </tr>
             </thead>
             <tbody>
-                {players.sort(sortColumns(state.sort.concat(['pos', 'name']), { pos: positions })).map((player) => {
-                    const isOnMyTeam = myTeam && myTeam[player.code];
-                    // const livePoints = liveStatsByCode && liveStatsByCode[player.code];
-                    return (
-                        <tr
-                            key={player.code}
-                            id={player.code}
-                            className={bem(
-                                'player',
-                                {
-                                    selected: isOnMyTeam,
-                                    new: !!player.new,
-                                    disabled: !!disabledPlayers[player.code],
-                                },
-                                'row',
-                            )}
-                        >
-                            {!hiddenColumns.includes('isHidden') && (
-                                <td className="cell">{player.isHidden && 'hidden'}</td>
-                            )}
-                            {!hiddenColumns.includes('code') && <td className="cell">{player.code}</td>}
-
-                            <td className="cell hide-1000">
-                                <Player.AllInfo SquadPlayer={player} />
-                            </td>
-                            <td className="cell show-1000">
-                                <Player.Pos pos={player.pos} />
-                            </td>
-                            <td className="cell show-1000">
-                                <Player.Image code={player.code} small liveQuery={{}} />
-                                <Player.Name>{player.name}</Player.Name>
-                            </td>
-                            <td className="cell show-1000">
-                                <Player.Club>{player.club}</Player.Club>
-                            </td>
-                            {!hiddenColumns.includes('value') && <td className="cell">{player.value}</td>}
-                            {additionalColumns.map((col) => (
-                                <td key={col} className={bem('stat', null, 'cell')}>
-                                    {String(player[col])}
+                {players
+                    .sort(
+                        sortColumns(state.sort.concat(['pos', 'name']), {
+                            pos: Positions.PlayerPositions.map((pos) => pos.id),
+                        }),
+                    )
+                    .map((player) => {
+                        const isOnMyTeam = myTeam && myTeam[player.code];
+                        return (
+                            <tr
+                                key={player.code}
+                                id={player.code}
+                                className={bem(
+                                    'player',
+                                    {
+                                        selected: isOnMyTeam,
+                                        new: !!player.new,
+                                        disabled: !!disabledPlayers[player.code],
+                                    },
+                                    'row',
+                                )}
+                            >
+                                <td className="cell hide-1000">
+                                    <Player.AllInfo SquadPlayer={player} />
                                 </td>
-                            ))}
-                            {visibleStats.map((stat) => (
-                                <td key={state.stat} className={bem('stat', null, 'cell')}>
-                                    {player.season && (player.season[stat] ?? '-')}
+                                <td className="cell show-1000">
+                                    <Player.Pos position={player.positionId} />
                                 </td>
-                            ))}
-                        </tr>
-                    );
-                })}
+                                <td className="cell show-1000">
+                                    <Player.Image code={player.code} small liveQuery={{}} />
+                                    <Player.Name>{player.name}</Player.Name>
+                                </td>
+                                <td className="cell show-1000">
+                                    <Player.Club>{player.club}</Player.Club>
+                                </td>
+                                {Stats.all.map((stat) => (
+                                    <td key={stat.id} className={bem('stat', null, 'cell')}>
+                                        {player.season && (player.season[stat.id].value ?? '-')}
+                                    </td>
+                                ))}
+                            </tr>
+                        );
+                    })}
             </tbody>
         </table>
     );
@@ -150,22 +123,16 @@ const PlayerTable = ({
 
 PlayerTable.propTypes = {
     players: PropTypes.array.isRequired,
-    positions: PropTypes.array.isRequired,
-    visibleStats: PropTypes.array,
-    hiddenColumns: PropTypes.arrayOf(PropTypes.string),
+    Stats: PropTypes.object,
+    Positions: PropTypes.object.isRequired,
     disabledPlayers: PropTypes.object,
-    additionalColumns: PropTypes.arrayOf(PropTypes.string),
     myTeam: PropTypes.object,
-    // liveStatsByCode: PropTypes.object,
 };
 
 PlayerTable.defaultProps = {
-    // liveStatsByCode: null,
     myTeam: null,
-    hiddenColumns: [],
     disabledPlayers: {},
-    visibleStats: [],
-    additionalColumns: [],
+    Stats: {},
 };
 
 export default PlayerTable;

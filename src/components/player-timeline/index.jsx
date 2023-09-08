@@ -13,7 +13,7 @@ export const PlayerHeader = ({ player }) => {
             </div>
 
             <div className={styles.gridTeamPos}>
-                <Player.Pos pos={player.pos} />
+                <Player.Pos position={player.positionId} />
             </div>
 
             <div className={styles.gridClub}>

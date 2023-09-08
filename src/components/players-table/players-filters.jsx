@@ -12,8 +12,8 @@ const bem = bemHelper({ block: 'players-filters' });
 
 const applyFilters = ({ player, queryParams }) => {
     const playerFiltered = !queryParams.player?.length || queryParams.player.includes(player.name);
-    const posFiltered = !queryParams.pos?.length || queryParams.pos.includes(player.pos);
-    const miscFiltered = !queryParams.misc?.length || (queryParams.misc.includes('isNew') && player.new); // ||
+    const posFiltered = !queryParams.pos?.length || queryParams.pos.includes(player.positionId.toLowerCase()); // todo: use posid in db
+    const miscFiltered = !queryParams.misc?.length || (queryParams.misc.includes('isNew') && player.new);
     const clubFiltered = !queryParams.club?.length || queryParams.club.includes(player.club);
     return playerFiltered && posFiltered && clubFiltered && miscFiltered;
 };
@@ -72,9 +72,9 @@ const getOptions = ({ positions, clubs, players }) => [
     {
         label: 'Positions',
         param: 'pos',
-        options: positions.map((position) => ({
-            value: position,
-            label: position,
+        options: positions.PlayerPositions.map((position) => ({
+            value: position.id,
+            label: position.label,
             group: 'position',
         })),
     },
@@ -134,6 +134,6 @@ export default function PlayersFilters({ positions, players, clubs, children }) 
 
 PlayersFilters.propTypes = {
     players: PropTypes.array.isRequired,
-    positions: PropTypes.array.isRequired,
+    positions: PropTypes.object.isRequired,
     children: PropTypes.func.isRequired,
 };

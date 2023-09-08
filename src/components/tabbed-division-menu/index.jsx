@@ -39,7 +39,7 @@ const tabs = [
 
 const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
     const { gameWeeks, currentGameWeek } = useGameWeeks();
-    const displayGW = selectedGameWeek ?? currentGameWeek.gameWeek;
+    const displayGW = selectedGameWeek ?? currentGameWeek.id;
     const [showFixture, onShowFixture] = React.useState(null);
     const fixtures = {
         thisWeek: gameWeeks[displayGW],
