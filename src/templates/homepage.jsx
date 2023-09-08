@@ -2,132 +2,127 @@
 import React from 'react';
 import { graphql } from 'gatsby';
 
-import Layout from '../components/layout';
-import Homepage from '../components/homepage';
+import * as Layout from '../components/layout';
+import Spacer from '../components/spacer';
 import useGameWeeks from '../hooks/use-game-weeks';
 import useMeta from '../hooks/use-meta';
-import Spacer from '../components/spacer';
+import CManagers from '../models/managers';
+import CDivisions from '../models/division';
+import CStandings from '../models/standings';
+import CPositions from '../models/position';
+import * as DivisionRankings from '../components/division-rankings';
+import NamedLink from '../components/named-link';
 
 const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
     const { formattedTime, getFromNow } = useMeta();
-    const { previousGameWeek, currentGameWeek, nextGameWeek } = useGameWeeks();
+    const GameWeeks = useGameWeeks();
     const {
-        allManagers: { nodes: managers },
-        allDivisions: { nodes: divisions },
-        allLeagueTable: { nodes: leagueStats },
+        allManagers: { nodes: allManagers },
+        allLeagueTable: { group: divisionStats },
     } = data;
-    const gameWeekDates = {
-        currentGameWeek,
-        nextGameWeek,
-        prevGameWeek: previousGameWeek,
-    };
-    const statsByDivision = managers.reduce(
-        (prev, { manager, managerKey, divisionKey }) => ({
-            ...prev,
-            [divisionKey]: [
-                ...(prev[divisionKey] || []),
-                {
-                    manager: {
-                        name: manager,
-                        key: managerKey,
-                    },
-                    points: leagueStats.find((stats) => stats.manager.name === manager).points,
-                    division: divisionKey,
-                },
-            ],
-        }),
-        {},
-    );
 
-    const footer = (
-        <Spacer
-            all={{ vertical: Spacer.spacings.MEDIUM, horizontal: Spacer.spacings.LARGE }}
-            style={{ fontSize: '0.9em' }}
-        >
-            <strong style={{ color: '#888', fontSize: '0.9em' }}>Last Build:</strong> {formattedTime}{' '}
-            <small style={{ color: '#888', fontSize: '0.9em' }}>({getFromNow()})</small>
-        </Spacer>
-    );
-
+    const Positions = new CPositions();
+    const Divisions = new CDivisions();
+    const Managers = new CManagers(allManagers);
+    const Standings = new CStandings(divisionStats);
     return (
-        <Layout title="Homepage" footer={footer}>
-            <Spacer all={{ top: Spacer.spacings.SMALL }}>
-                <Homepage
-                    selectedGameWeek={selectedGameWeek}
-                    gameWeekDates={gameWeekDates}
-                    divisions={divisions}
-                    statsByDivision={statsByDivision}
-                />
-            </Spacer>
-        </Layout>
+        <Layout.Container title="Homepage">
+            <Layout.Body>
+                <Spacer all={{ top: Spacer.spacings.SMALL }}>
+                    {Divisions.getAll().map((Division) => (
+                        <DivisionRankings.Container key={Division.id}>
+                            <DivisionRankings.Title>
+                                <NamedLink to={`${Division.id}-rankings`}>{Division.label}</NamedLink>
+                            </DivisionRankings.Title>
+                            <DivisionRankings.SeasonTotals
+                                selectedGameWeek={selectedGameWeek}
+                                GameWeeks={GameWeeks}
+                                Managers={Managers}
+                                Positions={Positions}
+                                Standings={Standings.byDivisionId[Division.id].rankStandings}
+                            />
+                        </DivisionRankings.Container>
+                    ))}
+                </Spacer>
+            </Layout.Body>
+            <Layout.Footer>
+                <Spacer
+                    all={{ vertical: Spacer.spacings.MEDIUM, horizontal: Spacer.spacings.LARGE }}
+                    style={{ fontSize: '0.9em' }}
+                >
+                    <strong style={{ color: '#888', fontSize: '0.9em' }}>Last Build:</strong> {formattedTime}{' '}
+                    <small style={{ color: '#888', fontSize: '0.9em' }}>({getFromNow()})</small>
+                </Spacer>
+            </Layout.Footer>
+        </Layout.Container>
     );
 };
 
 export const query = graphql`
     query Homepage($gameWeek: Int) {
-        allDivisions(sort: { order: ASC }) {
-            nodes {
-                key
-                label
-                order
-            }
-        }
-        allLeagueTable(filter: { gameWeek: { eq: $gameWeek } }, sort: { manager: { division: { order: ASC } } }) {
-            nodes {
-                gameWeek
-                points {
-                    am {
-                        gameWeekPoints
-                        seasonPoints
-                        rank
-                    }
-                    cb {
-                        gameWeekPoints
-                        seasonPoints
-                        rank
-                    }
-                    fb {
-                        seasonPoints
-                        gameWeekPoints
-                        rank
-                    }
-                    gks {
-                        gameWeekPoints
-                        seasonPoints
-                        rank
-                    }
-                    str {
-                        gameWeekPoints
-                        seasonPoints
-                        rank
-                    }
-                    total {
-                        gameWeekPoints
-                        seasonPoints
-                        rank
-                    }
-                    mid {
-                        gameWeekPoints
-                        seasonPoints
-                        rank
-                    }
-                }
-                manager {
-                    key: managerKey
-                    name: manager
-                    division {
-                        key
-                        label
-                        order
-                    }
-                }
-            }
-        }
         allManagers(sort: { division: { order: ASC } }) {
             nodes {
-                manager
-                managerKey
-                divisionKey
+                label: manager
+                id: managerKey
+                divisionId: divisionKey
+            }
+        }
+
+        allLeagueTable(filter: { gameWeek: { eq: $gameWeek } }, sort: { manager: { division: { order: ASC } } }) {
+            group(field: { manager: { division: { id: SELECT } } }) {
+                managersStats: nodes {
+                    gameWeek
+                    points {
+                        am {
+                            gameWeekPoints
+                            seasonPoints
+                            rank
+                            rankChange
+                        }
+                        cb {
+                            gameWeekPoints
+                            seasonPoints
+                            rank
+                            rankChange
+                        }
+                        fb {
+                            seasonPoints
+                            gameWeekPoints
+                            rank
+                            rankChange
+                        }
+                        gks {
+                            gameWeekPoints
+                            seasonPoints
+                            rank
+                            rankChange
+                        }
+                        str {
+                            gameWeekPoints
+                            seasonPoints
+                            rank
+                            rankChange
+                        }
+                        total {
+                            gameWeekPoints
+                            seasonPoints
+                            rank
+                            rankChange
+                        }
+                        mid {
+                            gameWeekPoints
+                            seasonPoints
+                            rank
+                            rankChange
+                        }
+                    }
+                    manager {
+                        managerId: managerKey
+                        division {
+                            divisionId: key
+                        }
+                    }
+                }
             }
         }
     }

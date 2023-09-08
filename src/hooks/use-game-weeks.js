@@ -1,13 +1,7 @@
 /* eslint-disable react/no-danger */
 import { graphql, useStaticQuery } from 'gatsby';
-import parseISO from 'date-fns/parseISO';
 
-const inDateRange = ({ start, end }, comparison) => comparison < parseISO(end) && comparison > parseISO(start);
-
-const getGameWeekFromDateFact = (gameWeeks) => (date) => {
-    const gwIndex = gameWeeks.findIndex(({ start, end }) => inDateRange({ start, end }, date));
-    return gwIndex < 0 ? 1 : gwIndex;
-};
+import GameWeeks from '../models/game-weeks';
 
 const useGameWeeks = () => {
     const {
@@ -16,7 +10,7 @@ const useGameWeeks = () => {
         query GameWeeks {
             allGameWeeks(sort: { gameWeek: ASC }) {
                 nodes {
-                    gameWeek
+                    id: gameWeek
                     isCurrent
                     cup
                     start
@@ -41,23 +35,7 @@ const useGameWeeks = () => {
             }
         }
     `);
-    const gameWeeks = gw.map((gm) => ({
-        ...gm,
-        start: new Date(gm.start),
-        end: new Date(gm.end),
-    }));
-    const getGameWeekFromDate = getGameWeekFromDateFact(gameWeeks);
-    const currentGameWeekIndex = gameWeeks.findIndex(({ isCurrent }) => !!isCurrent);
-    const currentGameWeek = gameWeeks[currentGameWeekIndex];
-    const nextGameWeek = gameWeeks[currentGameWeekIndex + 1];
-    const previousGameWeek = gameWeeks[currentGameWeekIndex - 1];
-    return {
-        gameWeeks,
-        currentGameWeek,
-        nextGameWeek,
-        previousGameWeek,
-        getGameWeekFromDate,
-    };
+    return new GameWeeks(gw);
 };
 
 export default useGameWeeks;

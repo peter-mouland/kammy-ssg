@@ -19,7 +19,49 @@ import * as styles from './layout.module.css';
 
 const queryClient = new QueryClient();
 
-const Layout = ({ title, description, children, footer }) => (
+export const Footer = ({ children }) => (
+    <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+            {children}
+            <h2 className={styles.footerHeader}>Relevant Links</h2>
+            <ul className={styles.footerLinks}>
+                <li>
+                    <NamedLink to="rules" />
+                </li>
+                <li>
+                    <NamedLink to="prize-money" />
+                </li>
+                <li>
+                    <a href="/players-1920">Players (2019-2020)</a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
+                </li>
+            </ul>
+            <h2 className={`${styles.footerHeader} ${styles.footerHeaderDraft}`}>Drafts</h2>
+            <ul className={`${styles.footerLinks} ${styles.footerLinksDraft}`}>
+                <li>
+                    <NamedLink to="premierLeague-draft">Premier League</NamedLink>
+                </li>
+                <li>
+                    <NamedLink to="championship-draft">Championship</NamedLink>
+                </li>
+                <li>
+                    <NamedLink to="leagueOne-draft">League One</NamedLink>
+                </li>
+                <li />
+            </ul>
+        </div>
+    </footer>
+);
+
+export const Body = ({ children }) => (
+    <main className={styles.content} data-b-layout="container">
+        <section>{typeof children === 'function' ? children() : children}</section>
+    </main>
+);
+
+export const Container = ({ title, description, children }) => (
     <QueryParamProvider adapter={ReachAdapter}>
         <QueryClientProvider client={queryClient}>
             <CookiesProvider>
@@ -30,49 +72,14 @@ const Layout = ({ title, description, children, footer }) => (
                 </Helmet>
                 <div>
                     <NavBar />
-                    <main className={styles.content}>
-                        <section>{typeof children === 'function' ? children() : children}</section>
-                    </main>
-                    <footer className={styles.footer}>
-                        <div className={styles.footerContent}>
-                            {footer}
-                            <h2 className={styles.footerHeader}>Relevant Links</h2>
-                            <ul className={styles.footerLinks}>
-                                <li>
-                                    <NamedLink to="rules" />
-                                </li>
-                                <li>
-                                    <NamedLink to="prize-money" />
-                                </li>
-                                <li>
-                                    <a href="/players-1920">Players (2019-2020)</a>
-                                </li>
-                                <li>
-                                    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Report Bugs</a>
-                                </li>
-                            </ul>
-                            <h2 className={`${styles.footerHeader} ${styles.footerHeaderDraft}`}>Drafts</h2>
-                            <ul className={`${styles.footerLinks} ${styles.footerLinksDraft}`}>
-                                <li>
-                                    <NamedLink to="premierLeague-draft">Premier League</NamedLink>
-                                </li>
-                                <li>
-                                    <NamedLink to="championship-draft">Championship</NamedLink>
-                                </li>
-                                <li>
-                                    <NamedLink to="leagueOne-draft">League One</NamedLink>
-                                </li>
-                                <li />
-                            </ul>
-                        </div>
-                    </footer>
+                    {children}
                 </div>
             </CookiesProvider>
         </QueryClientProvider>
     </QueryParamProvider>
 );
 
-Layout.propTypes = {
+Container.propTypes = {
     children: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.element,
@@ -81,13 +88,11 @@ Layout.propTypes = {
     ]).isRequired,
     title: PropTypes.string,
     description: PropTypes.string,
-    footer: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.func, PropTypes.arrayOf(PropTypes.node)]),
 };
 
-Layout.defaultProps = {
+Container.defaultProps = {
     title: 'Draft FF',
     description: '',
-    footer: '',
 };
 
-export default Layout;
+export default Container;
