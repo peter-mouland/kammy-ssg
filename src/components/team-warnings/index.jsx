@@ -2,33 +2,27 @@ import React from 'react';
 
 import Spacer from '../spacer';
 import Warning from '../icons/warning.svg';
-import validateClub from './lib/validate-club';
-import validatePositions from './lib/validate-pos';
-import validatePlayer from './lib/validate-player';
-import validateNewPlayers from './lib/validate-new-player';
 import * as styles from './team-warnings.module.css';
 
 const List = ({ children }) => <ul className={styles.list}>{children}</ul>;
 
-const Warnings = ({ teams, showOnValid = true }) => {
-    const newPlayers = validateNewPlayers(teams) || [];
-    const duplicatePlayers = validatePlayer(teams) || [];
-    const clubWarnings = validateClub(teams);
-    const posWarnings = validatePositions(teams);
-    const allClubWarnings = Object.keys(clubWarnings).map((manager) => (
+const Warnings = ({ warnings }) => {
+    const allClubWarnings = warnings.allClubWarnings.map((clubWarnings) => (
         <p>
-            <strong>{manager}</strong>: {clubWarnings[manager].join(', ')}
+            <strong>{clubWarnings.manager}</strong>: {clubWarnings.message}
         </p>
     ));
-    const allPosWarnings = Object.keys(posWarnings).map((manager) => (
+    const allPosWarnings = warnings.allPosWarnings.map((posWarnings) => (
         <p>
-            <strong>{manager}</strong>: {posWarnings[manager].join(', ')}
+            <strong>{posWarnings.manager}</strong>: {posWarnings.message}
         </p>
     ));
-    const hasWarnings = duplicatePlayers.length || allClubWarnings.length || allPosWarnings.length || newPlayers.length;
-    if (!hasWarnings && !showOnValid) {
-        return null;
-    }
+    const hasWarnings =
+        warnings.duplicatePlayers.length ||
+        warnings.allClubWarnings.length ||
+        warnings.allPosWarnings.length ||
+        warnings.newPlayers.length;
+
     if (!hasWarnings) {
         return (
             <p>
@@ -44,24 +38,24 @@ const Warnings = ({ teams, showOnValid = true }) => {
             <h2 className={styles.title}>
                 <Warning width={24} height={24} /> Team Warnings
             </h2>
-            {duplicatePlayers.length > 0 && (
+            {warnings.duplicatePlayers.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">
                         The following player(s) in more than 2 teams:{' '}
                         <List>
-                            {duplicatePlayers.map((player) => (
+                            {warnings.duplicatePlayers.map((player) => (
                                 <li key={player}>{player}</li>
                             ))}
                         </List>
                     </div>
                 </Spacer>
             )}
-            {newPlayers.length > 0 && (
+            {warnings.newPlayers.length > 0 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <div className="row row--warning">
                         The following <strong>new</strong> player(s):{' '}
                         <List>
-                            {newPlayers.map((player) => (
+                            {warnings.newPlayers.map((player) => (
                                 <li key={player}>{player}</li>
                             ))}
                         </List>

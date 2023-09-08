@@ -29,7 +29,7 @@ const DivisionHomePage = ({ data, pageContext: { gameWeek: selectedGameWeek, div
             <Layout.Body>
                 <TabbedMenu selected="rankings" division={divisionKey} selectedGameWeek={selectedGameWeek} />
                 <DivisionRankings.Container>
-                    <DivisionRankings.Title>{Division.label}: League Table</DivisionRankings.Title>
+                    <DivisionRankings.Title>Standings</DivisionRankings.Title>
                     <DivisionRankings.SeasonTotals
                         selectedGameWeek={selectedGameWeek}
                         GameWeeks={GameWeeks}
@@ -48,15 +48,6 @@ const DivisionHomePage = ({ data, pageContext: { gameWeek: selectedGameWeek, div
                         Standings={Standings.rankChangeStandings}
                     />
                 </DivisionRankings.Container>
-                {/* <DivisionRankings*/}
-                {/*    label={`${divisionLabel}: League Table`}*/}
-                {/*    divisionId={divisionKey}*/}
-                {/*    divisionUrl={divisionLabel.toLowerCase().replace(/ /g, '-')}*/}
-                {/*    stats={leagueStats}*/}
-                {/*    selectedGameWeek={selectedGameWeek}*/}
-                {/*    showGameWeekSwitcher*/}
-                {/*    showChart={false}*/}
-                {/*    showWeekly*/}
             </Layout.Body>
         </Layout.Container>
     );

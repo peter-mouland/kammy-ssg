@@ -1,7 +1,7 @@
-const validatePlayer = (allPlayers) => {
+const validatePlayer = (Squads) => {
     const cache = {};
-    const dupes = allPlayers.reduce((prev, player = {}) => {
-        if (cache[player.code] && !prev.includes(player.code)) {
+    const dupes = Squads.allPlayers.reduce((prev, player = {}) => {
+        if (cache[player.code]) {
             prev.push(player.code);
         }
         cache[player.code] = true;

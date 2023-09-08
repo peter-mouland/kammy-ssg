@@ -1,11 +1,10 @@
-const validateNewPlayer = (teams) => {
-    const players = Object.keys(teams).reduce((acc, manager) => [...acc, ...teams[manager]], []);
-    const unknownPlayers = players.filter(({ player }) => !player);
+const validateNewPlayer = (allPlayers) => {
+    const unknownPlayers = allPlayers.filter(({ player }) => !player);
     if (unknownPlayers.length) {
         // eslint-disable-next-line no-console
         console.log(unknownPlayers);
     }
-    return players.reduce((acc, { player = {} } = {}) => {
+    return allPlayers.reduce((acc, { player = {} } = {}) => {
         if (!player) {
             // eslint-disable-next-line no-console
             console.log('No _new_ player!');

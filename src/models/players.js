@@ -1,4 +1,10 @@
 export default class Player {
+    // live: async (_, args) => {
+    //     data = await request(`${baseURI}/event/${args.event}/live/`);
+    //     elements = data.elements;
+    //     return elements.find((el) => el.id == args.id);
+    // },
+
     constructor({ fplStats, url, webName, Club, currentGwPoints }) {
         this.fplStats = fplStats;
         this.url = `/${url}`;
