@@ -48,7 +48,7 @@ const PlayerPage = ({ data, pageContext: { playerName } }) => {
                         <td colSpan={3} />
                         {StatsList.all.map((Stat) => (
                             <Timeline.Td key={Stat.id}>
-                                <strong>{player.season[Stat.id].value}</strong>
+                                <strong>{player.seasonStats[Stat.id].value}</strong>
                             </Timeline.Td>
                         ))}
                     </Timeline.Tfooter>
@@ -63,12 +63,12 @@ export const query = graphql`
         player: players(code: { eq: $code }) {
             id
             code
-            name: web_name
+            name
             club
-            positionId: pos
+            positionId
             new
             url
-            season {
+            seasonStats {
                 apps
                 gls
                 asts
@@ -83,16 +83,18 @@ export const query = graphql`
             }
             gameWeeks {
                 fixtures {
-                    aScore
-                    aTname
-                    aTcode
-                    hScore
-                    hTname
-                    hTcode
                     is_home
                     was_home
-                    team_h_score
                     team_a_score
+                    team_h_score
+                    awayTeam {
+                        name
+                        code
+                    }
+                    homeTeam {
+                        name
+                        code
+                    }
                     stats {
                         apps
                         gls

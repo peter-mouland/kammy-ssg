@@ -10,6 +10,7 @@ import useGameWeeks from '../../hooks/use-game-weeks';
 const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
     const [showSwitcher, toggleSwitcher] = React.useState(false);
     const { currentGameWeek = {}, gameWeeks } = useGameWeeks();
+    console.log({ gameWeeks, selectedGameWeek });
     const route = findRoute({ to });
     return (
         <span style={{ position: 'relative', zIndex: 10 }}>
@@ -33,13 +34,13 @@ const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
                             'rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset',
                     }}
                 >
-                    {gameWeeks.map(({ gameWeek }) => (
-                        <div style={{ margin: '0.15em 0' }} key={gameWeek}>
-                            <Link to={`/week-${gameWeek}${route.path}`} className="">
+                    {gameWeeks.map(({ id, isCurrent }) => (
+                        <div style={{ margin: '0.15em 0' }} key={id}>
+                            <Link to={`/week-${id}${route.path}`} className="">
                                 <FormattedGameWeekDate
-                                    isSelected={selectedGameWeek === gameWeek}
-                                    gameWeek={gameWeeks[gameWeek]}
-                                    isCurrent={gameWeek === currentGameWeek.gameWeek}
+                                    isSelected={selectedGameWeek === id}
+                                    gameWeek={gameWeeks[id]}
+                                    isCurrent={isCurrent}
                                 />
                             </Link>
                         </div>

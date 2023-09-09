@@ -12,10 +12,10 @@ import CSquads from '../models/squads';
 import CPositions from '../models/position';
 import CDivisions from '../models/division';
 import CManagers from '../models/managers';
-import Player from '../components/player';
+import * as Player from '../components/player';
 import * as styles from '../components/division-teams/division-stats.module.css';
 
-const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } }) => {
+const Index = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionId } }) => {
     const [cookies] = useCookies(['is-admin']);
     const isAdmin = cookies['is-admin'] === 'true' || false;
     const {
@@ -25,14 +25,14 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } 
 
     const Positions = new CPositions();
     const Divisions = new CDivisions();
-    const Division = Divisions.byId[divisionKey];
+    const Division = Divisions.byId[divisionId];
     const Managers = new CManagers(allManagers);
     const Squads = new CSquads(currentTeams);
     const StatsList = new Stats();
     return (
         <Layout.Container title={`${Division.label} - Teams`}>
             <Layout.Body>
-                <TabbedMenu division={divisionKey} selected="teams" selectedGameWeek={selectedGameWeek} />
+                <TabbedMenu division={divisionId} selected="teams" selectedGameWeek={selectedGameWeek} />
                 {isAdmin && <TeamWarnings warnings={Squads.warnings} />}
 
                 <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
@@ -62,7 +62,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } 
                                             }
                                         >
                                             <StatsTable.Td>
-                                                <Player SquadPlayer={SquadPlayer} />
+                                                <Player.AllInfo player={SquadPlayer} />
                                             </StatsTable.Td>
                                             <StatsTable.Td>
                                                 <strong>{SquadPlayer.gameWeekStats.points.value}</strong>
@@ -78,7 +78,7 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } 
                                                 <em>
                                                     {SquadPlayer.nextGameWeekFixtures.map((f) => (
                                                         <React.Fragment key={f.fixture_id}>
-                                                            {f.is_home ? f.aTname : f.hTname}{' '}
+                                                            {f.is_home ? f.awayTeam.name : f.homeTeam.name}{' '}
                                                             <span className={styles.small}>
                                                                 {f.is_home ? '(h)' : '(a)'}
                                                             </span>
@@ -99,44 +99,48 @@ const Index = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } 
 };
 
 export const query = graphql`
-    query Teams($gameWeek: Int, $divisionKey: String) {
-        allManagers(filter: { divisionKey: { eq: $divisionKey } }, sort: { division: { order: ASC } }) {
+    query Teams($gameWeekIndex: Int, $divisionId: String) {
+        allManagers(filter: { divisionId: { eq: $divisionId } }, sort: { division: { order: ASC } }) {
             nodes {
-                label: manager
-                id: managerKey
-                divisionId: divisionKey
+                label
+                managerId
+                divisionId
             }
         }
 
         currentTeams: allTeams(
-            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { managerName: ASC }
+            filter: { gameWeekIndex: { eq: $gameWeekIndex }, manager: { divisionId: { eq: $divisionId } } }
+            sort: { managerId: ASC }
         ) {
-            group(field: { managerName: SELECT }) {
+            group(field: { managerId: SELECT }) {
                 squadPlayers: nodes {
                     manager {
-                        id: managerKey
+                        managerId
                     }
                     player {
                         code
-                        name: web_name
+                        name
                         club
                         url
-                    }
-                    hasChanged
-                    positionId: pos
-                    squadPositionId: teamPos
-                    squadPositionIndex: posIndex
-                    player {
                         nextGameWeekFixture {
                             fixtures {
                                 fixture_id
-                                hTname
-                                aTname
                                 is_home
+                                homeTeam {
+                                    code
+                                    name
+                                }
+                                awayTeam {
+                                    code
+                                    name
+                                }
                             }
                         }
                     }
+                    hasChanged
+                    playerPositionId
+                    squadPositionId
+                    squadPositionIndex
                     seasonToGameWeek {
                         apps
                         gls

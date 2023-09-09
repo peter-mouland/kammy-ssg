@@ -98,30 +98,27 @@ exports.createPages = async ({ actions, graphql }) => {
         {
             allGameWeeks {
                 nodes {
-                    gameWeek
+                    gameWeekIndex
                     isCurrent
                 }
             }
             allDivisions(sort: { order: ASC }) {
                 nodes {
-                    key
-                    label
-                    order
+                    divisionId
+                    url
                 }
             }
             allPlayers {
                 nodes {
                     code
-                    name: web_name
                     url
                 }
             }
-            allManagers(sort: { managerKey: ASC }) {
+            allManagers(sort: { managerId: ASC }) {
                 nodes {
-                    manager
-                    managerKey
+                    managerId
+                    divisionId
                     url
-                    divisionKey
                 }
             }
         }
@@ -131,56 +128,52 @@ exports.createPages = async ({ actions, graphql }) => {
     let maxGameweek = 99;
     const pageNodesToBuild = [];
 
-    data?.allGameWeeks.nodes.forEach(({ gameWeek, isCurrent }) => {
+    data?.allGameWeeks.nodes.forEach(({ gameWeekIndex, isCurrent }) => {
         // if (!isCurrent) return;
-        if (gameWeek > maxGameweek) return;
-        if (isCurrent) maxGameweek = gameWeek + 1;
+        if (gameWeekIndex > maxGameweek) return;
+        if (isCurrent) maxGameweek = gameWeekIndex + 1;
 
         // HOMEPAGE (by game-week)
-        const prevGameWeek = gameWeek - 1;
-        const nextGameWeek = gameWeek + 1;
+        const prevGameWeekIndex = gameWeekIndex - 1;
+        const nextGameWeekIndex = gameWeekIndex + 1;
         pageNodesToBuild.push({
-            path: `/week-${gameWeek}`,
+            path: `/week-${gameWeekIndex}`,
             component: path.resolve('src/templates/homepage.jsx'),
             context: {
-                gameWeek,
-                prevGameWeek,
-                nextGameWeek,
+                gameWeekIndex,
+                prevGameWeekIndex,
+                nextGameWeekIndex,
             },
         });
         // a new page for each division
-        data?.allDivisions.nodes.forEach(({ key, label }) => {
-            const url = label.replace(/ /g, '-').toLowerCase();
+        data?.allDivisions.nodes.forEach(({ divisionId, url }) => {
             //   DIVISION RANKINGS (by game-week)
             pageNodesToBuild.push({
-                path: `/week-${gameWeek}/${url}`,
+                path: `/week-${gameWeekIndex}/${url}`,
                 component: path.resolve('src/templates/division-rankings.jsx'),
                 context: {
-                    gameWeek,
-                    divisionKey: key,
-                    divisionLabel: label,
+                    gameWeekIndex,
+                    divisionId,
                 },
             });
             //   DIVISION TEAMS (by game-week)
             pageNodesToBuild.push({
-                path: `/week-${gameWeek}/${url}/teams`,
+                path: `/week-${gameWeekIndex}/${url}/teams`,
                 component: path.resolve('src/templates/division-teams.jsx'),
                 context: {
-                    gameWeek,
-                    prevGameWeek,
-                    divisionKey: key,
-                    divisionLabel: label,
+                    gameWeekIndex,
+                    prevGameWeekIndex,
+                    divisionId,
                 },
             });
             // DIVISION TRANSFERS
             pageNodesToBuild.push({
-                path: `/week-${gameWeek}/${url}/transfers`,
+                path: `/week-${gameWeekIndex}/${url}/transfers`,
                 component: path.resolve('src/templates/division-transfers.jsx'),
                 context: {
-                    gameWeek,
-                    prevGameWeek,
-                    divisionKey: key,
-                    divisionLabel: label,
+                    gameWeekIndex,
+                    prevGameWeekIndex,
+                    divisionId,
                 },
             });
         });
@@ -190,9 +183,9 @@ exports.createPages = async ({ actions, graphql }) => {
                 path: '/',
                 component: path.resolve('src/templates/homepage.jsx'),
                 context: {
-                    gameWeek,
-                    prevGameWeek,
-                    nextGameWeek,
+                    gameWeekIndex,
+                    prevGameWeekIndex,
+                    nextGameWeekIndex,
                 },
             });
             //   CUP
@@ -200,48 +193,44 @@ exports.createPages = async ({ actions, graphql }) => {
                 path: `/cup`,
                 component: path.resolve('src/templates/cup-index.jsx'),
                 context: {
-                    gameWeek,
-                    prevGameWeek,
-                    nextGameWeek,
+                    gameWeekIndex,
+                    prevGameWeekIndex,
+                    nextGameWeekIndex,
                 },
             });
             //   PLAYER
-            data?.allPlayers.nodes.forEach(({ name: playerName, url, code }) => {
+            data?.allPlayers.nodes.forEach(({ url, code }) => {
                 pageNodesToBuild.push({
                     path: url,
                     component: path.resolve('src/templates/player.jsx'),
                     context: {
-                        gameWeek,
-                        playerName,
+                        gameWeekIndex,
                         code,
                     },
                 });
             });
             //   MANAGER
-            data?.allManagers.nodes.forEach(({ divisionKey, manager: managerName, managerKey, url }) => {
+            data?.allManagers.nodes.forEach(({ divisionId, managerId, url }) => {
                 pageNodesToBuild.push({
                     path: url,
                     component: path.resolve('src/templates/manager.jsx'),
                     context: {
-                        gameWeek,
-                        managerName,
-                        managerKey,
-                        divisionKey,
+                        gameWeekIndex,
+                        managerId,
+                        divisionId,
                     },
                 });
             });
 
-            data?.allDivisions.nodes.forEach(({ key, label }) => {
-                const url = label.replace(/ /g, '-').toLowerCase();
+            data?.allDivisions.nodes.forEach(({ divisionId, url }) => {
                 //   DIVISION RANKINGS
                 pageNodesToBuild.push({
                     path: `/${url}`,
                     component: path.resolve('src/templates/division-rankings.jsx'),
                     context: {
-                        gameWeek,
-                        prevGameWeek,
-                        divisionKey: key,
-                        divisionLabel: label,
+                        gameWeekIndex,
+                        prevGameWeekIndex,
+                        divisionId,
                     },
                 });
                 //   DIVISION TEAMS
@@ -249,10 +238,9 @@ exports.createPages = async ({ actions, graphql }) => {
                     path: `/${url}/teams`,
                     component: path.resolve('src/templates/division-teams.jsx'),
                     context: {
-                        gameWeek,
-                        prevGameWeek,
-                        divisionKey: key,
-                        divisionLabel: label,
+                        gameWeekIndex,
+                        prevGameWeekIndex,
+                        divisionId,
                     },
                 });
                 //   DIVISION PLAYERS
@@ -260,10 +248,9 @@ exports.createPages = async ({ actions, graphql }) => {
                     path: `/${url}/players`,
                     component: path.resolve('src/templates/division-players.jsx'),
                     context: {
-                        gameWeek,
-                        prevGameWeek,
-                        divisionKey: key,
-                        divisionLabel: label,
+                        gameWeekIndex,
+                        prevGameWeekIndex,
+                        divisionId,
                     },
                 });
                 //   DIVISION TRANSFERS
@@ -271,10 +258,9 @@ exports.createPages = async ({ actions, graphql }) => {
                     path: `/${url}/transfers`,
                     component: path.resolve('src/templates/division-transfers.jsx'),
                     context: {
-                        gameWeek,
-                        prevGameWeek,
-                        divisionKey: key,
-                        divisionLabel: label,
+                        gameWeekIndex,
+                        prevGameWeekIndex,
+                        divisionId,
                     },
                 });
             });

@@ -8,7 +8,7 @@ import GwPoints from './components/gw-points';
 const CHANGES = 'CHANGES';
 const GW_POINTS = 'GW_POINTS';
 
-const Manager = ({ currentTeams, managerName, managerKey, gameWeek, divisionKey }) => {
+const Manager = ({ currentTeams, managerId, gameWeek, divisionId }) => {
     const [showTab, setShowTab] = React.useState(GW_POINTS);
     const teamsByManager = currentTeams.reduce((prev, teamItem) => {
         const team = prev[teamItem.manager.name] || [];
@@ -17,12 +17,12 @@ const Manager = ({ currentTeams, managerName, managerKey, gameWeek, divisionKey 
             [teamItem.manager.name]: [...team, teamItem],
         };
     }, []);
-    const currentTeam = teamsByManager[managerName];
+    const currentTeam = teamsByManager[managerId];
     return (
         <section id="managers-page" data-b-layout="container">
             <div className="page-content">
                 <Spacer all={{ stack: Spacer.spacings.MEDIUM }}>
-                    <h1>{managerName}&apos;s Team</h1>
+                    <h1>{managerId}&apos;s Team</h1>
                     <Spacer all={{ stackH: Spacer.spacings.SMALL }}>
                         <button type="button" onClick={() => setShowTab(GW_POINTS)}>
                             Current Team
@@ -35,8 +35,8 @@ const Manager = ({ currentTeams, managerName, managerKey, gameWeek, divisionKey 
                     {showTab === CHANGES ? (
                         <MakeChanges
                             teamsByManager={teamsByManager}
-                            managerName={managerName}
-                            divisionKey={divisionKey}
+                            managerId={managerId}
+                            divisionId={divisionId}
                             gameWeek={gameWeek}
                         />
                     ) : null}

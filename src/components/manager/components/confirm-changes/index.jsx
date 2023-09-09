@@ -9,15 +9,15 @@ import * as styles from './confirm-changes.module.css';
 import Player from '../../../player';
 import Accordion from '../accordion';
 
-const confirmChange = async ({ comment, newChanges, divisionKey, saveSquadChange, reset }) => {
+const confirmChange = async ({ comment, newChanges, divisionId, saveSquadChange, reset }) => {
     const timestamp = new Date();
-    const data = newChanges.map(({ type, playerIn, playerOut, manager, ...transfer }) => ({
+    const data = newChanges.map(({ type, playerIn, playerOut, managerId, ...transfer }) => ({
         ...transfer,
         timestamp,
         type,
-        manager,
-        Division: divisionKey,
-        Manager: manager,
+        managerId,
+        Division: divisionId,
+        Manager: managerId,
         Status: transfer.status,
         isPending: false,
         'Transfer Type': type,
@@ -26,16 +26,16 @@ const confirmChange = async ({ comment, newChanges, divisionKey, saveSquadChange
         Comment: comment,
     }));
 
-    await saveSquadChange({ division: divisionKey, data });
+    await saveSquadChange({ division: divisionId, data });
     reset();
 };
 
-const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChanges }) => {
+const Manager = ({ managerName, teamsByManager, gameWeek, divisionId, newChanges }) => {
     const [comment, setComment] = useState('');
     const { playersByName } = usePlayers();
     const { isLoading, isSaving, saveSquadChange, pendingChanges, hasPendingChanges } = useSquadChanges({
         selectedGameWeek: gameWeek,
-        divisionKey,
+        divisionId,
         teamsByManager,
     });
     const managerChanges = pendingChanges.filter(({ manager }) => manager === managerName);
@@ -82,7 +82,7 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey, newChange
                             confirmChange({
                                 comment,
                                 newChanges,
-                                divisionKey,
+                                divisionId,
                                 saveSquadChange,
                                 reset: () => {},
                             })

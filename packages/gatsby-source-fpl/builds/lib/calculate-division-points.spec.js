@@ -3,36 +3,36 @@ const getTeamPoints = require('./calculate-division-points');
 
 const teams = {
   "Olly":[{
-    teamPos: 'GK',
+    squadPositionId: 'gk',
     "gameWeekStats":{"points": 0},
     seasonToGameWeek: {"points":0},
   },{
-    teamPos: 'SUB',
+    squadPositionId: 'sub',
     "gameWeekStats":{"points":0},
     seasonToGameWeek: {"points":0},
   },{
-    teamPos: 'FB',
+    squadPositionId: 'fb',
     "gameWeekStats":{"points":0},
     seasonToGameWeek: {"points":0},
   },{
-    teamPos: 'FB',
+    squadPositionId: 'fb',
     "gameWeekStats":{"points":0},
     seasonToGameWeek: {"points":0},
   }],
   "Nick":[{
-    teamPos: 'GK',
+    squadPositionId: 'gk',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
   },{
-    teamPos: 'SUB',
+    squadPositionId: 'sub',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
   },{
-    teamPos: 'FB',
+    squadPositionId: 'fb',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
   },{
-    teamPos: 'FB',
+    squadPositionId: 'fb',
     "gameWeekStats":{"points":3},
     seasonToGameWeek: {"points":3},
   }],
@@ -66,11 +66,11 @@ describe('getTeamPoints()', () => {
     it('should return the aggregate POSITION (GK/SUB) points for the gameWeekPoints and seasonPoints', () => {
       const divisionPoints = getTeamPoints(
           [{
-              teamPos: 'GK',
+              squadPositionId: 'gk',
               "gameWeekStats":{"points": 1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'SUB',
+              squadPositionId: 'sub',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           }]
@@ -83,11 +83,11 @@ describe('getTeamPoints()', () => {
 
     it('should return the aggregate POSITION (fb) points for the gameWeekPoints and seasonPoints', () => {
       const divisionPoints = getTeamPoints([{
-          teamPos: 'FB',
+          squadPositionId: 'fb',
           "gameWeekStats":{"points":1},
           seasonToGameWeek: {"points":1},
       },{
-          teamPos: 'FB',
+          squadPositionId: 'fb',
           "gameWeekStats":{"points":1},
           seasonToGameWeek: {"points":1},
       }]);
@@ -115,19 +115,19 @@ describe('getTeamPoints()', () => {
 
     it('should calculate the total points for all positions', () => {
       const divisionPoints = getTeamPoints([{
-          teamPos: 'GK',
+          squadPositionId: 'gk',
           "gameWeekStats":{"points": 1},
           seasonToGameWeek: {"points":1},
       },{
-          teamPos: 'SUB',
+          squadPositionId: 'sub',
           "gameWeekStats":{"points":1},
           seasonToGameWeek: {"points":1},
       },{
-          teamPos: 'FB',
+          squadPositionId: 'fb',
           "gameWeekStats":{"points":1},
           seasonToGameWeek: {"points":1},
       },{
-          teamPos: 'FB',
+          squadPositionId: 'fb',
           "gameWeekStats":{"points":1},
           seasonToGameWeek: {"points":1},
       }]);
@@ -139,35 +139,35 @@ describe('getTeamPoints()', () => {
 
       it('should calculate the total points for all positions for multiple gameweeks', () => {
           const divisionPoints = getTeamPoints([{
-              teamPos: 'GK',
+              squadPositionId: 'gk',
               "gameWeekStats":{"points": 1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'SUB',
+              squadPositionId: 'sub',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'FB',
+              squadPositionId: 'fb',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'FB',
+              squadPositionId: 'fb',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'GK',
+              squadPositionId: 'gk',
               "gameWeekStats":{"points": 1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'SUB',
+              squadPositionId: 'sub',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'FB',
+              squadPositionId: 'fb',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           },{
-              teamPos: 'FB',
+              squadPositionId: 'fb',
               "gameWeekStats":{"points":1},
               seasonToGameWeek: {"points":1},
           }]);

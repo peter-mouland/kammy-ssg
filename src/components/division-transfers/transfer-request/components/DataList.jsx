@@ -24,7 +24,7 @@ const ArrivingTag = ({ item }) =>
 const ExitTag = ({ item }) =>
     item.isPendingTransferOut ? <span className={cx(styles.tag, styles.exitTag)}>pending exit</span> : null;
 const ManagerTag = ({ item }) =>
-    item.manager ? <span className={cx(styles.tag, styles.managerTag)}>{item.manager}</span> : null;
+    item.managerId ? <span className={cx(styles.tag, styles.managerTag)}>{item.managerId}</span> : null;
 const Tags = ({ item }) => (
     <span className={styles.tags}>
         <ExitTag item={item} /> <ArrivingTag item={item} /> <ManagerTag item={item} />

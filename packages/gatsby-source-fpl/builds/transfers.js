@@ -6,35 +6,21 @@ module.exports = ({ googleTransferData, createNodeId }) => {
 
     const transfers = googleTransferData
         .sort((t1, t2) => new Date(t1.timestamp) - new Date(t2.timestamp))
-        .map((transfer) => {
-            const data = transfer;
-            // save keys as ___string for node ids
-            data.divisionName = transfer.division;
-            data.managerName = transfer.manager;
-            data.transferInCode = parseInt(transfer.codeIn, 10);
-            data.transferOutCode = parseInt(transfer.codeOut, 10);
-            // delete dupes to ensure other errors get through
-            delete data.division;
-            delete data.manager;
-            delete data.transferIn;
-            delete data.transferOut;
-
-            return {
-                resourceId: `transfers-${String(data.timestamp)}-${data.managerName}`,
-                data: {
-                    ...data,
-                    division___NODE: createNodeId(`divisions-${data.divisionName}`),
-                    manager___NODE: createNodeId(`managers-${data.managerName}`),
-                    transferIn___NODE: createNodeId(`players-${data.transferInCode}`),
-                    transferOut___NODE: createNodeId(`players-${data.transferOutCode}`),
-                },
-                internal: {
-                    description: 'Transfers',
-                    mediaType: mediaTypes.JSON,
-                    type: nodeTypes.transfers,
-                },
-            };
-        });
+        .map((data) => ({
+            resourceId: `transfers-${String(data.timestamp)}-${data.managerId}`,
+            data: {
+                ...data,
+                division___NODE: createNodeId(`divisions-${data.divisionId}`),
+                manager___NODE: createNodeId(`managers-${data.managerId}`),
+                playerIn___NODE: createNodeId(`players-${data.codeIn}`),
+                playerOut___NODE: createNodeId(`players-${data.codeOut}`),
+            },
+            internal: {
+                description: 'Transfers',
+                mediaType: mediaTypes.JSON,
+                type: nodeTypes.transfers,
+            },
+        }));
     logEnd();
     return transfers;
 };

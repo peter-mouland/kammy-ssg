@@ -3,7 +3,7 @@
 const Chance = require('chance');
 const extractFFStats = require('@kammy/helpers.extract-fpl-stats');
 
-const { playerStats } = require('./player-stats');
+const { getPlayerStats } = require('./player-stats');
 
 const chance = new Chance();
 const getStats = (count) => new Array(count).fill(chance.integer());
@@ -12,7 +12,7 @@ let randomKey0;
 let randomKey1;
 let randomKey2;
 
-describe('playerStats', () => {
+describe('getPlayerStats', () => {
     let fixtures;
     let player;
 
@@ -41,21 +41,20 @@ describe('playerStats', () => {
             },
         ];
         player = {
-            pos: 'GK',
+            positionId: 'gk',
             fixtures,
             stats: {},
         };
     });
 
     it('return defaults when gameWeeks dont match', () => {
-        const gameWeeks = [
-            {
-                gameWeek: 1,
-                start: '2016-08-11 18:00:00',
-                end: '2016-08-18 18:00:00',
-            },
-        ];
-        const playerWithStats = playerStats({ player, gameWeeks });
+        const gameWeek = {
+            gameWeek: 1,
+            start: '2016-08-11 18:00:00',
+            end: '2016-08-18 18:00:00',
+            fixtures,
+        };
+        const playerWithStats = getPlayerStats({ player, gameWeek });
         expect(playerWithStats.fixtures).toHaveLength(fixtures.length);
         expect(playerWithStats.pos).toEqual(player.pos);
         expect(playerWithStats.gameWeekFixtures).toEqual([]);
@@ -76,14 +75,13 @@ describe('playerStats', () => {
 
     it('return a single gameWeeks match', () => {
         player.fixtures[0].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-        const gameWeeks = [
-            {
-                gameWeek: 1,
-                start: '2017-08-11 18:00:00',
-                end: '2017-08-18 18:00:00',
-            },
-        ];
-        const playerWithStats = playerStats({ player, gameWeeks });
+        const gameWeek = {
+            gameWeek: 1,
+            start: '2017-08-11 18:00:00',
+            end: '2017-08-18 18:00:00',
+            fixtures,
+        };
+        const playerWithStats = getPlayerStats({ player, gameWeek });
         expect(playerWithStats.fixtures).toHaveLength(fixtures.length);
         expect(playerWithStats.fixtures[0]).toEqual({
             ...fixtures[0],
@@ -132,14 +130,13 @@ describe('playerStats', () => {
         player.fixtures[0].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
         player.fixtures[1].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
         player.fixtures[2].stats = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-        const gameWeeks = [
-            {
-                gameWeek: 1,
-                start: '2017-08-11 18:00:00',
-                end: '2017-08-23 18:00:00',
-            },
-        ];
-        const playerWithStats = playerStats({ player, gameWeeks });
+        const gameWeek = {
+            gameWeek: 1,
+            start: '2017-08-11 18:00:00',
+            end: '2017-08-23 18:00:00',
+            fixtures,
+        };
+        const playerWithStats = getPlayerStats({ player, gameWeek });
         expect(playerWithStats.fixtures).toHaveLength(3);
         expect(playerWithStats.fixtures).toEqual([
             {

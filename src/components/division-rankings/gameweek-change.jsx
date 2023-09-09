@@ -35,12 +35,12 @@ export const GameWeekChange = ({ Positions, Standings, Managers }) => (
 
 GameWeekChange.propTypes = {
     gameWeekDates: PropTypes.object,
-    Standings: PropTypes.object,
+    Standings: PropTypes.array,
     Divisions: PropTypes.array,
 };
 
 GameWeekChange.defaultProps = {
-    Standings: {},
+    Standings: [],
     Divisions: [],
     gameWeekDates: null,
 };

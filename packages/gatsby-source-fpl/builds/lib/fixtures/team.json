@@ -1,62 +1,62 @@
 [
   {
-    "manager": "Olly",
-    "pos": "GK",
+    "managerId": "Olly",
+    "positionId": "GK",
     "name": "de Gea, David"
   },
   {
-    "manager": "Olly",
-    "pos": "CB",
+    "managerId": "Olly",
+    "positionId": "CB",
     "name": "Stones, John"
   },
   {
-    "manager": "Olly",
-    "pos": "CB",
+    "managerId": "Olly",
+    "positionId": "CB",
     "name": "Koscielny, Laurent"
   },
   {
-    "manager": "Olly",
-    "pos": "FB",
+    "managerId": "Olly",
+    "positionId": "FB",
     "name": "Alonso, Marcos"
   },
   {
-    "manager": "Olly",
-    "pos": "FB",
+    "managerId": "Olly",
+    "positionId": "FB",
     "name": "Kolasinac, Sead"
   },
   {
-    "manager": "Olly",
-    "pos": "MID",
+    "managerId": "Olly",
+    "positionId": "MID",
     "name": "Milner, James"
   },
   {
-    "manager": "Olly",
-    "pos": "MID",
+    "managerId": "Olly",
+    "positionId": "MID",
     "name": "Seri, Jean-Michael"
   },
   {
-    "manager": "Olly",
-    "pos": "AM",
+    "managerId": "Olly",
+    "positionId": "AM",
     "name": "Eriksen, Christian"
   },
   {
-    "manager": "Olly",
-    "pos": "AM",
+    "managerId": "Olly",
+    "positionId": "AM",
     "name": "Pedro,"
   },
   {
-    "manager": "Olly",
-    "pos": "FWD",
+    "managerId": "Olly",
+    "positionId": "STR",
     "name": "Lukaku, Romelu"
   },
   {
-    "manager": "Olly",
-    "pos": "FWD",
+    "managerId": "Olly",
+    "positionId": "STR",
     "name": "Defoe, Jermain"
   },
   {
-    "manager": "Olly",
-    "pos": "SUB",
+    "managerId": "Olly",
+    "positionId": "SUB",
     "name": "Hernandez, Javier"
   }
 ]

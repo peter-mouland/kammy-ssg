@@ -1,10 +1,11 @@
 import sortBy from '@kammy/sort-columns';
 
-const positionsOrder = ['GK', 'FB', 'CB', 'MID', 'AM', 'STR', 'SUB'];
+const positionsOrder = ['gk', 'fb', 'cb', 'mid', 'am', 'str', 'sub'];
 
 const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions = [], transfers }) => {
     const selectedPositions =
-        selectedOptions?.filter(({ group }) => group === 'position').map(({ value }) => value) || [];
+        selectedOptions.filter(({ group }) => group === 'position').map(({ value }) => value) || [];
+
     const selectedManagers =
         selectedOptions?.filter(({ group }) => group === 'manager').map(({ value }) => value) || [];
     const selectedPlayers = selectedOptions?.filter(({ group }) => group === 'player').map(({ value }) => value) || [];
@@ -25,8 +26,8 @@ const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions 
     );
 
     const managersPlayers = Object.values(teams)
-        .flatMap((name) => name)
-        .reduce((prev, curr) => ({ ...prev, [curr.playerCode]: curr }), {});
+        .flatMap((team) => team.players)
+        .reduce((prev, curr) => ({ ...prev, [curr.code]: curr }), {});
 
     const selectedManagersTransfers = selectedManagers
         .map((manager) => transfersByManager[manager])
@@ -40,38 +41,39 @@ const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions 
                 .filter(Boolean)
                 .map(({ transferOut }) => transferOut),
         );
+
     const selectedManagersPlayers = includeAvailablePlayers
         ? []
         : selectedManagers
               .map((manager) => teams[manager])
-              .flatMap((name) => name)
-              .map(({ playerCode }) => playerCode)
+              .flatMap((team) => team.players)
+              .map(({ code }) => code)
               .concat(selectedManagersTransfers);
 
     const unavailablePlayers = Object.keys(teams)
-        .reduce((prev, curr) => [...prev, ...teams[curr]], [])
-        .map(({ playerCode }) => playerCode)
+        .reduce((prev, curr) => [...prev, ...teams[curr].players], [])
+        .map(({ code }) => code)
         .concat();
 
     return playersArray
         .filter(
-            ({ pos, new: isNew, code }) =>
-                (selectedPositions.includes(pos) || !selectedPositions.length) &&
+            ({ positionId, new: isNew, code }) =>
+                (selectedPositions.includes(positionId) || !selectedPositions.length) &&
                 (selectedManagersPlayers.includes(code) || !selectedManagersPlayers.length) &&
                 (selectedPlayers.includes(code) || !selectedPlayers.length) &&
                 ((includeAvailablePlayers && !unavailablePlayers.includes(code)) || !includeAvailablePlayers) &&
                 ((includeNewPlayers && isNew) || !includeNewPlayers) &&
-                ((includeSub && managersPlayers[code]?.teamPos === 'SUB') || !includeSub) &&
+                ((includeSub && managersPlayers[code]?.squadPositionId === 'sub') || !includeSub) &&
                 ((includePendingPlayers && (!!transfersInByPlayer[code] || !!transfersOutByPlayer[code])) ||
                     !includePendingPlayers),
         )
-        .sort(sortBy(['pos', 'name'], { pos: positionsOrder }))
+        .sort(sortBy(['positionId', 'name'], { positionId: positionsOrder }))
         .map((player) => ({
             ...player,
             isPendingTransferIn: !!transfersInByPlayer[player.code],
             isPendingTransferOut: !!transfersOutByPlayer[player.code],
-            manager: managersPlayers[player.code] ? managersPlayers[player.code].managerName : undefined,
-            teamPos: managersPlayers[player.code] ? managersPlayers[player.code].teamPos : undefined,
+            managerId: managersPlayers[player.code] ? managersPlayers[player.code].managerId : undefined,
+            squadPositionId: managersPlayers[player.code] ? managersPlayers[player.code].squadPositionId : undefined,
         }));
 };
 

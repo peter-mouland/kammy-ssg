@@ -4,18 +4,58 @@ const getRank = require('./lib/calculate-division-rank');
 const getRankChange = require('./lib/calculate-rank-change');
 const logger = require('../lib/log');
 
-module.exports = ({ divisions, managers, teams, createNodeId }) => {
+module.exports = ({ divisions, managers, teams, gameWeeks, createNodeId }) => {
     const logEnd = logger.timed('Build: League Tables');
+    /**
+     *  {
+     *  teamPos: 'FB',
+     *  posIndex: 3,
+     *  pos: 'FB',
+     *  hasChanged: false,
+     *  division: undefined,
+     *  gameWeek: 8,
+     *  playerCode: 214590,
+     *  gameWeekStats: {
+     *    apps: 0,
+     *    gls: 0,
+     *    asts: 0,
+     *    cs: 0,
+     *    con: 0,
+     *    pensv: 0,
+     *    ycard: 0,
+     *    rcard: 0,
+     *    sb: 0,
+     *    bp: 0,
+     *    points: 0
+     *  },
+     *  seasonToGameWeek: {
+     *    apps: 180,
+     *    gls: 0,
+     *    asts: 0,
+     *    cs: 0,
+     *    con: 5,
+     *    pensv: 0,
+     *    ycard: 1,
+     *    rcard: 0,
+     *    sb: 0,
+     *    bp: 0,
+     *    points: 0
+     *  },
+     *  managerName: 'Howie',
+     *  manager___NODE: '1738ff31-8b42-51d1-b609-73738d55f39b',
+     *  player___NODE: '214033d3-f9c5-52ea-8090-f18fd60d7117'
+     *  },
+     */
     const teamData = teams.map(({ data }) => data);
     const managerData = managers.map(({ data }) => data);
     const divisionData = divisions.map(({ data }) => data);
-    const gameWeeks = [...new Set(teamData.map((player) => player.gameWeek))];
+    const gameWeeksData = gameWeeks.map(({ data }) => data);
 
     /*
   {
     gameWeek: 1,
-    divisionKey: 'leagueOne',
-    managerName: 'Tim',
+    divisionId: 'leagueOne',
+    managerId: 'Tim',
     manager___NODE: '2d7ebc98-3415-58a9-9091-627ff93f3188',
     points: {
       gks: { gameWeekPoints: 9, seasonPoints: 9 },
@@ -29,15 +69,17 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
   }
    */
     const results = [];
-    gameWeeks.forEach((gameWeek) => {
-        managerData.forEach(({ manager, divisionKey }) => {
-            const team = teamData.filter((item) => item.managerName === manager && item.gameWeek === gameWeek);
+    gameWeeksData.forEach((gameWeek) => {
+        managerData.forEach(({ managerId, divisionId }) => {
+            const team = teamData.filter(
+                (item) => item.managerId === managerId && item.gameWeekIndex === gameWeek.gameWeekIndex,
+            );
             const points = getPoints(team);
             results.push({
-                gameWeek,
-                managerName: manager,
-                divisionKey,
-                manager___NODE: createNodeId(`managers-${manager}`),
+                gameWeekIndex: gameWeek.gameWeekIndex,
+                managerId,
+                divisionId,
+                manager___NODE: createNodeId(`managers-${managerId}`),
                 points,
             });
         });
@@ -45,7 +87,7 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
 
     /*
   {
-    division: 'leagueOne',
+    divisionId: 'leagueOne',
     gameWeek: 10,
     rank: {
       Chris: { gks: 7, cb: 7, fb: 5, mid: 5, am: 3, str: 3 },
@@ -61,22 +103,31 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
   }
    */
     const ranks = [];
-    gameWeeks.forEach((gameWeek) => {
-        divisionData.forEach(({ key }) => {
-            const divisionFilter = ({ divisionKey }) => divisionKey === key;
-            const divisionManagers = managerData.filter(divisionFilter).map(({ manager }) => manager);
-            const managerFilter = (team) => divisionManagers.includes(team.managerName) && team.gameWeek === gameWeek;
+    gameWeeksData.forEach((gameWeek) => {
+        divisionData.forEach(({ divisionId }) => {
+            const divisionFilter = (manager) => manager.divisionId === divisionId;
+            const divisionManagers = managerData.filter(divisionFilter).map(({ managerId }) => managerId);
+            const managerFilter = (team) =>
+                divisionManagers.includes(team.managerId) && team.gameWeekIndex === gameWeek.gameWeekIndex;
             const division = results.filter(managerFilter);
             const rank = getRank(division);
-            ranks.push({ divisionKey: key, gameWeek, rank });
+            if (Object.keys(rank).length === 0) {
+                console.log({ managerData });
+                console.log({ divisionManagers });
+                console.log({ divisionId });
+                console.log({ gameWeek });
+                console.log({ rank });
+                process.exit(1);
+            }
+            ranks.push({ divisionId, gameWeekIndex: gameWeek.gameWeekIndex, rank });
         });
     });
 
     /*
   {
     gameWeek: 1,
-    managerName: 'Tim',
-    divisionKey: 'premierLeague',
+    managerId: 'Tim',
+    divisionId: 'premierLeague',
     manager___NODE: '2d7ebc98-3415-58a9-9091-627ff93f3188',
     points: {
       gks: { gameWeekPoints: 9, seasonPoints: 9, rank: 4 },
@@ -90,23 +141,31 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
   }
    */
     const resultsWithRank = results.map((item) => {
-        const findDivisionGameWeek = (rank) => rank.gameWeek === item.gameWeek && rank.divisionKey === item.divisionKey;
-        const findLastWeek = (rank) => rank.gameWeek === item.gameWeek - 1 && rank.divisionKey === item.divisionKey;
+        const findDivisionGameWeek = (rank) =>
+            rank.gameWeekIndex === item.gameWeekIndex && rank.divisionId === item.divisionId;
+        const findLastWeek = (rank) =>
+            rank.gameWeekIndex === item.gameWeekIndex - 1 && rank.divisionId === item.divisionId;
         const divRankings = ranks.find(findDivisionGameWeek) || {};
         const divLastWeekRankings = ranks.find(findLastWeek) || {};
         const rankChange = getRankChange(divLastWeekRankings.rank, divRankings.rank);
-        const points = Object.keys(item.points).reduce(
-            (prev, posKey) => ({
-                ...prev,
-                [posKey]: {
-                    ...prev[posKey],
-                    order: divRankings.rank[item.managerName].order,
-                    rank: divRankings.rank[item.managerName][posKey],
-                    rankChange: rankChange[item.managerName][posKey],
-                },
-            }),
-            item.points,
-        );
+        const points = Object.keys(item.points).reduce((prev, positionId) => {
+            if (!divRankings.rank[item.managerId]) {
+                console.log('manager rank not found');
+                console.log('====={divRankings}====');
+                console.log(divRankings);
+                console.log('-{item}-');
+                console.log(item);
+                process.exit(1);
+            }
+            // eslint-disable-next-line no-param-reassign
+            prev[positionId] = {
+                ...prev[positionId],
+                order: divRankings.rank[item.managerId].order,
+                rank: divRankings.rank[item.managerId][positionId],
+                rankChange: rankChange[item.managerId][positionId],
+            };
+            return prev;
+        }, item.points);
 
         return {
             ...item,
@@ -117,7 +176,7 @@ module.exports = ({ divisions, managers, teams, createNodeId }) => {
     logEnd();
 
     return resultsWithRank.map((data, i) => ({
-        resourceId: `league-tables-i${i}-${data.teamPos}-${data.manager}-${data.gameWeek}`,
+        resourceId: `league-tables-i${i}-${data.squadPositionId}-${data.managerId}-${data.gameWeekIndex}`,
         data,
         internal: {
             description: 'League Tables',

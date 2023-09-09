@@ -11,27 +11,26 @@ import CDivisions from '../models/division';
 import CManagers from '../models/managers';
 import { DivisionStandings } from '../models/standings';
 
-const DivisionHomePage = ({ data, pageContext: { gameWeek: selectedGameWeek, divisionKey } }) => {
+const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
     const GameWeeks = useGameWeeks();
     const {
         allManagers: { nodes: allManagers },
         allLeagueTable: { nodes: managersStats },
     } = data;
-
     const Positions = new CPositions();
     const Divisions = new CDivisions();
-    const Division = Divisions.byId[divisionKey];
+    const Division = Divisions.getDivision(divisionId);
     const Managers = new CManagers(allManagers);
     const Standings = new DivisionStandings({ managersStats });
 
     return (
         <Layout.Container title={`${Division.label} - Standings`}>
             <Layout.Body>
-                <TabbedMenu selected="rankings" division={divisionKey} selectedGameWeek={selectedGameWeek} />
+                <TabbedMenu selected="rankings" division={divisionId} selectedGameWeek={gameWeekIndex} />
                 <DivisionRankings.Container>
                     <DivisionRankings.Title>Standings</DivisionRankings.Title>
                     <DivisionRankings.SeasonTotals
-                        selectedGameWeek={selectedGameWeek}
+                        selectedGameWeek={gameWeekIndex}
                         GameWeeks={GameWeeks}
                         Managers={Managers}
                         Positions={Positions}
@@ -41,7 +40,7 @@ const DivisionHomePage = ({ data, pageContext: { gameWeek: selectedGameWeek, div
                 <DivisionRankings.Container>
                     <DivisionRankings.Title>Weekly Scores</DivisionRankings.Title>
                     <DivisionRankings.GameWeekChange
-                        selectedGameWeek={selectedGameWeek}
+                        selectedGameWeek={gameWeekIndex}
                         GameWeeks={GameWeeks}
                         Managers={Managers}
                         Positions={Positions}
@@ -54,17 +53,17 @@ const DivisionHomePage = ({ data, pageContext: { gameWeek: selectedGameWeek, div
 };
 
 export const query = graphql`
-    query DivisionRankings($gameWeek: Int, $divisionKey: String) {
-        allManagers(filter: { divisionKey: { eq: $divisionKey } }, sort: { division: { order: ASC } }) {
+    query DivisionRankings($gameWeekIndex: Int, $divisionId: String) {
+        allManagers(filter: { divisionId: { eq: $divisionId } }, sort: { division: { order: ASC } }) {
             nodes {
-                label: manager
-                id: managerKey
-                divisionId: divisionKey
+                label
+                managerId
+                divisionId
             }
         }
 
         allLeagueTable(
-            filter: { gameWeek: { eq: $gameWeek }, divisionKey: { eq: $divisionKey } }
+            filter: { gameWeekIndex: { eq: $gameWeekIndex }, divisionId: { eq: $divisionId } }
             sort: [
                 { manager: { division: { order: ASC } } }
                 { points: { total: { rank: ASC } } }
@@ -72,7 +71,7 @@ export const query = graphql`
             ]
         ) {
             nodes {
-                gameWeek
+                gameWeekIndex
                 points {
                     am {
                         gameWeekPoints
@@ -118,10 +117,8 @@ export const query = graphql`
                     }
                 }
                 manager {
-                    managerId: managerKey
-                    division {
-                        divisionId: key
-                    }
+                    managerId
+                    divisionId
                 }
             }
         }

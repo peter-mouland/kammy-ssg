@@ -1,6 +1,8 @@
 /* eslint-env jest */
 const calculateSeasonStats = require('./calculate-season');
 
+const GK = 'gk';
+
 describe('calculateSeason.calculateSeasonStats', () => {
     it('for a single gameweek for gk', () => {
         const stats = {
@@ -15,7 +17,7 @@ describe('calculateSeason.calculateSeasonStats', () => {
             rcard: 1,
         };
         const gameWeeks = [{ gameWeekStats: stats }];
-        expect(calculateSeasonStats(gameWeeks, 'GK')).toEqual(stats);
+        expect(calculateSeasonStats(gameWeeks, GK)).toEqual(stats);
     });
 
     it('for 2 gameweeks [GK]', () => {
@@ -31,7 +33,7 @@ describe('calculateSeason.calculateSeasonStats', () => {
             rcard: 1,
         };
         const gameWeeks = [{ gameWeekStats: stats }, { gameWeekStats: stats }];
-        expect(calculateSeasonStats(gameWeeks, 'GK')).toEqual({
+        expect(calculateSeasonStats(gameWeeks, GK)).toEqual({
             apps: 2,
             gls: 2,
             sb: 2,
@@ -79,7 +81,7 @@ describe('calculateSeason.calculateSeasonStats', () => {
             rcard: 3,
         };
         const gameWeeks = [{ gameWeekStats: stats }, { gameWeekStats: stats2 }, { gameWeekStats: stats3 }];
-        expect(calculateSeasonStats(gameWeeks, 'GK')).toEqual({
+        expect(calculateSeasonStats(gameWeeks, GK)).toEqual({
             apps: 6,
             gls: 6,
             sb: 6,

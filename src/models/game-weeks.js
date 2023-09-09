@@ -1,19 +1,15 @@
 import parseISO from 'date-fns/parseISO';
 
 class GameWeekFixture {
-    constructor({ id, event, aScore, aTcode, aTname, aTshortName, date, hScore, hTcode, hTname, hTshortName, status }) {
+    constructor({ id, event, team_a_score, team_h_score, awayTeam, homeTeam, date, finished }) {
         this.id = id;
         this.event = event;
-        this.aScore = aScore;
-        this.aTcode = aTcode;
-        this.aTname = aTname;
-        this.aTshortName = aTshortName;
+        this.awayTeam = awayTeam;
+        this.homeTeam = homeTeam;
+        this.team_a_score = team_a_score;
+        this.team_h_score = team_h_score;
         this.date = new Date(date);
-        this.hScore = hScore;
-        this.hTcode = hTcode;
-        this.hTname = hTname;
-        this.hTshortName = hTshortName;
-        this.status = status;
+        this.finished = finished;
     }
 }
 
@@ -46,5 +42,9 @@ export default class GameWeeks {
     getGameWeekFromDate(date) {
         const gwIndex = this.gameWeeks.findIndex(({ start, end }) => inDateRange({ start, end }, date));
         return gwIndex < 0 ? 1 : gwIndex;
+    }
+
+    isCurrentGameWeek(gameWeekIndex) {
+        return gameWeekIndex === this.currentGameWeekIndex;
     }
 }

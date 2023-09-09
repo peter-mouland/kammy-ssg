@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
 import { graphql, useStaticQuery } from 'gatsby';
+
+import { Players } from '../models/players';
 
 const usePlayers = () => {
     const {
@@ -8,15 +9,13 @@ const usePlayers = () => {
         query Players {
             allPlayers(filter: { isHidden: { eq: false } }) {
                 nodes {
-                    id
                     url
-                    name: web_name
+                    name
                     club
-                    pos
+                    positionId
                     new
                     code
-                    value: value_season
-                    season {
+                    seasonStats {
                         apps
                         gls
                         asts
@@ -33,15 +32,7 @@ const usePlayers = () => {
             }
         }
     `);
-    const playersByName = useMemo(
-        () => players.reduce((prev, player) => ({ ...prev, [player.name]: player }), {}),
-        [players],
-    );
-    const playersByCode = useMemo(
-        () => players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {}),
-        [players],
-    );
-    return { players, playersByName, playersByCode };
+    return new Players(players);
 };
 
 export default usePlayers;

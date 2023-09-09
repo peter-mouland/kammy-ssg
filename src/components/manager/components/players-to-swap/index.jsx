@@ -6,15 +6,17 @@ import Player from '../../../player';
 import Accordion from '../accordion';
 
 const TYPE = consts.changeTypes.SWAP;
-const SUB = 'SUB';
+const SUB = 'sub';
 
 const getValidPlayersToSwap = ({ team }) => {
-    const sub = team.find(({ teamPos }) => teamPos === SUB);
+    const sub = team.find(({ squadPositionId }) => squadPositionId === SUB);
     const selectedPlayers = team.filter(({ isSelected }) => isSelected);
-    const hasSelectedSub = selectedPlayers.find(({ teamPos }) => teamPos === SUB);
-    const possibleSquadSubs = team.filter(({ player, teamPos }) => player.pos === sub.player.pos && teamPos !== SUB);
+    const hasSelectedSub = selectedPlayers.find(({ squadPositionId }) => squadPositionId === SUB);
+    const possibleSquadSubs = team.filter(
+        ({ player, squadPositionId }) => player.positionId === sub.player.positionId && squadPositionId !== SUB,
+    );
     const possibleSelectedSubs = selectedPlayers.filter(
-        ({ player, teamPos }) => player.pos === sub.pos && teamPos !== SUB,
+        ({ player, squadPositionId }) => player.positionId === sub.positionId && squadPositionId !== SUB,
     );
     switch (true) {
         case Boolean(hasSelectedSub):
@@ -28,7 +30,7 @@ const getValidPlayersToSwap = ({ team }) => {
 
 const PlayersToSwap = ({ team, swaps, applyChange }) => {
     const selectedPlayers = team.filter(({ isSelected }) => !!isSelected);
-    const sub = team.find(({ teamPos }) => teamPos === SUB);
+    const sub = team.find(({ squadPositionId }) => squadPositionId === SUB);
     const recommendPlayersToShow = getValidPlayersToSwap({ team });
     const maxSwapsRules = maxSwaps({ managerSwaps: swaps });
 
@@ -64,16 +66,16 @@ const PlayersToSwap = ({ team, swaps, applyChange }) => {
                                 <td>
                                     <Player player={player} small />
                                 </td>
-                                <td>{player.season?.points}</td>
+                                <td>{player.seasonStats?.points}</td>
                                 <td>
                                     <button
                                         type="button"
                                         onClick={() =>
                                             applyChange({
                                                 type: TYPE,
-                                                teamPos: SUB,
+                                                squadPositionId: SUB,
                                                 player,
-                                                posIndex: sub.posIndex,
+                                                squadPositionIndex: sub.squadPositionIndex,
                                             })
                                         }
                                     >

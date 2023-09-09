@@ -63,7 +63,7 @@ const PlayerTable = ({ players, Stats, myTeam, Positions, disabledPlayers }) => 
                     {Stats.all.map((stat) => (
                         <SortableHeader
                             key={stat.id}
-                            id={`season.${stat.id}.value`}
+                            id={`seasonStats.${stat.id}.value`}
                             label={stat.label}
                             sort={state.sort}
                             handleSort={handleSort}
@@ -96,10 +96,10 @@ const PlayerTable = ({ players, Stats, myTeam, Positions, disabledPlayers }) => 
                                 )}
                             >
                                 <td className="cell hide-1000">
-                                    <Player.AllInfo SquadPlayer={player} />
+                                    <Player.AllInfo player={player} />
                                 </td>
                                 <td className="cell show-1000">
-                                    <Player.Pos position={player.positionId} />
+                                    <Player.Pos positionId={player.positionId} />
                                 </td>
                                 <td className="cell show-1000">
                                     <Player.Image code={player.code} small liveQuery={{}} />
@@ -110,7 +110,7 @@ const PlayerTable = ({ players, Stats, myTeam, Positions, disabledPlayers }) => 
                                 </td>
                                 {Stats.all.map((stat) => (
                                     <td key={stat.id} className={bem('stat', null, 'cell')}>
-                                        {player.season && (player.season[stat.id].value ?? '-')}
+                                        {player.seasonStats && (player.seasonStats[stat.id].value ?? '-')}
                                     </td>
                                 ))}
                             </tr>

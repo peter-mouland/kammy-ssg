@@ -6,33 +6,31 @@ import bemHelper from '@kammy/bem';
 import { PlayersFilters, PlayersTable } from '../components/players-table';
 import Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
-import { Players } from '../models/players';
 import CPositions from '../models/position';
 import { Stats } from '../models/stats';
+import CDivisions from '../models/division';
+import usePlayers from '../hooks/use-players';
+import useClubs from '../hooks/use-clubs';
 
 const bemTable = bemHelper({ block: 'players-page-table' });
 
-const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel, gameWeek: selectedGameWeek } }) => {
-    const { clubs } = data.allClubs;
+const PlayersPage = ({ data, pageContext: { divisionId, gameWeekIndex } }) => {
+    const Divisions = new CDivisions();
+    const Division = Divisions.getDivision(divisionId);
     const Positions = new CPositions();
     const StatsList = new Stats();
-    const allPlayers = new Players(data.allPlayers.nodes);
     const teamPlayers = data.teamPlayers.nodes;
-    const disabledPlayers = useMemo(
-        () =>
-            teamPlayers.reduce(
-                (prev, player) => ({
-                    ...prev,
-                    [player.playerCode]: player,
-                }),
-                {},
-            ),
-        [teamPlayers],
-    );
+    const allPlayers = usePlayers();
+    const clubs = useClubs();
+    const disabledPlayers = teamPlayers.reduce((prev, { player }) => {
+        // eslint-disable-next-line no-param-reassign
+        prev[player.code] = true;
+        return prev;
+    }, {});
     return (
-        <Layout title={`${divisionLabel} - Players`}>
+        <Layout title={`${Division.label} - Players`}>
             <section id="players-page" className={bemTable()} data-b-layout="container">
-                <TabbedMenu selected="players" division={divisionKey} selectedGameWeek={selectedGameWeek} />
+                <TabbedMenu selected="players" division={Division.id} selectedGameWeek={gameWeekIndex} />
                 <div className="page-content">
                     <PlayersFilters players={allPlayers.all} positions={Positions} clubs={clubs}>
                         {(playersFiltered) => (
@@ -51,40 +49,14 @@ const PlayersPage = ({ data, pageContext: { divisionKey, divisionLabel, gameWeek
 };
 
 export const query = graphql`
-    query AllPlayers($gameWeek: Int, $divisionKey: String) {
-        allClubs: allPlayers {
-            clubs: distinct(field: { club: SELECT })
-        }
-        teamPlayers: allTeams(filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }) {
+    query AllPlayers($gameWeekIndex: Int, $divisionId: String) {
+        teamPlayers: allTeams(
+            filter: { gameWeekIndex: { eq: $gameWeekIndex }, manager: { divisionId: { eq: $divisionId } } }
+        ) {
             nodes {
-                managerName
-                playerCode
+                managerId
                 player {
                     code
-                    web_name
-                }
-            }
-        }
-        allPlayers(filter: { isHidden: { eq: false } }) {
-            nodes {
-                code
-                name: web_name
-                club
-                positionId: pos
-                new
-                url
-                season {
-                    apps
-                    gls
-                    asts
-                    cs
-                    con
-                    pensv
-                    ycard
-                    rcard
-                    bp
-                    sb
-                    points
                 }
             }
         }

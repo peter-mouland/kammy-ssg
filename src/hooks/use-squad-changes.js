@@ -1,81 +1,44 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchTransfers, saveTransfers } from '@kammy/helpers.spreadsheet';
 import { getSquadWarnings, consts } from '@kammy/helpers.squad-rules';
 
-// import useAllTransfers from './use-all-transfers';
 import usePlayers from './use-players';
 import useGameWeeks from './use-game-weeks';
+import useManagers from './use-managers';
+import { useTransfersSheet } from './use-google-transfers';
 
 const inDateRange = ({ start, end }, comparison) => comparison < end && comparison > start;
 
-const fetchr = ({ queryKey }) => fetchTransfers(queryKey[1]);
-
 const { changeTypes } = consts;
 
-const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} }) => {
+const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
+    const players = usePlayers();
+    const managers = useManagers();
     const { gameWeeks } = useGameWeeks();
     const gameWeek = gameWeeks[selectedGameWeek];
+    const transfersQuery = useTransfersSheet({ divisionId });
 
-    const { players } = usePlayers();
-    const playersByCode = players.reduce((prev, player) => ({ ...prev, [player.code]: player }), {});
-
-    const queryKey = ['transfers', divisionKey];
-    const { isLoading, data: changeData = [] } = useQuery({
-        queryKey,
-        queryFn: fetchr,
-        select: (transfers) =>
-            transfers.map((transfer) => ({
-                ...transfer,
-                codeIn: parseInt(transfer.codeIn, 10),
-                codeOut: parseInt(transfer.codeOut, 10),
-                date: new Date(transfer.date),
-                isValid: transfer.status === 'Y',
-                isPending: transfer.status === 'TBC',
-                isFailed: transfer.status === 'E',
-            })),
-    });
-
-    const queryClient = useQueryClient();
     const transferWithoutWarnings = [];
-    let updatedTeams = teamsByManager;
-    const { mutate: saveSquadChange, isPending: isSaving } = useMutation({
-        mutationFn: saveTransfers,
-        onSuccess: async (data) => {
-            await queryClient.cancelQueries(queryKey);
-            queryClient.setQueryData(queryKey, (old) => [...old, ...data]);
-        },
-    });
-    const applyChange = (changesToApply) =>
-        changesToApply.map((change) => {
-            if (!change.isPending) {
-                // console.log({ change });
-                // todo:    add hasBeenBuilt to transfers gra[h
-                //          add function to return new-valid-transfers
-                // if (change.isValid && !hasBeenBuilt) {
-                //
-                // }
-                return { ...change, warnings: [] };
-            }
+    let updatedTeams = Squads.byManagerId;
+    const changes =
+        transfersQuery.data?.map((change) => {
+            if (!change.isPending) return change; // only check pending transfers
 
-            const { transferHasWarnings, warnings, teamsWithTransfer } = getSquadWarnings({
+            const { warnings, teamsWithTransfer } = getSquadWarnings({
                 transfers: transferWithoutWarnings,
-                manager: change.manager,
+                managerId: change.managerId,
+                manager: managers.byId[change.managerId],
                 changeType: change.type,
-                playerIn: playersByCode[change.codeIn],
-                playerOut: playersByCode[change.codeOut],
+                playerIn: players.byCode[change.codeIn],
+                playerOut: players.byCode[change.codeOut],
                 teams: updatedTeams,
             });
-            if (!transferHasWarnings) {
+            if (!warnings.length) {
                 transferWithoutWarnings.push(change);
             }
             updatedTeams = teamsWithTransfer;
-            return {
-                ...change,
-                warnings,
-            };
-        });
-    // console.log(changeData);
-    const changes = applyChange(changeData);
+            change.addWarnings(warnings);
+            return change;
+        }) || [];
+
     // if pending is slow, update code to use filter-views
     // premierLeague pending transfers filter view id : fvid=305296590
     // championship pending transfers filter view id : fvid=921820010
@@ -92,10 +55,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionKey, teamsByManager = {} })
         {},
     );
     return {
-        queryKey,
-        isLoading,
-        isSaving,
-        saveSquadChange,
+        transfersQuery,
         changes,
         newTeams: updatedTeams,
         pendingChanges,

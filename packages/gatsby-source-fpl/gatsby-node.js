@@ -77,6 +77,7 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         divisions,
         managers,
         teams,
+        gameWeeks,
         createNodeId,
     });
 

@@ -8,28 +8,25 @@ import Players from '../components/Players';
 
 const bem = bemHelper({ block: 'transfers-page' });
 
-const createFilterOptions = ({ managers = [], manager }) => [
+const createFilterOptions = ({ positions, managers = [], managerId }) => [
     {
         label: 'Managers',
         options: [
             { value: 'available', label: 'No manager (free agents)', group: 'manager' },
-            ...managers.map((mngr) => ({
-                value: mngr,
-                label: `${mngr}${mngr === manager ? '*' : ''}`,
+            ...managers.map(({ id, label }) => ({
+                value: id,
+                label: `${label}${id === managerId ? '*' : ''}`,
                 group: 'manager',
             })),
         ],
     },
     {
         label: 'Positions',
-        options: [
-            { value: 'GK', label: 'GK', group: 'position' },
-            { value: 'CB', label: 'CB', group: 'position' },
-            { value: 'FB', label: 'FB', group: 'position' },
-            { value: 'MID', label: 'MID', group: 'position' },
-            { value: 'AM', label: 'AM', group: 'position' },
-            { value: 'STR', label: 'STR', group: 'position' },
-        ],
+        options: positions.PlayerPositions.map((position) => ({
+            value: position.id,
+            label: position.label,
+            group: 'position',
+        })),
     },
     {
         label: 'Misc',
@@ -41,9 +38,20 @@ const createFilterOptions = ({ managers = [], manager }) => [
     },
 ];
 
-const Search = ({ managers, manager, teams, searchText, playersArray, defaultFilter, onSelect, transfers }) => {
-    const filterOptions = createFilterOptions({ managers, manager, players: playersArray });
+const Search = ({
+    positions,
+    managers,
+    managerId,
+    teams,
+    searchText,
+    playersArray,
+    defaultFilter,
+    onSelect,
+    transfers,
+}) => {
+    const filterOptions = createFilterOptions({ positions, managers, managerId, players: playersArray });
     const [playerFilter, setPlayerFilter] = useState(defaultFilter);
+
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter,
         playersArray,

@@ -6,7 +6,7 @@ module.exports = ({ element_types }) =>
         resourceId: `fpl-positions-${data.id}-${data.locale}`,
         data: {
             ...data,
-            pos: data.singular_name_short,
+            position: data.singular_name_short,
         },
         internal: {
             description: 'Fantasy Premier League positions',

@@ -31,8 +31,9 @@ const getDates = ({ start, end }) => {
     }
 };
 
-const GameWeekDate = ({ gameWeek, isSelected, isCurrent }) => {
-    const { start, end, cup, gameWeek: GW } = gameWeek;
+const GameWeekDate = ({ gameWeek, isCurrent }) => {
+    console.log({ gameWeek });
+    const { start, end, cup, id } = gameWeek;
     const { startMonth, startTime, startDay, endMonth, endDay, endTime } = getDates({ start, end });
     return (
         <div className={isCurrent ? `formatted-gameweek-container isSelected` : `formatted-gameweek-container`}>
@@ -40,7 +41,7 @@ const GameWeekDate = ({ gameWeek, isSelected, isCurrent }) => {
                 {cup && <Cup className="formatted-gameweek-cup" />}
                 <span className="formatted-gameweek-date__calendar">
                     <span className="formatted-gameweek-date__month">
-                        <div style={{ padding: '0.2em' }}>gw{GW}</div>
+                        <div style={{ padding: '0.2em' }}>gw{id}</div>
                     </span>
                     <span className="formatted-gameweek-date__time">
                         <span>
@@ -58,10 +59,9 @@ const GameWeekDate = ({ gameWeek, isSelected, isCurrent }) => {
 };
 
 GameWeekDate.propTypes = {
-    isSelected: PropTypes.bool,
     isCurrent: PropTypes.bool,
     gameWeek: PropTypes.shape({
-        gameWeek: PropTypes.number,
+        id: PropTypes.number,
         cup: PropTypes.bool,
         start: PropTypes.instanceOf(Date),
         end: PropTypes.instanceOf(Date),
@@ -69,7 +69,6 @@ GameWeekDate.propTypes = {
 };
 
 GameWeekDate.defaultProps = {
-    isSelected: false,
     isCurrent: false,
 };
 

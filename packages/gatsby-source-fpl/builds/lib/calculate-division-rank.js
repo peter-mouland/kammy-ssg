@@ -34,8 +34,8 @@ function getRanks(values = []) {
 [
   {
     gameWeek: 36,
-    managerName: 'James',
-    divisionKey: 'premierLeague',
+    managerId: 'James',
+    divisionId: 'premierLeague',
     manager___NODE: 'f367b744-bdf5-5a3b-a600-3970eef95623',
     points: {
       gks: [Object],
@@ -49,8 +49,8 @@ function getRanks(values = []) {
   },
   {
     gameWeek: 36,
-    managerName: 'Johnny',
-    divisionKey: 'premierLeague',
+    managerId: 'Johnny',
+    divisionId: 'premierLeague',
     manager___NODE: 'c0f25b28-93f7-5b2b-8b69-8ddc7768d9a9',
     points: {
       gks: [Object],
@@ -77,7 +77,7 @@ function getRanks(values = []) {
  */
 const getRank = (teamsWithDivisionPoints = []) => {
     const ranks = positions.reduce((prev, pos) => {
-        const arr = teamsWithDivisionPoints.map((team) => ({ ...team.points, managerName: team.managerName }));
+        const arr = teamsWithDivisionPoints.map((team) => ({ ...team.points, managerId: team.managerId }));
         const positionPoints = arr.map((item) => item[pos.key].seasonPoints);
         const ranked = getRanks(positionPoints);
         const rankings = {
@@ -85,23 +85,23 @@ const getRank = (teamsWithDivisionPoints = []) => {
         };
 
         ranked.forEach((item, i) => {
-            const { managerName } = arr[i];
-            rankings[managerName] = {
-                ...rankings[managerName],
+            const { managerId } = arr[i];
+            rankings[managerId] = {
+                ...rankings[managerId],
                 [pos.key]: item,
             };
         });
         return rankings;
     }, {});
     const division = [];
-    Object.keys(ranks).forEach((managerName) => {
-        const team = teamsWithDivisionPoints.find((thisTeam) => thisTeam.managerName === managerName);
-        Object.keys(ranks[managerName]).forEach((position) => {
-            ranks[managerName].total = (ranks[managerName].total || 0) + ranks[managerName][position];
-            ranks[managerName].seasonPoints = team.points.total.seasonPoints;
-            ranks[managerName].managerName = managerName;
+    Object.keys(ranks).forEach((managerId) => {
+        const team = teamsWithDivisionPoints.find((thisTeam) => thisTeam.managerId === managerId);
+        Object.keys(ranks[managerId]).forEach((positionId) => {
+            ranks[managerId].total = (ranks[managerId].total || 0) + ranks[managerId][positionId];
+            ranks[managerId].seasonPoints = team.points.total.seasonPoints;
+            ranks[managerId].managerId = managerId;
         });
-        division.push(ranks[managerName]);
+        division.push(ranks[managerId]);
     });
     const ranksWithOrder = division
         .sort(sortBy([`total`, 'seasonPoints']))
@@ -112,7 +112,7 @@ const getRank = (teamsWithDivisionPoints = []) => {
         .reduce(
             (prev, thisTeam) => ({
                 ...prev,
-                [thisTeam.managerName]: thisTeam,
+                [thisTeam.managerId]: thisTeam,
             }),
             {},
         );
