@@ -10,7 +10,7 @@ const playerOptions = (players) =>
         label: player.name,
         key: player.id,
         img: `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`,
-        additional: <small>{` ${player.pos}`}</small>,
+        additional: <small>{` ${player.positionId}`}</small>,
     }));
 
 // eslint-disable-next-line react/prop-types

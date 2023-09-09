@@ -1,7 +1,7 @@
 const validatePosition = (squad = []) =>
     squad.reduce((acc, squadPlayer = {}) => {
         const err =
-            squadPlayer.positionId !== squadPlayer.squadPositionId && squadPlayer.squadPositionId !== 'sub'
+            squadPlayer.playerPositionId !== squadPlayer.squadPositionId && squadPlayer.squadPositionId !== 'sub'
                 ? [squadPlayer.code]
                 : [];
         return [...acc, ...err];

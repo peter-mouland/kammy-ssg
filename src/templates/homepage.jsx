@@ -13,7 +13,7 @@ import CPositions from '../models/position';
 import * as DivisionRankings from '../components/division-rankings';
 import NamedLink from '../components/named-link';
 
-const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) => {
+const HomepageIndex = ({ data, pageContext: { gameWeekIndex: selectedGameWeek } }) => {
     const { formattedTime, getFromNow } = useMeta();
     const GameWeeks = useGameWeeks();
     const {
@@ -25,6 +25,7 @@ const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) =>
     const Divisions = new CDivisions();
     const Managers = new CManagers(allManagers);
     const Standings = new CStandings(divisionStats);
+
     return (
         <Layout.Container title="Homepage">
             <Layout.Body>
@@ -59,19 +60,22 @@ const HomepageIndex = ({ data, pageContext: { gameWeek: selectedGameWeek } }) =>
 };
 
 export const query = graphql`
-    query Homepage($gameWeek: Int) {
+    query Homepage($gameWeekIndex: Int) {
         allManagers(sort: { division: { order: ASC } }) {
             nodes {
-                label: manager
-                id: managerKey
-                divisionId: divisionKey
+                label
+                managerId
+                divisionId
             }
         }
 
-        allLeagueTable(filter: { gameWeek: { eq: $gameWeek } }, sort: { manager: { division: { order: ASC } } }) {
+        allLeagueTable(
+            filter: { gameWeekIndex: { eq: $gameWeekIndex } }
+            sort: { manager: { division: { order: ASC } } }
+        ) {
             group(field: { manager: { division: { id: SELECT } } }) {
                 managersStats: nodes {
-                    gameWeek
+                    gameWeekIndex
                     points {
                         am {
                             gameWeekPoints
@@ -117,10 +121,8 @@ export const query = graphql`
                         }
                     }
                     manager {
-                        managerId: managerKey
-                        division {
-                            divisionId: key
-                        }
+                        managerId
+                        divisionId
                     }
                 }
             }

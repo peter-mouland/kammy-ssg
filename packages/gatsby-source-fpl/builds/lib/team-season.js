@@ -1,5 +1,5 @@
 const calculateSeasonStats = require('./calculate-season');
-const { playerStats: getPlayerStats } = require('./player-stats');
+const { getPlayerStats } = require('./player-stats');
 
 const UNKNOWN_PLAYER = (player) => ({
     ...player,
@@ -10,29 +10,33 @@ const UNKNOWN_PLAYER = (player) => ({
 });
 
 class TeamSeason {
-    constructor({ manager, division, gameWeeks, playersByCode, fplTeams }) {
+    constructor({ managerId, divisionId, gameWeeks, playersByCode, fplTeams }) {
         this.players = playersByCode;
-        this.manager = manager;
+        this.managerId = managerId;
         this.gameWeeks = gameWeeks;
-        this.division = division;
+        this.divisionId = divisionId;
         this.fplTeams = fplTeams;
     }
 
     getPlayer(player) {
+        // if (!this.players[player.code]) {
+        //     console.log(player.code);
+        //     console.log(`unknown player code ${player.code}`);
+        // }
         return this.players[player.code] || UNKNOWN_PLAYER(player);
     }
 
     getSeason() {
-        const { gameWeeks, manager, division, fplTeams } = this;
+        const { gameWeeks, managerId, divisionId, fplTeams } = this;
         const players = Array(12).fill({});
         const results = [];
 
-        gameWeeks.forEach(({ players: gwPlayers, ...gameWeekObj }, gameweekIndex) => {
-            const { gameWeek } = gameWeekObj;
-            const previousWeek = gameWeeks[gameweekIndex - 1];
-            const managerPlayers = gwPlayers.filter(({ manager: playerManager }) => manager === playerManager);
+        gameWeeks.forEach(({ players: gwPlayers, ...gameWeekObj }) => {
+            const { gameWeekIndex } = gameWeekObj;
+            const previousWeek = gameWeeks[gameWeekIndex - 1];
+            const managerPlayers = gwPlayers.filter(({ managerId: playerManager }) => managerId === playerManager);
             const previousSquad = previousWeek?.players.filter(
-                ({ manager: playerManager }) => manager === playerManager,
+                ({ managerId: playerManager }) => managerId === playerManager,
             );
 
             managerPlayers.forEach((player, i) => {
@@ -41,28 +45,31 @@ class TeamSeason {
                 const seasonToGameWeek = players[i].seasonToGameWeek || [];
                 const player1 = this.getPlayer(player);
 
-                playerGws[gameWeek] = getPlayerStats({
+                playerGws[gameWeekIndex] = getPlayerStats({
                     player: player1,
                     gameWeek: gameWeekObj,
                     fplTeams,
                 });
-                seasonToGameWeek[gameWeek] = calculateSeasonStats(playerGws.slice(0, gameWeek + 1), player.pos);
+                seasonToGameWeek[gameWeekIndex] = calculateSeasonStats(
+                    playerGws.slice(0, gameWeekIndex + 1),
+                    player.positionId,
+                );
 
                 players[i] = {
                     player: playerGws,
                     seasonToGameWeek,
                 };
                 results.push({
-                    teamPos: player.teamPos,
-                    posIndex: i,
-                    pos: player.pos,
+                    squadPositionId: player.squadPositionId,
+                    squadPositionIndex: i,
+                    playerPositionId: player.positionId,
                     hasChanged: playerChanged,
-                    manager,
-                    division,
-                    gameWeek,
-                    playerCode: players[i].player[gameWeek].code,
-                    gameWeekStats: players[i].player[gameWeek].gameWeekStats,
-                    seasonToGameWeek: players[i].seasonToGameWeek[gameWeek],
+                    managerId,
+                    divisionId,
+                    gameWeekIndex,
+                    playerCode: players[i].player[gameWeekIndex].code,
+                    gameWeekStats: players[i].player[gameWeekIndex].gameWeekStats,
+                    seasonToGameWeek: players[i].seasonToGameWeek[gameWeekIndex],
                 });
             });
         });

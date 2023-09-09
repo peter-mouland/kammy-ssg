@@ -34,9 +34,9 @@ export const SeasonTotals = ({ Positions, Standings, Managers }) => (
 );
 
 SeasonTotals.propTypes = {
-    Standings: PropTypes.object,
+    Standings: PropTypes.array,
 };
 
 SeasonTotals.defaultProps = {
-    Standings: {},
+    Standings: [],
 };

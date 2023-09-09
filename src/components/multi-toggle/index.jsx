@@ -29,34 +29,39 @@ const MultiToggle = ({
                     <Interstitial message={loadingMessage} />
                 </div>
             )}
-            {options.map((option, i) => (
-                <div className={bem('option')} key={option}>
-                    <input
-                        checked={checked === option}
-                        id={`${id}-${i}`}
-                        name={id}
-                        type="radio"
-                        value={option}
-                        onChange={disabledOptions.includes(option) ? null : () => onChange(option)}
-                        disabled={disabledOptions.includes(option)}
-                    />
-                    {contextualHelp && (
-                        <ContextualHelp
-                            body={contextualHelp(option)}
-                            Trigger={
-                                <label className={bem('option-label')} htmlFor={`${id}-${i}`}>
-                                    {option}
-                                </label>
-                            }
+            {options.map((option, i) => {
+                const optionId = option.id || option;
+                const optionLabel = option.label || option;
+                const checkedId = checked?.id || checked;
+                return (
+                    <div className={bem('option')} key={optionId}>
+                        <input
+                            checked={checkedId === optionId}
+                            id={`${id}-${i}`}
+                            name={id}
+                            type="radio"
+                            value={optionId}
+                            onChange={disabledOptions.includes(optionId) ? null : () => onChange(optionId)}
+                            disabled={disabledOptions.includes(optionId)}
                         />
-                    )}
-                    {!contextualHelp && (
-                        <label className={bem('option-label')} htmlFor={`${id}-${i}`}>
-                            {option}
-                        </label>
-                    )}
-                </div>
-            ))}
+                        {contextualHelp && (
+                            <ContextualHelp
+                                body={contextualHelp(optionLabel)}
+                                Trigger={
+                                    <label className={bem('option-label')} htmlFor={`${id}-${i}`}>
+                                        {optionLabel}
+                                    </label>
+                                }
+                            />
+                        )}
+                        {!contextualHelp && (
+                            <label className={bem('option-label')} htmlFor={`${id}-${i}`}>
+                                {optionLabel}
+                            </label>
+                        )}
+                    </div>
+                );
+            })}
         </span>
     </span>
 );
@@ -64,7 +69,7 @@ const MultiToggle = ({
 MultiToggle.propTypes = {
     onChange: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
-    options: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+    options: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.object])),
     disabledOptions: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     className: PropTypes.string,
     checked: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

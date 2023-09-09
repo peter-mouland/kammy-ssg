@@ -11,6 +11,7 @@ let playersByCode;
 let teamSeason;
 let startOfSeason;
 let endOfSeason;
+const GK = 'gk';
 
 describe('TeamByGameWeek', () => {
     beforeEach(() => {
@@ -67,7 +68,7 @@ describe('TeamByGameWeek', () => {
         it('returns a known player if matched', () => {
             expect(teamSeason.getPlayer({ code: '36' })).toEqual({
                 name: 'de Gea, David',
-                pos: 'GK',
+                pos: GK,
                 code: 36,
                 club: 'Manchester United',
             });
@@ -78,7 +79,7 @@ describe('TeamByGameWeek', () => {
         it('returns a default unknown player with type as draft to say this player existed since draft day', () => {
             const player = {
                 name: 'de Gea, David',
-                pos: 'GK',
+                pos: GK,
                 code: 36,
                 club: 'Manchester United',
             };
@@ -102,7 +103,7 @@ describe('TeamByGameWeek', () => {
         it('returns a players transfers where dates match the transfer timestamp', () => {
             const player = {
                 name: 'de Gea, David',
-                pos: 'GK',
+                pos: GK,
                 code: 36,
                 club: 'Manchester United',
             };
@@ -143,7 +144,7 @@ describe('TeamByGameWeek', () => {
             it('returns a players transfers where dates match the transfer timestamp', () => {
                 const player = {
                     name: 'de Gea, David',
-                    pos: 'GK',
+                    pos: GK,
                     code: 36,
                     club: 'Manchester United',
                 };
@@ -205,7 +206,7 @@ describe('TeamByGameWeek', () => {
                 transfers,
                 draft,
             });
-            expect(teamSeason.getSeason()[0].players).toHaveLength(draft.length);
+            expect(Object.keys(teamSeason.getSeason()[0].players)).toHaveLength(draft.length);
         });
 
         it('should return players', () => {
@@ -215,11 +216,11 @@ describe('TeamByGameWeek', () => {
                 transfers,
                 draft,
             });
-            expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('name', 'de Gea, David');
-            expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('club', 'Manchester United');
-            expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('pos', 'GK');
-            expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('manager', 'Olly');
-            expect(teamSeason.getSeason()[0].players[0]).toHaveProperty('code', 36);
+            expect(teamSeason.getSeason()[0].players['36']).toHaveProperty('name', 'de Gea, David');
+            expect(teamSeason.getSeason()[0].players['36']).toHaveProperty('club', 'Manchester United');
+            expect(teamSeason.getSeason()[0].players['36']).toHaveProperty('posisitionId', GK);
+            expect(teamSeason.getSeason()[0].players['36']).toHaveProperty('managerId', 'Olly');
+            expect(teamSeason.getSeason()[0].players['36']).toHaveProperty('code', 36);
         });
     });
 });

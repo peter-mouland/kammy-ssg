@@ -5,15 +5,15 @@ module.exports = (rankWeek1, rankWeek2 = {}) => {
         .reduce(
             (prevWeek, pos) => ({
                 ...prevWeek,
-                [pos]: Object.keys(rankWeek2[pos]).reduce((prev, manager) => {
-                    const week2Scores = rankWeek2[pos][manager];
-                    const week1Scores = (rankWeek1 || { [pos]: { [manager]: 0 } })[pos][manager];
+                [pos]: Object.keys(rankWeek2[pos]).reduce((prev, managerId) => {
+                    const week2Scores = rankWeek2[pos][managerId];
+                    const week1Scores = (rankWeek1 || { [pos]: { [managerId]: 0 } })[pos][managerId];
                     const change = week2Scores - week1Scores;
-                    changeTotal[manager] = changeTotal[manager] || 0;
-                    changeTotal[manager] += change;
+                    changeTotal[managerId] = changeTotal[managerId] || 0;
+                    changeTotal[managerId] += change;
                     return {
                         ...prev,
-                        [manager]: change,
+                        [managerId]: change,
                     };
                 }, {}),
             }),

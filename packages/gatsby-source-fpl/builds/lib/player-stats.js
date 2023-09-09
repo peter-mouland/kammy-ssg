@@ -19,12 +19,12 @@ const emptyStatsRaw = {
 };
 const emptyStats = extractFplStats(emptyStatsRaw);
 
-const getPosStats = ({ stats, pos }) => {
+const getPosStats = ({ stats, playerPositionId }) => {
     // only show stats for those that can score points
     const posStats = Object.keys(stats).reduce(
         (prevPosStat, stat) => ({
             ...prevPosStat,
-            [stat]: ['points', 'apps'].includes(stat) || calculate[stat](9, pos) !== 0 ? stats[stat] : 0,
+            [stat]: ['points', 'apps'].includes(stat) || calculate[stat](9, playerPositionId) !== 0 ? stats[stat] : 0,
         }),
         {},
     );
@@ -34,11 +34,11 @@ const getPosStats = ({ stats, pos }) => {
 // exported for tests
 const addPointsToFixtures = (fixture, player) => {
     const stats = extractFplStats(fixture || emptyStatsRaw);
-    const points = calculateTotalPoints({ stats, pos: player.pos, gameWeekFixtures: [fixture] });
+    const points = calculateTotalPoints({ stats, playerPositionId: player.positionId, gameWeekFixtures: [fixture] });
     return {
         ...fixture,
         stats: {
-            ...getPosStats({ stats, pos: player.pos }),
+            ...getPosStats({ stats, playerPositionId: player.positionId }),
             points: points.total,
         },
     };
@@ -58,12 +58,12 @@ const totalUpStats = (fixtures) =>
     );
 
 // const counter = 0;
-const playerStats = ({ player, gameWeek, fplTeams }) => {
+const getPlayerStats = ({ player, gameWeek, fplTeams }) => {
     if (!player) {
         console.log('no player!');
         return {};
     }
-    if (!player.pos) {
+    if (!player.positionId) {
         console.log(player);
         console.log('no player pos!');
         process.exit(1);
@@ -95,9 +95,9 @@ const playerStats = ({ player, gameWeek, fplTeams }) => {
     // counter++;
     // if (counter > 2) process.exit(1);
     const stats = totalUpStats(gameWeekFixtures);
-    const point = calculateTotalPoints({ stats, pos: player.pos, gameWeekFixtures });
+    const point = calculateTotalPoints({ stats, playerPositionId: player.positionId, gameWeekFixtures });
     const gameWeekStats = {
-        ...getPosStats({ stats, pos: player.pos }),
+        ...getPosStats({ stats, playerPositionId: player.positionId }),
         points: point.total,
     };
 
@@ -109,5 +109,5 @@ const playerStats = ({ player, gameWeek, fplTeams }) => {
 };
 
 module.exports = {
-    playerStats,
+    getPlayerStats,
 };

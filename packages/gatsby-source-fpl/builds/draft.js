@@ -6,18 +6,17 @@ module.exports = ({ googleDraftData, createNodeId }) => {
 
     const draft = googleDraftData.map((item) => {
         const data = {
-            manager: item.manager,
-            position: item.position,
-            divisionName: item.division,
+            managerId: item.manager.toLowerCase().replace(/ /g, '-'),
+            squadPositionId: item.position.toLowerCase(),
+            divisionId: item.divisionId,
             playerCode: parseInt(item.code, 10),
-            code: parseInt(item.code, 10),
         };
 
         return {
-            resourceId: `draft-${data.manager}-${data.playerCode}`,
+            resourceId: `draft-${data.managerId}-${data.playerCode}`,
             data: {
                 ...data,
-                division___NODE: createNodeId(`divisions-${data.divisionName}`),
+                division___NODE: createNodeId(`divisions-${data.divisionId}`),
                 player___NODE: createNodeId(`players-${data.playerCode}`),
             },
             internal: {

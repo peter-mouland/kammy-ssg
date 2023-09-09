@@ -7,16 +7,16 @@ function forMinutes(gameWeekFixtures = []) {
     }, 0);
 }
 
-function forGoals(goals = 0, position) {
-    if (position === 'GK') {
+function forGoals(goals = 0, playerPositionId) {
+    if (playerPositionId === 'gk') {
         return goals * 10;
-    } else if (position === 'FB' || position === 'CB') {
+    } else if (playerPositionId === 'fb' || playerPositionId === 'cb') {
         return goals * 8;
-    } else if (position === 'MID') {
+    } else if (playerPositionId === 'mid') {
         return goals * 5;
-    } else if (position === 'AM') {
+    } else if (playerPositionId === 'am') {
         return goals * 5;
-    } else if (position === 'STR') {
+    } else if (playerPositionId === 'str') {
         return goals * 4;
     }
     return 0;
@@ -34,18 +34,18 @@ function forRedCards(rc = 0) {
     return rc * -5;
 }
 
-function forCleanSheet(cs = 0, position) {
-    if (position === 'FB' || position === 'CB' || position === 'GK') {
+function forCleanSheet(cs = 0, playerPositionId) {
+    if (playerPositionId === 'fb' || playerPositionId === 'cb' || playerPositionId === 'gk') {
         return cs * 5;
     }
-    if (position === 'MID') {
+    if (playerPositionId === 'mid') {
         return cs * 3;
     }
     return 0;
 }
 
-function forConceded(conceded = 0, position) {
-    if (position === 'FB' || position === 'CB' || position === 'GK') {
+function forConceded(conceded = 0, playerPositionId) {
+    if (playerPositionId === 'fb' || playerPositionId === 'cb' || playerPositionId === 'gk') {
         return conceded * -1;
     }
     return 0;
@@ -55,32 +55,32 @@ function forPenaltiesSaved(ps = 0) {
     return ps * 5;
 }
 
-function forSaveBonus(saves = 0, position) {
-    if (position === 'GK' && saves >= 3) {
+function forSaveBonus(saves = 0, playerPositionId) {
+    if (playerPositionId === 'gk' && saves >= 3) {
         return 2;
     }
     return 0;
 }
 
-function forBonus(bonusPoints = 0, position) {
-    if (position === 'CB' || position === 'MID') {
+function forBonus(bonusPoints = 0, playerPositionId) {
+    if (playerPositionId === 'cb' || playerPositionId === 'mid') {
         return bonusPoints || 0;
     }
     return 0;
 }
 
-function calculateTotalPoints({ stats, pos, gameWeekFixtures }) {
+function calculateTotalPoints({ stats, playerPositionId, gameWeekFixtures }) {
     // if (stats.apps_array) console.log(Object.keys(stats));
     const apps = forMinutes(gameWeekFixtures);
-    const gls = forGoals(stats.gls, pos);
-    const asts = forAssists(stats.asts, pos);
-    const cs = forCleanSheet(stats.cs, pos);
-    const con = forConceded(stats.con, pos);
-    const pensv = forPenaltiesSaved(stats.pensv, pos);
-    const ycard = forYellowCards(stats.ycard, pos);
-    const rcard = forRedCards(stats.rcard, pos);
-    const sb = forSaveBonus(stats.sb, pos);
-    const bp = forBonus(stats.bp, pos);
+    const gls = forGoals(stats.gls, playerPositionId);
+    const asts = forAssists(stats.asts, playerPositionId);
+    const cs = forCleanSheet(stats.cs, playerPositionId);
+    const con = forConceded(stats.con, playerPositionId);
+    const pensv = forPenaltiesSaved(stats.pensv, playerPositionId);
+    const ycard = forYellowCards(stats.ycard, playerPositionId);
+    const rcard = forRedCards(stats.rcard, playerPositionId);
+    const sb = forSaveBonus(stats.sb, playerPositionId);
+    const bp = forBonus(stats.bp, playerPositionId);
     const points = {
         apps,
         gls,

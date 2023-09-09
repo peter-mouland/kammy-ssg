@@ -14,35 +14,35 @@ import ConfirmChanges from '../confirm-changes';
 import SquadOnPitch from '../squad-on-pitch';
 
 const { SWAP } = consts.changeTypes;
-const SUB = 'SUB';
+const SUB = 'sub';
 const CHANGE_TBC = 'TBC';
 const CHANGE_CONFIRMED = 'Y';
 
 const selectSquadMember = (squad, squadMember) =>
     squad.map((member) => ({
         ...member,
-        isSelected: member.posIndex === squadMember.posIndex,
+        isSelected: member.squadPositionIndex === squadMember.squadPositionIndex,
     }));
 
 const createApplySwap =
-    ({ newTeam, setNewChanges, newChanges, setNewTeam, managerName, hasPendingChanges }) =>
-    ({ type, teamPos, player, posIndex }) => {
+    ({ newTeam, setNewChanges, newChanges, setNewTeam, managerId, hasPendingChanges }) =>
+    ({ type, squadPositionId, player, squadPositionIndex }) => {
         // type === SWAP
         const memberToSwap = newTeam.find((squadMember) => squadMember.player.name === player.name);
-        const sub = newTeam.find((squadMember) => squadMember.teamPos === SUB);
+        const sub = newTeam.find((squadMember) => squadMember.squadPositionId === SUB);
         const updatedSquad = newTeam.map((squadMember) => {
             if (squadMember.player.name === player.name) {
                 return {
                     ...squadMember,
-                    posIndex: sub.posIndex,
-                    teamPos: sub.teamPos,
+                    squadPositionIndex: sub.squadPositionIndex,
+                    squadPositionId: sub.squadPositionId,
                     hasChanged: true,
                 };
-            } else if (squadMember.teamPos === SUB) {
+            } else if (squadMember.squadPositionId === SUB) {
                 return {
                     ...squadMember,
-                    posIndex: memberToSwap.posIndex,
-                    teamPos: memberToSwap.teamPos,
+                    squadPositionIndex: memberToSwap.squadPositionIndex,
+                    squadPositionId: memberToSwap.squadPositionId,
                     hasChanged: true,
                 };
             }
@@ -51,7 +51,7 @@ const createApplySwap =
         setNewChanges([
             ...newChanges,
             {
-                manager: managerName,
+                manager: managerId,
                 status: hasPendingChanges ? CHANGE_TBC : CHANGE_CONFIRMED,
                 type: SWAP,
                 playerIn: memberToSwap.player,
@@ -66,19 +66,19 @@ const createApplySwap =
 // todo: show next gameweeks team
 // todo: but show this gameweeks change-requests
 
-const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
+const Manager = ({ managerId, teamsByManager, gameWeek, divisionId }) => {
     const [newChanges, setNewChanges] = React.useState([]);
     const { playersByName } = usePlayers();
     const { changesThisGameWeek, newTeams, changesByType, isLoading, saveSquadChange, hasPendingChanges } =
         useSquadChanges({
             selectedGameWeek: gameWeek, // todo: use separate hook for showing transfers
-            divisionKey,
+            divisionId,
             teamsByManager,
         });
     // console.log({ newTeams });
 
-    const [newTeam, setNewTeam] = React.useState(newTeams[managerName]);
-    const getManagerChanges = (changes) => changes.filter((change) => change.manager === managerName);
+    const [newTeam, setNewTeam] = React.useState(newTeams[managerId]);
+    const getManagerChanges = (changes) => changes.filter((change) => change.manager === managerId);
     const allManagerChanges = getManagerChanges(changesThisGameWeek);
     const swaps = getManagerChanges(changesByType.SWAP);
     const newSwaps = newChanges.filter(({ type }) => type === SWAP);
@@ -88,7 +88,7 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
         setNewChanges,
         newChanges,
         setNewTeam,
-        managerName,
+        managerId,
         hasPendingChanges,
     });
 
@@ -124,8 +124,8 @@ const Manager = ({ managerName, teamsByManager, gameWeek, divisionKey }) => {
             {/* />*/}
             <ConfirmChanges
                 gameWeek={gameWeek}
-                divisionKey={divisionKey}
-                managerName={managerName}
+                divisionId={divisionId}
+                managerId={managerId}
                 newChanges={newChanges}
                 teamsByManager={teamsByManager}
             />

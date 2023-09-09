@@ -8,38 +8,37 @@ import Manager from '../components/manager';
 // todo:
 //    1. need all manager teams to work out valid transfers
 //    2. auto validate swap
-const ManagerPage = ({ data, pageContext: { managerName, managerKey, divisionKey, gameWeek } }) => (
-    <Layout title={managerName}>
+const ManagerPage = ({ data, pageContext: { managerId, divisionId, gameWeek } }) => (
+    <Layout title={managerId}>
         <Manager
-            divisionKey={divisionKey}
+            divisionId={divisionId}
             gameWeek={gameWeek}
-            managerName={managerName}
-            managerKey={managerKey}
+            managerId={managerId}
             currentTeams={data.currentTeams.nodes}
         />
     </Layout>
 );
 
 export const query = graphql`
-    query CurrentTeam($gameWeek: Int, $divisionKey: String) {
+    query CurrentTeam($gameWeekIndex: Int, $divisionId: String) {
         currentTeams: allTeams(
-            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { managerName: ASC }
+            filter: { gameWeekIndex: { eq: $gameWeekIndex }, manager: { divisionId: { eq: $divisionId } } }
+            sort: { managerId: ASC }
         ) {
             nodes {
                 playerCode
-                teamPos
-                pos
-                posIndex
+                playerPositionId
+                squadPositionId
+                squadPositionIndex
                 manager {
-                    key: managerKey
-                    name: manager
+                    managerId
+                    label
                 }
                 player {
                     club
-                    name: web_name
+                    name
                     code
-                    pos
+                    positionId
                     url
                 }
             }

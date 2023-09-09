@@ -13,6 +13,8 @@ import Player from '../../player';
 import TransferWarnings from '../transfer-warnings';
 import Search from './search';
 import './transferPage.css';
+import CPositions from '../../../models/position';
+import { useMutateTransfersSheet } from '../../../hooks/use-google-transfers';
 
 const { changeTypes } = consts;
 const bem = bemHelper({ block: 'transfers-page' });
@@ -20,13 +22,13 @@ const drawerInitialState = undefined;
 const PLAYER_IN = 'playerIn';
 const PLAYER_OUT = 'playerOut';
 
-const confirmTransfer = async ({ transfers, divisionKey, saveSquadChange, reset }) => {
-    const data = transfers.map(({ type, playerIn, playerOut, comment, manager, ...transfer }) => ({
+const confirmTransfer = async ({ transfers, divisionId, saveSquadChange, reset }) => {
+    const data = transfers.map(({ type, playerIn, playerOut, comment, managerId, managerLabel, ...transfer }) => ({
         ...transfer,
         type,
-        manager,
-        Division: divisionKey,
-        Manager: manager,
+        managerId,
+        Division: divisionId,
+        Manager: managerLabel,
         Status: 'TBC',
         isPending: true,
         'Transfer Type': type,
@@ -37,24 +39,28 @@ const confirmTransfer = async ({ transfers, divisionKey, saveSquadChange, reset 
         Comment: comment,
     }));
 
-    await saveSquadChange({ division: divisionKey, data });
+    await saveSquadChange({ division: divisionId, data });
     reset();
 };
 
-const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, manager, selectedPlayer, playerOut }) => {
+const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, managerId, selectedPlayer, playerOut }) => {
     const positionFilter = selectedPlayer
-        ? { value: selectedPlayer.pos, label: selectedPlayer.pos, group: 'position' }
+        ? { value: selectedPlayer.positionId, label: selectedPlayer.positionId.toUpperCase(), group: 'position' }
         : null;
     switch (true) {
         case changeType === changeTypes.SWAP: {
             const sub =
-                (teamsByManager[manager] && teamsByManager[manager].find(({ teamPos }) => teamPos === 'SUB')) || {};
+                (teamsByManager[managerId] &&
+                    teamsByManager[managerId].players.find(({ squadPositionId }) => squadPositionId === 'sub')) ||
+                {};
+            const preselect = playersArray.find(({ code }) => code === sub.code);
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
-                        Boolean,
-                    ),
+                    defaultFilter: [
+                        { value: managerId, label: `${managerId}*`, group: 'manager' },
+                        positionFilter,
+                    ].filter(Boolean),
                     buttonText: 'your new SUB',
                     searchText: (
                         <span>
@@ -64,10 +70,10 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
                     ),
                 },
                 in: {
-                    preselect: sub.player,
+                    preselect,
                     players: playersArray,
                     defaultFilter: [
-                        { value: manager, label: `${manager}*`, group: 'manager' },
+                        { value: managerId, label: `${managerId}*`, group: 'manager' },
                         { value: 'isSub', label: 'Sub(s)', group: 'misc' },
                         positionFilter,
                     ].filter(Boolean),
@@ -85,9 +91,10 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
-                        Boolean,
-                    ),
+                    defaultFilter: [
+                        { value: managerId, label: `${managerId}*`, group: 'manager' },
+                        positionFilter,
+                    ].filter(Boolean),
                     searchText: <span>You can only drop a player currently in your team (or a pending transfer).</span>,
                     buttonText: 'Player Leaving',
                 },
@@ -105,15 +112,16 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
             return {
                 out: {
                     players: playersArray,
-                    defaultFilter: [{ value: manager, label: `${manager}*`, group: 'manager' }, positionFilter].filter(
-                        Boolean,
-                    ),
+                    defaultFilter: [
+                        { value: managerId, label: `${managerId}*`, group: 'manager' },
+                        positionFilter,
+                    ].filter(Boolean),
                     searchText: null,
                     buttonText: 'Player Leaving',
                 },
                 in: {
                     players: playersArray,
-                    defaultFilter: [playerOut?.teamPos === 'SUB' ? false : positionFilter].filter(Boolean),
+                    defaultFilter: [playerOut?.squadPositionId === 'sub' ? false : positionFilter].filter(Boolean),
                     searchText: null,
                     buttonText: 'Player Arriving',
                 },
@@ -122,33 +130,28 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
     }
 };
 
-const TransfersRequests = ({
-    divisionKey,
-    teamsByManager,
-    managers,
-    isLoading,
-    saveSquadChange,
-    transfers,
-    playersByCode,
-}) => {
-    const { players: playersArray } = usePlayers();
+const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers, squads }) => {
+    const { isPending, mutate: saveSquadChange } = useMutateTransfersSheet({ divisionId });
+    const Positions = new CPositions();
+    const players = usePlayers();
     const [drawerContent, setDrawerContent] = useState(drawerInitialState);
     const [changeType, setChangeType] = useState(undefined);
-    const [manager, setManager] = useState(undefined);
+    const [managerId, setManagerId] = useState(undefined);
     const [comment, setComment] = useState('');
     const [playerIn, setPlayerIn] = useState(undefined);
     const [playerOut, setPlayerOut] = useState(undefined);
     const selectedPlayer = drawerContent === PLAYER_IN ? playerOut : playerIn;
     const playerRequestConfig = getPlayerRequestConfig({
         teamsByManager,
-        playersArray,
+        playersArray: players.all,
         changeType,
-        manager,
+        managerId,
         selectedPlayer,
         playerOut,
     });
+
     const { warnings } =
-        getSquadWarnings({ playerIn, playerOut, teams: teamsByManager, manager, changeType, transfers }) || {};
+        getSquadWarnings({ playerIn, playerOut, teams: teamsByManager, managerId, changeType, transfers }) || {};
 
     const openSearch = (playerChangeType) => {
         setDrawerContent(playerChangeType);
@@ -167,9 +170,9 @@ const TransfersRequests = ({
         // get up to date config for new changeType
         const config = getPlayerRequestConfig({
             teamsByManager,
-            playersArray,
+            playersArray: players.all,
             changeType: type,
-            manager,
+            managerId,
             selectedPlayer,
         });
         setPlayerIn(config.in?.preselect);
@@ -186,8 +189,9 @@ const TransfersRequests = ({
 
     const RequestPlayerOut = () => (
         <Search
-            managers={managers}
-            manager={manager}
+            positions={Positions}
+            managers={managersList}
+            managerId={managerId}
             teams={teamsByManager}
             defaultFilter={playerRequestConfig.out.defaultFilter}
             playersArray={playerRequestConfig.out.players}
@@ -198,8 +202,9 @@ const TransfersRequests = ({
     );
     const RequestPlayerIn = () => (
         <Search
-            managers={managers}
-            manager={manager}
+            positions={Positions}
+            managers={managersList}
+            managerId={managerId}
             teams={teamsByManager}
             defaultFilter={playerRequestConfig.in.defaultFilter}
             playersArray={playerRequestConfig.in.players}
@@ -234,12 +239,12 @@ const TransfersRequests = ({
                     <MultiToggle
                         id="manager"
                         loadingMessage="loading teams..."
-                        options={managers}
-                        checked={manager}
-                        onChange={setManager}
+                        options={managersList}
+                        checked={managerId}
+                        onChange={setManagerId}
                     />
                 </Accordion.Content>
-                {manager && (
+                {managerId && (
                     <Accordion.Content>
                         <Spacer all={{ bottom: Spacer.spacings.TINY }}>
                             <h3>What type of request is it?</h3>
@@ -269,7 +274,10 @@ const TransfersRequests = ({
                             </Spacer>
                             <span className={bem('player-cta-label')}>
                                 {playerOut && (
-                                    <Player player={playersByCode[playerOut.code]} teamPos={playerOut.teamPos} />
+                                    <Player
+                                        player={players.byCode[playerOut.code]}
+                                        squadPositionId={playerOut.squadPositionId}
+                                    />
                                 )}
                             </span>
                         </Spacer>
@@ -284,7 +292,10 @@ const TransfersRequests = ({
                             </Spacer>
                             <span className={bem('player-cta-label')}>
                                 {playerIn && (
-                                    <Player player={playersByCode[playerIn.code]} teamPos={playerIn.teamPos} />
+                                    <Player
+                                        player={players.byCode[playerIn.code]}
+                                        squadPositionId={playerIn.squadPositionId}
+                                    />
                                 )}
                             </span>
                         </Spacer>
@@ -313,11 +324,14 @@ const TransfersRequests = ({
                 {playerIn && playerOut && (
                     <Accordion.Content>
                         <Button
-                            onClick={() =>
-                                confirmTransfer({
+                            onClick={() => {
+                                const squad = squads.byManagerId[managerId];
+
+                                return confirmTransfer({
                                     transfers: [
                                         {
-                                            manager,
+                                            managerId,
+                                            managerLabel: squad.manager.label,
                                             timestamp: new Date(),
                                             status: 'tbc',
                                             type: changeType,
@@ -331,13 +345,13 @@ const TransfersRequests = ({
                                             warnings,
                                         },
                                     ],
-                                    divisionKey,
+                                    divisionId,
                                     saveSquadChange,
                                     reset,
-                                })
-                            }
+                                });
+                            }}
                             state="buttonState"
-                            isLoading={isLoading}
+                            isLoading={isPending}
                         >
                             Submit Request
                         </Button>
@@ -349,7 +363,7 @@ const TransfersRequests = ({
 };
 
 TransfersRequests.propTypes = {
-    divisionKey: PropTypes.string.isRequired,
+    divisionId: PropTypes.string.isRequired,
     teamsByManager: PropTypes.object,
     isLoading: PropTypes.bool,
 };

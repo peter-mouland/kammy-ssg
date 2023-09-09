@@ -3,12 +3,8 @@ import { Stats } from './stats';
 
 class PlayerFixture {
     constructor(playerFixture) {
-        this.aScore = playerFixture.aScore;
-        this.aTname = playerFixture.aTname;
-        this.aTcode = playerFixture.aTcode;
-        this.hScore = playerFixture.hScore;
-        this.hTname = playerFixture.hTname;
-        this.hTcode = playerFixture.hTcode;
+        this.homeTeam = playerFixture.homeTeam;
+        this.awayTeam = playerFixture.awayTeam;
         this.is_home = playerFixture.is_home;
         this.was_home = playerFixture.was_home;
         this.homeGame = playerFixture.was_home || playerFixture.is_home;
@@ -60,7 +56,7 @@ export class Player {
         this.positionId = player.positionId;
         this.new = player.new;
         this.url = player.url;
-        this.season = new Stats(player.season);
+        this.seasonStats = new Stats(player.seasonStats);
         this.gameWeeks = new PlayerGameWeeks(player.gameWeeks);
         this.fixtures = this.gameWeeks.all.reduce((prev, curr) => {
             curr.fixtures.all.forEach((fixture) => {
@@ -75,7 +71,7 @@ export class Player {
     }
 
     getSeasonPoints() {
-        return this.season;
+        return this.seasonStats;
     }
 }
 

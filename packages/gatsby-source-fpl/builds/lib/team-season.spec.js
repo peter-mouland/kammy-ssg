@@ -45,7 +45,7 @@ describe('TeamSeason', () => {
         });
 
         it('returns a known player if matched', () => {
-            expect(teamSeason.getPlayer({ name: 'de Gea, David' })).toEqual('found');
+            expect(teamSeason.getPlayer({ name: 'de Gea, David', code: 32 })).toEqual('found');
         });
     });
 

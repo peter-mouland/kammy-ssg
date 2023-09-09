@@ -9,20 +9,13 @@ module.exports = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => {
     const mergedPlayers = mergePlayers({ googlePlayerData, gameWeeks, fplPlayers, fplTeams });
 
     logEnd();
-    return Object.values(mergedPlayers).map((player) => {
-        if (typeof player.season.bp === 'undefined') {
-            console.log(player);
-            console.error('No BP, what?');
-        }
-        // console.log(`create resourceId: players-${player.code}`);
-        return {
-            resourceId: `players-${player.code}`,
-            data: player,
-            internal: {
-                description: 'Players',
-                mediaType: mediaTypes.JSON,
-                type: nodeTypes.players,
-            },
-        };
-    });
+    return Object.values(mergedPlayers).map((player) => ({
+        resourceId: `players-${player.code}`,
+        data: player,
+        internal: {
+            description: 'Players',
+            mediaType: mediaTypes.JSON,
+            type: nodeTypes.players,
+        },
+    }));
 };

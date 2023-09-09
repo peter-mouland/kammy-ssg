@@ -2,62 +2,112 @@
 import React from 'react';
 import { graphql } from 'gatsby';
 
-import Layout from '../components/layout';
-import DivisionTransfers from '../components/division-transfers';
+import * as Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
+import CManagers from '../models/managers';
+import CSquads from '../models/squads';
+import CDivisions from '../models/division';
+import Spacer from '../components/spacer';
+import * as Transfers from '../components/division-transfers/trasfers-table';
+import TransferRequest from '../components/division-transfers/transfer-request';
+import useAdmin from '../hooks/use-admin';
+import usePlayers from '../hooks/use-players';
+import useGameWeeks from '../hooks/use-game-weeks';
+import useSquadChanges from '../hooks/use-squad-changes';
+import useManagers from '../hooks/use-managers';
 
-const TransfersPage = ({
-    data: {
+const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionId } }) => {
+    const {
         currentTeams: { group: currentTeams },
-    },
-    pageContext: { gameWeek: selectedGameWeek, divisionLabel, divisionKey },
-}) => {
-    const teamsByManager = currentTeams.reduce(
-        (prev, { nodes: team }) => ({
-            ...prev,
-            [team[0].managerName]: team,
-        }),
-        {},
-    );
-
-    const divisionUrl = divisionLabel.toLowerCase().replace(/ /g, '-');
+    } = data;
+    const Squads = new CSquads(currentTeams);
+    const Divisions = new CDivisions();
+    const { isAdmin } = useAdmin();
+    const players = usePlayers();
+    const GameWeeks = useGameWeeks();
+    const Managers = useManagers();
+    const { transfersQuery, changesThisGameWeek, newTeams } = useSquadChanges({
+        selectedGameWeek,
+        divisionId,
+        Squads,
+    });
+    console.log({ transfersQuery, changesThisGameWeek, newTeams });
+    const Division = Divisions.getDivision(divisionId);
+    const managersList = Managers.getManagersInDivision(Division.id);
+    const isCurrentGameWeek = GameWeeks.isCurrentGameWeek(selectedGameWeek);
 
     return (
-        <Layout title={`${divisionLabel} - Transfers`}>
-            <div data-b-layout="container">
-                <TabbedMenu selected="transfers" division={divisionKey} selectedGameWeek={selectedGameWeek} />
-                <DivisionTransfers
-                    teamsByManager={teamsByManager}
-                    divisionLabel={divisionLabel}
-                    divisionKey={divisionKey}
-                    divisionUrl={divisionUrl}
-                    selectedGameWeek={selectedGameWeek}
-                />
-            </div>
-        </Layout>
+        <Layout.Body>
+            <TabbedMenu selected="transfers" division={divisionId} selectedGameWeek={selectedGameWeek} />
+            <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.SMALL }}>
+                <Transfers.Table>
+                    <Transfers.Thead showWarnings={isAdmin} />
+                    <Transfers.Body
+                        isLoading={transfersQuery.isLoading}
+                        transfers={changesThisGameWeek}
+                        showWarnings={isAdmin}
+                        playersByCode={players.byCode}
+                    />
+                    <Transfers.Tfoot isLoading={transfersQuery.isLoading} />
+                </Transfers.Table>
+            </Spacer>
+            {isCurrentGameWeek && (
+                <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
+                    <TransferRequest
+                        squads={Squads}
+                        divisionId={Division.id}
+                        teamsByManager={newTeams}
+                        transfers={changesThisGameWeek}
+                        managersList={managersList}
+                    />
+                </Spacer>
+            )}
+        </Layout.Body>
     );
 };
+const TransfersPage = ({ data, pageContext }) => (
+    <Layout.Container title={`${pageContext.divisionId} - Transfers`}>
+        <PageBody data={data} pageContext={pageContext} />
+    </Layout.Container>
+);
 
 export const query = graphql`
-    query DivisionTransfers($gameWeek: Int, $divisionKey: String) {
+    query DivisionTransfers($gameWeekIndex: Int, $divisionId: String) {
         currentTeams: allTeams(
-            filter: { gameWeek: { eq: $gameWeek }, manager: { divisionKey: { eq: $divisionKey } } }
-            sort: { managerName: ASC }
+            filter: { gameWeekIndex: { eq: $gameWeekIndex }, manager: { divisionId: { eq: $divisionId } } }
+            sort: { managerId: ASC }
         ) {
-            group(field: { managerName: SELECT }) {
-                nodes {
-                    managerName
-                    playerCode
-                    teamPos
-                    pos
-                    posIndex
-                    player {
-                        club
-                        name: web_name
-                        code
-                        pos
-                        url
+            group(field: { managerId: SELECT }) {
+                squadPlayers: nodes {
+                    manager {
+                        managerId
+                        label
                     }
+                    player {
+                        code
+                        name
+                        club
+                        url
+                        positionId
+                        nextGameWeekFixture {
+                            fixtures {
+                                fixture_id
+                                is_home
+                                homeTeam {
+                                    code
+                                    name
+                                }
+                                awayTeam {
+                                    code
+                                    name
+                                }
+                            }
+                        }
+                    }
+                    hasChanged
+                    playerPositionId
+                    squadPositionId
+                    squadPositionIndex
                 }
             }
         }

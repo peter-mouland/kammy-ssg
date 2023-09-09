@@ -84,11 +84,15 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
             {showFixture ? (
                 <div style={{ maxWidth: '500px', margin: '0 auto' }}>
                     <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.MICRO }}>
-                        <h3>Game Week {displayGW}</h3>
+                        <h3>
+                            This Game Week <span style={{ fontSize: '0.8em', color: '#666' }}>{displayGW}</span>
+                        </h3>
                     </Spacer>
                     <GameWeekFixtures {...fixtures.thisWeek} />
                     <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.MICRO }}>
-                        <h3>Next Game week</h3>
+                        <h3>
+                            Next Game week <span style={{ fontSize: '0.8em', color: '#666' }}>{displayGW + 1}</span>
+                        </h3>
                     </Spacer>
                     <GameWeekFixtures {...fixtures.nextWeek} />
                 </div>

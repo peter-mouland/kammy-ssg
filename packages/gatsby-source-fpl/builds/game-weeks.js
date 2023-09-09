@@ -15,19 +15,8 @@ const getFixtures = (fplFixtures, fplTeams, gameWeek) =>
             if (!hTeam) console.log(data);
             return {
                 ...data,
-                aTid: aTeam?.id,
-                aTcode: aTeam?.code,
-                aScore: data.team_a_score || 0, // must have default for start of season so gatsby inferred schemas don't fuck up
-                team_a_score: data.team_a_score || 0,
-                aTname: aTeam?.name,
-                aTshortName: aTeam?.short_name,
-                hTid: hTeam?.id,
-                hTcode: hTeam?.code,
-                hTname: hTeam?.name,
-                hTshortName: hTeam?.short_name,
-                hScore: data.team_h_score || 0,
-                team_h_score: data.team_h_score || 0,
-                status: data.finished || false,
+                awayTeam: aTeam,
+                homeTeam: hTeam,
             };
         });
 
@@ -39,12 +28,10 @@ module.exports = ({ googleGameWeekData, fplFixtures, fplEvents, fplTeams }) => {
         const ggw = googleGameWeekData.find((googleGameWeek) => String(googleGameWeek.gameweek) === String(i));
         const end = new Date(event.deadline_time);
         const data = {
-            ...event,
+            fplEvent: event,
             cup: ['cup', 'y', 'yes', 'Y'].includes(ggw.cup || ''),
-            gameWeek: i,
-            startString: start,
-            endString: event.deadline_time,
-            start, // 11am on gsheets, 10am as new date(), back to 11am
+            gameWeekIndex: i,
+            start,
             end,
             isCurrent: new Date() < end && new Date() > start,
             fixtures: getFixtures(fplFixtures, fplTeams, i) || [],

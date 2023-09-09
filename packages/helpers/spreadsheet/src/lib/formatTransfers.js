@@ -1,25 +1,23 @@
-const formatTransfers = (data = [], division) => {
+const formatTransfers = (data = [], divisionId) => {
     try {
         const completeRows = data.filter((item) => item.Status);
         if (completeRows.length !== data.length) {
             // eslint-disable-next-line no-console
             console.log(`processing ${completeRows.length} rows out of ${data.length}`);
         }
-        return completeRows.map(({ Comment = '', Status, Timestamp, Manager, ...item }, i) => ({
-            division,
-            comment: Comment.trim(),
-            status: Status.trim() || '',
-            isValid: Status === 'Y',
-            isPending: Status === 'TBC',
-            isFailed: Status === 'E',
-            timestamp: new Date(Timestamp),
-            date: Timestamp,
-            manager: Manager?.trim(),
-            transferIn: item['Transfer In'],
-            codeIn: item['Code In'],
-            transferOut: item['Transfer Out'],
-            codeOut: item['Code Out'],
-            type: item['Transfer Type'],
+        // used by server and client-side fetching, so should satin in this shared package
+        return completeRows.map((transfer) => ({
+            comment: transfer.Comment?.trim(),
+            status: transfer.Status?.trim() || '',
+            isValid: transfer.Status === 'Y',
+            isPending: transfer.Status === 'TBC',
+            isFailed: transfer.Status === 'E',
+            timestamp: new Date(transfer.Timestamp),
+            managerId: transfer.Manager?.trim().toLowerCase().replace(/ /g, '-'),
+            codeIn: parseInt(transfer['Code In'], 10),
+            codeOut: parseInt(transfer['Code Out'], 10),
+            type: transfer['Transfer Type'],
+            divisionId,
         }));
     } catch (e) {
         console.error('formatTransfers error');

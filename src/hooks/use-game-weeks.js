@@ -8,9 +8,10 @@ const useGameWeeks = () => {
         allGameWeeks: { nodes: gw },
     } = useStaticQuery(graphql`
         query GameWeeks {
-            allGameWeeks(sort: { gameWeek: ASC }) {
+            allGameWeeks(sort: { gameWeekIndex: ASC }) {
                 nodes {
-                    id: gameWeek
+                    id: gameWeekIndex
+                    gameWeekIndex
                     isCurrent
                     cup
                     start
@@ -19,17 +20,19 @@ const useGameWeeks = () => {
                     endFromNow: end(fromNow: true)
                     fixtures {
                         id
-                        event
-                        aScore
-                        aTcode
-                        aTname
-                        aTshortName
                         date
-                        hScore
-                        hTcode
-                        hTname
-                        hTshortName
-                        status
+                        event
+                        finished
+                        team_a_score
+                        team_h_score
+                        awayTeam {
+                            code
+                            name
+                        }
+                        homeTeam {
+                            code
+                            name
+                        }
                     }
                 }
             }

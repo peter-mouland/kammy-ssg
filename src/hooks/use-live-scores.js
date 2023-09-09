@@ -35,9 +35,9 @@ const useLiveScores = () => {
         query PlayerCodes {
             allPlayers(filter: { isHidden: { eq: false } }) {
                 nodes {
-                    pos
+                    positionId
                     code
-                    name: web_name
+                    name
                 }
             }
         }

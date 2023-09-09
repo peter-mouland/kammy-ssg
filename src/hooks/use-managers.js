@@ -1,5 +1,7 @@
 import { graphql, useStaticQuery } from 'gatsby';
 
+import CManagers from '../models/managers';
+
 const useManagers = () => {
     const {
         allManagers: { nodes: managers },
@@ -7,21 +9,15 @@ const useManagers = () => {
         query managers {
             allManagers(sort: { division: { order: ASC } }) {
                 nodes {
-                    manager
-                    divisionKey
-                    division {
-                        key
-                        label
-                        order
-                    }
+                    label
+                    managerId
+                    url
+                    divisionId
                 }
             }
         }
     `);
-    const getManagersFromDivision = (divisionKey) =>
-        managers.filter(({ divisionKey: div }) => div === divisionKey).map(({ manager }) => manager);
-    const managerNames = managers.map(({ manager }) => manager).sort();
-    return { managers, getManagersFromDivision, managerNames };
+    return new CManagers(managers);
 };
 
 export default useManagers;

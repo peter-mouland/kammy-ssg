@@ -2,14 +2,14 @@
 /* LAYOUT */
 .player {
     display: grid;
-    grid-template-areas: 'teamPos image name'
-                         'teamPos image club'
+    grid-template-areas: 'squadPosition image name'
+                         'squadPosition image club'
                          '- image --';
     grid-template-columns: 40px 1fr 2fr;
     align-items: center;
 }
-.gridTeamPos {
-    grid-area: teamPos;
+.gridSquadPos {
+    grid-area: squadPosition;
 }
 
 .gridImage {
@@ -45,7 +45,7 @@
     color: #888;
 }
 
-.teamPos{
+.squadPosition{
     font-size: 0.85em;
     color: #333;
 }

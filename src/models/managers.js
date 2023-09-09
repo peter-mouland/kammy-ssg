@@ -2,43 +2,38 @@
 class Manager {
     Squad = undefined;
 
-    constructor({ id, label, url, divisionId }) {
-        this.id = id;
+    constructor({ managerId, label, divisionId }) {
+        this.managerId = managerId.replace(/ /g, '-').toLowerCase();
+        this.id = this.managerId; // shorthand alias
         this.label = label;
-        this.url = `/${url ?? id}`;
+        this.url = `/${managerId.replace(/ /g, '-').toLowerCase()}`;
         this.divisionId = divisionId;
-    }
-
-    addSquad(Squad) {
-        this.Squad = Squad;
     }
 }
 
 export default class Managers {
     all = [];
+    manager = [];
     byDivisionId = {};
     byId = {};
     constructor(managers) {
         managers.forEach((manager) => this.addManager(manager));
-        this.setByDivision();
     }
 
     addManager(props) {
         const manager = new Manager(props);
         this.all.push(manager);
         this.byId[manager.id] = manager;
+        this.byDivisionId[manager.divisionId] ??= [];
+        this.byDivisionId[manager.divisionId].push(manager);
+        this.byDivisionId[manager.divisionId].sort();
     }
 
-    setByDivision() {
-        this.byDivisionId = this.all.reduce((prev, manager) => {
-            // eslint-disable-next-line no-param-reassign
-            prev[manager.divisionId] ??= [];
-            prev[manager.divisionId].push(manager);
-            return prev;
-        }, {});
+    getManager(managerId) {
+        return this.byId[managerId];
     }
 
-    getAll() {
-        return this.all;
+    getManagersInDivision(divisionId) {
+        return this.byDivisionId[divisionId];
     }
 }

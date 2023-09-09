@@ -15,12 +15,13 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, cr
 
     // filter and set required vars
     const validTransfers = transferData.filter((transfer) => transfer.isValid);
-    const getValidManagerTransfers = (manager) => validTransfers.filter((transfer) => transfer.managerName === manager);
+    const getValidManagerTransfers = (managerId) =>
+        validTransfers.filter((transfer) => transfer.managerId === managerId);
 
     const draftByManager = draftData.reduce(
-        (prev, { manager }) => ({
+        (prev, { managerId }) => ({
             ...prev,
-            [manager]: draftData.filter((pick) => pick.manager === manager),
+            [managerId]: draftData.filter((pick) => pick.managerId === managerId),
         }),
         {},
     );
@@ -33,15 +34,14 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, cr
         {},
     );
 
-    const allTeamPlayers = managerData.reduce((prev, { manager, division }) => {
-        if (!draftByManager[manager]) {
-            // console.log(draftByManager);
-            logger.error(`Manager Mismatch: ${manager}`);
+    const allTeamPlayers = managerData.reduce((prev, { managerId, divisionId }) => {
+        if (!draftByManager[managerId]) {
+            logger.error(`Manager Mismatch: ${managerId}`);
         }
-        const debug = false; // manager === 'Tom F';
-        const validManagerTransfers = getValidManagerTransfers(manager);
+        const debug = false; // managerId === 'tom-f';
+        const validManagerTransfers = getValidManagerTransfers(managerId);
         const teamByGameWeek = new TeamByGameWeek({
-            draft: draftByManager[manager],
+            draft: draftByManager[managerId],
             transfers: validManagerTransfers,
             gameWeeks: gameWeekData,
             playersByCode,
@@ -50,8 +50,8 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, cr
 
         const seasonGameWeeks = teamByGameWeek.getSeason();
         const teamSeason = new TeamSeason({
-            manager,
-            division,
+            managerId,
+            divisionId,
             gameWeeks: seasonGameWeeks,
             playersByCode,
             fplTeams,
@@ -59,28 +59,19 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, cr
         const season = teamSeason.getSeason();
         return [...prev, ...season];
     }, []);
-
-    const teams = allTeamPlayers.map((item, i) => {
-        const data = {
-            ...item,
-            managerName: item.manager,
-        };
-        delete data.manager;
-
-        return {
-            resourceId: `teams-${i}-${data.managerName}-${data.playerCode}`,
-            data: {
-                ...data,
-                manager___NODE: createNodeId(`managers-${data.managerName}`),
-                player___NODE: createNodeId(`players-${data.playerCode}`),
-            },
-            internal: {
-                description: 'Teams',
-                mediaType: mediaTypes.JSON,
-                type: nodeTypes.teams,
-            },
-        };
-    });
+    const teams = allTeamPlayers.map((data, i) => ({
+        resourceId: `teams-${i}-${data.managerId}-${data.playerCode}`,
+        data: {
+            ...data,
+            manager___NODE: createNodeId(`managers-${data.managerId}`),
+            player___NODE: createNodeId(`players-${data.playerCode}`),
+        },
+        internal: {
+            description: 'Teams',
+            mediaType: mediaTypes.JSON,
+            type: nodeTypes.teams,
+        },
+    }));
     logEnd();
     return teams;
 };

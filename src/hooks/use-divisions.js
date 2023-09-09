@@ -7,8 +7,9 @@ const useDivisions = () => {
         query Divisions {
             allDivisions(sort: { order: ASC }) {
                 nodes {
-                    key
+                    divisionId
                     label
+                    url
                     order
                 }
             }

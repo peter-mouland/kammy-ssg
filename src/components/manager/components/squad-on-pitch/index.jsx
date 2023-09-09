@@ -7,28 +7,28 @@ import PitchIcon from '../../../icons/pitch.svg';
 import PlayerImage from '../../../player-image';
 import * as styles from './manager.module.css';
 
-const Pos = ({ children, isInteractive, onSelect, teamPos, squadMember, posIndex }) =>
+const Pos = ({ children, isInteractive, onSelect, squadPositionId, squadMember, squadPositionIndex }) =>
     isInteractive ? (
         <button
             type="button"
-            className={cx(styles.pos, styles[teamPos.toLowerCase()], {
+            className={cx(styles.pos, styles[squadPositionId], {
                 [styles.isSelected]: squadMember.isSelected,
                 [styles.isChanged]: squadMember.hasChanged,
             })}
-            onClick={isInteractive ? () => onSelect({ ...squadMember, posIndex }) : null}
+            onClick={isInteractive ? () => onSelect({ ...squadMember, squadPositionIndex }) : null}
         >
             {children}
         </button>
     ) : (
-        <div className={cx(styles.pos, styles[teamPos.toLowerCase()])}>{children}</div>
+        <div className={cx(styles.pos, styles[squadPositionId])}>{children}</div>
     );
 
 Pos.propTypes = {
     children: PropTypes.node.isRequired,
     onSelect: PropTypes.func.isRequired,
-    teamPos: PropTypes.string.isRequired,
+    squadPositionId: PropTypes.string.isRequired,
     squadMember: PropTypes.object.isRequired,
-    posIndex: PropTypes.number.isRequired,
+    squadPositionIndex: PropTypes.number.isRequired,
     isInteractive: PropTypes.bool,
 };
 
@@ -46,7 +46,7 @@ const SquadOnPitch = ({ squad, onSelect }) => {
             </div>
             <div className={styles.team}>
                 {positions.map((pos, index) => {
-                    const squadMember = squad.find((item) => item.posIndex === index);
+                    const squadMember = squad.find((item) => item.squadPositionIndex === index);
                     if (!squadMember.player) {
                         console.log('squadMember player not found');
                         console.log('This likely means gsheets does not match FPL spelling');
@@ -54,7 +54,16 @@ const SquadOnPitch = ({ squad, onSelect }) => {
                         return null;
                     }
                     return (
-                        <Pos key={index} {...{ squadMember, teamPos: pos, posIndex: index, onSelect, isInteractive }}>
+                        <Pos
+                            key={index}
+                            {...{
+                                squadMember,
+                                squadPositionId: pos.toLowerCase(),
+                                squadPositionIndex: index,
+                                onSelect,
+                                isInteractive,
+                            }}
+                        >
                             <PlayerImage code={squadMember.player.code} medium liveQuery={{}} />
                             <div className={styles.meta}>
                                 <div className={styles.name}>

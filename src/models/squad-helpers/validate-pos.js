@@ -1,7 +1,7 @@
 const validatePosition = (squad = []) =>
     squad.players.reduce((acc, squadPlayer = {}) => {
         const hasError =
-            squadPlayer.positionId !== squadPlayer.squadPositionId && squadPlayer.squadPositionId !== 'sub';
+            squadPlayer.playerPositionId !== squadPlayer.squadPositionId && squadPlayer.squadPositionId !== 'sub';
         if (hasError) squad.addWarning({ attr: 'position', value: squadPlayer.squadPositionId });
         const err = hasError ? [squadPlayer.code] : [];
         return [...acc, ...err];

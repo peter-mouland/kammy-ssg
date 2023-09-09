@@ -6,7 +6,7 @@ describe('getDivisionRank()', () => {
     it('should return a equal ranking by position when all points are the same', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 1, gameWeekPoints: 10 },
@@ -18,7 +18,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 1, gameWeekPoints: 10 },
@@ -37,7 +37,7 @@ describe('getDivisionRank()', () => {
                 cb: 0.5,
                 fb: 0.5,
                 gks: 0.5,
-                managerName: 'Nick',
+                managerId: 'Nick',
                 mid: 0.5,
                 order: 1,
                 seasonPoints: 6,
@@ -49,7 +49,7 @@ describe('getDivisionRank()', () => {
                 cb: 0.5,
                 fb: 0.5,
                 gks: 0.5,
-                managerName: 'Olly',
+                managerId: 'Olly',
                 mid: 0.5,
                 order: 0,
                 seasonPoints: 6,
@@ -62,7 +62,7 @@ describe('getDivisionRank()', () => {
     it('should return a Oly with higher ranking (1) when Ollys points are higher', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 11, gameWeekPoints: 10 },
                     cb: { seasonPoints: 11, gameWeekPoints: 10 },
@@ -74,7 +74,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 1, gameWeekPoints: 10 },
@@ -93,7 +93,7 @@ describe('getDivisionRank()', () => {
                 cb: 0,
                 fb: 0,
                 gks: 0,
-                managerName: 'Nick',
+                managerId: 'Nick',
                 mid: 0,
                 order: 0,
                 seasonPoints: 6,
@@ -105,7 +105,7 @@ describe('getDivisionRank()', () => {
                 cb: 1,
                 fb: 1,
                 gks: 1,
-                managerName: 'Olly',
+                managerId: 'Olly',
                 mid: 1,
                 order: 1,
                 seasonPoints: 66,
@@ -118,7 +118,7 @@ describe('getDivisionRank()', () => {
     it('should return a Nick with higher ranking (1) when Nicks points are higher. test to ensure JS hasnt reordered anything', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 11, gameWeekPoints: 10 },
                     cb: { seasonPoints: 11, gameWeekPoints: 10 },
@@ -130,7 +130,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 111, gameWeekPoints: 10 },
                     cb: { seasonPoints: 111, gameWeekPoints: 10 },
@@ -145,7 +145,7 @@ describe('getDivisionRank()', () => {
 
         expect(getDivisionRank(divisionPoints)).toEqual({
             Nick: {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 am: 1,
                 cb: 1,
                 fb: 1,
@@ -157,7 +157,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 666,
             },
             Olly: {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 am: 0,
                 cb: 0,
                 fb: 0,
@@ -174,7 +174,7 @@ describe('getDivisionRank()', () => {
     it('should correctly rank 3 players seasonPoints, with matching points for positions', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -186,7 +186,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -198,7 +198,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -213,7 +213,7 @@ describe('getDivisionRank()', () => {
 
         expect(getDivisionRank(divisionPoints)).toEqual({
             Nick: {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 am: 1,
                 cb: 1,
                 fb: 1,
@@ -225,7 +225,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Olly: {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 am: 1,
                 cb: 1,
                 fb: 1,
@@ -237,7 +237,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Pete: {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 am: 1,
                 cb: 1,
                 fb: 1,
@@ -254,7 +254,7 @@ describe('getDivisionRank()', () => {
     it('should correctly rank 3 players seasonPoints, with matching points for positions and one loser', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -266,7 +266,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -278,7 +278,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -290,7 +290,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Pete2',
+                managerId: 'Pete2',
                 points: {
                     gks: { seasonPoints: 0, gameWeekPoints: 1 },
                     cb: { seasonPoints: 1, gameWeekPoints: 1 },
@@ -305,7 +305,7 @@ describe('getDivisionRank()', () => {
 
         expect(getDivisionRank(divisionPoints)).toEqual({
             Nick: {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 am: 2,
                 cb: 2,
                 fb: 2,
@@ -317,7 +317,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Olly: {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 am: 2,
                 cb: 2,
                 fb: 2,
@@ -329,7 +329,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Pete: {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 am: 2,
                 cb: 2,
                 fb: 2,
@@ -341,7 +341,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Pete2: {
-                managerName: 'Pete2',
+                managerId: 'Pete2',
                 am: 0,
                 cb: 0,
                 fb: 0,
@@ -358,7 +358,7 @@ describe('getDivisionRank()', () => {
     it('should correctly rank 3 players seasonPoints, with differing points for positions', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     cb: { seasonPoints: 2, gameWeekPoints: 10 },
@@ -370,7 +370,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 6, gameWeekPoints: 10 },
                     cb: { seasonPoints: 5, gameWeekPoints: 10 },
@@ -382,7 +382,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 points: {
                     gks: { seasonPoints: 7, gameWeekPoints: 10 },
                     cb: { seasonPoints: 0, gameWeekPoints: 10 },
@@ -397,7 +397,7 @@ describe('getDivisionRank()', () => {
 
         expect(getDivisionRank(divisionPoints)).toEqual({
             Nick: {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 am: 1,
                 cb: 2,
                 fb: 2,
@@ -409,7 +409,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Olly: {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 am: 2,
                 cb: 1,
                 fb: 0.5,
@@ -421,7 +421,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 21,
             },
             Pete: {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 am: 0,
                 cb: 0,
                 fb: 0.5,
@@ -438,7 +438,7 @@ describe('getDivisionRank()', () => {
     it('should shows ties for the lead', () => {
         const divisionPoints = [
             {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     am: { seasonPoints: 1, gameWeekPoints: 10 },
@@ -450,7 +450,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     am: { seasonPoints: 1, gameWeekPoints: 10 },
@@ -462,7 +462,7 @@ describe('getDivisionRank()', () => {
                 },
             },
             {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 points: {
                     gks: { seasonPoints: 1, gameWeekPoints: 10 },
                     am: { seasonPoints: 1, gameWeekPoints: 10 },
@@ -477,7 +477,7 @@ describe('getDivisionRank()', () => {
 
         expect(getDivisionRank(divisionPoints)).toEqual({
             Nick: {
-                managerName: 'Nick',
+                managerId: 'Nick',
                 am: 1,
                 cb: 1.5,
                 fb: 2,
@@ -489,7 +489,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 9,
             },
             Olly: {
-                managerName: 'Olly',
+                managerId: 'Olly',
                 am: 1,
                 cb: 0,
                 fb: 0.5,
@@ -501,7 +501,7 @@ describe('getDivisionRank()', () => {
                 seasonPoints: 6,
             },
             Pete: {
-                managerName: 'Pete',
+                managerId: 'Pete',
                 am: 1,
                 cb: 1.5,
                 fb: 0.5,

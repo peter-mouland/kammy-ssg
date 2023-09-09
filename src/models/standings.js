@@ -29,12 +29,9 @@ export class DivisionStandings {
     all = [];
 
     constructor({ managersStats }) {
-        this.divisionId = managersStats[0].manager.division.divisionId;
+        this.divisionId = managersStats[0].manager.divisionId;
         managersStats.forEach(({ gameWeek, points, manager }) => {
-            const {
-                managerId,
-                division: { divisionId },
-            } = manager;
+            const { managerId, divisionId } = manager;
             const standing = new Standing({ divisionId, managerId, gameWeek, ...points });
             this.all.push(standing);
             this.byManagerId[standing.managerId] = standing;

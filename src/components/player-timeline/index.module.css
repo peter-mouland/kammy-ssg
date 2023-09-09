@@ -8,8 +8,8 @@
     grid-template-columns: 100px 2fr 1fr;
     align-items: center;
 }
-.gridTeamPos {
-    grid-area: teamPos;
+.gridSquadPos {
+    grid-area: suadPos;
 }
 
 .gridImage {

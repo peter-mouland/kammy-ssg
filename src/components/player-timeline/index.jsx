@@ -12,8 +12,8 @@ export const PlayerHeader = ({ player }) => {
                 <Player.Image code={player.code} large liveQuery={elementQuery} />
             </div>
 
-            <div className={styles.gridTeamPos}>
-                <Player.Pos position={player.positionId} />
+            <div className={styles.gridSquadPos}>
+                <Player.Pos positionId={player.positionId} />
             </div>
 
             <div className={styles.gridClub}>
@@ -55,14 +55,14 @@ export const Tfooter = ({ children }) => (
 
 export const HomeFixture = ({ fixture }) => (
     <div className={styles.home}>
-        {fixture.homeGame ? <strong>{fixture.hTname}</strong> : fixture.hTname}{' '}
-        <span style={{ color: 'grey' }}>{fixture.hScore}</span>
+        {fixture.homeGame ? <strong>{fixture.homeTeam.name}</strong> : fixture.homeTeam.name}{' '}
+        <span style={{ color: 'grey' }}>{fixture.team_h_score}</span>
     </div>
 );
 export const AwayFixture = ({ fixture }) => (
     <div className={styles.away}>
-        <span style={{ color: 'grey' }}>{fixture.aScore}</span>{' '}
-        {!fixture.homeGame ? <strong>{fixture.aTname}</strong> : fixture.aTname}
+        <span style={{ color: 'grey' }}>{fixture.team_a_score}</span>{' '}
+        {!fixture.homeGame ? <strong>{fixture.awayTeam.name}</strong> : fixture.awayTeam.name}
     </div>
 );
 

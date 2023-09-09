@@ -35,18 +35,17 @@ const GameWeekFixtures = ({ fixtures }) => {
                     const fullDate = toFullDate(fixture);
                     const dateStr =
                         fullDate === previousFullDate ? null : <h2 style={{ position: 'absolute' }}>{fullDate}</h2>;
-                    const { aScore, hScore } = fixture;
                     previousFullDate = fullDate;
                     return (
                         <div key={fixture.id} className={bem('fixtures')}>
                             {dateStr}
                             <span className={bem('fixture')}>
                                 <span className={bem('team', 'home')}>
-                                    {fixture.hTname} <span>{hScore}</span>
+                                    {fixture.homeTeam.name} <span>{fixture.team_h_score}</span>
                                 </span>
                                 vs
                                 <span className={bem('team', 'away')}>
-                                    <span>{aScore}</span> {fixture.aTname}
+                                    <span>{fixture.team_a_score}</span> {fixture.awayTeam.name}
                                 </span>
                             </span>
                         </div>
@@ -61,7 +60,7 @@ GameWeekFixtures.propTypes = {
         PropTypes.shape({
             hTname: PropTypes.string,
             aTname: PropTypes.string,
-            date: PropTypes.string,
+            date: PropTypes.any, // date
             aScore: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
             hScore: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         }),
