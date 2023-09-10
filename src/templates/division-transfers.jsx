@@ -31,26 +31,23 @@ const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisi
         divisionId,
         Squads,
     });
-    console.log({ transfersQuery, changesThisGameWeek, newTeams });
     const Division = Divisions.getDivision(divisionId);
     const managersList = Managers.getManagersInDivision(Division.id);
     const isCurrentGameWeek = GameWeeks.isCurrentGameWeek(selectedGameWeek);
 
     return (
-        <Layout.Body>
-            <TabbedMenu selected="transfers" division={divisionId} selectedGameWeek={selectedGameWeek} />
-            <Spacer all={{ top: Spacer.spacings.SMALL, bottom: Spacer.spacings.SMALL }}>
-                <Transfers.Table>
-                    <Transfers.Thead showWarnings={isAdmin} />
-                    <Transfers.Body
-                        isLoading={transfersQuery.isLoading}
-                        transfers={changesThisGameWeek}
-                        showWarnings={isAdmin}
-                        playersByCode={players.byCode}
-                    />
-                    <Transfers.Tfoot isLoading={transfersQuery.isLoading} />
-                </Transfers.Table>
-            </Spacer>
+        <React.Fragment>
+            <Layout.Title>Transfers</Layout.Title>
+            <Transfers.Table>
+                <Transfers.Thead showWarnings={isAdmin} />
+                <Transfers.Body
+                    isLoading={transfersQuery.isLoading}
+                    transfers={changesThisGameWeek}
+                    showWarnings={isAdmin}
+                    playersByCode={players.byCode}
+                />
+                <Transfers.Tfoot isLoading={transfersQuery.isLoading} />
+            </Transfers.Table>
             {isCurrentGameWeek && (
                 <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
                     <TransferRequest
@@ -62,12 +59,19 @@ const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisi
                     />
                 </Spacer>
             )}
-        </Layout.Body>
+        </React.Fragment>
     );
 };
 const TransfersPage = ({ data, pageContext }) => (
     <Layout.Container title={`${pageContext.divisionId} - Transfers`}>
-        <PageBody data={data} pageContext={pageContext} />
+        <TabbedMenu
+            selected="transfers"
+            division={pageContext.divisionId}
+            selectedGameWeek={pageContext.gameWeekIndex}
+        />
+        <Layout.Body>
+            <PageBody data={data} pageContext={pageContext} />
+        </Layout.Body>
     </Layout.Container>
 );
 

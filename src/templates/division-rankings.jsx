@@ -25,10 +25,10 @@ const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) 
 
     return (
         <Layout.Container title={`${Division.label} - Standings`}>
+            <TabbedMenu selected="rankings" division={divisionId} selectedGameWeek={gameWeekIndex} />
             <Layout.Body>
-                <TabbedMenu selected="rankings" division={divisionId} selectedGameWeek={gameWeekIndex} />
                 <DivisionRankings.Container>
-                    <DivisionRankings.Title>Standings</DivisionRankings.Title>
+                    <Layout.Title>Standings</Layout.Title>
                     <DivisionRankings.SeasonTotals
                         selectedGameWeek={gameWeekIndex}
                         GameWeeks={GameWeeks}
@@ -38,7 +38,7 @@ const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) 
                     />
                 </DivisionRankings.Container>
                 <DivisionRankings.Container>
-                    <DivisionRankings.Title>Weekly Scores</DivisionRankings.Title>
+                    <Layout.Title>Weekly Scores</Layout.Title>
                     <DivisionRankings.GameWeekChange
                         selectedGameWeek={gameWeekIndex}
                         GameWeeks={GameWeeks}

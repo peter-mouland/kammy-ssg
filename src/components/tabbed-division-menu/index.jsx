@@ -47,7 +47,7 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
     };
 
     return (
-        <div style={{ borderBottom: '1px solid var(--brand)', background: '#eee' }}>
+        <div style={{ borderBottom: '1px solid var(--brand)', background: '#eee', padding: '0.35em 0' }}>
             <div className={styles.container}>
                 <Spacer tag="ul" all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
                     {tabs.map(({ id, label, Icon }) => (

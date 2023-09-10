@@ -31,8 +31,9 @@ const Index = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionI
     const StatsList = new Stats();
     return (
         <Layout.Container title={`${Division.label} - Teams`}>
+            <TabbedMenu division={divisionId} selected="teams" selectedGameWeek={selectedGameWeek} />
             <Layout.Body>
-                <TabbedMenu division={divisionId} selected="teams" selectedGameWeek={selectedGameWeek} />
+                <Layout.Title>Teams</Layout.Title>
                 {isAdmin && <TeamWarnings warnings={Squads.warnings} />}
 
                 <div data-b-layout="vpad" style={{ margin: '0 auto', width: '100%' }}>
