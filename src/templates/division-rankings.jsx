@@ -4,12 +4,13 @@ import { graphql } from 'gatsby';
 
 import * as Layout from '../components/layout';
 import * as DivisionRankings from '../components/division-rankings';
-import TabbedMenu from '../components/tabbed-division-menu';
+import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
 import useGameWeeks from '../hooks/use-game-weeks';
 import CPositions from '../models/position';
 import CDivisions from '../models/division';
 import CManagers from '../models/managers';
 import { DivisionStandings } from '../models/standings';
+import NavBar from '../components/nav-bar';
 
 const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
     const GameWeeks = useGameWeeks();
@@ -25,7 +26,15 @@ const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) 
 
     return (
         <Layout.Container title={`${Division.label} - Standings`}>
-            <TabbedMenu selected="rankings" division={divisionId} selectedGameWeek={gameWeekIndex} />
+            <Layout.PrimaryNav>
+                <NavBar />
+            </Layout.PrimaryNav>
+            <Layout.SecondaryNav>
+                <TabbedMenu selected="rankings" divisionId={divisionId} selectedGameWeek={gameWeekIndex} />
+            </Layout.SecondaryNav>
+            <Layout.TertiaryNav>
+                <GameWeekNav selected="rankings" divisionId={divisionId} selectedGameWeek={gameWeekIndex} />
+            </Layout.TertiaryNav>
             <Layout.Body>
                 <DivisionRankings.Container>
                     <Layout.Title>Standings</Layout.Title>

@@ -37,7 +37,18 @@ const tabs = [
     },
 ];
 
-const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
+const Tab = ({ to, isActive, Icon, children }) => (
+    <NamedLink to={to} className={cx(styles.cta, { [styles.isActive]: isActive })}>
+        <Spacer medium={{ right: Spacer.spacings.SMALL }}>
+            <div className={styles.iconContainer}>
+                <Icon width="26px" height="26px" />
+            </div>
+        </Spacer>
+        {children}
+    </NamedLink>
+);
+
+export const GameWeekNav = ({ divisionId, selected, selectedGameWeek }) => {
     const { gameWeeks, currentGameWeek } = useGameWeeks();
     const displayGW = selectedGameWeek ?? currentGameWeek.id;
     const [showFixture, onShowFixture] = React.useState(null);
@@ -45,31 +56,11 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
         thisWeek: gameWeeks[displayGW],
         nextWeek: gameWeeks[displayGW + 1],
     };
-
     return (
-        <div style={{ borderBottom: '1px solid var(--brand)', background: '#eee', padding: '0.35em 0' }}>
-            <div className={styles.container}>
-                <Spacer tag="ul" all={{ stackH: Spacer.spacings.MEDIUM }} className={styles.tabs}>
-                    {tabs.map(({ id, label, Icon }) => (
-                        <li key={id} className={cx(styles.tab)}>
-                            <NamedLink
-                                to={`${division}-${id}`}
-                                className={cx(styles.cta, { [styles.isActive]: id === selected })}
-                            >
-                                <Spacer medium={{ right: Spacer.spacings.SMALL }}>
-                                    <div className={styles.iconContainer}>
-                                        <Icon width="26px" height="26px" />
-                                    </div>
-                                </Spacer>
-                                {label}
-                            </NamedLink>
-                        </li>
-                    ))}
-                </Spacer>
-            </div>
+        <div>
             <div className={styles.gwContainer}>
                 <span>
-                    <GameWeekSwitcher to={`${division}-${selected}`} selectedGameWeek={displayGW} />
+                    <GameWeekSwitcher to={`${divisionId}-${selected}`} selectedGameWeek={displayGW} />
                 </span>
                 <span>
                     <Button
@@ -101,13 +92,26 @@ const TabbedMenu = ({ division, selected, selectedGameWeek }) => {
     );
 };
 
+const TabbedMenu = ({ divisionId, selected, selectedGameWeek, showGWSwitcher }) => (
+    <div className={styles.container}>
+        <Spacer tag="ul" className={styles.tabs}>
+            {tabs.map(({ id, label, Icon }) => (
+                <li className={cx(styles.tab)}>
+                    <Tab key={id} to={`${divisionId}-${id}`} isActive={id === selected} Icon={Icon}>
+                        {label}
+                    </Tab>
+                </li>
+            ))}
+        </Spacer>
+        {showGWSwitcher ? (
+            <GameWeekNav selectedGameWeek={selectedGameWeek} divisionId={divisionId} selected={selected} />
+        ) : null}
+    </div>
+);
+
 TabbedMenu.propTypes = {
-    selectedGameWeek: PropTypes.number,
-    division: PropTypes.string.isRequired,
+    divisionId: PropTypes.string.isRequired,
     selected: PropTypes.string.isRequired,
-};
-TabbedMenu.defaultProps = {
-    selectedGameWeek: null,
 };
 
 export default TabbedMenu;

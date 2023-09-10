@@ -4,7 +4,7 @@ import React from 'react';
 import { useCookies } from 'react-cookie';
 
 import * as Layout from '../components/layout';
-import TabbedMenu from '../components/tabbed-division-menu';
+import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
 import TeamWarnings from '../components/team-warnings';
 import * as StatsTable from '../components/division-teams/division-stats.table';
 import { Stats } from '../models/stats';
@@ -14,8 +14,9 @@ import CDivisions from '../models/division';
 import CManagers from '../models/managers';
 import * as Player from '../components/player';
 import * as styles from '../components/division-teams/division-stats.module.css';
+import NavBar from '../components/nav-bar';
 
-const Index = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionId } }) => {
+const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
     const [cookies] = useCookies(['is-admin']);
     const isAdmin = cookies['is-admin'] === 'true' || false;
     const {
@@ -31,7 +32,15 @@ const Index = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionI
     const StatsList = new Stats();
     return (
         <Layout.Container title={`${Division.label} - Teams`}>
-            <TabbedMenu division={divisionId} selected="teams" selectedGameWeek={selectedGameWeek} />
+            <Layout.PrimaryNav>
+                <NavBar />
+            </Layout.PrimaryNav>
+            <Layout.SecondaryNav>
+                <TabbedMenu selected="teams" divisionId={divisionId} selectedGameWeek={gameWeekIndex} />
+            </Layout.SecondaryNav>
+            <Layout.TertiaryNav>
+                <GameWeekNav selected="teams" divisionId={divisionId} selectedGameWeek={gameWeekIndex} />
+            </Layout.TertiaryNav>
             <Layout.Body>
                 <Layout.Title>Teams</Layout.Title>
                 {isAdmin && <TeamWarnings warnings={Squads.warnings} />}

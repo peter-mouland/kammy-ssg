@@ -11,7 +11,7 @@ module.exports = [
             title: 'Kammy: Fantasy Football',
             description: 'Kammy : Fantasy Football',
         },
-        label: 'Home',
+        label: 'Drafft',
         requiresAuthentication: false,
         component: 'Homepage',
         template: 'default',

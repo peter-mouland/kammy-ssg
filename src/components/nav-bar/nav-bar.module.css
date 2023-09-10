@@ -9,6 +9,7 @@
     padding: 0;
     max-width: 1200px;
     margin: 0 auto;
+    display: flex;
 }
 
 .nav a {
@@ -17,10 +18,20 @@
     display: inline-block;
 }
 
-.nav .isActive,
-.nav [aria-current="page"] {
+.nav .home{
     background: #163;
     color: white;
+    text-decoration: none!important;
+    display: flex;
+    svg {
+        display: inline-block;
+        max-width: 32px;
+
+    }
+}
+.nav .isActive,
+.nav [aria-current="page"] {
+    text-decoration: underline;
 }
 
 .nav__link {

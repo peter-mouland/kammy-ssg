@@ -12,6 +12,7 @@ import CStandings from '../models/standings';
 import CPositions from '../models/position';
 import * as DivisionRankings from '../components/division-rankings';
 import NamedLink from '../components/named-link';
+import NavBar from '../components/nav-bar';
 
 const HomepageIndex = ({ data, pageContext: { gameWeekIndex: selectedGameWeek } }) => {
     const { formattedTime, getFromNow } = useMeta();
@@ -28,6 +29,9 @@ const HomepageIndex = ({ data, pageContext: { gameWeekIndex: selectedGameWeek } 
 
     return (
         <Layout.Container title="Homepage">
+            <Layout.PrimaryNav>
+                <NavBar />
+            </Layout.PrimaryNav>
             <Layout.Body>
                 {Divisions.getAll().map((Division) => (
                     <DivisionRankings.Container key={Division.id}>

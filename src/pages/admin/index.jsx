@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'gatsby';
 import { useCookies } from 'react-cookie';
 
-import Layout from '../../components/layout';
+import * as Layout from '../../components/layout';
 import Button from '../../components/button';
 import Spacer from '../../components/spacer';
 import useMeta from '../../hooks/use-meta';
+import NavBar from '../../components/nav-bar';
 
 const regenerateGatsby = (setIsLoading) => {
     setIsLoading(true);
@@ -25,27 +26,18 @@ const regenerateGatsby = (setIsLoading) => {
 const AdminPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [, setCookie] = useCookies(['is-admin']);
-    // const info = useQuery(['func'], async () => {
-    //     const response = await fetch(`/.netlify/functions/sky-sports`, {
-    //         method: 'post',
-    //         body: JSON.stringify({
-    //             type: 'fixtures',
-    //         }),
-    //     });
-    //     return response.json();
-    // });
-    // console.log({ info });
     useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
     const { formattedTime, getFromNow } = useMeta();
     const publish = () => regenerateGatsby(setIsLoading);
     return (
-        <Layout title="Admin - Links">
-            <div id="admin-page" data-b-layout="container">
-                <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>
-                    <h1>Admin</h1>
-                </Spacer>
+        <Layout.Container title="Admin - Links">
+            <Layout.PrimaryNav>
+                <NavBar />
+            </Layout.PrimaryNav>
+            <Layout.Body>
+                <Layout.Title>Admin</Layout.Title>
                 <Spacer all={{ vertical: Spacer.spacings.MEDIUM }}>
                     <strong>Last Build:</strong> {formattedTime}{' '}
                     <small style={{ color: '#888', fontSize: '0.9em' }}>({getFromNow()})</small>
@@ -85,9 +77,9 @@ const AdminPage = () => {
                             <Link to="players">View Latest Players</Link>
                         </Spacer>
                     </li>
-                </ul>
-            </div>
-        </Layout>
+                </ul>{' '}
+            </Layout.Body>
+        </Layout.Container>
     );
 };
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { graphql } from 'gatsby';
 
 import * as Layout from '../components/layout';
-import TabbedMenu from '../components/tabbed-division-menu';
+import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
 import CManagers from '../models/managers';
 import CSquads from '../models/squads';
 import CDivisions from '../models/division';
@@ -15,6 +15,7 @@ import usePlayers from '../hooks/use-players';
 import useGameWeeks from '../hooks/use-game-weeks';
 import useSquadChanges from '../hooks/use-squad-changes';
 import useManagers from '../hooks/use-managers';
+import NavBar from '../components/nav-bar';
 
 const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionId } }) => {
     const {
@@ -64,11 +65,23 @@ const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisi
 };
 const TransfersPage = ({ data, pageContext }) => (
     <Layout.Container title={`${pageContext.divisionId} - Transfers`}>
-        <TabbedMenu
-            selected="transfers"
-            division={pageContext.divisionId}
-            selectedGameWeek={pageContext.gameWeekIndex}
-        />
+        <Layout.PrimaryNav>
+            <NavBar />
+        </Layout.PrimaryNav>
+        <Layout.SecondaryNav>
+            <TabbedMenu
+                selected="transfers"
+                divisionId={pageContext.divisionId}
+                selectedGameWeek={pageContext.gameWeekIndex}
+            />
+        </Layout.SecondaryNav>
+        <Layout.TertiaryNav>
+            <GameWeekNav
+                selected="transfers"
+                divisionId={pageContext.divisionId}
+                selectedGameWeek={pageContext.gameWeekIndex}
+            />
+        </Layout.TertiaryNav>
         <Layout.Body>
             <PageBody data={data} pageContext={pageContext} />
         </Layout.Body>

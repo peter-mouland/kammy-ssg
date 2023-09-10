@@ -7,6 +7,7 @@ import * as Layout from '../components/layout';
 import Cup from '../components/cup';
 import IFrame from '../components/iFrame';
 import Spacer from '../components/spacer';
+import NavBar from '../components/nav-bar';
 
 const CupTemplate = ({ data }) => {
     const currentTeams = data.currentTeams.group.reduce(
@@ -18,6 +19,9 @@ const CupTemplate = ({ data }) => {
     );
     return (
         <Layout.Container title="Cup">
+            <Layout.PrimaryNav>
+                <NavBar />
+            </Layout.PrimaryNav>
             <Layout.Body>
                 <Layout.Title>Cup</Layout.Title>
                 <IFrame

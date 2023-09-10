@@ -1,3 +1,49 @@
+:root .layoutGrid {
+    --navHeight: calc(60px + env(safe-area-inset-bottom));
+    @media (--rnb-mq-medium) {
+        --navHeight: revert;
+    }
+}
+
+.layoutGrid {
+    display: grid;
+    grid-template-areas: 'primary-nav'
+                         'secondary-nav'
+                         'tertiary-nav'
+                         'body'
+                         'footer';
+}
+.gridPrimaryNav {
+    grid-area: primary-nav;
+}
+
+.gridSecondaryNav {
+    grid-area: secondary-nav;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: var(--navHeight);
+    width: 100%;
+    z-index: 1;
+
+    @media (--rnb-mq-medium) {
+        position: relative;
+    }
+}
+.gridTertiaryNav {
+    grid-area: tertiary-nav;
+}
+
+.gridBody {
+    grid-area: body;
+    margin-bottom: var(--navHeight);
+}
+
+.gridFooter {
+    grid-area: footer;
+
+}
+
 
 .content {
     min-height: calc(100vh - 20em - env(safe-area-inset-bottom) - 60px);

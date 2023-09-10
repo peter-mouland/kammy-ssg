@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet"
 /* eslint-enable */
 
 import React from 'react';
+import cx from 'classnames';
 import PropTypes from 'prop-types';
 import '@kammy/bootstrap';
 import { CookiesProvider } from 'react-cookie';
@@ -21,7 +22,7 @@ import Spacer from './spacer';
 const queryClient = new QueryClient();
 
 export const Footer = ({ children }) => (
-    <footer className={styles.footer}>
+    <footer className={cx(styles.footer, styles.gridFooter)}>
         <div className={styles.footerContent}>
             {children}
             <h2 className={styles.footerHeader}>Relevant Links</h2>
@@ -57,10 +58,13 @@ export const Footer = ({ children }) => (
 );
 
 export const Body = ({ children }) => (
-    <main className={styles.content} data-b-layout="container">
+    <main className={cx(styles.content, styles.gridBody)} data-b-layout="container">
         <section>{typeof children === 'function' ? children() : children}</section>
     </main>
 );
+export const PrimaryNav = ({ children }) => <nav className={cx(styles.gridPrimaryNav)}>{children}</nav>;
+export const SecondaryNav = ({ children }) => <nav className={cx(styles.gridSecondaryNav)}>{children}</nav>;
+export const TertiaryNav = ({ children }) => <nav className={cx(styles.gridTertiaryNav)}>{children}</nav>;
 export const Title = ({ children }) => (
     <h1>
         <Spacer all={{ vertical: Spacer.spacings.SMALL }}>{children}</Spacer>
@@ -76,10 +80,7 @@ export const Container = ({ title, description, children }) => (
                     <title>{title}</title>
                     {description && <meta name="description" content={description} />}
                 </Helmet>
-                <div>
-                    <NavBar />
-                    {children}
-                </div>
+                <div className={styles.layoutGrid}>{children}</div>
             </CookiesProvider>
         </QueryClientProvider>
     </QueryParamProvider>
