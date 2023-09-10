@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
+import cx from 'classnames';
 
 import Cup from './trophy.svg';
-import './GameWeekDate.css';
+import * as styles from './gameweek-date.module.css';
 
 const getDates = ({ start, end }) => {
     try {
@@ -31,34 +32,47 @@ const getDates = ({ start, end }) => {
     }
 };
 
-const GameWeekDate = ({ gameWeek, isCurrent }) => {
-    console.log({ gameWeek });
-    const { start, end, cup, id } = gameWeek;
-    const { startMonth, startTime, startDay, endMonth, endDay, endTime } = getDates({ start, end });
+const GameWeekDate = ({ gameWeek, isSelected }) => {
+    const { startMonth, startTime, startDay, endMonth, endDay, endTime } = getDates(gameWeek);
     return (
-        <div className={isCurrent ? `formatted-gameweek-container isSelected` : `formatted-gameweek-container`}>
-            <div className="formatted-gameweek-date">
-                {cup && <Cup className="formatted-gameweek-cup" />}
-                <span className="formatted-gameweek-date__calendar">
-                    <span className="formatted-gameweek-date__month">
-                        <div style={{ padding: '0.2em' }}>gw{id}</div>
-                    </span>
-                    <span className="formatted-gameweek-date__time">
-                        <span>
-                            {startMonth} {startDay} {startTime}
-                        </span>
-                        <span style={{ lineHeight: '0.5em', padding: '0.2em' }}>-</span>
-                        <span>
+        <div
+            className={cx(styles.container, {
+                [styles.isSelected]: gameWeek.isSelected,
+                [styles.isCurrent]: gameWeek.isCurrent,
+            })}
+        >
+            {gameWeek.cup && <Cup className={styles.cup} />}
+            <span className={styles.gw}>
+                {/* Another div to separate 'height-fill' from 'vertical-aligned' copy*/}
+                <div className={styles.va}>gw{gameWeek.id}</div>
+            </span>
+            <span className={styles.time}>
+                {gameWeek.isCurrent ? (
+                    <React.Fragment>
+                        Ends <strong>{gameWeek.endFromNow}</strong>
+                    </React.Fragment>
+                ) : gameWeek.hasPassed ? (
+                    <React.Fragment>
+                        Ended{' '}
+                        <strong>
                             {endMonth} {endDay} {endTime}
-                        </span>
-                    </span>
-                </span>
-            </div>
+                        </strong>
+                    </React.Fragment>
+                ) : (
+                    <React.Fragment>
+                        Starts{' '}
+                        <strong>
+                            {startMonth} {startDay} {startTime}
+                        </strong>
+                    </React.Fragment>
+                )}
+            </span>
         </div>
     );
 };
 
 GameWeekDate.propTypes = {
+    isSelected: PropTypes.bool,
     isCurrent: PropTypes.bool,
     gameWeek: PropTypes.shape({
         id: PropTypes.number,
@@ -69,6 +83,7 @@ GameWeekDate.propTypes = {
 };
 
 GameWeekDate.defaultProps = {
+    isSelected: false,
     isCurrent: false,
 };
 

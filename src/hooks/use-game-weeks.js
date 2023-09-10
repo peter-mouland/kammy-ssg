@@ -13,9 +13,12 @@ const useGameWeeks = () => {
                     id: gameWeekIndex
                     gameWeekIndex
                     isCurrent
+                    isNext
+                    hasPassed
                     cup
                     start
                     end
+                    sinceStartMs: end(difference: "start")
                     startFromNow: start(fromNow: true)
                     endFromNow: end(fromNow: true)
                     fixtures {

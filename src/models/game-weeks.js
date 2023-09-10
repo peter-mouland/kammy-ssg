@@ -14,17 +14,18 @@ class GameWeekFixture {
 }
 
 class GameWeek {
-    constructor({ id, label, url, start, end, isCurrent, hasCup, startFromNow, endFromNow, fixtures }) {
-        this.id = id;
-        this.label = label;
-        this.url = url;
-        this.start = new Date(start);
-        this.end = new Date(end);
-        this.isCurrent = isCurrent;
-        this.hasCup = hasCup;
-        this.startFromNow = startFromNow;
-        this.endFromNow = endFromNow;
-        this.fixtures = fixtures.map((fixture) => new GameWeekFixture(fixture));
+    constructor(gameWeek) {
+        this.id = gameWeek.id;
+        this.label = gameWeek.label;
+        this.url = gameWeek.url;
+        this.hasPassed = gameWeek.sinceStartMs > 0;
+        this.start = new Date(gameWeek.start);
+        this.end = new Date(gameWeek.end);
+        this.isCurrent = gameWeek.isCurrent;
+        this.hasCup = gameWeek.hasCup;
+        this.startFromNow = gameWeek.startFromNow;
+        this.endFromNow = gameWeek.endFromNow;
+        this.fixtures = gameWeek.fixtures.map((fixture) => new GameWeekFixture(fixture));
     }
 }
 

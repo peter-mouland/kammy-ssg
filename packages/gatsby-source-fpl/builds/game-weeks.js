@@ -23,19 +23,26 @@ const getFixtures = (fplFixtures, fplTeams, gameWeek) =>
 module.exports = ({ googleGameWeekData, fplFixtures, fplEvents, fplTeams }) => {
     const logEnd = logger.timed('Build: Game Weeks');
 
+    let hasHadCurrent = false;
+    let isNext = false;
     const results = fplEvents.map(({ data: event }, i) => {
         const start = new Date(fplEvents[i - 1]?.data?.deadline_time || '2023-07-30T11:00:00.000Z');
         const ggw = googleGameWeekData.find((googleGameWeek) => String(googleGameWeek.gameweek) === String(i));
         const end = new Date(event.deadline_time);
+        const isCurrent = new Date() < end && new Date() > start;
         const data = {
             fplEvent: event,
             cup: ['cup', 'y', 'yes', 'Y'].includes(ggw.cup || ''),
             gameWeekIndex: i,
             start,
             end,
-            isCurrent: new Date() < end && new Date() > start,
+            isCurrent,
+            isNext,
+            hasPassed: !hasHadCurrent && !isCurrent,
             fixtures: getFixtures(fplFixtures, fplTeams, i) || [],
         };
+        isNext = isCurrent;
+        hasHadCurrent = isCurrent || hasHadCurrent;
         return {
             resourceId: `game-weeks-${i}`,
             data,
