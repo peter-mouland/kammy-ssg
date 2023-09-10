@@ -2,20 +2,27 @@
 /* LAYOUT */
 .player {
     display: grid;
-    grid-template-areas: 'image name pos'
-                         'image club pos'
-                         'news news news';
-    grid-template-columns: 100px 2fr 1fr;
+    grid-template-areas: 'image name stats'
+                         'image club stats'
+                         'image squadPos stats'
+                         'news news stats';
+    grid-template-columns: 80px 1fr 2fr;
     align-items: center;
+    justify-items: center;
+    @media screen and (min-width: 600px){
+        grid-template-columns: 120px 1fr 2fr;
+    }
 }
 .gridSquadPos {
-    grid-area: suadPos;
+    grid-area: squadPos;
 }
 
 .gridImage {
     grid-area: image;
     align-self: baseline;
-    justify-self: center;
+}
+.gridStats {
+    grid-area: stats;
 }
 
 .gridName {
@@ -41,6 +48,9 @@
 .away {
       text-align: left;
 }
+
+
+/* UI */
 
 .my-team {
   font-weight: bold;
@@ -72,4 +82,54 @@ td.cell {
     text-align: center;
     padding: .3em .15em;
     vertical-align: middle;
+}
+
+
+
+/* STATS */
+
+.stats {
+    display: grid;
+    grid-template-areas: 'form formStats'
+                         'creativity creativityStats'
+                         'influence influenceStats'
+                         'setPlays setPlaysStats';
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    justify-items: center;
+    font-size: 0.9em;
+    @media screen and (min-width: 500px){
+        grid-template-columns: 1.5fr 1fr;
+        font-size: 1em;
+    }
+}
+
+.statsLabel {
+    color: #163;
+    padding: 0.2em;
+    border-bottom: 1px dashed #163;
+    width: 100%;
+    white-space: nowrap;
+}
+.statsValue {
+    color: #4f5a65;
+    padding: 0.2em;
+    border-bottom: 1px dashed #163;
+    width: 100%;
+    text-align: center;
+    > span:first-child {
+        margin-right: 1em;
+    }
+
+    .small {
+        font-size: 0.8em;
+        line-height: 1.25em;
+        color: #8f8a85;
+        white-space: nowrap;
+        float: right;
+        &:before {
+            content: 'rank: ';
+            display: inline-block;
+        }
+    }
 }
