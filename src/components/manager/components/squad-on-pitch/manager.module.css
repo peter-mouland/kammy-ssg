@@ -98,10 +98,12 @@
 
 .meta {
     width: 100%;
+    position: relative;
+    z-index: 1;
 }
 .name {
     font-size: 0.85rem;
-    background: rgba(0,0,0,0.25);
+    background: rgba(255,255,255,.75);
     padding: 2px 4px;
     width: 100%;
 }
@@ -112,7 +114,7 @@
     padding: 2px 4px;
     width: 100%;
     border-radius: 0 0 0.7rem 0.7rem;
-
+    font-weight: bold;
 }
 
 .name .first {

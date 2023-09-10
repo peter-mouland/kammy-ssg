@@ -5,7 +5,7 @@
     grid-template-areas: 'image name stats'
                          'image club stats'
                          'image squadPos stats'
-                         'news news stats';
+                         'image news stats';
     grid-template-columns: 80px 1fr 2fr;
     align-items: center;
     justify-items: center;
@@ -33,9 +33,7 @@
 }
 
 .gridNews {
-    grid-row: 3;
-    grid-column-start: 1;
-    grid-column-end: 4;
+    grid-area: news;
     background-color: rgba(255,255,255,0.75);
     z-index: 1;
     display: grid;
