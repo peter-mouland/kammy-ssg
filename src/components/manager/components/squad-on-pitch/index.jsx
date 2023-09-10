@@ -36,9 +36,10 @@ Pos.defaultProps = {
     isInteractive: false,
 };
 
+const positions = ['GK', 'FB', 'FB', 'CB', 'CB', 'MID', 'MID', 'AM', 'AM', 'STR', 'STR', 'SUB'];
+
 const SquadOnPitch = ({ squad, onSelect }) => {
     const isInteractive = onSelect !== null;
-    const positions = ['GK', 'FB', 'FB', 'CB', 'CB', 'MID', 'MID', 'AM', 'AM', 'STR', 'STR', 'SUB'];
     return (
         <div className={styles.teamContainer}>
             <div className={styles.iconContainer}>
@@ -46,8 +47,8 @@ const SquadOnPitch = ({ squad, onSelect }) => {
             </div>
             <div className={styles.team}>
                 {positions.map((pos, index) => {
-                    const squadMember = squad.find((item) => item.squadPositionIndex === index);
-                    if (!squadMember.player) {
+                    const squadMember = squad.players.find((item) => item.squadPositionIndex === index);
+                    if (!squadMember) {
                         console.log('squadMember player not found');
                         console.log('This likely means gsheets does not match FPL spelling');
                         console.log(squadMember);
@@ -64,13 +65,13 @@ const SquadOnPitch = ({ squad, onSelect }) => {
                                 isInteractive,
                             }}
                         >
-                            <PlayerImage code={squadMember.player.code} medium liveQuery={{}} />
+                            <PlayerImage code={squadMember.code} medium liveQuery={{}} />
                             <div className={styles.meta}>
                                 <div className={styles.name}>
-                                    <span>{squadMember.player.name.split(',')[0]}</span>
-                                    <span className={styles.first}>{squadMember.player.name.split(',')[1]}</span>
+                                    <span>{squadMember.name.split(',')[0]}</span>
+                                    <span className={styles.first}>{squadMember.name.split(',')[1]}</span>
                                 </div>
-                                <div className={styles.club}>{squadMember.player.club}</div>
+                                <div className={styles.club}>{squadMember.club}</div>
                             </div>
                         </Pos>
                     );

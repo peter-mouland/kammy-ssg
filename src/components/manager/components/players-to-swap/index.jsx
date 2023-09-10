@@ -9,14 +9,14 @@ const TYPE = consts.changeTypes.SWAP;
 const SUB = 'sub';
 
 const getValidPlayersToSwap = ({ team }) => {
-    const sub = team.find(({ squadPositionId }) => squadPositionId === SUB);
-    const selectedPlayers = team.filter(({ isSelected }) => isSelected);
+    const sub = team.players.find(({ squadPositionId }) => squadPositionId === SUB);
+    const selectedPlayers = team.players.filter(({ isSelected }) => isSelected);
     const hasSelectedSub = selectedPlayers.find(({ squadPositionId }) => squadPositionId === SUB);
-    const possibleSquadSubs = team.filter(
-        ({ player, squadPositionId }) => player.positionId === sub.player.positionId && squadPositionId !== SUB,
+    const possibleSquadSubs = team.players.filter(
+        ({ positionId, squadPositionId }) => positionId === sub.positionId && squadPositionId !== SUB,
     );
     const possibleSelectedSubs = selectedPlayers.filter(
-        ({ player, squadPositionId }) => player.positionId === sub.positionId && squadPositionId !== SUB,
+        ({ positionId, squadPositionId }) => positionId === sub.positionId && squadPositionId !== SUB,
     );
     switch (true) {
         case Boolean(hasSelectedSub):
@@ -29,8 +29,8 @@ const getValidPlayersToSwap = ({ team }) => {
 };
 
 const PlayersToSwap = ({ team, swaps, applyChange }) => {
-    const selectedPlayers = team.filter(({ isSelected }) => !!isSelected);
-    const sub = team.find(({ squadPositionId }) => squadPositionId === SUB);
+    const selectedPlayers = team.players.filter(({ isSelected }) => !!isSelected);
+    const sub = team.players.find(({ squadPositionId }) => squadPositionId === SUB);
     const recommendPlayersToShow = getValidPlayersToSwap({ team });
     const maxSwapsRules = maxSwaps({ managerSwaps: swaps });
 
@@ -40,7 +40,7 @@ const PlayersToSwap = ({ team, swaps, applyChange }) => {
             count={recommendPlayersToShow.length}
             highlights={[
                 <p>
-                    Player leaving: <strong>{sub.player.name}</strong>
+                    Player leaving: <strong>{sub.name}</strong>
                 </p>,
             ]}
             rules={maxSwapsRules}

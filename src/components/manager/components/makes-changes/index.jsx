@@ -66,18 +66,19 @@ const createApplySwap =
 // todo: show next gameweeks team
 // todo: but show this gameweeks change-requests
 
-const Manager = ({ managerId, teamsByManager, gameWeek, divisionId }) => {
+const Manager = ({ managerId, teamsByManager, gameWeekIndex, divisionId }) => {
     const [newChanges, setNewChanges] = React.useState([]);
     const { playersByName } = usePlayers();
     const { changesThisGameWeek, newTeams, changesByType, isLoading, saveSquadChange, hasPendingChanges } =
         useSquadChanges({
-            selectedGameWeek: gameWeek, // todo: use separate hook for showing transfers
+            selectedGameWeek: gameWeekIndex, // todo: use separate hook for showing transfers
             divisionId,
             teamsByManager,
         });
     // console.log({ newTeams });
 
-    const [newTeam, setNewTeam] = React.useState(newTeams[managerId]);
+    // const [newTeam, setNewTeam] = React.useState(newTeams[managerId]);
+    const [newTeam, setNewTeam] = React.useState(teamsByManager[managerId]);
     const getManagerChanges = (changes) => changes.filter((change) => change.manager === managerId);
     const allManagerChanges = getManagerChanges(changesThisGameWeek);
     const swaps = getManagerChanges(changesByType.SWAP);
@@ -123,7 +124,7 @@ const Manager = ({ managerId, teamsByManager, gameWeek, divisionId }) => {
             {/*    playersByName={playersByName}*/}
             {/* />*/}
             <ConfirmChanges
-                gameWeek={gameWeek}
+                gameWeek={gameWeekIndex}
                 divisionId={divisionId}
                 managerId={managerId}
                 newChanges={newChanges}
