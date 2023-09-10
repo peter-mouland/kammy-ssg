@@ -80,7 +80,7 @@ const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
 
                                             {/* remove first item, 'points', so we can make it bold, above*/}
                                             {StatsList.all.slice(1).map((Stat) => (
-                                                <StatsTable.Td key={Stat.id}>
+                                                <StatsTable.Td key={Stat.id} desktopOnly>
                                                     {SquadPlayer.gameWeekStats[Stat.id].value}
                                                 </StatsTable.Td>
                                             ))}
