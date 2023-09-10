@@ -16,7 +16,7 @@ class PlayerFixture {
 
 class PlayerFixtures {
     all = [];
-    constructor(playerFixtures) {
+    constructor(playerFixtures = []) {
         playerFixtures.forEach((playerFixture) => {
             this.all.push(new PlayerFixture(playerFixture));
         });
@@ -26,6 +26,7 @@ class PlayerFixtures {
 class PlayerGameWeek {
     constructor(playerGameWeek) {
         this.fixtures = new PlayerFixtures(playerGameWeek.fixtures);
+        this.stats = new Stats(playerGameWeek.stats);
     }
 }
 
@@ -50,7 +51,7 @@ export class Player {
     fixtures = [];
     manager = {};
 
-    constructor(player) {
+    constructor(player, options = {}) {
         this.form = player.form;
         this.formRank = player.form_rank;
         this.code = player.code;
@@ -60,8 +61,10 @@ export class Player {
         this.new = player.new;
         this.url = player.url;
         this.rawData = player;
-        this.seasonStats = new Stats(player.seasonStats);
         this.gameWeeks = new PlayerGameWeeks(player.gameWeeks);
+        this.seasonStats = Number.isInteger(options.gameWeekIndex)
+            ? this.gameWeeks.all[options.gameWeekIndex].stats
+            : new Stats(player.seasonStats);
         this.fixtures = this.gameWeeks.all.reduce((prev, curr) => {
             curr.fixtures.all.forEach((fixture) => {
                 prev.push(fixture);
@@ -86,9 +89,9 @@ export class Player {
 export class Players {
     all = [];
     byCode = {};
-    constructor(players) {
+    constructor(players, options) {
         players.forEach((player) => {
-            const player1 = new Player(player);
+            const player1 = new Player(player, options);
             this.all.push(player1);
             this.byCode[player1.code] = player1;
         });
@@ -100,7 +103,7 @@ export class Players {
      ] */
     addManagers(managedPlayers) {
         managedPlayers.forEach(({ manager, playerCode }) => {
-            this.byCode[playerCode].addManager(manager);
+            this.byCode[playerCode]?.addManager(manager);
         });
     }
 }

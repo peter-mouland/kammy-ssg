@@ -176,6 +176,16 @@ exports.createPages = async ({ actions, graphql }) => {
                     divisionId,
                 },
             });
+            //   DIVISION PLAYERS
+            pageNodesToBuild.push({
+                path: `/week-${gameWeekIndex}/${url}/players`,
+                component: path.resolve('src/templates/division-players.jsx'),
+                context: {
+                    gameWeekIndex,
+                    prevGameWeekIndex,
+                    divisionId,
+                },
+            });
         });
         if (isCurrent) {
             // HOMEPAGE

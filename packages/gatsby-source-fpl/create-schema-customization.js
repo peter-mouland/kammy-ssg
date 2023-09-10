@@ -6,6 +6,7 @@ exports.createSchemaCustomization = async ({ actions }) => {
       }
 
       type playersGameWeeks {
+        gameWeekIndex: Int
         fixtures: [playersGameWeeksFixtures]
       }
 

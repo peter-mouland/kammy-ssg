@@ -29,7 +29,7 @@ const getGameWeeksWithFixtures = ({ player, gameWeeks, fplTeams }) =>
         if (!gameWeekFixtures || !gameWeekFixtures.length) {
             notFound.add(gw);
         }
-        return { gameWeekIndex: gw.gameWeek, fixtures: gameWeekFixtures, stats: gameWeekStats };
+        return { gameWeekIndex: gw.gameWeekIndex, fixtures: gameWeekFixtures, stats: gameWeekStats };
     });
 
 const getPlayerWithStats = ({ player, gameWeeks, fplTeams }) => {
