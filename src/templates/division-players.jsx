@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { graphql } from 'gatsby';
 import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
-import Layout from '../components/layout';
+import * as Layout from '../components/layout';
 import TabbedMenu from '../components/tabbed-division-menu';
 import CPositions from '../models/position';
 import { Stats } from '../models/stats';
@@ -28,23 +28,22 @@ const PlayersPage = ({ data, pageContext: { divisionId, gameWeekIndex } }) => {
         return prev;
     }, {});
     return (
-        <Layout title={`${Division.label} - Players`}>
-            <section id="players-page" className={bemTable()} data-b-layout="container">
-                <TabbedMenu selected="players" division={Division.id} selectedGameWeek={gameWeekIndex} />
-                <div className="page-content">
-                    <PlayersFilters players={allPlayers.all} positions={Positions} clubs={clubs}>
-                        {(playersFiltered) => (
-                            <PlayersTable
-                                Positions={Positions}
-                                players={playersFiltered}
-                                disabledPlayers={disabledPlayers}
-                                Stats={StatsList}
-                            />
-                        )}
-                    </PlayersFilters>
-                </div>
-            </section>
-        </Layout>
+        <Layout.Container title={`${Division.label} - Players`}>
+            <TabbedMenu selected="players" division={Division.id} selectedGameWeek={gameWeekIndex} />
+            <Layout.Body>
+                <Layout.Title>All Players</Layout.Title>
+                <PlayersFilters players={allPlayers.all} positions={Positions} clubs={clubs}>
+                    {(playersFiltered) => (
+                        <PlayersTable
+                            Positions={Positions}
+                            players={playersFiltered}
+                            disabledPlayers={disabledPlayers}
+                            Stats={StatsList}
+                        />
+                    )}
+                </PlayersFilters>
+            </Layout.Body>
+        </Layout.Container>
     );
 };
 

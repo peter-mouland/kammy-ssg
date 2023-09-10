@@ -29,22 +29,20 @@ const HomepageIndex = ({ data, pageContext: { gameWeekIndex: selectedGameWeek } 
     return (
         <Layout.Container title="Homepage">
             <Layout.Body>
-                <Spacer all={{ top: Spacer.spacings.SMALL }}>
-                    {Divisions.getAll().map((Division) => (
-                        <DivisionRankings.Container key={Division.id}>
-                            <DivisionRankings.Title>
-                                <NamedLink to={`${Division.id}-rankings`}>{Division.label}</NamedLink>
-                            </DivisionRankings.Title>
-                            <DivisionRankings.SeasonTotals
-                                selectedGameWeek={selectedGameWeek}
-                                GameWeeks={GameWeeks}
-                                Managers={Managers}
-                                Positions={Positions}
-                                Standings={Standings.byDivisionId[Division.id].rankStandings}
-                            />
-                        </DivisionRankings.Container>
-                    ))}
-                </Spacer>
+                {Divisions.getAll().map((Division) => (
+                    <DivisionRankings.Container key={Division.id}>
+                        <Layout.Title>
+                            <NamedLink to={`${Division.id}-rankings`}>{Division.label}</NamedLink>
+                        </Layout.Title>
+                        <DivisionRankings.SeasonTotals
+                            selectedGameWeek={selectedGameWeek}
+                            GameWeeks={GameWeeks}
+                            Managers={Managers}
+                            Positions={Positions}
+                            Standings={Standings.byDivisionId[Division.id].rankStandings}
+                        />
+                    </DivisionRankings.Container>
+                ))}
             </Layout.Body>
             <Layout.Footer>
                 <Spacer

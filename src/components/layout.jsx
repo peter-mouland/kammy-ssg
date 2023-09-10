@@ -16,6 +16,7 @@ import NavBar from './nav-bar';
 import NamedLink from './named-link';
 import './index.css';
 import * as styles from './layout.module.css';
+import Spacer from './spacer';
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,11 @@ export const Body = ({ children }) => (
     <main className={styles.content} data-b-layout="container">
         <section>{typeof children === 'function' ? children() : children}</section>
     </main>
+);
+export const Title = ({ children }) => (
+    <h1>
+        <Spacer all={{ vertical: Spacer.spacings.SMALL }}>{children}</Spacer>
+    </h1>
 );
 
 export const Container = ({ title, description, children }) => (

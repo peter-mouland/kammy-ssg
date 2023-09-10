@@ -3,9 +3,10 @@ import React from 'react';
 import { graphql } from 'gatsby';
 import '@kammy/bootstrap';
 
-import Layout from '../components/layout';
+import * as Layout from '../components/layout';
 import Cup from '../components/cup';
 import IFrame from '../components/iFrame';
+import Spacer from '../components/spacer';
 
 const CupTemplate = ({ data }) => {
     const currentTeams = data.currentTeams.group.reduce(
@@ -16,16 +17,16 @@ const CupTemplate = ({ data }) => {
         {},
     );
     return (
-        <Layout title="Cup">
-            <section id="cup-page" data-b-layout="container">
-                <div data-b-layout="row vpad">Cup</div>
+        <Layout.Container title="Cup">
+            <Layout.Body>
+                <Layout.Title>Cup</Layout.Title>
                 <IFrame
                     title="Cup Scores"
                     src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQMM8Ec6BQwZgdQOWSl9owH_RrSwQ2cpQbFBeRso1OpQb2YO2Z-OIYHLYy9r6cgxoXTcHogwlsGSVDC/pubhtml"
                 />
                 <Cup currentTeams={currentTeams} />
-            </section>
-        </Layout>
+            </Layout.Body>
+        </Layout.Container>
     );
 };
 
