@@ -28,7 +28,7 @@ export const PlayerHeader = ({ player }) => {
             </div>
             <div className={cx(styles.gridStats, styles.stats)}>
                 <div style={{ gridArea: 'form' }} className={styles.statsLabel}>
-                    Form
+                    FPL Form
                 </div>
                 <div style={{ gridArea: 'formStats' }} className={styles.statsValue}>
                     <span>{player.rawData.form}</span>

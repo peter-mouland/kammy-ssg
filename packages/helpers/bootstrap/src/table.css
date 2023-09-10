@@ -48,7 +48,7 @@
 .table__player--disabled {
     color: #c3c3c3;
     font-style: italic;
-    text-decoration: line-through;
+    /*text-decoration: line-through;*/
 
       & a {
           color: #c3c3c3;

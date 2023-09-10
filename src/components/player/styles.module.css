@@ -5,7 +5,7 @@
     grid-template-areas: 'squadPosition image name'
                          'squadPosition image club'
                          '- image --';
-    grid-template-columns: 40px 1fr 2fr;
+    grid-template-columns: 25px 1fr 2fr;
     align-items: center;
 }
 .gridSquadPos {

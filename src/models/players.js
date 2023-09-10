@@ -48,6 +48,7 @@ export class Player {
 
     gameWeeks = [];
     fixtures = [];
+    manager = {};
 
     constructor(player) {
         this.form = player.form;
@@ -76,6 +77,10 @@ export class Player {
     getSeasonPoints() {
         return this.seasonStats;
     }
+
+    addManager(manager) {
+        this.manager = manager;
+    }
 }
 
 export class Players {
@@ -86,6 +91,16 @@ export class Players {
             const player1 = new Player(player);
             this.all.push(player1);
             this.byCode[player1.code] = player1;
+        });
+    }
+
+    /* [
+        manager: { managerId, label }
+        playerCode
+     ] */
+    addManagers(managedPlayers) {
+        managedPlayers.forEach(({ manager, playerCode }) => {
+            this.byCode[playerCode].addManager(manager);
         });
     }
 }

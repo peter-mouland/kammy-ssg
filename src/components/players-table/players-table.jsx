@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
-import { withDefault, useQueryParams, ArrayParam } from 'use-query-params';
+import { withDefault, useQueryParams, ArrayParam, BooleanParam } from 'use-query-params';
 
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
 import * as Player from '../player';
+import Button from '../button';
 
 const bem = bemHelper({ block: 'table' });
 
@@ -36,88 +37,119 @@ SortableHeader.defaultProps = {
     className: '',
 };
 
+const PLAYER_LIMIT_MAX = 999;
+const PLAYER_LIMIT_DEFAULT = 50;
+
 // create a custom parameter with a default value
 const EmptyArrayParam = withDefault(ArrayParam, []);
-const PlayerTable = ({ players, Stats, myTeam, Positions, disabledPlayers }) => {
-    const [state, setState] = useQueryParams({
+const PlayerTable = ({ players, Stats, Positions }) => {
+    const [queryParam, setQueryParam] = useQueryParams({
         sort: EmptyArrayParam,
+        limit: BooleanParam,
     });
     const handleSort = (column) => {
         switch (true) {
-            case isSortUp(state.sort, column):
-                return setState({ sort: [`-${column}`] });
-            case isSortDown(state.sort, column):
-                return setState({ sort: [] });
-            case isNotSorted(state.sort, column):
+            case isSortUp(queryParam.sort, column):
+                return setQueryParam({ sort: [`-${column}`] });
+            case isSortDown(queryParam.sort, column):
+                return setQueryParam({ sort: [] });
+            case isNotSorted(queryParam.sort, column):
             default:
-                return setState({ sort: [`${column}`] });
+                return setQueryParam({ sort: [`${column}`] });
         }
     };
+    const handleLimit = () => {
+        setQueryParam({ limit: !queryParam.limit });
+    };
+
     return (
-        <table className="table">
-            <thead>
-                <tr className="row row--header">
-                    <th className="cell cell--pos show-1000">Pos</th>
-                    <th className="cell cell--player">Player</th>
-                    <th className="cell cell--club show-1000">Club</th>
-                    {Stats.all.map((stat) => (
+        <React.Fragment>
+            <table className="table">
+                <thead>
+                    <tr className="row row--header">
+                        <th className="cell cell--pos show-1000">Pos</th>
+                        <th className="cell cell--player">Player</th>
+                        <th className="cell cell--club show-1000">Club</th>
+                        <th className="cell cell--club show-850">Manager</th>
                         <SortableHeader
-                            key={stat.id}
-                            id={`seasonStats.${stat.id}.value`}
-                            label={stat.label}
-                            sort={state.sort}
+                            id="form"
+                            label="FPL Form"
+                            sort={queryParam.sort}
                             handleSort={handleSort}
-                            className="cell--stat"
+                            className="cell--stat show-750"
                         />
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {players
-                    .sort(
-                        sortColumns(state.sort.concat(['pos', 'name']), {
-                            pos: Positions.PlayerPositions.map((pos) => pos.id),
-                        }),
-                    )
-                    .map((player) => {
-                        const isOnMyTeam = myTeam && myTeam[player.code];
-                        return (
-                            <tr
-                                key={player.code}
-                                id={player.code}
-                                className={bem(
-                                    'player',
-                                    {
-                                        selected: isOnMyTeam,
-                                        new: !!player.new,
-                                        disabled: !!disabledPlayers[player.code],
-                                    },
-                                    'row',
-                                )}
-                            >
-                                <td className="cell hide-1000">
-                                    <Player.AllInfo player={player} />
-                                </td>
-                                <td className="cell show-1000">
-                                    <Player.Pos positionId={player.positionId} />
-                                </td>
-                                <td className="cell show-1000">
-                                    <Player.Image code={player.code} small liveQuery={{}} />
-                                    <Player.Name>{player.name}</Player.Name>
-                                </td>
-                                <td className="cell show-1000">
-                                    <Player.Club>{player.club}</Player.Club>
-                                </td>
-                                {Stats.all.map((stat) => (
-                                    <td key={stat.id} className={bem('stat', null, 'cell')}>
-                                        {player.seasonStats && (player.seasonStats[stat.id].value ?? '-')}
+                        {Stats.all.map((stat) => (
+                            <SortableHeader
+                                key={stat.id}
+                                id={`seasonStats.${stat.id}.value`}
+                                label={stat.label}
+                                sort={queryParam.sort}
+                                handleSort={handleSort}
+                                className="cell--stat"
+                            />
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {players
+                        .sort(
+                            sortColumns(queryParam.sort.concat(['pos', '-seasonStats.points.value']), {
+                                pos: Positions.PlayerPositions.map((pos) => pos.id),
+                            }),
+                        )
+                        .slice(0, queryParam.limit ? PLAYER_LIMIT_MAX : PLAYER_LIMIT_DEFAULT)
+                        .map((player) => {
+                            const isOnMyTeam = player.manager.managerId === '';
+                            return (
+                                <tr
+                                    key={player.code}
+                                    id={player.code}
+                                    className={bem(
+                                        'player',
+                                        {
+                                            selected: isOnMyTeam,
+                                            new: !!player.new,
+                                            disabled: player.manager.managerId,
+                                        },
+                                        'row',
+                                    )}
+                                >
+                                    <td className="cell hide-1000">
+                                        <Player.AllInfo player={player} />
                                     </td>
-                                ))}
-                            </tr>
-                        );
-                    })}
-            </tbody>
-        </table>
+                                    <td className="cell show-1000">
+                                        <Player.Pos positionId={player.positionId} />
+                                    </td>
+                                    <td className="cell show-1000">
+                                        <Player.Image code={player.code} small liveQuery={{}} />
+                                        <Player.Name>{player.name}</Player.Name>
+                                    </td>
+                                    <td className="cell show-1000">
+                                        <Player.Club>{player.club}</Player.Club>
+                                    </td>
+                                    <td className="cell show-850">{player.manager.label}</td>
+                                    <td className="cell show-750">{player.form}</td>
+                                    {Stats.all.map((stat) => (
+                                        <td key={stat.id} className={bem('stat', null, 'cell')}>
+                                            {player.seasonStats && (player.seasonStats[stat.id].value ?? '-')}
+                                        </td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colSpan={50}>
+                            <em>{queryParam.limit ? `Showing all players` : `Showing top 50 players.`}</em>
+                            <Button type={Button.types.PRIMARY} onClick={() => handleLimit()}>
+                                {queryParam.limit ? `Show 50 players` : `Show all players`}
+                            </Button>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+        </React.Fragment>
     );
 };
 
@@ -125,13 +157,9 @@ PlayerTable.propTypes = {
     players: PropTypes.array.isRequired,
     Stats: PropTypes.object,
     Positions: PropTypes.object.isRequired,
-    disabledPlayers: PropTypes.object,
-    myTeam: PropTypes.object,
 };
 
 PlayerTable.defaultProps = {
-    myTeam: null,
-    disabledPlayers: {},
     Stats: {},
 };
 

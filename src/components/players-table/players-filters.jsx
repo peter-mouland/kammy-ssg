@@ -15,19 +15,22 @@ const applyFilters = ({ player, queryParams }) => {
     const posFiltered = !queryParams.pos?.length || queryParams.pos.includes(player.positionId.toLowerCase()); // todo: use posid in db
     const miscFiltered = !queryParams.misc?.length || (queryParams.misc.includes('isNew') && player.new);
     const clubFiltered = !queryParams.club?.length || queryParams.club.includes(player.club);
-    return playerFiltered && posFiltered && clubFiltered && miscFiltered;
+    const managerFiltered = !queryParams.manager?.length || queryParams.manager.includes(player.manager.managerId);
+    return playerFiltered && posFiltered && clubFiltered && miscFiltered && managerFiltered;
 };
 
 const addFilter = (selectedFilters, setQueryParams) => {
     const pos = [];
     const club = [];
     const player = [];
+    const manager = [];
     const misc = [];
 
     (selectedFilters || []).forEach(({ group, value }) => {
         if (group === 'position') pos.push(value);
         if (group === 'club') club.push(value);
         if (group === 'player') player.push(value);
+        if (group === 'manager') manager.push(value);
         if (group === 'misc') misc.push(value);
     });
     setQueryParams({
@@ -35,6 +38,7 @@ const addFilter = (selectedFilters, setQueryParams) => {
         pos: Array.from(new Set(pos)),
         club: Array.from(new Set(club)),
         player: Array.from(new Set(player)),
+        manager: Array.from(new Set(manager)),
     });
 };
 
@@ -60,10 +64,15 @@ const queryToFilter = (queryParams, options) => {
         const groupOptions = group.options.filter((option) => queryParams.club.includes(option.value));
         selectedFilters.push(...groupOptions);
     }
+    if (queryParams.manager) {
+        const group = options.find((option) => option.param === 'manager');
+        const groupOptions = group.options.filter((option) => queryParams.manager.includes(option.value));
+        selectedFilters.push(...groupOptions);
+    }
     return selectedFilters;
 };
 
-const getOptions = ({ positions, clubs, players }) => [
+const getOptions = ({ positions, clubs, players, managers }) => [
     {
         label: 'Misc',
         param: 'misc',
@@ -84,6 +93,11 @@ const getOptions = ({ positions, clubs, players }) => [
         options: clubs.map((club) => ({ value: club, label: club, group: 'club' })),
     },
     {
+        label: 'Managers',
+        param: 'manager',
+        options: managers.map((manager) => ({ value: manager.id, label: manager.label, group: 'manager' })),
+    },
+    {
         label: 'Players',
         param: 'player',
         options: players.map(({ name }) => ({
@@ -94,14 +108,15 @@ const getOptions = ({ positions, clubs, players }) => [
     },
 ];
 
-export default function PlayersFilters({ positions, players, clubs, children }) {
+export default function PlayersFilters({ positions, players, clubs, managers, children }) {
     const [queryParams, setQueryParams] = useQueryParams({
         pos: ArrayParam,
         player: ArrayParam,
         club: ArrayParam,
+        manager: ArrayParam,
         misc: ArrayParam,
     });
-    const options = getOptions({ positions, clubs, players });
+    const options = getOptions({ positions, clubs, players, managers });
     const selectedFilterValue = queryToFilter(queryParams, options);
     const onFilter = () =>
         players.filter((player) =>

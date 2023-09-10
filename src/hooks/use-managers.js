@@ -11,6 +11,7 @@ const useManagers = () => {
                 nodes {
                     label
                     managerId
+                    id: managerId
                     url
                     divisionId
                 }

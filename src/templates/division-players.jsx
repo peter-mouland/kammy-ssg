@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { graphql } from 'gatsby';
-import bemHelper from '@kammy/bem';
 
 import { PlayersFilters, PlayersTable } from '../components/players-table';
 import * as Layout from '../components/layout';
@@ -12,22 +11,18 @@ import CDivisions from '../models/division';
 import usePlayers from '../hooks/use-players';
 import useClubs from '../hooks/use-clubs';
 import NavBar from '../components/nav-bar';
-
-const bemTable = bemHelper({ block: 'players-page-table' });
+import useManagers from '../hooks/use-managers';
 
 const PlayersPage = ({ data, pageContext: { divisionId, gameWeekIndex } }) => {
     const Divisions = new CDivisions();
     const Division = Divisions.getDivision(divisionId);
     const Positions = new CPositions();
     const StatsList = new Stats();
-    const teamPlayers = data.teamPlayers.nodes;
+    const managedPlayers = data.teamPlayers.nodes;
     const allPlayers = usePlayers();
+    allPlayers.addManagers(managedPlayers);
+    const allManagers = useManagers();
     const clubs = useClubs();
-    const disabledPlayers = teamPlayers.reduce((prev, { player }) => {
-        // eslint-disable-next-line no-param-reassign
-        prev[player.code] = true;
-        return prev;
-    }, {});
     return (
         <Layout.Container title={`${Division.label} - Players`}>
             <Layout.PrimaryNav>
@@ -38,14 +33,14 @@ const PlayersPage = ({ data, pageContext: { divisionId, gameWeekIndex } }) => {
             </Layout.SecondaryNav>
             <Layout.Body>
                 <Layout.Title>All Players</Layout.Title>
-                <PlayersFilters players={allPlayers.all} positions={Positions} clubs={clubs}>
+                <PlayersFilters
+                    players={allPlayers.all}
+                    positions={Positions}
+                    clubs={clubs}
+                    managers={allManagers.byDivisionId[divisionId]}
+                >
                     {(playersFiltered) => (
-                        <PlayersTable
-                            Positions={Positions}
-                            players={playersFiltered}
-                            disabledPlayers={disabledPlayers}
-                            Stats={StatsList}
-                        />
+                        <PlayersTable Positions={Positions} players={playersFiltered} Stats={StatsList} />
                     )}
                 </PlayersFilters>
             </Layout.Body>
@@ -59,10 +54,11 @@ export const query = graphql`
             filter: { gameWeekIndex: { eq: $gameWeekIndex }, manager: { divisionId: { eq: $divisionId } } }
         ) {
             nodes {
-                managerId
-                player {
-                    code
+                manager {
+                    label
+                    managerId
                 }
+                playerCode
             }
         }
     }

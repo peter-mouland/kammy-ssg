@@ -15,6 +15,7 @@ const usePlayers = () => {
                     positionId
                     new
                     code
+                    form
                     seasonStats {
                         apps
                         gls
