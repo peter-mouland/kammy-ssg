@@ -50,12 +50,15 @@ export class Player {
     fixtures = [];
 
     constructor(player) {
+        this.form = player.form;
+        this.formRank = player.form_rank;
         this.code = player.code;
         this.name = player.name;
         this.club = player.club;
         this.positionId = player.positionId;
         this.new = player.new;
         this.url = player.url;
+        this.rawData = player;
         this.seasonStats = new Stats(player.seasonStats);
         this.gameWeeks = new PlayerGameWeeks(player.gameWeeks);
         this.fixtures = this.gameWeeks.all.reduce((prev, curr) => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 
 import { useElements } from '../../hooks/use-fpl';
 import * as Player from '../player';
@@ -24,6 +25,35 @@ export const PlayerHeader = ({ player }) => {
             </div>
             <div className={styles.gridNews}>
                 <Player.News>{elementQuery.data?.news}</Player.News>
+            </div>
+            <div className={cx(styles.gridStats, styles.stats)}>
+                <div style={{ gridArea: 'form' }} className={styles.statsLabel}>
+                    Form
+                </div>
+                <div style={{ gridArea: 'formStats' }} className={styles.statsValue}>
+                    <span>{player.rawData.form}</span>
+                    <small className={styles.small}>{player.rawData.form_rank}</small>
+                </div>
+                <div style={{ gridArea: 'creativity' }} className={styles.statsLabel}>
+                    Creativity
+                </div>
+                <div style={{ gridArea: 'creativityStats' }} className={styles.statsValue}>
+                    <span>{Math.floor(player.rawData.creativity)}</span>
+                    <small className={styles.small}>{player.rawData.creativity_rank}</small>
+                </div>
+                <div style={{ gridArea: 'influence' }} className={styles.statsLabel}>
+                    Influence
+                </div>
+                <div style={{ gridArea: 'influenceStats' }} className={styles.statsValue}>
+                    <span>{Math.floor(player.rawData.influence)}</span>
+                    <small className={styles.small}>{player.rawData.influence_rank}</small>
+                </div>
+                <div style={{ gridArea: 'setPlays' }} className={styles.statsLabel}>
+                    Set Play Order
+                </div>
+                <div style={{ gridArea: 'setPlaysStats' }} className={styles.statsValue}>
+                    {player.rawData.corners_and_indirect_freekicks_order}
+                </div>
             </div>
         </div>
     );
