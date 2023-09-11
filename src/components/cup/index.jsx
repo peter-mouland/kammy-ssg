@@ -89,7 +89,7 @@ const Cup = ({ Squads }) => {
                 />
             </Modal>
             <Modal key="done" id="done" title="Team Saved" open={progress === 3 && isSaved} onClose={startAgain} center>
-                <span style={{ 'font-size': '3em' }}>🎖</span>
+                <span style={{ fontSize: '3em' }}>🎖</span>
             </Modal>
         </section>
     );

@@ -1,17 +1,18 @@
 import React from 'react';
 
 import IFrame from '../components/iFrame';
-import Layout from '../components/layout';
+import * as Layout from '../components/layout';
 
 const PrizeMoney = () => (
-    <Layout title="Prize Money">
-        <div data-b-layout="container">
+    <Layout.Container title="Prize Money">
+        <Layout.Body>
+            <Layout.Title>Prize Money</Layout.Title>
             <IFrame
                 title="Prize Money"
                 src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTc6YcPueOZlY0YNx4W-SbcB2AwoDGfvTa1fxoBuRTmSsxHf61eujyBHkMYrxvjKuLaTbIKoAY97G2B/pubhtml"
             />
-        </div>
-    </Layout>
+        </Layout.Body>
+    </Layout.Container>
 );
 
 export default PrizeMoney;

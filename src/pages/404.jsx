@@ -1,14 +1,14 @@
 import React from 'react';
 
-import Layout from '../components/layout';
+import * as Layout from '../components/layout';
 
 const NotFoundPage = () => (
-    <Layout title="404 - page not found">
-        <div id="404-page" data-b-layout="container">
-            <h1>NOT FOUND</h1>
+    <Layout.Container title="404 - page not found">
+        <Layout.Body>
+            <Layout.Title>NOT FOUND</Layout.Title>
             <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
-        </div>
-    </Layout>
+        </Layout.Body>
+    </Layout.Container>
 );
 
 export default NotFoundPage;
