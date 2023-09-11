@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const PlayerPicker = ({ team, pendingTransfers, handleChange, picked, playerNumber, ...props }) => (
+const PlayerPicker = ({ squad, pendingTransfers, handleChange, picked, playerNumber, ...props }) => (
     <select {...props} onChange={(e) => handleChange(e.target.value, playerNumber)}>
         <option> - </option>
-        {team.map(({ playerCode, player }) => (
-            <option key={playerCode} disabled={picked.includes(playerCode)}>
-                {player.name}
+        {squad.players.map(({ code, name }) => (
+            <option key={code} disabled={picked.includes(code)}>
+                {name}
             </option>
         ))}
         {pendingTransfers.length &&
@@ -26,7 +26,7 @@ const PlayerPicker = ({ team, pendingTransfers, handleChange, picked, playerNumb
 );
 
 PlayerPicker.propTypes = {
-    team: PropTypes.arrayOf(
+    squad: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string,
         }),

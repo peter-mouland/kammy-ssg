@@ -126,6 +126,7 @@ export const query = graphql`
                 squadPlayers: nodes {
                     manager {
                         managerId
+                        label
                     }
                     player {
                         code

@@ -6,10 +6,10 @@ import Spacer from '../../spacer';
 import Button from '../../button';
 import PlayerPicker from '../player-picker';
 
-const TeamPicker = ({ team, pendingTransfers, manager, handleChange, handleSubmit, picked, isSaving }) => (
+const TeamPicker = ({ squad, pendingTransfers, managerId, handleChange, handleSubmit, picked, isSaving }) => (
     <section>
         {[1, 2, 3, 4].map((index) => {
-            const id = `manager-${manager}-player-${index}`;
+            const id = `manager-${managerId}-player-${index}`;
             return (
                 <div key={id}>
                     <label htmlFor={id}>
@@ -19,7 +19,7 @@ const TeamPicker = ({ team, pendingTransfers, manager, handleChange, handleSubmi
                             pendingTransfers={pendingTransfers}
                             picked={picked}
                             id={id}
-                            team={team}
+                            squad={squad}
                             handleChange={handleChange}
                         />
                     </label>
@@ -42,10 +42,10 @@ const TeamPicker = ({ team, pendingTransfers, manager, handleChange, handleSubmi
 );
 
 TeamPicker.propTypes = {
-    manager: PropTypes.string.isRequired,
+    managerId: PropTypes.string.isRequired,
     handleChange: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
-    team: PropTypes.arrayOf(
+    squad: PropTypes.arrayOf(
         PropTypes.shape({
             playerName: PropTypes.string.isRequired,
         }),

@@ -14,12 +14,12 @@ import TeamPicker from './team-picker';
 
 const bem = bemHelper({ block: 'division-stats' });
 
-const Cup = ({ currentTeams }) => {
-    const { managerNames: managers } = useManagers();
+const Cup = ({ Squads }) => {
+    const managers = useManagers();
     const { saveTeam, isSaving: cupTeamIsSaving, isSaved } = useCup();
     const { getPendingTransfersByManager } = useAllTransfers();
     const [progress, setProgress] = useState(0);
-    const [manager, setManager] = useState('');
+    const [managerId, setManagerId] = useState('');
     const [picked, setPicked] = useState([]);
 
     const saveCupTeam = async () => {
@@ -29,20 +29,21 @@ const Cup = ({ currentTeams }) => {
             player2,
             player3,
             player4,
-            manager,
+            managerId,
+            manager: managers.getManager(managerId).label,
         };
         await saveTeam(cupTeamInput);
         setProgress(3);
     };
 
     const closeModal = () => {
-        setManager('');
+        setManagerId('');
         setPicked([]);
         setProgress(0);
     };
 
-    const finishStep1 = (selection) => {
-        setManager(selection);
+    const finishStep1 = (managerIdSelected) => {
+        setManagerId(managerIdSelected);
         setPicked([]);
         setProgress(2);
     };
@@ -67,20 +68,20 @@ const Cup = ({ currentTeams }) => {
             {progress === 1 && (
                 <Spacer all={{ vertical: Spacer.spacings.SMALL }}>
                     <h2>Who are you?</h2>
-                    <MultiToggle id="manager" options={managers} checked={manager} onChange={finishStep1} />
+                    <MultiToggle id="managerId" options={managers.all} checked={managerId} onChange={finishStep1} />
                 </Spacer>
             )}
             <Modal
                 key="pickTeam"
                 id="pickTeam"
-                title={`${manager}, Pick a Cup Team`}
+                title={`${managerId}, Pick a Cup Team`}
                 open={progress === 2 || cupTeamIsSaving}
                 onClose={closeModal}
             >
                 <TeamPicker
-                    team={currentTeams[manager]}
-                    pendingTransfers={getPendingTransfersByManager(manager)}
-                    manager={manager}
+                    squad={Squads.byManagerId[managerId]}
+                    pendingTransfers={getPendingTransfersByManager(managerId)}
+                    managerId={managerId}
                     picked={picked}
                     handleChange={pickPlayer}
                     handleSubmit={saveCupTeam}
@@ -95,7 +96,7 @@ const Cup = ({ currentTeams }) => {
 };
 
 Cup.propTypes = {
-    currentTeams: PropTypes.object.isRequired,
+    Squads: PropTypes.object.isRequired,
 };
 
 export default Cup;
