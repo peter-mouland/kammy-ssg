@@ -12,7 +12,7 @@ const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
     return (
         <tbody>
             {transfers.map(({ timestamp, status = '', type, manager: mgr, transferIn, transferOut, comment }) => {
-                const gw = timestamp && getGameWeekFromDate(timestamp);
+                const gameWeek = timestamp && getGameWeekFromDate(timestamp);
                 return (
                     <tr className={`row row--${status.toLowerCase()}`} key={`${timestamp}-${transferIn}`}>
                         <td
@@ -21,7 +21,7 @@ const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
                             dangerouslySetInnerHTML={{ __html: `${status} ${getEmoji(status)}` }}
                         />
                         <td data-col-label="gw" className="cell cell--center">
-                            {gw}
+                            {gameWeek.id}
                         </td>
                         <td data-col-label="timestamp" className="cell cell--center show-625">
                             {formatTimestamp(timestamp)}

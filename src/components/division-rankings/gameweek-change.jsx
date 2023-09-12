@@ -7,7 +7,7 @@ export const GameWeekChange = ({ Positions, Standings, Managers }) => (
     <DivisionRankings.Table>
         <DivisionRankings.Thead>
             <DivisionRankings.Th />
-            {Positions.PositionCategories.map((Position) => (
+            {Positions.positionCategories.map((Position) => (
                 <DivisionRankings.Th key={Position.id} colSpan={2}>
                     {Position.label}
                 </DivisionRankings.Th>
@@ -18,7 +18,7 @@ export const GameWeekChange = ({ Positions, Standings, Managers }) => (
             {Standings.map((Standing) => (
                 <DivisionRankings.Tr key={Managers.byId[Standing.managerId].id}>
                     <DivisionRankings.Td>{Managers.byId[Standing.managerId].label}</DivisionRankings.Td>
-                    {Positions.PositionCategories.map((Position) => (
+                    {Positions.positionCategories.map((Position) => (
                         <DivisionRankings.TdPair
                             key={Position.id}
                             rank={Standing[Position.id].rankChange}

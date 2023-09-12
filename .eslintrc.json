@@ -13,6 +13,9 @@
     "postcss-modules/no-unused-class": 0,
     "import/named": 0,
     "import/export": 0,
-    "import/no-cycle": 2
+    "import/no-cycle": 2,
+    "max-classes-per-file": 0,
+    "camelcase": 0,
+    "no-nested-ternary": 0
   }
 }

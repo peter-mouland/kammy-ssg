@@ -22,7 +22,7 @@ const createFilterOptions = ({ positions, managers = [], managerId }) => [
     },
     {
         label: 'Positions',
-        options: positions.PlayerPositions.map((position) => ({
+        options: positions.playerPositions.map((position) => ({
             value: position.id,
             label: position.label,
             group: 'position',

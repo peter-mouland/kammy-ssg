@@ -5,20 +5,20 @@ import { graphql } from 'gatsby';
 import { PlayersFilters, PlayersTable } from '../components/players-table';
 import * as Layout from '../components/layout';
 import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
-import CPositions from '../models/position';
 import { Stats } from '../models/stats';
-import CDivisions from '../models/division';
 import { Players } from '../models/players';
+import usePositions from '../hooks/use-positions';
 import useClubs from '../hooks/use-clubs';
 import NavBar from '../components/nav-bar';
 import useManagers from '../hooks/use-managers';
 import useGameWeeks from '../hooks/use-game-weeks';
+import useDivisions from "../hooks/use-divisions";
 
 const PlayersPage = ({ data, pageContext: { divisionId, gameWeekIndex } }) => {
-    const Divisions = new CDivisions();
+    const Divisions = useDivisions()
     const Division = Divisions.getDivision(divisionId);
     const GameWeeks = useGameWeeks();
-    const Positions = new CPositions();
+    const Positions = usePositions();
     const StatsList = new Stats();
     const managedPlayers = data.teamPlayers.nodes;
     const allPlayers = new Players(data.allPlayers.nodes, {

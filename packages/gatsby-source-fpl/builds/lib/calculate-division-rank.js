@@ -78,7 +78,7 @@ function getRanks(values = []) {
 const getRank = (teamsWithDivisionPoints = []) => {
     const ranks = positions.reduce((prev, pos) => {
         const arr = teamsWithDivisionPoints.map((team) => ({ ...team.points, managerId: team.managerId }));
-        const positionPoints = arr.map((item) => item[pos.key].seasonPoints);
+        const positionPoints = arr.map((item) => item[pos.category].seasonPoints);
         const ranked = getRanks(positionPoints);
         const rankings = {
             ...prev,
@@ -88,7 +88,7 @@ const getRank = (teamsWithDivisionPoints = []) => {
             const { managerId } = arr[i];
             rankings[managerId] = {
                 ...rankings[managerId],
-                [pos.key]: item,
+                [pos.category]: item,
             };
         });
         return rankings;

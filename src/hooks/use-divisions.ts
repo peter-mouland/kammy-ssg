@@ -1,9 +1,9 @@
 import { graphql, useStaticQuery } from 'gatsby';
 
+import Divisions, { Division } from '../models/division';
+
 const useDivisions = () => {
-    const {
-        allDivisions: { nodes: divisions },
-    } = useStaticQuery(graphql`
+    const data = useStaticQuery(graphql`
         query Divisions {
             allDivisions(sort: { order: ASC }) {
                 nodes {
@@ -15,7 +15,8 @@ const useDivisions = () => {
             }
         }
     `);
-    return { divisions };
+    return new Divisions(data.allDivisions.nodes);
 };
 
 export default useDivisions;
+export { Divisions, Division };

@@ -94,7 +94,7 @@ const PlayerTable = ({ players, Stats, Positions }) => {
                     {players
                         .sort(
                             sortColumns(queryParam.sort.concat(['pos', '-seasonStats.points.value']), {
-                                pos: Positions.PlayerPositions.map((pos) => pos.id),
+                                pos: Positions.playerPositions.map((pos) => pos.id),
                             }),
                         )
                         .slice(0, queryParam.limit ? PLAYER_LIMIT_MAX : PLAYER_LIMIT_DEFAULT)

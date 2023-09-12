@@ -137,7 +137,7 @@ exports.createPages = async ({ actions, graphql }) => {
         const prevGameWeekIndex = gameWeekIndex - 1;
         const nextGameWeekIndex = gameWeekIndex + 1;
         pageNodesToBuild.push({
-            path: `/week-${gameWeekIndex}`,
+            path: `/week-${gameWeekIndex}`.replaceAll('//', '/'),
             component: path.resolve('src/templates/homepage.jsx'),
             context: {
                 gameWeekIndex,
@@ -149,7 +149,7 @@ exports.createPages = async ({ actions, graphql }) => {
         data?.allDivisions.nodes.forEach(({ divisionId, url }) => {
             //   DIVISION RANKINGS (by game-week)
             pageNodesToBuild.push({
-                path: `/week-${gameWeekIndex}/${url}`,
+                path: `/week-${gameWeekIndex}/${url}`.replaceAll('//', '/'),
                 component: path.resolve('src/templates/division-rankings.jsx'),
                 context: {
                     gameWeekIndex,
@@ -158,7 +158,7 @@ exports.createPages = async ({ actions, graphql }) => {
             });
             //   DIVISION TEAMS (by game-week)
             pageNodesToBuild.push({
-                path: `/week-${gameWeekIndex}/${url}/teams`,
+                path: `/week-${gameWeekIndex}/${url}/teams`.replaceAll('//', '/'),
                 component: path.resolve('src/templates/division-teams.jsx'),
                 context: {
                     gameWeekIndex,
@@ -168,7 +168,7 @@ exports.createPages = async ({ actions, graphql }) => {
             });
             // DIVISION TRANSFERS
             pageNodesToBuild.push({
-                path: `/week-${gameWeekIndex}/${url}/transfers`,
+                path: `/week-${gameWeekIndex}/${url}/transfers`.replaceAll('//', '/'),
                 component: path.resolve('src/templates/division-transfers.jsx'),
                 context: {
                     gameWeekIndex,
@@ -178,7 +178,7 @@ exports.createPages = async ({ actions, graphql }) => {
             });
             //   DIVISION PLAYERS
             pageNodesToBuild.push({
-                path: `/week-${gameWeekIndex}/${url}/players`,
+                path: `/week-${gameWeekIndex}/${url}/players`.replaceAll('//', '/'),
                 component: path.resolve('src/templates/division-players.jsx'),
                 context: {
                     gameWeekIndex,
@@ -235,7 +235,7 @@ exports.createPages = async ({ actions, graphql }) => {
             data?.allDivisions.nodes.forEach(({ divisionId, url }) => {
                 //   DIVISION RANKINGS
                 pageNodesToBuild.push({
-                    path: `/${url}`,
+                    path: `/${url}`.replaceAll('//', '/'),
                     component: path.resolve('src/templates/division-rankings.jsx'),
                     context: {
                         gameWeekIndex,
@@ -245,7 +245,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 });
                 //   DIVISION TEAMS
                 pageNodesToBuild.push({
-                    path: `/${url}/teams`,
+                    path: `/${url}/teams`.replaceAll('//', '/'),
                     component: path.resolve('src/templates/division-teams.jsx'),
                     context: {
                         gameWeekIndex,
@@ -255,7 +255,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 });
                 //   DIVISION PLAYERS
                 pageNodesToBuild.push({
-                    path: `/${url}/players`,
+                    path: `/${url}/players`.replaceAll('//', '/'),
                     component: path.resolve('src/templates/division-players.jsx'),
                     context: {
                         gameWeekIndex,
@@ -265,7 +265,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 });
                 //   DIVISION TRANSFERS
                 pageNodesToBuild.push({
-                    path: `/${url}/transfers`,
+                    path: `/${url}/transfers`.replaceAll('//', '/'),
                     component: path.resolve('src/templates/division-transfers.jsx'),
                     context: {
                         gameWeekIndex,

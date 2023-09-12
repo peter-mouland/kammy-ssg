@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { graphql } from 'gatsby';
 import React from 'react';
-import { useCookies } from 'react-cookie';
 
 import * as Layout from '../components/layout';
 import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
@@ -9,25 +8,23 @@ import TeamWarnings from '../components/team-warnings';
 import * as StatsTable from '../components/division-teams/division-stats.table';
 import { Stats } from '../models/stats';
 import CSquads from '../models/squads';
-import CPositions from '../models/position';
-import CDivisions from '../models/division';
-import CManagers from '../models/managers';
 import * as Player from '../components/player';
 import * as styles from '../components/division-teams/division-stats.module.css';
 import NavBar from '../components/nav-bar';
+import useAdmin from '../hooks/use-admin';
+import useDivisions from "../hooks/use-divisions";
+import useManagers from "../hooks/use-managers";
 
 const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
-    const [cookies] = useCookies(['is-admin']);
-    const isAdmin = cookies['is-admin'] === 'true' || false;
+    const { isAdmin } = useAdmin();
+
     const {
-        allManagers: { nodes: allManagers },
         currentTeams: { group: currentTeams },
     } = data;
 
-    const Positions = new CPositions();
-    const Divisions = new CDivisions();
+    const Divisions = useDivisions()
+    const Managers = useManagers()
     const Division = Divisions.byId[divisionId];
-    const Managers = new CManagers(allManagers);
     const Squads = new CSquads(currentTeams);
     const StatsList = new Stats();
     return (
@@ -110,14 +107,6 @@ const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
 
 export const query = graphql`
     query Teams($gameWeekIndex: Int, $divisionId: String) {
-        allManagers(filter: { divisionId: { eq: $divisionId } }, sort: { division: { order: ASC } }) {
-            nodes {
-                label
-                managerId
-                divisionId
-            }
-        }
-
         currentTeams: allTeams(
             filter: { gameWeekIndex: { eq: $gameWeekIndex }, manager: { divisionId: { eq: $divisionId } } }
             sort: { managerId: ASC }

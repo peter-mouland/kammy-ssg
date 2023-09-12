@@ -122,7 +122,7 @@ const TabbedMenu: React.FC<TabbedMenuProps> = ({ divisionId, selected, selectedG
     <div className={styles.container}>
         <ul className={styles.tabs}>
             {tabs.map(({ id, label, Icon }) => (
-                <li className={cx(styles.tab)}>
+                <li className={cx(styles.tab)} key={id}>
                     <Tab key={id} to={`${divisionId}-${id}`} isActive={id === selected} Icon={Icon}>
                         {label}
                     </Tab>

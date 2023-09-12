@@ -1,6 +1,7 @@
 import { graphql, useStaticQuery } from 'gatsby';
 
-const useClubs = () => {
+export type Club = string;
+const useClubs = (): [Club] => {
     const {
         allClubs: { clubs },
     } = useStaticQuery(graphql`

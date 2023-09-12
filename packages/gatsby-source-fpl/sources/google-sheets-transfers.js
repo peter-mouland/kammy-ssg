@@ -1,6 +1,13 @@
 const { fetchTransfers } = require('@kammy/helpers.spreadsheet');
 
-module.exports = () =>
-    Promise.all([fetchTransfers('premierLeague'), fetchTransfers('championship'), fetchTransfers('leagueOne')]).then(
-        ([premierLeague, championship, leagueOne]) => [...premierLeague, ...championship, ...leagueOne],
+module.exports = (googleDivisionData) => {
+    const transferPromises = googleDivisionData.map((data) =>
+        fetchTransfers(data.spreadsheetKey).then((rows) => rows.map((row) => ({ ...row, divisionId: data.id }))),
     );
+    return Promise.all(transferPromises).then((result) =>
+        result.reduce((prev, curr) => {
+            prev.push(...curr);
+            return prev;
+        }, []),
+    );
+};

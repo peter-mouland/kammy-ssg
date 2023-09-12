@@ -5,12 +5,12 @@ import NamedLink from '../named-link';
 import HomeIcon from '../../icons/home.svg';
 import Spacer from '../spacer';
 import * as styles from './nav-bar.module.css';
+import useAdmin from '../../hooks/use-admin';
 
 const linkClass = styles.nav__link;
 
 const Index = () => {
-    const [cookies] = useCookies(['is-admin']);
-    const isAdmin = cookies['is-admin'] === 'true' || false;
+    const { isAdmin } = useAdmin();
     return (
         <nav className={styles.nav}>
             <div className={styles.nav__content}>

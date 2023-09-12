@@ -81,7 +81,7 @@ const getOptions = ({ positions, clubs, players, managers }) => [
     {
         label: 'Positions',
         param: 'pos',
-        options: positions.PlayerPositions.map((position) => ({
+        options: positions.playerPositions.map((position) => ({
             value: position.id,
             label: position.label,
             group: 'position',

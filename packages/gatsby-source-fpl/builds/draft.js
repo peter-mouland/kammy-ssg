@@ -3,21 +3,17 @@ const logger = require('../lib/log');
 
 module.exports = ({ googleDraftData, createNodeId }) => {
     const logEnd = logger.timed('Build: Draft');
-
     const draft = googleDraftData.map((item) => {
-        const data = {
-            managerId: item.manager.toLowerCase().replace(/ /g, '-'),
-            squadPositionId: item.position.toLowerCase(),
-            divisionId: item.divisionId,
-            playerCode: parseInt(item.code, 10),
-        };
-
+        const managerId = item.manager.toLowerCase().replace(/ /g, '-');
         return {
-            resourceId: `draft-${data.managerId}-${data.playerCode}`,
+            resourceId: `draft-${managerId}-${item.code}`,
             data: {
-                ...data,
-                division___NODE: createNodeId(`divisions-${data.divisionId}`),
-                player___NODE: createNodeId(`players-${data.playerCode}`),
+                managerId,
+                squadPositionId: item.position.toLowerCase(),
+                divisionId: item.divisionId,
+                playerCode: parseInt(item.code, 10),
+                division___NODE: createNodeId(`divisions-${item.divisionId}`),
+                player___NODE: createNodeId(`players-${item.code}`),
             },
             internal: {
                 description: 'Draft',

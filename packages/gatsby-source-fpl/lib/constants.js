@@ -15,6 +15,8 @@ module.exports = {
         gameWeeks: 'gameWeeks',
         cup: 'cup',
         transfers: 'transfers',
+        positionCategories: 'positionCategories',
+        positions: 'positions',
         skySportsFixtures: 'skySportsFixtures',
         skySportsScores: 'skySportsScores',
         skySportsPlayers: 'skySportsPlayers',

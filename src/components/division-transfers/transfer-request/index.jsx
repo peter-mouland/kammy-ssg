@@ -15,6 +15,7 @@ import Search from './search';
 import './transferPage.css';
 import CPositions from '../../../models/position';
 import { useMutateTransfersSheet } from '../../../hooks/use-google-transfers';
+import usePositions from '../../../hooks/use-positions';
 
 const { changeTypes } = consts;
 const bem = bemHelper({ block: 'transfers-page' });
@@ -132,7 +133,7 @@ const getPlayerRequestConfig = ({ teamsByManager, playersArray, changeType, mana
 
 const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers, squads }) => {
     const { isPending, mutate: saveSquadChange } = useMutateTransfersSheet({ divisionId });
-    const Positions = new CPositions();
+    const Positions = usePositions();
     const players = usePlayers();
     const [drawerContent, setDrawerContent] = useState(drawerInitialState);
     const [changeType, setChangeType] = useState(undefined);

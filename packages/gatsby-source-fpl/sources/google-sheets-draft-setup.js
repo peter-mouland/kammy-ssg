@@ -1,10 +1,13 @@
 const { fetchSetup } = require('@kammy/helpers.spreadsheet');
 
-module.exports = () =>
-    Promise.all([fetchSetup('premierLeague'), fetchSetup('championship'), fetchSetup('leagueOne')]).then(
-        ([premierLeague, championship, leagueOne]) => [
-            ...premierLeague.map((row) => ({ ...row, divisionId: 'premierLeague' })),
-            ...championship.map((row) => ({ ...row, divisionId: 'championship' })),
-            ...leagueOne.map((row) => ({ ...row, divisionId: 'leagueOne' })),
-        ],
+module.exports = (googleDivisionData) => {
+    const divisions = googleDivisionData.map((data) =>
+        fetchSetup(data.spreadsheetKey).then((rows) => rows.map((row) => ({ ...row, divisionId: data.id }))),
     );
+    return Promise.all(divisions).then((result) =>
+        result.reduce((prev, curr) => {
+            prev.push(...curr);
+            return prev;
+        }, []),
+    );
+};

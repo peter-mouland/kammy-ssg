@@ -1,11 +1,11 @@
 /* eslint-disable react/no-danger */
 import { graphql, useStaticQuery } from 'gatsby';
 
-import GameWeeks from '../models/game-weeks';
+import GameWeeks, { GameWeek, GameWeekFixture } from '../models/game-weeks';
 
 const useGameWeeks = () => {
     const {
-        allGameWeeks: { nodes: gw },
+        allGameWeeks: { nodes: gameweek },
     } = useStaticQuery(graphql`
         query GameWeeks {
             allGameWeeks(sort: { gameWeekIndex: ASC }) {
@@ -41,7 +41,8 @@ const useGameWeeks = () => {
             }
         }
     `);
-    return new GameWeeks(gw);
+    return new GameWeeks(gameweek);
 };
 
 export default useGameWeeks;
+export { GameWeek, GameWeekFixture };

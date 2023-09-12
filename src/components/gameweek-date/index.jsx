@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import format from 'date-fns/format';
 import cx from 'classnames';
+import fromNow from 'fromnow';
 
 import Cup from './trophy.svg';
 import * as styles from './gameweek-date.module.css';
@@ -37,7 +38,7 @@ const GameWeekDate = ({ gameWeek, isSelected }) => {
     return (
         <div
             className={cx(styles.container, {
-                [styles.isSelected]: gameWeek.isSelected,
+                [styles.isSelected]: isSelected,
                 [styles.isCurrent]: gameWeek.isCurrent,
             })}
         >
@@ -49,7 +50,7 @@ const GameWeekDate = ({ gameWeek, isSelected }) => {
             <span className={styles.time}>
                 {gameWeek.isCurrent ? (
                     <React.Fragment>
-                        Ends <strong>{gameWeek.endFromNow}</strong>
+                        Ends in <strong>{fromNow(gameWeek.end, { max: 1, zero: false })}</strong>
                     </React.Fragment>
                 ) : gameWeek.hasPassed ? (
                     <React.Fragment>

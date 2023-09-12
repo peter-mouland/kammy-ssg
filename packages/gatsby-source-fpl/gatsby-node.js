@@ -20,6 +20,8 @@ const buildManagers = require('./builds/managers');
 const buildDraft = require('./builds/draft');
 const buildTeams = require('./builds/teams');
 const buildLeagueTables = require('./builds/league-tables');
+const buildPositionCategories = require('./builds/position-categories');
+const buildPositions = require('./builds/positions');
 
 const createNode = ({ actions, createNodeId, node }) =>
     actions.createNode({
@@ -37,27 +39,32 @@ exports.createSchemaCustomization = createSchemaCustomization;
 exports.sourceNodes = async ({ actions, createNodeId }) => {
     const {
         fplData,
+        googleDivisionData,
         googleGameWeekData,
         googleCupData,
         googleTransferData,
-        googlePlayerData,
-        googleDivisionData,
-        googleManagerData,
         googleDraftData,
+        googlePlayerData,
+        googleManagerData,
     } = await fetchAllData();
     // build all the objects which will be used to create gatsby nodes
 
     // first, all those without deps i.e. ___node
+    //  FPL
     const fplPlayers = buildFplPlayers(fplData);
     const fplFixtures = buildFplFixtures(fplData);
     const fplTeams = buildFplTeams(fplData);
     const fplFPositions = buildFplPositions(fplData);
     const fplEvents = buildFplEvents(fplData);
+
+    // DRAFFT
     const gameWeeks = buildGameWeeks({ googleGameWeekData, fplEvents, fplFixtures, fplTeams });
     const divisions = buildDivisions({ googleDivisionData });
     const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers, fplTeams });
+    const positionCategories = buildPositionCategories();
 
     // second, all those with deps i.e. ___node
+    const positions = buildPositions({ createNodeId });
     const cup = buildCup({ googleCupData, createNodeId }); // relies on sky players
     const managers = buildManagers({ googleManagerData, createNodeId }); // relies on divisions
     const draft = buildDraft({ googleDraftData, createNodeId }); // relies on players + divisions
@@ -89,10 +96,12 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
         ...(fplTeams || []),
         ...(fplFPositions || []),
         ...(fplEvents || []),
+        ...(positionCategories || []),
         ...(gameWeeks || []),
         ...(divisions || []),
         ...(players || []),
         // second
+        ...(positions || []),
         ...(cup || []),
         ...(managers || []),
         ...(draft || []),

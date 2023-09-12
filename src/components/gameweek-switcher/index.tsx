@@ -5,9 +5,10 @@ import { Link } from 'gatsby';
 import { findRoute } from '../named-link';
 import FormattedGameWeekDate from '../gameweek-date';
 import './gameweek-switcher.css';
-import useGameWeeks from '../../hooks/use-game-weeks';
+import useGameWeeks, { GameWeek } from '../../hooks/use-game-weeks';
 
-const GameWeekSwitcher = ({ to, selectedGameWeek }) => {
+type To = string; // `${divisionId}-${selectedTab}` e.g. championship-players
+const GameWeekSwitcher = ({ to, selectedGameWeek }: { to: To; selectedGameWeek: GameWeek['id'] }) => {
     const [showSwitcher, toggleSwitcher] = React.useState(false);
     const { gameWeeks } = useGameWeeks();
     const route = findRoute({ to });

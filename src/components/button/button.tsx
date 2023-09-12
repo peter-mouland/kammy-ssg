@@ -113,7 +113,7 @@ const Button: React.FC<Partial<GatsbyLinkProps<Record<string, unknown>>> & Custo
             [styles.isResponsive]: isResponsive,
         }),
         disabled: getIsDisabled(),
-        onClick: (isDisabled || isLoading) && routerProps.onClick,
+        onClick: isDisabled || isLoading ? null : routerProps.onClick,
     };
 
     return isInternalLink ? (

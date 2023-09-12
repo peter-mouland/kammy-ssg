@@ -7,34 +7,34 @@ const fetchGoogleTransfersData = require('./google-sheets-transfers');
 const fetchGoogleManagersData = require('./google-sheets-managers');
 const fetchGoogleDraftData = require('./google-sheets-draft-setup');
 
-module.exports = () =>
-    Promise.all([
+module.exports = async () => {
+    const googleDivisionData = await fetchGoogleDivisionsData();
+    return Promise.all([
         fetchFplData(),
         fetchGoogleGameWeeksData(),
         fetchGoogleCupData(),
-        fetchGoogleTransfersData(),
+        fetchGoogleDraftData(googleDivisionData),
+        fetchGoogleTransfersData(googleDivisionData),
         fetchGooglePlayersData(),
-        fetchGoogleDivisionsData(),
         fetchGoogleManagersData(),
-        fetchGoogleDraftData(),
     ]).then(
         ([
             fplData,
             googleGameWeekData,
             googleCupData,
+            googleDraftData,
             googleTransferData,
             googlePlayerData,
-            googleDivisionData,
             googleManagerData,
-            googleDraftData,
         ]) => ({
             fplData,
+            googleDivisionData,
             googleGameWeekData,
             googleCupData,
+            googleDraftData,
             googleTransferData,
             googlePlayerData,
-            googleDivisionData,
             googleManagerData,
-            googleDraftData,
         }),
     );
+};

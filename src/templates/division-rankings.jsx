@@ -6,22 +6,21 @@ import * as Layout from '../components/layout';
 import * as DivisionRankings from '../components/division-rankings';
 import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
 import useGameWeeks from '../hooks/use-game-weeks';
-import CPositions from '../models/position';
-import CDivisions from '../models/division';
-import CManagers from '../models/managers';
 import { DivisionStandings } from '../models/standings';
 import NavBar from '../components/nav-bar';
+import useDivisions from "../hooks/use-divisions";
+import usePositions from "../hooks/use-positions";
+import useManagers from "../hooks/use-managers";
 
 const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
     const GameWeeks = useGameWeeks();
     const {
-        allManagers: { nodes: allManagers },
         allLeagueTable: { nodes: managersStats },
     } = data;
-    const Positions = new CPositions();
-    const Divisions = new CDivisions();
+    const Positions = usePositions();
+    const Divisions = useDivisions()
+    const Managers = useManagers()
     const Division = Divisions.getDivision(divisionId);
-    const Managers = new CManagers(allManagers);
     const Standings = new DivisionStandings({ managersStats });
 
     return (
@@ -63,14 +62,6 @@ const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) 
 
 export const query = graphql`
     query DivisionRankings($gameWeekIndex: Int, $divisionId: String) {
-        allManagers(filter: { divisionId: { eq: $divisionId } }, sort: { division: { order: ASC } }) {
-            nodes {
-                label
-                managerId
-                divisionId
-            }
-        }
-
         allLeagueTable(
             filter: { gameWeekIndex: { eq: $gameWeekIndex }, divisionId: { eq: $divisionId } }
             sort: [

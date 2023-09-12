@@ -7,7 +7,7 @@ module.exports = ({ googleDivisionData }) =>
             label: division.label,
             order: division.order,
             spreadsheetKey: division.spreadsheetKey,
-            url: division.url,
+            url: `/${division.url}`,
         };
         return {
             resourceId: `divisions-${division.id}`,

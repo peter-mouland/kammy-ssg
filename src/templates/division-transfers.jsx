@@ -4,9 +4,7 @@ import { graphql } from 'gatsby';
 
 import * as Layout from '../components/layout';
 import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
-import CManagers from '../models/managers';
 import CSquads from '../models/squads';
-import CDivisions from '../models/division';
 import Spacer from '../components/spacer';
 import * as Transfers from '../components/division-transfers/trasfers-table';
 import TransferRequest from '../components/division-transfers/transfer-request';
@@ -16,13 +14,14 @@ import useGameWeeks from '../hooks/use-game-weeks';
 import useSquadChanges from '../hooks/use-squad-changes';
 import useManagers from '../hooks/use-managers';
 import NavBar from '../components/nav-bar';
+import useDivisions from "../hooks/use-divisions";
 
 const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionId } }) => {
     const {
         currentTeams: { group: currentTeams },
     } = data;
     const Squads = new CSquads(currentTeams);
-    const Divisions = new CDivisions();
+    const Divisions = useDivisions()
     const { isAdmin } = useAdmin();
     const players = usePlayers();
     const GameWeeks = useGameWeeks();
