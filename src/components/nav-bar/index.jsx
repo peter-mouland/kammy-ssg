@@ -2,7 +2,7 @@ import React from 'react';
 import { useCookies } from 'react-cookie';
 
 import NamedLink from '../named-link';
-import HomeIcon from '../icons/home.svg';
+import HomeIcon from '../../icons/home.svg';
 import Spacer from '../spacer';
 import * as styles from './nav-bar.module.css';
 

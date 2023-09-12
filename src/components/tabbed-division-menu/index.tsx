@@ -1,20 +1,35 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 import Button from '../button';
 import NamedLink from '../named-link';
 import GameWeekFixtures from '../gameweek-fixtures';
-import GroupIcon from '../icons/group.svg';
-import PlayersIcon from '../icons/players.svg';
-import TransfersIcon from '../icons/transfers.svg';
-import TableIcon from '../icons/table.svg';
+import GroupIcon from '../../icons/group.svg';
+import PlayersIcon from '../../icons/players.svg';
+import TransfersIcon from '../../icons/transfers.svg';
+import TableIcon from '../../icons/table.svg';
 import Spacer from '../spacer';
 import * as styles from './index.module.css';
 import GameWeekSwitcher from '../gameweek-switcher';
 import useGameWeeks from '../../hooks/use-game-weeks';
 
-const tabs = [
+type DivisionID = 'leagueOne' | 'championship' | 'premierLeague';
+type TabId = 'rankings' | 'teams' | 'transfers' | 'players';
+type SelectedGameWeek = number;
+type TabbedMenuProps = {
+    divisionId: DivisionID;
+    selected: TabId;
+    selectedGameWeek?: SelectedGameWeek;
+    showGWSwitcher?: boolean;
+};
+
+type Tabs = {
+    id: TabId;
+    label: string;
+    Icon: SVGIcon;
+};
+
+const tabs: Tabs[] = [
     {
         id: 'rankings',
         label: 'Standings',
@@ -37,7 +52,13 @@ const tabs = [
     },
 ];
 
-const Tab = ({ to, isActive, Icon, children }) => (
+type TabProps = {
+    to: string;
+    isActive: boolean;
+    Icon: SVGIcon;
+    children: React.ReactNode;
+};
+const Tab: React.FC<TabProps> = ({ to, isActive, Icon, children }) => (
     <NamedLink to={to} className={cx(styles.cta, { [styles.isActive]: isActive })}>
         <Spacer medium={{ right: Spacer.spacings.SMALL }}>
             <div className={styles.iconContainer}>
@@ -48,10 +69,15 @@ const Tab = ({ to, isActive, Icon, children }) => (
     </NamedLink>
 );
 
-export const GameWeekNav = ({ divisionId, selected, selectedGameWeek }) => {
+type GameWeekNavProps = {
+    divisionId: DivisionID;
+    selected: TabId;
+    selectedGameWeek?: SelectedGameWeek;
+};
+export const GameWeekNav: React.FC<GameWeekNavProps> = ({ divisionId, selected, selectedGameWeek }) => {
     const { gameWeeks, currentGameWeek } = useGameWeeks();
     const displayGW = selectedGameWeek ?? currentGameWeek.id;
-    const [showFixture, onShowFixture] = React.useState(null);
+    const [showFixture, onShowFixture] = React.useState<string | null>(null);
     const fixtures = {
         thisWeek: gameWeeks[displayGW],
         nextWeek: gameWeeks[displayGW + 1],
@@ -92,9 +118,9 @@ export const GameWeekNav = ({ divisionId, selected, selectedGameWeek }) => {
     );
 };
 
-const TabbedMenu = ({ divisionId, selected, selectedGameWeek, showGWSwitcher }) => (
+const TabbedMenu: React.FC<TabbedMenuProps> = ({ divisionId, selected, selectedGameWeek, showGWSwitcher }) => (
     <div className={styles.container}>
-        <Spacer tag="ul" className={styles.tabs}>
+        <ul className={styles.tabs}>
             {tabs.map(({ id, label, Icon }) => (
                 <li className={cx(styles.tab)}>
                     <Tab key={id} to={`${divisionId}-${id}`} isActive={id === selected} Icon={Icon}>
@@ -102,16 +128,11 @@ const TabbedMenu = ({ divisionId, selected, selectedGameWeek, showGWSwitcher }) 
                     </Tab>
                 </li>
             ))}
-        </Spacer>
+        </ul>
         {showGWSwitcher ? (
             <GameWeekNav selectedGameWeek={selectedGameWeek} divisionId={divisionId} selected={selected} />
         ) : null}
     </div>
 );
-
-TabbedMenu.propTypes = {
-    divisionId: PropTypes.string.isRequired,
-    selected: PropTypes.string.isRequired,
-};
 
 export default TabbedMenu;

@@ -1,4 +1,6 @@
 module.exports = {
+    'no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error'],
     'prettier/prettier': [
         'error',
         {
@@ -9,6 +11,7 @@ module.exports = {
         },
     ],
     indent: 0,
+    'react/prop-types': 0,
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0 }],
     'import/order': [

@@ -1,10 +1,12 @@
-import React from 'react';
+import * as React from 'react';
 
-import IFrame from '../components/iFrame';
 import * as Layout from '../components/layout';
+import IFrame from '../components/iFrame';
 
-const Rules = () => (
-    <Layout.Container title="Rules">
+import type { HeadFC, PageProps } from 'gatsby';
+
+const Rules: React.FC<PageProps> = () => (
+    <Layout.Container>
         <Layout.Body>
             <Layout.Title>Rules</Layout.Title>
             <IFrame
@@ -16,3 +18,4 @@ const Rules = () => (
 );
 
 export default Rules;
+export const Head: HeadFC = () => <title>Rules</title>;

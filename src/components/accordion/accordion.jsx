@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import ChevronDownIcon from '../icons/chevron.svg';
+import ChevronDownIcon from '../../icons/chevron.svg';
 import * as styles from './accordion.module.css';
 import { types } from './constants';
 import AccordionContent from './components/accordion-content';

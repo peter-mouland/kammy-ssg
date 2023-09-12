@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import PitchIcon from '../../../icons/pitch.svg';
+import PitchIcon from '../../../../icons/pitch.svg';
 import PlayerImage from '../../../player-image';
 import * as styles from './manager.module.css';
 

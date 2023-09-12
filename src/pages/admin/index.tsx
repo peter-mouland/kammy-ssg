@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Link } from 'gatsby';
 import { useCookies } from 'react-cookie';
 
@@ -8,7 +8,9 @@ import Spacer from '../../components/spacer';
 import useMeta from '../../hooks/use-meta';
 import NavBar from '../../components/nav-bar';
 
-const regenerateGatsby = (setIsLoading) => {
+import type { HeadFC, PageProps } from 'gatsby';
+
+const regenerateGatsby = (setIsLoading: (_: boolean) => void) => {
     setIsLoading(true);
     return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
         method: 'post',
@@ -23,16 +25,16 @@ const regenerateGatsby = (setIsLoading) => {
 //     });
 // };
 
-const AdminPage = () => {
-    const [isLoading, setIsLoading] = useState(false);
+const AdminPage: React.FC<PageProps> = () => {
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [, setCookie] = useCookies(['is-admin']);
-    useEffect(() => {
+    React.useEffect(() => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
     const { formattedTime, getFromNow } = useMeta();
     const publish = () => regenerateGatsby(setIsLoading);
     return (
-        <Layout.Container title="Admin - Links">
+        <Layout.Container>
             <Layout.PrimaryNav>
                 <NavBar />
             </Layout.PrimaryNav>
@@ -84,3 +86,4 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+export const Head: HeadFC = () => <title>Admin</title>;

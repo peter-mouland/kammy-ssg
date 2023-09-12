@@ -3,7 +3,7 @@ import React from 'react';
 import cx from 'classnames';
 
 import Spacer from '../../../spacer';
-import Arrow from '../../../icons/arrow-circle-right.svg';
+import Arrow from '../../../../icons/arrow-circle-right.svg';
 import * as styles from './accordion.module.css';
 
 const Accordion = ({ count, rules, highlights, title, children }) => {

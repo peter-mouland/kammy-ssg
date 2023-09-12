@@ -1,0 +1,33 @@
+declare const styles: {
+  readonly "gradient_7": string;
+  readonly "gradient_6_5": string;
+  readonly "gradient_6": string;
+  readonly "gradient_5_5": string;
+  readonly "gradient_5": string;
+  readonly "gradient_4_5": string;
+  readonly "gradient_4": string;
+  readonly "gradient_3_5": string;
+  readonly "gradient_3": string;
+  readonly "gradient_2_5": string;
+  readonly "gradient_2": string;
+  readonly "gradient_1_5": string;
+  readonly "gradient_1": string;
+  readonly "gradient_0_5": string;
+  readonly "gradient_0": string;
+  readonly "gradient__0_5": string;
+  readonly "gradient__1": string;
+  readonly "gradient__1_5": string;
+  readonly "gradient__2": string;
+  readonly "gradient__2_5": string;
+  readonly "gradient__3": string;
+  readonly "gradient__3_5": string;
+  readonly "gradient__4": string;
+  readonly "gradient__4_5": string;
+  readonly "gradient__5": string;
+  readonly "gradient__5_5": string;
+  readonly "gradient__6": string;
+  readonly "gradient__6_5": string;
+  readonly "gradient__7": string;
+};
+export = styles;
+

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Spacer from '../spacer';
-import Warning from '../icons/warning.svg';
+import Warning from '../../icons/warning.svg';
 import * as styles from './team-warnings.module.css';
 
 const List = ({ children }) => <ul className={styles.list}>{children}</ul>;

@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import formatTimestamp from '../lib/format-timestamp';
 import Interstitial from '../../interstitial';
 import ContextualHelp from '../../contextual-help';
-import ChatIcon from '../../icons/chat.svg';
-import Warning from '../../icons/warning.svg';
+import ChatIcon from '../../../icons/chat.svg';
+import Warning from '../../../icons/warning.svg';
 import * as styles from './styles.module.css';
 import Player from '../../player';
 

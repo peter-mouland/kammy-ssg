@@ -1,7 +1,6 @@
 // config *must* run before everything else
 /* eslint-disable */
 import "../config/config";
-import { Helmet } from "react-helmet"
 /* eslint-enable */
 
 import React from 'react';
@@ -13,7 +12,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QueryParamProvider } from 'use-query-params';
 import { ReachAdapter } from 'use-query-params/adapters/reach';
 
-import NavBar from './nav-bar';
 import NamedLink from './named-link';
 import './index.css';
 import * as styles from './layout.module.css';
@@ -71,15 +69,10 @@ export const Title = ({ children }) => (
     </h1>
 );
 
-export const Container = ({ title, description, children }) => (
+export const Container = ({ children }) => (
     <QueryParamProvider adapter={ReachAdapter}>
         <QueryClientProvider client={queryClient}>
             <CookiesProvider>
-                <Helmet>
-                    <meta charSet="utf-8" />
-                    <title>{title}</title>
-                    {description && <meta name="description" content={description} />}
-                </Helmet>
                 <div className={styles.layoutGrid}>{children}</div>
             </CookiesProvider>
         </QueryClientProvider>
@@ -93,13 +86,6 @@ Container.propTypes = {
         PropTypes.func,
         PropTypes.arrayOf(PropTypes.node),
     ]).isRequired,
-    title: PropTypes.string,
-    description: PropTypes.string,
-};
-
-Container.defaultProps = {
-    title: 'Draft FF',
-    description: '',
 };
 
 export default Container;

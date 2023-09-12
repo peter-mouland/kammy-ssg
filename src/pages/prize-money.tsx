@@ -1,10 +1,12 @@
-import React from 'react';
+import * as React from 'react';
 
 import IFrame from '../components/iFrame';
 import * as Layout from '../components/layout';
 
-const PrizeMoney = () => (
-    <Layout.Container title="Prize Money">
+import type { HeadFC, PageProps } from 'gatsby';
+
+const PrizeMoney: React.FC<PageProps> = () => (
+    <Layout.Container>
         <Layout.Body>
             <Layout.Title>Prize Money</Layout.Title>
             <IFrame
@@ -16,3 +18,4 @@ const PrizeMoney = () => (
 );
 
 export default PrizeMoney;
+export const Head: HeadFC = () => <title>Prize Money</title>;

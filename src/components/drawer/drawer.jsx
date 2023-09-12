@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import Icon from '../icons/cross.svg';
+import Icon from '../../icons/cross.svg';
 import Portal from '../portal';
 import * as styles from './drawer.module.css';
 import { placements, themes } from './constants';

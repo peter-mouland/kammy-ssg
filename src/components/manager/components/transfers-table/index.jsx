@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
 import Interstitial from '../../../interstitial';
 import ContextualHelp from '../../../contextual-help';
-import ChatIcon from '../../../icons/chat.svg';
-import Warning from '../../../icons/warning.svg';
+import ChatIcon from '../../../../icons/chat.svg';
+import Warning from '../../../../icons/warning.svg';
 import Player from '../../../player';
 import formatTimestamp from '../../lib/format-timestamp';
 import getEmoji from '../../lib/get-emoji';

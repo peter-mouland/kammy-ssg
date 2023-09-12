@@ -3,13 +3,19 @@ const overrides = require('./overrides');
 
 module.exports = {
     root: true,
-    parser: 'babel-eslint',
+    parser: '@typescript-eslint/parser',
     env: {
         es6: true,
         node: true,
     },
-    plugins: ['prettier', 'postcss-modules'],
-    extends: ['eslint:recommended', 'airbnb', 'prettier', 'plugin:postcss-modules/recommended'],
+    plugins: ['@typescript-eslint', 'prettier', 'postcss-modules'],
+    extends: [
+        'eslint:recommended',
+        'airbnb',
+        'prettier',
+        'plugin:postcss-modules/recommended',
+        'plugin:@typescript-eslint/recommended',
+    ],
     globals: {},
     parserOptions: {
         sourceType: 'module',
