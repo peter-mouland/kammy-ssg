@@ -55,8 +55,10 @@ export class Player {
         this.form = player.form;
         this.formRank = player.form_rank;
         this.code = player.code;
+        this.photo = player.photo;
         this.name = player.name;
         this.club = player.club;
+        this.position = player.position;
         this.positionId = player.positionId;
         this.new = player.new;
         this.url = player.url;

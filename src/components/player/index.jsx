@@ -9,14 +9,22 @@ import * as styles from './styles.module.css';
 
 export const Name = ({ children }) => <div className={styles.name}>{children}</div>;
 export const Club = ({ children }) => <div className={styles.club}>{children}</div>;
-export const Pos = ({ squadPositionId, positionId }) => (
-    <div className={styles.pos}>
-        <div className={styles.squadPosition}>{squadPositionId || positionId}</div>
-        <div className={cx(styles.pos, { [styles.hidden]: positionId === squadPositionId || !squadPositionId })}>
-            ({positionId})
+export const Pos = ({ squadPosition, position }) => {
+    const primary = squadPosition?.label || position.label;
+    const secondary = squadPosition && position.label !== squadPosition?.label ? position.label : null;
+    return (
+        <div className={styles.pos}>
+            <div className={styles.squadPosition}>{primary}</div>
+            <div
+                className={cx(styles.pos, {
+                    [styles.hidden]: !secondary,
+                })}
+            >
+                ({secondary})
+            </div>
         </div>
-    </div>
-);
+    );
+};
 export const News = ({ children }) => <div className={styles.news}>{children}</div>;
 export const Image = PlayerImage;
 
@@ -25,10 +33,7 @@ export const AllInfo = ({ large, small, player = {} }) => {
     return (
         <div className={cx(styles.player, { [styles.large]: large })}>
             <div className={styles.gridSquadPos}>
-                <Pos
-                    positionId={player.playerPositionId || player.positionId}
-                    squadPositionId={player.squadPositionId}
-                />
+                <Pos position={player.position} squadPosition={player.squadPosition} />
             </div>
             <div className={styles.gridImage}>
                 <Link to={player.url}>

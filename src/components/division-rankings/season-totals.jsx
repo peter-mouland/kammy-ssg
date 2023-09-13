@@ -18,16 +18,13 @@ export const SeasonTotals = ({ Positions, Standings, Managers }) => (
             {Standings.map((Standing) => (
                 <DivisionRankings.Tr key={Managers.byId[Standing.managerId].id}>
                     <DivisionRankings.Td>{Managers.byId[Standing.managerId].label}</DivisionRankings.Td>
-                    {Positions.positionCategories.map(
-                        (Position) =>
-                            console.log(Position) || (
-                                <DivisionRankings.TdPair
-                                    key={Position.id}
-                                    rank={Standing[Position.id].rank}
-                                    point={Standing[Position.id].seasonPoints}
-                                />
-                            ),
-                    )}
+                    {Positions.positionCategories.map((Position) => (
+                        <DivisionRankings.TdPair
+                            key={Position.id}
+                            rank={Standing[Position.id].rank}
+                            point={Standing[Position.id].seasonPoints}
+                        />
+                    ))}
                     <DivisionRankings.Td>{Standing.total.rank}</DivisionRankings.Td>
                     <DivisionRankings.Td small>{Standing.total.seasonPoints}</DivisionRankings.Td>
                 </DivisionRankings.Tr>

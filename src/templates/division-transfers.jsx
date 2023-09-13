@@ -104,6 +104,7 @@ export const query = graphql`
                         name
                         club
                         url
+                        position { label }
                         positionId
                         nextGameWeekFixture {
                             fixtures {

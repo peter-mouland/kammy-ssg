@@ -123,6 +123,9 @@ export const query = graphql`
             points_per_game_rank
             points_per_game_rank_type
             positionId
+            position {
+                label
+            }
             red_cards
             saves
             saves_per_90

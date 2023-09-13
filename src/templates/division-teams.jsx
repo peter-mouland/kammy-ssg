@@ -122,6 +122,10 @@ export const query = graphql`
                         name
                         club
                         url
+                        photo
+                        position {
+                            label
+                        }
                         nextGameWeekFixture {
                             fixtures {
                                 fixture_id
@@ -140,6 +144,7 @@ export const query = graphql`
                     hasChanged
                     playerPositionId
                     squadPositionId
+                    squadPosition { label }
                     squadPositionIndex
                     seasonToGameWeek {
                         apps

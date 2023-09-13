@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'gatsby';
+import { withDefault, useQueryParams, ArrayParam, BooleanParam } from 'use-query-params';
 import bemHelper from '@kammy/bem';
 import sortColumns from '@kammy/sort-columns';
-import { withDefault, useQueryParams, ArrayParam, BooleanParam } from 'use-query-params';
 
 import SortDownIcon from './sort-down.svg';
 import SortUpIcon from './sort-up.svg';
@@ -118,11 +119,13 @@ const PlayerTable = ({ players, Stats, Positions }) => {
                                         <Player.AllInfo player={player} />
                                     </td>
                                     <td className="cell show-1000">
-                                        <Player.Pos positionId={player.positionId} />
+                                        <Player.Pos position={player.position} />
                                     </td>
                                     <td className="cell show-1000">
-                                        <Player.Image code={player.code} small liveQuery={{}} />
-                                        <Player.Name>{player.name}</Player.Name>
+                                        <Link to={player.url}>
+                                            <Player.Image code={player.code} small liveQuery={{}} />
+                                            <Player.Name>{player.name}</Player.Name>
+                                        </Link>
                                     </td>
                                     <td className="cell show-1000">
                                         <Player.Club>{player.club}</Player.Club>

@@ -82,7 +82,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
             [fplPlayer.code]: {
                 ...playerWithStats,
                 name: fplPlayer.web_name,
-                url: `/player/${gPlayer.code}`,
+                url: `/player/${fplPlayer.code}`,
                 gameWeekStats: playerWithStats.gameWeek,
             },
         };

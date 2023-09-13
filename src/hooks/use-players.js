@@ -12,6 +12,10 @@ const usePlayers = () => {
                     url
                     name
                     club
+                    photo
+                    position {
+                        label
+                    }
                     positionId
                     new
                     code

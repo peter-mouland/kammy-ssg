@@ -14,14 +14,16 @@ export const PlayerHeader = ({ player }) => {
             </div>
 
             <div className={styles.gridSquadPos}>
-                <Player.Pos positionId={player.positionId} />
+                <Player.Pos position={player.position} />
             </div>
 
             <div className={styles.gridClub}>
                 <Player.Club>{player.club}</Player.Club>
             </div>
             <div className={styles.gridName}>
-                <Player.Name to={player.url}>{player.name}</Player.Name>
+                <Player.Name to={player.url}>
+                    {player.rawData.first_name} {player.rawData.second_name}
+                </Player.Name>
             </div>
             <div className={styles.gridNews}>
                 <Player.News>{elementQuery.data?.news}</Player.News>

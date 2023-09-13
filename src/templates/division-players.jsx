@@ -76,8 +76,10 @@ export const query = graphql`
                 name
                 club
                 positionId
+                position { label }
                 new
                 code
+                photo
                 form
                 seasonStats {
                     apps

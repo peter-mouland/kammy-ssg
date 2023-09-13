@@ -11,6 +11,8 @@ export class SquadPlayer {
         this.code = squadPlayer.player.code;
         this.url = squadPlayer.player.url;
         this.club = squadPlayer.player.club;
+        this.position = squadPlayer.player.position;
+        this.squadPosition = squadPlayer.squadPosition;
         this.squadPositionId = squadPlayer.squadPositionId.toLowerCase(); // todo: use id in scoring
         this.playerPositionId = squadPlayer.playerPositionId.toLowerCase(); // todo: use id in scoring
         this.squadPositionIndex = squadPlayer.squadPositionIndex;

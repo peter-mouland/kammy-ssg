@@ -8,7 +8,7 @@ import ContextualHelp from '../../contextual-help';
 import ChatIcon from '../../../icons/chat.svg';
 import Warning from '../../../icons/warning.svg';
 import * as styles from './styles.module.css';
-import Player from '../../player';
+import * as Player from '../../player';
 
 export const Body = ({ transfers, showWarnings, playersByCode, isLoading }) => {
     if (transfers.length === 0 && !isLoading) {
@@ -66,10 +66,10 @@ export const Body = ({ transfers, showWarnings, playersByCode, isLoading }) => {
                             {transfer.managerId}
                         </td>
                         <td data-col-label="transfer in" className="cell cell--center">
-                            {transfer.codeIn && <Player player={playerIn} small />}
+                            {transfer.codeIn && <Player.AllInfo player={playerIn} small />}
                         </td>
                         <td data-col-label="transfer out" className="cell cell--center">
-                            {transfer.codeOut && <Player player={playerOut} small />}
+                            {transfer.codeOut && <Player.AllInfo player={playerOut} small />}
                         </td>
                         <td data-col-label="comment" className="cell cell--center">
                             {transfer.comment && (

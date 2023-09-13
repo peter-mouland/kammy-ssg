@@ -60,11 +60,11 @@ exports.sourceNodes = async ({ actions, createNodeId }) => {
     // DRAFFT
     const gameWeeks = buildGameWeeks({ googleGameWeekData, fplEvents, fplFixtures, fplTeams });
     const divisions = buildDivisions({ googleDivisionData });
-    const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers, fplTeams });
     const positionCategories = buildPositionCategories();
 
     // second, all those with deps i.e. ___node
     const positions = buildPositions({ createNodeId });
+    const players = buildPlayers({ googlePlayerData, gameWeeks, fplPlayers, fplTeams, createNodeId });
     const cup = buildCup({ googleCupData, createNodeId }); // relies on sky players
     const managers = buildManagers({ googleManagerData, createNodeId }); // relies on divisions
     const draft = buildDraft({ googleDraftData, createNodeId }); // relies on players + divisions

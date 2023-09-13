@@ -63,6 +63,7 @@ module.exports = ({ draft, transfers, gameWeeks, players, managers, fplTeams, cr
         resourceId: `teams-${i}-${data.managerId}-${data.playerCode}`,
         data: {
             ...data,
+            squadPosition___NODE: createNodeId(`positions-${data.squadPositionId}`),
             manager___NODE: createNodeId(`managers-${data.managerId}`),
             player___NODE: createNodeId(`players-${data.playerCode}`),
         },
