@@ -1,8 +1,23 @@
 // eslint-disable-next-line max-classes-per-file
 import { Stats } from './stats';
 
+import type { Position } from './position';
+import type { Manager } from './managers';
+
+type Options = { gameWeekIndex?: PlayerGameWeek['gameWeekIndex'] };
+type PlayerGameWeekAPI = { fixtures: PlayerFixture[]; stats: Stats; id: number };
+type PlayerAPI = Partial<Player> & { gameWeeks: PlayerGameWeekAPI[] };
+
 class PlayerFixture {
-    constructor(playerFixture) {
+    homeTeam: unknown;
+    awayTeam: unknown;
+    is_home: boolean;
+    was_home: boolean;
+    homeGame: boolean;
+    team_h_score: number;
+    team_a_score: number;
+    stats: Stats;
+    constructor(playerFixture: PlayerFixture) {
         this.homeTeam = playerFixture.homeTeam;
         this.awayTeam = playerFixture.awayTeam;
         this.is_home = playerFixture.is_home;
@@ -15,8 +30,8 @@ class PlayerFixture {
 }
 
 class PlayerFixtures {
-    all = [];
-    constructor(playerFixtures = []) {
+    all: PlayerFixture[] = [];
+    constructor(playerFixtures: PlayerFixture[] = []) {
         playerFixtures.forEach((playerFixture) => {
             this.all.push(new PlayerFixture(playerFixture));
         });
@@ -24,15 +39,19 @@ class PlayerFixtures {
 }
 
 class PlayerGameWeek {
-    constructor(playerGameWeek) {
+    gameWeekIndex: number;
+    fixtures: PlayerFixtures;
+    stats: Stats;
+    constructor(playerGameWeek: PlayerGameWeekAPI) {
+        this.gameWeekIndex = playerGameWeek.id;
         this.fixtures = new PlayerFixtures(playerGameWeek.fixtures);
         this.stats = new Stats(playerGameWeek.stats);
     }
 }
 
 class PlayerGameWeeks {
-    all = [];
-    constructor(playerGameWeeks = []) {
+    all: PlayerGameWeek[] = [];
+    constructor(playerGameWeeks: PlayerGameWeekAPI[] = []) {
         playerGameWeeks.forEach((playerGameWeek) => {
             const gw = new PlayerGameWeek(playerGameWeek);
             this.all.push(gw);
@@ -47,11 +66,23 @@ export class Player {
     //     return elements.find((el) => el.id == args.id);
     // },
 
-    gameWeeks = [];
-    fixtures = [];
+    gameWeeks: PlayerGameWeeks = [];
+    seasonStats: Stats['all'] = [];
+    fixtures: PlayerGameWeek['fixtures']['all'] = [];
     manager = {};
+    form: number;
+    formRank: number;
+    code: number;
+    photo: string;
+    name: string;
+    club: string;
+    position: Position;
+    positionId: Position['id'];
+    new: boolean;
+    url: string;
+    rawData: unknown;
 
-    constructor(player, options = {}) {
+    constructor(player: PlayerAPI, options: Options = {}) {
         this.form = player.form;
         this.formRank = player.form_rank;
         this.code = player.code;
@@ -64,9 +95,10 @@ export class Player {
         this.url = player.url;
         this.rawData = player;
         this.gameWeeks = new PlayerGameWeeks(player.gameWeeks);
-        this.seasonStats = Number.isInteger(options.gameWeekIndex)
-            ? this.gameWeeks.all[options.gameWeekIndex].stats
-            : new Stats(player.seasonStats);
+        this.seasonStats =
+            typeof options.gameWeekIndex === 'number'
+                ? this.gameWeeks.all[options.gameWeekIndex].stats
+                : new Stats(player.seasonStats);
         this.fixtures = this.gameWeeks.all.reduce((prev, curr) => {
             curr.fixtures.all.forEach((fixture) => {
                 prev.push(fixture);
@@ -75,23 +107,29 @@ export class Player {
         }, []);
     }
 
-    getGameWeekFixtures(gameWeekIndex) {
-        return this.gameWeeks[gameWeekIndex].fixtures;
+    getGameWeekFixtures(gameWeekIndex: number) {
+        return this.gameWeeks.all[gameWeekIndex].fixtures;
     }
 
     getSeasonPoints() {
         return this.seasonStats;
     }
 
-    addManager(manager) {
+    addManager(manager: Partial<Manager>) {
         this.manager = manager;
     }
 }
 
+type ManagedPlayers = {
+    manager: { managerId: Manager['managerId']; label: Manager['label'] };
+    player: { code: Player['code'] };
+}[];
+
 export class Players {
-    all = [];
-    byCode = {};
-    constructor(players, options) {
+    all: Player[] = [];
+    byCode: Record<string, Player> = {};
+
+    constructor(players: PlayerAPI[], options: Options) {
         players.forEach((player) => {
             const player1 = new Player(player, options);
             this.all.push(player1);
@@ -101,11 +139,11 @@ export class Players {
 
     /* [
         manager: { managerId, label }
-        playerCode
+        player: { code }
      ] */
-    addManagers(managedPlayers) {
-        managedPlayers.forEach(({ manager, playerCode }) => {
-            this.byCode[playerCode]?.addManager(manager);
+    addManagers(managedPlayers: ManagedPlayers) {
+        managedPlayers.forEach(({ manager, player }) => {
+            this.byCode[player.code]?.addManager(manager);
         });
     }
 }

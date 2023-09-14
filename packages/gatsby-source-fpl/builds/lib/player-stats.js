@@ -82,13 +82,15 @@ const getPlayerStats = ({ player, gameWeek, fplTeams }) => {
                 player.fixtures.find((fix) => fix.id === fixture.fixture_id),
         )
         .map((gwFixture) => {
-            const { data: aTeam } = fplTeams.find(({ data: { id } }) => gwFixture.team_a === id) || {};
             const playerFixture = player.fixtures.find((fix) => fix.id === gwFixture.fixture_id);
             const playerFixtureStats = player.stats.find((stats) => stats.fixture === gwFixture.fixture_id);
-            if (!aTeam) console.log(gwFixture);
             return {
                 ...playerFixture,
                 ...gwFixture,
+                oponent: {
+                    club: gwFixture.is_home ? gwFixture.awayTeam.name : gwFixture.homeTeam.name,
+                    awayOrHomeLabel: gwFixture.is_home ? 'h' : 'a',
+                },
                 ...addPointsToFixtures(playerFixtureStats, player),
             };
         });

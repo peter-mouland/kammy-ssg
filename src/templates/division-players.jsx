@@ -12,10 +12,10 @@ import useClubs from '../hooks/use-clubs';
 import NavBar from '../components/nav-bar';
 import useManagers from '../hooks/use-managers';
 import useGameWeeks from '../hooks/use-game-weeks';
-import useDivisions from "../hooks/use-divisions";
+import useDivisions from '../hooks/use-divisions';
 
 const PlayersPage = ({ data, pageContext: { divisionId, gameWeekIndex } }) => {
-    const Divisions = useDivisions()
+    const Divisions = useDivisions();
     const Division = Divisions.getDivision(divisionId);
     const GameWeeks = useGameWeeks();
     const Positions = usePositions();
@@ -67,7 +67,9 @@ export const query = graphql`
                     label
                     managerId
                 }
-                playerCode
+                player {
+                    code
+                }
             }
         }
         allPlayers(filter: { isHidden: { eq: false } }) {
@@ -76,7 +78,9 @@ export const query = graphql`
                 name
                 club
                 positionId
-                position { label }
+                position {
+                    label
+                }
                 new
                 code
                 photo

@@ -12,8 +12,8 @@ import * as Player from '../components/player';
 import * as styles from '../components/division-teams/division-stats.module.css';
 import NavBar from '../components/nav-bar';
 import useAdmin from '../hooks/use-admin';
-import useDivisions from "../hooks/use-divisions";
-import useManagers from "../hooks/use-managers";
+import useDivisions from '../hooks/use-divisions';
+import useManagers from '../hooks/use-managers';
 
 const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
     const { isAdmin } = useAdmin();
@@ -22,8 +22,8 @@ const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
         currentTeams: { group: currentTeams },
     } = data;
 
-    const Divisions = useDivisions()
-    const Managers = useManagers()
+    const Divisions = useDivisions();
+    const Managers = useManagers();
     const Division = Divisions.byId[divisionId];
     const Squads = new CSquads(currentTeams);
     const StatsList = new Stats();
@@ -85,9 +85,9 @@ const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
                                                 <em>
                                                     {SquadPlayer.nextGameWeekFixtures.map((f) => (
                                                         <React.Fragment key={f.fixture_id}>
-                                                            {f.is_home ? f.awayTeam.name : f.homeTeam.name}{' '}
+                                                            {f.oponent.club}{' '}
                                                             <span className={styles.small}>
-                                                                {f.is_home ? '(h)' : '(a)'}
+                                                                ({f.oponent.awayOrHomeLabel})
                                                             </span>
                                                         </React.Fragment>
                                                     ))}
@@ -130,13 +130,9 @@ export const query = graphql`
                             fixtures {
                                 fixture_id
                                 is_home
-                                homeTeam {
-                                    code
-                                    name
-                                }
-                                awayTeam {
-                                    code
-                                    name
+                                oponent {
+                                    club
+                                    awayOrHomeLabel
                                 }
                             }
                         }
@@ -144,7 +140,9 @@ export const query = graphql`
                     hasChanged
                     playerPositionId
                     squadPositionId
-                    squadPosition { label }
+                    squadPosition {
+                        label
+                    }
                     squadPositionIndex
                     seasonToGameWeek {
                         apps

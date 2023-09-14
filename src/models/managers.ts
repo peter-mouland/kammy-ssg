@@ -1,8 +1,11 @@
 // eslint-disable-next-line max-classes-per-file
-class Manager {
-    Squad = undefined;
-
-    constructor({ managerId, label, divisionId }) {
+export class Manager {
+    managerId: string;
+    id: string;
+    label: string;
+    url: string;
+    divisionId: string;
+    constructor({ managerId, label, divisionId }: Manager) {
         this.managerId = managerId.replace(/ /g, '-').toLowerCase();
         this.id = this.managerId; // shorthand alias
         this.label = label;
@@ -12,15 +15,15 @@ class Manager {
 }
 
 export default class Managers {
-    all = [];
+    all: Manager[] = [];
     manager = [];
-    byDivisionId = {};
-    byId = {};
-    constructor(managers) {
+    byDivisionId: Record<string, Manager[]> = {};
+    byId: Record<string, Manager> = {};
+    constructor(managers: Manager[]) {
         managers.forEach((manager) => this.addManager(manager));
     }
 
-    addManager(props) {
+    addManager(props: Manager) {
         const manager = new Manager(props);
         this.all.push(manager);
         this.byId[manager.id] = manager;
@@ -29,11 +32,11 @@ export default class Managers {
         this.byDivisionId[manager.divisionId].sort();
     }
 
-    getManager(managerId) {
+    getManager(managerId: Manager['id']) {
         return this.byId[managerId];
     }
 
-    getManagersInDivision(divisionId) {
+    getManagersInDivision(divisionId: Manager['divisionId']) {
         return this.byDivisionId[divisionId];
     }
 }

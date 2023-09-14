@@ -10,8 +10,8 @@ import * as styles from './styles.module.css';
 export const Name = ({ children }) => <div className={styles.name}>{children}</div>;
 export const Club = ({ children }) => <div className={styles.club}>{children}</div>;
 export const Pos = ({ squadPosition, position }) => {
-    const primary = squadPosition?.label || position.label;
-    const secondary = squadPosition && position.label !== squadPosition?.label ? position.label : null;
+    const primary = squadPosition?.label || position?.label || '?';
+    const secondary = squadPosition && position?.label !== squadPosition?.label ? position?.label : null;
     return (
         <div className={styles.pos}>
             <div className={styles.squadPosition}>{primary}</div>
