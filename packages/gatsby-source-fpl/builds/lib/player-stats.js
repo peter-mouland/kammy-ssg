@@ -82,17 +82,29 @@ const getPlayerStats = ({ player, gameWeek, fplTeams }) => {
                 player.fixtures.find((fix) => fix.id === fixture.fixture_id),
         )
         .map((gwFixture) => {
-            const playerFixture = player.fixtures.find((fix) => fix.id === gwFixture.fixture_id);
-            const playerFixtureStats = player.stats.find((stats) => stats.fixture === gwFixture.fixture_id);
-            return {
-                ...playerFixture,
-                ...gwFixture,
-                oponent: {
-                    club: gwFixture.is_home ? gwFixture.awayTeam.name : gwFixture.homeTeam.name,
-                    awayOrHomeLabel: gwFixture.is_home ? 'h' : 'a',
-                },
-                ...addPointsToFixtures(playerFixtureStats, player),
-            };
+            try {
+                const playerFixture = player.fixtures.find((fix) => fix.id === gwFixture.fixture_id);
+                const playerFixtureStats = player.stats.find((stats) => stats.fixture === gwFixture.fixture_id);
+                const home = playerFixtureStats?.was_home ?? playerFixture?.is_home;
+                return {
+                    ...playerFixture,
+                    ...gwFixture,
+                    oponent: {
+                        club: home ? gwFixture.awayTeam.name : gwFixture.homeTeam.name,
+                        awayOrHomeLabel: home ? 'h' : 'a',
+                    },
+                    ...addPointsToFixtures(playerFixtureStats, player),
+                };
+            } catch (e) {
+                const playerFixture = player.fixtures.find((fix) => fix.id === gwFixture.fixture_id);
+                const playerFixtureStats = player.stats.find((stats) => stats.fixture === gwFixture.fixture_id);
+
+                console.log(e);
+                console.log({ playerFixture });
+                console.log({ gwFixture });
+                console.log({ playerFixtureStats });
+                process.exit(1);
+            }
         });
     // counter++;
     // if (counter > 2) process.exit(1);
