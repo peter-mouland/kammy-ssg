@@ -11,8 +11,8 @@ type PlayerAPI = Partial<Player> & { gameWeeks: PlayerGameWeekAPI[] };
 class PlayerFixture {
     homeTeam: unknown;
     awayTeam: unknown;
-    is_home: boolean;
-    was_home: boolean;
+    started: boolean;
+    finished: boolean;
     homeGame: boolean;
     team_h_score: number;
     team_a_score: number;
@@ -20,8 +20,8 @@ class PlayerFixture {
     constructor(playerFixture: PlayerFixture) {
         this.homeTeam = playerFixture.homeTeam;
         this.awayTeam = playerFixture.awayTeam;
-        this.is_home = playerFixture.is_home;
-        this.was_home = playerFixture.was_home;
+        this.finished = playerFixture.finished;
+        this.started = playerFixture.started;
         this.homeGame = playerFixture.was_home || playerFixture.is_home;
         this.team_h_score = playerFixture.team_h_score;
         this.team_a_score = playerFixture.team_a_score;

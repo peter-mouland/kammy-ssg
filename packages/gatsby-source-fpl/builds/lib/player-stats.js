@@ -85,13 +85,14 @@ const getPlayerStats = ({ player, gameWeek, fplTeams }) => {
             try {
                 const playerFixture = player.fixtures.find((fix) => fix.id === gwFixture.fixture_id);
                 const playerFixtureStats = player.stats.find((stats) => stats.fixture === gwFixture.fixture_id);
-                const home = playerFixtureStats?.was_home ?? playerFixture?.is_home;
+                const homeGame = playerFixtureStats?.was_home ?? playerFixture?.is_home;
                 return {
                     ...playerFixture,
                     ...gwFixture,
                     oponent: {
-                        club: home ? gwFixture.awayTeam.name : gwFixture.homeTeam.name,
-                        awayOrHomeLabel: home ? 'h' : 'a',
+                        homeGame,
+                        club: homeGame ? gwFixture.awayTeam.name : gwFixture.homeTeam.name,
+                        awayOrHomeLabel: homeGame ? 'h' : 'a',
                     },
                     ...addPointsToFixtures(playerFixtureStats, player),
                 };

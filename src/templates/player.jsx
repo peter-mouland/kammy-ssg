@@ -2,16 +2,37 @@
 import React from 'react';
 import { graphql } from 'gatsby';
 
+import NavBar from '../components/nav-bar';
 import * as Layout from '../components/layout';
 import * as Timeline from '../components/player-timeline';
 import { Stats } from '../models/stats';
 import { Player } from '../models/players';
 
+const StatsList = new Stats();
+
+const Fixture = ({ fixture }) => (
+    <Timeline.Tr key={`${fixture.event}`} light={!fixture.finished}>
+        <Timeline.Td>
+            <Timeline.HomeFixture fixture={fixture} />
+        </Timeline.Td>
+        <Timeline.Td>vs</Timeline.Td>
+        <Timeline.Td>
+            <Timeline.AwayFixture fixture={fixture} />
+        </Timeline.Td>
+        <Timeline.Td>{fixture.finished ? <strong>{fixture.stats.points.value}</strong> : '-'}</Timeline.Td>
+        {StatsList.all.slice(1).map((Stat) => (
+            <Timeline.Td key={Stat.id}>{fixture.finished ? fixture.stats[Stat.id].value : ''}</Timeline.Td>
+        ))}
+    </Timeline.Tr>
+);
+
 const PlayerPage = ({ data, pageContext: { playerName } }) => {
     const player = new Player(data.player);
-    const StatsList = new Stats();
     return (
         <Layout.Container title={playerName}>
+            <Layout.PrimaryNav>
+                <NavBar />
+            </Layout.PrimaryNav>
             <Layout.Body>
                 <Timeline.PlayerHeader player={player} />
                 <Timeline.Table>
@@ -23,35 +44,24 @@ const PlayerPage = ({ data, pageContext: { playerName } }) => {
                     </Timeline.Thead>
                     <Timeline.Tbody>
                         {(player.gameWeeks.all || []).map((playerGameWeek) =>
-                            (playerGameWeek.fixtures.all || []).map((fixture) => (
-                                <tr key={`${fixture.event}`}>
-                                    <Timeline.Td>
-                                        <Timeline.HomeFixture fixture={fixture} />
-                                    </Timeline.Td>
-                                    <Timeline.Td>
-                                        <span style={{ padding: '0 4px' }}>vs</span>
-                                    </Timeline.Td>
-                                    <Timeline.Td>
-                                        <Timeline.AwayFixture fixture={fixture} />
-                                    </Timeline.Td>
-                                    <Timeline.Td>
-                                        <strong>{fixture.stats.points.value}</strong>
-                                    </Timeline.Td>
-                                    {StatsList.all.slice(1).map((Stat) => (
-                                        <Timeline.Td key={Stat.id}>{fixture.stats[Stat.id].value}</Timeline.Td>
-                                    ))}
-                                </tr>
-                            )),
+                            (playerGameWeek.fixtures.all || [])
+                                .filter(({ finished }) => finished)
+                                .map((fixture) => <Fixture fixture={fixture} />),
                         )}
                     </Timeline.Tbody>
-                    <Timeline.Tfooter>
+                    <Timeline.Tr>
                         <td colSpan={3} />
                         {StatsList.all.map((Stat) => (
                             <Timeline.Td key={Stat.id}>
                                 <strong>{player.seasonStats[Stat.id].value}</strong>
                             </Timeline.Td>
                         ))}
-                    </Timeline.Tfooter>
+                    </Timeline.Tr>
+                    {(player.gameWeeks.all || []).map((playerGameWeek) =>
+                        (playerGameWeek.fixtures.all || [])
+                            .filter(({ finished }) => !finished)
+                            .map((fixture) => <Fixture fixture={fixture} />),
+                    )}
                 </Timeline.Table>
             </Layout.Body>
         </Layout.Container>
@@ -171,6 +181,8 @@ export const query = graphql`
                     was_home
                     team_a_score
                     team_h_score
+                    started
+                    finished
                     awayTeam {
                         name
                         code

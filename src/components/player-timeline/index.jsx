@@ -78,6 +78,8 @@ export const Td = ({ colspan, children }) => (
     </td>
 );
 
+export const Tr = ({ children, light }) => <tr className={light ? styles.light : ''}>{children}</tr>;
+
 export const Tbody = ({ children }) => <tbody>{children}</tbody>;
 export const Tfooter = ({ children }) => (
     <tfoot>

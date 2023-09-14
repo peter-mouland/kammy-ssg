@@ -10,9 +10,9 @@ import CStandings from '../models/standings';
 import * as DivisionRankings from '../components/division-rankings';
 import NamedLink from '../components/named-link';
 import NavBar from '../components/nav-bar';
-import useDivisions from "../hooks/use-divisions";
-import usePositions from "../hooks/use-positions";
-import useManagers from "../hooks/use-managers";
+import useDivisions from '../hooks/use-divisions';
+import usePositions from '../hooks/use-positions';
+import useManagers from '../hooks/use-managers';
 
 const HomepageIndex = ({ data, pageContext: { gameWeekIndex: selectedGameWeek } }) => {
     const { formattedTime, getFromNow } = useMeta();
@@ -22,8 +22,8 @@ const HomepageIndex = ({ data, pageContext: { gameWeekIndex: selectedGameWeek } 
     } = data;
 
     const Positions = usePositions();
-    const Divisions = useDivisions()
-    const Managers = useManagers()
+    const Divisions = useDivisions();
+    const Managers = useManagers();
     const Standings = new CStandings(divisionStats);
 
     return (
