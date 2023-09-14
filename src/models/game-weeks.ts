@@ -1,3 +1,5 @@
+import fromNow from 'fromnow';
+
 export class GameWeekFixture {
     id: number;
     event: number;
@@ -28,18 +30,21 @@ export class GameWeek {
     hasPassed: boolean;
     start: Date;
     end: Date;
+    endsIn: string;
     isCurrent: boolean;
     hasCup: boolean;
     startFromNow: string;
     endFromNow: string;
     fixtures: GameWeekFixture[];
     constructor(gameWeek: GameWeekAPI) {
+        this.start = new Date(gameWeek.start);
+        this.end = new Date(gameWeek.end);
+        const lt48Hrs = (this.end - Date.now()) / 1000 / 60 / 60 < 48;
         this.id = gameWeek.id;
         this.label = gameWeek.label;
         this.url = gameWeek.url;
         this.hasPassed = gameWeek.sinceStartMs > 0;
-        this.start = new Date(gameWeek.start);
-        this.end = new Date(gameWeek.end);
+        this.endsIn = fromNow(gameWeek.end, { max: lt48Hrs ? 2 : 1, zero: false });
         this.isCurrent = gameWeek.isCurrent;
         this.hasCup = gameWeek.hasCup;
         this.startFromNow = gameWeek.startFromNow;
