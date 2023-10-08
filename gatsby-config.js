@@ -28,9 +28,7 @@ module.exports = {
     },
     plugins: [
         'gatsby-plugin-use-query-params',
-        {
-            resolve: `gatsby-plugin-gatsby-cloud`,
-        },
+        'gatsby-plugin-netlify',
         {
             resolve: 'gatsby-plugin-buildtime-timezone',
             options: {

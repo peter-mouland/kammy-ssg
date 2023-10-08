@@ -10,20 +10,10 @@ import NavBar from '../../components/nav-bar';
 
 import type { HeadFC, PageProps } from 'gatsby';
 
-const regenerateGatsby = (setIsLoading: (_: boolean) => void) => {
-    setIsLoading(true);
-    return fetch('https://webhook.gatsbyjs.com/hooks/data_source/publish/b5688433-a49a-4368-84e6-8a08eb2e4377', {
+const regenerateNetlify = () =>
+    fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
         method: 'post',
     });
-};
-
-// eslint-disable-next-line no-unused-vars
-// const regenerateNetlify = (setIsLoading) => {
-//     setIsLoading(true);
-//     return fetch('https://api.netlify.com/build_hooks/5f5fd04913fd8644b328305a', {
-//         method: 'post',
-//     });
-// };
 
 const AdminPage: React.FC<PageProps> = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -32,7 +22,11 @@ const AdminPage: React.FC<PageProps> = () => {
         setCookie('is-admin', 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 });
     });
     const { formattedTime, getFromNow } = useMeta();
-    const publish = () => regenerateGatsby(setIsLoading);
+    const publish = () => {
+        setIsLoading(true);
+        return regenerateNetlify();
+    };
+
     return (
         <Layout.Container>
             <Layout.PrimaryNav>
