@@ -7,3 +7,5 @@
   NODE_VERSION = "18.12.1"
   NETLIFY_USE_YARN = "true"
   YARN_VERSION = "3.3.1" #or other version
+[build.processing]
+  skip_processing = true

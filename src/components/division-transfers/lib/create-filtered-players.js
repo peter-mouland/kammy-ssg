@@ -2,10 +2,10 @@ import sortBy from '@kammy/sort-columns';
 
 const positionsOrder = ['gk', 'fb', 'cb', 'mid', 'am', 'str', 'sub'];
 
-const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions = [], transfers }) => {
+const createFilteredPlayers = ({ players, teams = {}, selectedOptions = [], transfers }) => {
     const selectedPositions =
         selectedOptions.filter(({ group }) => group === 'position').map(({ value }) => value) || [];
-
+    console.log({ selectedOptions, selectedPositions });
     const selectedManagers =
         selectedOptions?.filter(({ group }) => group === 'manager').map(({ value }) => value) || [];
     const selectedPlayers = selectedOptions?.filter(({ group }) => group === 'player').map(({ value }) => value) || [];
@@ -55,7 +55,7 @@ const createFilteredPlayers = ({ playersArray = [], teams = {}, selectedOptions 
         .map(({ code }) => code)
         .concat();
 
-    return playersArray
+    return players.all
         .filter(
             ({ positionId, new: isNew, code }) =>
                 (selectedPositions.includes(positionId) || !selectedPositions.length) &&

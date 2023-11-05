@@ -1,4 +1,4 @@
-import { getSquadWarnings, consts } from '@kammy/helpers.squad-rules';
+import { getSquadWarnings, changeTypes } from '@kammy/helpers.squad-rules';
 
 import usePlayers from './use-players';
 import useGameWeeks from './use-game-weeks';
@@ -6,8 +6,6 @@ import useManagers from './use-managers';
 import { useTransfersSheet } from './use-google-transfers';
 
 const inDateRange = ({ start, end }, comparison) => comparison < end && comparison > start;
-
-const { changeTypes } = consts;
 
 const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
     const players = usePlayers();
@@ -18,6 +16,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
 
     const transferWithoutWarnings = [];
     let updatedTeams = Squads.byManagerId;
+
     const changes =
         transfersQuery.data?.map((change) => {
             if (!change.isPending) return change; // only check pending transfers
@@ -26,10 +25,10 @@ const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
                 transfers: transferWithoutWarnings,
                 managerId: change.managerId,
                 manager: managers.byId[change.managerId],
-                changeType: change.type,
                 playerIn: players.byCode[change.codeIn],
                 playerOut: players.byCode[change.codeOut],
-                teams: updatedTeams,
+                teamsByManager: updatedTeams,
+                type: change.type,
             });
             if (!warnings.length) {
                 transferWithoutWarnings.push(change);

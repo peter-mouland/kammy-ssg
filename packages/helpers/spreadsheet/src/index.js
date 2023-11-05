@@ -22,6 +22,7 @@ const kammyProxy = async (api, data) => {
 };
 
 module.exports = {
+    spreadsheets,
     fetchTransfers: (divisionID, { season } = {}) =>
         fetchr(spreadsheets.TRANSFERS_ID, `/values/${divisionID}`, { season }).then((data) =>
             formatTransfers(data, divisionID),

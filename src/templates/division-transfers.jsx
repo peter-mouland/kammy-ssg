@@ -14,14 +14,14 @@ import useGameWeeks from '../hooks/use-game-weeks';
 import useSquadChanges from '../hooks/use-squad-changes';
 import useManagers from '../hooks/use-managers';
 import NavBar from '../components/nav-bar';
-import useDivisions from "../hooks/use-divisions";
+import useDivisions from '../hooks/use-divisions';
 
 const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisionId } }) => {
     const {
         currentTeams: { group: currentTeams },
     } = data;
     const Squads = new CSquads(currentTeams);
-    const Divisions = useDivisions()
+    const Divisions = useDivisions();
     const { isAdmin } = useAdmin();
     const players = usePlayers();
     const GameWeeks = useGameWeeks();
@@ -104,7 +104,9 @@ export const query = graphql`
                         name
                         club
                         url
-                        position { label }
+                        position {
+                            label
+                        }
                         positionId
                         nextGameWeekFixture {
                             fixtures {
