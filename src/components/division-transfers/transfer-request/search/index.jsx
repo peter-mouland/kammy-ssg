@@ -38,27 +38,16 @@ const createFilterOptions = ({ positions, managers = [], managerId }) => [
     },
 ];
 
-const Search = ({
-    positions,
-    managers,
-    managerId,
-    teams,
-    searchText,
-    playersArray,
-    defaultFilter,
-    onSelect,
-    transfers,
-}) => {
-    const filterOptions = createFilterOptions({ positions, managers, managerId, players: playersArray });
+const Search = ({ positions, managers, managerId, teams, searchText, players, defaultFilter, onSelect, transfers }) => {
+    const filterOptions = createFilterOptions({ positions, managers, managerId, players });
     const [playerFilter, setPlayerFilter] = useState(defaultFilter);
 
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter,
-        playersArray,
+        players,
         teams,
         transfers,
     });
-
     return (
         <Spacer all={{ vertical: Spacer.spacings.HUGE, horizontal: Spacer.spacings.SMALL }}>
             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
@@ -80,7 +69,7 @@ const Search = ({
                 </div>
             </Spacer>
             <div style={{ position: 'relative', zIndex: '1' }}>
-                {playersArray.length > 0 && <Players onSelect={onSelect} playersArray={filteredPlayers} />}
+                {players.all.length > 0 && <Players onSelect={onSelect} playersArray={filteredPlayers} />}
             </div>
         </Spacer>
     );

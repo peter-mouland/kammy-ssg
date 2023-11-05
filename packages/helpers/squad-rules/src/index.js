@@ -1,3 +1,3 @@
-export { default as getSquadWarnings } from './get-warnings';
-export { default as consts } from './consts';
-export { default as maxSwaps } from './swaps/max-swaps';
+export { getSquadWarnings } from './get-warnings';
+export { changeTypes } from './consts';
+export { swapCountLimit } from './rules/swap/swap-count-limit.js';

@@ -10,10 +10,3 @@ export const changeTypes = {
 export const MAX_SWAPS = 2;
 export const MAX_TRANSFERS = 2;
 export const MAX_PLAYERS_FROM_ONE_CLUB = 2;
-
-export default {
-    changeTypes,
-    MAX_SWAPS,
-    MAX_TRANSFERS,
-    MAX_PLAYERS_FROM_ONE_CLUB,
-};

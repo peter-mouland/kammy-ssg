@@ -1,86 +1,16 @@
-import { changeTypes, MAX_PLAYERS_FROM_ONE_CLUB, MAX_TRANSFERS } from './consts';
-import maxSwaps from './swaps/max-swaps';
-
-const managerHasTooManyTransfers = ({ managerTransfers, changeType }) => ({
-    error: managerTransfers.length >= MAX_TRANSFERS && changeType === changeTypes.TRANSFER,
-    message: `
-        It appears you have already made two <strong>transfers</strong> during this game week,
-        so this move may exceed your limit
-    `,
-});
-
-const newPlayerRequestWithOldPlayer = ({ playerIn, changeType }) => ({
-    error: !playerIn.new && changeType === changeTypes.NEW_PLAYER,
-    message: `<strong>${playerIn.name}</strong> is not marked as new. You may need to make a transfer instead`,
-});
-
-const transferWithNewPlayer = ({ playerIn, changeType }) => ({
-    error: playerIn.new && changeType !== changeTypes.NEW_PLAYER,
-    message: `<strong>${playerIn.name}</strong> is marked as 'new'. You may need to make a new player request instead.`,
-});
-
-const managerHasMoreThanTwoFromOneClub = ({ playerIn, clubPlayers }) => ({
-    error: clubPlayers[playerIn.club]?.length > MAX_PLAYERS_FROM_ONE_CLUB,
-    message: `
-        This transfer appears to make your team exceed the limit of two per club for <strong>${playerIn.club}!</strong>
-    `,
-});
-
-const playerInOtherTeam = ({ playersInOtherTeamsByCode, playerIn, playersInOtherTeams, changeType }) => {
-    let message;
-    const playerMessage = `It looks like <strong>${playerIn.name}</strong> is already in <strong>${
-        playersInOtherTeamsByCode[playerIn.code]?.managerId
-    }</strong>'s team`;
-
-    if (changeType === changeTypes.NEW_PLAYER) {
-        message = `Oops! This player is marked as new but appears to already be in another manager’s team.
-         Please submit but check with your friendly admins`;
-    } else if (changeType === changeTypes.SWAP) {
-        message = `Swaps are for moving players between the SUB spot and their assigned position. ${playerMessage}`;
-    } else {
-        message = playerMessage;
-    }
-    return {
-        error:
-            playersInOtherTeams.includes(playerIn.code) &&
-            changeType !== changeTypes.LOAN_END &&
-            changeType !== changeTypes.LOAN_START,
-        message,
-    };
-};
-
-const loanPlayerNotInOtherTeam = ({ playerIn, playerOut, playersInOtherTeams, newTeam, changeType }) => {
-    const playOutWithinNewTeam = newTeam.find((player) => player.code === playerOut.code);
-    return {
-        error: !playOutWithinNewTeam && changeType === changeTypes.LOAN_START,
-        message: `It looks like <strong>${playerOut.name}</strong> is not in your team. A "Loan Start" must involve <em>your</em> players`,
-    };
-};
-
-const playerPositionsDontMatch = ({ playerOut, playerIn, teamPLayerOut = {}, changeType }) => ({
-    error:
-        (changeType === changeTypes.SWAP && playerIn.pos !== playerOut.pos) ||
-        (changeType !== changeTypes.SWAP && teamPLayerOut.squadPositionId !== 'sub' && playerIn.pos !== playerOut.pos),
-    message: `This change appears to put a player in the wrong position within your team!`,
-});
-
-const playerAlreadyInValidTransfer = ({ transfers, playerIn }) => ({
-    error: transfers.find(
-        ({ transferIn, type, warnings = [] }) =>
-            warnings.length === 0 && transferIn === playerIn.code && type !== changeTypes.NEW_PLAYER,
-    ),
-    message: `<strong>${playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
-});
-
-const swapInvolvingNonTeamMember = ({ changeType, teamPLayerIn, teamPLayerOut }) => ({
-    error: (!teamPLayerIn || !teamPLayerOut) && changeType === changeTypes.SWAP,
-    message: `Both players in a swap must be from within your team`,
-});
-
-const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
-    error: !teamPLayerOut && changeType !== changeTypes.SWAP,
-    message: `It looks like you're trying to drop a player that is not in your team`,
-});
+import { getNewTeam } from './utils/get-new-team';
+import { transferCountLimit } from './rules/transfer/transfer-count-limit';
+import { transferWithNewPlayer } from './rules/transfer/transfer-with-new-player';
+import { swapCountLimit } from './rules/swap/swap-count-limit';
+import { swapInvolvingMixedPositions } from './rules/swap/swap-involving-mixed-position';
+import { swapInvolvingNonTeamMember } from './rules/swap/swap-involving-non-team-member';
+import { newPlayerRequestWithNonNewPlayer } from './rules/new-player/new-player-request-with-non-new-player';
+import { moreThanTwoFromOneClub } from './rules/generic/more-than-two-players-from-one-club';
+import { playerInAlreadyOwned } from './rules/generic/player-in-already-owned';
+import { loanPlayerNotOwned } from './rules/loan/loan-player-not-owned';
+import { playerOutNotInSquad } from './rules/generic/player-out-not-in-squad';
+import { playerPositionsDoNotMatch } from './rules/generic/player-positions-do-not-match';
+import { playerInAlreadyInValidTransfer } from './rules/generic/player-in-already-in-valid-transfer';
 
 // todo: NEW PLAYER
 // - Be warned! If you win this new player, your team may exceed the limit of two per club.
@@ -106,7 +36,7 @@ const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
 
 //
 // // loans
-// const loans = changeData.filter((change) => {
+// const loans = changeState.filter((change) => {
 //     if (!playersByCode[change.playerOut].loans) playersByCode[change.playerOut].loans = [];
 //     if (!playersByCode[change.playerOut].transfers) playersByCode[change.playerOut].transfers = [];
 //
@@ -128,7 +58,7 @@ const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
 // });
 //
 // console.log({ gameWeek });
-// console.log({ changeData });
+// console.log({ changeState });
 // console.log({ loans });
 // console.log({ playersByCode });
 // const loanPairings = loans.map((loan) => {
@@ -166,92 +96,22 @@ const nonTeamMemberLeaving = ({ changeType, teamPLayerOut }) => ({
 //     return loan;
 // });
 
-const getSquadWarnings = ({ playerIn, playerOut, teams, managerId, changeType, transfers }) => {
-    if (!managerId || !playerIn || !playerOut || !changeType) {
-        return { warnings: [] };
-    }
-    // "transfers" arent "squads", so no  .plpayers a
-    const { players } = teams[managerId];
-    const teamPLayerOut = players.find((player) => player.code === playerOut.code);
-    const teamPLayerIn = players.find((player) => player.code === playerIn.code);
-    const playerInSquadPosition = teamPLayerIn ? teamPLayerIn.squadPositionId : null;
-    const playerOutSquadPosition = teamPLayerOut ? teamPLayerOut.squadPositionId : null;
-
-    const newTeamUnsorted = players.filter((player) => {
-        if (changeType === changeTypes.SWAP) {
-            return player.code !== playerOut.code && player.code !== playerIn.code;
-        } else if (changeType === changeTypes.NEW_PLAYER) {
-            return true; // new player  not be assumed to have been won
-        }
-        return player.code !== playerOut.code;
-    });
-    if (changeType === changeTypes.SWAP) {
-        newTeamUnsorted.push({
-            managerId,
-            squadPositionIndex: teamPLayerIn?.squadPositionIndex,
-            squadPositionId: playerInSquadPosition,
-            player: playerOut,
-            playerCode: playerOut.code,
-            playerPositionId: playerOut.positionId,
-        });
-    }
-    if (changeType !== changeTypes.NEW_PLAYER) {
-        newTeamUnsorted.push({
-            managerId,
-            squadPositionIndex: teamPLayerOut?.squadPositionIndex,
-            player: playerIn,
-            playerCode: playerIn.code,
-            playerPositionId: playerIn.positionId,
-            squadPositionId: playerOutSquadPosition,
-        });
-    }
-
-    const newTeam = newTeamUnsorted.sort((a, b) => (a.squadPositionIndex < b.squadPositionIndex ? -1 : 1));
-    const newTeams = {
-        ...teams,
-        [managerId]: {
-            managerId,
-            players: newTeam, // ".players" needed to mimic teams coming from server
-        },
-    };
-
-    const playersInOtherTeamsByCode = Object.keys(teams).reduce((prev, teamManagerId) => {
-        if (teamManagerId === managerId) return prev;
-        return {
-            ...prev,
-            ...teams[managerId].byCode,
-        };
-    }, {});
-
-    const playersInOtherTeams = Object.keys(playersInOtherTeamsByCode).map((c) => parseInt(c, 10));
-
-    const managerTransfers = transfers.filter(
-        (transfer) => transfer.managerId === managerId && transfer.type === changeTypes.TRANSFER,
-    );
-    const managerSwaps = transfers.filter(
-        (transfer) => transfer.managerId === managerId && transfer.type === changeTypes.SWAP,
-    );
-
-    const clubPlayers = newTeam.reduce(
-        (prev, player) => ({
-            ...prev,
-            [player.club]: [...(prev[player.club] || []), player].filter(Boolean),
-        }),
-        {},
-    );
+export const getSquadWarnings = (changeState) => {
+    const { teamsWithTransfer } = getNewTeam(changeState);
 
     const warnings = [
-        nonTeamMemberLeaving({ changeType, teamPLayerOut }),
-        swapInvolvingNonTeamMember({ changeType, teamPLayerIn, teamPLayerOut }),
-        newPlayerRequestWithOldPlayer({ playerIn, changeType }),
-        transferWithNewPlayer({ playerIn, changeType }),
-        managerHasTooManyTransfers({ managerTransfers, changeType }),
-        changeType === changeTypes.SWAP ? maxSwaps({ managerSwaps }) : {},
-        managerHasMoreThanTwoFromOneClub({ playerIn, clubPlayers }),
-        loanPlayerNotInOtherTeam({ playerIn, playerOut, playersInOtherTeams, newTeam, changeType }),
-        playerInOtherTeam({ playerIn, playersInOtherTeams, playersInOtherTeamsByCode, changeType }),
-        playerPositionsDontMatch({ playerIn, playerOut, teamPLayerOut, changeType }),
-        playerAlreadyInValidTransfer({ playerIn, transfers }),
+        playerInAlreadyOwned(changeState),
+        playerOutNotInSquad(changeState),
+        swapInvolvingNonTeamMember(changeState),
+        swapInvolvingMixedPositions(changeState),
+        newPlayerRequestWithNonNewPlayer(changeState),
+        transferWithNewPlayer(changeState),
+        transferCountLimit(changeState),
+        swapCountLimit(changeState),
+        moreThanTwoFromOneClub(changeState),
+        loanPlayerNotOwned(changeState),
+        playerPositionsDoNotMatch(changeState),
+        playerInAlreadyInValidTransfer(changeState),
 
         // todo: show something to say pending transfer involved has _potential_ issue
         // playerAlreadyInTransferWithWarnings({ playerIn, transfers }),
@@ -265,13 +125,7 @@ const getSquadWarnings = ({ playerIn, playerOut, teams, managerId, changeType, t
         .map(({ message }) => message);
 
     return {
-        originalTeam: players,
-        originalTeams: teams,
         warnings,
-        transferHasWarnings: !!warnings.length,
-        teamWithTransfer: newTeam,
-        teamsWithTransfer: newTeams,
+        teamsWithTransfer,
     };
 };
-
-export default getSquadWarnings;

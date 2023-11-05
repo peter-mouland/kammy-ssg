@@ -1,17 +1,17 @@
 const http = require('https');
 const path = require('path');
 const fs = require('fs');
+const { spreadsheets } = require('@kammy/helpers.spreadsheet');
 
 const logger = require('./log');
-const constants = require('./constants');
 
 const getFixturePath = (url, season = '2223') => {
     let slimUrl = url
         .replace('https://fantasy.premierleague.com/api/', '')
         .replace('https://sheets.googleapis.com/v4/spreadsheets/', '')
-        .replace(constants.spreadsheets.ACCESS_KEY, '')
-        .replace(constants.spreadsheets.SETUP_ID, 'setup')
-        .replace(constants.spreadsheets.TRANSFERS_ID, 'transfers')
+        .replace(spreadsheets.ACCESS_KEY, '')
+        .replace(spreadsheets.SETUP_ID, 'setup')
+        .replace(spreadsheets.TRANSFERS_ID, 'transfers')
         .replace('?key=', '.json');
     if (slimUrl.endsWith('/')) {
         slimUrl = slimUrl.replace(/\/$/, '.json');
