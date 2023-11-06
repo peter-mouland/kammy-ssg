@@ -1,7 +1,7 @@
 import { changeTypes, MAX_TRANSFERS } from '../../consts';
 
-export const transferCountLimit = (changeState) => {
-    const managerTransfers = changeState.transfers.filter(
+export const transferCountLimit = (changeState, { transfers }) => {
+    const managerTransfers = transfers.filter(
         (transfer) => transfer.managerId === changeState.managerId && transfer.type === changeTypes.TRANSFER,
     );
     return {

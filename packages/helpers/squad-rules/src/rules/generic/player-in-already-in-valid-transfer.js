@@ -1,11 +1,11 @@
 import { changeTypes } from '../../consts';
 
-export const playerInAlreadyInValidTransfer = (changeState) => {
+export const playerInAlreadyInValidTransfer = (changeState, { transfers }) => {
     if (!changeState.playerIn) return {};
     return {
-        error: changeState.transfers.find(
-            ({ transferIn, type, warnings = [] }) =>
-                warnings.length === 0 && transferIn === changeState.playerIn.code && type !== changeTypes.NEW_PLAYER,
+        error: transfers.find(
+            ({ codeIn, type, warnings = [] }) =>
+                warnings.length === 0 && codeIn === changeState.playerIn.code && type !== changeTypes.NEW_PLAYER,
         ),
         message: `<strong>${changeState.playerIn.name}</strong> has already been selected by another manager in a pending transfer.`,
     };

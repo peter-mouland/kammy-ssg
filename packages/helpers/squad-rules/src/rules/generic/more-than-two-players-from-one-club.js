@@ -1,9 +1,9 @@
 import { MAX_PLAYERS_FROM_ONE_CLUB } from '../../consts';
 import { getNewTeam } from '../../utils/get-new-team';
 
-export const moreThanTwoFromOneClub = (changeState) => {
+export const moreThanTwoFromOneClub = (changeState, divisionData) => {
     if (!changeState.playerIn) return {};
-    const { newTeam } = getNewTeam(changeState);
+    const { newTeam } = getNewTeam(changeState, divisionData);
     const clubPlayers = newTeam.reduce(
         (prev, player) => ({
             ...prev,

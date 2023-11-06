@@ -1,9 +1,9 @@
 import { changeTypes } from '../../consts';
 import { getNewTeam } from '../../utils/get-new-team';
 
-export const loanPlayerNotOwned = (changeState) => {
+export const loanPlayerNotOwned = (changeState, divisionData) => {
     if (!changeState.playerOut) return {};
-    const { newTeam } = getNewTeam(changeState);
+    const { newTeam } = getNewTeam(changeState, divisionData);
     const playerOutWithinNewTeam = newTeam.find((player) => player.code === changeState.playerOut.code);
     return {
         error: !playerOutWithinNewTeam && changeState.type === changeTypes.LOAN_START,
