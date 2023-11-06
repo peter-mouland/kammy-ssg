@@ -34,7 +34,6 @@ const PageBody = ({ data, pageContext: { gameWeekIndex: selectedGameWeek, divisi
     const Division = Divisions.getDivision(divisionId);
     const managersList = Managers.getManagersInDivision(Division.id);
     const isCurrentGameWeek = GameWeeks.isCurrentGameWeek(selectedGameWeek);
-
     return (
         <React.Fragment>
             <Layout.Title>Transfers</Layout.Title>

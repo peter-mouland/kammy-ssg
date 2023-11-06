@@ -1,8 +1,7 @@
 import { changeTypes } from '../consts';
 
-export const getNewTeam = (changeState) => {
-    console.log({ changeState });
-    const { players } = changeState.teamsByManager[changeState.managerId];
+export const getNewTeam = (changeState, { teamsByManager }) => {
+    const { players } = teamsByManager[changeState.managerId];
     const teamPLayerOut = players.find((player) => player.code === changeState.playerOut?.code);
     const teamPLayerIn = players.find((player) => player.code === changeState.playerIn?.code);
     const playerInSquadPosition = teamPLayerIn ? teamPLayerIn.squadPositionId : null;
@@ -41,7 +40,7 @@ export const getNewTeam = (changeState) => {
 
     const newTeam = unsortedTeam.sort((a, b) => (a.squadPositionIndex < b.squadPositionIndex ? -1 : 1));
     const teamsWithTransfer = {
-        ...changeState.teamsByManager,
+        ...teamsByManager,
         [changeState.managerId]: {
             managerId: changeState.managerId,
             players: newTeam, // ".players" needed to mimic teams coming from server

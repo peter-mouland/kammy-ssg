@@ -1,10 +1,10 @@
 import { changeTypes } from '../../consts';
 
-export const playerInAlreadyOwned = (changeState) => {
+export const playerInAlreadyOwned = (changeState, { teamsByManager }) => {
     if (!changeState.playerIn) return {};
-    const playersInOtherTeamsByCode = Object.keys(changeState.teamsByManager).reduce((prev, managerId) => {
+    const playersInOtherTeamsByCode = Object.keys(teamsByManager).reduce((prev, managerId) => {
         if (managerId === changeState.managerId) return prev;
-        const { players } = changeState.teamsByManager[managerId];
+        const { players } = teamsByManager[managerId];
         return {
             ...prev,
             ...players.reduce((prevPlayer, player) => ({ ...prevPlayer, [player.code]: player }), {}),

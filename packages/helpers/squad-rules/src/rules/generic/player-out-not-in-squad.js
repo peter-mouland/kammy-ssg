@@ -1,6 +1,6 @@
-export const playerOutNotInSquad = (changeState) => {
+export const playerOutNotInSquad = (changeState, { teamsByManager }) => {
     if (!changeState.playerOut) return {};
-    const team = changeState.teamsByManager[changeState.managerId];
+    const team = teamsByManager[changeState.managerId];
     const teamPLayerOut = team.players.find((player) => player.code === changeState.playerOut?.code);
     return {
         error: !teamPLayerOut,

@@ -96,22 +96,20 @@ import { playerInAlreadyInValidTransfer } from './rules/generic/player-in-alread
 //     return loan;
 // });
 
-export const getSquadWarnings = (changeState) => {
-    const { teamsWithTransfer } = getNewTeam(changeState);
-
+export const getSquadWarnings = (changeState, divisionData) => {
     const warnings = [
-        playerInAlreadyOwned(changeState),
-        playerOutNotInSquad(changeState),
-        swapInvolvingNonTeamMember(changeState),
-        swapInvolvingMixedPositions(changeState),
-        newPlayerRequestWithNonNewPlayer(changeState),
-        transferWithNewPlayer(changeState),
-        transferCountLimit(changeState),
-        swapCountLimit(changeState),
-        moreThanTwoFromOneClub(changeState),
-        loanPlayerNotOwned(changeState),
-        playerPositionsDoNotMatch(changeState),
-        playerInAlreadyInValidTransfer(changeState),
+        playerPositionsDoNotMatch(changeState, divisionData),
+        moreThanTwoFromOneClub(changeState, divisionData),
+        playerInAlreadyInValidTransfer(changeState, divisionData),
+        playerInAlreadyOwned(changeState, divisionData),
+        playerOutNotInSquad(changeState, divisionData),
+        swapCountLimit(changeState, divisionData),
+        swapInvolvingNonTeamMember(changeState, divisionData),
+        swapInvolvingMixedPositions(changeState, divisionData),
+        newPlayerRequestWithNonNewPlayer(changeState, divisionData),
+        transferWithNewPlayer(changeState, divisionData),
+        transferCountLimit(changeState, divisionData),
+        loanPlayerNotOwned(changeState, divisionData),
 
         // todo: show something to say pending transfer involved has _potential_ issue
         // playerAlreadyInTransferWithWarnings({ playerIn, transfers }),
@@ -126,6 +124,5 @@ export const getSquadWarnings = (changeState) => {
 
     return {
         warnings,
-        teamsWithTransfer,
     };
 };

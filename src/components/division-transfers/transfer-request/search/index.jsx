@@ -41,7 +41,6 @@ const createFilterOptions = ({ positions, managers = [], managerId }) => [
 const Search = ({ positions, managers, managerId, teams, searchText, players, defaultFilter, onSelect, transfers }) => {
     const filterOptions = createFilterOptions({ positions, managers, managerId, players });
     const [playerFilter, setPlayerFilter] = useState(defaultFilter);
-
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter,
         players,

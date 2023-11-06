@@ -1,4 +1,5 @@
 import { getSquadWarnings, changeTypes } from '@kammy/helpers.squad-rules';
+import { getNewTeam } from '@kammy/helpers.squad-rules/src/utils/get-new-team';
 
 import usePlayers from './use-players';
 import useGameWeeks from './use-game-weeks';
@@ -20,16 +21,17 @@ const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
     const changes =
         transfersQuery.data?.map((change) => {
             if (!change.isPending) return change; // only check pending transfers
-
-            const { warnings, teamsWithTransfer } = getSquadWarnings({
-                transfers: transferWithoutWarnings,
+            const changeState = {
+                type: change.type,
                 managerId: change.managerId,
-                manager: managers.byId[change.managerId],
+                comment: change.comment,
+                isPending: change.isPending,
                 playerIn: players.byCode[change.codeIn],
                 playerOut: players.byCode[change.codeOut],
-                teamsByManager: updatedTeams,
-                type: change.type,
-            });
+            };
+            const divisionData = { transfers: transferWithoutWarnings, teamsByManager: updatedTeams };
+            const { warnings } = getSquadWarnings(changeState, divisionData);
+            const { teamsWithTransfer } = getNewTeam(changeState, divisionData);
             if (!warnings.length) {
                 transferWithoutWarnings.push(change);
             }

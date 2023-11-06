@@ -5,7 +5,6 @@ const positionsOrder = ['gk', 'fb', 'cb', 'mid', 'am', 'str', 'sub'];
 const createFilteredPlayers = ({ players, teams = {}, selectedOptions = [], transfers }) => {
     const selectedPositions =
         selectedOptions.filter(({ group }) => group === 'position').map(({ value }) => value) || [];
-    console.log({ selectedOptions, selectedPositions });
     const selectedManagers =
         selectedOptions?.filter(({ group }) => group === 'manager').map(({ value }) => value) || [];
     const selectedPlayers = selectedOptions?.filter(({ group }) => group === 'player').map(({ value }) => value) || [];

@@ -1,8 +1,8 @@
 import { changeTypes } from '../../consts';
 
-export const swapInvolvingMixedPositions = (changeState) => {
+export const swapInvolvingMixedPositions = (changeState, { teamsByManager }) => {
     if (!changeState.playerOut || changeState.playerIn) return {};
-    const { players } = changeState.teamsByManager[changeState.managerId];
+    const { players } = teamsByManager[changeState.managerId];
     const teamPLayerOut = players.find((player) => player.code === changeState.playerOut?.code);
     const teamPLayerIn = players.find((player) => player.code === changeState.playerIn?.code);
 

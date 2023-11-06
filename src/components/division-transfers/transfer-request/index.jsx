@@ -58,7 +58,10 @@ const createPositionFilter = (selectedPlayer) =>
         ? { value: selectedPlayer.positionId, label: selectedPlayer.positionId.toUpperCase(), group: 'position' }
         : null;
 
-const getPlayerRequestConfig = ({ type, teamsByManager, players, managerId, selectedPlayer, playerIn, playerOut }) => {
+const getPlayerRequestConfig = (
+    { type, managerId, selectedPlayer, playerIn, playerOut },
+    { players, teamsByManager },
+) => {
     switch (true) {
         case type === changeTypes.SWAP: {
             const sub =
@@ -145,10 +148,7 @@ const getPlayerRequestConfig = ({ type, teamsByManager, players, managerId, sele
     }
 };
 
-const initialChangeState = ({ players, teamsByManager, transfers }) => ({
-    transfers,
-    players,
-    teamsByManager,
+const initialChangeState = {
     type: null,
     managerId: null,
     comment: null,
@@ -157,73 +157,44 @@ const initialChangeState = ({ players, teamsByManager, transfers }) => ({
     isPending: true,
     drawerType: null,
     selectedPlayer: null,
-    warnings: [],
-});
+};
 
 const changeReducer = (state, action) => {
-    console.log(action.type, state);
     switch (action.type) {
         case 'SET_MANAGER':
             return {
-                ...initialChangeState(state),
+                ...initialChangeState,
                 managerId: action.data,
             };
         case 'SET_TYPE': {
-            // use latest type in config calcs
-            const config = getPlayerRequestConfig({ ...state, type: action.data });
             return {
                 ...state,
-                playerIn: config.in?.preselect,
+                playerIn: action.config.in?.preselect,
                 playerOut: null,
                 type: action.data,
-                config,
             };
         }
         case 'OPEN_PLAYER_OUT_DRAWER': {
-            const config = getPlayerRequestConfig(state);
             return {
                 ...state,
                 drawerType: PLAYER_OUT,
                 selectedPlayer: state.playerIn,
-                search: {
-                    defaultFilter: config.out.defaultFilter,
-                    players: config.out.players,
-                    searchText: config.out.searchText,
-                    onSelectType: 'SET_PLAYER_OUT',
-                },
             };
         }
         case 'OPEN_PLAYER_IN_DRAWER': {
-            const config = getPlayerRequestConfig(state);
             return {
                 ...state,
                 drawerType: PLAYER_IN,
                 selectedPlayer: state.playerOut,
-                search: {
-                    defaultFilter: config.in.defaultFilter,
-                    players: config.in.players,
-                    searchText: config.in.searchText,
-                    onSelectType: 'SET_PLAYER_IN',
-                },
             };
         }
         case 'SET_PLAYER_IN': {
             const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
-            const setPlayerInState = { ...closeDrawerState, playerIn: action.player };
-            const { warnings } = getSquadWarnings(setPlayerInState) || {};
-            return {
-                ...setPlayerInState,
-                warnings,
-            };
+            return { ...closeDrawerState, playerIn: action.player };
         }
         case 'SET_PLAYER_OUT': {
             const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
-            const setPlayerOutState = { ...closeDrawerState, playerOut: action.player };
-            const { warnings } = getSquadWarnings(setPlayerOutState) || {};
-            return {
-                ...setPlayerOutState,
-                warnings,
-            };
+            return { ...closeDrawerState, playerOut: action.player };
         }
         case 'SET_COMMENT':
             return {
@@ -238,7 +209,7 @@ const changeReducer = (state, action) => {
                 search: null,
             };
         case 'RESET':
-            return initialChangeState(state);
+            return initialChangeState;
         default:
             return state;
     }
@@ -248,10 +219,26 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
     const { isPending, mutate: saveSquadChange } = useMutateTransfersSheet({ divisionId });
     const Positions = usePositions();
     const players = usePlayers();
-    const [changeState, dispatchChange] = useReducer(
-        changeReducer,
-        initialChangeState({ transfers, players, teamsByManager }),
-    );
+    const [changeState, dispatchChange] = useReducer(changeReducer, initialChangeState);
+    const { warnings } = getSquadWarnings(changeState, { transfers, players, teamsByManager }) || {};
+    const config = getPlayerRequestConfig(changeState, { players, teamsByManager });
+
+    const search =
+        changeState.drawerType === PLAYER_OUT
+            ? {
+                  defaultFilter: config.out.defaultFilter,
+                  players: config.out.players,
+                  searchText: config.out.searchText,
+                  onSelectType: 'SET_PLAYER_OUT',
+              }
+            : changeState.drawerType === PLAYER_IN
+            ? {
+                  defaultFilter: config.in.defaultFilter,
+                  players: config.in.players,
+                  searchText: config.in.searchText,
+                  onSelectType: 'SET_PLAYER_IN',
+              }
+            : {};
 
     return (
         <div className={bem(null, null, 'page-content')}>
@@ -263,16 +250,16 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                 placement={Drawer.placements.RIGHT}
                 theme={Drawer.themes.LIGHT}
             >
-                {changeState.search ? (
+                {changeState.drawerType ? (
                     <Search
                         positions={Positions}
                         managers={managersList}
                         managerId={changeState.managerId}
                         teams={teamsByManager}
-                        defaultFilter={changeState.search?.defaultFilter}
-                        players={changeState.search?.players}
-                        searchText={changeState.search?.searchText}
-                        onSelect={(player) => dispatchChange({ type: changeState.search.onSelectType, player })}
+                        defaultFilter={search.defaultFilter}
+                        players={search.players}
+                        searchText={search.searchText}
+                        onSelect={(player) => dispatchChange({ type: search.onSelectType, player })}
                         transfers={transfers}
                     />
                 ) : null}
@@ -303,7 +290,7 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                             id="change-type"
                             options={Object.values(changeTypes)}
                             checked={changeState.type}
-                            onChange={(type) => dispatchChange({ type: 'SET_TYPE', data: type })}
+                            onChange={(type) => dispatchChange({ type: 'SET_TYPE', data: type, config })}
                         />
                     </Accordion.Content>
                 )}
@@ -318,8 +305,7 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                             <Spacer all={{ right: Spacer.spacings.SMALL }}>
                                 <span className={bem('player-cta-button')}>
                                     <Button onClick={() => dispatchChange({ type: 'OPEN_PLAYER_OUT_DRAWER' })}>
-                                        {changeState.playerOut ? 'Change ' : 'Pick '}{' '}
-                                        {changeState.config.out.buttonText}
+                                        {changeState.playerOut ? 'Change ' : 'Pick '} {config.out.buttonText}
                                     </Button>
                                 </span>
                             </Spacer>
@@ -337,7 +323,7 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                             <Spacer all={{ right: Spacer.spacings.SMALL }}>
                                 <span className={bem('player-cta-button')}>
                                     <Button onClick={() => dispatchChange({ type: 'OPEN_PLAYER_IN_DRAWER' })}>
-                                        {changeState.playerIn ? 'Change ' : 'Pick '} {changeState.config.in.buttonText}
+                                        {changeState.playerIn ? 'Change ' : 'Pick '} {config.in.buttonText}
                                     </Button>
                                 </span>
                             </Spacer>
@@ -350,9 +336,9 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                                 )}
                             </span>
                         </Spacer>
-                        {changeState.warnings.length > 0 ? (
+                        {warnings.length > 0 ? (
                             <Spacer all={{ bottom: Spacer.spacings.SMALL }}>
-                                <TransferWarnings warnings={changeState.warnings} />
+                                <TransferWarnings warnings={warnings} />
                             </Spacer>
                         ) : null}
                     </Accordion.Content>
