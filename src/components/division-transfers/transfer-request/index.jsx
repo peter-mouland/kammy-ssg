@@ -159,66 +159,71 @@ const initialChangeState = {
     selectedPlayer: null,
 };
 
-const changeReducer = (state, action) => {
-    switch (action.type) {
-        case 'SET_MANAGER':
-            return {
-                ...initialChangeState,
-                managerId: action.data,
-            };
-        case 'SET_TYPE': {
-            return {
-                ...state,
-                playerIn: action.config.in?.preselect,
-                playerOut: null,
-                type: action.data,
-            };
+const changeReducerFactory = (divisionData) => {
+    const changeReducer = (state, action) => {
+        switch (action.type) {
+            case 'SET_MANAGER':
+                return {
+                    ...initialChangeState,
+                    managerId: action.data,
+                };
+            case 'SET_TYPE': {
+                const config = getPlayerRequestConfig({ ...state, type: action.data }, divisionData);
+                return {
+                    ...state,
+                    playerIn: config.in?.preselect,
+                    playerOut: null,
+                    type: action.data,
+                };
+            }
+            case 'OPEN_PLAYER_OUT_DRAWER': {
+                return {
+                    ...state,
+                    drawerType: PLAYER_OUT,
+                    selectedPlayer: state.playerIn,
+                };
+            }
+            case 'OPEN_PLAYER_IN_DRAWER': {
+                return {
+                    ...state,
+                    drawerType: PLAYER_IN,
+                    selectedPlayer: state.playerOut,
+                };
+            }
+            case 'SET_PLAYER_IN': {
+                const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
+                return { ...closeDrawerState, playerIn: action.player };
+            }
+            case 'SET_PLAYER_OUT': {
+                const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
+                return { ...closeDrawerState, playerOut: action.player };
+            }
+            case 'SET_COMMENT':
+                return {
+                    ...state,
+                    comment: action.data,
+                };
+            case 'CLOSE_DRAWER':
+                return {
+                    ...state,
+                    selectedPlayer: null,
+                    drawerType: null,
+                    search: null,
+                };
+            case 'RESET':
+                return initialChangeState;
+            default:
+                return state;
         }
-        case 'OPEN_PLAYER_OUT_DRAWER': {
-            return {
-                ...state,
-                drawerType: PLAYER_OUT,
-                selectedPlayer: state.playerIn,
-            };
-        }
-        case 'OPEN_PLAYER_IN_DRAWER': {
-            return {
-                ...state,
-                drawerType: PLAYER_IN,
-                selectedPlayer: state.playerOut,
-            };
-        }
-        case 'SET_PLAYER_IN': {
-            const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
-            return { ...closeDrawerState, playerIn: action.player };
-        }
-        case 'SET_PLAYER_OUT': {
-            const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
-            return { ...closeDrawerState, playerOut: action.player };
-        }
-        case 'SET_COMMENT':
-            return {
-                ...state,
-                comment: action.data,
-            };
-        case 'CLOSE_DRAWER':
-            return {
-                ...state,
-                selectedPlayer: null,
-                drawerType: null,
-                search: null,
-            };
-        case 'RESET':
-            return initialChangeState;
-        default:
-            return state;
-    }
+    };
+    return changeReducer;
 };
 
 const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers, squads }) => {
     const { isPending, mutate: saveSquadChange } = useMutateTransfersSheet({ divisionId });
     const Positions = usePositions();
     const players = usePlayers();
+    const changeReducer = changeReducerFactory({ transfers, players, teamsByManager });
     const [changeState, dispatchChange] = useReducer(changeReducer, initialChangeState);
     const { warnings } = getSquadWarnings(changeState, { transfers, players, teamsByManager }) || {};
     const config = getPlayerRequestConfig(changeState, { players, teamsByManager });
@@ -290,7 +295,7 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                             id="change-type"
                             options={Object.values(changeTypes)}
                             checked={changeState.type}
-                            onChange={(type) => dispatchChange({ type: 'SET_TYPE', data: type, config })}
+                            onChange={(type) => dispatchChange({ type: 'SET_TYPE', data: type })}
                         />
                     </Accordion.Content>
                 )}
