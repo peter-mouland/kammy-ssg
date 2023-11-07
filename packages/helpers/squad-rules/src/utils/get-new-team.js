@@ -8,13 +8,13 @@ export const getNewTeam = (changeState, { teamsByManager }) => {
     const playerOutSquadPosition = teamPLayerOut ? teamPLayerOut.squadPositionId : null;
     const unsortedTeam = players.filter((player) => {
         if (changeState.type === changeTypes.SWAP) {
-            return player.code !== changeState.playerOut.code && player.code !== changeState.playerIn.code;
+            return player.code !== changeState.playerOut?.code && player.code !== changeState.playerIn?.code;
         } else if (changeState.type === changeTypes.NEW_PLAYER) {
             return true; // new player  not be assumed to have been won
         }
-        return player.code !== changeState.playerOut.code;
+        return player.code !== changeState.playerOut?.code;
     });
-    if (changeState.type === changeTypes.SWAP) {
+    if (changeState.type === changeTypes.SWAP && changeState.playerOut) {
         unsortedTeam.push({
             ...changeState.playerOut,
             managerId: changeState.managerId,
