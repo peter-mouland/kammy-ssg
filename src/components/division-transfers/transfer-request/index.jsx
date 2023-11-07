@@ -192,10 +192,12 @@ const changeReducerFactory = (divisionData) => {
             }
             case 'SET_PLAYER_IN': {
                 const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
+                // console.log('SET_PLAYER_IN', { state, closeDrawerState });
                 return { ...closeDrawerState, playerIn: action.player };
             }
             case 'SET_PLAYER_OUT': {
                 const closeDrawerState = changeReducer(state, { type: 'CLOSE_DRAWER' });
+                // console.log('SET_PLAYER_OUT', { state, closeDrawerState });
                 return { ...closeDrawerState, playerOut: action.player };
             }
             case 'SET_COMMENT':
@@ -372,7 +374,7 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
                                     divisionId,
                                     squads,
                                     saveSquadChange,
-                                    reset: dispatchChange({ type: 'RESET' }),
+                                    reset: () => dispatchChange({ type: 'RESET' }),
                                 })
                             }
                             state="buttonState"

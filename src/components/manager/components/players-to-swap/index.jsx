@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { maxSwaps, consts } from '@kammy/helpers.squad-rules';
+import { swapCountLimit, changeTypes } from '@kammy/helpers.squad-rules';
 
 import Player from '../../../player';
 import Accordion from '../accordion';
 
-const TYPE = consts.changeTypes.SWAP;
+const TYPE = changeTypes.SWAP;
 const SUB = 'sub';
 
 const getValidPlayersToSwap = ({ team }) => {
@@ -32,7 +32,7 @@ const PlayersToSwap = ({ team, swaps, applyChange }) => {
     const selectedPlayers = team.players.filter(({ isSelected }) => !!isSelected);
     const sub = team.players.find(({ squadPositionId }) => squadPositionId === SUB);
     const recommendPlayersToShow = getValidPlayersToSwap({ team });
-    const maxSwapsRules = maxSwaps({ managerSwaps: swaps });
+    // const maxSwapsRules = swapCountLimit({ managerSwaps: swaps });
 
     return (
         <Accordion
@@ -43,7 +43,8 @@ const PlayersToSwap = ({ team, swaps, applyChange }) => {
                     Player leaving: <strong>{sub.name}</strong>
                 </p>,
             ]}
-            rules={maxSwapsRules}
+            rules={{}}
+            // rules={maxSwapsRules}
         >
             <table>
                 <thead>
