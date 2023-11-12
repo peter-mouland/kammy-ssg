@@ -32,6 +32,7 @@ const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
             const divisionData = { transfers: transferWithoutWarnings, teamsByManager: updatedTeams };
             const { warnings } = getSquadWarnings(changeState, divisionData);
             const { teamsWithTransfer } = getNewTeam(changeState, divisionData);
+            if (changeState.managerId === 'tony') console.log(teamsWithTransfer.tony);
             if (!warnings.length) {
                 transferWithoutWarnings.push(change);
             }
