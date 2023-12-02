@@ -70,6 +70,10 @@ export default class GameWeeks {
         this.previousGameWeek = this.gameWeeks[this.currentGameWeekIndex - 1];
     }
 
+    getSelectedGameWeek(selectedGameWeek) {
+        return this.gameWeeks[selectedGameWeek];
+    }
+
     getGameWeekFromDate(date: Date) {
         return this.gameWeeks.find(({ start, end }) => inDateRange({ start, end }, date));
     }

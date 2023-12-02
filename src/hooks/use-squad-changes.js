@@ -11,16 +11,20 @@ const inDateRange = ({ start, end }, comparison) => comparison < end && comparis
 const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
     const players = usePlayers();
     const managers = useManagers();
-    const { gameWeeks } = useGameWeeks();
-    const gameWeek = gameWeeks[selectedGameWeek];
+    const GameWeeks = useGameWeeks();
+    const gameWeek = GameWeeks.getSelectedGameWeek(selectedGameWeek);
     const transfersQuery = useTransfersSheet({ divisionId });
 
     const transferWithoutWarnings = [];
     let updatedTeams = Squads.byManagerId;
-
     const changes =
         transfersQuery.data?.map((change) => {
-            if (!change.isPending) return change; // only check pending transfers
+            // divisionData must be in loop to get latest teams with current transfers
+            const divisionData = { transfers: transferWithoutWarnings, teamsByManager: updatedTeams };
+            // processing this gameWeek also checks previous GW's 'pending' transfers
+            // we assume all 'pending' are valid
+            const isSelectedGameWeek = selectedGameWeek !== GameWeeks.getGameWeekFromDate(change.timestamp).id;
+            if (isSelectedGameWeek && !change.isPending) return change;
             const changeState = {
                 type: change.type,
                 managerId: change.managerId,
@@ -29,10 +33,11 @@ const useSquadChanges = ({ selectedGameWeek, divisionId, Squads = {} }) => {
                 playerIn: players.byCode[change.codeIn],
                 playerOut: players.byCode[change.codeOut],
             };
-            const divisionData = { transfers: transferWithoutWarnings, teamsByManager: updatedTeams };
             const { warnings } = getSquadWarnings(changeState, divisionData);
             const { teamsWithTransfer } = getNewTeam(changeState, divisionData);
-            if (changeState.managerId === 'tony') console.log(teamsWithTransfer.tony);
+            // if (changeState.managerId === 'tim') {
+            //     console.log({ warnings }, teamsWithTransfer['tom-s'], teamsWithTransfer.tim);
+            // }
             if (!warnings.length) {
                 transferWithoutWarnings.push(change);
             }
