@@ -4,8 +4,8 @@
   port = 8888 # The port that the netlify dev will be accessible on
   publish = "public" # If you use a _redirect file, provide the path to your static content folder
 [build.environment]
-  NODE_VERSION = "18.12.1"
+  NODE_VERSION = "20.8.0"
   NETLIFY_USE_YARN = "true"
-  YARN_VERSION = "3.3.1" #or other version
+  YARN_VERSION = "4.1.0" #or other version
 [build.processing]
   skip_processing = true
