@@ -28,7 +28,7 @@
     "start:preview": "CI=true gatsby develop  --host 0.0.0.0",
     "playground": "GATSBY_GRAPHQL_IDE=playground gatsby develop",
     "build": "TZ='Europe/London' gatsby build --log-pages",
-    "build:prod": "NODE_ENV=production TZ='Europe/London' gatsby build --prefix-paths",
+    "build:prod": "GATSBY_CPU_COUNT=2 NODE_ENV=production TZ='Europe/London' gatsby build --prefix-paths",
     "--- util ---": "",
     "clean": "yarn clean:yarn && lerna clean --yes && yarn clean:npm",
     "clean:dist": "rimraf public && gatsby clean",
