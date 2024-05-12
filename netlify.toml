@@ -3,6 +3,8 @@
   command = "yarn start" # Command to start your dev server
   port = 8888 # The port that the netlify dev will be accessible on
   publish = "public" # If you use a _redirect file, provide the path to your static content folder
+[build]
+  memory = 6000
 [build.environment]
   NODE_VERSION = "20.8.0"
   NETLIFY_USE_YARN = "true"
