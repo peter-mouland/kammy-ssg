@@ -11,7 +11,7 @@
   "homepage": "https://github.com/peter-mouland/kammy-ssg#readme",
   "packageManager": "yarn@4.1.0",
   "engines": {
-    "node": "20.8.0",
+    "node": "22.1.0",
     "npm": "10.2.0"
   },
   "bugs": {
