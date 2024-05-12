@@ -28,7 +28,12 @@ module.exports = {
     },
     plugins: [
         'gatsby-plugin-use-query-params',
-        'gatsby-plugin-netlify',
+        {
+            resolve: 'gatsby-plugin-netlify',
+            options: {
+                mergeCachingHeaders: false,
+            },
+        },
         {
             resolve: 'gatsby-plugin-buildtime-timezone',
             options: {

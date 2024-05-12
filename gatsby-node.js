@@ -75,19 +75,7 @@ exports.onCreateWebpackConfig = ({ actions, loaders }) => {
     });
 };
 
-exports.onCreateBabelConfig = ({ actions }) => {
-    actions.setBabelPlugin({
-        name: '@babel/plugin-proposal-object-rest-spread',
-    });
-
-    actions.setBabelPlugin({
-        name: '@babel/plugin-proposal-class-properties',
-    });
-
-    actions.setBabelPlugin({
-        name: '@babel/plugin-syntax-dynamic-import',
-    });
-};
+exports.onCreateBabelConfig = () => {};
 
 exports.onPreBootstrap = () => {};
 
