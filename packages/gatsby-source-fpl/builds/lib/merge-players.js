@@ -70,7 +70,7 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
         const gPlayer = googlePlayersObj[fplPlayer.code] || { new: false, isHidden: true, positionId: 'na' };
         if (!googlePlayersObj[fplPlayer.code]) {
             // player is in the fpl list, but not in the google sheet
-            logger.error(`Player not in gsheet? ${fplPlayer.web_name} ${fplPlayer.code}`);
+            logger.warn(`Player not in gsheet? ${fplPlayer.web_name} ${fplPlayer.code}`);
         }
         const player = {
             ...fplPlayer,
@@ -87,7 +87,6 @@ const mergePlayers = ({ googlePlayerData, gameWeeks, fplPlayers, fplTeams }) => 
             },
         };
     }, {});
-    logger.error(notFound);
     logger.warn(`GameWeeks without Fixtures: ${notFound.size}`);
     return mergedPlayers;
 };
