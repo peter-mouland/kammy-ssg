@@ -10,6 +10,6 @@
   framework = "gatsby"
 [build.environment]
   NODE_VERSION = "22.1.0"
-  YARN_VERSION = "4.1.0" #or other version
+  YARN_VERSION = "4.1.0"
 [[plugins]]
   package = "@netlify/plugin-gatsby"

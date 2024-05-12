@@ -35,6 +35,13 @@ module.exports = {
             },
         },
         {
+            resolve: 'gatsby-adapter-netlify',
+            options: {
+                // add any specific options if needed
+                version: '1.1.4',
+            },
+        },
+        {
             resolve: 'gatsby-plugin-buildtime-timezone',
             options: {
                 tz: 'Europe/London',

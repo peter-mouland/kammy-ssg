@@ -60,6 +60,7 @@
     "eslint-config-canonical": "41.0.4",
     "fromnow": "3.0.1",
     "gatsby": "5.13.4",
+    "gatsby-adapter-netlify": "1.1.4",
     "gatsby-plugin-buildtime-timezone": "1.0.3",
     "gatsby-plugin-netlify": "5.1.1",
     "gatsby-plugin-react-css-modules": "5.13.1",
