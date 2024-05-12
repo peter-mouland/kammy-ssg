@@ -4,7 +4,7 @@
   port = 8888 # The port that the netlify dev will be accessible on
   publish = "public" # If you use a _redirect file, provide the path to your static content folder
 [build]
-  memory = 7000
+  memory = 6000
   publish = "public"
   command = "yarn build:prod"
 [build.environment]
