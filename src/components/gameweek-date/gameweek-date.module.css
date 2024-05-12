@@ -30,11 +30,17 @@
     }
 }
 
-.isCurrent .gw {
+.isSelected .gw {
     background: green;
     color: white;
 }
 
+.isCurrent .gw {
+    background: darkgreen;
+    color: white;
+}
+
+.isSelected .time,
 .isCurrent .time {
     flex-grow: 1;
 }
