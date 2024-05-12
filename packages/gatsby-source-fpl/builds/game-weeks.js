@@ -25,7 +25,22 @@ module.exports = ({ googleGameWeekData, fplFixtures, fplEvents, fplTeams }) => {
 
     let hasHadCurrent = false;
     let isNext = false;
-    const results = fplEvents.map(({ data: event }, i) => {
+    const finalEvent = fplEvents[fplEvents.length - 1]?.data;
+    const finalStart = new Date(finalEvent?.deadline_time);
+    const finalEnd = '2035-07-30T11:00:00.000Z';
+    const finalIsCurrent = new Date() < finalEnd && new Date() > finalStart;
+    const finalData = {
+        fplEvent: finalEvent,
+        cup: false,
+        gameWeekIndex: fplEvents.length,
+        start: finalStart,
+        end: finalEnd,
+        isCurrent: finalIsCurrent,
+        isNext,
+        hasPassed: !hasHadCurrent && !finalIsCurrent,
+        fixtures: getFixtures(fplFixtures, fplTeams, fplEvents.length) || [],
+    };
+    const results = [...fplEvents, { data: finalData }].map(({ data: event }, i) => {
         const start = new Date(fplEvents[i - 1]?.data?.deadline_time || '2023-07-30T11:00:00.000Z');
         const ggw = googleGameWeekData.find((googleGameWeek) => String(googleGameWeek.gameweek) === String(i));
         const end = new Date(event.deadline_time);

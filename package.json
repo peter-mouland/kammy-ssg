@@ -26,7 +26,7 @@
     "start": "TZ='Europe/London' gatsby develop",
     "start:static": "cd public; ws --spa index.html",
     "serve": "gatsby serve",
-    "start:preview": "CI=true gatsby develop -p ${NOMAD_PORT_HTTP} --host 0.0.0.0",
+    "start:preview": "CI=true gatsby develop --host 0.0.0.0",
     "playground": "GATSBY_GRAPHQL_IDE=playground gatsby develop",
     "build": "gatsby clean && TZ='Europe/London' gatsby build --log-pages",
     "build:prod": "gatsby clean && NODE_ENV=production TZ='Europe/London' gatsby build --prefix-paths",
