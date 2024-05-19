@@ -72,16 +72,6 @@ const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
                                             </StatsTable.Td>
                                         ))}
                                         <StatsTable.Td separator>
-                                            <em>
-                                                {SquadPlayer.nextGameWeekFixtures.map((f) => (
-                                                    <React.Fragment key={f.fixture_id}>
-                                                        {f.oponent.club}{' '}
-                                                        <span style={{ fontSize: '0.8em', color: 'grey' }}>
-                                                            ({f.oponent.awayOrHomeLabel})
-                                                        </span>
-                                                    </React.Fragment>
-                                                ))}
-                                            </em>
                                         </StatsTable.Td>
                                     </StatsTable.Tr>
                                 ))}
@@ -114,16 +104,6 @@ export const query = graphql`
                         photo
                         position {
                             label
-                        }
-                        nextGameWeekFixture {
-                            fixtures {
-                                fixture_id
-                                is_home
-                                oponent {
-                                    club
-                                    awayOrHomeLabel
-                                }
-                            }
                         }
                     }
                     hasChanged
