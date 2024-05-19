@@ -16,7 +16,7 @@ export class SquadPlayer {
         this.squadPositionId = squadPlayer.squadPositionId.toLowerCase(); // todo: use id in scoring
         this.playerPositionId = squadPlayer.playerPositionId.toLowerCase(); // todo: use id in scoring
         this.squadPositionIndex = squadPlayer.squadPositionIndex;
-        this.nextGameWeekFixtures = squadPlayer.player.nextGameWeekFixture.fixtures || [];
+        // this.nextGameWeekFixtures = squadPlayer.player.nextGameWeekFixture.fixtures || [];
         this.seasonToGameWeek = new Stats(squadPlayer.seasonToGameWeek);
         this.gameWeekStats = new Stats(squadPlayer.gameWeekStats);
     }

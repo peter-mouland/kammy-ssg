@@ -40,7 +40,7 @@ const getPlayerWithStats = ({ player, gameWeeks, fplTeams }) => {
     return {
         ...player,
         currentGameWeekFixture: gameWeeksWithFixtures[currentGameWeekIndex],
-        nextGameWeekFixture: gameWeeksWithFixtures[nextGameWeekIndex],
+        // nextGameWeekFixture: gameWeeksWithFixtures[nextGameWeekIndex],
         gameWeeks: gameWeeksWithFixtures,
         seasonStats: season,
     };
