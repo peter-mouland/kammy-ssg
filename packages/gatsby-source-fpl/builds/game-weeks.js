@@ -40,7 +40,7 @@ module.exports = ({ googleGameWeekData, fplFixtures, fplEvents, fplTeams }) => {
         hasPassed: !hasHadCurrent && !finalIsCurrent,
         fixtures: getFixtures(fplFixtures, fplTeams, fplEvents.length) || [],
     };
-    const results = [...fplEvents, { data: finalData }].map(({ data: event }, i) => {
+    const results = [...fplEvents, { data: finalData, isFinal: true }].map(({ data: event, isFinal }, i) => {
         const start = new Date(fplEvents[i - 1]?.data?.deadline_time || '2023-07-30T11:00:00.000Z');
         const ggw = googleGameWeekData.find((googleGameWeek) => String(googleGameWeek.gameweek) === String(i));
         const end = new Date(event.deadline_time);
@@ -52,6 +52,7 @@ module.exports = ({ googleGameWeekData, fplFixtures, fplEvents, fplTeams }) => {
             start,
             end,
             isCurrent,
+            isFinal,
             isNext,
             hasPassed: !hasHadCurrent && !isCurrent,
             fixtures: getFixtures(fplFixtures, fplTeams, i) || [],

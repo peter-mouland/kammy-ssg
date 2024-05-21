@@ -88,6 +88,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 nodes {
                     gameWeekIndex
                     isCurrent
+                    isFinal
                 }
             }
             allDivisions(sort: { order: ASC }) {
@@ -116,7 +117,7 @@ exports.createPages = async ({ actions, graphql }) => {
     let maxGameweek = 99;
     const pageNodesToBuild = [];
 
-    data?.allGameWeeks.nodes.forEach(({ gameWeekIndex, isCurrent }) => {
+    data?.allGameWeeks.nodes.forEach(({ gameWeekIndex, isCurrent, isFinal, ...rest }) => {
         // if (!isCurrent) return;
         if (gameWeekIndex > maxGameweek) return;
         if (isCurrent) maxGameweek = gameWeekIndex + 1;
@@ -175,7 +176,7 @@ exports.createPages = async ({ actions, graphql }) => {
                 },
             });
         });
-        if (isCurrent) {
+        if (isCurrent || isFinal) {
             // HOMEPAGE
             pageNodesToBuild.push({
                 path: '/',
