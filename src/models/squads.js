@@ -5,18 +5,19 @@ import { Stats } from './stats';
 export class SquadPlayer {
     warnings = [];
     constructor(squadPlayer) {
+        console.log(squadPlayer)
         this.managerId = squadPlayer.manager.managerId;
         this.hasChanged = squadPlayer.hasChanged;
-        this.name = squadPlayer.player.name;
-        this.code = squadPlayer.player.code;
-        this.url = squadPlayer.player.url;
-        this.club = squadPlayer.player.club;
-        this.position = squadPlayer.player.position;
+        this.name = squadPlayer.player?.name; // todo - player should exist even on final gw
+        this.code = squadPlayer.player?.code;
+        this.url = squadPlayer.player?.url;
+        this.club = squadPlayer.player?.club;
+        this.position = squadPlayer.player?.position;
         this.squadPosition = squadPlayer.squadPosition;
         this.squadPositionId = squadPlayer.squadPositionId.toLowerCase(); // todo: use id in scoring
         this.playerPositionId = squadPlayer.playerPositionId.toLowerCase(); // todo: use id in scoring
         this.squadPositionIndex = squadPlayer.squadPositionIndex;
-        // this.nextGameWeekFixtures = squadPlayer.player.nextGameWeekFixture.fixtures || [];
+        this.nextGameWeekFixtures = squadPlayer.player?.nextGameWeekFixture.fixtures || [];
         this.seasonToGameWeek = new Stats(squadPlayer.seasonToGameWeek);
         this.gameWeekStats = new Stats(squadPlayer.gameWeekStats);
     }
@@ -66,6 +67,7 @@ export default class Squads {
     byManagerId = {};
     warnings = {};
     constructor(squads) {
+        console.log(squads)
         squads.forEach(({ squadPlayers }) => {
             const squad = new Squad(squadPlayers);
             this.byManagerId[squad.managerId] = squad;

@@ -46,6 +46,20 @@ export const query = graphql`
                         name
                         club
                         url
+                        nextGameWeekFixture {
+                            fixtures {
+                                fixture_id
+                                is_home
+                                homeTeam {
+                                    code
+                                    name
+                                }
+                                awayTeam {
+                                    code
+                                    name
+                                }
+                            }
+                        }
                     }
                     hasChanged
                     playerPositionId
