@@ -16372,8 +16372,6 @@ __metadata:
     lerna: "npm:6.6.2"
     local-web-server: "npm:5.3.3"
     node-gyp: "npm:9.4.0"
-    postcss-hexrgba: "npm:2.1.0"
-    postcss-nested: "npm:6.0.1"
     postcss-preset-env: "npm:7.8.3"
     prop-types: "npm:15.8.1"
     react: "npm:18.3.1"
@@ -20328,17 +20326,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-hexrgba@npm:2.1.0":
-  version: 2.1.0
-  resolution: "postcss-hexrgba@npm:2.1.0"
-  dependencies:
-    postcss-value-parser: "npm:^4.1.0"
-  peerDependencies:
-    postcss: ^8.1.4
-  checksum: 10/333da92fb1b9cff4dda3db8f499573b32d85cdd7fbb28017f772ba2ab90186d3bd0afe5a3bbf0e67bd5841190f8e630178847012390ba2fc74a0b8eeae0d57cf
-  languageName: node
-  linkType: hard
-
 "postcss-image-set-function@npm:^4.0.7":
   version: 4.0.7
   resolution: "postcss-image-set-function@npm:4.0.7"
@@ -20644,17 +20631,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-nested@npm:6.0.1":
-  version: 6.0.1
-  resolution: "postcss-nested@npm:6.0.1"
-  dependencies:
-    postcss-selector-parser: "npm:^6.0.11"
-  peerDependencies:
-    postcss: ^8.2.14
-  checksum: 10/02aaac682f599879fae6aab3210aee59b8b5bde3ba242527f6fd103726955b74ffa05c2b765920be5f403e758045582534d11b1e19add01586c19743ed99e3fe
-  languageName: node
-  linkType: hard
-
 "postcss-nesting@npm:^10.2.0":
   version: 10.2.0
   resolution: "postcss-nesting@npm:10.2.0"
@@ -20938,16 +20914,6 @@ __metadata:
     cssesc: "npm:^3.0.0"
     util-deprecate: "npm:^1.0.2"
   checksum: 10/14d2c77e533a7b0688f35c909c07f74a9f3cc8d7aea19fd4042093c2df96d6d1ca0d41fcf0ecea28e8560e09913e8a58e5d95a6504cea31c71e23acb80927bab
-  languageName: node
-  linkType: hard
-
-"postcss-selector-parser@npm:^6.0.11":
-  version: 6.0.13
-  resolution: "postcss-selector-parser@npm:6.0.13"
-  dependencies:
-    cssesc: "npm:^3.0.0"
-    util-deprecate: "npm:^1.0.2"
-  checksum: 10/e779aa1f8ca9ee45d562400aac6109a2bccc59559b6e15adec8bc2a71d395ca563a378fd68f6a61963b4ef2ca190e0c0486e6dc6c41d755f3b82dd6e480e6941
   languageName: node
   linkType: hard
 
