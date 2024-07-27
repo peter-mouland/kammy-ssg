@@ -1,6 +1,6 @@
 import sortBy from '@kammy/sort-columns';
 
-const positionsOrder = ['gk', 'fb', 'cb', 'mid', 'am', 'str', 'sub'];
+const positionsOrder = ['gk', 'fb', 'cb', 'mid', 'wa', 'ca', 'sub'];
 
 const createFilteredPlayers = ({ players, teams = {}, selectedOptions = [], transfers }) => {
     const selectedPositions =

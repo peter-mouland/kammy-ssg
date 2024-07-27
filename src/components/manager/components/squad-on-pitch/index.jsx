@@ -36,7 +36,7 @@ Pos.defaultProps = {
     isInteractive: false,
 };
 
-const positions = ['GK', 'FB', 'FB', 'CB', 'CB', 'MID', 'MID', 'AM', 'AM', 'STR', 'STR', 'SUB'];
+const positions = ['GK', 'FB', 'FB', 'CB', 'CB', 'MID', 'MID', 'WA', 'WA', 'CA', 'CA', 'SUB'];
 
 const SquadOnPitch = ({ squad, onSelect }) => {
     const isInteractive = onSelect !== null;

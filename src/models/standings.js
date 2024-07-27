@@ -12,15 +12,15 @@ class Points {
 }
 
 class Standing {
-    constructor({ gameWeek, managerId, am, cb, fb, gks, mid, str, total }) {
+    constructor({ gameWeek, managerId, wa, cb, fb, gks, mid, ca, total }) {
         this.gameWeek = gameWeek;
         this.managerId = managerId;
         this.gks = new Points({ positionId: 'gks', ...gks });
         this.cb = new Points({ positionId: 'cb', ...cb });
         this.fb = new Points({ positionId: 'fb', ...fb });
         this.mid = new Points({ positionId: 'mid', ...mid });
-        this.am = new Points({ positionId: 'am', ...am });
-        this.str = new Points({ positionId: 'str', ...str });
+        this.wa = new Points({ positionId: 'wa', ...wa });
+        this.ca = new Points({ positionId: 'ca', ...ca });
         this.total = new Points({ positionId: 'total', ...total });
     }
 }

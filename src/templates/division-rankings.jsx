@@ -8,9 +8,9 @@ import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';
 import useGameWeeks from '../hooks/use-game-weeks';
 import { DivisionStandings } from '../models/standings';
 import NavBar from '../components/nav-bar';
-import useDivisions from "../hooks/use-divisions";
-import usePositions from "../hooks/use-positions";
-import useManagers from "../hooks/use-managers";
+import useDivisions from '../hooks/use-divisions';
+import usePositions from '../hooks/use-positions';
+import useManagers from '../hooks/use-managers';
 
 const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
     const GameWeeks = useGameWeeks();
@@ -18,8 +18,8 @@ const DivisionHomePage = ({ data, pageContext: { gameWeekIndex, divisionId } }) 
         allLeagueTable: { nodes: managersStats },
     } = data;
     const Positions = usePositions();
-    const Divisions = useDivisions()
-    const Managers = useManagers()
+    const Divisions = useDivisions();
+    const Managers = useManagers();
     const Division = Divisions.getDivision(divisionId);
     const Standings = new DivisionStandings({ managersStats });
 
@@ -73,7 +73,7 @@ export const query = graphql`
             nodes {
                 gameWeekIndex
                 points {
-                    am {
+                    wa {
                         gameWeekPoints
                         seasonPoints
                         rank
@@ -97,7 +97,7 @@ export const query = graphql`
                         rank
                         rankChange
                     }
-                    str {
+                    ca {
                         gameWeekPoints
                         seasonPoints
                         rank

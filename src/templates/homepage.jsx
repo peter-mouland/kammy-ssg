@@ -70,7 +70,7 @@ export const query = graphql`
                 managersStats: nodes {
                     gameWeekIndex
                     points {
-                        am {
+                        wa {
                             gameWeekPoints
                             seasonPoints
                             rank
@@ -94,7 +94,7 @@ export const query = graphql`
                             rank
                             rankChange
                         }
-                        str {
+                        ca {
                             gameWeekPoints
                             seasonPoints
                             rank
