@@ -16,7 +16,7 @@ function forGoals(goals = 0, playerPositionId) {
     } else if (playerPositionId === 'mid') {
         return goals * 5;
     } else if (playerPositionId === 'am') {
-        return goals * 5;
+        return goals * 4;
     } else if (playerPositionId === 'str') {
         return goals * 4;
     }
