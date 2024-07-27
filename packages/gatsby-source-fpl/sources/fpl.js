@@ -1,6 +1,6 @@
 const pMap = require('p-map');
 
-const CONCURRENCY = 2; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
+const CONCURRENCY = 1; // ['true', true].includes(process.env.IS_LOCAL) ? 25 : 1;
 const bootstrapURL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 // process.env.NODE_ENV === 'development'
 //     ? 'https://fantasy.premierleague.com/api/bootstrap-static/'

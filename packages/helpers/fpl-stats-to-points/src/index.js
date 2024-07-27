@@ -1,3 +1,4 @@
+// appearance points
 function forMinutes(gameWeekFixtures = []) {
     // cumulative minutes doesnt work, we need to know the individual minutes for each game fixture in that game week
     return gameWeekFixtures.filter(Boolean).reduce((prev, { minutes }) => {
@@ -30,7 +31,10 @@ function forYellowCards(yc = 0) {
     return yc * -1;
 }
 
-function forRedCards(rc = 0) {
+function forRedCards(rc = 0, playerPositionId) {
+    if (playerPositionId === 'fb' || playerPositionId === 'cb' || playerPositionId === 'gk') {
+        return rc * -3;
+    }
     return rc * -5;
 }
 
@@ -45,8 +49,10 @@ function forCleanSheet(cs = 0, playerPositionId) {
 }
 
 function forConceded(conceded = 0, playerPositionId) {
+    // 1st goal conceded : 0 points
+    // 2nd goal conceded : -1 points etc...
     if (playerPositionId === 'fb' || playerPositionId === 'cb' || playerPositionId === 'gk') {
-        return conceded * -1;
+        return conceded * -1 + 1;
     }
     return 0;
 }
@@ -56,8 +62,12 @@ function forPenaltiesSaved(ps = 0) {
 }
 
 function forSaveBonus(saves = 0, playerPositionId) {
+    // 1st save : 0 points
+    // 2nd save : 0 points
+    // 3rd save : 1 points
+    // 6th save : 2 points
     if (playerPositionId === 'gk' && saves >= 3) {
-        return 2;
+        return Math.floor(saves / 3);
     }
     return 0;
 }

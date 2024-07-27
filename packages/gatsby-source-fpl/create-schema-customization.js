@@ -5,6 +5,11 @@ exports.createSchemaCustomization = async ({ actions }) => {
         gameWeeks: [playersGameWeeks]
       }
 
+      type players implements Node {
+        chance_of_playing_this_round: Int
+        ep_this: Int
+      }
+
       type playersGameWeeks {
         gameWeekIndex: Int
         fixtures: [playersGameWeeksFixtures]
@@ -38,6 +43,11 @@ exports.createSchemaCustomization = async ({ actions }) => {
         opponent_team: String
         was_home: Boolean
         stats: playersGameWeeksFixturesStats
+      }
+
+      type gameWeeksFixtures {
+        team_a_score: Int
+        team_h_score: Int
       }
 
       type playersGameWeeksFixturesStats {
