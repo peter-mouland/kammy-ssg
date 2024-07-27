@@ -49,8 +49,10 @@ function forCleanSheet(cs = 0, playerPositionId) {
 }
 
 function forConceded(conceded = 0, playerPositionId) {
+    // 0 goal conceded : 0 points
     // 1st goal conceded : 0 points
     // 2nd goal conceded : -1 points etc...
+    if (conceded === 0) return 0; // i.e. do not give a point for having a clean sheet
     if (playerPositionId === 'fb' || playerPositionId === 'cb' || playerPositionId === 'gk') {
         return conceded * -1 + 1;
     }
