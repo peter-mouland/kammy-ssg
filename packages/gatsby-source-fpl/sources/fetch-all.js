@@ -9,32 +9,22 @@ const fetchGoogleDraftData = require('./google-sheets-draft-setup');
 
 module.exports = async () => {
     const googleDivisionData = await fetchGoogleDivisionsData();
+    const googlePlayerData = await fetchGooglePlayersData();
     return Promise.all([
-        fetchFplData(),
+        fetchFplData(googlePlayerData),
         fetchGoogleGameWeeksData(),
         fetchGoogleCupData(),
         fetchGoogleDraftData(googleDivisionData),
         fetchGoogleTransfersData(googleDivisionData),
-        fetchGooglePlayersData(),
         fetchGoogleManagersData(),
-    ]).then(
-        ([
-            fplData,
-            googleGameWeekData,
-            googleCupData,
-            googleDraftData,
-            googleTransferData,
-            googlePlayerData,
-            googleManagerData,
-        ]) => ({
-            fplData,
-            googleDivisionData,
-            googleGameWeekData,
-            googleCupData,
-            googleDraftData,
-            googleTransferData,
-            googlePlayerData,
-            googleManagerData,
-        }),
-    );
+    ]).then(([fplData, googleGameWeekData, googleCupData, googleDraftData, googleTransferData, googleManagerData]) => ({
+        fplData,
+        googleDivisionData,
+        googleGameWeekData,
+        googleCupData,
+        googleDraftData,
+        googleTransferData,
+        googlePlayerData,
+        googleManagerData,
+    }));
 };

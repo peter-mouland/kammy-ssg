@@ -18,21 +18,22 @@ const fixturesURL = 'https://fantasy.premierleague.com/api/fixtures/';
 //     : 'https://kammy-proxy.herokuapp.com/skysports/fixtures';
 // ? 'http://localhost:8888/.netlify/functions/sky-sports-fitures'
 
-const fetchPlayersFixtures = async (elements) => {
+const fetchPlayersFixtures = async (googlePlayerData, elementsById) => {
     const mapper = async (element) => {
         const { fixtures, history } = await fetch(getElementsUrl(element.id));
-        return { ...element, fixtures, stats: history };
+        return { ...elementsById[element.id], fixtures, stats: history };
     };
-    return pMap(elements, mapper, { concurrency: CONCURRENCY });
+    return pMap(googlePlayerData, mapper, { concurrency: CONCURRENCY });
 };
 
-const fetchFplData = async () => {
+const fetchFplData = async (googlePlayerData) => {
     // eslint-disable-next-line camelcase
     const { events, elements, teams, element_types } = await fetch(bootstrapURL);
     const teamsByCode = teams.reduce((prev, t) => ({ ...prev, [t.code]: t }), {});
+    const elementsById = elements.reduce((prev, e) => ({ ...prev, [e.id]: e }), {});
     const elementTypesById = element_types.reduce((prev, e) => ({ ...prev, [e.id]: e }), {});
     const fixtures = await fetch(fixturesURL);
-    const elementsWithFixturesAndStats = await fetchPlayersFixtures(elements);
+    const elementsWithFixturesAndStats = await fetchPlayersFixtures(googlePlayerData, elementsById);
     return {
         events,
         elements: elementsWithFixturesAndStats,
