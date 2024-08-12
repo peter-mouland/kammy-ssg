@@ -5,7 +5,6 @@ import { Stats } from './stats';
 export class SquadPlayer {
     warnings = [];
     constructor(squadPlayer) {
-        console.log(squadPlayer)
         this.managerId = squadPlayer.manager.managerId;
         this.hasChanged = squadPlayer.hasChanged;
         this.name = squadPlayer.player?.name; // todo - player should exist even on final gw
@@ -67,7 +66,6 @@ export default class Squads {
     byManagerId = {};
     warnings = {};
     constructor(squads) {
-        console.log(squads)
         squads.forEach(({ squadPlayers }) => {
             const squad = new Squad(squadPlayers);
             this.byManagerId[squad.managerId] = squad;
