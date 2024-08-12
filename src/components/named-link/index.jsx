@@ -15,7 +15,7 @@ const isPartiallyActive =
             ? { className: bem(null, null, `${className} isActive`) }
             : { className: bem(null, null, className) };
 
-const NamedLink = ({ className, to, children }) => {
+const NamedLink = ({ className = '', to, children = null }) => {
     const route = findRoute({ to });
     if (!route) throw new Error(`Route to '${to}' not found`);
     const { path, label } = route;
@@ -24,17 +24,6 @@ const NamedLink = ({ className, to, children }) => {
             {children || label}
         </Link>
     );
-};
-
-NamedLink.propTypes = {
-    to: PropTypes.string.isRequired,
-    className: PropTypes.string,
-    children: PropTypes.node,
-};
-
-NamedLink.defaultProps = {
-    className: '',
-    children: null,
 };
 
 NamedLink.contextTypes = {

@@ -31,7 +31,7 @@ const Tags = ({ item }) => (
     </span>
 );
 
-const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem }) => {
+const Item = ({ item, index, focusIndex, onSelect, searchTerm, selectedItem = null }) => {
     const buttonClassName = 'datalist-button';
     const isActive = focusIndex === index || (selectedItem && selectedItem.key === item.key);
     const label = indexOfMatch(searchTerm, item) < 0 ? item.label : labelWithBoldText(item, searchTerm);
@@ -60,15 +60,12 @@ Item.propTypes = {
         isPendingTransferOut: PropTypes.bool,
         additional: PropTypes.node,
     }).isRequired,
+    // eslint-disable-next-line react/require-default-props
     selectedItem: PropTypes.shape({ key: PropTypes.string, label: PropTypes.string }),
     index: PropTypes.number.isRequired,
     focusIndex: PropTypes.number.isRequired,
     onSelect: PropTypes.func.isRequired,
     searchTerm: PropTypes.string.isRequired,
-};
-
-Item.defaultProps = {
-    selectedItem: null,
 };
 
 class DataListInput extends React.Component {
@@ -158,9 +155,8 @@ class DataListInput extends React.Component {
     };
 
     render() {
-        const { items, emptyStateMessage } = this.props;
+        const { items, emptyStateMessage, placeholder, alwaysShowItems } = this.props;
         const { matchingItems, searchTerm, visible, selectedItem, focusIndex } = this.state;
-        const { placeholder, alwaysShowItems } = this.props;
         const dataListClassName = alwaysShowItems || visible ? 'datalist datalist--on' : 'datalist';
         const itemsClassName = alwaysShowItems || visible ? 'datalist-items datalist-items--on' : 'datalist-items';
         const itemsToShow = matchingItems.length === 0 && searchTerm.length === 0 ? items : matchingItems;

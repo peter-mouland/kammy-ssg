@@ -5,7 +5,6 @@ const bootstrapURL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 // process.env.NODE_ENV === 'development'
 //     ? 'https://fantasy.premierleague.com/api/bootstrap-static/'
 //     : 'https://kammy-proxy.herokuapp.com/fpl/bootstrap-static';
-// ? 'http://localhost:8888/.netlify/functions/sky-sports-players'
 
 const getElementsUrl = (code) => `https://fantasy.premierleague.com/api/element-summary/${code}/`;
 // process.env.NODE_ENV === 'development'
@@ -15,7 +14,6 @@ const getElementsUrl = (code) => `https://fantasy.premierleague.com/api/element-
 const fixturesURL = 'https://fantasy.premierleague.com/api/fixtures/';
 // process.env.NODE_ENV === 'development'
 //     ? 'https://fantasy.premierleague.com/api/fixtures'
-//     : 'https://kammy-proxy.herokuapp.com/skysports/fixtures';
 // ? 'http://localhost:8888/.netlify/functions/sky-sports-fitures'
 
 const fetchPlayersFixtures = async (googlePlayerData, elementsById) => {

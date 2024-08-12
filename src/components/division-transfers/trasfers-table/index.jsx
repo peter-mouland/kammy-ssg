@@ -40,7 +40,7 @@ export const Body = ({ transfers, showWarnings, playersByCode, isLoading }) => {
                 const playerOut = playersByCode[transfer.codeOut];
                 return (
                     <tr
-                        className={`row row--${transfer.status.toLowerCase()} ${warningClass}`}
+                        className={`row row--${transfer.status?.toLowerCase()} ${warningClass}`}
                         key={`${transfer.date}-${transfer.codeIn}`}
                     >
                         {showWarnings && (

@@ -7,7 +7,7 @@ import getEmoji from '../../lib/get-emoji';
 import Interstitial from '../../../interstitial';
 import useGameWeeks from '../../../../hooks/use-game-weeks';
 
-const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
+const TransferBody = ({ transfers, Action = null, getGameWeekFromDate }) => {
     if (transfers.length < 1) return null;
     return (
         <tbody>
@@ -56,14 +56,9 @@ const TransferBody = ({ transfers, Action, getGameWeekFromDate }) => {
 TransferBody.propTypes = {
     getGameWeekFromDate: PropTypes.func.isRequired,
     transfers: PropTypes.array.isRequired,
-    Action: PropTypes.element,
 };
 
-TransferBody.defaultProps = {
-    Action: null,
-};
-
-const GameWeekTransfers = ({ transfers, isLoading, Action }) => {
+const GameWeekTransfers = ({ transfers, isLoading = false, Action = null }) => {
     const { getGameWeekFromDate } = useGameWeeks();
 
     return (
@@ -112,13 +107,6 @@ GameWeekTransfers.propTypes = {
             comment: PropTypes.string,
         }),
     ).isRequired,
-    isLoading: PropTypes.bool,
-    Action: PropTypes.element,
-};
-
-GameWeekTransfers.defaultProps = {
-    Action: null,
-    isLoading: false,
 };
 
 export default GameWeekTransfers;
