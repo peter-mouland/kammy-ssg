@@ -1,11 +1,12 @@
 .playerImage {
+    position: relative;
     width: 35px;
     height: 35px;
 
-    img {
+    & img {
         max-width: 100%;
     }
-    .circle {
+    & .circle {
         position: relative;
         border: 2px solid transparent;
         border-radius: 50%;
@@ -13,7 +14,7 @@
         height: 35px;
         transition: color ease 1s, background-color ease 1s;
 
-        .icon {
+        & .icon {
             position: absolute;
             top: -4px;
             right: -4px;
@@ -47,7 +48,7 @@
          width: 100px;
          height: 122px;
 
-        .circle {
+        & .circle {
             border-width: 3px;
             width: 100px;
             height: 100px;
@@ -59,7 +60,7 @@
 }
 
 @media (min-width: 650px) {
-    .playerImage {
+    & .playerImage {
         margin: 0px 8px;
 
         &.small {
@@ -70,7 +71,7 @@
              width: 50px;
              height: 50px;
 
-            .circle {
+            & .circle {
                 border-width: 2px;
                 width: 50px;
                 height: 50px;
