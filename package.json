@@ -11,7 +11,7 @@
   "homepage": "https://github.com/peter-mouland/kammy-ssg#readme",
   "packageManager": "yarn@4.1.0",
   "engines": {
-    "node": "22.1.0",
+    "node": "20.x",
     "npm": "10.2.0"
   },
   "bugs": {
@@ -80,7 +80,8 @@
     "recharts": "2.12.7",
     "rimraf": "5.0.7",
     "typed-css-modules": "0.9.1",
-    "use-query-params": "2.2.1"
+    "use-query-params": "2.2.1",
+    "vercel": "^36.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.16.5",

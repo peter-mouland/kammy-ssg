@@ -7,7 +7,7 @@ exports.createSchemaCustomization = async ({ actions }) => {
 
       type players implements Node {
         chance_of_playing_this_round: Int
-        ep_this: Int
+        ep_this: String
       }
 
       type playersGameWeeks {
