@@ -32,6 +32,29 @@ const getGameWeeksWithFixtures = ({ player, gameWeeks, fplTeams }) =>
         return { gameWeekIndex: gw.gameWeekIndex, fixtures: gameWeekFixtures || [], stats: gameWeekStats };
     });
 
+const lastGWFixture = {
+    gameWeekIndex: 99,
+    fixtures: [
+        {
+            fixture_id: -1,
+            is_home: false,
+            oponent: {
+                club: '',
+                awayOrHomeLabel: '',
+            },
+            homeTeam: {
+                code: -1,
+                name: '',
+            },
+            awayTeam: {
+                code: -1,
+                name: '',
+            },
+        },
+    ],
+    stats: {},
+};
+
 const getPlayerWithStats = ({ player, gameWeeks, fplTeams }) => {
     const gameWeeksWithFixtures = getGameWeeksWithFixtures({ player, gameWeeks, fplTeams });
     const season = calculateSeasonStats(gameWeeksWithFixtures, player.positionId);
@@ -40,21 +63,8 @@ const getPlayerWithStats = ({ player, gameWeeks, fplTeams }) => {
     return {
         ...player,
         currentGameWeekFixture: gameWeeksWithFixtures[currentGameWeekIndex],
-        nextGameWeekFixture:  { gameWeekIndex: 99, fixtures: [{ //gameWeeksWithFixtures[nextGameWeekIndex],
-                fixture_id: -1,
-                is_home: false,
-                oponent: {
-                    club: '',
-                    awayOrHomeLabel: ''
-                },
-                homeTeam: {
-                    code: -1,
-                    name: ''
-                },
-                awayTeam: {
-                    code: -1,
-                    name: ''
-                } }], stats: {} },
+        nextGameWeekFixture: gameWeeksWithFixtures[nextGameWeekIndex] || lastGWFixture,
+
         gameWeeks: gameWeeksWithFixtures,
         seasonStats: season,
     };
