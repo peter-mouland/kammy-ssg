@@ -85,6 +85,7 @@ export const query = graphql`
                 code
                 photo
                 form
+                value_season
                 seasonStats {
                     apps
                     gls

@@ -31,6 +31,7 @@ type PlayerAPI = {
     code: number;
     photo: string;
     form: number;
+    value_season: number;
     seasonStats: Stats;
     gameWeeks: GameWeekAPI[];
 };
@@ -110,6 +111,7 @@ export class Player {
 
     constructor(player: PlayerAPI, options: Options = {}) {
         this.form = player.form;
+        this.value_season = player.value_season;
         this.code = player.code;
         this.photo = player.photo;
         this.name = player.name;

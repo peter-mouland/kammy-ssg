@@ -77,7 +77,15 @@ const PlayerTable = ({ players, Stats, Positions }) => {
                             label="FPL Form"
                             sort={queryParam.sort}
                             handleSort={handleSort}
-                            className="cell--stat show-750"
+                            className="cell--stat show-1000"
+                        />
+
+                        <SortableHeader
+                            id="value_season"
+                            label="FPL Value"
+                            sort={queryParam.sort}
+                            handleSort={handleSort}
+                            className="cell--stat show-1000"
                         />
                         {Stats.all.map((stat) => (
                             <SortableHeader
@@ -131,7 +139,8 @@ const PlayerTable = ({ players, Stats, Positions }) => {
                                         <Player.Club>{player.club}</Player.Club>
                                     </td>
                                     <td className="cell show-850">{player.manager.label}</td>
-                                    <td className="cell show-750">{player.form}</td>
+                                    <td className="cell show-1000">{player.form}</td>
+                                    <td className="cell show-1000">{player.value_season}</td>
                                     {Stats.all.map((stat) => (
                                         <td key={stat.id} className={bem('stat', null, 'cell')}>
                                             {player.seasonStats && (player.seasonStats[stat.id].value ?? '-')}
