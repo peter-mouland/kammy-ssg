@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 import '@kammy/bootstrap';
 import bemHelper from '@kammy/bem';
@@ -18,9 +18,9 @@ const Cup = ({ Squads }) => {
     const managers = useManagers();
     const { saveTeam, isSaving: cupTeamIsSaving, isSaved } = useCup();
     const { getPendingTransfersByManager } = useAllTransfers();
-    const [progress, setProgress] = useState(0);
-    const [managerId, setManagerId] = useState('');
-    const [picked, setPicked] = useState([]);
+    const [progress, setProgress] = React.useState(0);
+    const [managerId, setManagerId] = React.useState('');
+    const [picked, setPicked] = React.useState([]);
 
     const saveCupTeam = async () => {
         const [player1, player2, player3, player4] = picked;

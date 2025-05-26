@@ -18,6 +18,10 @@ const fixturesURL = 'https://fantasy.premierleague.com/api/fixtures/';
 
 const fetchPlayersFixtures = async (googlePlayerData, elementsById) => {
     const mapper = async (element) => {
+        if (!element.id) {
+            console.error(`error id unknown `, element);
+            // return;
+        }
         const { fixtures, history } = await fetch(getElementsUrl(element.id));
         return { ...elementsById[element.id], fixtures, stats: history };
     };

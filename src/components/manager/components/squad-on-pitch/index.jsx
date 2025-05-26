@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 

@@ -13,9 +13,9 @@
     "@kammy/helpers.get-gmt-date": "1.0.0",
     "@kammy/helpers.spreadsheet": "1.0.0",
     "@kammy/sort-columns": "1.0.0",
-    "chalk": "4.1.1",
-    "chance": "1.1.9",
-    "date-fns": "2.29.3",
+    "chalk": "4.1.2",
+    "chance": "1.1.13",
+    "date-fns": "2.30.0",
     "json-query": "2.2.2",
     "p-map": "4.0.0"
   }

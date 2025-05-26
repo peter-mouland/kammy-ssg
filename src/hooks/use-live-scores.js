@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import * as React from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { graphql, useStaticQuery } from 'gatsby';
 import extract from '@kammy/helpers.extract-fpl-stats';
@@ -16,7 +16,7 @@ const fetchScores = () =>
 
 const useLiveScores = () => {
     const queryKey = 'liveStats';
-    const [intervalMs] = useState(60000);
+    const [intervalMs] = React.useState(60000);
     const queryClient = useQueryClient();
 
     const {

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 
 const PlayerPicker = ({ squad, pendingTransfers, handleChange, picked, playerNumber, ...props }) => (

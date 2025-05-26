@@ -1,0 +1,106 @@
+{
+  "range": "Managers!A1:Z1000",
+  "majorDimension": "ROWS",
+  "values": [
+    [
+      "manager",
+      "division"
+    ],
+    [
+      "Andy",
+      "premierLeague"
+    ],
+    [
+      "Johnny",
+      "premierLeague"
+    ],
+    [
+      "Nick",
+      "premierLeague"
+    ],
+    [
+      "Phil",
+      "premierLeague"
+    ],
+    [
+      "Sav",
+      "premierLeague"
+    ],
+    [
+      "Stuart",
+      "premierLeague"
+    ],
+    [
+      "Tim",
+      "premierLeague"
+    ],
+    [
+      "Tom F",
+      "premierLeague"
+    ],
+    [
+      "Chris S",
+      "championship"
+    ],
+    [
+      "Dave G",
+      "championship"
+    ],
+    [
+      "Fitch",
+      "championship"
+    ],
+    [
+      "Howie",
+      "championship"
+    ],
+    [
+      "Matt",
+      "championship"
+    ],
+    [
+      "Naked",
+      "championship"
+    ],
+    [
+      "Tom S",
+      "championship"
+    ],
+    [
+      "Tony",
+      "championship"
+    ],
+    [
+      "Chris C",
+      "leagueOne"
+    ],
+    [
+      "Dan",
+      "leagueOne"
+    ],
+    [
+      "Jim Bob",
+      "leagueOne"
+    ],
+    [
+      "Luke",
+      "leagueOne"
+    ],
+    [
+      "Max",
+      "leagueOne"
+    ],
+    [
+      "Paul",
+      "leagueOne"
+    ],
+    [
+      "Rich W",
+      "leagueOne"
+    ],
+    [
+      "Russ",
+      "leagueOne"
+    ]
+  ]
+}

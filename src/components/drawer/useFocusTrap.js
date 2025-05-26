@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import * as React from 'react'
 
 // eslint-disable-next-line
 // Based off https://github.com/medialize/ally.js/blob/987c12c64c00d79a9c2c64cd20ed42e08425473b/src/selector/focusable.js
@@ -28,9 +28,9 @@ const FOCUSABLE_SELECTOR =
     '[contenteditable]';
 
 function useFocusTrap({ hasBackdrop, isBackdropShown, isOpen, containerRef, onKeyDown, rootId = 'root' }) {
-    const [focusableElements, setFocusableElements] = useState([]);
+    const [focusableElements, setFocusableElements] = React.useState([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const root = document.getElementById(rootId);
 
         if (root && isOpen) {
@@ -79,7 +79,7 @@ function useFocusTrap({ hasBackdrop, isBackdropShown, isOpen, containerRef, onKe
         };
     }, [hasBackdrop, isBackdropShown, isOpen, containerRef, rootId]);
 
-    const keyHandler = useCallback(
+    const keyHandler = React.useCallback(
         (event) => {
             if (event.key === 'Tab' && focusableElements.length > 0) {
                 const { length, 0: first, [length - 1]: last } = focusableElements;

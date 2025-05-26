@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
+import * as React from 'react'
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import canUseDom from '@kammy/helpers.can-use-dom';
 
 const Portal = ({ children, className }) => {
-    const elRef = useRef(canUseDom() ? document.createElement('div') : null);
+    const elRef = React.useRef(canUseDom() ? document.createElement('div') : null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const el = elRef.current;
         el.classList.add(className);
         document.body.appendChild(el);

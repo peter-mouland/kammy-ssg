@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react'
 
 import Spacer from '../spacer';
 import Warning from '../../icons/warning.svg';

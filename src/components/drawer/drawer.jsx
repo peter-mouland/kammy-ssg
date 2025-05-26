@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
@@ -33,9 +33,9 @@ const Drawer = ({
     });
     const closeIconClass = cx(styles.close, styles[`isTheme${theme}`]);
     const isBackdropShown = hasBackdrop && isOpen;
-    const containerRef = useRef();
+    const containerRef = React.useRef();
 
-    const handleEscape = useCallback(
+    const handleEscape = React.useCallback(
         (event) => {
             // NOTE: not 100% sure if react normalizes IE event so check for it
             if ((event.key === 'Esc' || event.key === 'Escape') && typeof onClose === 'function') {

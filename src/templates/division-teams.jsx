@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { graphql } from 'gatsby';
-import React from 'react';
+import * as React from 'react'
 
 import * as Layout from '../components/layout';
 import TabbedMenu, { GameWeekNav } from '../components/tabbed-division-menu';

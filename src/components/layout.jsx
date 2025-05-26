@@ -3,7 +3,7 @@
 import "../config/config";
 /* eslint-enable */
 
-import React from 'react';
+import * as React from 'react'
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import '@kammy/bootstrap';

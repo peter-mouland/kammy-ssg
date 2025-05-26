@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react'
 import Select from 'react-select';
 import bemHelper from '@kammy/bem';
 
@@ -40,7 +40,7 @@ const createFilterOptions = ({ positions, managers = [], managerId }) => [
 
 const Search = ({ positions, managers, managerId, teams, searchText, players, defaultFilter, onSelect, transfers }) => {
     const filterOptions = createFilterOptions({ positions, managers, managerId, players });
-    const [playerFilter, setPlayerFilter] = useState(defaultFilter);
+    const [playerFilter, setPlayerFilter] = React.useState(defaultFilter);
     const filteredPlayers = createFilteredPlayers({
         selectedOptions: playerFilter,
         players,

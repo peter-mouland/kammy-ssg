@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import * as React from 'react'
 import bemHelper from '@kammy/bem';
 
 import Spacer from '../spacer';
@@ -16,10 +16,10 @@ export const Td = ({ children, small }) => <td className={`cell ${small ? 'cell-
 export const TdPair = ({ rank, point }) => {
     const gradient = `gradient_${parseInt(rank, 10).toString().replace('.', '_').replace('-', '_')}`;
     return (
-        <Fragment>
+        <React.Fragment>
             <td className={`cell cell--rank ${styles[gradient]}`}>{rank}</td>
             <td className={`cell cell--pair cell--point ${styles[gradient]}`}>{point}</td>
-        </Fragment>
+        </React.Fragment>
     );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react'
 import cx from 'classnames';
 import toTitleCase from '@kammy/helpers.title-case';
 import { timing } from '@kammy/tokens';

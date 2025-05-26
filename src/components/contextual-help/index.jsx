@@ -1,12 +1,12 @@
 /* eslint-disable id-length */
-import React, { PureComponent } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 
 import Caret from './components/Caret';
 import Popover from './components/Popover';
 import * as styles from './contextual-help.module.css';
 
-class ContextualHelp extends PureComponent {
+class ContextualHelp extends React.PureComponent {
     state = {
         isOpen: false,
     };

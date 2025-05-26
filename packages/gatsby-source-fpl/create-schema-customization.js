@@ -33,7 +33,20 @@ exports.createSchemaCustomization = async ({ actions }) => {
             strength_defence_home: Int
             strength_defence_away: Int
       }
+
       type playersGameWeeksFixtures {
+        awayTeam: TeamFixture
+        homeTeam: TeamFixture
+        team_a_score: Int
+        team_h_score: Int
+        date: String
+        is_home: Boolean
+        opponent_team: String
+        was_home: Boolean
+        stats: playersGameWeeksFixturesStats
+      }
+
+      type playersNextGameWeekFixture {
         awayTeam: TeamFixture
         homeTeam: TeamFixture
         team_a_score: Int

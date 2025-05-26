@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import { getSquadWarnings, changeTypes } from '@kammy/helpers.squad-rules';
@@ -226,7 +226,7 @@ const TransfersRequests = ({ divisionId, teamsByManager, managersList, transfers
     const Positions = usePositions();
     const players = usePlayers();
     const changeReducer = changeReducerFactory({ transfers, players, teamsByManager });
-    const [changeState, dispatchChange] = useReducer(changeReducer, initialChangeState);
+    const [changeState, dispatchChange] = React.useReducer(changeReducer, initialChangeState);
     const { warnings } = getSquadWarnings(changeState, { transfers, players, teamsByManager }) || {};
     const config = getPlayerRequestConfig(changeState, { players, teamsByManager });
 

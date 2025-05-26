@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 
@@ -7,7 +7,7 @@ import './positionTimeline.css';
 const bem = bemHelper({ block: 'position-timeline' });
 
 export const StatsHeaders = ({ colspan }) => (
-    <Fragment>
+    <React.Fragment>
         <th className="cell cell--points" colSpan={colspan}>
             Points
         </th>
@@ -47,7 +47,7 @@ export const StatsHeaders = ({ colspan }) => (
         <th className="cell cell--sb hide-625" colSpan={colspan}>
             b
         </th>
-    </Fragment>
+    </React.Fragment>
 );
 
 StatsHeaders.propTypes = {
@@ -61,7 +61,7 @@ StatsHeaders.defaultProps = {
 export const TeamName = ({ team = '' }) => <span>{team}</span>;
 
 export const StatsCells = ({ seasonToGameWeek }) => (
-    <Fragment>
+    <React.Fragment>
         <td className="cell cell--points">{seasonToGameWeek.points}</td>
         <td className="cell cell--apps">{seasonToGameWeek.apps ?? '-'}</td>
         <td className="cell cell--gls">{seasonToGameWeek.gls ?? '-'}</td>
@@ -73,7 +73,7 @@ export const StatsCells = ({ seasonToGameWeek }) => (
         <td className="cell cell--rcard ">{seasonToGameWeek.rcard}</td>
         <td className="cell cell--sb">{seasonToGameWeek.sb ?? '-'}</td>
         <td className="cell cell--bp">{seasonToGameWeek.bp ?? '-'}</td>
-    </Fragment>
+    </React.Fragment>
 );
 
 StatsCells.propTypes = {

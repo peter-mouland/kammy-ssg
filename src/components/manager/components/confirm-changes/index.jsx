@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import * as React from 'react'
 
 import useSquadChanges from '../../../../hooks/use-squad-changes';
 import usePlayers from '../../../../hooks/use-players';
@@ -31,7 +31,7 @@ const confirmChange = async ({ comment, newChanges, divisionId, saveSquadChange,
 };
 
 const Manager = ({ managerName, teamsByManager, gameWeek, divisionId, newChanges }) => {
-    const [comment, setComment] = useState('');
+    const [comment, setComment] = React.useState('');
     const { playersByName } = usePlayers();
     const { isLoading, isSaving, saveSquadChange, pendingChanges, hasPendingChanges } = useSquadChanges({
         selectedGameWeek: gameWeek,

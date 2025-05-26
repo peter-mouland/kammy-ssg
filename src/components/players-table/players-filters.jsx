@@ -1,5 +1,5 @@
 /* eslint-disable react/no-deprecated */
-import React from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 import bemHelper from '@kammy/bem';
 import Select from 'react-select';

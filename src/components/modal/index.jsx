@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 
 import './modal.css';
 
-export default class Index extends Component {
+export default class Index extends React.Component {
     static propTypes = {
         children: PropTypes.node.isRequired,
         id: PropTypes.string.isRequired,

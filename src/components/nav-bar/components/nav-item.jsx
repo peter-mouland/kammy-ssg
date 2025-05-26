@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import * as React from 'react'
 import PropTypes from 'prop-types';
 
 import NamedLink from '../../named-link';
 import './nav-item.css';
 
 const NavItem = ({ label, children, className = '', to }) => {
-    const [open, toggleOpen] = useState(false);
+    const [open, toggleOpen] = React.useState(false);
     const toggle = (toggleLabel) => toggleOpen(open === toggleLabel ? null : toggleLabel);
     const close = () => toggleOpen(null);
 

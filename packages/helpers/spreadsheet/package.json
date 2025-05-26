@@ -7,6 +7,6 @@
   "author": "Peter Mouland",
   "license": "ISC",
   "dependencies": {
-    "date-fns": "2.29.3"
+    "date-fns": "2.30.0"
   }
 }
