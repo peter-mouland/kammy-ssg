@@ -5,7 +5,7 @@ export default [
     index("routes/_index.tsx"),
     route("my-team", "routes/my-team.tsx"),
     route("draft", "routes/draft.tsx"),
-    route("generate-draft", "routes/generate-draft.tsx"),
+    route("draft/admin", "routes/draft-ADMIN.tsx"),
     route("player/:playerId", "routes/player.$playerId.tsx"),
 
     // API routes

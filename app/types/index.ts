@@ -54,7 +54,6 @@ export interface DraftStateData {
     currentPick: number;
     currentUserId: string;
     currentDivisionId: string;
-    totalRounds: number;
     picksPerTeam: number;
     startedAt: Date | null;
     completedAt: Date | null;

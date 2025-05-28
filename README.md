@@ -48,7 +48,7 @@ app/
 │   ├── _index.tsx                 # Dashboard page
 │   ├── my-team.tsx                # Team management page
 │   ├── draft.tsx                  # Live draft interface
-│   ├── generate-draft.tsx         # Draft setup page
+│   ├── draft-admin.tsx         # Draft setup page
 │   ├── player.$playerId.tsx       # Player detail page
 │   ├── api.sheets.ts              # Sheets CRUD API
 │   └── api.live-scores.ts         # Server-Sent Events for live updates

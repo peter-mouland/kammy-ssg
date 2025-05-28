@@ -235,7 +235,7 @@ export async function getUserDraftPosition(
 export async function getNextDraftUser(
     divisionId: string,
     currentPickNumber: number,
-    totalRounds: number
+    picksPerTeam: number
 ): Promise<{ userId: string; userName: string; position: number } | null> {
     try {
         const draftOrder = await getDraftOrderByDivision(divisionId);
@@ -247,7 +247,7 @@ export async function getNextDraftUser(
         const totalTeams = draftOrder.length;
         const currentRound = Math.ceil(currentPickNumber / totalTeams);
 
-        if (currentRound > totalRounds) {
+        if (currentRound > picksPerTeam) {
             return null; // Draft complete
         }
 
@@ -346,7 +346,7 @@ export function validateDraftOrderData(data: Partial<DraftOrderData>): string[] 
 export async function getUserPickSequence(
     divisionId: string,
     userId: string,
-    totalRounds: number
+    picksPerTeam: number
 ): Promise<number[]> {
     try {
         const draftOrder = await getDraftOrderByDivision(divisionId);
@@ -359,7 +359,7 @@ export async function getUserPickSequence(
 
         const pickSequence: number[] = [];
 
-        for (let round = 1; round <= totalRounds; round++) {
+        for (let round = 1; round <= picksPerTeam; round++) {
             let pickInRound: number;
 
             // Snake draft logic

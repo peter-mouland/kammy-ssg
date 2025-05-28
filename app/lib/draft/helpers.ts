@@ -6,10 +6,10 @@ import type { DraftOrderData, DraftStateData } from '../../types';
 export function calculateNextDraftUser(
     currentPick: number,
     draftOrder: DraftOrderData[],
-    totalRounds: number
+    picksPerTeam: number
 ): { userId: string; userName: string; round: number; pickInRound: number } | null {
     const totalTeams = draftOrder.length;
-    const totalPicks = totalTeams * totalRounds;
+    const totalPicks = totalTeams * picksPerTeam;
 
     // Check if draft is complete
     if (currentPick > totalPicks) {
@@ -46,7 +46,7 @@ export function calculateNextDraftUser(
  */
 export function generateDraftSequence(
     draftOrder: DraftOrderData[],
-    totalRounds: number
+    picksPerTeam: number
 ): Array<{
     pickNumber: number;
     round: number;
@@ -57,7 +57,7 @@ export function generateDraftSequence(
     const sequence = [];
     const totalTeams = draftOrder.length;
 
-    for (let round = 1; round <= totalRounds; round++) {
+    for (let round = 1; round <= picksPerTeam; round++) {
         const isSnakeRound = round % 2 === 0;
 
         for (let posInRound = 1; posInRound <= totalTeams; posInRound++) {
@@ -88,7 +88,7 @@ export function getNextDraftState(
     draftOrder: DraftOrderData[]
 ): DraftStateData {
     const nextPick = currentDraftState.currentPick + 1;
-    const nextUser = calculateNextDraftUser(nextPick, draftOrder, currentDraftState.totalRounds);
+    const nextUser = calculateNextDraftUser(nextPick, draftOrder, currentDraftState.picksPerTeam);
 
     if (!nextUser) {
         // Draft is complete
@@ -114,10 +114,10 @@ export function getUserUpcomingPicks(
     userId: string,
     currentPick: number,
     draftOrder: DraftOrderData[],
-    totalRounds: number,
+    picksPerTeam: number,
     maxPicks = 5
 ): number[] {
-    const sequence = generateDraftSequence(draftOrder, totalRounds);
+    const sequence = generateDraftSequence(draftOrder, picksPerTeam);
 
     return sequence
         .filter(pick => pick.userId === userId && pick.pickNumber >= currentPick)

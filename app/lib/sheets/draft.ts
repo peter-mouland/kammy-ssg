@@ -34,7 +34,6 @@ const DRAFT_STATE_HEADERS = {
     'Current Pick': 'currentPick' as keyof DraftStateData,
     'Current User ID': 'currentUserId' as keyof DraftStateData,
     'Current Division ID': 'currentDivisionId' as keyof DraftStateData,
-    'Total Rounds': 'totalRounds' as keyof DraftStateData,
     'Picks Per Team': 'picksPerTeam' as keyof DraftStateData,
     'Started At': 'startedAt' as keyof DraftStateData,
     'Completed At': 'completedAt' as keyof DraftStateData
@@ -51,7 +50,6 @@ const DRAFT_PICKS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickData, (valu
 const DRAFT_STATE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftStateData, (value: any) => any>> = {
     isActive: parseSheetBoolean,
     currentPick: parseSheetNumber,
-    totalRounds: parseSheetNumber,
     picksPerTeam: parseSheetNumber,
     startedAt: (value: any) => value ? parseSheetDate(value) : null,
     completedAt: (value: any) => value ? parseSheetDate(value) : null
@@ -278,13 +276,13 @@ export async function getDraftedPlayers(
 export async function calculateNextPick(
     divisionId: string,
     totalTeams: number,
-    totalRounds: number
+    picksPerTeam: number
 ): Promise<{ pickNumber: number; round: number; isSnakeDraft: boolean } | null> {
     try {
         const picks = await getDraftPicksByDivision(divisionId);
         const nextPickNumber = picks.length + 1;
 
-        if (nextPickNumber > totalTeams * totalRounds) {
+        if (nextPickNumber > totalTeams * picksPerTeam) {
             return null; // Draft complete
         }
 
@@ -349,8 +347,7 @@ export async function clearDraftData(
             currentPick: 1,
             currentUserId: '',
             currentDivisionId: '',
-            totalRounds: 15,
-            picksPerTeam: 15,
+            picksPerTeam: 12,
             startedAt: null,
             completedAt: null
         };
@@ -410,10 +407,6 @@ export function validateDraftStateData(data: Partial<DraftStateData>): string[] 
 
     if (data.currentPick !== undefined && (typeof data.currentPick !== 'number' || data.currentPick < 1)) {
         errors.push('Current pick must be a positive number');
-    }
-
-    if (data.totalRounds !== undefined && (typeof data.totalRounds !== 'number' || data.totalRounds < 1)) {
-        errors.push('Total rounds must be a positive number');
     }
 
     if (data.picksPerTeam !== undefined && (typeof data.picksPerTeam !== 'number' || data.picksPerTeam < 1)) {

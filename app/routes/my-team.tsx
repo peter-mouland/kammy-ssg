@@ -4,6 +4,7 @@ import { useLoaderData, useActionData, Form, useSearchParams } from "react-route
 import { readUserTeams, getUserTeamsByDivision } from "../lib/sheets/userTeams";
 import { readDivisions } from "../lib/sheets/divisions";
 import type { UserTeamData, DivisionData } from "../types";
+import { SelectDivision } from '../components/select-division';
 
 export const meta: MetaFunction = () => {
     return [
@@ -109,13 +110,14 @@ export default function MyTeam() {
 
     return (
         <div>
-            <div style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '2rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center' }}>
                 <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                    Team Management
+                    League Standings
                 </h1>
-                <p style={{ color: '#6b7280', fontSize: '1.125rem' }}>
-                    View league standings and manage team information
-                </p>
+                <SelectDivision divisions={divisions} selectedDivision={selectedDivision} handleDivisionChange={handleDivisionChange} />
             </div>
 
             {/* Action Messages */}
@@ -130,42 +132,6 @@ export default function MyTeam() {
                     ❌ {actionData.error}
                 </div>
             )}
-
-            {/* Controls */}
-            <div className="card" style={{ marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <label htmlFor="division-select" style={{ fontWeight: '500' }}>
-                            Filter by Division:
-                        </label>
-                        <select
-                            id="division-select"
-                            value={selectedDivision || "all"}
-                            onChange={(e) => handleDivisionChange(e.target.value)}
-                            style={{
-                                padding: '0.5rem',
-                                border: '1px solid #d1d5db',
-                                borderRadius: '0.375rem',
-                                backgroundColor: 'white'
-                            }}
-                        >
-                            <option value="all">All Divisions</option>
-                            {divisions.map((division) => (
-                                <option key={division.id} value={division.id}>
-                                    {division.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <Form method="post">
-                        <input type="hidden" name="actionType" value="refreshRankings" />
-                        <button type="submit" className="btn btn-secondary">
-                            🔄 Refresh Rankings
-                        </button>
-                    </Form>
-                </div>
-            </div>
 
             {/* Division Summary */}
             {selectedDivision && (
@@ -204,7 +170,8 @@ export default function MyTeam() {
 
             {/* Team Standings */}
             <div className="card">
-                <div className="card-header">
+                <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
                     <h2 className="card-title">
                         📊 League Standings
                         {selectedDivision && ` - ${divisions.find(d => d.id === selectedDivision)?.label}`}
@@ -212,6 +179,13 @@ export default function MyTeam() {
                     <p style={{ color: '#6b7280', margin: '0.5rem 0 0 0' }}>
                         {userTeams.length} teams • Last updated: {new Date().toLocaleDateString()}
                     </p>
+                    </div>
+                    <Form method="post" style={{ float: 'right' }}>
+                        <input type="hidden" name="actionType" value="refreshRankings" />
+                        <button type="submit" className="btn btn-secondary">
+                            🔄 Refresh Rankings
+                        </button>
+                    </Form>
                 </div>
 
                 {userTeams.length === 0 ? (

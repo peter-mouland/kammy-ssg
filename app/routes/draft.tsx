@@ -80,7 +80,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 
             // Generate draft sequence if we have draft order
             if (draftOrder.length > 0 && draftState) {
-                draftSequence = generateDraftSequence(draftOrder, draftState.totalRounds);
+                draftSequence = generateDraftSequence(draftOrder, draftState.picksPerTeam);
             }
         }
 
@@ -261,21 +261,24 @@ export default function Draft() {
                 </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-                {/* Available Players */}
-                <DraftPlayersAvailable onSelectPlayer={handleMakePick} availablePlayers={availablePlayers}
-                                       isUserTurn={isUserTurn} />
+            {draftState?.isActive ?
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+                    {/* Available Players */}
+                    <DraftPlayersAvailable onSelectPlayer={handleMakePick} availablePlayers={availablePlayers}
+                                           isUserTurn={isUserTurn} />
 
-                {/* Right Column */}
-                <div  style={{ display: 'grid', gridTemplateRows: '0.7fr 1.3fr', gap: '2rem' }}>
-                    {/* Draft Order */}
-                    <DraftOrder draftOrder={draftOrder} draftPicks={draftPicks} draftSequence={draftSequence}
-                                draftState={draftState} />
+                    {/* Right Column */}
+                    <div  style={{ display: 'grid', gridTemplateRows: '0.7fr 1.3fr', gap: '2rem' }}>
+                        {/* Draft Order */}
+                        <DraftOrder draftOrder={draftOrder} draftPicks={draftPicks} draftSequence={draftSequence}
+                                    draftState={draftState} />
 
-                    {/* Draft Board */}
-                    <DraftBoard draftPicks={draftPicks} />
+                        {/* Draft Board */}
+                        <DraftBoard draftPicks={draftPicks} />
+                    </div>
                 </div>
-            </div>
+                : null
+            }
            <TeamDraft draftPicks={draftPicks} draftOrder={draftOrder} />
         </div>
     );

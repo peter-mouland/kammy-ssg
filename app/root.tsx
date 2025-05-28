@@ -213,8 +213,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             font-size: 0.875rem;
             font-weight: 500;
             text-decoration: none;
-            cursor: pointer;
             transition: all 0.2s;
+            cursor: pointer;
+
+            &:disabled {
+                cursor: default;
+            }
           }
 
           .btn-primary {
@@ -367,9 +371,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <nav className="nav">
                     <a href="/" className="logo">Fantasy Draft</a>
                     <a href="/">Dashboard</a>
-                    <a href="/my-team">My Team</a>
+                    <a href="/my-team">League Standings</a>
                     <a href="/draft">Draft</a>
-                    <a href="/generate-draft">Draft Setup</a>
                 </nav>
             </div>
         </div>
