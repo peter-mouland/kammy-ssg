@@ -40,6 +40,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Meta />
             <Links />
             <style>{`
+            @keyframes tilt-n-move-shaking {
+                0% { transform: translate(0, 0) rotate(0deg); }
+                25% { transform: translate(5px, 5px) rotate(5deg); }
+                50% { transform: translate(0, 0) rotate(0eg); }
+                75% { transform: translate(-5px, 5px) rotate(-5deg); }
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+
           /* CSS Reset and System Font Setup */
           * {
             box-sizing: border-box;
@@ -240,7 +249,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             border-radius: 0.5rem;
             padding: 1rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
           }
 
           .card-header {

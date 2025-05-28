@@ -1,4 +1,4 @@
-import type { DraftOrderData, DraftStateData } from '../types';
+import type { DraftOrderData, DraftStateData } from '../../types';
 
 /**
  * Calculate the next user in snake draft order

@@ -12,7 +12,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                 </p>
             </div>
 
-            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
                 {draftPicks.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
                         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📋</div>
@@ -30,7 +30,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                                     <div
                                         key={pick.pickNumber}
                                         style={{
-                                            padding: '0.75rem',
+                                            padding: '0.5rem',
                                             borderBottom: isLastItem ? 'none' : '1px solid #f3f4f6',
                                             backgroundColor: 'white'
                                         }}

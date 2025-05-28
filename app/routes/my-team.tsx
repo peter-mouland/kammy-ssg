@@ -1,7 +1,6 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useActionData, Form, useSearchParams } from "react-router";
-import { createSheetsClient } from "../lib/sheets/common";
 import { readUserTeams, getUserTeamsByDivision } from "../lib/sheets/userTeams";
 import { readDivisions } from "../lib/sheets/divisions";
 import type { UserTeamData, DivisionData } from "../types";
@@ -29,23 +28,12 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
         const url = new URL(request.url);
         const selectedDivision = url.searchParams.get("division");
 
-        // Get environment variables
-        const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
-        const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS;
-
-        if (!spreadsheetId || !credentials) {
-            throw new Error("Missing required environment variables for Google Sheets");
-        }
-
-        // Create sheets client
-        const sheetsClient = await createSheetsClient(credentials);
-
         // Fetch data in parallel
         const [userTeams, divisions] = await Promise.all([
             selectedDivision
-                ? getUserTeamsByDivision(sheetsClient, spreadsheetId, selectedDivision)
-                : readUserTeams(sheetsClient, spreadsheetId),
-            readDivisions(sheetsClient, spreadsheetId)
+                ? getUserTeamsByDivision(selectedDivision)
+                : readUserTeams(),
+            readDivisions()
         ]);
 
         // Sort teams by league rank
@@ -68,31 +56,43 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
         const formData = await request.formData();
         const actionType = formData.get("actionType");
 
-        // Get environment variables
-        const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
-        const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS;
-
-        if (!spreadsheetId || !credentials) {
-            throw new Error("Missing required environment variables for Google Sheets");
-        }
-
-        const sheetsClient = await createSheetsClient(credentials);
-
         switch (actionType) {
             case "refreshRankings":
                 // This would trigger a recalculation of league rankings
                 // Implementation would depend on your specific ranking logic
-                return json<ActionData>({ success: true });
+                return data<ActionData>({ success: true });
 
             default:
-                return json<ActionData>({ error: "Invalid action type" });
+                return data<ActionData>({ error: "Invalid action type" });
         }
 
     } catch (error) {
         console.error("My team action error:", error);
-        return json<ActionData>({ error: "Failed to perform action" });
+        return data<ActionData>({ error: "Failed to perform action" });
     }
 }
+
+
+
+const getPositionIcon = (rank: number) => {
+    if (rank === 1) return "🥇";
+    if (rank === 2) return "🥈";
+    if (rank === 3) return "🥉";
+    return `#${rank}`;
+};
+
+const getPositionStyle = (rank: number) => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '2.5rem',
+    height: '2.5rem',
+    borderRadius: '50%',
+    backgroundColor: rank <= 3 ? '#fbbf24' : rank <= 10 ? '#10b981' : '#6b7280',
+    color: 'white',
+    fontSize: '0.875rem',
+    fontWeight: '600'
+});
 
 export default function MyTeam() {
     const { userTeams, divisions, selectedDivision } = useLoaderData<typeof loader>();
@@ -106,26 +106,6 @@ export default function MyTeam() {
             setSearchParams({ division: divisionId });
         }
     };
-
-    const getPositionIcon = (rank: number) => {
-        if (rank === 1) return "🥇";
-        if (rank === 2) return "🥈";
-        if (rank === 3) return "🥉";
-        return `#${rank}`;
-    };
-
-    const getPositionStyle = (rank: number) => ({
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '2.5rem',
-        height: '2.5rem',
-        borderRadius: '50%',
-        backgroundColor: rank <= 3 ? '#fbbf24' : rank <= 10 ? '#10b981' : '#6b7280',
-        color: 'white',
-        fontSize: '0.875rem',
-        fontWeight: '600'
-    });
 
     return (
         <div>
@@ -202,13 +182,13 @@ export default function MyTeam() {
                         </div>
                         <div style={{ textAlign: 'center' }}>
                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>
-                                {userTeams.length > 0 ? Math.round(userTeams.reduce((sum, team) => sum + team.totalPoints, 0) / userTeams.length).toLocaleString() : 0}
+                                {userTeams.length > 0 ? Math.round(userTeams.reduce((sum, team) => sum + team.totalPoints, 0) / userTeams.length)?.toLocaleString() : 0}
                             </div>
                             <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Avg Points</div>
                         </div>
                         <div style={{ textAlign: 'center' }}>
                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#8b5cf6' }}>
-                                {userTeams.length > 0 ? userTeams[0].totalPoints.toLocaleString() : 0}
+                                {userTeams.length > 0 ? userTeams[0].totalPoints?.toLocaleString() : 0}
                             </div>
                             <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Top Score</div>
                         </div>
@@ -296,7 +276,7 @@ export default function MyTeam() {
                       </span>
                                     </td>
                                     <td style={{ fontWeight: '600', fontSize: '1.125rem' }}>
-                                        {team.totalPoints.toLocaleString()}
+                                        {team.totalPoints?.toLocaleString()}
                                     </td>
                                     <td style={{
                                         color: team.currentGwPoints > 50 ? '#059669' : team.currentGwPoints > 30 ? '#0891b2' : '#6b7280',
@@ -305,7 +285,7 @@ export default function MyTeam() {
                                         {team.currentGwPoints}
                                     </td>
                                     <td style={{ color: '#6b7280' }}>
-                                        #{team.overallRank.toLocaleString()}
+                                        #{team.overallRank?.toLocaleString()}
                                     </td>
                                     <td style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                                         {new Date(team.lastUpdated).toLocaleDateString()}
@@ -340,7 +320,7 @@ export default function MyTeam() {
                                     {userTeams[0].userName}
                                 </div>
                                 <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>
-                                    {userTeams[0].totalPoints.toLocaleString()} points
+                                    {userTeams[0].totalPoints?.toLocaleString()} points
                                 </div>
                             </div>
                         )}
@@ -378,7 +358,7 @@ export default function MyTeam() {
                         </h3>
                         <div>
                             <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#8b5cf6', marginBottom: '0.5rem' }}>
-                                {Math.round(userTeams.reduce((sum, team) => sum + team.totalPoints, 0) / userTeams.length).toLocaleString()}
+                                {Math.round(userTeams.reduce((sum, team) => sum + team.totalPoints, 0) / userTeams.length)?.toLocaleString()}
                             </div>
                             <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                                 Total Points Average

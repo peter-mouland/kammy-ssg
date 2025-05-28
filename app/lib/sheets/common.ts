@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import type { AppError } from '../../types';
-import { getGoogleSheetsClient } from './sheets.base';
 
 export const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -131,7 +130,7 @@ export async function readSheetRange(
     options: SheetReadOptions = {}
 ): Promise<any[][]> {
     try {
-        const sheetsClient = await getGoogleSheetsClient();
+        const sheetsClient = await createSheetsClient();
         const response = await sheetsClient.spreadsheets.values.get({
             spreadsheetId: sheetRange.spreadsheetId,
             range: sheetRange.range,
@@ -159,7 +158,7 @@ export async function writeSheetRange(
     options: SheetWriteOptions = {}
 ): Promise<void> {
     try {
-        const sheetsClient = await getGoogleSheetsClient();
+        const sheetsClient = await createSheetsClient();
         await sheetsClient.spreadsheets.values.update({
             spreadsheetId: sheetRange.spreadsheetId,
             range: sheetRange.range,
@@ -190,7 +189,7 @@ export async function appendToSheet(
     options: SheetWriteOptions = {}
 ): Promise<void> {
     try {
-        const sheetsClient = await getGoogleSheetsClient();
+        const sheetsClient = await createSheetsClient();
         await sheetsClient.spreadsheets.values.append({
             spreadsheetId: sheetRange.spreadsheetId,
             range: sheetRange.range,
