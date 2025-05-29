@@ -33,6 +33,7 @@ const convertToPlayerGameweekStats = (gameweekData: FplPlayerGameweekData[]): Pl
         yellowCards: gw.yellow_cards,
         redCards: gw.red_cards,
         saves: gw.saves,
+        penaltiesSaved: gw.penalties_saved,
         bonus: gw.bonus
     }));
 };

@@ -9,13 +9,14 @@ import type {
 export const POSITION_RULES = {
     gk: {
         goalPoints: 10,
+        assists: 3,
         cleanSheetPoints: 5,
-        redCardPenalty: -3,
         savesThreshold: 2,
         savesRatio: 3, // 1 point per 3 saves after threshold
+        penaltiesSaved: 5,
         goalsConcededPenalty: -1, // per 2 goals,
-        assists: 3,
         yellowCard: -1,
+        redCardPenalty: -3,
         appearance: {
             under45Min: 1,
             over45Min: 3
@@ -23,11 +24,11 @@ export const POSITION_RULES = {
     },
     fb: {
         goalPoints: 8,
-        cleanSheetPoints: 5,
-        redCardPenalty: -3,
-        goalsConcededPenalty: -1, // per 2 goals,
         assists: 3,
+        cleanSheetPoints: 5,
+        goalsConcededPenalty: -1, // per 2 goals,
         yellowCard: -1,
+        redCardPenalty: -3,
         appearance: {
             under45Min: 1,
             over45Min: 3
@@ -35,12 +36,12 @@ export const POSITION_RULES = {
     },
     cb: {
         goalPoints: 8,
+        assists: 3,
         cleanSheetPoints: 5,
+        goalsConcededPenalty: -1, // per 2 goals,
+        yellowCard: -1,
         redCardPenalty: -3,
         bonus: 1,
-        goalsConcededPenalty: -1, // per 2 goals,
-        assists: 3,
-        yellowCard: -1,
         appearance: {
             under45Min: 1,
             over45Min: 3
@@ -135,9 +136,16 @@ function calculateSavesBonus(saves: number, position: CustomPosition): number {
 
     const rule = POSITION_RULES.gk;
     if (saves <= rule.savesThreshold) return 0;
+    return Math.floor(saves / rule.savesRatio);
+}
+/**
+ * Calculate penalties saved (goalkeepers only)
+ */
+function calculatePenaltiesSaved(saved: number, position: CustomPosition): number {
+    const rule = POSITION_RULES[position];
+    if (!('penaltiesSaved' in rule)) return 0;
 
-    const bonusSaves = saves - rule.savesThreshold;
-    return Math.floor(bonusSaves / rule.savesRatio);
+    return saved * rule.penaltiesSaved;
 }
 
 /**
@@ -147,7 +155,7 @@ function calculateBonus(bonus: number, position: CustomPosition): number {
     const rule = POSITION_RULES[position];
     if (!('bonus' in rule)) return 0;
 
-    if (bonus <= rule.bonus) return 0;
+    if (bonus < rule.bonus) return 0;
 
     return bonus;
 }
@@ -161,7 +169,7 @@ function calculateGoalsConcededPenalty(goalsConceded: number, position: CustomPo
     if (!('goalsConcededPenalty' in rule)) return 0;
 
     if (goalsConceded === 0) return 0; // i.e. do not give a point for having a clean sheet
-    return goalsConceded * -1 + 1;
+    return goalsConceded * rule.goalsConcededPenalty + 1;
 }
 
 /**
@@ -187,6 +195,7 @@ export function calculateGameweekPoints(
         yellowCards: calculateYellowCardPenalty(stats.yellowCards, position),
         redCards: calculateRedCardPenalty(stats.redCards, position),
         saves: calculateSavesBonus(stats.saves, position),
+        penaltiesSaved: calculatePenaltiesSaved(stats.penaltiesSaved, position),
         goalsConceded: calculateGoalsConcededPenalty(stats.goalsConceded, position),
         bonus: calculateBonus(stats.bonus, position),
         total: 0
@@ -216,6 +225,7 @@ export function calculateSeasonPoints(
         yellowCards: 0,
         redCards: 0,
         saves: 0,
+        penaltiesSaved: 0,
         goalsConceded: 0,
         bonus: 0,
         total: 0
@@ -274,13 +284,6 @@ export function getPositionColor(position: CustomPosition): string {
 }
 
 /**
- * Validate that a position is a valid custom position
- */
-export function isValidCustomPosition(position: string): position is CustomPosition {
-    return ['gk', 'fb', 'cb', 'mid', 'wa', 'ca'].includes(position);
-}
-
-/**
  * Format points for display (with + prefix for positive points)
  */
 export function formatPointsDisplay(points: number): string {
@@ -300,6 +303,7 @@ export function getPointsBreakdownDisplay(breakdown: PointsBreakdown): Record<st
         yellowCards: formatPointsDisplay(breakdown.yellowCards),
         redCards: formatPointsDisplay(breakdown.redCards),
         saves: formatPointsDisplay(breakdown.saves),
+        penaltiesSaved: formatPointsDisplay(breakdown.penaltiesSaved),
         goalsConceded: formatPointsDisplay(breakdown.goalsConceded),
         bonus: formatPointsDisplay(breakdown.bonus),
         total: formatPointsDisplay(breakdown.total)

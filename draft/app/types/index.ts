@@ -140,6 +140,7 @@ export interface PointsBreakdown {
     yellowCards: number;
     redCards: number;
     saves: number;
+    penaltiesSaved: number;
     goalsConceded: number;
     bonus: number;
     total: number;

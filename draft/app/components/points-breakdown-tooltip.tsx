@@ -13,7 +13,7 @@ interface PointBreakdownItem {
     label: string;
     value: number;
     points: number;
-    formula: string;
+    formula: string | string[];
     isRelevant: boolean;
 }
 
@@ -22,21 +22,34 @@ const getPointsBreakdown = (player: PointsBreakdownTooltipProps['player']): Poin
     const position = player.position_name;
     const breakdown = player.points_breakdown || {};
     const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {} // ?????
+    const gcByGameCount = player.gameweek_data ? player.gameweek_data
+        .sort((a, b)=> a.goals_conceded < b.goals_conceded ? -1 : 1)
+        .reduce((acc, v) => ({
+            ...acc,
+            [v.goals_conceded]: acc[v.goals_conceded] ? acc[v.goals_conceded] +1 : 1
+        }), {}) : {}
+    const savesByGameCount = player.gameweek_data ? player.gameweek_data
+        .sort((a, b)=> a.saves < b.saves ? -1 : 1)
+        .reduce((acc, v) => ({
+            ...acc,
+            [v.saves]: acc[v.saves] ? acc[v.saves] +1 : 1
+        }), {}) : {}
     const items: PointBreakdownItem[] = [
         {
             label: 'Appearance',
             value: player.gameweek_data?.length || 0,
             points: breakdown.appearance || 0,
             formula: player.gameweek_data ?
-                `${player.gameweek_data.filter(g => g.minutes >= 45).length} games (45+ min) × ${rules.appearance.over45Min}pts + ${player.gameweek_data.filter(g => g.minutes > 0 && g.minutes < 45).length} games (<45 min) × ${rules.appearance.under45Min}pt` :
-                `${breakdown.appearance || 0} pts`,
+                [`${player.gameweek_data.filter(g => g.minutes >= 45).length} games (45+ min) × ${rules.appearance.over45Min}pts`,
+                 `${player.gameweek_data.filter(g => g.minutes > 0 && g.minutes < 45).length} games (<45 min) × ${rules.appearance.under45Min}pt`] :
+                [`${breakdown.appearance || 0} pts`],
             isRelevant: true
         },
         {
             label: 'Goals',
             value: player.goals_scored,
             points: breakdown.goals || 0,
-            formula: `${player.goals_scored} goals × ${rules.goalPoints} pts`,
+            formula: `${player.goals_scored} × ${rules.goalPoints} pts`,
             isRelevant: true
         },
         {
@@ -82,17 +95,35 @@ const getPointsBreakdown = (player: PointsBreakdownTooltipProps['player']): Poin
             label: 'Saves',
             value: player.saves,
             points: breakdown.saves || 0,
-            formula: isStatRelevant('saves', position) ?
-                `${player.saves} saves ÷ ${rules.savesThreshold} = ${Math.floor(player.saves / rules.savesThreshold)} pts` :
+            formula:
+                isStatRelevant('saves', position) && player.gameweek_data ?
+                    Object.entries(savesByGameCount).map(([key, value]) => (
+                        parseInt(key, 10) <= rules.savesThreshold ?
+                            `${value} games (${key} saves) x 0 pts`:
+                            `${value} games (${key} saves) x ${Math.floor(parseInt(key, 10) / rules.savesRatio)} pts`
+                    )) :
                 'N/A for position',
             isRelevant: isStatRelevant('saves', position)
+        },
+        {
+            label: 'Penalties Saved',
+            value: player.penalties_saved,
+            points: breakdown.penaltiesSaved || 0,
+            formula: isStatRelevant('penalties_saved', position) ?
+                `${player.penalties_saved} x ${rules.penaltiesSaved} pts` :
+                'N/A for position',
+            isRelevant: isStatRelevant('penalties_saved', position)
         },
         {
             label: 'Goals Conceded',
             value: player.goals_conceded,
             points: breakdown.goalsConceded || 0,
-            formula: isStatRelevant('goals_conceded', position) ?
-                `${player.goals_conceded} conceded = ${breakdown.goalsConceded || 0} pts` :
+            formula: isStatRelevant('goals_conceded', position) && player.gameweek_data ?
+                Object.entries(gcByGameCount).map(([key, value]) => (
+                    parseInt(key, 10) === 0 ?
+                    `${value} games (0 gc) x 0 pts`:
+                    `${value} games (${key} gc) x ${(parseInt(key, 10) * rules.goalsConcededPenalty) + 1} pts`
+                )) :
                 'N/A for position',
             isRelevant: isStatRelevant('goals_conceded', position)
         }
@@ -110,7 +141,7 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
         <div
             className={styles.tooltipContainer}
             onMouseEnter={() => setIsVisible(true)}
-            // onMouseLeave={() => setIsVisible(false)}
+            onMouseLeave={() => setIsVisible(false)}
         >
             {children}
 
@@ -126,16 +157,16 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
                     </div>
 
                     <div className={styles.breakdownList}>
-                        {breakdown.map((item, index) => (
+                        {breakdown.map((item) => (
                             <div
-                                key={index}
+                                key={item.label}
                                 className={`${styles.breakdownItem} ${!item.isRelevant ? styles.notRelevant : ''} ${item.points > 0 ? styles.positive : item.points < 0 ? styles.negative : styles.neutral}`}
                             >
                                 <div className={styles.statLabel}>
                                     {item.label}
                                 </div>
                                 <div className={styles.statFormula}>
-                                    {item.formula}
+                                    {Array.isArray(item.formula) ? item.formula.map(i =><div>{i}</div>) : item.formula}
                                 </div>
                                 <div className={styles.statPoints}>
                                     {item.points > 0 ? '+' : ''}{item.points}
