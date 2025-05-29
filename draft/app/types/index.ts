@@ -80,7 +80,7 @@ export interface PlayerGameweekStatsData {
     yellowCards: number;
     redCards: number;
     saves: number;
-    bonusPoints: number;
+    bonus: number;
     fixtureMinutes: number;
     updatedAt: Date;
 }
@@ -98,12 +98,30 @@ export interface PlayerSeasonStatsData {
     yellowCards: number;
     redCards: number;
     saves: number;
-    bonusPoints: number;
+    bonus: number;
     updatedAt: Date;
 }
 
 // Custom Position Types
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
+
+
+export interface PlayerData {
+    id: string;
+    code: string;
+    firstName: string;
+    lastName: string;
+    position: string; // GK, CB, FB, MID, WA, CA
+    team: string;
+    fplId?: number; // FPL API ID for matching
+    webName?: string; // FPL web name for matching
+    // Add other fields from your spreadsheet as needed
+    // Examples:
+    nationality?: string;
+    age?: number;
+    value?: number;
+    notes?: string;
+}
 
 export interface PlayerPositionData {
     playerId: string;
@@ -123,6 +141,7 @@ export interface PointsBreakdown {
     redCards: number;
     saves: number;
     goalsConceded: number;
+    bonus: number;
     total: number;
 }
 
@@ -154,6 +173,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // FPL API Types
 export interface FplPlayerData {
     id: number;
+    code: number;
     first_name: string;
     second_name: string;
     web_name: string;

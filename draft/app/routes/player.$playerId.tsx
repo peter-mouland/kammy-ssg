@@ -263,7 +263,7 @@ export default function PlayerDetail() {
                                             {formatPointsDisplay(customPointsBreakdown?.total || 0)}
                                         </td>
                                         <td style={{ color: '#6b7280' }}>
-                                            {stats.bonusPoints || 0}
+                                            {stats.bonus || 0}
                                         </td>
                                     </tr>
                                 );

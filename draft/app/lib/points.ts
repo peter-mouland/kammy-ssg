@@ -13,56 +13,81 @@ export const POSITION_RULES = {
         redCardPenalty: -3,
         savesThreshold: 2,
         savesRatio: 3, // 1 point per 3 saves after threshold
-        goalsConcededPenalty: -1, // per 2 goals
-        goalsConcededThreshold: 2
+        goalsConcededPenalty: -1, // per 2 goals,
+        assists: 3,
+        yellowCard: -1,
+        appearance: {
+            under45Min: 1,
+            over45Min: 3
+        },
     },
     fb: {
         goalPoints: 8,
         cleanSheetPoints: 5,
         redCardPenalty: -3,
-        goalsConcededPenalty: -1, // per 2 goals
-        goalsConcededThreshold: 2
+        goalsConcededPenalty: -1, // per 2 goals,
+        assists: 3,
+        yellowCard: -1,
+        appearance: {
+            under45Min: 1,
+            over45Min: 3
+        },
     },
     cb: {
         goalPoints: 8,
         cleanSheetPoints: 5,
         redCardPenalty: -3,
-        goalsConcededPenalty: -1, // per 2 goals
-        goalsConcededThreshold: 2
+        bonus: 1,
+        goalsConcededPenalty: -1, // per 2 goals,
+        assists: 3,
+        yellowCard: -1,
+        appearance: {
+            under45Min: 1,
+            over45Min: 3
+        },
     },
     mid: {
         goalPoints: 5,
+        bonus: 1,
         cleanSheetPoints: 3,
-        redCardPenalty: -5
+        redCardPenalty: -5,
+        assists: 3,
+        yellowCard: -1,
+        appearance: {
+            under45Min: 1,
+            over45Min: 3
+        },
     },
     wa: {
         goalPoints: 4,
         cleanSheetPoints: 0,
-        redCardPenalty: -5
+        redCardPenalty: -5,
+        assists: 3,
+        yellowCard: -1,
+        appearance: {
+            under45Min: 1,
+            over45Min: 3
+        },
     },
     ca: {
         goalPoints: 4,
         cleanSheetPoints: 0,
-        redCardPenalty: -5
+        redCardPenalty: -5,
+        assists: 3,
+        yellowCard: -1,
+        appearance: {
+            under45Min: 1,
+            over45Min: 3
+        },
     }
-} as const;
-
-// Common point values
-export const COMMON_POINTS = {
-    appearance: {
-        under45Min: 1,
-        over45Min: 3
-    },
-    assists: 3,
-    yellowCard: -1
 } as const;
 
 /**
  * Calculate appearance points based on minutes played
  */
-function calculateAppearancePoints(minutesPlayed: number): number {
+function calculateAppearancePoints(minutesPlayed: number, position: CustomPosition): number {
     if (minutesPlayed === 0) return 0;
-    return minutesPlayed < 45 ? COMMON_POINTS.appearance.under45Min : COMMON_POINTS.appearance.over45Min;
+    return minutesPlayed < 45 ? POSITION_RULES[position].appearance.under45Min : POSITION_RULES[position].appearance.over45Min;
 }
 
 /**
@@ -75,8 +100,8 @@ function calculateGoalPoints(goals: number, position: CustomPosition): number {
 /**
  * Calculate assist points (same for all positions)
  */
-function calculateAssistPoints(assists: number): number {
-    return assists * COMMON_POINTS.assists;
+function calculateAssistPoints(assists: number, position: CustomPosition): number {
+    return assists * POSITION_RULES[position].assists;
 }
 
 /**
@@ -90,8 +115,8 @@ function calculateCleanSheetPoints(cleanSheets: number, position: CustomPosition
 /**
  * Calculate yellow card penalty (same for all positions)
  */
-function calculateYellowCardPenalty(yellowCards: number): number {
-    return yellowCards * COMMON_POINTS.yellowCard;
+function calculateYellowCardPenalty(yellowCards: number, position: CustomPosition): number {
+    return yellowCards * POSITION_RULES[position].yellowCard;
 }
 
 /**
@@ -116,6 +141,18 @@ function calculateSavesBonus(saves: number, position: CustomPosition): number {
 }
 
 /**
+ * Calculate bonus
+ */
+function calculateBonus(bonus: number, position: CustomPosition): number {
+    const rule = POSITION_RULES[position];
+    if (!('bonus' in rule)) return 0;
+
+    if (bonus <= rule.bonus) return 0;
+
+    return bonus;
+}
+
+/**
  * Calculate goals conceded penalty for defenders and goalkeepers
  */
 function calculateGoalsConcededPenalty(goalsConceded: number, position: CustomPosition): number {
@@ -123,11 +160,8 @@ function calculateGoalsConcededPenalty(goalsConceded: number, position: CustomPo
 
     if (!('goalsConcededPenalty' in rule)) return 0;
 
-    const threshold = rule.goalsConcededThreshold || 0;
-    if (goalsConceded <= threshold) return 0;
-
-    const penaltyGoals = goalsConceded - threshold;
-    return Math.floor(penaltyGoals / 2) * rule.goalsConcededPenalty;
+    if (goalsConceded === 0) return 0; // i.e. do not give a point for having a clean sheet
+    return goalsConceded * -1 + 1;
 }
 
 /**
@@ -146,14 +180,15 @@ export function calculateGameweekPoints(
     }
 
     const breakdown: PointsBreakdown = {
-        appearance: calculateAppearancePoints(totalMinutes),
+        appearance: calculateAppearancePoints(totalMinutes, position),
         goals: calculateGoalPoints(stats.goals, position),
-        assists: calculateAssistPoints(stats.assists),
+        assists: calculateAssistPoints(stats.assists, position),
         cleanSheets: calculateCleanSheetPoints(stats.cleanSheets, position),
-        yellowCards: calculateYellowCardPenalty(stats.yellowCards),
+        yellowCards: calculateYellowCardPenalty(stats.yellowCards, position),
         redCards: calculateRedCardPenalty(stats.redCards, position),
         saves: calculateSavesBonus(stats.saves, position),
         goalsConceded: calculateGoalsConcededPenalty(stats.goalsConceded, position),
+        bonus: calculateBonus(stats.bonus, position),
         total: 0
     };
 
@@ -182,6 +217,7 @@ export function calculateSeasonPoints(
         redCards: 0,
         saves: 0,
         goalsConceded: 0,
+        bonus: 0,
         total: 0
     };
 
@@ -245,32 +281,6 @@ export function isValidCustomPosition(position: string): position is CustomPosit
 }
 
 /**
- * Convert FPL position ID to custom position (requires mapping logic)
- */
-export function mapFplPositionToCustomPosition(
-    fplPositionId: number,
-    playerName: string,
-    teamName: string
-): CustomPosition {
-    // This would need to be implemented based on your specific mapping rules
-    // For now, providing a basic mapping
-    switch (fplPositionId) {
-        case 1:
-            return 'gk';
-        case 2:
-            // Would need logic to differentiate between fb and cb
-            return 'fb'; // Default to full-back, could be refined
-        case 3:
-            return 'mid';
-        case 4:
-            // Would need logic to differentiate between wa and ca
-            return 'wa'; // Default to winger, could be refined
-        default:
-            return 'mid'; // Fallback
-    }
-}
-
-/**
  * Format points for display (with + prefix for positive points)
  */
 export function formatPointsDisplay(points: number): string {
@@ -291,6 +301,7 @@ export function getPointsBreakdownDisplay(breakdown: PointsBreakdown): Record<st
         redCards: formatPointsDisplay(breakdown.redCards),
         saves: formatPointsDisplay(breakdown.saves),
         goalsConceded: formatPointsDisplay(breakdown.goalsConceded),
+        bonus: formatPointsDisplay(breakdown.bonus),
         total: formatPointsDisplay(breakdown.total)
     };
 }

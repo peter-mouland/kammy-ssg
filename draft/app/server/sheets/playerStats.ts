@@ -26,7 +26,7 @@ const PLAYER_GAMEWEEK_STATS_HEADERS = {
     'Yellow Cards': 'yellowCards' as keyof PlayerGameweekStatsData,
     'Red Cards': 'redCards' as keyof PlayerGameweekStatsData,
     'Saves': 'saves' as keyof PlayerGameweekStatsData,
-    'Bonus Points': 'bonusPoints' as keyof PlayerGameweekStatsData,
+    'Bonus Points': 'bonus' as keyof PlayerGameweekStatsData,
     'Fixture Minutes': 'fixtureMinutes' as keyof PlayerGameweekStatsData,
     'Updated At': 'updatedAt' as keyof PlayerGameweekStatsData
 };
@@ -46,7 +46,7 @@ const PLAYER_SEASON_STATS_HEADERS = {
     'Yellow Cards': 'yellowCards' as keyof PlayerSeasonStatsData,
     'Red Cards': 'redCards' as keyof PlayerSeasonStatsData,
     'Saves': 'saves' as keyof PlayerSeasonStatsData,
-    'Bonus Points': 'bonusPoints' as keyof PlayerSeasonStatsData,
+    'Bonus Points': 'bonus' as keyof PlayerSeasonStatsData,
     'Updated At': 'updatedAt' as keyof PlayerSeasonStatsData
 };
 
@@ -62,7 +62,7 @@ const PLAYER_GAMEWEEK_STATS_TRANSFORM_FUNCTIONS: Partial<Record<keyof PlayerGame
     yellowCards: parseSheetNumber,
     redCards: parseSheetNumber,
     saves: parseSheetNumber,
-    bonusPoints: parseSheetNumber,
+    bonus: parseSheetNumber,
     fixtureMinutes: parseSheetNumber,
     updatedAt: parseSheetDate
 };
@@ -78,7 +78,7 @@ const PLAYER_SEASON_STATS_TRANSFORM_FUNCTIONS: Partial<Record<keyof PlayerSeason
     yellowCards: parseSheetNumber,
     redCards: parseSheetNumber,
     saves: parseSheetNumber,
-    bonusPoints: parseSheetNumber,
+    bonus: parseSheetNumber,
     updatedAt: parseSheetDate
 };
 
@@ -350,7 +350,7 @@ export async function calculateSeasonStatsFromGameweeks(
             yellowCards: 0,
             redCards: 0,
             saves: 0,
-            bonusPoints: 0,
+            bonus: 0,
             updatedAt: new Date()
         };
 
@@ -364,7 +364,7 @@ export async function calculateSeasonStatsFromGameweeks(
             seasonStats.yellowCards += gwStat.yellowCards;
             seasonStats.redCards += gwStat.redCards;
             seasonStats.saves += gwStat.saves;
-            seasonStats.bonusPoints += gwStat.bonusPoints;
+            seasonStats.bonus += gwStat.bonus;
 
             if (gwStat.minutesPlayed > 0) {
                 seasonStats.gamesPlayed++;
@@ -451,7 +451,7 @@ export function validatePlayerGameweekStatsData(data: Partial<PlayerGameweekStat
     // Validate numeric fields are non-negative
     const numericFields = [
         'minutesPlayed', 'goals', 'assists', 'cleanSheets', 'goalsConceded',
-        'penaltiesSaved', 'yellowCards', 'redCards', 'saves', 'bonusPoints', 'fixtureMinutes'
+        'penaltiesSaved', 'yellowCards', 'redCards', 'saves', 'bonus', 'fixtureMinutes'
     ];
 
     numericFields.forEach(field => {
@@ -481,7 +481,7 @@ export function validatePlayerSeasonStatsData(data: Partial<PlayerSeasonStatsDat
     // Validate numeric fields are non-negative
     const numericFields = [
         'totalMinutes', 'gamesPlayed', 'goals', 'assists', 'cleanSheets',
-        'goalsConceded', 'penaltiesSaved', 'yellowCards', 'redCards', 'saves', 'bonusPoints'
+        'goalsConceded', 'penaltiesSaved', 'yellowCards', 'redCards', 'saves', 'bonus'
     ];
 
     numericFields.forEach(field => {

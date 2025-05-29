@@ -251,7 +251,7 @@ export function convertFplToGameweekStats(
         yellowCards: fplPlayer.yellow_cards || 0,
         redCards: fplPlayer.red_cards || 0,
         saves: fplPlayer.saves || 0,
-        bonusPoints: fplPlayer.bonus || 0,
+        bonus: fplPlayer.bonus || 0,
         fixtureMinutes: liveStats?.stats?.minutes || fplPlayer.minutes || 0,
         updatedAt: new Date()
     };
@@ -541,4 +541,78 @@ export function clearBootstrapCache(): void {
         data: null,
         timestamp: 0
     };
+}
+
+// Add to your existing lib/fpl/api.ts file
+
+export interface FplPlayerGameweekData {
+    element: number; // player ID
+    fixture: number;
+    opponent_team: number;
+    total_points: number;
+    was_home: boolean;
+    kickoff_time: string;
+    team_h_score: number;
+    team_a_score: number;
+    round: number;
+    minutes: number;
+    goals_scored: number;
+    assists: number;
+    clean_sheets: number;
+    goals_conceded: number;
+    own_goals: number;
+    penalties_saved: number;
+    penalties_missed: number;
+    yellow_cards: number;
+    red_cards: number;
+    saves: number;
+    bonus: number;
+    bps: number;
+    influence: string;
+    creativity: string;
+    threat: string;
+    ict_index: string;
+    starts: number;
+    expected_goals: string;
+    expected_assists: string;
+    expected_goal_involvements: string;
+    expected_goals_conceded: string;
+}
+
+export interface FplPlayerSeasonData {
+    history: FplPlayerGameweekData[];
+    history_past: any[];
+    fixtures: any[];
+}
+
+// Fetch individual player's gameweek data
+export async function getPlayerGameweekData(playerId: number): Promise<FplPlayerSeasonData> {
+    // summary is key'd off ID, (not CODE)
+    const response = await fetch(`${FPL_BASE_URL}/element-summary/${playerId}/`);
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch player ${playerId} gameweek data: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+// Batch fetch gameweek data for multiple players (with rate limiting)
+export async function getBatchPlayerGameweekData(playerIds: number[], delay: number = 100): Promise<Record<number, FplPlayerSeasonData>> {
+    const results: Record<number, FplPlayerSeasonData> = {};
+
+    for (const playerId of playerIds) {
+        try {
+            results[playerId] = await getPlayerGameweekData(playerId);
+            // Add delay to avoid rate limiting
+            if (delay > 0) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        } catch (error) {
+            console.error(`Failed to fetch gameweek data for player ${playerId}:`, error);
+            // Continue with other players even if one fails
+        }
+    }
+
+    return results;
 }

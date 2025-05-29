@@ -1,0 +1,222 @@
+.tooltipContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 0;
+    min-width: 280px;
+    max-width: 320px;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.tooltipHeader {
+    padding: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    background-color: #f9fafb;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.playerName {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.position {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+.breakdownList {
+    padding: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.breakdownItem {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+    align-items: center;
+}
+
+.breakdownItem:last-child {
+    margin-bottom: 0;
+}
+
+.breakdownItem.positive {
+    background-color: #f0fdf4;
+    border-left: 3px solid #22c55e;
+}
+
+.breakdownItem.negative {
+    background-color: #fef2f2;
+    border-left: 3px solid #ef4444;
+}
+
+.breakdownItem.neutral {
+    background-color: #f8fafc;
+    border-left: 3px solid #94a3b8;
+}
+
+.breakdownItem.notRelevant {
+    background-color: #f9fafb;
+    border-left: 3px solid #d1d5db;
+    opacity: 0.6;
+}
+
+.statLabel {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.75rem;
+}
+
+.statFormula {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-family: monospace;
+}
+
+.statPoints {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-align: right;
+    min-width: 2rem;
+}
+
+.positive .statPoints {
+    color: #16a34a;
+}
+
+.negative .statPoints {
+    color: #dc2626;
+}
+
+.neutral .statPoints {
+    color: #6b7280;
+}
+
+.notRelevant .statPoints {
+    color: #9ca3af;
+}
+
+.tooltipFooter {
+    padding: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+    background-color: #f9fafb;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.totalPoints {
+    text-align: center;
+    color: #111827;
+    font-size: 0.875rem;
+}
+
+.tooltipArrow {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+.tooltipArrow::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #e5e7eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tooltip {
+        min-width: 260px;
+        max-width: 300px;
+        font-size: 0.75rem;
+    }
+
+    .tooltipHeader {
+        padding: 0.5rem;
+    }
+
+    .breakdownList {
+        padding: 0.375rem;
+        max-height: 250px;
+    }
+
+    .breakdownItem {
+        padding: 0.25rem 0.375rem;
+    }
+
+    .tooltipFooter {
+        padding: 0.5rem;
+    }
+}
+
+/* Handle tooltip positioning near screen edges */
+.tooltip.rightEdge {
+    left: auto;
+    right: 0;
+    transform: none;
+}
+
+.tooltip.leftEdge {
+    left: 0;
+    transform: none;
+}
+
+/* Scrollbar styling for breakdown list */
+.breakdownList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.breakdownList::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.breakdownList::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.breakdownList::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
