@@ -1,0 +1,39 @@
+.subtitle {
+    color: #6b7280;
+    margin: 0.5rem 0 0 0;
+}
+
+.tableContainer {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.playerName {
+    font-weight: 500;
+    color: #111827;
+}
+
+.playerRank {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.teamName {
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.points {
+    font-weight: 600;
+    color: #111827;
+}
+
+.price {
+    color: #059669;
+    font-weight: 500;
+}
+
+.actionContainer {
+    margin-top: 1rem;
+    text-align: center;
+}

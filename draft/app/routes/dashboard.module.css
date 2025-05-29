@@ -1,0 +1,38 @@
+/* Dashboard page styles */
+.pageHeader {
+    margin-bottom: 2rem;
+}
+
+.pageTitle {
+    font-size: 2.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.pageSubtitle {
+    color: #6b7280;
+    font-size: 1.125rem;
+}
+
+.dashboardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboardGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .pageTitle {
+        font-size: 1.875rem;
+    }
+
+    .pageSubtitle {
+        font-size: 1rem;
+    }
+}

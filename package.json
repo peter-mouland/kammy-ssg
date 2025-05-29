@@ -3,38 +3,29 @@
   "version": "1.0.0",
   "type": "module",
   "packageManager": "yarn@4.9.1",
+  "engines": {
+    "node": "20.x",
+    "npm": "10.2.0"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "yarn workspace draft dev",
+    "build": "yarn workspace draft build && yarn copy-build && yarn workspace functions build",
+    "copy-build": "cp -r draft/build functions/",
+    "clean": "rm -rf functions/build draft/build functions/lib",
+    "preview": "yarn workspace draft preview",
+    "start": "yarn workspace draft start",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "firebase:login": "firebase login",
+    "firebase:init": "firebase init",
+    "firebase:deploy": "firebase deploy",
+    "local": "firebase emulators:start",
+    "functions:build": "yarn workspace functions build",
+    "functions:dev": "yarn workspace functions serve",
+    "functions:deploy": "yarn workspace functions build && firebase deploy --only functions"
   },
-  "dependencies": {
-    "@react-router/dev": "^7.0.0",
-    "@react-router/node": "^7.0.0",
-    "@react-router/serve": "^7.0.0",
-    "clsx": "^2.1.1",
-    "date-fns": "^3.6.0",
-    "google-auth-library": "^9.14.1",
-    "googleapis": "^144.0.0",
-    "isbot": "^5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router": "^7.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.7.4",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9.11.1",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.9",
-    "typescript": "^5.5.3",
-    "vite": "^5.4.1"
-  }
+  "workspaces": [
+    "draft",
+    "functions"
+  ]
 }

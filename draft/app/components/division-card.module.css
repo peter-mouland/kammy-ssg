@@ -1,0 +1,178 @@
+/* Division card */
+.divisionCard {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+.divisionCard.active {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Division header */
+.divisionHeader {
+    margin-bottom: 1rem;
+}
+
+.divisionTitleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.divisionTitle {
+    margin: 0;
+    font-weight: 600;
+    line-height: 1;
+    color: #111827;
+}
+
+.divisionTitle.active {
+    color: #059669;
+}
+
+.divisionStats {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Action buttons */
+.actionButton {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    min-width: 120px;
+}
+
+.actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.actionButton.generate {
+    background-color: #f59e0b;
+}
+
+.actionButton.generate:hover:not(:disabled) {
+    background-color: #d97706;
+    transform: translateY(-1px);
+}
+
+.actionButton.start {
+    background-color: #10b981;
+}
+
+.actionButton.start:hover:not(:disabled) {
+    background-color: #059669;
+    transform: translateY(-1px);
+}
+
+.actionButton.stop {
+    background-color: #ef4444;
+}
+
+.actionButton.stop:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+.actionButton.disabled {
+    background-color: #6b7280;
+}
+
+/* Draft order section */
+.draftOrderSection {
+    margin-bottom: 1rem;
+}
+
+.draftOrderTitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.draftOrderList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.draftOrderItem {
+    font-size: 0.875rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.draftOrderItem:last-child {
+    border-bottom: none;
+}
+
+.draftOrderPosition {
+    font-weight: 600;
+    color: #059669;
+    min-width: 2rem;
+    display: inline-block;
+}
+
+.draftOrderMeta {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* Empty state */
+.emptyState {
+    text-align: center;
+    padding: 1rem;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    border-radius: 0.375rem;
+    border: 2px dashed #d1d5db;
+}
+
+/* Status indicators */
+.activeIndicator {
+    color: #10b981;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .divisionTitleRow {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+    .actionButton {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .divisionCard {
+        padding: 1rem;
+    }
+}

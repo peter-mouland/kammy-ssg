@@ -1,0 +1,65 @@
+.subtitle {
+    color: #6b7280;
+    margin: 0.5rem 0 0 0;
+}
+
+.servicesList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.serviceItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.serviceItem:last-child {
+    border-bottom: none;
+}
+
+.serviceName {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.serviceStatus {
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.online {
+    color: #10b981;
+}
+
+.offline {
+    color: #ef4444;
+}
+
+/* Add pulse animation for online status */
+.online::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.25rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}

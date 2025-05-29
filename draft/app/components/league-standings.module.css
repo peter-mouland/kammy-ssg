@@ -1,0 +1,55 @@
+.subtitle {
+    color: #6b7280;
+    margin: 0.5rem 0 0 0;
+}
+
+.tableContainer {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.rankBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.topRank {
+    background-color: #fbbf24;
+    color: white;
+}
+
+.regularRank {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.teamName {
+    font-weight: 500;
+    color: #111827;
+}
+
+.division {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.managerName {
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.points {
+    font-weight: 600;
+    color: #111827;
+}
+
+.actionContainer {
+    margin-top: 1rem;
+    text-align: center;
+}

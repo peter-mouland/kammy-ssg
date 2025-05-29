@@ -1,0 +1,20 @@
+.subtitle {
+    color: #6b7280;
+    margin: 0.5rem 0 0 0;
+}
+
+.actionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.actionsList .btn {
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.actionsList .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}

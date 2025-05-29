@@ -1,0 +1,64 @@
+/* Message container */
+.messageContainer {
+    margin-bottom: 1.5rem;
+}
+
+/* Success message */
+.successMessage {
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Error message */
+.errorMessage {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Icon styles */
+.messageIcon {
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.messageText {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .successMessage,
+    .errorMessage {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}

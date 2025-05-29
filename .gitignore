@@ -1,6 +1,7 @@
 .idea/
 node_modules/
 .react-router
+.firebase
 dist
 coverage
 compiled
