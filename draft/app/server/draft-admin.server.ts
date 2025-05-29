@@ -84,6 +84,8 @@ export async function handleDraftAction(params: DraftActionParams) {
             return { success: true, message: `Draft order cleared for division ${divisionId}` };
 
         case "startDraft":
+            console.log('Processing startDraft action');
+
             if (!divisionId) {
                 throw new Error("Please select a division to start the draft");
             }

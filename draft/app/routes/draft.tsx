@@ -14,6 +14,7 @@ import { TeamDraft } from '../components/draft-team';
 import { DraftPlayersAvailable } from '../components/draft-players-availablle';
 import { Timer } from '../components/timer';
 import { SelectUser } from '../components/select-user';
+import { requestFormData } from '../server/form-data';
 
 export const meta: MetaFunction = () => {
     return [
@@ -129,9 +130,9 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
-        const formData = await request.formData();
+        const formData = await requestFormData({ context })
         const actionType = formData.get("actionType");
         const divisionId = formData.get("divisionId")?.toString();
         const playerId = formData.get("playerId")?.toString();

@@ -5,6 +5,7 @@ import { readUserTeams, getUserTeamsByDivision } from "../server/sheets/userTeam
 import { readDivisions } from "../server/sheets/divisions";
 import type { UserTeamData, DivisionData } from "../types";
 import { SelectDivision } from '../components/select-division';
+import { requestFormData } from '../server/form-data';
 
 export const meta: MetaFunction = () => {
     return [
@@ -52,9 +53,9 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
-        const formData = await request.formData();
+        const formData = await requestFormData({ context })
         const actionType = formData.get("actionType");
 
         switch (actionType) {

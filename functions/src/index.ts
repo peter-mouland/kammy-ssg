@@ -33,6 +33,10 @@ app.all("*", createRequestHandler({
             throw error;
         }
     },
+    getLoadContext: (req, res) => {
+        // PASS BODY THROUGH CONTEXT TO GET FORM DATA ON FIREBASE
+        return req.body
+    },
     mode: process.env.NODE_ENV || "production",
 }));
 

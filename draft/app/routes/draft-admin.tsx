@@ -6,6 +6,7 @@ import type { DraftAdminData } from "../server/draft-admin.server";
 import { DivisionCard } from "../components/division-card";
 import { ActionMessage } from "../components/action-message";
 import styles from './draft-admin.module.css';
+import { requestFormData } from '../server/form-data';
 
 export const meta: MetaFunction = () => {
     return [
@@ -30,13 +31,22 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
-        const formData = await request.formData();
-        const actionType = formData.get("actionType")?.toString() || "";
-        const divisionId = formData.get("divisionId")?.toString();
 
-        const result = await handleDraftAction({ actionType, divisionId });
+        const formData = await requestFormData({ context })
+        const actionType = formData.get("actionType") as string | null;
+        const divisionId = formData.get("divisionId") as string | null;
+
+        if (!actionType) {
+            return data<ActionData>({ error: "Action type is required" });
+        }
+
+        const result = await handleDraftAction({
+            actionType: actionType.trim(),
+            divisionId: divisionId?.trim() || undefined
+        });
+
         return data<ActionData>(result);
 
     } catch (error) {

@@ -9,6 +9,8 @@ public
 docs
 .DS_Store
 .swp
+.env.local
+.env.developer
 .divshot-cache/
 *.iml
 *.log
