@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './points-breakdown-tooltip.module.css';
-import type { EnhancedPlayerData } from '../server/player-stats.server';
+import type { EnhancedPlayerData } from '../server/cache/types';
 import { isStatRelevant } from '../lib/is-stat-relevant';
 import { POSITION_RULES } from '../lib/points';
 

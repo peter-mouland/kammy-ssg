@@ -6,8 +6,8 @@ let db: FirebaseFirestore.Firestore;
 export function getFirestoreInstance() {
     if (!db) {
         if (getApps().length === 0) {
-            if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-                const serviceAccountJson = atob(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+            if (process.env.VITE_FIREBASE_SERVICE_ACCOUNT_KEY) {
+                const serviceAccountJson = atob(process.env.VITE_FIREBASE_SERVICE_ACCOUNT_KEY);
                 const serviceAccount = JSON.parse(serviceAccountJson);
 
                 initializeApp({

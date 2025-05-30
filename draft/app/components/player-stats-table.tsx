@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import styles from './player-stats-table.module.css';
 import { PointsBreakdownTooltip } from './points-breakdown-tooltip';
-import type { EnhancedPlayerData } from "../server/player-stats.server";
+import type { EnhancedPlayerData } from '../server/cache/types';
 import { isStatRelevant } from '../lib/is-stat-relevant';
 
 interface PlayerStatsTableProps {

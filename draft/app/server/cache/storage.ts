@@ -117,9 +117,6 @@ export async function getCachedPlayerStatsData(): Promise<PlayerStatsData | null
         const players = playersSnapshot.docs.map(doc => {
             const data = doc.data() as CachedPlayerData;
 
-            // Debug logging to see what we're getting from cache
-            console.log(`Cached player ${data.web_name}: position_name="${data.position_name}"`);
-
             // Convert cached gameweeks back to gameweek_data array
             const gameweek_data = Object.keys(data.gameweeks || {})
                 .sort((a, b) => Number(a) - Number(b))
@@ -132,9 +129,6 @@ export async function getCachedPlayerStatsData(): Promise<PlayerStatsData | null
                 ...playerData,
                 gameweek_data
             };
-
-            // Debug logging to see what we're returning
-            console.log(`Enhanced player ${enhancedPlayer.web_name}: position_name="${enhancedPlayer.position_name}"`);
 
             return enhancedPlayer;
         });

@@ -1,7 +1,6 @@
 
 // Convert FPL gameweek data to your format
-import type { FplPlayerGameweekData } from './api';
-import type { PlayerGameweekStatsData } from '../../types';
+import type { FplPlayerGameweekData, PlayerGameweekStatsData } from '../../types';
 
 export const convertToPlayerGameweeksStats = (gameweekData: FplPlayerGameweekData[]): PlayerGameweekStatsData[] => {
     return gameweekData.map(convertToPlayerGameweekStats);

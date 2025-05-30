@@ -2,8 +2,7 @@ import { getFplBootstrapData, getBatchPlayerGameweekData } from "../fpl/api";
 import { convertToPlayerGameweekStats } from "../fpl/stats";
 import { readPlayers } from "../sheets/players";
 import { calculateSeasonPoints, calculateGameweekPoints } from "../../lib/points";
-import type { FplPlayerData, FplTeamData, PlayerData, CustomPosition, PlayerGameweekStatsData } from "../../types";
-import type { FplPlayerGameweekData } from "../fpl/api";
+import type { FplPlayerGameweekData, FplPlayerData, FplTeamData, PlayerData, CustomPosition, PlayerGameweekStatsData } from "../../types";
 import type { RefreshOptions, EnhancedPlayerData } from './types';
 import { getCacheMetadata, getCachedGameweekData, cacheGameweekData, clearAllCache } from './storage';
 

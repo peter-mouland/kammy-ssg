@@ -6,14 +6,6 @@ import { getCachedPlayerStatsData, cachePlayerStatsData } from './cache/storage'
 import { generateFreshPlayerData } from './cache/data-generator';
 import { refreshPlayerCache, clearStuckOperations } from './cache/refresh';
 
-// Re-export types for backward compatibility
-export type {
-    RefreshOptions,
-    PlayerStatsData,
-    EnhancedPlayerData,
-    CacheOperationStatus
-} from './cache/types';
-
 // Main function - uses cache by default
 export async function getPlayerStatsData(options: RefreshOptions = {}): Promise<PlayerStatsData> {
     const { useCacheFirst = true, ...refreshOptions } = options;
