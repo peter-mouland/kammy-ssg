@@ -20,7 +20,7 @@ let bootstrapCache: { data: FplBootstrapData | null; timestamp: number } = {
     timestamp: 0
 };
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
 
 /**
  * Fetch data from FPL API with error handling

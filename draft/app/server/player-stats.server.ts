@@ -1,124 +1,142 @@
-// Server-only imports
-import { getFplBootstrapData, getBatchPlayerGameweekData } from "./fpl/api";
-import { readPlayers } from "./sheets/players";
-import { calculateSeasonPoints } from "../lib/points";
-import type { FplPlayerData, FplTeamData, PlayerData, CustomPosition, PlayerGameweekStatsData } from "../types";
-import type { FplPlayerGameweekData } from "./fpl/api";
+import { getFplBootstrapData } from "./fpl/api";
+import type { FplTeamData } from "../types";
+import type { RefreshOptions, PlayerStatsData } from './cache/types';
+import { getCacheOperationStatus } from './cache/operations';
+import { getCachedPlayerStatsData, cachePlayerStatsData } from './cache/storage';
+import { generateFreshPlayerData } from './cache/data-generator';
+import { refreshPlayerCache, clearStuckOperations } from './cache/refresh';
 
+// Re-export types for backward compatibility
+export type {
+    RefreshOptions,
+    PlayerStatsData,
+    EnhancedPlayerData,
+    CacheOperationStatus
+} from './cache/types';
 
-export interface PlayerStatsData {
-    players: EnhancedPlayerData[];
-    teams: Record<number, string>;
-    positions: Record<number, string>;
-}
+// Main function - uses cache by default
+export async function getPlayerStatsData(options: RefreshOptions = {}): Promise<PlayerStatsData> {
+    const { useCacheFirst = true, ...refreshOptions } = options;
 
-export interface EnhancedPlayerData extends FplPlayerData {
-    team_name: string;
-    position_name: string; // Custom position: ca, wa, mid, fb, cb, gk
-    custom_points: number;
-    points_breakdown: any; // Points breakdown from your points logic
-    player_info?: PlayerData; // Additional info from spreadsheet
-    gameweek_data?: FplPlayerGameweekData[]; // Per-game data
-}
+    try {
+        // Check if cache operation is currently running
+        const operationStatus = await getCacheOperationStatus();
+        const isRefreshing = operationStatus?.status === 'running';
 
-// Convert FPL gameweek data to your format
-const convertToPlayerGameweekStats = (gameweekData: FplPlayerGameweekData[]): PlayerGameweekStatsData[] => {
-    return gameweekData.map(gw => ({
-        gameweek: gw.round,
-        minutesPlayed: gw.minutes,
-        goals: gw.goals_scored,
-        assists: gw.assists,
-        cleanSheets: gw.clean_sheets,
-        goalsConceded: gw.goals_conceded,
-        yellowCards: gw.yellow_cards,
-        redCards: gw.red_cards,
-        saves: gw.saves,
-        penaltiesSaved: gw.penalties_saved,
-        bonus: gw.bonus
-    }));
-};
+        // If cache is being refreshed, return cached data with status
+        if (isRefreshing && useCacheFirst) {
+            console.log('Cache refresh in progress, getting cached data');
+            const cachedData = await getCachedPlayerStatsData();
 
-export async function getPlayerStatsData(): Promise<PlayerStatsData> {
-    const [bootstrapData, playersData] = await Promise.all([
-        getFplBootstrapData(),
-        readPlayers()
-    ]);
+            if (cachedData) {
+                console.log('...returning cached data');
+                return {
+                    ...cachedData,
+                    cacheStatus: {
+                        isRefreshing: true,
+                        operationType: operationStatus?.operationType,
+                        progress: operationStatus?.progress
+                    }
+                };
+            } else {
+                // No cached data available during refresh - this happens during "Clear & Rebuild"
+                // Generate fresh data without caching it (since refresh is in progress)
+                console.log('No cached data available during refresh, generating fresh player data');
+                const { players, currentGameweek } = await generateFreshPlayerData({
+                    useCacheFirst: false,
+                    // Don't cache during this call since refresh is in progress
+                    skipCaching: true
+                });
 
-    console.log('Fetching gameweek data for all players...');
+                console.log('getting getFplBootstrapData');
+                const bootstrapData = await getFplBootstrapData();
 
-    // Get all player IDs (limit to top players to avoid rate limits during development)
-    const playerIds = bootstrapData.elements
-        .filter(p => p.total_points > 10) // Only get players with some points to reduce API calls
-        .map(p => p.id);
-
-    console.log(`Fetching gameweek data for ${playerIds.length} players...`);
-    console.log(`Found ${playersData.length} players in spreadsheet`);
-    console.log('Sample spreadsheet players:', playersData.slice(0, 3).map(p => `${p.firstName} ${p.lastName} - ${p.position}`));
-
-    // Fetch gameweek data for all players (with rate limiting)
-    const gameweekDataMap = await getBatchPlayerGameweekData(playerIds, 50); // 50ms delay between requests
-
-    console.log(`Retrieved gameweek data for ${Object.keys(gameweekDataMap).length} players`);
-
-    // Create team lookup map
-    const teams = bootstrapData.teams.reduce((acc: Record<number, string>, team: FplTeamData) => {
-        acc[team.id] = team.name;
-        return acc;
-    }, {});
-
-    // Create player lookup map from spreadsheet with better matching
-    const playersLookup = playersData.reduce((acc: Record<string, PlayerData>, player: PlayerData) => {
-        acc[player.id] = player;
-        return acc;
-    }, {});
-
-    console.log(`Created lookup for ${playersData.length} players from spreadsheet`);
-    console.log('Sample lookup keys:', Object.keys(playersLookup).slice(0, 10));
-
-    // Enhance players with accurate points calculations using your existing logic
-    const enhancedPlayers: EnhancedPlayerData[] = bootstrapData.elements.map((player: FplPlayerData) => {
-        // Try to find custom player data with multiple matching strategies
-        const playerSheet = playersLookup[player.id]; // FPL ID match
-        if (!playerSheet) {
-            // player in bootstrap, not in spreadsheet
-            return {
-                ...player,
-                team_name: '', position_name: '', custom_points: 0, points_breakdown: {}
-            };
+                console.log('...returning fresh data');
+                return {
+                    players,
+                    teams: bootstrapData.teams.reduce((acc: Record<number, string>, team: FplTeamData) => {
+                        acc[team.id] = team.name;
+                        return acc;
+                    }, {}),
+                    positions: {
+                        'gk': 'gk',
+                        'cb': 'cb',
+                        'fb': 'fb',
+                        'mid': 'mid',
+                        'wa': 'wa',
+                        'ca': 'ca'
+                    },
+                    cacheStatus: {
+                        isRefreshing: true,
+                        operationType: operationStatus?.operationType,
+                        progress: operationStatus?.progress
+                    }
+                };
+            }
         }
 
-        console.log(`Player ${player.web_name}: FPL ID ${player.id}, Found custom data:`, playerSheet ? `${playerSheet.firstName} ${playerSheet.lastName} - ${playerSheet.position}` : 'No match');
+        // Try to get cached data first (unless explicitly disabled)
+        if (useCacheFirst && !refreshOptions.forceFullRefresh && !refreshOptions.clearAll && !isRefreshing) {
+            console.log('useCacheFirst: ' + useCacheFirst + ' or force refresh, getting cached data');
+            const cachedData = await getCachedPlayerStatsData();
+            if (cachedData) {
+                console.log('Returning cached player stats data');
+                return {
+                    ...cachedData,
+                    cacheStatus: {
+                        isRefreshing: false
+                    }
+                };
+            }
+            console.log('Cache miss or invalid, generating fresh data');
+        }
 
-        // Get gameweek data and convert to your format
-        const gameweekData = gameweekDataMap[player.id]?.history || [];
-        const playerGameweekStats = convertToPlayerGameweekStats(gameweekData);
+        // Generate fresh data
+        console.log('Generating fresh player data');
+        const { players, currentGameweek } = await generateFreshPlayerData(refreshOptions);
 
-        // Calculate points using your existing logic
-        const pointsBreakdown = calculateSeasonPoints(playerGameweekStats, playerSheet.position.toLowerCase() as CustomPosition);
+        console.log('getting getFplBootstrapData');
+        const bootstrapData = await getFplBootstrapData();
 
-        console.log(`Final position for ${player.web_name}: ${playerSheet.position}`);
-
-        return {
-            ...player,
-            team_name: teams[player.team] || `Team ${player.team}`,
-            position_name: playerSheet.position, // This should now be the custom position
-            custom_points: pointsBreakdown.total,
-            points_breakdown: pointsBreakdown,
-            player_info: playerSheet,
-            gameweek_data: gameweekData
+        const result: PlayerStatsData = {
+            players,
+            teams: bootstrapData.teams.reduce((acc: Record<number, string>, team: FplTeamData) => {
+                acc[team.id] = team.name;
+                return acc;
+            }, {}),
+            positions: {
+                'gk': 'gk',
+                'cb': 'cb',
+                'fb': 'fb',
+                'mid': 'mid',
+                'wa': 'wa',
+                'ca': 'ca'
+            },
+            cacheStatus: {
+                isRefreshing: false
+            }
         };
-    });
 
-    return {
-        players: enhancedPlayers,
-        teams,
-        positions: {
-            'gk': 'gk',
-            'cb': 'cb',
-            'fb': 'fb',
-            'mid': 'mid',
-            'wa': 'wa',
-            'ca': 'ca'
+        // Cache the fresh data (unless it was a specific gameweek update or skip caching is requested)
+        if (!refreshOptions.specificGameweeks && !refreshOptions.skipCaching) {
+            console.log('...caching fresh data');
+            await cachePlayerStatsData(result, currentGameweek);
         }
-    };
+
+        console.log('...returning fresh data');
+        return result;
+
+    } catch (error) {
+        console.error('Error in getPlayerStatsData:', error);
+        throw error;
+    }
 }
+
+// Export cache refresh function
+export { refreshPlayerCache };
+
+// Export function to get cache operation status (for API routes)
+export { getCacheOperationStatus as getCacheRefreshStatus };
+
+// Export function to clear stuck operations
+export { clearStuckOperations };

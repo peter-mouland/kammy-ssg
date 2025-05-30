@@ -12,10 +12,10 @@ export default [
     // API routes
     route("api/sheets", "routes/api.sheets.ts"),
     route("api/live-scores", "routes/api.live-scores.ts"),
+    route("api/cache", "routes/api.cache.ts"), // New cache management API
 
     // debugging routes
     route("debug", "routes/debug.tsx"),
 ] satisfies RouteConfig;
 
 // route("api/cron", "routes/api.cron.ts"),
-// route("player.$playerId", "routes/player.$playerId.tsx"),

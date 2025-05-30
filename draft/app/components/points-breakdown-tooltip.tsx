@@ -22,6 +22,8 @@ const getPointsBreakdown = (player: PointsBreakdownTooltipProps['player']): Poin
     const position = player.position_name;
     const breakdown = player.points_breakdown || {};
     const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {} // ?????
+    if (!rules) console.log(player, position)
+    if (!rules.appearance) console.log(player, position)
     const gcByGameCount = player.gameweek_data ? player.gameweek_data
         .sort((a, b)=> a.goals_conceded < b.goals_conceded ? -1 : 1)
         .reduce((acc, v) => ({
