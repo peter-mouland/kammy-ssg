@@ -1,6 +1,4 @@
-export const CACHE_COLLECTION = 'player_stats_cache';
-export const CACHE_STATUS_COLLECTION = 'cache_operations';
-export const CACHE_VERSION = 'v3'; // Increment due to structure change
+// app/lib/server/cache/utils.ts - REPLACE YOUR EXISTING FILE
 
 export function timestampToDate(timestamp: Date | { seconds: number; nanoseconds: number }): Date {
     if (timestamp instanceof Date) {

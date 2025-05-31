@@ -20,7 +20,7 @@ export const ScoringInfo = () => (
                 <div>+3 pts (MID)</div>
             </div>
             <div className={styles.scoringItem}>
-                <strong>Appearance:</strong>
+                <strong>Minutes Played:</strong>
                 <div>+3 pts (45+ min),</div>
                 <div>+1 pt (&lt;45 min)</div>
             </div>

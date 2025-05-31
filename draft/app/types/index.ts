@@ -19,22 +19,6 @@ export interface UserTeamData {
     lastUpdated: Date;
 }
 
-// Weekly Points Types
-export interface WeeklyPointsData {
-    userId: string;
-    gameweek: number;
-    points: number;
-    transfers: number;
-    hits: number;
-    captain: string;
-    viceCaptain: string;
-    benchBoost: boolean;
-    tripleCaptain: boolean;
-    wildcard: boolean;
-    freeHit: boolean;
-    dateRecorded: Date;
-}
-
 // Draft Types
 export interface DraftPickData {
     pickNumber: number;
@@ -116,11 +100,6 @@ export interface PlayerData {
     fplId?: number; // FPL API ID for matching
     webName?: string; // FPL web name for matching
     // Add other fields from your spreadsheet as needed
-    // Examples:
-    nationality?: string;
-    age?: number;
-    value?: number;
-    notes?: string;
 }
 
 export interface PlayerPositionData {
@@ -133,7 +112,7 @@ export interface PlayerPositionData {
 
 // Points Calculation Types
 export interface PointsBreakdown {
-    appearance: number;
+    minutesPlayed: number;
     goals: number;
     assists: number;
     cleanSheets: number;
@@ -162,17 +141,21 @@ export interface ApiResponse<T> {
     message?: string;
 }
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-    pagination?: {
-        page: number;
-        limit: number;
-        total: number;
-        hasMore: boolean;
-    };
-}
-
 // FPL API Types
 export interface FplPlayerData {
+    photo: string;
+    status: string;
+    cost_change_start: number;
+    cost_change_event: number;
+    form: number;
+    points_per_game: number;
+    selected_by_percent: number;
+    transfers_in: number;
+    transfers_out: number;
+    transfers_in_event: number;
+    transfers_out_event: number;
+    total_points: number;
+    event_points: number;
     id: number;
     code: number;
     first_name: string;
@@ -181,7 +164,6 @@ export interface FplPlayerData {
     team: number;
     element_type: number;
     now_cost: number;
-    total_points: number;
     minutes: number;
     goals_scored: number;
     assists: number;
@@ -267,7 +249,7 @@ export interface FplPhase {
 export interface FplTeam {
     code: number;
     draw: number;
-    form: null;
+    form: number;
     id: number;
     loss: number;
     name: string;

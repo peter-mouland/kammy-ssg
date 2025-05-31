@@ -1,6 +1,7 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs } from "react-router";
 import { data } from "react-router";
-import { refreshPlayerCache, getPlayerStatsData, getCacheRefreshStatus, clearStuckOperations } from "../server/player-stats.server";
+import { refreshPlayerCache, getPlayerStatsData, getCacheRefreshStatus } from "../../../server/player-stats.server";
+import { clearStuckOperations } from '../../../server/cache/refresh';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const url = new URL(request.url);

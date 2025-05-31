@@ -10,9 +10,12 @@ export default [
     route("players", "routes/players.tsx"),
 
     // API routes
-    route("api/sheets", "routes/api.sheets.ts"),
-    route("api/live-scores", "routes/api.live-scores.ts"),
-    route("api/cache", "routes/api.cache.ts"), // New cache management API
+    route("api/cache/health", "routes/api/cache/health.ts"),
+    route("api/cache", "routes/api/cache/management.ts"),
+    route("api/players/season-stats", "routes/api/players/season-stats.ts"),
+    route("api/gameweek/:gameweekId", "routes/api/players/gameweek.$gameweek.ts"),
+    route("api/sheets", "routes/api/api.sheets.ts"),
+    route("api/live-scores", "routes/api/api.live-scores.ts"),
 
     // debugging routes
     route("debug", "routes/debug.tsx"),

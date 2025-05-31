@@ -1,3 +1,5 @@
+// app/lib/server/cache/refresh.ts - REPLACE YOUR EXISTING FILE
+
 import type { RefreshOptions, CacheOperationStatus } from './types';
 import {
     getCacheOperationStatus,
@@ -6,6 +8,8 @@ import {
     isCacheOperationRunning
 } from './operations';
 import { generateFreshPlayerData } from './data-generator';
+import { cleanupOldGameweeks } from './gameweek-storage';
+import { getCurrentGameweek } from '../fpl/api';
 
 export async function refreshPlayerCache(options: RefreshOptions = {}): Promise<{ success: boolean; message: string; playersCount: number }> {
     // Check if cache operation is already running
@@ -36,15 +40,6 @@ export async function refreshPlayerCache(options: RefreshOptions = {}): Promise<
     });
 
     try {
-        // Update progress
-        await setCacheOperationStatus({
-            operationType,
-            status: 'running',
-            startedAt: startTime,
-            progress: {
-                currentStep: 'Fetching player data...'
-            }
-        });
 
         const { players } = await generateFreshPlayerData(options);
 
@@ -62,7 +57,7 @@ export async function refreshPlayerCache(options: RefreshOptions = {}): Promise<
 
         let message: string;
         if (options.clearAll) {
-            message = 'Cache cleared and rebuilt from API';
+            message = 'Cache cleared and rebuilt with new structure';
         } else if (options.forceFullRefresh) {
             message = 'Full cache refresh completed (all gameweeks)';
         } else if (options.quickRefresh) {
@@ -84,7 +79,7 @@ export async function refreshPlayerCache(options: RefreshOptions = {}): Promise<
             }
         });
 
-        // Clear operation status immediately (don't use setTimeout)
+        // Clear operation status
         console.log('Cache refresh completed, clearing operation status...');
         await clearCacheOperationStatus();
 
@@ -108,7 +103,6 @@ export async function refreshPlayerCache(options: RefreshOptions = {}): Promise<
             }
         });
 
-        // Clear failed status immediately (don't use setTimeout)
         console.log('Cache refresh failed, clearing operation status...');
         await clearCacheOperationStatus();
 

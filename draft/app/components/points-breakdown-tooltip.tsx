@@ -2,7 +2,6 @@ import { useState } from 'react';
 import styles from './points-breakdown-tooltip.module.css';
 import type { EnhancedPlayerData } from '../server/cache/types';
 import { isStatRelevant } from '../lib/is-stat-relevant';
-import { POSITION_RULES } from '../lib/points';
 
 interface PointsBreakdownTooltipProps {
     player: EnhancedPlayerData;
@@ -11,122 +10,86 @@ interface PointsBreakdownTooltipProps {
 
 interface PointBreakdownItem {
     label: string;
-    value: number;
     points: number;
     formula: string | string[];
     isRelevant: boolean;
 }
 
-// Calculate detailed breakdown using the actual points breakdown from server
+// Calculate detailed breakdown using the pre-calculated explanations from server
 const getPointsBreakdown = (player: PointsBreakdownTooltipProps['player']): PointBreakdownItem[] => {
     const position = player.position_name;
     const breakdown = player.points_breakdown || {};
-    const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {} // ?????
-    if (!rules) console.log(player, position)
-    if (!rules.appearance) console.log(player, position)
-    const gcByGameCount = player.gameweek_data ? player.gameweek_data
-        .sort((a, b)=> a.goals_conceded < b.goals_conceded ? -1 : 1)
-        .reduce((acc, v) => ({
-            ...acc,
-            [v.goals_conceded]: acc[v.goals_conceded] ? acc[v.goals_conceded] +1 : 1
-        }), {}) : {}
-    const savesByGameCount = player.gameweek_data ? player.gameweek_data
-        .sort((a, b)=> a.saves < b.saves ? -1 : 1)
-        .reduce((acc, v) => ({
-            ...acc,
-            [v.saves]: acc[v.saves] ? acc[v.saves] +1 : 1
-        }), {}) : {}
+    const explanations = player.points_explanations || {};
+
     const items: PointBreakdownItem[] = [
         {
-            label: 'Appearance',
-            value: player.gameweek_data?.length || 0,
-            points: breakdown.appearance || 0,
-            formula: player.gameweek_data ?
-                [`${player.gameweek_data.filter(g => g.minutes >= 45).length} games (45+ min) × ${rules.appearance.over45Min}pts`,
-                 `${player.gameweek_data.filter(g => g.minutes > 0 && g.minutes < 45).length} games (<45 min) × ${rules.appearance.under45Min}pt`] :
-                [`${breakdown.appearance || 0} pts`],
+            label: 'Minutes Played',
+            points: breakdown.minutesPlayed || 0,
+            formula: explanations.minutesPlayed,
             isRelevant: true
         },
         {
             label: 'Goals',
-            value: player.goals_scored,
             points: breakdown.goals || 0,
-            formula: `${player.goals_scored} × ${rules.goalPoints} pts`,
+            formula: explanations.goals,
             isRelevant: true
         },
         {
             label: 'Assists',
-            value: player.assists,
             points: breakdown.assists || 0,
-            formula: `${player.assists} × ${rules.assists} pts`,
+            formula: explanations.assists,
             isRelevant: true
         },
         {
             label: 'Clean Sheets',
-            value: player.clean_sheets,
             points: breakdown.cleanSheets || 0,
-            formula: isStatRelevant('clean_sheets', position) ?
-                `${player.clean_sheets} × ${rules.cleanSheetPoints} pts` :
-                'N/A for position',
+            formula: isStatRelevant('clean_sheets', position)
+                ? (explanations.cleanSheets)
+                : 'N/A for position',
             isRelevant: isStatRelevant('clean_sheets', position)
         },
         {
             label: 'Yellow Cards',
-            value: player.yellow_cards,
             points: breakdown.yellowCards || 0,
-            formula: `${player.yellow_cards} × ${rules.yellowCard} pt`,
+            formula: explanations.yellowCards,
             isRelevant: true
         },
         {
             label: 'Red Cards',
-            value: player.red_cards,
             points: breakdown.redCards || 0,
-            formula: `${player.red_cards} × ${rules.redCardPenalty} pts`,
+            formula: explanations.redCards,
             isRelevant: true
         },
         {
             label: 'Bonus Points',
-            value: player.bonus,
             points: breakdown.bonus || 0,
-            formula: isStatRelevant('bonus', position) ?
-                `${player.bonus} bonus pts` :
-                'N/A for position',
+            formula: isStatRelevant('bonus', position)
+                ? (explanations.bonus)
+                : 'N/A for position',
             isRelevant: isStatRelevant('bonus', position)
         },
         {
             label: 'Saves',
-            value: player.saves,
             points: breakdown.saves || 0,
-            formula:
-                isStatRelevant('saves', position) && player.gameweek_data ?
-                    Object.entries(savesByGameCount).map(([key, value]) => (
-                        parseInt(key, 10) <= rules.savesThreshold ?
-                            `${value} games (${key} saves) x 0 pts`:
-                            `${value} games (${key} saves) x ${Math.floor(parseInt(key, 10) / rules.savesRatio)} pts`
-                    )) :
-                'N/A for position',
+            formula: isStatRelevant('saves', position)
+                ? (explanations.saves)
+                : 'N/A for position',
             isRelevant: isStatRelevant('saves', position)
         },
         {
             label: 'Penalties Saved',
-            value: player.penalties_saved,
             points: breakdown.penaltiesSaved || 0,
-            formula: isStatRelevant('penalties_saved', position) ?
-                `${player.penalties_saved} x ${rules.penaltiesSaved} pts` :
-                'N/A for position',
+            formula: isStatRelevant('penalties_saved', position)
+                ? (explanations.penaltiesSaved)
+                : 'N/A for position',
             isRelevant: isStatRelevant('penalties_saved', position)
         },
         {
             label: 'Goals Conceded',
-            value: player.goals_conceded,
             points: breakdown.goalsConceded || 0,
-            formula: isStatRelevant('goals_conceded', position) && player.gameweek_data ?
-                Object.entries(gcByGameCount).map(([key, value]) => (
-                    parseInt(key, 10) === 0 ?
-                    `${value} games (0 gc) x 0 pts`:
-                    `${value} games (${key} gc) x ${(parseInt(key, 10) * rules.goalsConcededPenalty) + 1} pts`
-                )) :
-                'N/A for position',
+            formula: isStatRelevant('goals_conceded', position)
+                ? (explanations.goalsConceded)
+                : 'N/A for position',
             isRelevant: isStatRelevant('goals_conceded', position)
         }
     ];
@@ -168,7 +131,12 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
                                     {item.label}
                                 </div>
                                 <div className={styles.statFormula}>
-                                    {Array.isArray(item.formula) ? item.formula.map(i =><div>{i}</div>) : item.formula}
+                                    {Array.isArray(item.formula) ?
+                                        item.formula.map((line, index) => (
+                                            <div key={index}>{line}</div>
+                                        )) :
+                                        item.formula
+                                    }
                                 </div>
                                 <div className={styles.statPoints}>
                                     {item.points > 0 ? '+' : ''}{item.points}

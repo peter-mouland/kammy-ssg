@@ -1,6 +1,7 @@
 import { getFirestoreInstance } from '../../lib/firebase.admin';
 import type { CacheOperationStatus } from './types';
-import { CACHE_STATUS_COLLECTION, timestampToDate } from './utils';
+import { timestampToDate } from './utils';
+import { CACHE_STATUS_COLLECTION } from './constants';
 
 const db = getFirestoreInstance();
 

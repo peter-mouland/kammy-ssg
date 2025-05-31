@@ -1,10 +1,10 @@
 import { type ActionFunctionArgs } from "react-router";
 import { data } from "react-router";
-import { readUserTeams, addUserTeam, updateUserTeam, deleteUserTeam } from "../server/sheets/userTeams";
-import { readDivisions, addDivision, updateDivision, deleteDivision } from "../server/sheets/divisions";
-import { readDraftPicks, addDraftPick } from "../server/sheets/draft";
-import { readDraftOrders, generateRandomDraftOrder } from "../server/sheets/draftOrder";
-import type { ApiResponse } from "../types";
+import { readUserTeams, addUserTeam, updateUserTeam, deleteUserTeam } from "../../server/sheets/userTeams";
+import { readDivisions, addDivision, updateDivision, deleteDivision } from "../../server/sheets/divisions";
+import { readDraftPicks, addDraftPick } from "../../server/sheets/draft";
+import { readDraftOrders, generateRandomDraftOrder } from "../../server/sheets/draftOrder";
+import type { ApiResponse } from "../../types";
 
 export async function action({ request }: ActionFunctionArgs): Promise<Response> {
     try {

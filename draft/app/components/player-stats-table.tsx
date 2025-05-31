@@ -3,6 +3,7 @@ import styles from './player-stats-table.module.css';
 import { PointsBreakdownTooltip } from './points-breakdown-tooltip';
 import type { EnhancedPlayerData } from '../server/cache/types';
 import { isStatRelevant } from '../lib/is-stat-relevant';
+import { Link } from 'react-router';
 
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];
@@ -71,7 +72,11 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         if (!isStatRelevant(stat, position)) {
             return '-';
         }
-        return value.toString();
+        if (value || value === 0) {
+        } else {
+            console.log(stat, position, value);
+        }
+        return value?.toString();
     };
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -210,17 +215,19 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
                                 {player.position_name}
                             </td>
                             <td className={styles.playerName}>
+                                <Link to={`/player/${player.id}`}>
                                 <div>
                                     <div className={styles.webName}>{player.web_name}</div>
                                     <div className={styles.fullName}>
                                         {player.first_name} {player.second_name}
                                     </div>
                                 </div>
+                                </Link>
                             </td>
                             <td className={styles.teamName}>{player.team_name}</td>
                             <td className={styles.form}>{player.form}</td>
                             <td className={styles.price}>£{(player.now_cost / 10).toFixed(1)}m</td>
-                            <td className={styles.stat}>{player.minutes}</td>
+                            <td className={styles.stat}>{player.minutes_played}</td>
                             <td className={styles.stat}>{player.goals_scored}</td>
                             <td className={styles.stat}>{player.assists}</td>
                             <td className={styles.stat}>{formatStatValue(player.clean_sheets, 'clean_sheets', player.position_name)}</td>

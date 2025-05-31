@@ -294,12 +294,12 @@ export default function PlayerDetail() {
                                     <div style={{
                                         fontSize: '1.25rem',
                                         fontWeight: 'bold',
-                                        color: getPointsColor(latestBreakdown.appearance),
+                                        color: getPointsColor(latestBreakdown.minutesPlayed),
                                         marginBottom: '0.25rem'
                                     }}>
-                                        {formatPointsDisplay(latestBreakdown.appearance)}
+                                        {formatPointsDisplay(latestBreakdown.minutesPlayed)}
                                     </div>
-                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Appearance</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Minutes Played</div>
                                 </div>
 
                                 <div style={{ textAlign: 'center' }}>

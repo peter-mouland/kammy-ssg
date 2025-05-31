@@ -17,7 +17,7 @@ export const POSITION_RULES = {
         goalsConcededPenalty: -1, // per 2 goals,
         yellowCard: -1,
         redCardPenalty: -3,
-        appearance: {
+        minutesPlayed: {
             under45Min: 1,
             over45Min: 3
         },
@@ -29,7 +29,7 @@ export const POSITION_RULES = {
         goalsConcededPenalty: -1, // per 2 goals,
         yellowCard: -1,
         redCardPenalty: -3,
-        appearance: {
+        minutesPlayed: {
             under45Min: 1,
             over45Min: 3
         },
@@ -42,7 +42,7 @@ export const POSITION_RULES = {
         yellowCard: -1,
         redCardPenalty: -3,
         bonus: 1,
-        appearance: {
+        minutesPlayed: {
             under45Min: 1,
             over45Min: 3
         },
@@ -54,7 +54,7 @@ export const POSITION_RULES = {
         redCardPenalty: -5,
         assists: 3,
         yellowCard: -1,
-        appearance: {
+        minutesPlayed: {
             under45Min: 1,
             over45Min: 3
         },
@@ -65,7 +65,7 @@ export const POSITION_RULES = {
         redCardPenalty: -5,
         assists: 3,
         yellowCard: -1,
-        appearance: {
+        minutesPlayed: {
             under45Min: 1,
             over45Min: 3
         },
@@ -76,7 +76,7 @@ export const POSITION_RULES = {
         redCardPenalty: -5,
         assists: 3,
         yellowCard: -1,
-        appearance: {
+        minutesPlayed: {
             under45Min: 1,
             over45Min: 3
         },
@@ -84,11 +84,11 @@ export const POSITION_RULES = {
 } as const;
 
 /**
- * Calculate appearance points based on minutes played
+ * Calculate minutesPlayed points based on minutes played
  */
 function calculateAppearancePoints(minutesPlayed: number, position: CustomPosition): number {
     if (minutesPlayed === 0) return 0;
-    return minutesPlayed < 45 ? POSITION_RULES[position].appearance.under45Min : POSITION_RULES[position].appearance.over45Min;
+    return minutesPlayed < 45 ? POSITION_RULES[position].minutesPlayed.under45Min : POSITION_RULES[position].minutesPlayed.over45Min;
 }
 
 /**
@@ -178,17 +178,11 @@ function calculateGoalsConcededPenalty(goalsConceded: number, position: CustomPo
 export function calculateGameweekPoints(
     stats: PlayerGameweekStatsData,
     position: CustomPosition,
-    fixtures?: GameweekFixture[]
 ): PointsBreakdown {
-    // Handle multiple fixtures in the same gameweek
-    let totalMinutes = stats.minutesPlayed;
-    if (fixtures && fixtures.length > 1) {
-        // If there are multiple fixtures, use the sum of fixture minutes
-        totalMinutes = fixtures.reduce((sum, fixture) => sum + fixture.fixtureMinutes, 0);
-    }
+
 
     const breakdown: PointsBreakdown = {
-        appearance: calculateAppearancePoints(totalMinutes, position),
+        minutesPlayed: calculateAppearancePoints(stats.minutesPlayed, position),
         goals: calculateGoalPoints(stats.goals, position),
         assists: calculateAssistPoints(stats.assists, position),
         cleanSheets: calculateCleanSheetPoints(stats.cleanSheets, position),
@@ -218,7 +212,7 @@ export function calculateSeasonPoints(
     fixturesByGameweek?: Map<number, GameweekFixture[]>
 ): PointsBreakdown {
     const seasonBreakdown: PointsBreakdown = {
-        appearance: 0,
+        minutesPlayed: 0,
         goals: 0,
         assists: 0,
         cleanSheets: 0,
@@ -296,7 +290,7 @@ export function formatPointsDisplay(points: number): string {
  */
 export function getPointsBreakdownDisplay(breakdown: PointsBreakdown): Record<string, string> {
     return {
-        appearance: formatPointsDisplay(breakdown.appearance),
+        minutesPlayed: formatPointsDisplay(breakdown.minutesPlayed),
         goals: formatPointsDisplay(breakdown.goals),
         assists: formatPointsDisplay(breakdown.assists),
         cleanSheets: formatPointsDisplay(breakdown.cleanSheets),

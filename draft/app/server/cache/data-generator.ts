@@ -1,10 +1,13 @@
+// app/lib/server/cache/data-generator.ts
+
 import { getFplBootstrapData, getBatchPlayerGameweekData } from "../fpl/api";
 import { convertToPlayerGameweekStats } from "../fpl/stats";
 import { readPlayers } from "../sheets/players";
 import { calculateSeasonPoints, calculateGameweekPoints } from "../../lib/points";
 import type { FplPlayerGameweekData, FplPlayerData, FplTeamData, PlayerData, CustomPosition, PlayerGameweekStatsData } from "../../types";
 import type { RefreshOptions, EnhancedPlayerData } from './types';
-import { getCacheMetadata, getCachedGameweekData, cacheGameweekData, clearAllCache } from './storage';
+import { updateGameweekData, clearGameweekData, getSeasonPointsBreakdown, type GameweekData } from './gameweek-storage';
+import { clearSeasonStats } from './season-stats';
 
 async function isGameweekFinished(gameweek: number): Promise<boolean> {
     try {
@@ -13,43 +16,20 @@ async function isGameweekFinished(gameweek: number): Promise<boolean> {
 
         if (!gameweekEvent) return false;
 
-        // Gameweek is finished if it's marked as finished and not current
         return gameweekEvent.finished && !gameweekEvent.is_current;
     } catch {
         return false;
     }
 }
 
-async function getGameweeksToUpdate(currentGameweek: number, metadata: any | null, forceCurrentOnly: boolean = false): Promise<number[]> {
+async function getGameweeksToUpdate(currentGameweek: number, forceCurrentOnly: boolean = false): Promise<number[]> {
     if (forceCurrentOnly) {
-        // Quick refresh - only current gameweek
         return [currentGameweek];
     }
 
-    const gameweeksToUpdate: number[] = [];
-
-    if (!metadata) {
-        // No cache exists, need all gameweeks up to current
-        return Array.from({ length: currentGameweek }, (_, i) => i + 1);
-    }
-
-    // Always update current gameweek (it might still be changing)
-    gameweeksToUpdate.push(currentGameweek);
-
-    // Check if previous gameweek is final
-    if (currentGameweek > 1) {
-        const previousGameweek = currentGameweek - 1;
-        const isPreviousFinished = await isGameweekFinished(previousGameweek);
-
-        // Update previous gameweek if it's finished but not marked as final in our cache
-        if (isPreviousFinished && !metadata.gameweeksProcessed.includes(previousGameweek)) {
-            gameweeksToUpdate.push(previousGameweek);
-        }
-    }
-
-    console.log(`Gameweeks to update: ${gameweeksToUpdate.join(', ')}`);
-    return gameweeksToUpdate;
+    return Array.from({ length: currentGameweek }, (_, i) => i + 1);
 }
+
 
 export async function generateFreshPlayerData(options: RefreshOptions = {}): Promise<{ players: EnhancedPlayerData[], currentGameweek: number }> {
     const { forceFullRefresh = false, clearAll = false, specificGameweeks, quickRefresh = false } = options;
@@ -62,51 +42,35 @@ export async function generateFreshPlayerData(options: RefreshOptions = {}): Pro
     ]);
 
     const currentGameweek = bootstrapData.events.find(event => event.is_current)?.id || 1;
-    const metadata = await getCacheMetadata();
+
+    // Clear cache if requested
+    if (clearAll) {
+        console.log('Clearing all cache data...');
+        await Promise.all([
+            clearGameweekData(),
+            clearSeasonStats()
+        ]);
+    }
 
     // Determine which gameweeks to update
     let gameweeksToUpdate: number[];
     if (specificGameweeks) {
         gameweeksToUpdate = specificGameweeks;
-    } else if (forceFullRefresh || !metadata) {
-        gameweeksToUpdate = Array.from({ length: currentGameweek }, (_, i) => i + 1);
+    } else if (quickRefresh) {
+        gameweeksToUpdate = [currentGameweek];
     } else {
-        gameweeksToUpdate = await getGameweeksToUpdate(currentGameweek, metadata, quickRefresh);
+        gameweeksToUpdate = await getGameweeksToUpdate(currentGameweek, false);
     }
 
     console.log(`Updating gameweeks: ${gameweeksToUpdate.join(', ')}`);
 
     // Get active players
-    const playerIds = bootstrapData.elements
-        .map(p => p.id);
+    const playerIds = bootstrapData.elements.map(p => p.id);
 
-    // Get existing cached gameweek data (only if not clearing all)
-    // Now this reads from the aggregated player documents
-    let cachedGameweekData = new Map<string, any>();
-    if (!clearAll) {
-        cachedGameweekData = await getCachedGameweekData(playerIds, gameweeksToUpdate);
-    }
-
-    // Fetch fresh data only for gameweeks that need updating
-    const playersNeedingFreshData = playerIds.filter(playerId => {
-        if (clearAll) {
-            // If clearing all, fetch all players
-            return true;
-        }
-        return gameweeksToUpdate.some(gw => {
-            const key = `${playerId}-${gw}`;
-            const cached = cachedGameweekData.get(key);
-            // Fetch if not cached, or if it's the current gameweek (might still be changing)
-            return !cached || (!cached.isFinal && gw === currentGameweek);
-        });
-    });
-
-    console.log(`Fetching fresh data for ${playersNeedingFreshData.length} players`);
-
-    let freshGameweekData: Record<number, any> = {};
-    if (playersNeedingFreshData.length > 0) {
-        freshGameweekData = await getBatchPlayerGameweekData(playersNeedingFreshData, 25);
-    }
+    // Fetch fresh gameweek data
+    // todo: only do on full refresh.
+    // - incremental we can fetch this and last gw only + use cached values to recalc season
+    const freshGameweekData = await getBatchPlayerGameweekData(playerIds, 25);
 
     // Create lookup maps
     const teams = bootstrapData.teams.reduce((acc: Record<number, string>, team: FplTeamData) => {
@@ -120,75 +84,92 @@ export async function generateFreshPlayerData(options: RefreshOptions = {}): Pro
     }, {});
 
     console.log(`Created lookup for ${playersData.length} players from spreadsheet`);
-    console.log('Sample lookup keys:', Object.keys(playersLookup).slice(0, 10));
 
-    // Process all players
+    // Process players and update cache
     const enhancedPlayers: EnhancedPlayerData[] = await Promise.all(
         bootstrapData.elements
             .filter((player: FplPlayerData) => playersLookup[player.id])
             .map(async (player: FplPlayerData) => {
-                // Try to find custom player data
                 const playerSheet = playersLookup[player.id];
-
-                console.log(`Player ${player.web_name}: FPL ID ${player.id}, Found custom data:`, playerSheet ? `${playerSheet.firstName} ${playerSheet.lastName} - ${playerSheet.position}` : 'No match');
-
-                // Determine position
                 const customPosition = playerSheet.position?.toLowerCase() as CustomPosition;
 
-                // Combine cached and fresh gameweek data
-                const allGameweekData: FplPlayerGameweekData[] = [];
-                const allGameweekStats: PlayerGameweekStatsData[] = [];
+                console.log(`Processing ${player.web_name}: Position ${playerSheet.position}`);
 
-                for (let gw = 1; gw <= currentGameweek; gw++) {
-                    const cacheKey = `${player.id}-${gw}`;
-                    const cached = cachedGameweekData.get(cacheKey);
+                // Process gameweeks and update cache with aggregated data
+                for (const gw of gameweeksToUpdate) {
+                    // Get all games for this player in this gameweek
+                    const playerGameweekData = freshGameweekData[player.id];
+                    if (playerGameweekData?.history) {
+                        // Filter games for this specific gameweek
+                        const gameweekGames = playerGameweekData.history.filter((h: any) => h.round === gw);
 
-                    if (cached && cached.isFinal && !clearAll) {
-                        // Use cached data for final gameweeks (unless clearing all)
-                        allGameweekData.push(cached.data);
-                        allGameweekStats.push(convertToPlayerGameweekStats(cached.data));
-                    } else {
-                        // Use fresh data for current/recent gameweeks or when clearing all
-                        const freshData = freshGameweekData[player.id]?.history?.find((h: any) => h.round === gw);
-                        if (freshData) {
-                            allGameweekData.push(freshData);
-                            allGameweekStats.push(convertToPlayerGameweekStats(freshData));
+                        if (gameweekGames.length > 0) {
+                            // Calculate points breakdown for the aggregated gameweek stats
+                            const agg = gameweekGames.reduce((acc, fplStats) => {
+                                const points = calculateGameweekPoints(convertToPlayerGameweekStats(fplStats), customPosition);
+                                const aStats = acc.stats;
+                                const aPB = acc.pointsBreakdown;
+                                return {
+                                    stats: {
+                                        ...acc.stats,
+                                        minutesPlayed: aStats.minutesPlayed ? fplStats.minutes : aStats.minutesPlayed + fplStats.minutes,
+                                        goals: aStats.goals ? fplStats.goals_scored : aStats.goals + fplStats.goals_scored,
+                                        assists: aStats.assists ? fplStats.assists : aStats.assists + fplStats.assists,
+                                        cleanSheets: aStats.cleanSheets ? fplStats.clean_sheets : aStats.cleanSheets + fplStats.clean_sheets,
+                                        yellowCards: aStats.yellowCards ? fplStats.yellow_cards : aStats.yellowCards + fplStats.yellow_cards,
+                                        redCards: aStats.redCards ? fplStats.red_cards : aStats.redCards + fplStats.red_cards,
+                                        saves: aStats.saves ? fplStats.saves : aStats.saves + fplStats.saves,
+                                        penaltiesSaved: aStats.penaltiesSaved ? fplStats.penalties_saved : aStats.penaltiesSaved + fplStats.penalties_saved,
+                                        goalsConceded: aStats.goalsConceded ? fplStats.goals_conceded : aStats.goalsConceded + fplStats.goals_conceded,
+                                        bonus: aStats.bonus ? fplStats.bonus : aStats.bonus + fplStats.bonus,
+                                    },
+                                    pointsBreakdown: {
+                                        ...acc.pointsBreakdown,
+                                        minutesPlayed: aPB.minutesPlayed ? points.minutesPlayed : aPB.minutesPlayed + points.minutesPlayed,
+                                        goals: aPB.goals ? points.goals : aPB.goals + points.goals,
+                                        assists: aPB.assists ? points.assists : aPB.assists + points.assists,
+                                        cleanSheets: aPB.cleanSheets ? points.cleanSheets : aPB.cleanSheets + points.cleanSheets,
+                                        yellowCards: aPB.yellowCards ? points.yellowCards : aPB.yellowCards + points.yellowCards,
+                                        redCards: aPB.redCards ? points.redCards : aPB.redCards + points.redCards,
+                                        saves: aPB.saves ? points.saves : aPB.saves + points.saves,
+                                        penaltiesSaved: aPB.penaltiesSaved ? points.penaltiesSaved : aPB.penaltiesSaved + points.penaltiesSaved,
+                                        goalsConceded: aPB.goalsConceded ? points.goalsConceded : aPB.goalsConceded + points.goalsConceded,
+                                        bonus: aPB.bonus ? points.bonus : aPB.bonus + points.bonus,
+                                        total: aPB.total ? points.total : aPB.total + points.total,
+                                    }
+                                };
+                            }, { pointsBreakdown: {}, stats: {}})
+                            const isFinal = await isGameweekFinished(gw);
 
-                            // Cache the fresh data in the player's aggregated document
-                            if (!clearAll) {
-                                const gwBreakdown = calculateGameweekPoints(
-                                    convertToPlayerGameweekStats(freshData),
-                                    customPosition
-                                );
-                                const isFinal = await isGameweekFinished(gw);
-                                await cacheGameweekData(player.id, gw, freshData, gwBreakdown, isFinal);
-                            }
+                            // Update cache with aggregated stats + game details
+                            await updateGameweekData(
+                                player.id,
+                                gw,
+                                agg.pointsBreakdown,
+                                agg.stats,
+                                isFinal
+                            );
                         }
                     }
                 }
 
-                // Calculate season points
-                const pointsBreakdown = calculateSeasonPoints(allGameweekStats, customPosition);
+                // Get calculated season points breakdown (from cache)
+                const seasonAgg = await getSeasonPointsBreakdown(player.id);
 
-                console.log(`${player.web_name} (${playerSheet.position}): ${pointsBreakdown.total}`);
+                console.log(`${player.web_name} (${playerSheet.position}): ${seasonAgg.breakdown.total} points`);
 
                 return {
                     ...player,
                     team_name: teams[player.team] || `Team ${player.team}`,
                     position_name: playerSheet.position,
-                    custom_points: pointsBreakdown.total,
-                    points_breakdown: pointsBreakdown,
+                    custom_points: seasonAgg.breakdown.total,
+                    stats: seasonAgg.stats,
+                    points_breakdown: seasonAgg.breakdown,
                     player_info: playerSheet,
-                    gameweek_data: allGameweekData
+                    points_explanations: {},
                 };
             })
-        );
-
-    // If clearing all, now clear the cache AFTER we have fresh data ready
-    if (clearAll) {
-        console.log('Fresh data generated, now clearing old cache...');
-        await clearAllCache();
-    }
+    );
 
     return { players: enhancedPlayers, currentGameweek };
 }
