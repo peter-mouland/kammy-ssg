@@ -1,12 +1,12 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useActionData } from "react-router";
-import { getDraftAdminData, handleDraftAction } from "../server/draft-admin.server";
-import type { DraftAdminData } from "../server/draft-admin.server";
+import { getDraftAdminData, handleDraftAction } from "./server/draft-admin.server";
+import type { DraftAdminData } from "./server/draft-admin.server";
+import { requestFormData } from '../lib/form-data';
 import { DivisionCard } from "../components/division-card";
 import { ActionMessage } from "../components/action-message";
 import styles from './draft-admin.module.css';
-import { requestFormData } from '../server/form-data';
 
 export const meta: MetaFunction = () => {
     return [

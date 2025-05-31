@@ -1,8 +1,8 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData } from "react-router";
-import { getDashboardData } from "../server/dashboard.server";
-import type { DashboardData } from "../server/dashboard.server";
+import { getDashboardData } from "./server/dashboard.server";
+import type { DashboardData } from "./server/dashboard.server";
 import { TopPlayers } from "../components/top-players";
 import { LeagueStandings } from "../components/league-standings";
 import { DivisionOverview } from "../components/division-overview";

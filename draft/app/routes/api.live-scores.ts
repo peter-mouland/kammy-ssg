@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs } from "react-router";
-import { readDraftState, getDraftPicksByDivision } from "../server/sheets/draft";
-import { getDraftOrderByDivision } from "../server/sheets/draftOrder";
+import { readDraftState, getDraftPicksByDivision } from "./server/sheets/draft";
+import { getDraftOrderByDivision } from "./server/sheets/draftOrder";
 import type { DraftUpdateMessage, PickMadeMessage, TurnChangeMessage } from "../types";
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {

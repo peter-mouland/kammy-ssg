@@ -1,32 +1,24 @@
 import { useState, useMemo } from "react";
 import styles from './player-stats-table.module.css';
 import { PointsBreakdownTooltip } from './points-breakdown-tooltip';
-import type { EnhancedPlayerData } from "../server/player-stats.server";
+import type { EnhancedPlayerData } from "../types";
 import { isStatRelevant } from '../lib/is-stat-relevant';
 
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];
     teams: Record<number, string>;
+    positions: Record<string, string>;
 }
 
 type SortField = 'web_name' | 'team_name' | 'position_name' | 'total_points' | 'custom_points' | 'now_cost' | 'form';
 type SortDirection = 'asc' | 'desc';
 
-export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
+export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTableProps) {
     const [nameFilter, setNameFilter] = useState('');
     const [positionFilter, setPositionFilter] = useState('');
     const [teamFilter, setTeamFilter] = useState('');
     const [sortField, setSortField] = useState<SortField>('custom_points');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-
-    // Get unique values for filters
-    const uniquePositions = useMemo(() => {
-        return [...new Set(players.map(p => p.position_name))].sort();
-    }, [players]);
-
-    const uniqueTeams = useMemo(() => {
-        return [...new Set(players.map(p => p.team_name))].sort();
-    }, [players]);
 
     // Filter and sort players
     const filteredPlayers = useMemo(() => {
@@ -116,7 +108,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
                         className={styles.filterSelect}
                     >
                         <option value="">All Positions</option>
-                        {uniquePositions.map(position => (
+                        {Object.keys(positions).map(position => (
                             <option key={position} value={position}>{position}</option>
                         ))}
                     </select>
@@ -133,7 +125,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
                         className={styles.filterSelect}
                     >
                         <option value="">All Teams</option>
-                        {uniqueTeams.map(team => (
+                        {Object.keys(teams).map(team => (
                             <option key={team} value={team}>{team}</option>
                         ))}
                     </select>

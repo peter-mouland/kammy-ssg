@@ -4,6 +4,7 @@ import type {
     PointsBreakdown,
     GameweekFixture
 } from '../types';
+import { isStatRelevant } from './is-stat-relevant';
 
 // Position point multipliers and rules
 export const POSITION_RULES = {
@@ -209,13 +210,14 @@ export function calculateGameweekPoints(
     return breakdown;
 }
 
+
+
 /**
  * Calculate season total points from gameweek data
  */
 export function calculateSeasonPoints(
     gameweekStats: PlayerGameweekStatsData[],
     position: CustomPosition,
-    fixturesByGameweek?: Map<number, GameweekFixture[]>
 ): PointsBreakdown {
     const seasonBreakdown: PointsBreakdown = {
         appearance: 0,
@@ -233,8 +235,7 @@ export function calculateSeasonPoints(
 
     // Sum up all gameweek breakdowns
     gameweekStats.forEach(gwStats => {
-        const fixtures = fixturesByGameweek?.get(gwStats.gameweek);
-        const gwBreakdown = calculateGameweekPoints(gwStats, position, fixtures);
+        const gwBreakdown = calculateGameweekPoints(gwStats, position);
 
         Object.entries(gwBreakdown).forEach(([key, value]) => {
             if (key !== 'total') {
@@ -307,5 +308,115 @@ export function getPointsBreakdownDisplay(breakdown: PointsBreakdown): Record<st
         goalsConceded: formatPointsDisplay(breakdown.goalsConceded),
         bonus: formatPointsDisplay(breakdown.bonus),
         total: formatPointsDisplay(breakdown.total)
+    };
+}
+
+export const getFullBreakdown = (gameweeks, position, points, stats) => {
+    const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {} // ?????
+    const gcByGameCount = gameweeks
+        .sort((a, b)=> a.goals_conceded < b.goals_conceded ? -1 : 1)
+        .reduce((acc, v) => ({
+            ...acc,
+            [v.goals_conceded]: acc[v.goals_conceded] ? acc[v.goals_conceded] +1 : 1
+        }), {})
+    const savesByGameCount = gameweeks
+        .sort((a, b)=> a.saves < b.saves ? -1 : 1)
+        .reduce((acc, v) => ({
+            ...acc,
+            [v.saves]: acc[v.saves] ? acc[v.saves] +1 : 1
+        }), {})
+    if (stats.id === 328) console.log(gameweeks)
+    return {
+        appearance: {
+            label: 'Appearance',
+            stat: stats.minutes,
+            points: points.appearance || 0,
+            formula:
+                [`${gameweeks.filter(g => g.minutesPlayed >= 45).length} games (45+ min) × ${rules.appearance.over45Min}pts`,
+                    `${gameweeks.filter(g => g.minutesPlayed > 0 && g.minutesPlayed < 45).length} games (<45 min) × ${rules.appearance.under45Min}pt`],
+            isRelevant: true,
+        },
+        goals: {
+            label: 'Goals',
+            stat: stats.goals_scored,
+            points: points.goals || 0,
+            formula: `${stats.goals_scored} × ${rules.goalPoints} pts`,
+            isRelevant: true,
+        },
+        assists: {
+            label: 'Assists',
+            stat: stats.assists,
+            points: points.assists || 0,
+            formula: `${stats.assists} × ${rules.assists} pts`,
+            isRelevant: true,
+        },
+        cleanSheets: {
+            label: 'Clean Sheets',
+            stat: stats.clean_sheets,
+            points: points.cleanSheets || 0,
+            formula: isStatRelevant('clean_sheets', position) ?
+                `${stats.clean_sheets} × ${rules.cleanSheetPoints} pts` :
+                'N/A for position',
+            isRelevant: isStatRelevant('clean_sheets', position)
+        },
+        yellowCards: {
+            label: 'Yellow Cards',
+            stat: stats.yellow_cards,
+            points: points.yellowCards || 0,
+            formula: `${stats.yellow_cards} × ${rules.yellowCard} pt`,
+            isRelevant: true
+        },
+        redCards: {
+            label: 'Red Cards',
+            stat: stats.red_cards,
+            points: points.redCards || 0,
+            formula: `${stats.red_cards} × ${rules.redCardPenalty} pts`,
+            isRelevant: true
+        },
+        bonus: {
+            label: 'Bonus Points',
+            value: stats.bonus,
+            points: points.bonus || 0,
+            formula: isStatRelevant('bonus', position) ?
+                `${stats.bonus} bonus pts` :
+                'N/A for position',
+            isRelevant: isStatRelevant('bonus', position)
+        },
+        saves: {
+            label: 'Saves',
+            value: stats.saves,
+            points: points.saves || 0,
+            formula:
+                isStatRelevant('saves', position) && gameweeks ?
+                    Object.entries(savesByGameCount).map(([key, value]) => (
+                        parseInt(key, 10) <= rules.savesThreshold ?
+                            `${value} games (${key} saves) x 0 pts` :
+                            `${value} games (${key} saves) x ${Math.floor(parseInt(key, 10) / rules.savesRatio)} pts`
+                    )) :
+                    'N/A for position',
+            isRelevant: isStatRelevant('saves', position)
+        },
+        penaltiesSaved: {
+            label: 'Penalties Saved',
+            value: stats.penalties_saved,
+            points: points.penaltiesSaved || 0,
+            formula: isStatRelevant('penalties_saved', position) ?
+                `${stats.penalties_saved} x ${rules.penaltiesSaved} pts` :
+                'N/A for position',
+            isRelevant: isStatRelevant('penalties_saved', position)
+        },
+        goalsConceded: {
+            label: 'Goals Conceded',
+            value: stats.goals_conceded,
+            points: points.goalsConceded || 0,
+            formula: isStatRelevant('goals_conceded', position) && gameweeks ?
+                Object.entries(gcByGameCount).map(([key, value]) => (
+                    parseInt(key, 10) === 0 ?
+                        `${value} games (0 gc) x 0 pts` :
+                        `${value} games (${key} gc) x ${(parseInt(key, 10) * rules.goalsConcededPenalty) + 1} pts`
+                )) :
+                'N/A for position',
+            isRelevant: isStatRelevant('goals_conceded', position)
+        }
     };
 }

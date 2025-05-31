@@ -1,4 +1,6 @@
 // Division Types
+import type { FplPlayerGameweekData } from '../server/fpl/api';
+
 export interface DivisionData {
     id: string;
     label: string;
@@ -406,4 +408,21 @@ export interface DraftCompleteMessage extends SseMessage {
         completedAt: Date;
         finalPicks: DraftPickData[];
     };
+}
+
+
+export interface PlayerStatsData {
+    players: EnhancedPlayerData[];
+    teams: Record<number, string>;
+    positions: Record<string, string>;
+}
+
+export interface EnhancedPlayerData extends FplPlayerData {
+    team_name: string;
+    position_name: string; // Custom position: ca, wa, mid, fb, cb, gk
+    custom_points: number;
+    points_breakdown: any; // Points breakdown from your points logic
+    points_breakdown_explanations: any; // Points breakdown from your points logic
+    player_info?: PlayerData; // Additional info from spreadsheet
+    gameweek_data?: FplPlayerGameweekData[]; // Per-game data
 }

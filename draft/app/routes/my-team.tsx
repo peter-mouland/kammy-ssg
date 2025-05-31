@@ -1,11 +1,11 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useActionData, Form, useSearchParams } from "react-router";
-import { readUserTeams, getUserTeamsByDivision } from "../server/sheets/userTeams";
-import { readDivisions } from "../server/sheets/divisions";
+import { readUserTeams, getUserTeamsByDivision } from "./server/sheets/userTeams";
+import { readDivisions } from "./server/sheets/divisions";
+import { requestFormData } from '../lib/form-data';
 import type { UserTeamData, DivisionData } from "../types";
 import { SelectDivision } from '../components/select-division';
-import { requestFormData } from '../server/form-data';
 
 export const meta: MetaFunction = () => {
     return [
