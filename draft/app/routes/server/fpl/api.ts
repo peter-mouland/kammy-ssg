@@ -134,6 +134,24 @@ export class FplApi {
         }
     }
 
+    async getBatchPlayerDetailedStats(playerIds: number[], delay: number = 50): Promise<Record<number, FplPlayerSeasonData>> {
+        const results: Record<number, FplPlayerSeasonData> = {};
+
+        for (const playerId of playerIds) {
+            try {
+                results[playerId] = await this.getPlayerDetailedStats(playerId);
+                // Add delay to avoid rate limiting
+                if (delay > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            } catch (error) {
+                console.error(`Failed to fetch gameweek data for player ${playerId}:`, error);
+                // Continue with other players even if one fails
+            }
+        }
+
+        return results;
+    }
     /**
      * Get live gameweek data
      */
