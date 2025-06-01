@@ -10,14 +10,40 @@ interface PlayerStatsTableProps {
     positions: Record<string, string>;
 }
 
-type SortField = 'web_name' | 'team_name' | 'position_name' | 'total_points' | 'custom_points' | 'now_cost' | 'form';
+type SortField = 'web_name' | 'team_name' | 'draft.position' | 'draft.pointsTotal' | 'now_cost' | 'form';
 type SortDirection = 'asc' | 'desc';
+
+// Helper function to get nested value by dot notation
+function getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+// Updated sort function
+const sorter = (sortField, sortDirection) => (a, b) => {
+    let aValue = getNestedValue(a, sortField);
+    let bValue = getNestedValue(b, sortField);
+
+    // Handle numeric values
+    if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+    }
+
+    // Handle string values
+    const aStr = String(aValue).toLowerCase();
+    const bStr = String(bValue).toLowerCase();
+
+    if (sortDirection === 'asc') {
+        return aStr < bStr ? -1 : aStr > bStr ? 1 : 0;
+    } else {
+        return aStr > bStr ? -1 : aStr < bStr ? 1 : 0;
+    }
+};
 
 export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTableProps) {
     const [nameFilter, setNameFilter] = useState('');
     const [positionFilter, setPositionFilter] = useState('');
     const [teamFilter, setTeamFilter] = useState('');
-    const [sortField, setSortField] = useState<SortField>('custom_points');
+    const [sortField, setSortField] = useState<SortField>('draft.pointsTotal');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
     // Filter and sort players
@@ -27,32 +53,14 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                 player.web_name.toLowerCase().includes(nameFilter.toLowerCase()) ||
                 `${player.first_name} ${player.second_name}`.toLowerCase().includes(nameFilter.toLowerCase());
 
-            const matchesPosition = positionFilter === '' || player.position_name === positionFilter;
+            const matchesPosition = positionFilter === '' || player.draft.position === positionFilter;
             const matchesTeam = teamFilter === '' || player.team_name === teamFilter;
 
             return matchesName && matchesPosition && matchesTeam;
         });
 
         // Sort players
-        filtered.sort((a, b) => {
-            let aValue = a[sortField];
-            let bValue = b[sortField];
-
-            // Handle numeric values
-            if (typeof aValue === 'number' && typeof bValue === 'number') {
-                return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-            }
-
-            // Handle string values
-            const aStr = String(aValue).toLowerCase();
-            const bStr = String(bValue).toLowerCase();
-
-            if (sortDirection === 'asc') {
-                return aStr < bStr ? -1 : aStr > bStr ? 1 : 0;
-            } else {
-                return aStr > bStr ? -1 : aStr < bStr ? 1 : 0;
-            }
-        });
+        filtered.sort(sorter(sortField, sortDirection));
 
         return filtered;
     }, [players, nameFilter, positionFilter, teamFilter, sortField, sortDirection]);
@@ -142,10 +150,10 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                     <thead>
                     <tr>
                         <th
-                            onClick={() => handleSort('position_name')}
+                            onClick={() => handleSort('draft.position')}
                             className={styles.sortableHeader}
                         >
-                            Pos {getSortIcon('position_name')}
+                            Pos {getSortIcon('draft.position')}
                         </th>
                         <th
                             onClick={() => handleSort('web_name')}
@@ -182,24 +190,18 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                         <th className={styles.statHeader}>Bonus</th>
                         <th className={styles.statHeader}>Saves</th>
                         <th
-                            onClick={() => handleSort('total_points')}
-                            className={styles.sortableHeader}
-                        >
-                            FPL Pts {getSortIcon('total_points')}
-                        </th>
-                        <th
-                            onClick={() => handleSort('custom_points')}
+                            onClick={() => handleSort('draft.pointsTotal')}
                             className={`${styles.sortableHeader} ${styles.customPoints}`}
                         >
-                            Custom Pts {getSortIcon('custom_points')}
+                            Custom Pts {getSortIcon('draft.pointsTotal')}
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     {filteredPlayers.map((player) =>  (
                         <tr key={player.id} className={styles.playerRow}>
-                            <td className={`${styles.position} ${styles[player.position_name.toLowerCase()]}`}>
-                                {player.position_name}
+                            <td className={`${styles.position} ${styles[player.draft.position.toLowerCase()]}`}>
+                                {player.draft.position}
                             </td>
                             <td className={styles.playerName}>
                                 <div>
@@ -215,19 +217,18 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                             <td className={styles.stat}>{player.minutes}</td>
                             <td className={styles.stat}>{player.goals_scored}</td>
                             <td className={styles.stat}>{player.assists}</td>
-                            <td className={styles.stat}>{formatStatValue(player.clean_sheets, 'clean_sheets', player.position_name)}</td>
-                            <td className={styles.stat}>{formatStatValue(player.goals_conceded, 'goals_conceded', player.position_name)}</td>
-                            <td className={styles.stat}>{formatStatValue(player.penalties_saved, 'penalties_saved', player.position_name)}</td>
+                            <td className={styles.stat}>{formatStatValue(player.clean_sheets, 'clean_sheets', player.draft.position)}</td>
+                            <td className={styles.stat}>{formatStatValue(player.goals_conceded, 'goals_conceded', player.draft.position)}</td>
+                            <td className={styles.stat}>{formatStatValue(player.penalties_saved, 'penalties_saved', player.draft.position)}</td>
                             <td className={styles.stat}>{player.yellow_cards}</td>
                             <td className={styles.stat}>{player.red_cards}</td>
-                            <td className={styles.stat}>{formatStatValue(player.bonus, 'bonus', player.position_name)}</td>
-                            <td className={styles.stat}>{formatStatValue(player.saves, 'saves', player.position_name)}</td>
-                            <td className={styles.fplPoints}>{player.total_points}</td>
+                            <td className={styles.stat}>{formatStatValue(player.bonus, 'bonus', player.draft.position)}</td>
+                            <td className={styles.stat}>{formatStatValue(player.saves, 'saves', player.draft.position)}</td>
                             <td className={styles.customPoints}>
                                 <PointsBreakdownTooltip player={player}>
-                                <span className={styles.customPointsValue}>
-                                  {player.custom_points}
-                                </span>
+                                    <span className={styles.customPointsValue}>
+                                      {player.draft.pointsTotal}
+                                    </span>
                                 </PointsBreakdownTooltip>
                             </td>
                         </tr>

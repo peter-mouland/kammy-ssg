@@ -7,8 +7,6 @@ export class FirestoreClient {
         FPL_ENDPOINTS: 'fpl-endpoints',
         FPL_BOOTSTRAP: 'fpl-bootstrap',
         FPL_ELEMENTS: 'fpl-elements',
-        PLAYER_SEASONS: 'player-seasons',
-        PLAYER_GAMEWEEKS: 'player-gameweeks',
         CACHE_STATE: 'cache-state'
     } as const;
 

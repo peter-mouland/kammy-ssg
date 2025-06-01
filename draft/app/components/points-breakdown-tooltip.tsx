@@ -42,25 +42,25 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
                             {player.web_name} - Points Breakdown
                         </h4>
                         <div className={styles.position}>
-                            {player.position_name}
+                            {player.draft.position}
                         </div>
                     </div>
 
                     <div className={styles.breakdownList}>
-                        <BreakdownItem {...player.full_breakdown.appearance} />
-                        <BreakdownItem {...player.full_breakdown.goals} />
-                        <BreakdownItem {...player.full_breakdown.assists} />
-                        <BreakdownItem {...player.full_breakdown.cleanSheets} />
-                        <BreakdownItem {...player.full_breakdown.goalsConceded} />
-                        <BreakdownItem {...player.full_breakdown.yellowCards} />
-                        <BreakdownItem {...player.full_breakdown.redCards} />
-                        <BreakdownItem {...player.full_breakdown.saves} />
-                        <BreakdownItem {...player.full_breakdown.bonus} />
+                        <BreakdownItem {...player.draft.fullBreakdown.appearance} />
+                        <BreakdownItem {...player.draft.fullBreakdown.goals} />
+                        <BreakdownItem {...player.draft.fullBreakdown.assists} />
+                        <BreakdownItem {...player.draft.fullBreakdown.cleanSheets} />
+                        <BreakdownItem {...player.draft.fullBreakdown.goalsConceded} />
+                        <BreakdownItem {...player.draft.fullBreakdown.yellowCards} />
+                        <BreakdownItem {...player.draft.fullBreakdown.redCards} />
+                        <BreakdownItem {...player.draft.fullBreakdown.saves} />
+                        <BreakdownItem {...player.draft.fullBreakdown.bonus} />
                     </div>
 
                     <div className={styles.tooltipFooter}>
                         <div className={styles.totalPoints}>
-                            <strong>Total: {player.points_breakdown.total} points</strong>
+                            <strong>Total: {player.draft.pointsTotal} points</strong>
                         </div>
                     </div>
 

@@ -129,7 +129,90 @@ export class FplCache {
 
     // === HELPER METHODS ===
 
+    /**
+     * Update elements with draft data
+     */
+    async updateElementsWithDraft(draftDataById: Record<number, any>): Promise<void> {
+        const elements = await this.getElements();
+        if (!elements) {
+            throw new Error('No elements found to update with draft data');
+        }
 
+        // Add draft data to each element
+        const updatedElements = elements.map(element => {
+            const draftData = draftDataById[element.id];
+            if (draftData) {
+                return {
+                    ...element,
+                    draft: draftData
+                };
+            }
+            return element;
+        });
+
+        await this.client.setDocument(
+          this.client.collections.FPL_BOOTSTRAP,
+          'elements',
+          { source: 'fpl-with-draft', data: updatedElements, timestamp: Date.now() }
+        );
+    }
+
+    /**
+     * Update individual element summaries with draft data
+     */
+    async updateElementSummariesWithDraft(draftDataById: Record<number, any>): Promise<void> {
+        const entries = Object.entries(draftDataById);
+        console.log(`📝 Updating ${entries.length} element summaries with draft data`);
+
+        for (const [playerIdStr, draftData] of entries) {
+            const playerId = parseInt(playerIdStr);
+
+            // Get existing element summary
+            const existingSummary = await this.getElementSummary(playerId);
+            if (existingSummary) {
+                // Add draft data to existing summary
+                const updatedSummary = {
+                    ...existingSummary,
+                    draft: draftData
+                };
+
+                await this.client.setDocument(
+                  this.client.collections.FPL_ELEMENTS,
+                  `element-${playerIdStr}`,
+                  { source: 'fpl-with-draft', data: updatedSummary, timestamp: Date.now() }
+                );
+            }
+        }
+
+        console.log(`✅ Successfully updated ${entries.length} element summaries with draft data`);
+    }
+
+    /**
+     * Check if elements have draft data
+     */
+    async hasDraftData(): Promise<boolean> {
+        const elements = await this.getElements();
+        return elements ? elements.some(element => element.draft) : false;
+    }
+
+    /**
+     * Clear draft data from elements
+     */
+    async clearDraftData(): Promise<void> {
+        const elements = await this.getElements();
+        if (!elements) return;
+
+        const clearedElements = elements.map(element => {
+            const { draft, ...elementWithoutDraft } = element;
+            return elementWithoutDraft;
+        });
+
+        await this.client.setDocument(
+          this.client.collections.FPL_BOOTSTRAP,
+          'elements',
+          { source: 'fpl', data: clearedElements }
+        );
+    }
 
 
     /**
