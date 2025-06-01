@@ -5,6 +5,7 @@ const PLAYERS_SHEET_NAME = 'Players';
 
 export async function readPlayers(): Promise<PlayerData[]> {
     try {
+        console.log(`Reading Sheet Players ...`);
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
             spreadsheetId,
@@ -24,7 +25,7 @@ export async function readPlayers(): Promise<PlayerData[]> {
         // console.log('Players spreadsheet headers:', headers);
         // console.log('Sample row:', rows[0]);
 
-        return rows.map((row: any[], index: number) => {
+        const gsheetPlayers = rows.map((row: any[], index: number) => {
             try {
                 // Helper function to get value by header name
                 const getValue = (headerName: string): string => {
@@ -54,8 +55,6 @@ export async function readPlayers(): Promise<PlayerData[]> {
                     webName: getValue('web') || getValue('webname') || getValue('web_name'),
                 };
 
-                console.log(`Player ${index}: ${player.firstName} ${player.lastName}, Position: '${player.position}'`);
-
                 // Only return if we have minimum required data
                 if (player.firstName && player.lastName) {
                     return player;
@@ -67,7 +66,8 @@ export async function readPlayers(): Promise<PlayerData[]> {
                 return null;
             }
         }).filter((player): player is PlayerData => player !== null);
-
+        console.log(`...found ${gsheetPlayers.length} gSheet Players ...`);
+        return gsheetPlayers
     } catch (error) {
         console.error('Error reading players from spreadsheet:', error);
         throw new Error('Failed to read players data');

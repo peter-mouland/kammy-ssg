@@ -174,26 +174,34 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 // FPL API Types
-export interface FplPlayerData {
-    id: number;
+// Filtered FPL Player Data Type (essential fields only)
+export interface FilteredFplPlayerData {
     code: number;
+    chance_of_playing_next_round: number | null;
+    chance_of_playing_this_round: number | null;
+    news: string;
+    news_added: string | null;
+    form: string;
+    id: number;
     first_name: string;
     second_name: string;
     web_name: string;
     team: number;
-    element_type: number;
-    now_cost: number;
-    total_points: number;
+    team_code: number;
     minutes: number;
     goals_scored: number;
     assists: number;
     clean_sheets: number;
     goals_conceded: number;
+    own_goals: number;
     penalties_saved: number;
+    penalties_missed: number;
     yellow_cards: number;
     red_cards: number;
     saves: number;
     bonus: number;
+    bps: number;
+    starts: number;
 }
 
 export interface FplBootstrapData {

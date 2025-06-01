@@ -325,7 +325,7 @@ export const getFullBreakdown = (gameweeks, position, points, stats) => {
             ...acc,
             [v.saves]: acc[v.saves] ? acc[v.saves] +1 : 1
         }), {})
-    if (stats.id === 328) console.log(gameweeks)
+
     return {
         appearance: {
             label: 'Appearance',
