@@ -1,15 +1,9 @@
+// app/routes/draft.tsx
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
-import { useLoaderData,  useFetcher, useSearchParams } from "react-router";
-import { readDraftState, addDraftPick, getDraftPicksByDivision, updateDraftState } from "./server/sheets/draft";
-import { getDraftOrderByDivision } from "./server/sheets/draftOrder";
-import { readDivisions } from "./server/sheets/divisions";
-import { readUserTeams } from "./server/sheets/userTeams";
+import { useLoaderData, useFetcher, useSearchParams } from "react-router";
 import { requestFormData } from '../lib/form-data';
-import { fplApi } from "./server/fpl/api";
-import { fplApiCache } from "./server/fpl/api-cache";
-import { getNextDraftState, generateDraftSequence } from "../lib/draft/helpers";
-import type { DraftStateData, DraftPickData, DraftOrderData, FplPlayerData, DivisionData, UserTeamData } from "../types";
+import type { LoaderData, ActionData } from './draft/types'; // Move interfaces to separate file
 import { DraftBoard } from '../components/draft-board';
 import { DraftOrder } from '../components/draft-order';
 import { TeamDraft } from '../components/draft-team';
@@ -24,107 +18,14 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-interface LoaderData {
-    draftState: DraftStateData | null;
-    draftPicks: DraftPickData[];
-    draftOrder: DraftOrderData[];
-    availablePlayers: FplPlayerData[];
-    currentUser: string | null;
-    isUserTurn: boolean;
-    divisions: DivisionData[];
-    userTeams: UserTeamData[];
-    selectedDivision?: string;
-    selectedUser?: string;
-    draftSequence: Array<{
-        pickNumber: number;
-        round: number;
-        userId: string;
-        userName: string;
-        position: number;
-    }>;
-}
-
-interface ActionData {
-    success?: boolean;
-    error?: string;
-    pick?: DraftPickData;
-}
-
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
     try {
+        // Dynamic import to keep server code on server
+        const { loadDraftData } = await import('./server/draft.server');
         const url = new URL(request.url);
-        const selectedUser = url.searchParams.get("user") || "";
-        const search = url.searchParams.get("search") || "";
-        const position = url.searchParams.get("position") || "";
+        const loaderData = await loadDraftData(url);
 
-        // Fetch all required data
-        const [draftState, divisions, userTeams, allPlayers] = await Promise.all([
-            readDraftState(),
-            readDivisions(),
-            readUserTeams(),
-            fplApiCache.getFplPlayers()
-        ]);
-
-        // Use first division if none selected
-        const divisionId = draftState?.currentDivisionId || divisions[0]?.id || "";
-
-        let draftPicks: DraftPickData[] = [];
-        let draftOrder: DraftOrderData[] = [];
-        let draftSequence: any[] = [];
-
-
-        if (divisionId) {
-            // Fetch draft data for selected division
-            [draftPicks, draftOrder] = await Promise.all([
-                getDraftPicksByDivision(divisionId),
-                getDraftOrderByDivision(divisionId)
-            ]);
-
-            // Generate draft sequence if we have draft order
-            if (draftOrder.length > 0 && draftState) {
-                draftSequence = generateDraftSequence(draftOrder, draftState.picksPerTeam);
-            }
-        }
-
-        // Filter available players
-        const draftedPlayerIds = new Set(draftPicks.map(pick => pick.playerId));
-        let availablePlayers = allPlayers.filter(player => !draftedPlayerIds.has(player.id.toString()));
-
-        // Apply search and position filters
-        if (search) {
-            const searchResults = await fplApiCache.searchPlayersByName(search);
-            const searchIds = new Set(searchResults.map(p => p.id));
-            availablePlayers = availablePlayers.filter(p => searchIds.has(p.id));
-        }
-
-        if (position) {
-            const positionId = parseInt(position);
-            availablePlayers = availablePlayers.filter(p => p.element_type === positionId);
-        }
-
-        // Sort by total points
-        availablePlayers.sort((a, b) => b.total_points - a.total_points);
-
-        // Determine current user and if it's their turn
-        const currentUser = selectedUser || userTeams.find(team => team.divisionId === divisionId)?.userId || "";
-        const isUserTurn = draftState?.isActive &&
-            draftState.currentDivisionId === divisionId &&
-            draftState.currentUserId === currentUser;
-
-        return data<LoaderData>({
-            draftState,
-            draftPicks,
-            draftOrder,
-            availablePlayers: availablePlayers.slice(0, 50),
-            currentUser,
-            isUserTurn,
-            divisions,
-            userTeams: userTeams.filter(team => team.divisionId === divisionId),
-            selectedDivision: divisionId,
-            selectedUser: currentUser,
-            draftSequence
-        });
-
+        return data<LoaderData>(loaderData);
     } catch (error) {
         console.error("Draft loader error:", error);
         throw new Response("Failed to load draft data", { status: 500 });
@@ -133,73 +34,23 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
-        const formData = await requestFormData({ context })
+        const formData = await requestFormData({ request, context });
         const actionType = formData.get("actionType");
-        const divisionId = formData.get("divisionId")?.toString();
-        const playerId = formData.get("playerId")?.toString();
-        const userId = formData.get("userId")?.toString();
 
         switch (actionType) {
-            case "makePick":
-                if (!divisionId || !playerId || !userId) {
-                    return data<ActionData>({ error: "Missing required fields for pick" });
-                }
-
-                // Get player data
-                const allPlayers = await fplApiCache.getFplPlayers();
-                const player = allPlayers.find(p => p.id.toString() === playerId);
-
-                if (!player) {
-                    return data<ActionData>({ error: "Player not found" });
-                }
-
-                // Get current draft state, picks, and order
-                const [draftState, existingPicks, draftOrder] = await Promise.all([
-                    readDraftState(),
-                    getDraftPicksByDivision(divisionId),
-                    getDraftOrderByDivision(divisionId)
-                ]);
-
-                if (!draftState?.isActive) {
-                    return data<ActionData>({ error: "Draft is not active" });
-                }
-
-                if (draftState.currentUserId !== userId) {
-                    return data<ActionData>({ error: "Not your turn to pick" });
-                }
-
-                // Create draft pick
-                const pickNumber = existingPicks.length + 1;
-                const round = Math.ceil(pickNumber / draftOrder.length);
-
-                const draftPick: DraftPickData = {
-                    pickNumber,
-                    round,
-                    userId,
-                    playerId: player.id.toString(),
-                    playerName: `${player.first_name} ${player.second_name}`,
-                    team: `Team ${player.team}`,
-                    position: player.element_type.toString(),
-                    price: player.now_cost / 10,
-                    pickedAt: new Date(),
-                    divisionId
-                };
-
-                await addDraftPick(draftPick);
-
-                // Update draft state to next player using snake logic
-                const nextDraftState = getNextDraftState(draftState, draftOrder);
-                await updateDraftState(nextDraftState);
-
-                return data<ActionData>({ success: true, pick: draftPick });
-
+            case "makePick": {
+                const { makeDraftPick } = await import('./server/draft.server');
+                const result = await makeDraftPick(formData);
+                return data<ActionData>(result);
+            }
             default:
                 return data<ActionData>({ error: "Invalid action type" });
         }
-
     } catch (error) {
         console.error("Draft action error:", error);
-        return data<ActionData>({ error: "Failed to perform draft action" });
+        return data<ActionData>({
+            error: error instanceof Error ? error.message : "Failed to perform draft action"
+        });
     }
 }
 

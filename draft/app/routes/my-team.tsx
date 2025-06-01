@@ -55,7 +55,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
-        const formData = await requestFormData({ context })
+        const formData = await requestFormData({ request, context })
         const actionType = formData.get("actionType");
 
         switch (actionType) {

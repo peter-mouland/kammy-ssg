@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import type { AppError } from '../../types';
+import type { AppError } from '../../../types';
 
 export const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID;
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];

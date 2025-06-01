@@ -1,10 +1,15 @@
 import { type ActionFunctionArgs } from "react-router";
 
-export async function requestFormData({ context }: ActionFunctionArgs['context']): Promise<URLSearchParams> {
+export async function requestFormData({ request, context }: ActionFunctionArgs['context']): Promise<URLSearchParams> {
         // does not work in firebase
-        // const formData = await request.formData();
-        // actionType = formData.get("actionType") as string | null;
-        // divisionId = formData.get("divisionId") as string | null;
-
-        return { get: (name) => context[name] }
+        const formData = await request.formData();
+        return {
+            get: (name) => {
+                const v = context[name] // needed for firebase
+                if (v) {
+                    return v
+                }
+                return formData.get(name) // needed for react-router-v7
+            }
+        }
 }

@@ -1,4 +1,3 @@
-import type { sheets_v4 } from 'googleapis';
 import type { DraftOrderData } from '../../types';
 import {
     readSheetRange,
