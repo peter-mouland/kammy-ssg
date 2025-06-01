@@ -2,8 +2,6 @@
 import type {
     FplBootstrapData,
     FplPlayerData,
-    PlayerGameweekStatsData,
-    CustomPosition
 } from '../../../types';
 import type { FplPlayerSeasonData } from './api';
 import { FplCache } from '../firestore-cache/fpl-cache';
@@ -93,7 +91,7 @@ export class FplApiCache {
     }
 
     /**
-     * Try to reconstruct bootstrap data from cache
+     * reconstruct bootstrap data from cache
      */
     private async tryGetBootstrapFromCache(): Promise<FplBootstrapData | null> {
         const [teams, events, elements] = await Promise.all([
@@ -140,26 +138,42 @@ export class FplApiCache {
     /**
      * Get FPL teams
      */
-    async getFplTeams(): Promise<Array<{ id: number; name: string; short_name: string }>> {
+    async getFplTeams() {
         return this.withPromiseDeduplication('teams', async () => {
             const startTime = performance.now();
             console.log('🔄 getFplTeams() - Start');
 
             const cached = await this.fplCache.getTeams();
             if (cached) {
-                const result = cached.map((team: any) => ({
-                    id: team.id,
-                    name: team.name,
-                    short_name: team.short_name
-                }));
                 console.log(`✅ getFplTeams() - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`);
-                return result;
+                return cached;
             }
 
             console.log('📡 getFplTeams() - Cache miss, getting from bootstrap');
             const bootstrap = await this.getFplBootstrapData();
             const result = fplStats.extractFplTeams(bootstrap);
             console.log(`✅ getFplTeams() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
+            return result;
+        });
+    }
+    /**
+     * Get FPL events
+     */
+    async getFplEvents() {
+        return this.withPromiseDeduplication('events', async () => {
+            const startTime = performance.now();
+            console.log('🔄 getFplEvents() - Start');
+
+            const cached = await this.fplCache.getEvents();
+            if (cached) {
+                console.log(`✅ getFplEvents() - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`);
+                return cached;
+            }
+
+            console.log('📡 getFplEvents() - Cache miss, getting from bootstrap');
+            const bootstrap = await this.getFplBootstrapData();
+            const result = bootstrap.events;
+            console.log(`✅ getFplEvents() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
             return result;
         });
     }
@@ -388,52 +402,6 @@ export class FplApiCache {
         return result;
     }
 
-    // === CONVERSION METHODS ===
-
-    /**
-     * Convert FPL player data to gameweek stats format
-     */
-    convertFplToGameweekStats(
-        fplPlayer: FplPlayerData,
-        gameweek: number,
-        liveData?: any
-    ): PlayerGameweekStatsData {
-        return fplStats.convertFplToGameweekStats(fplPlayer, gameweek, liveData);
-    }
-
-    /**
-     * Map FPL position to custom position
-     */
-    mapFplPositionToCustom(
-        elementType: number,
-        playerName: string,
-        teamId: number
-    ): CustomPosition {
-        return fplStats.mapFplPositionToCustom(elementType, playerName, teamId);
-    }
-
-    /**
-     * Convert player gameweek data to stats format
-     */
-    convertToPlayerGameweeksStats(gameweekData: fplApi.FplPlayerGameweekData[]): PlayerGameweekStatsData[] {
-        return fplStats.convertToPlayerGameweeksStats(gameweekData);
-    }
-
-    /**
-     * Convert single gameweek data to stats format
-     */
-    convertToPlayerGameweekStats(gw: fplApi.FplPlayerGameweekData): PlayerGameweekStatsData {
-        return fplStats.convertToPlayerGameweekStats(gw);
-    }
-    // === UTILITY METHODS ===
-
-    private chunkArray<T>(array: T[], size: number): T[][] {
-        const chunks: T[][] = [];
-        for (let i = 0; i < array.length; i += size) {
-            chunks.push(array.slice(i, i + size));
-        }
-        return chunks;
-    }
     // === CACHE MANAGEMENT ===
 
     /**

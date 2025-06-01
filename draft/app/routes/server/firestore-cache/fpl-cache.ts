@@ -129,6 +129,9 @@ export class FplCache {
 
     // === HELPER METHODS ===
 
+
+
+
     /**
      * Get players by team (from cached elements)
      */
@@ -229,9 +232,9 @@ export class FplCache {
      * Populate all bootstrap documents with fresh data (chunked for large payloads)
      */
     async populateBootstrap(bootstrapData: FplBootstrapData): Promise<void> {
-        // await this.populateTeams(bootstrapData.teams)
-        // await this.populateEvents(bootstrapData.events)
-        // await this.populateElements(bootstrapData.elements)
+        await this.populateTeams(bootstrapData.teams)
+        await this.populateEvents(bootstrapData.events)
+        await this.populateElements(bootstrapData.elements)
     }
 
     /**
@@ -262,16 +265,6 @@ export class FplCache {
         }
 
         console.log(`✅ Successfully wrote ${entries.length} element summaries`);
-    }
-
-    // === UTILITY METHODS ===
-
-    private chunkArray<T>(array: T[], size: number): T[][] {
-        const chunks: T[][] = [];
-        for (let i = 0; i < array.length; i += size) {
-            chunks.push(array.slice(i, i + size));
-        }
-        return chunks;
     }
 
     // Add this temporary method to your FplCache class

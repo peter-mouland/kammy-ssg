@@ -6,7 +6,8 @@ import { getDraftOrderByDivision } from "./server/sheets/draftOrder";
 import { readDivisions } from "./server/sheets/divisions";
 import { readUserTeams } from "./server/sheets/userTeams";
 import { requestFormData } from '../lib/form-data';
-import { getFplPlayers, searchPlayersByName } from "./server/fpl/api";
+import { fplApi } from "./server/fpl/api";
+import { fplApiCache } from "./server/fpl/api-cache";
 import { getNextDraftState, generateDraftSequence } from "../lib/draft/helpers";
 import type { DraftStateData, DraftPickData, DraftOrderData, FplPlayerData, DivisionData, UserTeamData } from "../types";
 import { DraftBoard } from '../components/draft-board';
@@ -61,7 +62,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
             readDraftState(),
             readDivisions(),
             readUserTeams(),
-            getFplPlayers()
+            fplApiCache.getFplPlayers()
         ]);
 
         // Use first division if none selected
@@ -91,7 +92,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 
         // Apply search and position filters
         if (search) {
-            const searchResults = await searchPlayersByName(search);
+            const searchResults = await fplApiCache.searchPlayersByName(search);
             const searchIds = new Set(searchResults.map(p => p.id));
             availablePlayers = availablePlayers.filter(p => searchIds.has(p.id));
         }
@@ -145,7 +146,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 }
 
                 // Get player data
-                const allPlayers = await getFplPlayers();
+                const allPlayers = await fplApiCache.getFplPlayers();
                 const player = allPlayers.find(p => p.id.toString() === playerId);
 
                 if (!player) {

@@ -1,7 +1,7 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData } from "react-router";
-import { getFplPlayer, getPlayerDetailedStats } from "./server/fpl/api";
+import { fplApi } from "./server/fpl/api";
 import { getPlayerGameweekStats, getPlayerSeasonStats } from "./server/sheets/playerStats";
 import { calculateGameweekPoints, getPositionDisplayName, getPositionColor, formatPointsDisplay } from "../lib/points";
 import type { FplPlayerData, PlayerGameweekStatsData, PlayerSeasonStatsData, PointsBreakdown, CustomPosition } from "../types";
@@ -33,8 +33,8 @@ export async function loader({ params }: LoaderFunctionArgs): Promise<Response> 
 
         // Fetch player data in parallel
         const [player, playerDetail, gameweekStats, seasonStats] = await Promise.all([
-            getFplPlayer(playerId),
-            getPlayerDetailedStats(playerId),
+            fplApi.getFplPlayer(playerId),
+            fplApi.getPlayerDetailedStats(playerId),
             getPlayerGameweekStats(playerId.toString()),
             getPlayerSeasonStats(playerId.toString(), "2024-25")
         ]);

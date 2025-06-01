@@ -15,6 +15,7 @@ export const convertFplElementToCache = (element) => ({
     team: element.team,
     team_code: element.team_code,
     form: element.form,
+    now_cost: element.now_cost,
     chance_of_playing_next_round: element.chance_of_playing_next_round,
     chance_of_playing_this_round: element.chance_of_playing_this_round,
     news: element.news,

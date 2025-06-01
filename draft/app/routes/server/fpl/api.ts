@@ -184,6 +184,51 @@ export class FplApi {
         }
     }
 
+    async getFplPlayers(): Promise<FplPlayerData[]> {
+        try {
+            const bootstrap = await this.getFplBootstrapData();
+            return bootstrap.elements;
+        } catch (error) {
+            throw createAppError(
+                'FPL_PLAYERS_ERROR',
+                'Failed to get FPL players',
+                error
+            );
+        }
+    }
+
+    /**
+     * Get FPL player by ID
+     */
+    async getFplPlayer(playerId: number): Promise<FplPlayerData | null> {
+        try {
+            const players = await this.getFplPlayers();
+            return players.find(player => player.id === playerId) || null;
+        } catch (error) {
+            throw createAppError(
+                'FPL_PLAYER_ERROR',
+                `Failed to get FPL player: ${playerId}`,
+                error
+            );
+        }
+    }
+
+    async getTopPerformers(limit = 10): Promise<FplPlayerData[]> {
+        try {
+            const players = await this.getFplPlayers();
+            return players
+                .filter(player => player.minutes > 0)
+                .sort((a, b) => b.total_points - a.total_points)
+                .slice(0, limit);
+        } catch (error) {
+            throw createAppError(
+                'TOP_PERFORMERS_ERROR',
+                'Failed to get top performers',
+                error
+            );
+        }
+    }
+
     /**
      * Get FPL entry history
      */
