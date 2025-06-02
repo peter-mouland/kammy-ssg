@@ -12,7 +12,6 @@ export default [
     // API routes
     route("api/sheets", "routes/api.sheets.ts"),
     route("api/live-scores", "routes/api.live-scores.ts"),
-    route("api/draft/poll", "routes/api.draft-poll.ts"),
     route("api/draft/live", "routes/api.draft.live.ts"),
 
     // debugging routes

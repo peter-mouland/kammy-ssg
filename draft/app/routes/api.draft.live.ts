@@ -146,8 +146,8 @@ async function sendCurrentDraftState(
     encoder: TextEncoder
 ) {
     try {
-        const { readDraftState, getDraftPicksByDivision } = await import("../server/sheets/draft");
-        const { getDraftOrderByDivision } = await import("../server/sheets/draft-order");
+        const { readDraftState, getDraftPicksByDivision } = await import("./server/sheets/draft");
+        const { getDraftOrderByDivision } = await import("./server/sheets/draft-order");
 
         const [draftState, draftPicks, draftOrder] = await Promise.all([
             readDraftState(),
