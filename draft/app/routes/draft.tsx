@@ -1,8 +1,8 @@
-// app/routes/draft.tsx - Refactored with components and CSS modules
+// app/routes/draft.tsx - Updated with Firebase toast integration
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useFetcher, useSearchParams, useNavigation, useActionData, useRevalidator } from "react-router";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import * as React from "react";
 import { requestFormData } from '../lib/form-data';
 import type { DraftPickData, DraftOrderData, DraftStateData, FplPlayerData, UserTeamData, DivisionData } from '../types';
@@ -19,7 +19,7 @@ import { PageHeader } from '../components/page-header';
 import { ToastManager, useToast } from '../components/toast-manager';
 import { ConnectionStatus, ConnectionAlert } from '../components/connection-status';
 import { LoadingOverlay, LoadingSpinner, TurnAlert } from '../components/loading-overlay';
-import { DraftWithSSE } from '../components/draft-sse-handler';
+import { DraftWithFirebase } from '../components/draft-firebase-handler';
 
 // Hooks
 import { useOptimisticPicks } from '../lib/draft/use-optimistic-picks';
@@ -103,6 +103,13 @@ export default function Draft() {
     const [searchParams, setSearchParams] = useSearchParams();
     const { showToast } = useToast();
 
+    // Track previous pick count to detect new picks from Firebase
+    const previousPickCountRef = useRef(loaderData.draftPicks.length);
+    const [lastProcessedPick, setLastProcessedPick] = useState<DraftPickData | null>(null);
+
+    // Track turn changes to show "It's your turn" toast
+    const previousIsUserTurnRef = useRef(loaderData.isUserTurn);
+
     // Optimistic updates
     const { optimisticPicks, addOptimisticPick, hasOptimisticPicks } = useOptimisticPicks(loaderData.draftPicks);
 
@@ -112,7 +119,55 @@ export default function Draft() {
     const isSubmitting = fetcher.state === "submitting";
     const isPending = navigation.state !== "idle" || fetcher.state !== "idle";
 
-    // Handle action responses
+    // Handle new picks from Firebase (when data revalidates)
+    useEffect(() => {
+        const currentPickCount = loaderData.draftPicks.length;
+        const previousPickCount = previousPickCountRef.current;
+
+        // If we have new picks (and it's not the initial load)
+        if (currentPickCount > previousPickCount && previousPickCount > 0) {
+            // Get the latest pick(s)
+            const newPicks = loaderData.draftPicks.slice(previousPickCount);
+
+            newPicks.forEach(pick => {
+                // Don't show toast for your own picks (those are handled by action/fetcher responses)
+                if (pick.userId !== loaderData.currentUser) {
+                    // Find the user who made the pick
+                    const userTeam = loaderData.userTeams.find(team => team.userId === pick.userId);
+                    const userName = userTeam?.teamName || `User ${pick.userId}`;
+
+                    showToast({
+                        message: `${userName} drafted ${pick.playerName}`,
+                        type: 'info',
+                        duration: 4000
+                    });
+                }
+            });
+        }
+
+        // Update the ref for next comparison
+        previousPickCountRef.current = currentPickCount;
+    }, [loaderData.draftPicks, loaderData.currentUser, loaderData.userTeams, showToast]);
+
+    // Handle turn changes - show "It's your turn" toast
+    useEffect(() => {
+        const currentIsUserTurn = loaderData.isUserTurn;
+        const previousIsUserTurn = previousIsUserTurnRef.current;
+
+        // If it just became the user's turn (and draft is active)
+        if (currentIsUserTurn && !previousIsUserTurn && loaderData.draftState?.isActive) {
+            showToast({
+                message: "🎯 It's your turn to pick!",
+                type: 'warning',
+                duration: 6000 // Longer duration for turn notifications
+            });
+        }
+
+        // Update the ref for next comparison
+        previousIsUserTurnRef.current = currentIsUserTurn;
+    }, [loaderData.isUserTurn, loaderData.draftState?.isActive, showToast]);
+
+    // Handle action responses (your own picks)
     useEffect(() => {
         if (actionData?.success && actionData.pick) {
             showToast({
@@ -127,7 +182,7 @@ export default function Draft() {
         }
     }, [actionData, showToast]);
 
-    // Handle fetcher responses
+    // Handle fetcher responses (your own picks)
     useEffect(() => {
         if (fetcher.data?.success && fetcher.data.pick) {
             showToast({
@@ -231,8 +286,8 @@ export default function Draft() {
             {/* Loading overlay */}
             <LoadingOverlay show={isPending || hasOptimisticPicks} />
 
-            {/* SSE Handler - manages real-time connections */}
-            <DraftWithSSE
+            {/* Firebase Handler - manages real-time connections */}
+            <DraftWithFirebase
                 divisionId={loaderData.selectedDivision}
                 currentUserId={loaderData.currentUser}
                 isDraftActive={loaderData.draftState?.isActive || false}
@@ -338,7 +393,7 @@ export default function Draft() {
                         {process.env.NODE_ENV === 'development' && (
                             <details className={styles.debugInfo}>
                                 <summary className={styles.debugSummary}>
-                                    Debug Info (Component Optimized)
+                                    Debug Info (Firebase Toast Integration)
                                 </summary>
                                 <pre className={styles.debugContent}>
                                     {JSON.stringify({
@@ -354,15 +409,18 @@ export default function Draft() {
                                         navigationState: navigation.state,
                                         fetcherState: fetcher.state,
                                         currentPickCount: loaderData.draftPicks.length,
+                                        previousPickCount: previousPickCountRef.current,
+                                        isUserTurn: loaderData.isUserTurn,
+                                        previousIsUserTurn: previousIsUserTurnRef.current,
                                         draftActive: loaderData.draftState?.isActive,
-                                        components: 'Modularized with CSS modules'
+                                        components: 'Firebase toast integration + turn notifications'
                                     }, null, 2)}
                                 </pre>
                             </details>
                         )}
                     </>
                 )}
-            </DraftWithSSE>
+            </DraftWithFirebase>
         </div>
     );
 }

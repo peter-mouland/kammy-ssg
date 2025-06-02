@@ -1,3 +1,4 @@
+/* components/toast-manager/toast-manager.module.css */
 .toastContainer {
     position: fixed;
     top: 1rem;
@@ -41,6 +42,12 @@
     background-color: #fef2f2;
     border: 1px solid #fca5a5;
     color: #dc2626;
+}
+
+.toast.warning {
+    background-color: #fef3c7;
+    border: 1px solid #fbbf24;
+    color: #92400e;
 }
 
 .toast.info {

@@ -1,6 +1,5 @@
 import { useSearchParams } from 'react-router';
 import { useState } from 'react';
-import { getPositionDisplayName } from '../lib/points';
 
 export const DraftPlayersAvailable = ({ onSelectPlayer, availablePlayers, isUserTurn }) => {
 

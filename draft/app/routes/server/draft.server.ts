@@ -1,4 +1,4 @@
-// Enhanced app/server/draft.server.ts with SSE broadcasting
+// Enhanced app/server/draft.server.ts with Firebase broadcasting
 import { readDraftState, addDraftPick, getDraftPicksByDivision, updateDraftState } from './sheets/draft';
 import { getDraftOrderByDivision } from './sheets/draft-order';
 import { readDivisions } from './sheets/divisions';
@@ -8,15 +8,8 @@ import { getNextDraftState } from "../../lib/draft/get-next-draft-state";
 import { generateDraftSequence } from "../../lib/draft/generate-draft-sequence";
 import type { DraftPickData, DraftOrderData } from "../../types";
 
-// Import the broadcast function (using dynamic import to avoid issues)
-async function broadcastDraftEvent(event: any) {
-    try {
-        const { broadcastDraftEvent: broadcast } = await import("../api.draft.live");
-        broadcast(event);
-    } catch (error) {
-        console.error("Failed to broadcast draft event:", error);
-    }
-}
+// Import Firebase sync
+import { FirebaseDraftSync } from './firestore-cache/firebase-draft-sync';
 
 export async function loadDraftData(url: URL) {
     const selectedUser = url.searchParams.get("user") || "";
@@ -47,6 +40,12 @@ export async function loadDraftData(url: URL) {
             draftSequence = generateDraftSequence(draftOrder, draftState.picksPerTeam);
         }
     }
+
+    // REMOVED: No longer sync Firebase state on every page load
+    // This was causing excessive writes on every revalidation
+
+    // Only initialize Firebase state when draft is first activated
+    // This should be done in a separate "start draft" action, not on every load
 
     // Filter available players
     const draftedPlayerIds = new Set(draftPicks.map(pick => pick.playerId));
@@ -146,51 +145,66 @@ export async function makeDraftPick(formData: FormData) {
     const nextDraftState = getNextDraftState(draftState, draftOrder);
     await updateDraftState(nextDraftState);
 
-    // 🚀 Broadcast the pick to all connected clients
-    await broadcastDraftEvent({
-        type: 'pick-made',
-        data: {
-            pick: {
-                ...draftPick,
-                userName // Add userName for better UX
-            },
-            pickNumber: draftPick.pickNumber,
-            userId: draftPick.userId,
-            userName,
-            playerName: draftPick.playerName,
-            position: draftPick.position,
-            round: draftPick.round
-        },
-        divisionId
-    });
+    // Get next state variables
+    const nextPickNumber = nextDraftState.currentPick;
+    const nextUserId = nextDraftState.currentUserId;
+    const nextUserName = userTeams.find(team => team.userId === nextUserId)?.userName || 'Unknown User';
 
-    // 🚀 Broadcast turn change if draft is still active
-    if (nextDraftState.isActive) {
-        const nextUser = draftOrder.find(order => order.userId === nextDraftState.currentUserId);
-        await broadcastDraftEvent({
-            type: 'turn-change',
-            data: {
-                currentPick: nextDraftState.currentPick,
-                currentUserId: nextDraftState.currentUserId,
-                currentUserName: nextUser?.userName || 'Unknown User',
-                pickDeadline: new Date(Date.now() + 120000), // 2 minutes
-                isActive: true,
-                pickCount: pickNumber
-            },
-            divisionId
+    try {
+        // ONLY sync to Firebase when a pick is actually made
+        // This will use the deduplication logic we added earlier
+        await FirebaseDraftSync.broadcastPickMade(divisionId, draftPick, {
+            currentPick: nextPickNumber,
+            currentUserId: nextUserId,
+            isActive: nextDraftState.isActive,
+            totalPicks: draftOrder.length * (draftState.picksPerTeam || 15)
         });
-    } else {
-        // 🚀 Broadcast draft completion
-        await broadcastDraftEvent({
-            type: 'draft-ended',
-            data: {
-                message: 'Draft completed!',
-                finalPickCount: pickNumber,
-                completedAt: nextDraftState.completedAt
-            },
-            divisionId
-        });
+
+        console.log(`🔥 Pick synced to Firebase: ${draftPick.playerName} by ${userName}`);
+    } catch (error) {
+        console.error("🔥 Failed to sync pick to Firebase:", error);
+        // Don't throw - the pick was still saved to your main database
     }
 
-    return { success: true, pick: { ...draftPick, userName } };
+    return {
+        success: true,
+        pick: {
+            ...draftPick,
+            userName,
+            nextUser: nextDraftState.isActive ? {
+                userId: nextUserId,
+                userName: nextUserName,
+                pickNumber: nextPickNumber
+            } : null
+        }
+    };
+}
+
+// NEW: Separate function to initialize/start draft
+export async function startDraft(divisionId: string) {
+    try {
+        const [draftState, draftOrder] = await Promise.all([
+            readDraftState(),
+            getDraftOrderByDivision(divisionId)
+        ]);
+
+        if (!draftState) {
+            throw new Error("No draft state found");
+        }
+
+        // Initialize Firebase state when draft starts
+        await FirebaseDraftSync.initializeDraft(divisionId, {
+            currentPick: draftState.currentPick,
+            currentUserId: draftState.currentUserId,
+            isActive: true,
+            lastUpdate: Date.now(),
+            totalPicks: draftOrder.length * (draftState.picksPerTeam || 15)
+        });
+
+        console.log(`🔥 Draft initialized in Firebase for division: ${divisionId}`);
+        return { success: true };
+    } catch (error) {
+        console.error("🔥 Failed to initialize draft in Firebase:", error);
+        throw error;
+    }
 }

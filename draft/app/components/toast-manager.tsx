@@ -5,7 +5,7 @@ import styles from './toast-manager.module.css';
 export interface Toast {
     id: string;
     message: string;
-    type: 'success' | 'error' | 'info';
+    type: 'success' | 'error' | 'warning' | 'info';
     duration?: number;
 }
 
