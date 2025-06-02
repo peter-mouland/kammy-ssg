@@ -1,7 +1,7 @@
 // src/lib/firestore-cache/fpl-cache.ts
 import type { FirestoreClient } from './firestore-client'
 import type { FplBootstrapData, FplPlayerData } from '../../../types'
-import { convertFplElementToCache } from '../fpl/stats';
+import { convertFplElementHistoryToCache, convertFplElementToCache } from '../fpl/stats';
 import { processBatchedReads } from '../utils/batch-processor';
 
 // Filtered FPL Player Data Type (absolute essentials only)
@@ -83,7 +83,7 @@ export class FplCache {
     /**
      * Get element summary data (individual player gameweek breakdown)
      */
-    async getElementSummary(playerId: number): Promise<any | null> {
+    async getElementGameweek(playerId: number): Promise<any | null> {
         const doc = await this.client.getDocument(
             this.client.collections.FPL_ELEMENTS,
             `element-${playerId}`
@@ -168,7 +168,7 @@ export class FplCache {
             const playerId = parseInt(playerIdStr);
 
             // Get existing element summary
-            const existingSummary = await this.getElementSummary(playerId);
+            const existingSummary = await this.getElementGameweek(playerId);
             if (existingSummary) {
                 // Add draft data to existing summary
                 const updatedSummary = {
@@ -324,10 +324,12 @@ export class FplCache {
      * Populate element summary document with fresh data
      */
     async populateElementSummary(playerId: number, summaryData: any): Promise<void> {
+        const history: FilteredFplPlayerData[] = summaryData.history.map(convertFplElementHistoryToCache);
+
         await this.client.setDocument(
             this.client.collections.FPL_ELEMENTS,
             `element-${playerId}`,
-            { source: 'fpl', data: summaryData }
+            { source: 'fpl', data: { fixtures: summaryData.fixtures, history } }
         );
     }
 

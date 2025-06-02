@@ -17,6 +17,25 @@ export const convertFplElementToCache = (element) => ({
     form: element.form,
     now_cost: element.now_cost,
 })
+export const convertFplElementHistoryToCache = (element) => ({
+    element: element.element,
+    round: element.round,
+    fixture: element.fixture,
+    assists: element.assists,
+    bonus: element.bonus,
+    clean_sheets: element.clean_sheets,
+    goals_conceded: element.goals_conceded,
+    goals_scored: element.goals_scored,
+    minutes: element.minutes,
+    own_goals: element.own_goals,
+    penalties_saved: element.penalties_saved,
+    penalties_missed: element.penalties_missed,
+    red_cards: element.red_cards,
+    saves: element.saves,
+    yellow_cards: element.yellow_cards,
+    team_a_score: element.team_a_score,
+    team_h_score: element.team_h_score,
+})
 
 // Convert FPL gameweek data to your format
 export const convertToPlayerGameweeksStats = (gameweekData: FplPlayerGameweekData[]): PlayerGameweekStatsData[] => {

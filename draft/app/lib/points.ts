@@ -265,7 +265,7 @@ export function getPositionDisplayName(position: CustomPosition): string {
         ca: 'Centre Forward'
     };
 
-    return displayNames[position];
+    return displayNames[position?.toLowerCase()] || position;
 }
 
 /**

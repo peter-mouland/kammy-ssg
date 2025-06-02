@@ -1,10 +1,6 @@
 import { useSearchParams } from 'react-router';
 import { useState } from 'react';
-
-const getPositionName = (elementType: number) => {
-    const positions = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
-    return positions[elementType as keyof typeof positions] || 'Unknown';
-};
+import { getPositionDisplayName } from '../lib/points';
 
 export const DraftPlayersAvailable = ({ onSelectPlayer, availablePlayers, isUserTurn }) => {
 
@@ -83,7 +79,7 @@ export const DraftPlayersAvailable = ({ onSelectPlayer, availablePlayers, isUser
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        {availablePlayers.map((player) => (
+                        {availablePlayers.map((player) => console.log(player) || (
                             <div
                                 key={player.id}
                                 style={{
@@ -104,7 +100,7 @@ export const DraftPlayersAvailable = ({ onSelectPlayer, availablePlayers, isUser
                                             {player.first_name} {player.second_name}
                                         </div>
                                         <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                            {getPositionName(player.element_type)} • Team {player.team}
+                                            {player.draft?.position} • Team {player.team}
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>

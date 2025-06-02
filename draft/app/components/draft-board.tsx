@@ -1,3 +1,5 @@
+import { getPositionDisplayName } from '../lib/points';
+
 interface DraftBoardProps {
     draftPicks: DraftPickData[];
 }
@@ -77,7 +79,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                                             alignItems: 'center',
                                             gap: '0.5rem'
                                         }}>
-                                            <span>{getPositionName(parseInt(pick.position))}</span>
+                                            <span>{getPositionDisplayName(pick.draft?.position)}</span>
                                             <span>•</span>
                                             <span>{pick.team}</span>
                                             <span>•</span>
@@ -93,8 +95,3 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
     );
 }
 
-// Helper function (should be imported from your utils)
-function getPositionName(elementType: number) {
-    const positions = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
-    return positions[elementType as keyof typeof positions] || 'Unknown';
-}

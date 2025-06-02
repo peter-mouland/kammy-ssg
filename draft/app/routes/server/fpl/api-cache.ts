@@ -242,7 +242,7 @@ export class FplApiCache {
             const startTime = performance.now();
             console.log(`🔄 getPlayerDetailedStats(${playerId}) - Start`);
 
-            const cached = await this.fplCache.getElementSummary(playerId);
+            const cached = await this.fplCache.getElementGameweek(playerId);
             if (cached) {
                 console.log(`✅ getPlayerDetailedStats(${playerId}) - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`);
                 return cached;

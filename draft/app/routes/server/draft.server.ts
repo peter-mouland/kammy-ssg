@@ -60,8 +60,7 @@ export async function loadDraftData(url: URL) {
     }
 
     if (position) {
-        const positionId = parseInt(position);
-        availablePlayers = availablePlayers.filter(p => p.element_type === positionId);
+        availablePlayers = availablePlayers.filter(p => p.draft.position === position);
     }
 
     availablePlayers.sort((a, b) => b.total_points - a.total_points);
@@ -134,7 +133,7 @@ export async function makeDraftPick(formData: FormData) {
         playerId: player.id.toString(),
         playerName: `${player.first_name} ${player.second_name}`,
         team: `Team ${player.team}`,
-        position: player.position?.toString(),
+        position: player.draft.position,
         price: player.now_cost / 10,
         pickedAt: new Date(),
         divisionId
@@ -159,6 +158,7 @@ export async function makeDraftPick(formData: FormData) {
             userId: draftPick.userId,
             userName,
             playerName: draftPick.playerName,
+            position: draftPick.position,
             round: draftPick.round
         },
         divisionId

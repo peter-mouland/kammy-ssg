@@ -172,7 +172,7 @@ export default function Draft() {
             playerId,
             playerName: selectedPlayer.web_name || `${selectedPlayer.first_name} ${selectedPlayer.second_name}`,
             team: `Team ${selectedPlayer.team}`,
-            position: selectedPlayer.position?.toString(),
+            position: selectedPlayer.draft.position,
             price: selectedPlayer.now_cost / 10,
             pickedAt: new Date(),
             divisionId: loaderData.selectedDivision
