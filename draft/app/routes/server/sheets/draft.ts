@@ -363,6 +363,232 @@ export async function clearDraftData(
 }
 
 /**
+ * Delete a draft pick by pick number and division ID
+ */
+export async function deleteDraftPick(
+    pickNumber: number,
+    divisionId: string
+): Promise<void> {
+    try {
+        // Read all current picks
+        const allPicks = await readDraftPicks();
+
+        // Find the pick to delete
+        const pickToDelete = allPicks.find(pick =>
+            pick.pickNumber === pickNumber && pick.divisionId === divisionId
+        );
+
+        if (!pickToDelete) {
+            throw new Error(`Pick ${pickNumber} not found in division ${divisionId}`);
+        }
+
+        // Filter out the pick to delete
+        const remainingPicks = allPicks.filter(pick =>
+            !(pick.pickNumber === pickNumber && pick.divisionId === divisionId)
+        );
+
+        // Transform the remaining picks for sheet format
+        const transformedPicks = remainingPicks.map(pick => ({
+            ...pick,
+            pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt
+        }));
+
+        // Convert to sheet rows format
+        const sheetRows = convertToSheetRows(transformedPicks, DRAFT_PICKS_HEADERS, true);
+
+        // Clear the sheet and write the remaining picks
+        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+        const sheetRange: SheetRange = {
+            spreadsheetId,
+            range: `'${DRAFT_PICKS_SHEET_NAME}'!A:J`
+        };
+
+        await writeSheetRange(sheetRange, sheetRows);
+
+        console.log(`🗑️ Successfully deleted pick ${pickNumber} (${pickToDelete.playerName}) from division ${divisionId}`);
+
+    } catch (error) {
+        throw createAppError(
+            'DRAFT_PICK_DELETE_ERROR',
+            `Failed to delete draft pick ${pickNumber} from division ${divisionId}`,
+            error
+        );
+    }
+}
+
+/**
+ * Delete multiple draft picks by pick numbers and division ID
+ * More efficient for removing multiple picks at once
+ */
+export async function deleteDraftPicks(
+    pickNumbers: number[],
+    divisionId: string
+): Promise<DraftPickData[]> {
+    try {
+        // Read all current picks
+        const allPicks = await readDraftPicks();
+
+        // Find the picks to delete
+        const picksToDelete = allPicks.filter(pick =>
+            pickNumbers.includes(pick.pickNumber) && pick.divisionId === divisionId
+        );
+
+        if (picksToDelete.length === 0) {
+            throw new Error(`No picks found matching numbers ${pickNumbers.join(', ')} in division ${divisionId}`);
+        }
+
+        // Create a Set for faster lookup
+        const pickNumbersSet = new Set(pickNumbers);
+
+        // Filter out the picks to delete
+        const remainingPicks = allPicks.filter(pick =>
+            !(pickNumbersSet.has(pick.pickNumber) && pick.divisionId === divisionId)
+        );
+
+        // Transform the remaining picks for sheet format
+        const transformedPicks = remainingPicks.map(pick => ({
+            ...pick,
+            pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt
+        }));
+
+        // Convert to sheet rows format
+        const sheetRows = convertToSheetRows(transformedPicks, DRAFT_PICKS_HEADERS, true);
+
+        // Clear the sheet and write the remaining picks
+        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+        const sheetRange: SheetRange = {
+            spreadsheetId,
+            range: `'${DRAFT_PICKS_SHEET_NAME}'!A:J`
+        };
+
+        await writeSheetRange(sheetRange, sheetRows);
+
+        console.log(`🗑️ Successfully deleted ${picksToDelete.length} picks from division ${divisionId}:`,
+            picksToDelete.map(p => `${p.pickNumber}: ${p.playerName}`));
+
+        return picksToDelete;
+
+    } catch (error) {
+        throw createAppError(
+            'DRAFT_PICKS_DELETE_ERROR',
+            `Failed to delete draft picks ${pickNumbers.join(', ')} from division ${divisionId}`,
+            error
+        );
+    }
+}
+
+/**
+ * Delete the last N draft picks from a division
+ * Optimized for the "remove last pick" functionality
+ */
+export async function deleteLastDraftPicks(
+    divisionId: string,
+    count: number = 1
+): Promise<DraftPickData[]> {
+    try {
+        if (count < 1 || count > 50) {
+            throw new Error('Count must be between 1 and 50');
+        }
+
+        // Get picks for this division only
+        const divisionPicks = await getDraftPicksByDivision(divisionId);
+
+        if (divisionPicks.length === 0) {
+            throw new Error(`No picks found in division ${divisionId}`);
+        }
+
+        // Sort by pick number descending to get the most recent picks
+        const sortedPicks = divisionPicks.sort((a, b) => b.pickNumber - a.pickNumber);
+
+        // Get the picks to delete (last N picks)
+        const actualCount = Math.min(count, sortedPicks.length);
+        const picksToDelete = sortedPicks.slice(0, actualCount);
+        const pickNumbersToDelete = picksToDelete.map(p => p.pickNumber);
+
+        // Use the multi-delete function for efficiency
+        return await deleteDraftPicks(pickNumbersToDelete, divisionId);
+
+    } catch (error) {
+        throw createAppError(
+            'LAST_PICKS_DELETE_ERROR',
+            `Failed to delete last ${count} picks from division ${divisionId}`,
+            error
+        );
+    }
+}
+
+/**
+ * Reorder pick numbers after deletion to maintain sequence
+ * Call this after deleting picks to fix the numbering
+ */
+export async function reorderPickNumbers(divisionId: string): Promise<void> {
+    try {
+        // Get all picks for this division
+        const divisionPicks = await getDraftPicksByDivision(divisionId);
+
+        if (divisionPicks.length === 0) {
+            return; // Nothing to reorder
+        }
+
+        // Sort by the original pick time/date to maintain draft order
+        const sortedPicks = divisionPicks.sort((a, b) => {
+            // First sort by pick number as fallback
+            const timeA = a.pickedAt instanceof Date ? a.pickedAt.getTime() : new Date(a.pickedAt).getTime();
+            const timeB = b.pickedAt instanceof Date ? b.pickedAt.getTime() : new Date(b.pickedAt).getTime();
+            return timeA - timeB;
+        });
+
+        // Reassign pick numbers sequentially
+        const reorderedPicks = sortedPicks.map((pick, index) => ({
+            ...pick,
+            pickNumber: index + 1,
+            round: Math.ceil((index + 1) / getDraftOrderLength(divisionId)) // You'll need to calculate this
+        }));
+
+        // Get all picks (not just this division) to preserve other divisions
+        const allPicks = await readDraftPicks();
+        const otherDivisionPicks = allPicks.filter(pick => pick.divisionId !== divisionId);
+
+        // Combine reordered picks with other divisions
+        const allReorderedPicks = [...otherDivisionPicks, ...reorderedPicks];
+
+        // Transform for sheet format
+        const transformedPicks = allReorderedPicks.map(pick => ({
+            ...pick,
+            pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt
+        }));
+
+        // Write back to sheet
+        const sheetRows = convertToSheetRows(transformedPicks, DRAFT_PICKS_HEADERS, true);
+
+        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+        const sheetRange: SheetRange = {
+            spreadsheetId,
+            range: `'${DRAFT_PICKS_SHEET_NAME}'!A:J`
+        };
+
+        await writeSheetRange(sheetRange, sheetRows);
+
+        console.log(`🔄 Reordered pick numbers for division ${divisionId}`);
+
+    } catch (error) {
+        throw createAppError(
+            'PICK_REORDER_ERROR',
+            `Failed to reorder pick numbers for division ${divisionId}`,
+            error
+        );
+    }
+}
+
+// Helper function to get draft order length (you might need to adjust this)
+function getDraftOrderLength(divisionId: string): number {
+    // This should return the number of teams in the division
+    // You might need to import and call getDraftOrderByDivision or have this as a parameter
+    // For now, assuming a default of 10 teams
+    return 10; // Replace with actual logic
+}
+
+/**
  * Validate draft pick data
  */
 export function validateDraftPickData(data: Partial<DraftPickData>): string[] {

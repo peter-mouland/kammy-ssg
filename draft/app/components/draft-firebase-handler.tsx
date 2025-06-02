@@ -2,9 +2,11 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { ref, onValue, off, get, set } from 'firebase/database';
 import { useRevalidator } from 'react-router';
-import { database } from '../lib/firebase-client-config';
+import { getRealtimeDbInstance } from '../lib/firebase-client-config';
 
 export type ConnectionState = 'connecting' | 'connected' | 'disconnected' | 'error';
+
+const database = getRealtimeDbInstance()
 
 interface DraftEvent {
     type: 'pick-made' | 'turn-change' | 'draft-started' | 'draft-ended' | 'connection';

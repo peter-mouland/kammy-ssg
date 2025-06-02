@@ -1,5 +1,5 @@
 // lib/firebase-realtime.ts - SEPARATE config just for Realtime Database
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 
 // Realtime Database specific config
@@ -22,18 +22,18 @@ if (!realtimeConfig.apiKey || !realtimeConfig.databaseURL) {
 const REALTIME_APP_NAME = 'realtime-draft';
 
 // Get or create the Realtime Database app
-let realtimeApp;
-try {
-    // Try to get existing app
-    realtimeApp = getApp(REALTIME_APP_NAME);
-    console.log('🔥 Using existing Realtime Database app');
-} catch (error) {
-    // App doesn't exist, create it
-    console.log('🔥 Creating new Realtime Database app');
-    realtimeApp = initializeApp(realtimeConfig, REALTIME_APP_NAME);
+let realtimeDB;
+
+export function getRealtimeDbInstance() {
+    console.log('getRealtimeDbInstance')
+    if (!realtimeDB) {
+        const existingApps = getApps();
+        let realtimeApp = existingApps.find(app => console.log(app) || app.name === REALTIME_APP_NAME);
+        if (!realtimeApp) {
+            realtimeApp = initializeApp(realtimeConfig, REALTIME_APP_NAME);
+            console.log('🔥 Firebase Realtime Database client initialized for project:', realtimeConfig.projectId);
+        }
+        realtimeDB = getDatabase(realtimeApp)
+    }
+    return realtimeDB;
 }
-
-// Get database instance for real-time listening
-export const database = getDatabase(realtimeApp);
-
-console.log('🔥 Firebase Realtime Database client initialized for project:', realtimeConfig.projectId);

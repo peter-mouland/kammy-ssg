@@ -20,6 +20,7 @@ import { ToastManager, useToast } from '../components/toast-manager';
 import { ConnectionStatus, ConnectionAlert } from '../components/connection-status';
 import { LoadingOverlay, LoadingSpinner, TurnAlert } from '../components/loading-overlay';
 import { DraftWithFirebase } from '../components/draft-firebase-handler';
+import { DraftConfetti } from '../components/draft-confetti';
 
 // Hooks
 import { useOptimisticPicks } from '../lib/draft/use-optimistic-picks';
@@ -77,6 +78,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 const result = await makeDraftPick(formData);
                 return data<ActionData>(result);
             }
+            case "removeLastPick": {
+                const { removeLastDraftPick } = await import('./server/draft.server');
+                const result = await removeLastDraftPick(formData);
+                return data<ActionData>(result);
+            }
             default:
                 return data<ActionData>({ error: "Invalid action type" });
         }
@@ -109,6 +115,14 @@ export default function Draft() {
 
     // Track turn changes to show "It's your turn" toast
     const previousIsUserTurnRef = useRef(loaderData.isUserTurn);
+
+    // Track draft completion for celebration
+    const [showDraftCompleteConfetti, setShowDraftCompleteConfetti] = useState(false);
+    const previousDraftCompleteRef = useRef(false);
+
+    // Track remove pick attempts for progressive removal
+    const [removePickCount, setRemovePickCount] = useState(0);
+    const removePickTimeoutRef = useRef<NodeJS.Timeout>();
 
     // Optimistic updates
     const { optimisticPicks, addOptimisticPick, hasOptimisticPicks } = useOptimisticPicks(loaderData.draftPicks);
@@ -167,6 +181,32 @@ export default function Draft() {
         previousIsUserTurnRef.current = currentIsUserTurn;
     }, [loaderData.isUserTurn, loaderData.draftState?.isActive, showToast]);
 
+    // Handle draft completion detection
+    useEffect(() => {
+        if (!loaderData.draftState?.isActive) {
+            previousDraftCompleteRef.current = false;
+            return;
+        }
+
+        // Calculate if draft is complete
+        const totalPossiblePicks = loaderData.draftOrder.length * (loaderData.draftState.picksPerTeam || 15);
+        const currentDraftComplete = optimisticPicks.length >= totalPossiblePicks;
+        const previousDraftComplete = previousDraftCompleteRef.current;
+
+        // If draft just completed
+        if (currentDraftComplete && !previousDraftComplete && optimisticPicks.length > 0) {
+            setShowDraftCompleteConfetti(true);
+
+            showToast({
+                message: "🎉 DRAFT COMPLETE! All picks are in! Good luck this season! 🏆",
+                type: 'success',
+                duration: 8000
+            });
+        }
+
+        previousDraftCompleteRef.current = currentDraftComplete;
+    }, [optimisticPicks.length, loaderData.draftOrder.length, loaderData.draftState, showToast]);
+
     // Handle action responses (your own picks)
     useEffect(() => {
         if (actionData?.success && actionData.pick) {
@@ -182,11 +222,16 @@ export default function Draft() {
         }
     }, [actionData, showToast]);
 
-    // Handle fetcher responses (your own picks)
+    // Handle fetcher responses (your own picks and removals)
     useEffect(() => {
         if (fetcher.data?.success && fetcher.data.pick) {
             showToast({
                 message: `${fetcher.data.pick.playerName} drafted successfully!`,
+                type: 'success'
+            });
+        } else if (fetcher.data?.success && fetcher.data.action === 'removeLastPick') {
+            showToast({
+                message: `✅ Removed last pick`,
                 type: 'success'
             });
         } else if (fetcher.data?.error) {
@@ -253,6 +298,36 @@ export default function Draft() {
         showToast
     ]);
 
+    const handleRemoveLastPick = useCallback(() => {
+        if (!loaderData.selectedDivision || isSubmitting || optimisticPicks.length === 0) {
+            return;
+        }
+
+        if (removePickTimeoutRef.current) {
+            clearTimeout(removePickTimeoutRef.current);
+        }
+
+        // Show progressive toast
+        showToast({
+            message: `Remove last pick`,
+            type: 'warning',
+            duration: 3000
+        });
+
+        // Submit removal request
+        fetcher.submit({
+            actionType: "removeLastPick",
+            divisionId: loaderData.selectedDivision,
+        }, { method: "post" });
+    }, [
+        loaderData.selectedDivision,
+        isSubmitting,
+        optimisticPicks.length,
+        removePickCount,
+        fetcher,
+        showToast
+    ]);
+
     // Memoized filtered players
     const availablePlayersFiltered = useMemo(() => {
         const pickedPlayerIds = new Set(optimisticPicks.map(pick => pick.playerId));
@@ -283,6 +358,13 @@ export default function Draft() {
             {/* Toast Manager - handles all notifications */}
             <ToastManager maxToasts={3} />
 
+            {/* Draft Complete Confetti */}
+            <DraftConfetti
+                show={showDraftCompleteConfetti}
+                onComplete={() => setShowDraftCompleteConfetti(false)}
+                duration={5000}
+            />
+
             {/* Loading overlay */}
             <LoadingOverlay show={isPending || hasOptimisticPicks} />
 
@@ -309,6 +391,21 @@ export default function Draft() {
                                         selectedUser={loaderData.selectedUser}
                                         handleUserChange={handleUserChange}
                                     />
+
+                                    {/* Remove Last Pick Button - Admin/Debug Feature */}
+                                    {(process.env.NODE_ENV === 'development' || loaderData.currentUser === 'admin') && optimisticPicks.length > 0 && (
+                                        <button
+                                            onClick={handleRemoveLastPick}
+                                            disabled={isSubmitting}
+                                            className={styles.removePickButton}
+                                            title={`Remove last ${removePickCount + 1} pick${removePickCount > 0 ? 's' : ''}`}
+                                        >
+                                            🗑️ Remove Last Pick
+                                            {removePickCount > 0 && (
+                                                <span className={styles.removeCount}>({removePickCount + 1})</span>
+                                            )}
+                                        </button>
+                                    )}
                                 </div>
                             }
                         />
@@ -413,7 +510,7 @@ export default function Draft() {
                                         isUserTurn: loaderData.isUserTurn,
                                         previousIsUserTurn: previousIsUserTurnRef.current,
                                         draftActive: loaderData.draftState?.isActive,
-                                        components: 'Firebase toast integration + turn notifications'
+                                        components: 'Firebase toast integration + turn notifications + remove last pick'
                                     }, null, 2)}
                                 </pre>
                             </details>

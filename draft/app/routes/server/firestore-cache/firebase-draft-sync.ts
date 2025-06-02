@@ -1,5 +1,5 @@
 // lib/firebase-draft-sync.ts
-import { adminDatabase } from './firebase.realtime-admin';
+import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
 
 interface DraftEvent {
     type: 'pick-made' | 'turn-change' | 'draft-started' | 'draft-ended';
@@ -16,6 +16,8 @@ interface DraftState {
     lastUpdate: number;
     totalPicks?: number;
 }
+
+const adminDatabase = getRealtimeAdminDbInstance()
 
 export class FirebaseDraftSync {
     // Cache to prevent redundant writes
