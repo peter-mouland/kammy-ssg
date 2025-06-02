@@ -47,15 +47,15 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
                     </div>
 
                     <div className={styles.breakdownList}>
-                        <BreakdownItem {...player.draft.fullBreakdown.appearance} />
-                        <BreakdownItem {...player.draft.fullBreakdown.goals} />
-                        <BreakdownItem {...player.draft.fullBreakdown.assists} />
-                        <BreakdownItem {...player.draft.fullBreakdown.cleanSheets} />
-                        <BreakdownItem {...player.draft.fullBreakdown.goalsConceded} />
-                        <BreakdownItem {...player.draft.fullBreakdown.yellowCards} />
-                        <BreakdownItem {...player.draft.fullBreakdown.redCards} />
-                        <BreakdownItem {...player.draft.fullBreakdown.saves} />
-                        <BreakdownItem {...player.draft.fullBreakdown.bonus} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.appearance} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.goals} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.assists} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.cleanSheets} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.goalsConceded} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.yellowCards} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.redCards} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.saves} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.bonus} />
                     </div>
 
                     <div className={styles.tooltipFooter}>

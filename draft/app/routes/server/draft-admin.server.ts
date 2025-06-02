@@ -1,4 +1,4 @@
-// Server-only imports
+// Enhanced app/server/draft-admin.server.ts with clear data functionality
 import { readDivisions } from "./sheets/divisions";
 import { getUserTeamsByDivision } from "./sheets/user-teams";
 import {
@@ -8,6 +8,7 @@ import {
     draftOrderExists
 } from "./sheets/draft-order";
 import { updateDraftState, readDraftState } from "./sheets/draft";
+import { FirestoreClearService } from "./firestore-cache/clear-service";
 import type { DivisionData, UserTeamData, DraftOrderData, DraftStateData } from "../types";
 
 export interface DraftAdminData {
@@ -51,10 +52,12 @@ export async function getDraftAdminData(): Promise<DraftAdminData> {
 export interface DraftActionParams {
     actionType: string;
     divisionId?: string;
+    authToken?: string;
+    variant?: 'all' | 'fpl-only' | 'elements-only';
 }
 
 export async function handleDraftAction(params: DraftActionParams) {
-    const { actionType, divisionId } = params;
+    const { actionType, divisionId, authToken, variant } = params;
 
     switch (actionType) {
         case "generateOrder":
@@ -130,7 +133,67 @@ export async function handleDraftAction(params: DraftActionParams) {
             await updateDraftState(stoppedDraftState);
             return { success: true, message: "Draft stopped successfully" };
 
+        case "clearFirestoreData":
+            // Validate auth token
+            // if (!authToken || !isValidAdminToken(authToken)) {
+            //     throw new Error("Unauthorized: Invalid admin token");
+            // }
+
+            const clearVariant = variant || 'all';
+            const clearService = new FirestoreClearService();
+
+            try {
+                switch (clearVariant) {
+                    case 'all':
+                        await clearService.clearAllData();
+                        break;
+                    case 'fpl-only':
+                        await clearService.clearFplCacheOnly();
+                        break;
+                    case 'elements-only':
+                        await clearService.clearElementSummariesOnly();
+                        break;
+                    default:
+                        throw new Error(`Invalid clear variant: ${clearVariant}`);
+                }
+
+                return {
+                    success: true,
+                    message: `Firestore data cleared successfully (${clearVariant})`
+                };
+            } catch (error) {
+                console.error('Clear firestore data error:', error);
+                throw new Error(`Failed to clear firestore data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
+        case "getFirestoreStats":
+            // Validate auth token
+            // if (!authToken || !isValidAdminToken(authToken)) {
+            //     throw new Error("Unauthorized: Invalid admin token");
+            // }
+
+            try {
+                const clearService = new FirestoreClearService();
+                const [stats, estimate] = await Promise.all([
+                    clearService.getCollectionStats(),
+                    clearService.estimateClearTime()
+                ]);
+
+                return {
+                    success: true,
+                    data: { stats, estimate, timestamp: new Date().toISOString() }
+                };
+            } catch (error) {
+                console.error('Get firestore stats error:', error);
+                throw new Error(`Failed to get firestore stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
         default:
             throw new Error("Invalid action type: " + actionType);
     }
+}
+
+function isValidAdminToken(token: string): boolean {
+    const adminToken = process.env.ADMIN_TOKEN || 'admin-secret-token';
+    return token === adminToken;
 }

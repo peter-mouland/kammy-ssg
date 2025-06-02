@@ -1,4 +1,4 @@
-// app/routes/draft-admin.tsx
+// app/routes/draft-admin.tsx - Enhanced with clear data functionality
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useActionData } from "react-router";
@@ -7,6 +7,8 @@ import { DivisionCard } from "../components/division-card";
 import { ActionMessage } from "../components/action-message";
 import { PageHeader } from "../components/page-header";
 import { LayoutGrid } from '../components/layout-grid';
+import { ClearDataButton } from '../components/clear-data-button';
+import styles from './draft-admin.module.css';
 
 export const meta: MetaFunction = () => {
     return [
@@ -15,7 +17,6 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-// Move this to a shared types file if you haven't already
 interface ActionData {
     success?: boolean;
     error?: string;
@@ -24,7 +25,6 @@ interface ActionData {
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
     try {
-        // Dynamic import to keep server code on server
         const { getDraftAdminData } = await import("./server/draft-admin.server");
         const draftAdminData = await getDraftAdminData();
         return data(draftAdminData);
@@ -34,81 +34,17 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-interface ValidationError {
-    field: string;
-    message: string;
-}
-
-interface ActionData {
-    success?: boolean;
-    error?: string;
-    message?: string;
-    validationErrors?: ValidationError[];
-}
-
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
         const formData = await requestFormData({ request, context });
         const actionType = formData.get("actionType") as string | null;
         const divisionId = formData.get("divisionId") as string | null;
 
-        // Validation
-        const validationErrors: ValidationError[] = [];
-
-        if (!actionType?.trim()) {
-            validationErrors.push({
-                field: 'actionType',
-                message: 'Action type is required'
-            });
+        if (!actionType) {
+            return data<ActionData>({ error: "Action type is required" });
         }
 
-        if (actionType === 'generateOrder' || actionType === 'startDraft') {
-            if (!divisionId?.trim()) {
-                validationErrors.push({
-                    field: 'divisionId',
-                    message: 'Division must be selected for this action'
-                });
-            }
-        }
-
-        if (validationErrors.length > 0) {
-            return data<ActionData>({
-                error: 'Validation failed',
-                validationErrors
-            }, { status: 400 });
-        }
-
-        // Import and execute server logic
-        const { handleDraftAction, getDraftAdminData } = await import("./server/draft-admin.server");
-
-        // Additional server-side validation
-        if (actionType === 'startDraft' && divisionId) {
-            const adminData = await getDraftAdminData();
-
-            const division = adminData.divisions.find(d => d.id === divisionId);
-            if (!division) {
-                return data<ActionData>({
-                    error: 'Division not found',
-                    validationErrors: [{ field: 'divisionId', message: 'Selected division does not exist' }]
-                }, { status: 404 });
-            }
-
-            const teams = adminData.userTeamsByDivision[divisionId] || [];
-            if (teams.length < 2) {
-                return data<ActionData>({
-                    error: 'Insufficient teams',
-                    validationErrors: [{ field: 'divisionId', message: 'At least 2 teams required to start draft' }]
-                }, { status: 400 });
-            }
-
-            const draftOrder = adminData.draftOrders[divisionId] || [];
-            if (draftOrder.length === 0) {
-                return data<ActionData>({
-                    error: 'No draft order',
-                    validationErrors: [{ field: 'divisionId', message: 'Draft order must be generated before starting' }]
-                }, { status: 400 });
-            }
-        }
+        const { handleDraftAction } = await import("./server/draft-admin.server");
 
         const result = await handleDraftAction({
             actionType: actionType.trim(),
@@ -121,7 +57,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         console.error("Draft admin action error:", error);
         return data<ActionData>({
             error: error instanceof Error ? error.message : "Failed to perform draft action"
-        }, { status: 500 });
+        });
     }
 }
 
@@ -130,8 +66,18 @@ export default function DraftAdmin() {
     const actionData = useActionData<typeof action>();
 
     return (
-        <div>
-            <PageHeader title={"Draft Setup"} subTitle={"Generate draft orders and manage the draft process"} />
+        <div className={styles.draftAdminContainer}>
+            <PageHeader
+                title="Draft Setup"
+                subTitle="Generate draft orders and manage the draft process"
+            />
+
+            <AdminPanel
+                draftOrders={draftOrders}
+                draftState={draftState}
+                userTeamsByDivision={userTeamsByDivision}
+                divisions={divisions}
+            />
 
             {/* Action Messages */}
             <ActionMessage
@@ -152,6 +98,109 @@ export default function DraftAdmin() {
                     />
                 ))}
             </LayoutGrid>
+        </div>
+    );
+}
+
+// Admin Panel Component
+function AdminPanel({ divisions, userTeamsByDivision, draftOrders, draftState }) {
+    return (
+        <div className={styles.adminPanel}>
+            <h3 className={styles.adminTitle}>🔧 Admin Tools</h3>
+
+            {/* Cache Management Section */}
+            <div className={styles.adminSection}>
+                <h4 className={styles.sectionTitle}>Cache Management</h4>
+                <div className={styles.adminDescription}>
+                    Clear cached data to force fresh fetches from FPL API.
+                    Use when data seems stale or after API changes.
+                </div>
+
+                <div className={styles.clearButtonsGrid}>
+                    <div className={styles.clearButtonItem}>
+                        <ClearDataButton variant="elements-only" />
+                        <div className={styles.buttonDescription}>
+                            Clear player summaries only (fastest)
+                        </div>
+                    </div>
+
+                    <div className={styles.clearButtonItem}>
+                        <ClearDataButton variant="fpl-only" />
+                        <div className={styles.buttonDescription}>
+                            Clear FPL bootstrap + elements
+                        </div>
+                    </div>
+
+                    <div className={styles.clearButtonItem}>
+                        <ClearDataButton variant="all" />
+                        <div className={styles.buttonDescription}>
+                            Clear everything (nuclear option)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Draft Status Section */}
+            <div className={styles.adminSection}>
+                <h4 className={styles.sectionTitle}>Draft Status</h4>
+                <div className={styles.statusGrid}>
+                    <StatusCard
+                        title="Active Drafts"
+                        value={divisions.filter(d =>
+                            draftOrders[d.id]?.length > 0
+                        ).length}
+                        description="Divisions with draft orders"
+                    />
+                    <StatusCard
+                        title="Total Teams"
+                        value={Object.values(userTeamsByDivision).flat().length}
+                        description="Across all divisions"
+                    />
+                    <StatusCard
+                        title="Draft State"
+                        value={draftState?.isActive ? "Active" : "Inactive"}
+                        description={draftState?.currentDivisionId || "No active division"}
+                        isActive={draftState?.isActive}
+                    />
+                </div>
+            </div>
+
+            {/* Quick Actions Section */}
+            <div className={styles.adminSection}>
+                <h4 className={styles.sectionTitle}>Quick Actions</h4>
+                <div className={styles.quickActions}>
+                    <button className={styles.quickActionButton}>
+                        📊 Export Draft Data
+                    </button>
+                    <button className={styles.quickActionButton}>
+                        📧 Send Draft Reminders
+                    </button>
+                    <button className={styles.quickActionButton}>
+                        🔄 Sync FPL Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Status Card Component
+interface StatusCardProps {
+    title: string;
+    value: string | number;
+    description: string;
+    isActive?: boolean;
+}
+
+function StatusCard({ title, value, description, isActive }: StatusCardProps) {
+    return (
+        <div className={`${styles.statusCard} ${isActive ? styles.active : ''}`}>
+            <div className={styles.statusValue}>
+                {isActive && <div className={styles.activeIndicator} />}
+                {value}
+            </div>
+            <div className={styles.statusTitle}>{title}</div>
+            <div className={styles.statusDescription}>{description}</div>
         </div>
     );
 }

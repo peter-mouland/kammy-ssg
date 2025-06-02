@@ -341,7 +341,7 @@ export class FplCache {
         console.log(`📝 Writing ${entries.length} element summaries individually to avoid payload limits`);
 
         for (const [playerIdStr, data] of entries) {
-            console.log(` ...element-${playerIdStr}`);
+            // console.log(` ...element-${playerIdStr}`);
             await this.client.setDocument(
                 this.client.collections.FPL_ELEMENTS,
                 `element-${playerIdStr}`,

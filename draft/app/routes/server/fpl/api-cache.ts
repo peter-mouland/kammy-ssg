@@ -485,7 +485,6 @@ export class FplApiCache {
               position: element.draft.position,
               pointsTotal: element.draft.pointsTotal,
               pointsBreakdown: element.draft.pointsBreakdown,
-              fullBreakdown: element.draft.fullBreakdown,
           }));
     }
 

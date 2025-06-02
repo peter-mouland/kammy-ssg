@@ -71,7 +71,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
         if (!isStatRelevant(stat, position)) {
             return '-';
         }
-        return value.toString();
+        return value?.toString();
     };
     const handleSort = (field: SortField) => {
         if (sortField === field) {

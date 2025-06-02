@@ -79,7 +79,7 @@ export const DraftPlayersAvailable = ({ onSelectPlayer, availablePlayers, isUser
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        {availablePlayers.map((player) => console.log(player) || (
+                        {availablePlayers.map((player) => (
                             <div
                                 key={player.id}
                                 style={{
