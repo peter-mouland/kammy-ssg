@@ -1,4 +1,4 @@
-// app/routes/draft/draft.server.ts
+// Enhanced app/server/draft.server.ts with SSE broadcasting
 import { readDraftState, addDraftPick, getDraftPicksByDivision, updateDraftState } from './sheets/draft';
 import { getDraftOrderByDivision } from './sheets/draft-order';
 import { readDivisions } from './sheets/divisions';
@@ -7,6 +7,16 @@ import { fplApiCache } from './fpl/api-cache';
 import { getNextDraftState } from "../../lib/draft/get-next-draft-state";
 import { generateDraftSequence } from "../../lib/draft/generate-draft-sequence";
 import type { DraftPickData, DraftOrderData } from "../../types";
+
+// Import the broadcast function (using dynamic import to avoid issues)
+async function broadcastDraftEvent(event: any) {
+    try {
+        const { broadcastDraftEvent: broadcast } = await import("../api.draft.live");
+        broadcast(event);
+    } catch (error) {
+        console.error("Failed to broadcast draft event:", error);
+    }
+}
 
 export async function loadDraftData(url: URL) {
     const selectedUser = url.searchParams.get("user") || "";
@@ -92,10 +102,11 @@ export async function makeDraftPick(formData: FormData) {
         throw new Error("Player not found");
     }
 
-    const [draftState, existingPicks, draftOrder] = await Promise.all([
+    const [draftState, existingPicks, draftOrder, userTeams] = await Promise.all([
         readDraftState(),
         getDraftPicksByDivision(divisionId),
-        getDraftOrderByDivision(divisionId)
+        getDraftOrderByDivision(divisionId),
+        readUserTeams()
     ]);
 
     if (!draftState?.isActive) {
@@ -106,8 +117,15 @@ export async function makeDraftPick(formData: FormData) {
         throw new Error("Not your turn to pick");
     }
 
+    // Check if player already picked
+    const alreadyPicked = existingPicks.some(pick => pick.playerId === playerId);
+    if (alreadyPicked) {
+        throw new Error("Player has already been drafted");
+    }
+
     const pickNumber = existingPicks.length + 1;
     const round = Math.ceil(pickNumber / draftOrder.length);
+    const userName = userTeams.find(team => team.userId === userId)?.userName || 'Unknown User';
 
     const draftPick: DraftPickData = {
         pickNumber,
@@ -122,10 +140,57 @@ export async function makeDraftPick(formData: FormData) {
         divisionId
     };
 
+    // Add the pick to sheets
     await addDraftPick(draftPick);
 
+    // Calculate next draft state
     const nextDraftState = getNextDraftState(draftState, draftOrder);
     await updateDraftState(nextDraftState);
 
-    return { success: true, pick: draftPick };
+    // 🚀 Broadcast the pick to all connected clients
+    await broadcastDraftEvent({
+        type: 'pick-made',
+        data: {
+            pick: {
+                ...draftPick,
+                userName // Add userName for better UX
+            },
+            pickNumber: draftPick.pickNumber,
+            userId: draftPick.userId,
+            userName,
+            playerName: draftPick.playerName,
+            round: draftPick.round
+        },
+        divisionId
+    });
+
+    // 🚀 Broadcast turn change if draft is still active
+    if (nextDraftState.isActive) {
+        const nextUser = draftOrder.find(order => order.userId === nextDraftState.currentUserId);
+        await broadcastDraftEvent({
+            type: 'turn-change',
+            data: {
+                currentPick: nextDraftState.currentPick,
+                currentUserId: nextDraftState.currentUserId,
+                currentUserName: nextUser?.userName || 'Unknown User',
+                pickDeadline: new Date(Date.now() + 120000), // 2 minutes
+                isActive: true,
+                pickCount: pickNumber
+            },
+            divisionId
+        });
+    } else {
+        // 🚀 Broadcast draft completion
+        await broadcastDraftEvent({
+            type: 'draft-ended',
+            data: {
+                message: 'Draft completed!',
+                finalPickCount: pickNumber,
+                completedAt: nextDraftState.completedAt
+            },
+            divisionId
+        });
+    }
+
+    return { success: true, pick: { ...draftPick, userName } };
 }

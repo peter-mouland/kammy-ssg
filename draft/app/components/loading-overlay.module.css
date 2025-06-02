@@ -1,0 +1,92 @@
+.turnAlert {
+    border: 2px solid #059669;
+    background-color: rgb(240, 253, 244);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.turnTitle {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #059669;
+}
+
+.timer {
+    color: #059669;
+    font-weight: 500;
+}
+
+.submittingIndicator {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+}
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spinner {
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinner.small {
+    width: 1rem;
+    height: 1rem;
+}
+
+.spinner.medium {
+    width: 2rem;
+    height: 2rem;
+}
+
+.spinner.large {
+    width: 3rem;
+    height: 3rem;
+}
+
+.message {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.progressBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: rgba(59, 130, 246, 0.1);
+    z-index: 999;
+}
+
+.progressIndicator {
+    height: 100%;
+    background-color: #3b82f6;
+    animation: progress 2s ease-in-out infinite;
+    transform-origin: left;
+}
+
+@keyframes progress {
+    0% { transform: scaleX(0); }
+    50% { transform: scaleX(0.5); }
+    100% { transform: scaleX(1); }
+}
