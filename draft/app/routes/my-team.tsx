@@ -1,11 +1,12 @@
+// app/routes/my-team.tsx
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useActionData, Form, useSearchParams } from "react-router";
-import { readUserTeams, getUserTeamsByDivision } from "./server/sheets/userTeams";
-import { readDivisions } from "./server/sheets/divisions";
 import { requestFormData } from '../lib/form-data';
 import type { UserTeamData, DivisionData } from "../types";
 import { SelectDivision } from '../components/select-division';
+import { PageHeader } from '../components/page-header';
+import { SelectUser } from '../components/select-user';
 
 export const meta: MetaFunction = () => {
     return [
@@ -28,24 +29,12 @@ interface ActionData {
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
     try {
         const url = new URL(request.url);
-        const selectedDivision = url.searchParams.get("division");
 
-        // Fetch data in parallel
-        const [userTeams, divisions] = await Promise.all([
-            selectedDivision
-                ? getUserTeamsByDivision(selectedDivision)
-                : readUserTeams(),
-            readDivisions()
-        ]);
+        // Dynamic import to keep server code on server
+        const { getMyTeamData } = await import("./server/my-team.server");
+        const loaderData = await getMyTeamData(url);
 
-        // Sort teams by league rank
-        const sortedTeams = userTeams.sort((a, b) => a.leagueRank - b.leagueRank);
-
-        return data<LoaderData>({
-            userTeams: sortedTeams,
-            divisions,
-            selectedDivision: selectedDivision || undefined
-        });
+        return data<LoaderData>(loaderData);
 
     } catch (error) {
         console.error("My team loader error:", error);
@@ -55,26 +44,21 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
-        const formData = await requestFormData({ request, context })
-        const actionType = formData.get("actionType");
+        const formData = await requestFormData({ request, context });
 
-        switch (actionType) {
-            case "refreshRankings":
-                // This would trigger a recalculation of league rankings
-                // Implementation would depend on your specific ranking logic
-                return data<ActionData>({ success: true });
+        // Dynamic import to keep server code on server
+        const { handleMyTeamAction } = await import("./server/my-team.server");
+        const result = await handleMyTeamAction(formData);
 
-            default:
-                return data<ActionData>({ error: "Invalid action type" });
-        }
+        return data<ActionData>(result);
 
     } catch (error) {
         console.error("My team action error:", error);
-        return data<ActionData>({ error: "Failed to perform action" });
+        return data<ActionData>({
+            error: error instanceof Error ? error.message : "Failed to perform action"
+        });
     }
 }
-
-
 
 const getPositionIcon = (rank: number) => {
     if (rank === 1) return "🥇";
@@ -111,15 +95,13 @@ export default function MyTeam() {
 
     return (
         <div>
-            <div style={{ marginBottom: '2rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center' }}>
-                <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                    League Standings
-                </h1>
-                <SelectDivision divisions={divisions} selectedDivision={selectedDivision} handleDivisionChange={handleDivisionChange} />
-            </div>
+
+            <PageHeader
+                title={"League Standings"}
+                actions={
+                    <SelectDivision divisions={divisions} selectedDivision={selectedDivision} handleDivisionChange={handleDivisionChange} />
+                }
+            />
 
             {/* Action Messages */}
             {actionData?.success && (
@@ -173,13 +155,13 @@ export default function MyTeam() {
             <div className="card">
                 <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                    <h2 className="card-title">
-                        📊 League Standings
-                        {selectedDivision && ` - ${divisions.find(d => d.id === selectedDivision)?.label}`}
-                    </h2>
-                    <p style={{ color: '#6b7280', margin: '0.5rem 0 0 0' }}>
-                        {userTeams.length} teams • Last updated: {new Date().toLocaleDateString()}
-                    </p>
+                        <h2 className="card-title">
+                            📊 League Standings
+                            {selectedDivision && ` - ${divisions.find(d => d.id === selectedDivision)?.label}`}
+                        </h2>
+                        <p style={{ color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+                            {userTeams.length} teams • Last updated: {new Date().toLocaleDateString()}
+                        </p>
                     </div>
                     <Form method="post" style={{ float: 'right' }}>
                         <input type="hidden" name="actionType" value="refreshRankings" />

@@ -1,11 +1,11 @@
+// app/routes/players.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData } from "react-router";
-import { getPlayerStatsData } from "./server/player-stats.server";
 import type { PlayerStatsData } from "../types";
 import { PlayerStatsTable } from "../components/player-stats-table";
-import styles from './players.module.css';
 import { ScoringInfo } from '../components/scoring-info';
+import { PageHeader } from '../components/page-header';
 
 export const meta: MetaFunction = () => {
     return [
@@ -16,6 +16,8 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
     try {
+        // Dynamic import to keep server code on server
+        const { getPlayerStatsData } = await import("./server/players.server");
         const playerStatsData = await getPlayerStatsData();
         return data<PlayerStatsData>(playerStatsData);
     } catch (error) {
@@ -28,15 +30,14 @@ export default function Players() {
     const { players, teams, positions } = useLoaderData<typeof loader>();
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Player Statistics</h1>
-                <p className={styles.subtitle}>
-                    Comprehensive stats for all {players.length} Premier League players with custom scoring
-                </p>
+        <div>
 
-                <ScoringInfo />
-            </div>
+            <PageHeader
+                title={"Player Statistics"}
+                subTitle={`Comprehensive stats for all ${players.length} Premier League players with custom scoring`}
+            />
+
+            <ScoringInfo />
 
             <PlayerStatsTable players={players} teams={teams} positions={positions} />
         </div>

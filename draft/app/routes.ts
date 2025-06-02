@@ -18,4 +18,3 @@ export default [
 ] satisfies RouteConfig;
 
 // route("api/cron", "routes/api.cron.ts"),
-// route("player.$playerId", "routes/player.$playerId.tsx"),

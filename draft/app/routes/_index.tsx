@@ -1,8 +1,7 @@
+// app/routes/dashboard.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData } from "react-router";
-import { getDashboardData } from "./server/dashboard.server";
-import type { DashboardData } from "./server/dashboard.server";
 import { TopPlayers } from "../components/top-players";
 import { LeagueStandings } from "../components/league-standings";
 import { DivisionOverview } from "../components/division-overview";
@@ -10,7 +9,8 @@ import { QuickActions } from "../components/quick-actions";
 import { RecentActivity } from "../components/recent-activity";
 import { SystemStatus } from "../components/system-status";
 import { GameStats } from "../components/game-stats";
-import styles from './dashboard.module.css';
+import { PageHeader } from '../components/page-header';
+import { LayoutGrid } from '../components/layout-grid';
 
 export const meta: MetaFunction = () => {
     return [
@@ -21,8 +21,10 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
     try {
+        // Dynamic import to keep server code on server
+        const { getDashboardData } = await import("./server/dashboard.server");
         const dashboardData = await getDashboardData();
-        return data<DashboardData>(dashboardData);
+        return data(dashboardData);
     } catch (error) {
         console.error("Dashboard loader error:", error);
         throw new Response("Failed to load dashboard data", { status: 500 });
@@ -34,16 +36,12 @@ export default function Dashboard() {
 
     return (
         <div>
-            <div className={styles.pageHeader}>
-                <h1 className={styles.pageTitle}>
-                    Fantasy Football Draft Dashboard
-                </h1>
-                <p className={styles.pageSubtitle}>
-                    Gameweek {currentGameweek} • {divisions.length} Divisions • {leagueStandings.length}+ Teams
-                </p>
-            </div>
+            <PageHeader
+                title={"Fantasy Football Draft Dashboard"}
+                subTitle={`Gameweek ${currentGameweek} • ${divisions.length} Divisions • ${leagueStandings.length}+ Teams`}
+            />
 
-            <div className={styles.dashboardGrid}>
+            <LayoutGrid>
                 <TopPlayers players={topPlayers} />
 
                 <LeagueStandings standings={leagueStandings} />
@@ -68,7 +66,7 @@ export default function Dashboard() {
                     topPlayers={topPlayers}
                     currentGameweek={currentGameweek}
                 />
-            </div>
+            </LayoutGrid>
         </div>
     );
 }

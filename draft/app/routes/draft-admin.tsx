@@ -5,7 +5,8 @@ import { useLoaderData, useActionData } from "react-router";
 import { requestFormData } from '../lib/form-data';
 import { DivisionCard } from "../components/division-card";
 import { ActionMessage } from "../components/action-message";
-import styles from './draft-admin.module.css';
+import { PageHeader } from "../components/page-header";
+import { LayoutGrid } from '../components/layout-grid';
 
 export const meta: MetaFunction = () => {
     return [
@@ -67,14 +68,7 @@ export default function DraftAdmin() {
 
     return (
         <div>
-            <div className={styles.pageHeader}>
-                <h1 className={styles.pageTitle}>
-                    Draft Setup
-                </h1>
-                <p className={styles.pageSubtitle}>
-                    Generate draft orders and manage the draft process
-                </p>
-            </div>
+            <PageHeader title={"Draft Setup"} subTitle={"Generate draft orders and manage the draft process"} />
 
             {/* Action Messages */}
             <ActionMessage
@@ -84,7 +78,7 @@ export default function DraftAdmin() {
             />
 
             {/* Division Management */}
-            <div className={styles.divisionGrid}>
+            <LayoutGrid>
                 {divisions.map((division) => (
                     <DivisionCard
                         key={division.id}
@@ -94,7 +88,7 @@ export default function DraftAdmin() {
                         draftState={draftState}
                     />
                 ))}
-            </div>
+            </LayoutGrid>
         </div>
     );
 }

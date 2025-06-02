@@ -1,6 +1,6 @@
 // Server-only imports - these won't be included in client bundle
 import { fplApiCache } from "./fpl/api-cache";
-import { readUserTeams } from "./sheets/userTeams";
+import { readUserTeams } from "./sheets/user-teams";
 import { readDivisions } from "./sheets/divisions";
 import type { UserTeamData, DivisionData, FplPlayerData } from "../types";
 

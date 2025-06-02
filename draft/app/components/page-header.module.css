@@ -3,10 +3,16 @@
     margin-bottom: 2rem;
 }
 
+.primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .pageTitle {
     font-size: 2.25rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    line-height: 1.1;
 }
 
 .pageSubtitle {
@@ -14,19 +20,9 @@
     font-size: 1.125rem;
 }
 
-/* Division grid */
-.divisionGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .divisionGrid {
-        grid-template-columns: 1fr;
-    }
-
     .pageTitle {
         font-size: 1.875rem;
     }

@@ -292,25 +292,6 @@ export function formatPointsDisplay(points: number): string {
     return points.toString();
 }
 
-/**
- * Get points breakdown as formatted strings for display
- */
-export function getPointsBreakdownDisplay(breakdown: PointsBreakdown): Record<string, string> {
-    return {
-        appearance: formatPointsDisplay(breakdown.appearance),
-        goals: formatPointsDisplay(breakdown.goals),
-        assists: formatPointsDisplay(breakdown.assists),
-        cleanSheets: formatPointsDisplay(breakdown.cleanSheets),
-        yellowCards: formatPointsDisplay(breakdown.yellowCards),
-        redCards: formatPointsDisplay(breakdown.redCards),
-        saves: formatPointsDisplay(breakdown.saves),
-        penaltiesSaved: formatPointsDisplay(breakdown.penaltiesSaved),
-        goalsConceded: formatPointsDisplay(breakdown.goalsConceded),
-        bonus: formatPointsDisplay(breakdown.bonus),
-        total: formatPointsDisplay(breakdown.total)
-    };
-}
-
 export const getFullBreakdown = (gameweeks, position, points, stats) => {
     const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {} // ?????
     const gcByGameCount = gameweeks

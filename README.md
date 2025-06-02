@@ -40,10 +40,10 @@ app/
 │   └── sheets/
 │       ├── common.ts              # Common Google Sheets utilities
 │       ├── divisions.ts           # Divisions sheet management
-│       ├── userTeams.ts           # User teams sheet management
+│       ├── user-teams.ts           # User teams sheet management
 │       ├── draft.ts               # Draft picks & state management
-│       ├── draftOrder.ts          # Draft order management
-│       └── playerStats.ts         # Player statistics management
+│       ├── draft-order.ts          # Draft order management
+│       └── player-stats.ts         # Player statistics management
 ├── routes/
 │   ├── _index.tsx                 # Dashboard page
 │   ├── my-team.tsx                # Team management page

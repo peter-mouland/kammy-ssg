@@ -10,6 +10,7 @@ import { TeamDraft } from '../components/draft-team';
 import { DraftPlayersAvailable } from '../components/draft-players-availablle';
 import { Timer } from '../components/timer';
 import { SelectUser } from '../components/select-user';
+import { PageHeader } from '../components/page-header';
 
 export const meta: MetaFunction = () => {
     return [
@@ -81,19 +82,15 @@ export default function Draft() {
         }, { method: "post" });
     };
 
+    const h1 = <>{draftState?.isActive ? "🟢 Live " + divisions.find(d => d.id === draftState?.currentDivisionId)?.label + " Draft Room" : "⚪️ Draft Room"}</>;
     return (
         <div>
-            <div style={{
-                marginBottom: '2rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-                <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                    {draftState?.isActive ? "🟢 Live " + divisions.find(d => d.id === draftState?.currentDivisionId)?.label + " Draft Room" : "⚪️ Draft Room"}
-                </h1>
-                <SelectUser users={userTeams} selectedUser={selectedUser} handleUserChange={handleUserChange} />
-            </div>
+            <PageHeader
+                title={h1}
+                actions={
+                    <SelectUser users={userTeams} selectedUser={selectedUser} handleUserChange={handleUserChange} />
+                }
+            />
 
             {/* Your Turn Alert */}
             {isUserTurn && (
@@ -121,7 +118,7 @@ export default function Draft() {
                                            isUserTurn={isUserTurn} />
 
                     {/* Right Column */}
-                    <div  style={{ display: 'grid', gridTemplateRows: '0.7fr 1.3fr', gap: '2rem' }}>
+                    <div style={{ display: 'grid', gridTemplateRows: '0.7fr 1.3fr', gap: '2rem' }}>
                         {/* Draft Order */}
                         <DraftOrder draftOrder={draftOrder} draftPicks={draftPicks} draftSequence={draftSequence}
                                     draftState={draftState} />
@@ -132,7 +129,7 @@ export default function Draft() {
                 </div>
                 : null
             }
-           <TeamDraft draftPicks={draftPicks} draftOrder={draftOrder} />
+            <TeamDraft draftPicks={draftPicks} draftOrder={draftOrder} />
         </div>
     );
 }
