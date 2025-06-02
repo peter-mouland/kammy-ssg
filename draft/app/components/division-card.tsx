@@ -1,4 +1,5 @@
-import { Form } from "react-router";
+import { useState } from 'react';
+import { Form, useFetcher } from "react-router";
 import styles from './division-card.module.css';
 import type { DivisionData, UserTeamData, DraftOrderData, DraftStateData } from "../types";
 
@@ -84,6 +85,17 @@ const formatDate = (dateString: string | Date): string => {
 };
 
 export function DivisionCard({ division, teams, orders, draftState }: DivisionCardProps) {
+    const fetcher = useFetcher<ActionData>();
+    const isLoading = fetcher.state === "submitting";
+    const validationErrors = fetcher.data?.validationErrors || [];
+
+    const handleAction = (actionType: string) => {
+        fetcher.submit(
+            { actionType, divisionId: division.id },
+            { method: "post" }
+        );
+    };
+
     const isActive = !!(draftState?.isActive && draftState.currentDivisionId === division.id);
     const divisionStatus = getDivisionStatus(
         division.id,
@@ -119,13 +131,14 @@ export function DivisionCard({ division, teams, orders, draftState }: DivisionCa
                     <Form method="post" style={{ display: 'inline' }}>
                         <input type="hidden" name="divisionId" value={division.id} />
                         <button
+                            onClick={() => handleAction(divisionStatus.action)}
                             type="submit"
                             className={buttonClasses}
                             name="actionType"
                             value={divisionStatus.action}
-                            disabled={divisionStatus.disabled}
+                            disabled={divisionStatus.disabled || isLoading}
                         >
-                            {divisionStatus.status}
+                            {isLoading ? 'loading...' : divisionStatus.status}
                         </button>
                     </Form>
                 </div>
@@ -134,6 +147,24 @@ export function DivisionCard({ division, teams, orders, draftState }: DivisionCa
                     {teams.length} teams {orders.length > 0 ? '' : ' • No order yet'}
                 </div>
             </div>
+
+
+            {/* Validation errors */}
+            {validationErrors.length > 0 && (
+                <div style={{
+                    backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    color: '#dc2626',
+                    padding: '0.75rem',
+                    borderRadius: '0.375rem',
+                    marginBottom: '1rem',
+                    fontSize: '0.875rem'
+                }}>
+                    {validationErrors.map((error, index) => (
+                        <div key={index}>• {error.message}</div>
+                    ))}
+                </div>
+            )}
 
             {/* Draft Order */}
             {orders.length > 0 && (

@@ -116,7 +116,7 @@ export async function makeDraftPick(formData: FormData) {
         playerId: player.id.toString(),
         playerName: `${player.first_name} ${player.second_name}`,
         team: `Team ${player.team}`,
-        position: player.element_type.toString(),
+        position: player.position?.toString(),
         price: player.now_cost / 10,
         pickedAt: new Date(),
         divisionId
