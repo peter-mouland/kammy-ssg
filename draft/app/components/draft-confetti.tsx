@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { playCelebrationSound } from '../lib/audio/celebration-sounds';
 
 interface ConfettiProps {
     show: boolean;
     onComplete?: () => void;
     duration?: number;
+    playSound?: boolean;
 }
 
 interface ConfettiPiece {
@@ -18,7 +20,7 @@ interface ConfettiPiece {
     rotationSpeed: number;
 }
 
-export function DraftConfetti({ show, onComplete, duration = 3000 }: ConfettiProps) {
+export function DraftConfetti({ show, onComplete, duration = 3000, playSound = true }: ConfettiProps) {
     const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
     const [isActive, setIsActive] = useState(false);
 
@@ -49,6 +51,14 @@ export function DraftConfetti({ show, onComplete, duration = 3000 }: ConfettiPro
 
         setIsActive(true);
 
+        // Play celebration sound when confetti starts
+        if (playSound) {
+            // Small delay to ensure user interaction has occurred
+            setTimeout(() => {
+                playCelebrationSound();
+            }, 100);
+        }
+
         // Create initial burst of confetti
         const initialConfetti = Array.from({ length: 50 }, (_, i) => createConfettiPiece(i));
         setConfetti(initialConfetti);
@@ -77,7 +87,7 @@ export function DraftConfetti({ show, onComplete, duration = 3000 }: ConfettiPro
             clearInterval(addInterval);
             clearTimeout(stopTimeout);
         };
-    }, [show, duration, onComplete]);
+    }, [show, duration, onComplete, playSound]);
 
     useEffect(() => {
         if (!isActive || confetti.length === 0) return;
@@ -114,7 +124,7 @@ export function DraftConfetti({ show, onComplete, duration = 3000 }: ConfettiPro
         }}>
             {confetti.map(piece => (
                 <div
-                    key={piece.id + '+' + piece.x}
+                    key={piece.id + piece.x}
                     style={{
                         position: 'absolute',
                         left: piece.x,

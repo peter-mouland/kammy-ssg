@@ -1,4 +1,4 @@
-// app/routes/draft.tsx - Updated with Firebase toast integration
+// app/routes/draft.tsx - Refactored with components and CSS modules
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useFetcher, useSearchParams, useNavigation, useActionData, useRevalidator } from "react-router";
@@ -21,6 +21,14 @@ import { ConnectionStatus, ConnectionAlert } from '../components/connection-stat
 import { LoadingOverlay, LoadingSpinner, TurnAlert } from '../components/loading-overlay';
 import { DraftWithFirebase } from '../components/draft-firebase-handler';
 import { DraftConfetti } from '../components/draft-confetti';
+
+// Audio imports
+import {
+    playCelebrationSound,
+    playPickSuccessSound,
+    playErrorSound,
+    playYourTurnSound
+} from '../lib/audio/celebration-sounds';
 
 // Hooks
 import { useOptimisticPicks } from '../lib/draft/use-optimistic-picks';
@@ -53,6 +61,8 @@ interface ActionData {
     success?: boolean;
     error?: string;
     pick?: DraftPickData;
+    action?: string;
+    removedCount?: number;
 }
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
@@ -175,6 +185,11 @@ export default function Draft() {
                 type: 'warning',
                 duration: 6000 // Longer duration for turn notifications
             });
+
+            // Play your turn sound
+            setTimeout(() => {
+                playYourTurnSound();
+            }, 100);
         }
 
         // Update the ref for next comparison
@@ -202,23 +217,35 @@ export default function Draft() {
                 type: 'success',
                 duration: 8000
             });
+
+            // Note: Celebration sound will be played by the confetti component
         }
 
         previousDraftCompleteRef.current = currentDraftComplete;
     }, [optimisticPicks.length, loaderData.draftOrder.length, loaderData.draftState, showToast]);
 
-    // Handle action responses (your own picks)
+    // Handle action responses (your own picks and removals)
     useEffect(() => {
         if (actionData?.success && actionData.pick) {
             showToast({
                 message: `${actionData.pick.playerName} drafted successfully!`,
                 type: 'success'
             });
+
+            // Play success sound for your own picks
+            setTimeout(() => {
+                playPickSuccessSound();
+            }, 100);
         } else if (actionData?.error) {
             showToast({
                 message: actionData.error,
                 type: 'error'
             });
+
+            // Play error sound
+            setTimeout(() => {
+                playErrorSound();
+            }, 100);
         }
     }, [actionData, showToast]);
 
@@ -229,18 +256,34 @@ export default function Draft() {
                 message: `${fetcher.data.pick.playerName} drafted successfully!`,
                 type: 'success'
             });
+
+            // Play success sound for your own picks
+            setTimeout(() => {
+                playPickSuccessSound();
+            }, 100);
         } else if (fetcher.data?.success && fetcher.data.action === 'removeLastPick') {
+            const removedCount = fetcher.data.removedCount || 1;
+            const totalClicks = removePickCount + 1;
             showToast({
-                message: `✅ Removed last pick`,
+                message: `✅ Removed 1 pick (${totalClicks} ${totalClicks === 1 ? 'removal' : 'removals'} total)`,
                 type: 'success'
             });
+            // Don't reset the counter here - let it continue to track total removals
         } else if (fetcher.data?.error) {
             showToast({
                 message: fetcher.data.error,
                 type: 'error'
             });
+
+            // Play error sound
+            setTimeout(() => {
+                playErrorSound();
+            }, 100);
+
+            // Reset remove counter on error
+            setRemovePickCount(0);
         }
-    }, [fetcher.data, showToast]);
+    }, [fetcher.data, showToast, removePickCount]);
 
     const handleUserChange = useCallback((userId: string) => {
         setSearchParams(prev => {
@@ -303,21 +346,32 @@ export default function Draft() {
             return;
         }
 
+        // Increment remove count for UI display
+        const newCount = removePickCount + 1;
+        setRemovePickCount(newCount);
+
+        // Clear existing timeout
         if (removePickTimeoutRef.current) {
             clearTimeout(removePickTimeoutRef.current);
         }
 
-        // Show progressive toast
+        // Show progressive toast - but always remove only 1 pick
         showToast({
-            message: `Remove last pick`,
+            message: `Removing 1 pick... (${newCount} ${newCount === 1 ? 'click' : 'clicks'} total)`,
             type: 'warning',
             duration: 3000
         });
 
-        // Submit removal request
+        // Set timeout to reset count if no more clicks
+        removePickTimeoutRef.current = setTimeout(() => {
+            setRemovePickCount(0);
+        }, 3000);
+
+        // Submit removal request - ALWAYS remove only 1 pick per click
         fetcher.submit({
             actionType: "removeLastPick",
             divisionId: loaderData.selectedDivision,
+            removeCount: "1" // Always remove just 1 pick per click
         }, { method: "post" });
     }, [
         loaderData.selectedDivision,
@@ -398,11 +452,11 @@ export default function Draft() {
                                             onClick={handleRemoveLastPick}
                                             disabled={isSubmitting}
                                             className={styles.removePickButton}
-                                            title={`Remove last ${removePickCount + 1} pick${removePickCount > 0 ? 's' : ''}`}
+                                            title={`Remove 1 pick (clicked ${removePickCount + 1} ${removePickCount === 0 ? 'time' : 'times'})`}
                                         >
                                             🗑️ Remove Last Pick
                                             {removePickCount > 0 && (
-                                                <span className={styles.removeCount}>({removePickCount + 1})</span>
+                                                <span className={styles.removeCount}>×{removePickCount + 1}</span>
                                             )}
                                         </button>
                                     )}
@@ -490,7 +544,7 @@ export default function Draft() {
                         {process.env.NODE_ENV === 'development' && (
                             <details className={styles.debugInfo}>
                                 <summary className={styles.debugSummary}>
-                                    Debug Info (Firebase Toast Integration)
+                                    Debug Info (Complete Audio Integration)
                                 </summary>
                                 <pre className={styles.debugContent}>
                                     {JSON.stringify({
@@ -507,10 +561,9 @@ export default function Draft() {
                                         fetcherState: fetcher.state,
                                         currentPickCount: loaderData.draftPicks.length,
                                         previousPickCount: previousPickCountRef.current,
-                                        isUserTurn: loaderData.isUserTurn,
-                                        previousIsUserTurn: previousIsUserTurnRef.current,
+                                        removePickCount: removePickCount,
                                         draftActive: loaderData.draftState?.isActive,
-                                        components: 'Firebase toast integration + turn notifications + remove last pick'
+                                        components: 'Firebase toast integration + turn notifications + remove last pick + audio'
                                     }, null, 2)}
                                 </pre>
                             </details>
