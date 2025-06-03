@@ -274,3 +274,35 @@
 .tableContainer::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
+
+.playerLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+.playerLink:hover {
+    color: #2563eb;
+    background-color: #f8fafc;
+}
+
+.playerLink:hover .playerName {
+    text-decoration: underline;
+}
+
+.playerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.playerName {
+    font-weight: 500;
+    font-size: 0.95em;
+}
+
+.playerTeam {
+    font-size: 0.8em;
+    color: #64748b;
+}

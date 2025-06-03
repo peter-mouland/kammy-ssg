@@ -1,0 +1,195 @@
+/* app/components/player-highlights.module.css */
+.highlightsContainer {
+    margin: 24px 0;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.statCard {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.statTitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.statValue {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.statSubtitle {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.customPoints .statValue {
+    color: #2563eb;
+}
+
+.fplPoints .statValue {
+    color: #7c3aed;
+}
+
+.games .statValue {
+    color: #0891b2;
+}
+
+.goodForm .statValue {
+    color: #059669;
+}
+
+.averageForm .statValue {
+    color: #d97706;
+}
+
+.poorForm .statValue {
+    color: #dc2626;
+}
+
+.performanceSection {
+    margin: 24px 0;
+}
+
+.performanceBars {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.performanceBar {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.barHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.barLabel {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.barValue {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.barContainer {
+    display: flex;
+    height: 24px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.barSegment, .barFull {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    transition: all 0.3s ease;
+}
+
+.segmentLabel {
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.disciplineCompact {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.disciplineItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.disciplineIcon {
+    font-size: 16px;
+}
+
+.insightsSection {
+    margin: 32px 0;
+}
+
+.insights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.insight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.insightIcon {
+    font-size: 18px;
+}
+
+.insightText {
+    color: #1e293b;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .performanceGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .insights {
+        grid-template-columns: 1fr;
+    }
+}

@@ -70,3 +70,88 @@ export interface EnhancedPlayerDataWithMetadata extends EnhancedPlayerData {
         };
     };
 }
+
+// Add these types to your existing types.ts file
+
+export interface GameweekStatWithPoints {
+    gameweek: number;
+    // Basic stats
+    minutes: number;
+    goals: number;
+    assists: number;
+    cleanSheets: number;
+    goalsConceded: number;
+    yellowCards: number;
+    redCards: number;
+    saves: number;
+    penaltiesSaved: number;
+    bonus: number;
+
+    // Match info
+    opponent: number;
+    opponentName: string;
+    wasHome: boolean;
+    teamHScore: number;
+    teamAScore: number;
+
+    // Points breakdown
+    customPoints: {
+        appearance: number;
+        goals: number;
+        assists: number;
+        cleanSheets: number;
+        goalsConceded: number;
+        yellowCards: number;
+        redCards: number;
+        saves: number;
+        penaltiesSaved: number;
+        bonus: number;
+        total: number;
+    } | null;
+
+    // FPL original points
+    fplPoints: number;
+
+    // Metadata
+    generatedAt: string | null;
+}
+
+export interface PlayerDetailData {
+    player: FplPlayerData;
+    team: {
+        id: number;
+        name: string;
+        short_name: string;
+    };
+    position: string;
+    gameweekStats: GameweekStatWithPoints[];
+    seasonTotals: {
+        // Basic stats
+        gamesPlayed: number;
+        totalMinutes: number;
+        goals: number;
+        assists: number;
+        cleanSheets: number;
+        goalsConceded: number;
+        yellowCards: number;
+        redCards: number;
+        saves: number;
+        penaltiesSaved: number;
+        bonus: number;
+
+        // Points
+        totalFplPoints: number;
+        totalCustomPoints: number;
+
+        // Averages
+        averageMinutes: number;
+        averageFplPoints: number;
+        averageCustomPoints: number;
+
+        // Performance metrics
+        goalsPerGame: number;
+        assistsPerGame: number;
+        cleanSheetPercentage: number;
+    };
+    currentGameweek: number;
+}

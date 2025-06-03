@@ -1,0 +1,72 @@
+/* app/routes/player-detail.module.css */
+.playerDetailContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.breadcrumb {
+    margin-bottom: 20px;
+}
+
+.breadcrumbLink {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 14px;
+    transition: opacity 0.2s ease;
+}
+
+.breadcrumbLink:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.playerMeta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.position {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.team {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.price {
+    background: #dcfce7;
+    color: #059669;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.gameweekSection {
+    margin-top: 32px;
+}
+
+.sectionTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.gameweekCount {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: normal;
+}

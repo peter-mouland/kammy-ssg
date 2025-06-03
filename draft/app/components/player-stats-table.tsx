@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router";
 import styles from './player-stats-table.module.css';
 import { PointsBreakdownTooltip } from './points-breakdown-tooltip';
 import type { EnhancedPlayerData } from "../types";
@@ -203,13 +204,20 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                             <td className={`${styles.position} ${styles[player.draft.position.toLowerCase()]}`}>
                                 {player.draft.position}
                             </td>
-                            <td className={styles.playerName}>
-                                <div>
-                                    <div className={styles.webName}>{player.web_name}</div>
-                                    <div className={styles.fullName}>
-                                        {player.first_name} {player.second_name}
+                            <td className={styles.nameCell}>
+                                <Link
+                                    to={`/players/${player.id}`}
+                                    className={styles.playerLink}
+                                >
+                                    <div className={styles.playerInfo}>
+                                        <span className={styles.playerName}>
+                                            {player.first_name} {player.second_name}
+                                        </span>
+                                                                    <span className={styles.playerTeam}>
+                                            {teams[player.team]?.short_name || 'Unknown'}
+                                        </span>
                                     </div>
-                                </div>
+                                </Link>
                             </td>
                             <td className={styles.teamName}>{player.team_name}</td>
                             <td className={styles.form}>{player.form}</td>
