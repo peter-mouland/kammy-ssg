@@ -187,7 +187,31 @@ export async function handleDraftAction(params: DraftActionParams) {
                 console.error('Get firestore stats error:', error);
                 throw new Error(`Failed to get firestore stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
+        case "syncDraft":
+            if (!divisionId) {
+                throw new Error("Division ID is required");
+            }
 
+            try {
+                console.log(`🔄 Syncing draft for division: ${divisionId}`);
+
+                // Import Firebase sync
+                const { FirebaseDraftSync } = await import('./firestore-cache/firebase-draft-sync');
+
+                // Sync the draft state from sheets to Firebase
+                const syncResult = await FirebaseDraftSync.syncDraftFromSheets(divisionId);
+
+                return {
+                    success: true,
+                    message: `Draft synced for division ${divisionId}! ${syncResult.picksCount} picks, current pick: ${syncResult.currentPick}`,
+                    data: syncResult
+                };
+            } catch (error) {
+                console.error('Sync draft error:', error);
+                throw new Error(`Failed to sync draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
+        default:
         default:
             throw new Error("Invalid action type: " + actionType);
     }

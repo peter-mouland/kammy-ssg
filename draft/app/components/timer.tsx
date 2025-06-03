@@ -1,6 +1,7 @@
 
 // Mock timer for pick deadline
 import { useEffect, useState } from 'react';
+import styles from './timer.module.css'
 
 
 const formatTime = (seconds: number) => {
@@ -21,7 +22,7 @@ export const Timer = ({ minutesPerPick = 5 }) => {
     }, []);
 
     return (
-        <div style={{ animation: timeRemaining < 30 ? "tilt-n-move-shaking 0.25s linear infinite" : "" }}>
+        <div className={ timeRemaining < 30 ? styles.attentionImportantShake : timeRemaining < 120 ? styles.attentionShake : ''}>
             <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.15rem' }}>
                 <span style={{
                     fontSize: '1.125rem',

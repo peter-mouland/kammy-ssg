@@ -62,7 +62,6 @@ interface ActionData {
     error?: string;
     pick?: DraftPickData;
     action?: string;
-    removedCount?: number;
 }
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
@@ -121,7 +120,6 @@ export default function Draft() {
 
     // Track previous pick count to detect new picks from Firebase
     const previousPickCountRef = useRef(loaderData.draftPicks.length);
-    const [lastProcessedPick, setLastProcessedPick] = useState<DraftPickData | null>(null);
 
     // Track turn changes to show "It's your turn" toast
     const previousIsUserTurnRef = useRef(loaderData.isUserTurn);
@@ -129,10 +127,6 @@ export default function Draft() {
     // Track draft completion for celebration
     const [showDraftCompleteConfetti, setShowDraftCompleteConfetti] = useState(false);
     const previousDraftCompleteRef = useRef(false);
-
-    // Track remove pick attempts for progressive removal
-    const [removePickCount, setRemovePickCount] = useState(0);
-    const removePickTimeoutRef = useRef<NodeJS.Timeout>();
 
     // Optimistic updates
     const { optimisticPicks, addOptimisticPick, hasOptimisticPicks } = useOptimisticPicks(loaderData.draftPicks);
@@ -233,9 +227,7 @@ export default function Draft() {
             });
 
             // Play success sound for your own picks
-            setTimeout(() => {
-                playPickSuccessSound();
-            }, 100);
+            setTimeout(() => playPickSuccessSound(), 100);
         } else if (actionData?.error) {
             showToast({
                 message: actionData.error,
@@ -243,9 +235,7 @@ export default function Draft() {
             });
 
             // Play error sound
-            setTimeout(() => {
-                playErrorSound();
-            }, 100);
+            setTimeout(() => playErrorSound(), 100);
         }
     }, [actionData, showToast]);
 
@@ -258,17 +248,7 @@ export default function Draft() {
             });
 
             // Play success sound for your own picks
-            setTimeout(() => {
-                playPickSuccessSound();
-            }, 100);
-        } else if (fetcher.data?.success && fetcher.data.action === 'removeLastPick') {
-            const removedCount = fetcher.data.removedCount || 1;
-            const totalClicks = removePickCount + 1;
-            showToast({
-                message: `✅ Removed 1 pick (${totalClicks} ${totalClicks === 1 ? 'removal' : 'removals'} total)`,
-                type: 'success'
-            });
-            // Don't reset the counter here - let it continue to track total removals
+            setTimeout(() => playPickSuccessSound(), 100);
         } else if (fetcher.data?.error) {
             showToast({
                 message: fetcher.data.error,
@@ -276,14 +256,9 @@ export default function Draft() {
             });
 
             // Play error sound
-            setTimeout(() => {
-                playErrorSound();
-            }, 100);
-
-            // Reset remove counter on error
-            setRemovePickCount(0);
+            setTimeout(() => playErrorSound(), 100);
         }
-    }, [fetcher.data, showToast, removePickCount]);
+    }, [fetcher.data, showToast]);
 
     const handleUserChange = useCallback((userId: string) => {
         setSearchParams(prev => {
@@ -337,47 +312,6 @@ export default function Draft() {
         isSubmitting,
         optimisticPicks.length,
         addOptimisticPick,
-        fetcher,
-        showToast
-    ]);
-
-    const handleRemoveLastPick = useCallback(() => {
-        if (!loaderData.selectedDivision || isSubmitting || optimisticPicks.length === 0) {
-            return;
-        }
-
-        // Increment remove count for UI display
-        const newCount = removePickCount + 1;
-        setRemovePickCount(newCount);
-
-        // Clear existing timeout
-        if (removePickTimeoutRef.current) {
-            clearTimeout(removePickTimeoutRef.current);
-        }
-
-        // Show progressive toast - but always remove only 1 pick
-        showToast({
-            message: `Removing 1 pick... (${newCount} ${newCount === 1 ? 'click' : 'clicks'} total)`,
-            type: 'warning',
-            duration: 3000
-        });
-
-        // Set timeout to reset count if no more clicks
-        removePickTimeoutRef.current = setTimeout(() => {
-            setRemovePickCount(0);
-        }, 3000);
-
-        // Submit removal request - ALWAYS remove only 1 pick per click
-        fetcher.submit({
-            actionType: "removeLastPick",
-            divisionId: loaderData.selectedDivision,
-            removeCount: "1" // Always remove just 1 pick per click
-        }, { method: "post" });
-    }, [
-        loaderData.selectedDivision,
-        isSubmitting,
-        optimisticPicks.length,
-        removePickCount,
         fetcher,
         showToast
     ]);
@@ -446,20 +380,6 @@ export default function Draft() {
                                         handleUserChange={handleUserChange}
                                     />
 
-                                    {/* Remove Last Pick Button - Admin/Debug Feature */}
-                                    {(process.env.NODE_ENV === 'development' || loaderData.currentUser === 'admin') && optimisticPicks.length > 0 && (
-                                        <button
-                                            onClick={handleRemoveLastPick}
-                                            disabled={isSubmitting}
-                                            className={styles.removePickButton}
-                                            title={`Remove 1 pick (clicked ${removePickCount + 1} ${removePickCount === 0 ? 'time' : 'times'})`}
-                                        >
-                                            🗑️ Remove Last Pick
-                                            {removePickCount > 0 && (
-                                                <span className={styles.removeCount}>×{removePickCount + 1}</span>
-                                            )}
-                                        </button>
-                                    )}
                                 </div>
                             }
                         />
@@ -561,9 +481,8 @@ export default function Draft() {
                                         fetcherState: fetcher.state,
                                         currentPickCount: loaderData.draftPicks.length,
                                         previousPickCount: previousPickCountRef.current,
-                                        removePickCount: removePickCount,
                                         draftActive: loaderData.draftState?.isActive,
-                                        components: 'Firebase toast integration + turn notifications + remove last pick + audio'
+                                        components: 'Firebase toast integration + turn notifications + audio'
                                     }, null, 2)}
                                 </pre>
                             </details>

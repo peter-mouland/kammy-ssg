@@ -158,6 +158,147 @@ export class FirebaseDraftSync {
         }
     }
 
+    // Add this to your FirebaseDraftSync class in firebase-draft-sync.ts
+
+// Sync current draft state from Google Sheets to Firebase
+    static async syncDraftFromSheets(divisionId: string) {
+        try {
+            console.log(`🔥 Syncing draft state from sheets to Firebase for division: ${divisionId}`);
+
+            // Import sheets functions to get current state
+            const { readDraftState, getDraftPicksByDivision } = await import('../sheets/draft');
+            const { getDraftOrderByDivision } = await import('../sheets/draft-order');
+
+            // Get current data from sheets
+            const [draftState, draftPicks, draftOrder] = await Promise.all([
+                readDraftState(),
+                getDraftPicksByDivision(divisionId),
+                getDraftOrderByDivision(divisionId)
+            ]);
+
+            if (!draftState) {
+                throw new Error('No draft state found in sheets');
+            }
+
+            if (draftOrder.length === 0) {
+                throw new Error('No draft order found for this division');
+            }
+
+            // Calculate the correct current state based on picks made
+            const picksCount = draftPicks.length;
+            const totalTeams = draftOrder.length;
+            const picksPerTeam = draftState.picksPerTeam || 15;
+            const totalPossiblePicks = totalTeams * picksPerTeam;
+
+            // Determine whose turn it is based on picks made
+            let currentPick = picksCount + 1;
+            let currentUserId = draftState.currentUserId;
+            let isActive = draftState.isActive && currentPick <= totalPossiblePicks;
+
+            if (isActive && currentPick <= totalPossiblePicks) {
+                // Calculate whose turn it is using snake draft logic
+                const currentRound = Math.ceil(currentPick / totalTeams);
+                const positionInRound = ((currentPick - 1) % totalTeams) + 1;
+
+                let actualPosition: number;
+                if (currentRound % 2 === 0) {
+                    // Even rounds: reverse order (snake draft)
+                    actualPosition = totalTeams - positionInRound + 1;
+                } else {
+                    // Odd rounds: normal order
+                    actualPosition = positionInRound;
+                }
+
+                const currentUser = draftOrder.find(order => order.position === actualPosition);
+                if (currentUser) {
+                    currentUserId = currentUser.userId;
+                }
+            }
+
+            // Update Firebase with the correct state
+            const firebaseState = {
+                currentPick,
+                currentUserId,
+                isActive,
+                totalPicks: totalPossiblePicks,
+                lastUpdate: Date.now(),
+                syncedFromSheets: true
+            };
+
+            await this.updateDraftState(divisionId, firebaseState);
+
+            // Initialize the draft structure if needed
+            const draftRef = adminDatabase.ref(`drafts/${divisionId}`);
+            const draftSnapshot = await draftRef.once('value');
+
+            if (!draftSnapshot.exists()) {
+                // Initialize the complete draft structure
+                await this.initializeDraft(divisionId, {
+                    currentPick,
+                    currentUserId,
+                    isActive,
+                    lastUpdate: Date.now(),
+                    totalPicks: totalPossiblePicks
+                });
+            }
+
+            // Sync existing picks to Firebase
+            if (draftPicks.length > 0) {
+                console.log(`🔥 Syncing ${draftPicks.length} existing picks to Firebase`);
+
+                for (const pick of draftPicks) {
+                    await this.updateDraftPick(divisionId, pick.pickNumber, {
+                        pickNumber: pick.pickNumber,
+                        round: pick.round,
+                        userId: pick.userId,
+                        playerId: pick.playerId,
+                        playerName: pick.playerName,
+                        team: pick.team,
+                        position: pick.position,
+                        price: pick.price,
+                        pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt,
+                        divisionId: pick.divisionId,
+                        timestamp: Date.now()
+                    });
+                }
+            }
+
+            // Add sync event
+            await this.addDraftEvent(divisionId, {
+                type: 'draft-synced',
+                data: {
+                    message: 'Draft synced from Google Sheets',
+                    picksCount,
+                    currentPick,
+                    currentUserId,
+                    isActive,
+                    timestamp: new Date().toISOString()
+                }
+            });
+
+            console.log(`🔥 ✅ Draft sync completed for division ${divisionId}:`, {
+                picksCount,
+                currentPick,
+                currentUserId,
+                isActive,
+                totalPossiblePicks
+            });
+
+            return {
+                success: true,
+                picksCount,
+                currentPick,
+                currentUserId,
+                isActive,
+                totalPossiblePicks
+            };
+
+        } catch (error) {
+            console.error(`🔥 ❌ Draft sync failed for division ${divisionId}:`, error);
+            throw error;
+        }
+    }
+
     // Initialize draft
     static async initializeDraft(divisionId: string, initialState: DraftState) {
         try {

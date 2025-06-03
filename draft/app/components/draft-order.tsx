@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { DraftConfetti } from './draft-confetti';
 import { useToast } from './toast-manager';
+import styles from './draft-order.module.css';
 
 export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }) {
     const { showToast } = useToast();
@@ -62,7 +63,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
     }, [draftState?.isActive, draftPicks.length]);
 
     return (
-        <div className="draft-order">
+        <div className="card">
             {/* Confetti Component */}
             <DraftConfetti
                 show={showConfetti}
@@ -71,28 +72,27 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
             />
 
             {/* Draft Order Header */}
-            <div className="draft-order-header">
-                <h3>Draft Order</h3>
+            <div className="card-header">
+                <h2 className="card-title">Draft Order</h2>
+            </div>
+
+            <div>
 
                 {/* Next Picker or Completion Status */}
                 {draftState?.isActive && (
-                    <div className="draft-status">
+                    <div className={styles.draftStatus}>
                         {draftComplete ? (
-                            <div className="draft-complete-status">
-                                <span className="complete-icon">🏁</span>
-                                <span className="complete-text">DRAFT COMPLETE!</span>
-                                <div className="complete-subtext">
+                            <div className={styles.draftCompleteStatus}>
+                                <span className={styles.completeIcon}>🏁</span>
+                                <span className={styles.completeText}>DRAFT COMPLETE!</span>
+                                <div className={styles.completeSubtext}>
                                     {draftPicks.length} picks made • All teams are set!
                                 </div>
                             </div>
                         ) : nextPicker ? (
-                            <div className="next-picker">
-                                <span className="up-next-label">Up Next:</span>
-                                <span className="next-picker-name">{nextPicker.userName}</span>
-                                <span className="pick-number">Pick #{nextPicker.pickNumber}</span>
-                            </div>
+                            null
                         ) : (
-                            <div className="draft-loading">
+                            <div className={styles.draftLoading}>
                                 <span>Calculating next pick...</span>
                             </div>
                         )}
@@ -101,125 +101,53 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
             </div>
 
             {/* Rest of your existing draft order component */}
-            <div className="draft-order-list">
+            <ul className={styles.draftOrderList}>
                 {draftOrder.map((user, index) => (
-                    <div
+                    <li
                         key={user.userId}
-                        className={`draft-order-item ${
-                            user.userId === draftState?.currentUserId ? 'current-turn' : ''
+                        className={`${styles.draftOrderItem} ${
+                            user.userId === draftState?.currentUserId ? styles.currentTurn : ''
                         } ${
-                            user.userId === nextPicker?.userId ? 'next-turn' : ''
+                            user.userId === nextPicker?.userId ? styles.nextTurn : ''
                         }`}
                     >
-                        <div className="order-position">#{index + 1}</div>
-                        <div className="user-info">
-                            <div className="user-name">{user.userName}</div>
-                            <div className="team-name">{user.teamName}</div>
+                        <div className={styles.orderPosition}>#{index + 1}</div>
+                        <div className={styles.userInfo}>
+                            <div className={styles.userName}>{user.userName}</div>
+                            <div className={styles.teamName}>{user.teamName}</div>
                         </div>
                         {user.userId === draftState?.currentUserId && !draftComplete && (
-                            <div className="turn-indicator">
-                                <span className="picking-now">Picking Now</span>
+                            <div className={styles.turnIndicator}>
+                                <span className={styles.pickingNow}>⏰ on clock</span>
                             </div>
                         )}
                         {user.userId === nextPicker?.userId && !draftComplete && (
-                            <div className="next-indicator">
-                                <span className="on-deck">On Deck</span>
+                            <div className={styles.nextIndicator}>
+                                <span className={styles.onDeck}>Get Ready...</span>
                             </div>
                         )}
-                    </div>
+                    </li>
                 ))}
-            </div>
+            </ul>
 
             {/* Draft Progress */}
             {draftState?.isActive && (
-                <div className="draft-progress">
-                    <div className="progress-bar">
+                <div className={styles.draftProgress}>
+                    <div className={styles.progressBar}>
                         <div
-                            className="progress-fill"
+                            className={styles.progressFill}
                             style={{
                                 width: `${(draftPicks.length / draftSequence.length) * 100}%`,
                                 backgroundColor: draftComplete ? '#10ac84' : '#45b7d1'
                             }}
                         />
                     </div>
-                    <div className="progress-text">
+                    <div className={styles.progressText}>
                         {draftPicks.length} of {draftSequence.length} picks complete
-                        {draftComplete && <span className="complete-badge"> ✓ DONE</span>}
+                        {draftComplete && <span className={styles.completeBadge}> ✓ DONE</span>}
                     </div>
                 </div>
             )}
-
-            <style jsx>{`
-                .draft-complete-status {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    padding: 1rem;
-                    background: linear-gradient(135deg, #10ac84, #00d2d3);
-                    border-radius: 0.5rem;
-                    color: white;
-                    text-align: center;
-                    animation: celebrationPulse 2s ease-in-out infinite;
-                }
-
-                .complete-icon {
-                    font-size: 2rem;
-                    margin-bottom: 0.5rem;
-                }
-
-                .complete-text {
-                    font-size: 1.25rem;
-                    font-weight: bold;
-                    margin-bottom: 0.25rem;
-                }
-
-                .complete-subtext {
-                    font-size: 0.875rem;
-                    opacity: 0.9;
-                }
-
-                .progress-fill {
-                    transition: all 0.3s ease;
-                }
-
-                .complete-badge {
-                    color: #10ac84;
-                    font-weight: bold;
-                }
-
-                @keyframes celebrationPulse {
-                    0%, 100% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                }
-
-                .next-picker {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    padding: 0.75rem;
-                    background: #fef3c7;
-                    border: 1px solid #fbbf24;
-                    border-radius: 0.5rem;
-                    color: #92400e;
-                }
-
-                .up-next-label {
-                    font-size: 0.75rem;
-                    text-transform: uppercase;
-                    font-weight: bold;
-                    margin-bottom: 0.25rem;
-                }
-
-                .next-picker-name {
-                    font-weight: bold;
-                    font-size: 1rem;
-                }
-
-                .pick-number {
-                    font-size: 0.875rem;
-                    opacity: 0.8;
-                }
-            `}</style>
         </div>
     );
 }

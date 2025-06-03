@@ -140,6 +140,31 @@ function AdminPanel({ divisions, userTeamsByDivision, draftOrders, draftState })
                 </div>
             </div>
 
+            {/* Firebase Sync Section */}
+            <div className={styles.adminSection}>
+                <h4 className={styles.sectionTitle}>Firebase Sync</h4>
+                <div className={styles.adminDescription}>
+                    Sync draft state from Google Sheets to Firebase Realtime Database.
+                    Use this to fix Firebase state if it gets out of sync with your sheets.
+                </div>
+                <div className={styles.syncNote}>
+                    💡 <strong>Tip:</strong> Use this after manually editing picks in sheets or if Firebase shows wrong turn/state.
+                </div>
+
+                <SyncDraftButton
+                    divisionId={draftState?.currentDivisionId}
+                    disabled={!draftState?.currentDivisionId || !draftState?.isActive}
+                    size="medium"
+                    variant="primary"
+                />
+
+                {!draftState?.isActive && (
+                    <div className={styles.syncWarning}>
+                        ⚠️ No active draft to sync. Start a draft first.
+                    </div>
+                )}
+            </div>
+
             {/* Draft Status Section */}
             <div className={styles.adminSection}>
                 <h4 className={styles.sectionTitle}>Draft Status</h4>

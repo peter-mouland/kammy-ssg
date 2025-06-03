@@ -1,5 +1,6 @@
 // components/loading-overlay/loading-overlay.tsx
 import styles from './loading-overlay.module.css';
+import { Timer } from './timer';
 
 interface LoadingOverlayProps {
     show: boolean;
@@ -51,8 +52,7 @@ export function TurnAlert({ isUserTurn, isSubmitting }: TurnAlertProps) {
                 🎯 It's Your Turn!
             </h3>
             <div className={styles.timer}>
-                {/* Timer component would go here */}
-                <div>⏰ 2:00 remaining</div>
+                <Timer minutesPerPick={2.5}/>
             </div>
 
             {isSubmitting && (

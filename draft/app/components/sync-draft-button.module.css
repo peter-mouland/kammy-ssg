@@ -1,0 +1,138 @@
+/* components/sync-draft-button.module.css */
+
+.syncButtonContainer {
+    display: inline-block;
+}
+
+.syncButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    border: 1px solid;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+}
+
+.syncButton:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.syncButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Sizes */
+.small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.medium {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.large {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+/* Variants */
+.primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.primary:hover:not(:disabled) {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.secondary {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.secondary:hover:not(:disabled) {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* States */
+.loading {
+    background-color: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: white !important;
+}
+
+.success {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: white !important;
+    animation: successPulse 0.5s ease-out;
+}
+
+.error {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.text {
+    white-space: nowrap;
+}
+
+/* Messages */
+.successMessage {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #059669;
+    font-weight: 500;
+}
+
+.errorMessage {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #dc2626;
+}
+
+.syncDetails {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    background-color: #f9fafb;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e5e7eb;
+}
+
+.syncDetails div {
+    margin-bottom: 0.25rem;
+}
+
+.syncDetails div:last-child {
+    margin-bottom: 0;
+}
