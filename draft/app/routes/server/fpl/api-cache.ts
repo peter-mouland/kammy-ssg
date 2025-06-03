@@ -5,7 +5,6 @@ import type {
 } from '../../../types';
 import type { FplPlayerSeasonData } from './api';
 import { FplCache } from '../firestore-cache/fpl-cache';
-import { FirestoreClient } from '../firestore-cache/firestore-client';
 import { fplApi } from './api';
 import * as fplStats from './stats';
 import { processBatched } from '../utils/batch-processor';
@@ -386,97 +385,6 @@ export class FplApiCache {
         const result = player ? fplStats.getPlayerForm(player) : 0;
         console.log(`✅ getPlayerForm(${playerId}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
         return result;
-    }
-
-    /**
-     * Get enhanced player data (with draft calculations)
-     */
-    async getEnhancedPlayerData(): Promise<EnhancedPlayerData[]> {
-        return this.withPromiseDeduplication('enhanced-players', async () => {
-            const startTime = performance.now();
-            console.log('🔄 getEnhancedPlayerData() - Start');
-
-            // Check if we have cached draft data
-            const hasDraft = await this.fplCache.hasDraftData();
-            if (hasDraft) {
-                console.log('✅ getEnhancedPlayerData() - Found cached draft data');
-                const elementsWithDraft = await this.fplCache.getElements();
-                const enhancedPlayers = this.convertElementsWithDraftToEnhanced(elementsWithDraft);
-                console.log(`✅ getEnhancedPlayerData() - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`);
-                return enhancedPlayers;
-            }
-
-            console.log('🔄 getEnhancedPlayerData() - No draft data, generating...');
-            const enhancedPlayers = await this.generateAndCacheEnhancedData();
-            console.log(`✅ getEnhancedPlayerData() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
-            return enhancedPlayers;
-        });
-    }
-
-    /**
-     * Generate enhanced data and cache it in draft fields
-     */
-    private async generateAndCacheEnhancedData(): Promise<EnhancedPlayerData[]> {
-        const [sheetsPlayers, fplPlayers, fplTeams] = await Promise.all([
-            readPlayers(),
-            this.getFplPlayers(),
-            this.getFplTeams(),
-        ]);
-
-        const playerIds = fplPlayers.map(p => p.id);
-        const fplPlayerGameweeksById = await this.getBatchPlayerDetailedStats(playerIds);
-        const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
-            acc[team.id] = team.name;
-            return acc;
-        }, {});
-
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayerData>, player) => {
-            acc[player.id] = player;
-            return acc;
-        }, {});
-
-        console.log('🔄 generateAndCacheEnhancedData() - Running generateEnhancedData...');
-        const enhancedPlayers = generateEnhancedData(fplPlayers, fplPlayerGameweeksById, sheetsPlayersById, teams);
-
-        // Extract draft data for caching
-        const draftDataById: Record<number, any> = {};
-        enhancedPlayers.forEach(player => {
-            const playerSheet = sheetsPlayersById[player.id.toString()];
-            if (playerSheet) draftDataById[player.id] = player;
-        });
-
-        console.log('🔄 generateAndCacheEnhancedData() - Caching draft data...');
-        await this.fplCache.updateElementsWithDraft(draftDataById);
-
-        console.log('✅ generateAndCacheEnhancedData() - Complete');
-        return enhancedPlayers;
-    }
-
-    /**
-     * Convert elements with draft data back to enhanced format
-     */
-    private convertElementsWithDraftToEnhanced(elementsWithDraft: any[]): EnhancedPlayerData[] {
-        return elementsWithDraft
-          .filter(element => element.draft) // Only include elements with draft data
-          .map(element => ({
-              ...element,
-              position: element.draft.position,
-              pointsTotal: element.draft.pointsTotal,
-              pointsBreakdown: element.draft.pointsBreakdown,
-          }));
-    }
-
-    /**
-     * Force regeneration of enhanced data
-     */
-    async refreshEnhancedData(): Promise<EnhancedPlayerData[]> {
-        console.log('🔄 refreshEnhancedData() - Clearing existing draft data...');
-        await this.fplCache.clearDraftData();
-
-        // Clear the promise deduplication cache for this key
-        this.pendingPromises.delete('enhanced-players');
-
-        return await this.getEnhancedPlayerData();
     }
 
     /**

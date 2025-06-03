@@ -1,5 +1,4 @@
 // src/lib/firestore-cache/fpl-cache.ts
-import type { FirestoreClient } from './firestore-client'
 import { FirestoreClient } from './firestore-client'
 import type { FplBootstrapData, FplPlayerData } from '../../../types'
 import { convertFplElementHistoryToCache, convertFplElementToCache } from '../fpl/stats';
@@ -464,5 +463,159 @@ export class FplCache {
         } catch (error) {
             console.error('❌ Error checking elements size:', error);
         }
+    }
+
+    // Add these methods to your FplCache class in fpl-cache.ts
+
+    /**
+     * Get gameweek points for a specific player and gameweek
+     */
+    async getPlayerGameweekPoints(playerId: number, gameweek: number): Promise<any | null> {
+        const elementSummary = await this.getElementGameweek(playerId);
+
+        if (!elementSummary?.draft?.gameweekPoints) {
+            return null;
+        }
+
+        return elementSummary.draft.gameweekPoints[gameweek] || null;
+    }
+
+    /**
+     * Get all gameweek points for a specific player
+     */
+    async getPlayerAllGameweekPoints(playerId: number): Promise<Record<number, any> | null> {
+        const elementSummary = await this.getElementGameweek(playerId);
+
+        if (!elementSummary?.draft?.gameweekPoints) {
+            return null;
+        }
+
+        return elementSummary.draft.gameweekPoints;
+    }
+
+    /**
+     * Get gameweek points for multiple players for a specific gameweek
+     */
+    async getBatchPlayerGameweekPoints(
+        playerIds: number[],
+        gameweek: number
+    ): Promise<Record<number, any>> {
+        const docIds = playerIds.map(id => `element-${id}`);
+        const docs = await this.client.batchGetDocuments(
+            this.client.collections.FPL_ELEMENTS,
+            docIds
+        );
+
+        const results: Record<number, any> = {};
+
+        playerIds.forEach((playerId, index) => {
+            const doc = docs[index];
+            if (doc?.data?.draft?.gameweekPoints?.[gameweek]) {
+                results[playerId] = doc.data.draft.gameweekPoints[gameweek];
+            }
+        });
+
+        return results;
+    }
+
+    /**
+     * Get current season totals for players (calculated from gameweek points)
+     */
+    async getPlayerSeasonTotals(playerIds: number[]): Promise<Record<number, { totalPoints: number; gameweeksPlayed: number }>> {
+        const docIds = playerIds.map(id => `element-${id}`);
+        const docs = await this.client.batchGetDocuments(
+            this.client.collections.FPL_ELEMENTS,
+            docIds
+        );
+
+        const results: Record<number, { totalPoints: number; gameweeksPlayed: number }> = {};
+
+        // Import the utility function
+        const { calculateSeasonTotalFromGameweekPoints } = await import('../scoring/generate-gameweek-points');
+
+        playerIds.forEach((playerId, index) => {
+            const doc = docs[index];
+            if (doc?.data?.draft?.gameweekPoints) {
+                results[playerId] = calculateSeasonTotalFromGameweekPoints(doc.data.draft.gameweekPoints);
+            } else {
+                results[playerId] = { totalPoints: 0, gameweeksPlayed: 0 };
+            }
+        });
+
+        return results;
+    }
+
+    /**
+     * Check which players have gameweek points data
+     */
+    async getPlayersWithGameweekPoints(): Promise<number[]> {
+        // This would require a more complex query, but for now we can check a sample
+        // In practice, you might want to maintain a separate index of players with gameweek data
+        const playersWithPoints: number[] = [];
+
+        // Simple implementation - could be optimized with proper indexing
+        const allElements = await this.getElements();
+        if (!allElements) return [];
+
+        for (const element of allElements.slice(0, 50)) { // Sample first 50 for performance
+            const elementSummary = await this.getElementGameweek(element.id);
+            if (elementSummary?.draft?.gameweekPoints) {
+                playersWithPoints.push(element.id);
+            }
+        }
+
+        return playersWithPoints;
+    }
+
+    /**
+     * Get latest gameweek with points data across all players
+     */
+    async getLatestGameweekWithPoints(): Promise<number | null> {
+        // Check a sample of players to find the latest gameweek with data
+        const allElements = await this.getElements();
+        if (!allElements) return null;
+
+        let latestGameweek = 0;
+
+        for (const element of allElements.slice(0, 20)) { // Sample for performance
+            const elementSummary = await this.getElementGameweek(element.id);
+            if (elementSummary?.draft?.gameweekPoints) {
+                const gameweeks = Object.keys(elementSummary.draft.gameweekPoints).map(Number);
+                const playerLatest = Math.max(...gameweeks);
+                latestGameweek = Math.max(latestGameweek, playerLatest);
+            }
+        }
+
+        return latestGameweek > 0 ? latestGameweek : null;
+    }
+
+    /**
+     * Clear gameweek points data (for troubleshooting)
+     */
+    async clearGameweekPoints(): Promise<void> {
+        console.log('🔄 Clearing gameweek points data...');
+
+        // Get all element summaries and remove gameweekPoints
+        const allElements = await this.getElements();
+        if (!allElements) return;
+
+        for (const element of allElements) {
+            const elementSummary = await this.getElementGameweek(element.id);
+            if (elementSummary?.draft?.gameweekPoints) {
+                const { gameweekPoints, ...draftWithoutPoints } = elementSummary.draft;
+                const updatedSummary = {
+                    ...elementSummary,
+                    draft: draftWithoutPoints
+                };
+
+                await this.client.setDocument(
+                    this.client.collections.FPL_ELEMENTS,
+                    `element-${element.id}`,
+                    { source: 'fpl', data: updatedSummary }
+                );
+            }
+        }
+
+        console.log('✅ Gameweek points data cleared');
     }
 }

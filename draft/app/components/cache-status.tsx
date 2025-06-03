@@ -1,5 +1,6 @@
 import { useFetcher } from 'react-router';
-import { useState, useEffect } from 'react';
+import * as React from 'react';
+import { ActionButton } from './action-button';
 import styles from './cache-status.module.css';
 
 interface CacheStatusProps {
@@ -9,14 +10,14 @@ interface CacheStatusProps {
 
 export function CacheStatus({ autoRefresh = false, refreshInterval = 30000 }: CacheStatusProps) {
     const fetcher = useFetcher();
-    const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+    const [lastRefresh, setLastRefresh] = React.useState<Date | null>(null);
 
     const cacheData = fetcher.data?.data;
     const isLoading = fetcher.state === 'submitting';
     const hasError = fetcher.data?.error;
 
     // Auto-refresh functionality
-    useEffect(() => {
+    React.useEffect(() => {
         if (autoRefresh && !isLoading) {
             const interval = setInterval(() => {
                 refreshStatus();
@@ -26,7 +27,7 @@ export function CacheStatus({ autoRefresh = false, refreshInterval = 30000 }: Ca
     }, [autoRefresh, refreshInterval, isLoading]);
 
     // Load initial status
-    useEffect(() => {
+    React.useEffect(() => {
         if (!cacheData && !isLoading && !hasError) {
             refreshStatus();
         }
@@ -169,6 +170,35 @@ export function CacheStatus({ autoRefresh = false, refreshInterval = 30000 }: Ca
                             disabled={isLoading || cacheData.missing?.elements}
                             recommended={cacheData.missing?.draftData && !cacheData.missing?.elements}
                         />
+
+                    </div>
+
+
+                    {/* NEW: Gameweek Points Status Section */}
+                    <div className={styles.actionsGrid}>
+                        <GameweekPointsStatus />
+
+                        {/* Smart Points Update Button */}
+                        <ActionButton
+                            title="Smart Points Update"
+                            description="Automatically detects and updates only changed gameweeks"
+                            icon="⚡"
+                            actionType="generateGameWeekPoints"
+                            onExecute={executeAction}
+                            disabled={false}
+                            recommended={true}
+                        />
+
+                        {/* Manual Full Regeneration (for troubleshooting) */}
+                        <ActionButton
+                            title="Force Regenerate All Points"
+                            description="Regenerate all points from scratch (slower)"
+                            icon="🔄"
+                            actionType="forceRegenerateAllPoints"
+                            onExecute={executeAction}
+                            disabled={false}
+                            recommended={false}
+                        />
                     </div>
 
                     {/* Recommendations */}
@@ -216,39 +246,64 @@ function DataCount({ label, count, missing, expected }: DataCountProps) {
     );
 }
 
-interface ActionButtonProps {
-    title: string;
-    description: string;
-    icon: string;
-    actionType: string;
-    onExecute: (actionType: string) => void;
-    disabled: boolean;
-    recommended: boolean;
-}
 
-function ActionButton({
-                          title,
-                          description,
-                          icon,
-                          actionType,
-                          onExecute,
-                          disabled,
-                          recommended
-                      }: ActionButtonProps) {
+// Add a new status display component to show gameweek points status:
+function GameweekPointsStatus() {
+    const fetcher = useFetcher();
+    const statusFetcher = useFetcher();
+
+
+// Then handle the response in useEffect
+    React.useEffect(() => {
+        console.log(status)
+        if (statusFetcher.data?.success) {
+            setStatus(statusFetcher.data.data);
+        }
+    }, [statusFetcher.data]);
+    const checkStatus = () => {
+        statusFetcher.submit(
+            { actionType: 'getGameweekPointsStatus' },
+            { method: 'post' }
+        );
+    };
+
+    const [status, setStatus] = React.useState(null);
+    const [loading, setLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        checkStatus();
+    }, []);
+
+    if (loading) return <div>Loading points status...</div>;
+    if (!status) return null;
+
     return (
-        <div className={`${styles.actionButton} ${recommended ? styles.recommended : ''}`}>
-            <button
-                onClick={() => onExecute(actionType)}
-                disabled={disabled}
-                className={styles.actionBtn}
-            >
-                <span className={styles.actionIcon}>{icon}</span>
-                <div className={styles.actionContent}>
-                    <div className={styles.actionTitle}>{title}</div>
-                    <div className={styles.actionDescription}>{description}</div>
+        <div className={styles.pointsStatus}>
+            <h4>🎯 Gameweek Points Status</h4>
+            <div className={styles.statusGrid}>
+                <div className={styles.statusItem}>
+                    <label>Current Gameweek:</label>
+                    <span>{status.currentGameweek}</span>
                 </div>
-                {recommended && <span className={styles.recommendedBadge}>Recommended</span>}
-            </button>
+                <div className={styles.statusItem}>
+                    <label>Last Generated:</label>
+                    <span>
+                        GW{status.lastGameweek}
+                        {status.lastGenerated && ` (${new Date(status.lastGenerated).toLocaleDateString()})`}
+                    </span>
+                </div>
+                <div className={styles.statusItem}>
+                    <label>Status:</label>
+                    <span className={status.needsUpdate ? styles.needsUpdate : styles.upToDate}>
+                        {status.needsUpdate ? '⚠️ Update Needed' : '✅ Up to Date'}
+                    </span>
+                </div>
+                {status.needsUpdate && (
+                    <div className={styles.statusReason}>
+                        <strong>Reason:</strong> {status.reason}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

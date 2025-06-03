@@ -1,7 +1,7 @@
 // app/routes/draft-admin.tsx - Enhanced with clear data functionality
-import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
-import { data } from "react-router";
-import { useLoaderData, useActionData } from "react-router";
+import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from 'react-router';
+import { data, useFetcher, useLoaderData, useActionData } from "react-router";
+import * as React from "react";
 import { requestFormData } from '../lib/form-data';
 import { DivisionCard } from "../components/division-card";
 import { ActionMessage } from "../components/action-message";
@@ -11,6 +11,8 @@ import { ClearDataButton } from '../components/clear-data-button';
 import styles from './draft-admin.module.css';
 import { SyncDraftButton } from '../components/sync-draft-button';
 import { CacheStatus } from '../components/cache-status';
+import { ActionButton } from '../components/action-button';
+
 
 export const meta: MetaFunction = () => {
     return [
@@ -89,6 +91,10 @@ export default function DraftAdmin() {
             />
 
             {/* Division Management */}
+
+            <br />
+            <br />
+
             <LayoutGrid>
                 {divisions.map((division) => (
                     <DivisionCard
@@ -104,8 +110,6 @@ export default function DraftAdmin() {
     );
 }
 
-// Admin Panel Component
-// Admin Panel Component
 function AdminPanel({ divisions, userTeamsByDivision, draftOrders, draftState }) {
     return (
         <div className={styles.adminPanel}>
