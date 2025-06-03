@@ -17,7 +17,7 @@ const PLAYER_GAMEWEEK_STATS_SHEET_NAME = 'PlayerGameweekStats';
 const PLAYER_GAMEWEEK_STATS_HEADERS = {
     'Player ID': 'playerId' as keyof PlayerGameweekStatsData,
     'Gameweek': 'gameweek' as keyof PlayerGameweekStatsData,
-    'Minutes Played': 'minutesPlayed' as keyof PlayerGameweekStatsData,
+    'Minutes Played': 'appearance' as keyof PlayerGameweekStatsData,
     'Goals': 'goals' as keyof PlayerGameweekStatsData,
     'Assists': 'assists' as keyof PlayerGameweekStatsData,
     'Clean Sheets': 'cleanSheets' as keyof PlayerGameweekStatsData,
@@ -36,7 +36,7 @@ const PLAYER_SEASON_STATS_SHEET_NAME = 'PlayerSeasonStats';
 const PLAYER_SEASON_STATS_HEADERS = {
     'Player ID': 'playerId' as keyof PlayerSeasonStatsData,
     'Season': 'season' as keyof PlayerSeasonStatsData,
-    'Total Minutes': 'totalMinutes' as keyof PlayerSeasonStatsData,
+    'Total Minutes': 'appearance' as keyof PlayerSeasonStatsData,
     'Games Played': 'gamesPlayed' as keyof PlayerSeasonStatsData,
     'Goals': 'goals' as keyof PlayerSeasonStatsData,
     'Assists': 'assists' as keyof PlayerSeasonStatsData,
@@ -53,7 +53,7 @@ const PLAYER_SEASON_STATS_HEADERS = {
 // Transform functions for parsing
 const PLAYER_GAMEWEEK_STATS_TRANSFORM_FUNCTIONS: Partial<Record<keyof PlayerGameweekStatsData, (value: any) => any>> = {
     gameweek: parseSheetNumber,
-    minutesPlayed: parseSheetNumber,
+    appearance: parseSheetNumber,
     goals: parseSheetNumber,
     assists: parseSheetNumber,
     cleanSheets: parseSheetNumber,
@@ -68,7 +68,7 @@ const PLAYER_GAMEWEEK_STATS_TRANSFORM_FUNCTIONS: Partial<Record<keyof PlayerGame
 };
 
 const PLAYER_SEASON_STATS_TRANSFORM_FUNCTIONS: Partial<Record<keyof PlayerSeasonStatsData, (value: any) => any>> = {
-    totalMinutes: parseSheetNumber,
+    appearance: parseSheetNumber,
     gamesPlayed: parseSheetNumber,
     goals: parseSheetNumber,
     assists: parseSheetNumber,
@@ -340,7 +340,7 @@ export async function calculateSeasonStatsFromGameweeks(
         const seasonStats: PlayerSeasonStatsData = {
             playerId,
             season,
-            totalMinutes: 0,
+            appearance: 0,
             gamesPlayed: 0,
             goals: 0,
             assists: 0,
@@ -355,7 +355,7 @@ export async function calculateSeasonStatsFromGameweeks(
         };
 
         gameweekStats.forEach(gwStat => {
-            seasonStats.totalMinutes += gwStat.minutesPlayed;
+            seasonStats.appearance += gwStat.appearance;
             seasonStats.goals += gwStat.goals;
             seasonStats.assists += gwStat.assists;
             seasonStats.cleanSheets += gwStat.cleanSheets;
@@ -366,7 +366,7 @@ export async function calculateSeasonStatsFromGameweeks(
             seasonStats.saves += gwStat.saves;
             seasonStats.bonus += gwStat.bonus;
 
-            if (gwStat.minutesPlayed > 0) {
+            if (gwStat.appearance > 0) {
                 seasonStats.gamesPlayed++;
             }
         });
@@ -450,7 +450,7 @@ export function validatePlayerGameweekStatsData(data: Partial<PlayerGameweekStat
 
     // Validate numeric fields are non-negative
     const numericFields = [
-        'minutesPlayed', 'goals', 'assists', 'cleanSheets', 'goalsConceded',
+        'appearance', 'goals', 'assists', 'cleanSheets', 'goalsConceded',
         'penaltiesSaved', 'yellowCards', 'redCards', 'saves', 'bonus', 'fixtureMinutes'
     ];
 
@@ -480,7 +480,7 @@ export function validatePlayerSeasonStatsData(data: Partial<PlayerSeasonStatsDat
 
     // Validate numeric fields are non-negative
     const numericFields = [
-        'totalMinutes', 'gamesPlayed', 'goals', 'assists', 'cleanSheets',
+        'appearance', 'gamesPlayed', 'goals', 'assists', 'cleanSheets',
         'goalsConceded', 'penaltiesSaved', 'yellowCards', 'redCards', 'saves', 'bonus'
     ];
 

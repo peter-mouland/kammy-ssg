@@ -1,0 +1,317 @@
+/* components/cache-status.module.css */
+
+.cacheStatus {
+    background: white;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.refreshButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    color: #374151;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+/* Health Card */
+.healthCard {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid;
+}
+
+.healthy {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #065f46;
+}
+
+.warning {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.critical {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.unknown {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    color: #374151;
+}
+
+.healthHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.healthIcon {
+    font-size: 1.5rem;
+}
+
+.healthText {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.completion {
+    margin-left: auto;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+.issues {
+    margin-top: 0.75rem;
+}
+
+.issues ul {
+    margin: 0.5rem 0 0 1rem;
+    padding: 0;
+}
+
+.issues li {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Data Counts Grid */
+.countsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dataCount {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid;
+}
+
+.present {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #065f46;
+}
+
+.missing {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.countValue {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.countLabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.countPercentage {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+/* Actions Grid */
+.actionsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.actionButton {
+    position: relative;
+}
+
+.recommended {
+    border: 2px solid #3b82f6;
+    border-radius: 0.5rem;
+    background: #eff6ff;
+}
+
+.actionBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.recommended .actionBtn {
+    border: none;
+    background: transparent;
+}
+
+.actionBtn:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.actionBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.actionIcon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.actionContent {
+    flex: 1;
+}
+
+.actionTitle {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.actionDescription {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.recommendedBadge {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    background: #3b82f6;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+}
+
+/* Recommendations */
+.recommendations {
+    background: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.recommendations h5 {
+    margin: 0 0 0.5rem 0;
+    color: #0c4a6e;
+    font-size: 0.875rem;
+}
+
+.recommendations ul {
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.recommendations li {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    color: #0c4a6e;
+}
+
+/* Last Updated */
+.lastUpdated {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+    .countsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .actionsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .healthHeader {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .completion {
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+}

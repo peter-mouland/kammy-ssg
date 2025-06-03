@@ -9,10 +9,8 @@ const serviceAccountJson = atob(process.env.MY_FIREBASE_SERVICE_ACCOUNT_KEY);
 const serviceAccount = JSON.parse(serviceAccountJson);
 
 export function getFirestoreInstance() {
-    console.log('getFirestoreInstance')
     if (!db) {
         const existingApps = getApps();
-        console.log(existingApps)
         let app = existingApps.find(app => app.name === FIRESTORE_ADMIN_APP_NAME);
         if (!app) {
             if (process.env.MY_FIREBASE_SERVICE_ACCOUNT_KEY) {

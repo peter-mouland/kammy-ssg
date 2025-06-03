@@ -8,7 +8,6 @@ import { getNextDraftState } from "../../lib/draft/get-next-draft-state";
 import { generateDraftSequence } from "../../lib/draft/generate-draft-sequence";
 import type { DraftPickData, DraftOrderData } from "../../types";
 
-// Import Firebase sync
 import { FirebaseDraftSync } from './firestore-cache/firebase-draft-sync';
 
 export async function loadDraftData(url: URL) {
@@ -40,12 +39,6 @@ export async function loadDraftData(url: URL) {
             draftSequence = generateDraftSequence(draftOrder, draftState.picksPerTeam);
         }
     }
-
-    // REMOVED: No longer sync Firebase state on every page load
-    // This was causing excessive writes on every revalidation
-
-    // Only initialize Firebase state when draft is first activated
-    // This should be done in a separate "start draft" action, not on every load
 
     // Filter available players
     const draftedPlayerIds = new Set(draftPicks.map(pick => pick.playerId));

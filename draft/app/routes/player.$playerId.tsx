@@ -115,7 +115,7 @@ export default function PlayerDetail() {
 
                 <div className="card" style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f59e0b', marginBottom: '0.5rem' }}>
-                        {seasonStats?.totalMinutes || gameweekStats.reduce((sum, stats) => sum + stats.minutesPlayed, 0)}
+                        {seasonStats?.appearance || gameweekStats.reduce((sum, stats) => sum + stats.appearance, 0)}
                     </div>
                     <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                         Total Minutes
@@ -186,7 +186,7 @@ export default function PlayerDetail() {
                                             {stats.gameweek}
                                         </td>
                                         <td>
-                                            {stats.minutesPlayed}'
+                                            {stats.appearance}'
                                         </td>
                                         <td style={{ color: stats.goals > 0 ? '#10b981' : undefined }}>
                                             {stats.goals}

@@ -5,7 +5,7 @@ export const ScoringInfo = () => (
         <h3 className={styles.scoringTitle}>Custom Scoring System:</h3>
         <div className={styles.scoringGrid}>
             <div className={styles.scoringItem}>
-                <strong>Appearance:</strong>
+                <strong>Minutes Played:</strong>
                 <div>+3 pts (45+ min), +1 pt (&lt;45 min)</div>
             </div>
             <div className={styles.scoringItem}>

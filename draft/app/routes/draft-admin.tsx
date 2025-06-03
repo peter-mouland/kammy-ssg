@@ -9,6 +9,8 @@ import { PageHeader } from "../components/page-header";
 import { LayoutGrid } from '../components/layout-grid';
 import { ClearDataButton } from '../components/clear-data-button';
 import styles from './draft-admin.module.css';
+import { SyncDraftButton } from '../components/sync-draft-button';
+import { CacheStatus } from '../components/cache-status';
 
 export const meta: MetaFunction = () => {
     return [
@@ -103,17 +105,22 @@ export default function DraftAdmin() {
 }
 
 // Admin Panel Component
+// Admin Panel Component
 function AdminPanel({ divisions, userTeamsByDivision, draftOrders, draftState }) {
     return (
         <div className={styles.adminPanel}>
             <h3 className={styles.adminTitle}>🔧 Admin Tools</h3>
 
+            {/* Cache Status Section */}
+            <div className={styles.adminSection}>
+                <CacheStatus autoRefresh={false} />
+            </div>
+
             {/* Cache Management Section */}
             <div className={styles.adminSection}>
-                <h4 className={styles.sectionTitle}>Cache Management</h4>
+                <h4 className={styles.sectionTitle}>Manual Cache Management</h4>
                 <div className={styles.adminDescription}>
-                    Clear cached data to force fresh fetches from FPL API.
-                    Use when data seems stale or after API changes.
+                    Manual cache clearing options. Use the Cache Status section above for intelligent data population.
                 </div>
 
                 <div className={styles.clearButtonsGrid}>

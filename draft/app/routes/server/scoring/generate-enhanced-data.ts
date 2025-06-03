@@ -14,18 +14,16 @@ export const generateEnhancedData = (fplPlayers, fplPlayerGameweeksById, sheetsP
 
             // Calculate points using your existing logic
             const position = playerSheet.position.toLowerCase() as CustomPosition;
-            const pointsBreakdown = calculateSeasonPoints(playerGameweekStats, position);
-            const fullBreakdown = getFullBreakdown(playerGameweekStats, position, pointsBreakdown, fplPlayer)
+            const breakdown = calculateSeasonPoints(playerGameweekStats, position);
+            const fullBreakdown = getFullBreakdown(playerGameweekStats, position, breakdown)
 
             return {
                 ...fplPlayer,
-                team_name: fplTeams[fplPlayer.team] || `Team ${fplPlayer.team}`,
-                position_name: playerSheet.position, // This should now be the custom position
-                custom_points: pointsBreakdown.total,
-                points_breakdown: pointsBreakdown,
-                full_breakdown: fullBreakdown,
-                player_info: playerSheet,
-                gameweek_data: gameweekData
+                draft: {
+                    position: playerSheet.position,
+                    pointsTotal: breakdown.points.total,
+                    pointsBreakdown: fullBreakdown, // todo : move to elements-[id] docs
+                }
             };
         });
 }

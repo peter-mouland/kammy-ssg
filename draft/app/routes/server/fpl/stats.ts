@@ -17,6 +17,7 @@ export const convertFplElementToCache = (element) => ({
     form: element.form,
     now_cost: element.now_cost,
 })
+
 export const convertFplElementHistoryToCache = (element) => ({
     element: element.element,
     round: element.round,
@@ -46,7 +47,7 @@ export const convertToPlayerGameweekStats = (gw: FplPlayerGameweekData): PlayerG
     return {
         playerId: gw.element.toString(),
         gameweek: gw.round,
-        minutesPlayed: gw.minutes,
+        appearance: gw.minutes,
         goals: gw.goals_scored,
         assists: gw.assists,
         cleanSheets: gw.clean_sheets,
@@ -75,7 +76,7 @@ export function convertFplToGameweekStats(
     return {
         playerId: fplPlayer.id.toString(),
         gameweek,
-        minutesPlayed: fplPlayer.minutes || 0,
+        appearance: fplPlayer.minutes || 0,
         goals: fplPlayer.goals_scored || 0,
         assists: fplPlayer.assists || 0,
         cleanSheets: fplPlayer.clean_sheets || 0,

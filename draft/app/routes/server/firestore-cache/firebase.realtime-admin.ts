@@ -12,10 +12,9 @@ const serviceAccount = JSON.parse(serviceAccountJson);
 let realtimeDB;
 
 export function getRealtimeAdminDbInstance() {
-    console.log('getRealtimeAdminDbInstance')
     if (!realtimeDB) {
         const existingApps = getApps();
-        console.log(existingApps)
+
         let realtimeApp = existingApps.find(app => app.name === REALTIME_ADMIN_APP_NAME);
         if (!realtimeApp) {
             realtimeApp = initializeApp({

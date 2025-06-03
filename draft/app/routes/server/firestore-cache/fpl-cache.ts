@@ -1,8 +1,10 @@
 // src/lib/firestore-cache/fpl-cache.ts
 import type { FirestoreClient } from './firestore-client'
+import { FirestoreClient } from './firestore-client'
 import type { FplBootstrapData, FplPlayerData } from '../../../types'
 import { convertFplElementHistoryToCache, convertFplElementToCache } from '../fpl/stats';
 import { processBatchedReads } from '../utils/batch-processor';
+import { FirestoreClearService } from './clear-service';
 
 // Filtered FPL Player Data Type (absolute essentials only)
 export interface FilteredFplPlayerData {
@@ -16,8 +18,11 @@ export interface FilteredFplPlayerData {
 
 export class FplCache {
     constructor(
-        private client: FirestoreClient,
-    ) {}
+    ) {
+        const firestoreClient = new FirestoreClient();
+        this.client = firestoreClient
+        this.clearService = new FirestoreClearService()
+    }
 
     // === READ METHODS ===
 
@@ -144,7 +149,7 @@ export class FplCache {
             if (draftData) {
                 return {
                     ...element,
-                    draft: draftData
+                    draft: draftData.draft
                 };
             }
             return element;
@@ -173,7 +178,7 @@ export class FplCache {
                 // Add draft data to existing summary
                 const updatedSummary = {
                     ...existingSummary,
-                    draft: draftData
+                    draft: draftData.draft
                 };
 
                 await this.client.setDocument(
@@ -336,12 +341,12 @@ export class FplCache {
     /**
      * Populate multiple element summary documents with fresh data
      */
+    // todo : batch to reduce cost
     async populateElementSummaries(summariesData: Record<number, any>): Promise<void> {
         const entries = Object.entries(summariesData);
         console.log(`📝 Writing ${entries.length} element summaries individually to avoid payload limits`);
 
         for (const [playerIdStr, data] of entries) {
-            // console.log(` ...element-${playerIdStr}`);
             await this.client.setDocument(
                 this.client.collections.FPL_ELEMENTS,
                 `element-${playerIdStr}`,
@@ -350,6 +355,93 @@ export class FplCache {
         }
 
         console.log(`✅ Successfully wrote ${entries.length} element summaries`);
+    }
+
+    /**
+     * Get count of teams in cache
+     */
+    async getTeamsCount(): Promise<number> {
+        try {
+            const teams = await this.getTeams();
+            return teams?.length || 0;
+        } catch (error) {
+            console.error('Error getting teams count:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Get count of events in cache
+     */
+    async getEventsCount(): Promise<number> {
+        try {
+            const events = await this.getEvents();
+            return events?.length || 0;
+        } catch (error) {
+            console.error('Error getting events count:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Get count of elements in cache
+     */
+    async getElementsCount(): Promise<number> {
+        try {
+            const elements = await this.getElements();
+            return elements?.length || 0;
+        } catch (error) {
+            console.error('Error getting elements count:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Get count of element summaries in cache
+     */
+    async getElementSummariesCount(): Promise<number> {
+        try {
+            // This depends on your Firestore structure
+            // You might need to query the collection directly
+            const snapshot = await this.client.db
+                .collection(this.client.collections.FPL_ELEMENTS)
+                .count()
+                .get();
+            return snapshot.data().count;
+        } catch (error) {
+            console.error('Error getting element summaries count:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Clear bootstrap data
+     */
+    async clearBootstrapData(): Promise<void> {
+        try {
+            await Promise.all([
+                this.clearService.clearCollection('teams'),
+                this.clearService.clearCollection('events'),
+                this.clearService.clearCollection('elements')
+            ]);
+            console.log('✅ Bootstrap data cleared');
+        } catch (error) {
+            console.error('❌ Error clearing bootstrap data:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Clear element summaries
+     */
+    async clearElementSummaries(): Promise<void> {
+        try {
+            await this.clearService.clearCollection(this.client.collections.FPL_ELEMENTS);
+            console.log('✅ Element summaries cleared');
+        } catch (error) {
+            console.error('❌ Error clearing element summaries:', error);
+            throw error;
+        }
     }
 
     // Add this temporary method to your FplCache class

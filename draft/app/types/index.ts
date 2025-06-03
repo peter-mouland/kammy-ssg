@@ -73,7 +73,7 @@ export interface DraftOrderData {
 export interface PlayerGameweekStatsData {
     playerId: string;
     gameweek: number;
-    minutesPlayed: number;
+    appearance: number;
     goals: number;
     assists: number;
     cleanSheets: number;
@@ -90,7 +90,7 @@ export interface PlayerGameweekStatsData {
 export interface PlayerSeasonStatsData {
     playerId: string;
     season: string;
-    totalMinutes: number;
+    appearance: number;
     gamesPlayed: number;
     goals: number;
     assists: number;

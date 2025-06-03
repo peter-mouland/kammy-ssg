@@ -187,6 +187,115 @@ export async function handleDraftAction(params: DraftActionParams) {
                 console.error('Get firestore stats error:', error);
                 throw new Error(`Failed to get firestore stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
+
+        case "getCacheStatus":
+            try {
+                console.log('🔄 Getting cache status...');
+
+                // Import FPL API cache - FIXED PATH
+                const { fplApiCache } = await import('./fpl/api-cache');
+
+                // Get comprehensive cache status
+                const cacheHealth = await fplApiCache.getCacheHealth();
+
+                return {
+                    success: true,
+                    message: `Cache status retrieved - ${cacheHealth.health.overall}`,
+                    data: cacheHealth
+                };
+            } catch (error) {
+                console.error('Get cache status error:', error);
+                throw new Error(`Failed to get cache status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
+        case "populateBootstrapData":
+            try {
+                console.log('🔄 Populating bootstrap data...');
+
+                const { fplApiCache } = await import('./fpl/api-cache');
+
+                const result = await fplApiCache.preloadCommonData({
+                    includeBootstrap: true,
+                    includeEnhancedData: false,
+                    includeElementSummaries: false,
+                    forceRefresh: true
+                });
+
+                return {
+                    success: true,
+                    message: `Bootstrap data populated! ${result.results.bootstrap?.elements?.length || 0} players loaded`,
+                    data: result
+                };
+            } catch (error) {
+                console.error('Populate bootstrap data error:', error);
+                throw new Error(`Failed to populate bootstrap data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
+        case "generateEnhancedData":
+            try {
+                console.log('🔄 Generating enhanced data...');
+
+                const { fplApiCache } = await import('./fpl/api-cache');
+
+                const enhancedPlayers = await fplApiCache.refreshEnhancedData();
+
+                return {
+                    success: true,
+                    message: `Enhanced data generated! ${enhancedPlayers.length} players with draft calculations`,
+                    data: { enhancedPlayersCount: enhancedPlayers.length }
+                };
+            } catch (error) {
+                console.error('Generate enhanced data error:', error);
+                throw new Error(`Failed to generate enhanced data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
+        case "generateEnhancedDataFast":
+            try {
+                console.log('🔄 Generating enhanced data (fast mode)...');
+
+                const { fplApiCache } = await import('./fpl/api-cache');
+
+                const result = await fplApiCache.preloadCommonData({
+                    includeBootstrap: false,
+                    includeEnhancedData: true,
+                    includeElementSummaries: false,
+                    forceRefresh: true,
+                    skipDetailedStats: false
+                });
+
+                return {
+                    success: true,
+                    message: `Enhanced data generated (fast)! ${result.results.enhanced?.length || 0} players with basic draft calculations`,
+                    data: result
+                };
+            } catch (error) {
+                console.error('Generate enhanced data (fast) error:', error);
+                throw new Error(`Failed to generate enhanced data (fast): ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
+        case "populateElementSummaries":
+            try {
+                console.log('🔄 Populating element summaries...');
+
+                const { fplApiCache } = await import('./fpl/api-cache');
+
+                const result = await fplApiCache.preloadCommonData({
+                    includeBootstrap: false,
+                    includeEnhancedData: false,
+                    includeElementSummaries: true,
+                    forceRefresh: true
+                });
+
+                return {
+                    success: true,
+                    message: `Element summaries populated! ${Object.keys(result.results.elementSummaries || {}).length} players with detailed stats`,
+                    data: result
+                };
+            } catch (error) {
+                console.error('Populate element summaries error:', error);
+                throw new Error(`Failed to populate element summaries: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            }
+
         case "syncDraft":
             if (!divisionId) {
                 throw new Error("Division ID is required");
@@ -211,7 +320,6 @@ export async function handleDraftAction(params: DraftActionParams) {
                 throw new Error(`Failed to sync draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
 
-        default:
         default:
             throw new Error("Invalid action type: " + actionType);
     }

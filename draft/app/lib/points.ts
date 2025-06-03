@@ -87,9 +87,9 @@ export const POSITION_RULES = {
 /**
  * Calculate appearance points based on minutes played
  */
-function calculateAppearancePoints(minutesPlayed: number, position: CustomPosition): number {
-    if (minutesPlayed === 0) return 0;
-    return minutesPlayed < 45 ? POSITION_RULES[position].appearance.under45Min : POSITION_RULES[position].appearance.over45Min;
+function calculateAppearancePoints(appearance: number, position: CustomPosition): number {
+    if (appearance === 0) return 0;
+    return appearance < 45 ? POSITION_RULES[position].appearance.under45Min : POSITION_RULES[position].appearance.over45Min;
 }
 
 /**
@@ -182,14 +182,14 @@ export function calculateGameweekPoints(
     fixtures?: GameweekFixture[]
 ): PointsBreakdown {
     // Handle multiple fixtures in the same gameweek
-    let totalMinutes = stats.minutesPlayed;
+    let appearance = stats.appearance;
     if (fixtures && fixtures.length > 1) {
         // If there are multiple fixtures, use the sum of fixture minutes
-        totalMinutes = fixtures.reduce((sum, fixture) => sum + fixture.fixtureMinutes, 0);
+        appearance = fixtures.reduce((sum, fixture) => sum + fixture.fixtureMinutes, 0);
     }
 
     const breakdown: PointsBreakdown = {
-        appearance: calculateAppearancePoints(totalMinutes, position),
+        appearance: calculateAppearancePoints(appearance, position),
         goals: calculateGoalPoints(stats.goals, position),
         assists: calculateAssistPoints(stats.assists, position),
         cleanSheets: calculateCleanSheetPoints(stats.cleanSheets, position),
@@ -219,7 +219,20 @@ export function calculateSeasonPoints(
     gameweekStats: PlayerGameweekStatsData[],
     position: CustomPosition,
 ): PointsBreakdown {
-    const seasonBreakdown: PointsBreakdown = {
+    const points: PointsBreakdown = {
+        appearance: 0,
+        goals: 0,
+        assists: 0,
+        cleanSheets: 0,
+        yellowCards: 0,
+        redCards: 0,
+        saves: 0,
+        penaltiesSaved: 0,
+        goalsConceded: 0,
+        bonus: 0,
+        total: 0
+    };
+    const stats: PointsBreakdown = {
         appearance: 0,
         goals: 0,
         assists: 0,
@@ -239,17 +252,18 @@ export function calculateSeasonPoints(
 
         Object.entries(gwBreakdown).forEach(([key, value]) => {
             if (key !== 'total') {
-                (seasonBreakdown as any)[key] += value;
+                (points as any)[key] += value;
+                (stats as any)[key] += gwStats[key];
             }
         });
     });
 
     // Calculate season total
-    seasonBreakdown.total = Object.entries(seasonBreakdown)
+    points.total = Object.entries(points)
         .filter(([key]) => key !== 'total')
         .reduce((sum, [, value]) => sum + value, 0);
 
-    return seasonBreakdown;
+    return { points, stats };
 }
 
 /**
@@ -292,7 +306,7 @@ export function formatPointsDisplay(points: number): string {
     return points.toString();
 }
 
-export const getFullBreakdown = (gameweeks, position, points, stats) => {
+export const getFullBreakdown = (gameweeks, position, { points, stats }) => {
     const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {} // ?????
     const gcByGameCount = gameweeks
         .sort((a, b)=> a.goals_conceded < b.goals_conceded ? -1 : 1)
@@ -307,21 +321,22 @@ export const getFullBreakdown = (gameweeks, position, points, stats) => {
             [v.saves]: acc[v.saves] ? acc[v.saves] +1 : 1
         }), {})
 
+
     return {
         appearance: {
             label: 'Appearance',
-            stat: stats.minutes,
+            stat: stats.appearance,
             points: points.appearance || 0,
             formula:
-                [`${gameweeks.filter(g => g.minutesPlayed >= 45).length} games (45+ min) × ${rules.appearance.over45Min}pts`,
-                    `${gameweeks.filter(g => g.minutesPlayed > 0 && g.minutesPlayed < 45).length} games (<45 min) × ${rules.appearance.under45Min}pt`],
+                [`${gameweeks.filter(g => g.appearance >= 45).length} games (45+ min) × ${rules.appearance.over45Min}pts`,
+                    `${gameweeks.filter(g => g.appearance > 0 && g.appearance < 45).length} games (<45 min) × ${rules.appearance.under45Min}pt`],
             isRelevant: true,
         },
         goals: {
             label: 'Goals',
-            stat: stats.goals_scored,
+            stat: stats.goals,
             points: points.goals || 0,
-            formula: `${stats.goals_scored} × ${rules.goalPoints} pts`,
+            formula: `${stats.goals} × ${rules.goalPoints} pts`,
             isRelevant: true,
         },
         assists: {
@@ -333,30 +348,30 @@ export const getFullBreakdown = (gameweeks, position, points, stats) => {
         },
         cleanSheets: {
             label: 'Clean Sheets',
-            stat: stats.clean_sheets,
+            stat: stats.cleanSheets,
             points: points.cleanSheets || 0,
             formula: isStatRelevant('clean_sheets', position) ?
-                `${stats.clean_sheets} × ${rules.cleanSheetPoints} pts` :
+                `${stats.cleanSheets} × ${rules.cleanSheetPoints} pts` :
                 'N/A for position',
             isRelevant: isStatRelevant('clean_sheets', position)
         },
         yellowCards: {
             label: 'Yellow Cards',
-            stat: stats.yellow_cards,
+            stat: stats.yellowCards,
             points: points.yellowCards || 0,
-            formula: `${stats.yellow_cards} × ${rules.yellowCard} pt`,
+            formula: `${stats.yellowCards} × ${rules.yellowCard} pt`,
             isRelevant: true
         },
         redCards: {
             label: 'Red Cards',
-            stat: stats.red_cards,
+            stat: stats.redCards,
             points: points.redCards || 0,
-            formula: `${stats.red_cards} × ${rules.redCardPenalty} pts`,
+            formula: `${stats.redCards} × ${rules.redCardPenalty} pts`,
             isRelevant: true
         },
         bonus: {
             label: 'Bonus Points',
-            value: stats.bonus,
+            stat: stats.bonus,
             points: points.bonus || 0,
             formula: isStatRelevant('bonus', position) ?
                 `${stats.bonus} bonus pts` :
@@ -365,7 +380,7 @@ export const getFullBreakdown = (gameweeks, position, points, stats) => {
         },
         saves: {
             label: 'Saves',
-            value: stats.saves,
+            stat: stats.saves,
             points: points.saves || 0,
             formula:
                 isStatRelevant('saves', position) && gameweeks ?
@@ -379,16 +394,16 @@ export const getFullBreakdown = (gameweeks, position, points, stats) => {
         },
         penaltiesSaved: {
             label: 'Penalties Saved',
-            value: stats.penalties_saved,
+            stat: stats.penaltiesSaved,
             points: points.penaltiesSaved || 0,
             formula: isStatRelevant('penalties_saved', position) ?
-                `${stats.penalties_saved} x ${rules.penaltiesSaved} pts` :
+                `${stats.penaltiesSaved} x ${rules.penaltiesSaved} pts` :
                 'N/A for position',
             isRelevant: isStatRelevant('penalties_saved', position)
         },
         goalsConceded: {
             label: 'Goals Conceded',
-            value: stats.goals_conceded,
+            stat: stats.goalsConceded,
             points: points.goalsConceded || 0,
             formula: isStatRelevant('goals_conceded', position) && gameweeks ?
                 Object.entries(gcByGameCount).map(([key, value]) => (
