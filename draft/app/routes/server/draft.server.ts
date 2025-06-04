@@ -16,11 +16,12 @@ export async function loadDraftData(url: URL) {
     const position = url.searchParams.get("position") || "";
 
     // Fetch all required data
-    const [draftState, divisions, userTeams, allPlayers] = await Promise.all([
+    const [draftState, divisions, userTeams, allPlayers, teams] = await Promise.all([
         readDraftState(),
         readDivisions(),
         readUserTeams(),
-        fplApiCache.getFplPlayers()
+        fplApiCache.getFplPlayers(),
+        fplApiCache.getFplTeams()
     ]);
 
     const divisionId = draftState?.currentDivisionId || divisions[0]?.id || "";
@@ -73,7 +74,8 @@ export async function loadDraftData(url: URL) {
         userTeams: userTeams.filter(team => team.divisionId === divisionId),
         selectedDivision: divisionId,
         selectedUser: currentUser,
-        draftSequence
+        draftSequence,
+        teams
     };
 }
 

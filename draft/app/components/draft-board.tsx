@@ -79,7 +79,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                                             alignItems: 'center',
                                             gap: '0.5rem'
                                         }}>
-                                            <span>{getPositionDisplayName(pick.draft?.position)}</span>
+                                            <span>{getPositionDisplayName(pick.position)}</span>
                                             <span>•</span>
                                             <span>{pick.team}</span>
                                             <span>•</span>

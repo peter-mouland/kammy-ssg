@@ -1,3 +1,5 @@
+/* components/draft-team.module.css */
+
 /* Team formation container */
 .teamContainer {
     display: flex;
@@ -15,6 +17,13 @@
     background-color: #fafafa;
 }
 
+/* Compact version for squad status */
+.teamCard.compact {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    flex: 1 1 100%;
+}
+
 /* Team header */
 .teamHeader {
     display: flex;
@@ -23,6 +32,11 @@
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #e5e7eb;
+}
+
+.teamCard.compact .teamHeader {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
 }
 
 .teamName {
@@ -40,12 +54,22 @@
     border-radius: 0.375rem;
 }
 
+.playerCount.complete {
+    background-color: #d1fae5;
+    color: #059669;
+    border: 1px solid #86efac;
+}
+
 /* Formation grid */
 .formationGrid {
     display: grid;
     grid-template-columns: auto 1fr 1fr 1fr 1fr auto;
     gap: 0.5rem;
     align-items: start;
+}
+
+.teamCard.compact .formationGrid {
+    gap: 0.375rem;
 }
 
 /* Position column */
@@ -63,6 +87,11 @@
     text-align: center;
 }
 
+.teamCard.compact .positionHeader {
+    font-size: 0.625rem;
+    margin-bottom: 0.375rem;
+}
+
 /* Position slots */
 .positionSlot {
     min-height: 3rem;
@@ -76,12 +105,24 @@
     margin: 0.25rem;
 }
 
+.teamCard.compact .positionSlot {
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    padding: 0.375rem;
+    margin: 0.125rem;
+}
+
 .positionSlot.empty {
     background-color: transparent;
 }
 
 .positionSlot.filled {
     /* Background color will be set via CSS custom properties */
+}
+
+.positionSlot.overflow {
+    border-color: #f59e0b !important;
+    background-color: rgba(245, 158, 11, 0.1) !important;
 }
 
 /* Position colors - using CSS custom properties for dynamic colors */
@@ -179,9 +220,23 @@
     margin-bottom: 0.125rem;
 }
 
+.teamCard.compact .playerName {
+    font-size: 0.625rem;
+}
+
 .playerPosition {
     font-size: 0.625rem;
     color: #6B7280;
+}
+
+.teamCard.compact .playerPosition {
+    font-size: 0.5rem;
+}
+
+.overflowIndicator {
+    color: #f59e0b;
+    font-size: 0.5rem;
+    margin-left: 0.25rem;
 }
 
 /* Responsive adjustments */
@@ -208,49 +263,4 @@
     .playerPosition {
         font-size: 0.5rem;
     }
-}
-
-/* Add these classes to the bottom of your existing draft-team.module.css */
-
-/* Compact version for squad status */
-.teamCard.compact {
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    flex: 1 1 100%;
-}
-
-.teamCard.compact .teamHeader {
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem;
-}
-
-.teamCard.compact .formationGrid {
-    gap: 0.375rem;
-}
-
-.teamCard.compact .positionSlot {
-    min-height: 2.5rem;
-    min-width: 2.5rem;
-    padding: 0.375rem;
-    margin: 0.125rem;
-}
-
-.teamCard.compact .playerName {
-    font-size: 0.625rem;
-}
-
-.teamCard.compact .playerPosition {
-    font-size: 0.5rem;
-}
-
-.teamCard.compact .positionHeader {
-    font-size: 0.625rem;
-    margin-bottom: 0.375rem;
-}
-
-/* Complete indicator for player count */
-.playerCount.complete {
-    background-color: #d1fae5;
-    color: #059669;
-    border: 1px solid #86efac;
 }

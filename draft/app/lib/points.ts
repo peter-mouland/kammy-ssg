@@ -276,7 +276,7 @@ export function getPositionDisplayName(position: CustomPosition): string {
         cb: 'Centre-back',
         mid: 'Midfielder',
         wa: 'Winger/Attacking Mid',
-        ca: 'Centre Forward'
+        ca: 'Centre Attacker'
     };
 
     return displayNames[position?.toLowerCase()] || position;

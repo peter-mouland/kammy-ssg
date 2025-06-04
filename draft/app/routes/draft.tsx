@@ -10,8 +10,8 @@ import type { DraftPickData, DraftOrderData, DraftStateData, FplPlayerData, User
 // Components
 import { DraftBoard } from '../components/draft-board';
 import { DraftOrder } from '../components/draft-order';
-import { TeamDraft } from '../components/draft-team';
-import { DraftPlayersAvailable } from '../components/draft-players-availablle';
+import { DraftTeams } from '../components/draft-teams';
+import { DraftPlayers } from '../components/draft-players';
 import { SelectUser } from '../components/select-user';
 import { PageHeader } from '../components/page-header';
 
@@ -35,6 +35,8 @@ import { useOptimisticPicks } from '../lib/draft/use-optimistic-picks';
 
 // Styles
 import styles from './draft.module.css';
+import { DebugPlayerPositions } from '../components/debug-player-positions';
+import { DraftTeam } from '../components/draft-team';
 
 export const meta: MetaFunction = () => {
     return [
@@ -55,6 +57,7 @@ interface LoaderData {
     selectedDivision: string;
     selectedUser: string;
     draftSequence: any[];
+    teams: any[]
 }
 
 interface ActionData {
@@ -106,8 +109,8 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 // Memoized components to prevent unnecessary rerenders
 const MemoizedDraftBoard = React.memo(DraftBoard);
 const MemoizedDraftOrder = React.memo(DraftOrder);
-const MemoizedTeamDraft = React.memo(TeamDraft);
-const MemoizedDraftPlayersAvailable = React.memo(DraftPlayersAvailable);
+const MemoizedTeamDraft = React.memo(DraftTeams);
+const MemoizedDraftPlayers = React.memo(DraftPlayers);
 
 export default function Draft() {
     const loaderData = useLoaderData<typeof loader>();
@@ -409,10 +412,23 @@ export default function Draft() {
                             <div className={styles.draftInterface}>
                                 {/* Available Players */}
                                 <div className={styles.playersSection}>
-                                    <MemoizedDraftPlayersAvailable
+
+                                    {/* Squad Status */}
+
+                                    <DraftTeam
+                                        userId={loaderData.draftState.currentUserId}
+                                        userName={loaderData.draftState.currentUserId}
+                                        draftPicks={loaderData.draftPicks.filter(pick => pick.userId === loaderData.draftState.currentUserId)}
+                                        isCompact={true}
+                                    />
+
+                                    <MemoizedDraftPlayers
                                         onSelectPlayer={handleMakePick}
                                         availablePlayers={availablePlayersFiltered}
                                         isUserTurn={loaderData.isUserTurn && !isSubmitting}
+                                        currentUserPicks={loaderData.draftPicks.filter(pick => pick.userId === loaderData.currentUser)}
+                                        allTeams={loaderData.teams} // You'll need to add this to loader data
+
                                     />
 
                                     {/* Optimistic feedback overlay */}
@@ -486,6 +502,12 @@ export default function Draft() {
                                     }, null, 2)}
                                 </pre>
                             </details>
+                        )}
+                        {process.env.NODE_ENV === 'development' && (
+                            <DebugPlayerPositions
+                                players={availablePlayersFiltered}
+                                title="Available Players Debug"
+                            />
                         )}
                     </>
                 )}

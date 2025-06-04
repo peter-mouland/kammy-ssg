@@ -1,10 +1,13 @@
-import type { DraftPickData, DraftOrderData } from "../types";
-
+// components/draft-team.tsx (fixed version)
+import type { DraftPickData } from "../types";
+import { getPositionDisplayName } from '../lib/points';
 import styles from './draft-team.module.css';
 
-interface TeamDraftProps {
+interface DraftTeamProps {
+    userId: string;
+    userName: string;
     draftPicks: DraftPickData[];
-    draftOrder: DraftOrderData[];
+    isCompact?: boolean;
 }
 
 interface PositionSlot {
@@ -28,18 +31,66 @@ interface TeamFormation {
     };
 }
 
-// Get position display name
-const getPositionDisplayName = (position: string) => {
-    const names = {
-        gk: 'GK',
-        cb: 'CB',
-        fb: 'FB',
-        mid: 'MID',
-        wa: 'WA',
-        ca: 'CA',
-        sub: 'SUB'
+const createUserFormation = (userPicks, userId, userName): TeamFormation => {
+    console.log(`Creating formation for ${userName}:`, userPicks); // Debug log
+
+    const formation: TeamFormation = {
+        userId,
+        userName,
+        positions: {
+            gk: [{ id: `${userId}-gk-1`, position: 'gk', isEmpty: true }],
+            cb: [
+                { id: `${userId}-cb-1`, position: 'cb', isEmpty: true },
+                { id: `${userId}-cb-2`, position: 'cb', isEmpty: true }
+            ],
+            fb: [
+                { id: `${userId}-fb-1`, position: 'fb', isEmpty: true },
+                { id: `${userId}-fb-2`, position: 'fb', isEmpty: true }
+            ],
+            mid: [
+                { id: `${userId}-mid-1`, position: 'mid', isEmpty: true },
+                { id: `${userId}-mid-2`, position: 'mid', isEmpty: true }
+            ],
+            wa: [
+                { id: `${userId}-wa-1`, position: 'wa', isEmpty: true },
+                { id: `${userId}-wa-2`, position: 'wa', isEmpty: true }
+            ],
+            ca: [
+                { id: `${userId}-ca-1`, position: 'ca', isEmpty: true },
+                { id: `${userId}-ca-2`, position: 'ca', isEmpty: true }
+            ],
+            sub: [{ id: `${userId}-sub-1`, position: 'sub', isEmpty: true }]
+        }
     };
-    return names[position as keyof typeof names] || position.toUpperCase();
+
+    // Place picked players into formation
+    userPicks.forEach((pick, index) => {
+        const customPosition = pick.position;
+        const positionSlots = formation.positions[customPosition.toLowerCase() as keyof typeof formation.positions];
+
+        if (positionSlots) {
+            const emptySlot = positionSlots.find(slot => slot.isEmpty);
+            if (emptySlot) {
+                emptySlot.player = pick;
+                emptySlot.isEmpty = false;
+            } else {
+                const subSlot = formation.positions.sub.find(slot => slot.isEmpty);
+                if (subSlot) {
+                    subSlot.player = pick;
+                    subSlot.isEmpty = false;
+                }
+            }
+        } else {
+            // Unknown position, put in sub
+            const subSlot = formation.positions.sub.find(slot => slot.isEmpty);
+            if (subSlot) {
+                subSlot.player = pick;
+                subSlot.isEmpty = false;
+            }
+        }
+    });
+
+    return formation;
 };
 
 // Render position slot
@@ -75,151 +126,71 @@ const PositionSlot = (slot: PositionSlot) => {
     );
 };
 
-export function TeamDraft({ draftPicks, draftOrder }: TeamDraftProps) {
-    // Map FPL positions to custom positions - DETERMINISTIC VERSION
-    const mapFplToCustomPosition = (fplPosition: string): string => {
-        switch (fplPosition) {
-            case '1': return 'gk';
-            case '2': return 'cb'; // : 'fb'; // Would need better logic
-            case '3': return 'mid';
-            case '4': return 'wa'; // : 'ca'; // Would need better logic
-            default: return 'sub';
-        }
-    };
-
+export function DraftTeam({ userId, userName, draftPicks, isCompact = false }: DraftTeamProps) {
     // Create formation for a specific user
-    const createUserFormation = (userId: string, userName: string): TeamFormation => {
-        const userPicks = draftPicks.filter(pick => pick.userId === userId);
-
-        // Initialize empty formation
-        const formation: TeamFormation = {
-            userId,
-            userName,
-            positions: {
-                gk: [{ id: `${userId}-gk-1`, position: 'gk', isEmpty: true }],
-                cb: [
-                    { id: `${userId}-cb-1`, position: 'cb', isEmpty: true },
-                    { id: `${userId}-cb-2`, position: 'cb', isEmpty: true }
-                ],
-                fb: [
-                    { id: `${userId}-fb-1`, position: 'fb', isEmpty: true },
-                    { id: `${userId}-fb-2`, position: 'fb', isEmpty: true }
-                ],
-                mid: [
-                    { id: `${userId}-mid-1`, position: 'mid', isEmpty: true },
-                    { id: `${userId}-mid-2`, position: 'mid', isEmpty: true }
-                ],
-                wa: [
-                    { id: `${userId}-wa-1`, position: 'wa', isEmpty: true },
-                    { id: `${userId}-wa-2`, position: 'wa', isEmpty: true }
-                ],
-                ca: [
-                    { id: `${userId}-ca-1`, position: 'ca', isEmpty: true },
-                    { id: `${userId}-ca-2`, position: 'ca', isEmpty: true }
-                ],
-                sub: [{ id: `${userId}-sub-1`, position: 'sub', isEmpty: true }]
-            }
-        };
-
-        // Place picked players into formation
-        userPicks.forEach((pick, index) => {
-            const customPosition = mapFplToCustomPosition(pick.position);
-            const positionSlots = formation.positions[customPosition as keyof typeof formation.positions];
-
-            if (positionSlots) {
-                // Find first empty slot in the position
-                const emptySlot = positionSlots.find(slot => slot.isEmpty);
-                if (emptySlot) {
-                    emptySlot.player = pick;
-                    emptySlot.isEmpty = false;
-                } else {
-                    // Position is full, put in sub
-                    const subSlot = formation.positions.sub.find(slot => slot.isEmpty);
-                    if (subSlot) {
-                        subSlot.player = pick;
-                        subSlot.isEmpty = false;
-                    }
-                }
-            }
-        });
-
-        return formation;
-    };
-
+    const userPicks = draftPicks.filter(pick => pick.userId === userId);
+    const formation = createUserFormation(userPicks, userId, userName);
+    const userPicksCount = userPicks.length; // Fixed: use userPicks.length instead of filtering again
     return (
-        <div className="card">
-            <div className="card-header">
-                <h2 className="card-title">Team Formations</h2>
+        <div className={`${styles.teamCard} ${isCompact ? styles.compact : ''}`}>
+            {/* Team Header */}
+            <div className={styles.teamHeader}>
+                <h3 className={styles.teamName}>
+                    {userName}
+                </h3>
+                <span className={`${styles.playerCount} ${userPicksCount >= 12 ? styles.complete : ''}`}>
+                    {userPicksCount}/12 players
+                </span>
             </div>
 
-            <div className={styles.teamContainer}>
-                {draftOrder.map(order => {
-                    const formation = createUserFormation(order.userId, order.userName);
+            {/* Formation Grid */}
+            <div className={styles.formationGrid}>
+                {/* GK Column */}
+                <div className={styles.positionColumn}>
+                    <div className={styles.positionHeader}>
+                        GK (1) SUB (1)
+                    </div>
+                    {formation.positions.gk.map(PositionSlot)}
+                    {formation.positions.sub.map(PositionSlot)}
+                </div>
 
-                    return (
-                        <div key={order.userId} className={styles.teamCard}>
-                            {/* Team Header */}
-                            <div className={styles.teamHeader}>
-                                <h3 className={styles.teamName}>
-                                    {formation.userName}
-                                </h3>
-                                <span className={styles.playerCount}>
-                                    {draftPicks.filter(pick => pick.userId === order.userId).length}/12 players
-                                </span>
-                            </div>
+                {/* Defense Columns */}
+                <div className={styles.positionColumn}>
+                    <div className={styles.positionHeader}>
+                        CB (2)
+                    </div>
+                    {formation.positions.cb.map(PositionSlot)}
+                </div>
 
-                            {/* Formation Grid */}
-                            <div className={styles.formationGrid}>
-                                {/* GK Column */}
-                                <div className={styles.positionColumn}>
-                                    <div className={styles.positionHeader}>
-                                        GK (1) SUB (1)
-                                    </div>
-                                    {formation.positions.gk.map(PositionSlot)}
-                                    {formation.positions.sub.map(PositionSlot)}
-                                </div>
+                <div className={styles.positionColumn}>
+                    <div className={styles.positionHeader}>
+                        FB (2)
+                    </div>
+                    {formation.positions.fb.map(PositionSlot)}
+                </div>
 
-                                {/* Defense Columns */}
-                                <div className={styles.positionColumn}>
-                                    <div className={styles.positionHeader}>
-                                        CB (2)
-                                    </div>
-                                    {formation.positions.cb.map(PositionSlot)}
-                                </div>
+                {/* Midfield Column */}
+                <div className={styles.positionColumn}>
+                    <div className={styles.positionHeader}>
+                        MID (2)
+                    </div>
+                    {formation.positions.mid.map(PositionSlot)}
+                </div>
 
-                                <div className={styles.positionColumn}>
-                                    <div className={styles.positionHeader}>
-                                        FB (2)
-                                    </div>
-                                    {formation.positions.fb.map(PositionSlot)}
-                                </div>
+                {/* Attack Columns */}
+                <div className={styles.positionColumn}>
+                    <div className={styles.positionHeader}>
+                        WA (2)
+                    </div>
+                    {formation.positions.wa.map(PositionSlot)}
+                </div>
 
-                                {/* Midfield Column */}
-                                <div className={styles.positionColumn}>
-                                    <div className={styles.positionHeader}>
-                                        MID (2)
-                                    </div>
-                                    {formation.positions.mid.map(PositionSlot)}
-                                </div>
-
-                                {/* Attack Columns */}
-                                <div className={styles.positionColumn}>
-                                    <div className={styles.positionHeader}>
-                                        WA (2)
-                                    </div>
-                                    {formation.positions.wa.map(PositionSlot)}
-                                </div>
-
-                                <div className={styles.positionColumn}>
-                                    <div className={styles.positionHeader}>
-                                        CA (2)
-                                    </div>
-                                    {formation.positions.ca.map(PositionSlot)}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
+                <div className={styles.positionColumn}>
+                    <div className={styles.positionHeader}>
+                        CA (2)
+                    </div>
+                    {formation.positions.ca.map(PositionSlot)}
+                </div>
             </div>
         </div>
     );

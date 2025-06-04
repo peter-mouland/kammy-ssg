@@ -1,0 +1,179 @@
+/* components/draft-players.module.css */
+
+.searchControls {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 0.5rem;
+    align-items: end;
+    margin-top: 1rem;
+}
+
+.searchInput {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.selectInput {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    font-size: 0.875rem;
+    min-width: 120px;
+}
+
+.searchButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.resultsSummary {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.playersList {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+}
+
+.emptyIcon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.clearFiltersButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.clearFiltersButton:hover {
+    background: #2563eb;
+}
+
+.playerItem {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: white;
+    cursor: pointer;
+    opacity: 1;
+    transition: all 0.2s;
+}
+
+.playerItem:hover {
+    background-color: #f3f4f6;
+}
+
+.playerItem.disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.playerItem.disabled:hover {
+    background-color: white;
+}
+
+.playerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playerInfo {
+    flex: 1;
+}
+
+.playerName {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.subOnlyBadge {
+    font-size: 0.625rem;
+    background: #fbbf24;
+    color: white;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+}
+
+.playerDetails {
+    font-size: 0.75rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.positionBadge {
+    background: #e5e7eb;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.625rem;
+}
+
+.playerPrice {
+    text-align: right;
+}
+
+.priceValue {
+    font-weight: 600;
+    color: #059669;
+    font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .searchControls {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .selectInput {
+        min-width: auto;
+    }
+
+    .resultsSummary {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .playerContent {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .playerPrice {
+        align-self: flex-end;
+    }
+}
+/* Add these to your existing draft-players.module.css */
+
+.filterHint {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
