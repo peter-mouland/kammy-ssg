@@ -253,9 +253,9 @@ export class FirebaseDraftSync {
                         userId: pick.userId,
                         playerId: pick.playerId,
                         playerName: pick.playerName,
-                        team: pick.team,
+                        teamCode: pick.teamCode,
+                        teamName: pick.teamName,
                         position: pick.position,
-                        price: pick.price,
                         pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt,
                         divisionId: pick.divisionId,
                         timestamp: Date.now()

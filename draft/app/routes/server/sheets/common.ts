@@ -429,3 +429,485 @@ export async function batchSheetOperations(
         );
     }
 }
+
+/**
+ * Read headers from a sheet to create dynamic mapping
+ */
+export async function readSheetHeaders(
+    sheetRange: SheetRange
+): Promise<string[]> {
+    try {
+        const sheetsClient = await createSheetsClient();
+        const headerRange = {
+            ...sheetRange,
+            range: sheetRange.range.split('!')[0] + '!1:1' // Get only first row
+        };
+
+        const response = await sheetsClient.spreadsheets.values.get({
+            spreadsheetId: headerRange.spreadsheetId,
+            range: headerRange.range,
+            valueRenderOption: 'UNFORMATTED_VALUE'
+        });
+
+        return response.data.values?.[0] || [];
+    } catch (error) {
+        throw createAppError(
+            'SHEET_HEADERS_READ_ERROR',
+            `Failed to read headers from sheet: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Create a mapping from object keys to column indices based on actual sheet headers
+ */
+export function createHeaderMapping<T>(
+    actualHeaders: string[],
+    headerMapping: Record<string, keyof T>
+): Map<keyof T, number> {
+    const mapping = new Map<keyof T, number>();
+
+    Object.entries(headerMapping).forEach(([headerText, objectKey]) => {
+        const columnIndex = actualHeaders.findIndex(header =>
+            normalizeHeaderName(header) === normalizeHeaderName(headerText)
+        );
+
+        if (columnIndex >= 0) {
+            mapping.set(objectKey, columnIndex);
+        } else {
+            console.warn(`Header "${headerText}" not found in sheet. Available headers:`, actualHeaders);
+        }
+    });
+
+    return mapping;
+}
+
+/**
+ * Convert objects to sheet rows using dynamic header mapping
+ */
+export function convertToSheetRowsWithMapping<T>(
+    data: T[],
+    actualHeaders: string[],
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>
+): any[][] {
+    const columnMapping = createHeaderMapping(actualHeaders, headerMapping);
+
+    return data.map(item => {
+        // Create array with same length as headers, filled with empty strings
+        const row = new Array(actualHeaders.length).fill('');
+
+        // Fill in values at correct positions
+        columnMapping.forEach((columnIndex, objectKey) => {
+            let value = item[objectKey] ?? '';
+
+            // Apply transformation if provided
+            if (transformFunctions && objectKey in transformFunctions) {
+                const transformFn = transformFunctions[objectKey];
+                if (transformFn) {
+                    value = transformFn(value);
+                }
+            }
+
+            row[columnIndex] = value;
+        });
+
+        return row;
+    });
+}
+
+/**
+ * Smart append that handles header mapping automatically
+ */
+export async function smartAppendToSheet<T>(
+    sheetRange: SheetRange,
+    data: T[],
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
+    options: SheetWriteOptions = {}
+): Promise<void> {
+    try {
+        // Read current headers from sheet
+        const actualHeaders = await readSheetHeaders(sheetRange);
+
+        if (actualHeaders.length === 0) {
+            throw new Error('No headers found in sheet. Please ensure the sheet has a header row.');
+        }
+
+        // Convert data to rows using actual header positions
+        const rows = convertToSheetRowsWithMapping(
+            data,
+            actualHeaders,
+            headerMapping,
+            transformFunctions
+        );
+
+        // Append the rows
+        await appendToSheet(sheetRange, rows, options);
+
+    } catch (error) {
+        throw createAppError(
+            'SMART_APPEND_ERROR',
+            `Failed to smart append to sheet: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Smart update that handles header mapping automatically
+ */
+export async function smartUpdateSheet<T>(
+    sheetRange: SheetRange,
+    data: T[],
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
+    includeHeaders = true,
+    options: SheetWriteOptions = {}
+): Promise<void> {
+    try {
+        let rows: any[][];
+
+        if (includeHeaders) {
+            // Use the header mapping keys as headers
+            const headers = Object.keys(headerMapping);
+            const dataRows = convertToSheetRows(data, headerMapping, false);
+            rows = [headers, ...dataRows];
+        } else {
+            // Read existing headers and map data accordingly
+            const actualHeaders = await readSheetHeaders(sheetRange);
+            rows = convertToSheetRowsWithMapping(
+                data,
+                actualHeaders,
+                headerMapping,
+                transformFunctions
+            );
+        }
+
+        await writeSheetRange(sheetRange, rows, options);
+
+    } catch (error) {
+        throw createAppError(
+            'SMART_UPDATE_ERROR',
+            `Failed to smart update sheet: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Validate that required headers exist in the sheet
+ */
+export async function validateRequiredHeaders<T>(
+    sheetRange: SheetRange,
+    headerMapping: Record<string, keyof T>,
+    requiredKeys?: (keyof T)[]
+): Promise<{ isValid: boolean; missingHeaders: string[]; extraHeaders: string[] }> {
+    try {
+        const actualHeaders = await readSheetHeaders(sheetRange);
+        const expectedHeaders = Object.keys(headerMapping);
+        const normalizedActual = actualHeaders.map(normalizeHeaderName);
+        const normalizedExpected = expectedHeaders.map(normalizeHeaderName);
+
+        const missingHeaders = expectedHeaders.filter(header =>
+            !normalizedActual.includes(normalizeHeaderName(header))
+        );
+
+        const extraHeaders = actualHeaders.filter(header =>
+            !normalizedExpected.includes(normalizeHeaderName(header))
+        );
+
+        // If specific keys are required, check only those
+        const requiredHeaders = requiredKeys
+            ? Object.entries(headerMapping)
+                .filter(([_, key]) => requiredKeys.includes(key))
+                .map(([header, _]) => header)
+            : expectedHeaders;
+
+        const missingRequired = requiredHeaders.filter(header =>
+            !normalizedActual.includes(normalizeHeaderName(header))
+        );
+
+        return {
+            isValid: missingRequired.length === 0,
+            missingHeaders: missingRequired,
+            extraHeaders
+        };
+    } catch (error) {
+        throw createAppError(
+            'HEADER_VALIDATION_ERROR',
+            `Failed to validate headers for sheet: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Get safe column range that includes all mapped columns
+ */
+export function getSafeColumnRange<T>(
+    sheetName: string,
+    headerMapping: Record<string, keyof T>,
+    actualHeaders: string[]
+): string {
+    const mappedIndices = Object.keys(headerMapping)
+        .map(headerText =>
+            actualHeaders.findIndex(header =>
+                normalizeHeaderName(header) === normalizeHeaderName(headerText)
+            )
+        )
+        .filter(index => index >= 0);
+
+    if (mappedIndices.length === 0) {
+        return `'${sheetName}'!A:A`; // Fallback to column A
+    }
+
+    const maxIndex = Math.max(...mappedIndices);
+    const maxColumn = String.fromCharCode(65 + maxIndex); // Convert to letter (A, B, C, etc.)
+
+    return `'${sheetName}'!A:${maxColumn}`;
+}
+
+
+/**
+ * Read sheet data and extract headers in one call
+ */
+export async function readSheetWithHeaders(
+    sheetRange: SheetRange,
+    options: SheetReadOptions = {}
+): Promise<{ headers: string[]; data: any[][]; rawData: any[][] }> {
+    try {
+        const sheetsClient = await createSheetsClient();
+        const response = await sheetsClient.spreadsheets.values.get({
+            spreadsheetId: sheetRange.spreadsheetId,
+            range: sheetRange.range,
+            valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
+            dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
+            majorDimension: options.majorDimension || 'ROWS'
+        });
+
+        const rawData = response.data.values || [];
+        const headers = rawData.length > 0 ? rawData[0] : [];
+        const data = rawData.slice(1);
+
+        return { headers, data, rawData };
+    } catch (error) {
+        throw createAppError(
+            'SHEET_READ_WITH_HEADERS_ERROR',
+            `Failed to read sheet with headers: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Create header-to-column mapping from actual sheet headers
+ */
+export function createHeaderMappingFromActual<T>(
+    actualHeaders: string[],
+    expectedHeaderMapping: Record<string, keyof T>
+): { mapping: Map<keyof T, number>; missing: string[]; found: string[] } {
+    const mapping = new Map<keyof T, number>();
+    const missing: string[] = [];
+    const found: string[] = [];
+
+    Object.entries(expectedHeaderMapping).forEach(([headerText, objectKey]) => {
+        const columnIndex = actualHeaders.findIndex(header =>
+            normalizeHeaderName(header) === normalizeHeaderName(headerText)
+        );
+
+        if (columnIndex >= 0) {
+            mapping.set(objectKey, columnIndex);
+            found.push(headerText);
+        } else {
+            missing.push(headerText);
+        }
+    });
+
+    return { mapping, missing, found };
+}
+
+/**
+ * Parse sheet data using dynamic header mapping - single API call
+ */
+export function parseSheetDataWithMapping<T>(
+    headers: string[],
+    dataRows: any[][],
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>
+): { data: T[]; mapping: Map<keyof T, number>; missing: string[] } {
+    const { mapping, missing } = createHeaderMappingFromActual(headers, headerMapping);
+
+    const data = dataRows.map(row => {
+        const item = {} as T;
+
+        mapping.forEach((columnIndex, objectKey) => {
+            if (columnIndex < row.length) {
+                let value = row[columnIndex];
+
+                // Apply transformation function if provided
+                if (transformFunctions && objectKey in transformFunctions) {
+                    const transformFn = transformFunctions[objectKey];
+                    if (transformFn) {
+                        value = transformFn(value);
+                    }
+                }
+
+                item[objectKey] = value;
+            }
+        });
+
+        return item;
+    });
+
+    return { data, mapping, missing };
+}
+
+/**
+ * Convert objects to sheet rows using actual header positions - no API call needed
+ */
+export function convertToRowsWithActualHeaders<T>(
+    data: T[],
+    actualHeaders: string[],
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>
+): any[][] {
+    const { mapping } = createHeaderMappingFromActual(actualHeaders, headerMapping);
+
+    return data.map(item => {
+        // Create array with same length as headers, filled with empty strings
+        const row = new Array(actualHeaders.length).fill('');
+
+        // Fill in values at correct positions
+        mapping.forEach((columnIndex, objectKey) => {
+            let value = item[objectKey] ?? '';
+
+            // Apply transformation if provided
+            if (transformFunctions && objectKey in transformFunctions) {
+                const transformFn = transformFunctions[objectKey];
+                if (transformFn) {
+                    value = transformFn(value);
+                }
+            }
+
+            row[columnIndex] = value;
+        });
+
+        return row;
+    });
+}
+
+/**
+ * Optimized smart append - single API call to read headers
+ */
+export async function optimizedSmartAppend<T>(
+    sheetRange: SheetRange,
+    data: T[],
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
+    options: SheetWriteOptions = {}
+): Promise<void> {
+    try {
+        // Single API call to get headers and existing data
+        const { headers } = await readSheetWithHeaders(sheetRange);
+
+        if (headers.length === 0) {
+            throw new Error('No headers found in sheet. Please ensure the sheet has a header row.');
+        }
+
+        // Convert data to rows using actual header positions
+        const rows = convertToRowsWithActualHeaders(
+            data,
+            headers,
+            headerMapping,
+            transformFunctions
+        );
+
+        // Append the rows
+        await appendToSheet(sheetRange, rows, options);
+
+    } catch (error) {
+        throw createAppError(
+            'OPTIMIZED_SMART_APPEND_ERROR',
+            `Failed to smart append to sheet: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Optimized read with header mapping - single API call
+ */
+export async function optimizedReadWithMapping<T>(
+    sheetRange: SheetRange,
+    headerMapping: Record<string, keyof T>,
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
+    options: SheetReadOptions = {}
+): Promise<{ data: T[]; missing: string[]; headers: string[] }> {
+    try {
+        // Single API call to get everything
+        const { headers, data: dataRows } = await readSheetWithHeaders(sheetRange, options);
+
+        if (headers.length === 0) {
+            return { data: [], missing: Object.keys(headerMapping), headers: [] };
+        }
+
+        // Parse data using header mapping
+        const { data, missing } = parseSheetDataWithMapping(
+            headers,
+            dataRows,
+            headerMapping,
+            transformFunctions
+        );
+
+        return { data, missing, headers };
+
+    } catch (error) {
+        throw createAppError(
+            'OPTIMIZED_READ_WITH_MAPPING_ERROR',
+            `Failed to read sheet with mapping: ${sheetRange.range}`,
+            error
+        );
+    }
+}
+
+/**
+ * Cache headers to avoid repeated API calls within same request
+ */
+const headerCache = new Map<string, { headers: string[]; timestamp: number }>();
+const CACHE_TTL = 60000; // 1 minute cache
+
+export function getCachedHeaders(cacheKey: string): string[] | null {
+    const cached = headerCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.headers;
+    }
+    return null;
+}
+
+export function setCachedHeaders(cacheKey: string, headers: string[]): void {
+    headerCache.set(cacheKey, { headers, timestamp: Date.now() });
+}
+
+/**
+ * Get headers with caching to reduce API calls
+ */
+export async function getCachedSheetHeaders(sheetRange: SheetRange): Promise<string[]> {
+    const cacheKey = `${sheetRange.spreadsheetId}:${sheetRange.range.split('!')[0]}`;
+
+    // Check cache first
+    const cachedHeaders = getCachedHeaders(cacheKey);
+    if (cachedHeaders) {
+        return cachedHeaders;
+    }
+
+    // Read from API and cache
+    const { headers } = await readSheetWithHeaders({
+        ...sheetRange,
+        range: sheetRange.range.split('!')[0] + '!1:1'
+    });
+
+    setCachedHeaders(cacheKey, headers);
+    return headers;
+}

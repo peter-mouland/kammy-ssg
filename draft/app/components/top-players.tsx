@@ -43,7 +43,7 @@ export function TopPlayers({ players }: TopPlayersProps) {
                                 </div>
                             </td>
                             <td className={styles.teamName}>
-                                Team {player.team}
+                                {player.team_code}
                             </td>
                             <td className={styles.points}>
                                 {player.total_points}

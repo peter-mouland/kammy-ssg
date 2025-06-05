@@ -222,12 +222,12 @@ export class FplCache {
     /**
      * Get players by team (from cached elements)
      */
-    async getPlayersByTeam(teamId: number): Promise<FplPlayerData[]> {
+    async getPlayersByTeam(teamCode: number): Promise<FplPlayerData[]> {
         const elements = await this.getElements();
         if (!elements) return [];
 
         return elements
-            .filter(player => player.team === teamId)
+            .filter(player => player.team_code === teamCode)
             .sort((a, b) => b.total_points - a.total_points);
     }
 

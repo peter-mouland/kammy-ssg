@@ -326,12 +326,12 @@ export class FplApiCache {
     /**
      * Get players by team
      */
-    async getPlayersByTeam(teamId: number): Promise<FplPlayerData[]> {
+    async getPlayersByTeam(teamCode: number): Promise<FplPlayerData[]> {
         const startTime = performance.now();
-        console.log(`🔄 getPlayersByTeam(${teamId}) - Start`);
+        console.log(`🔄 getPlayersByTeam(${teamCode}) - Start`);
 
-        const result = await this.fplCache.getPlayersByTeam(teamId);
-        console.log(`✅ getPlayersByTeam(${teamId}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
+        const result = await this.fplCache.getPlayersByTeam(teamCode);
+        console.log(`✅ getPlayersByTeam(${teamCode}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
         return result;
     }
 
@@ -607,7 +607,7 @@ export class FplApiCache {
             console.log('🔄 Step 3/6: Preparing data structures...');
             const playerIds = fplPlayers.map(p => p.id);
             const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
-                acc[team.id] = team.name;
+                acc[team.code] = team.name;
                 return acc;
             }, {});
 
@@ -675,7 +675,7 @@ export class FplApiCache {
         const emptyDetailedStats: Record<number, FplPlayerSeasonData> = {};
 
         const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
-            acc[team.id] = team.name;
+            acc[team.code] = team.name;
             return acc;
         }, {});
 

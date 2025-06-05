@@ -12,7 +12,6 @@ export const convertFplElementToCache = (element) => ({
     first_name: element.first_name,
     second_name: element.second_name,
     web_name: element.web_name,
-    team: element.team,
     team_code: element.team_code,
     form: element.form,
     now_cost: element.now_cost,
@@ -149,9 +148,9 @@ export function getPlayersByPosition(players: FplPlayerData[], elementType: numb
 /**
  * Get players by team
  */
-export function getPlayersByTeam(players: FplPlayerData[], teamId: number): FplPlayerData[] {
+export function getPlayersByTeam(players: FplPlayerData[], teamCode: number): FplPlayerData[] {
     return players
-        .filter(player => player.team === teamId)
+        .filter(player => player.team_code === teamCode)
         .sort((a, b) => b.total_points - a.total_points);
 }
 
@@ -193,7 +192,7 @@ export function calculateTeamStrengths(bootstrap: FplBootstrapData): Record<numb
     const strengths: Record<number, { attack: number; defence: number }> = {};
 
     bootstrap.teams.forEach(team => {
-        strengths[team.id] = {
+        strengths[team.code] = {
             attack: (team.strength_attack_home + team.strength_attack_away) / 2,
             defence: (team.strength_defence_home + team.strength_defence_away) / 2
         };

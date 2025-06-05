@@ -10,7 +10,7 @@ export async function getPlayerStatsData(): Promise<PlayerStatsData> {
     ]);
 
     const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
-        acc[team.id] = team.name;
+        acc[team.code] = team.name;
         return acc;
     }, {});
 

@@ -99,7 +99,7 @@ export const DraftPlayersAvailable = ({ onSelectPlayer, availablePlayers, isUser
                                             {player.first_name} {player.second_name}
                                         </div>
                                         <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                            {player.draft?.position} • Team {player.team}
+                                            {player.draft?.position} • {player.team_code}
                                         </div>
                                     </div>
                                     <div style={{ textAlign: 'right' }}>

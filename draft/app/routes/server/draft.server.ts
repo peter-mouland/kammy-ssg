@@ -67,7 +67,7 @@ export async function loadDraftData(url: URL) {
         draftState,
         draftPicks,
         draftOrder,
-        availablePlayers: availablePlayers.slice(0, 50),
+        availablePlayers: availablePlayers,
         currentUser,
         isUserTurn,
         divisions,
@@ -89,17 +89,22 @@ export async function makeDraftPick(formData: FormData) {
     }
 
     const allPlayers = await fplApiCache.getFplPlayers();
+    const allTeams = await fplApiCache.getFplTeams();
     const player = allPlayers.find(p => p.id.toString() === playerId);
+    const team = allTeams.find(t => t.code === player.team_code);
 
     if (!player) {
         throw new Error("Player not found");
+    }
+    if (!team) {
+        throw new Error(`Team ${player.team_code} not found`);
     }
 
     const [draftState, existingPicks, draftOrder, userTeams] = await Promise.all([
         readDraftState(),
         getDraftPicksByDivision(divisionId),
         getDraftOrderByDivision(divisionId),
-        readUserTeams()
+        readUserTeams(),
     ]);
 
     if (!draftState?.isActive) {
@@ -125,10 +130,10 @@ export async function makeDraftPick(formData: FormData) {
         round,
         userId,
         playerId: player.id.toString(),
-        playerName: `${player.first_name} ${player.second_name}`,
-        team: `Team ${player.team}`,
+        playerName: player.web_name,
+        teamName: team.name,
+        teamCode: player.team_code,
         position: player.draft.position,
-        price: player.now_cost / 10,
         pickedAt: new Date(),
         divisionId
     };

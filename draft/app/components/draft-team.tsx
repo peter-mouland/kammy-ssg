@@ -105,7 +105,7 @@ const PositionSlot = (slot: PositionSlot) => {
         styles.emptySlotText,
         styles[slot.position]
     ].join(' ');
-
+console.log(slot)
     return (
         <div key={slot.id} className={slotClasses}>
             {slot.isEmpty ? (
@@ -119,6 +119,9 @@ const PositionSlot = (slot: PositionSlot) => {
                     </div>
                     <div className={styles.playerPosition}>
                         {getPositionDisplayName(slot.position)}
+                    </div>
+                    <div className={styles.playerPosition}>
+                        {slot.player?.teamName}
                     </div>
                 </div>
             )}

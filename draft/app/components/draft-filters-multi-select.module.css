@@ -1,27 +1,3 @@
-/* components/compact-multi-select.module.css */
-
-.filtersContainer {
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
-    gap: 0.75rem;
-    align-items: end;
-    margin: 1rem 0;
-}
-
-.searchInput {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    background: white;
-}
-
-.searchInput:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
-}
-
 .dropdown {
     position: relative;
     min-width: 140px;
@@ -65,7 +41,7 @@
     color: #6b7280;
 }
 
-.dropdown.open .dropdownArrow {
+.dropdown .dropdownButton.open .dropdownArrow {
     transform: rotate(180deg);
 }
 
@@ -155,39 +131,9 @@
     color: #1e40af;
 }
 
-.clearButton {
-    padding: 0.5rem 1rem;
-    background: #6b7280;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    white-space: nowrap;
-}
-
-.clearButton:hover {
-    background: #4b5563;
-}
-
-.resultsSummary {
-    grid-column: 1 / -1;
-    font-size: 0.75rem;
-    color: #6b7280;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .filtersContainer {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
-
-    .dropdown {
+.dropdown {
         min-width: auto;
     }
 }

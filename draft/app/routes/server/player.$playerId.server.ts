@@ -27,9 +27,9 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         }
 
         // Get team data and create team lookup for opponents
-        const team = fplTeams.find(t => t.id === fplPlayer.team);
+        const team = fplTeams.find(t => t.code === fplPlayer.team_code);
         if (!team) {
-            throw new Error(`Team ${fplPlayer.team} not found`);
+            throw new Error(`Team ${fplPlayer.team_code} not found`);
         }
 
         // Create team lookup for opponent names

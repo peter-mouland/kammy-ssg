@@ -1,7 +1,12 @@
-// components/draft-players.tsx - Updated with multi-select filters
+// components/draft-players.tsx - Optimized version
 import React, { useState, useMemo, useEffect } from 'react';
-import { useEligiblePlayers, validateDraftEligibility, getPlayerPosition, DRAFT_RULES } from '../lib/draft/draft-rules';
-import { MultiSelectFilters } from './multi-select-filters';
+import {
+    validateDraftEligibility,
+    getPlayerPosition,
+    DRAFT_RULES,
+    getSquadComposition,
+} from '../lib/draft/draft-rules';
+import { DraftFilters } from './draft-filters';
 import { getPositionDisplayName } from '../lib/points';
 import styles from './draft-players.module.css';
 
@@ -13,6 +18,12 @@ interface DraftPlayersProps {
     allTeams?: any[];
 }
 
+interface PlayerWithValidation {
+    player: any;
+    validation: ReturnType<typeof validateDraftEligibility>;
+    position: string;
+}
+
 export function DraftPlayers({
                                  onSelectPlayer,
                                  availablePlayers,
@@ -20,37 +31,70 @@ export function DraftPlayers({
                                  currentUserPicks,
                                  allTeams = []
                              }: DraftPlayersProps) {
-    // Initialize with all positions and teams selected
-    const [selectedPositions, setSelectedPositions] = useState<string[]>(() =>
-        Object.keys(DRAFT_RULES.positions)
-    );
-    const [selectedTeams, setSelectedTeams] = useState<string[]>(() =>
-        allTeams.map(team => team.id.toString())
-    );
+    const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
+    const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [filtersInitialized, setFiltersInitialized] = useState(false);
+    const squadComposition = getSquadComposition(currentUserPicks);
 
-    // Update teams when allTeams changes (on initial load)
+
+
+    // Pre-compute validations for all players - this avoids duplicate calculations
+    const playersWithValidation = useMemo((): PlayerWithValidation[] => {
+        return availablePlayers.map(player => ({
+            player,
+            validation: validateDraftEligibility(squadComposition, player),
+            position: getPlayerPosition(player)
+        }));
+    }, [availablePlayers, squadComposition]);
+
+
+    // Get only eligible players (those that can be drafted)
+    const eligiblePlayersWithValidation = useMemo(() => {
+        return playersWithValidation.filter(item => item.validation.isEligible);
+    }, [playersWithValidation]);
+
+    // Initialize filters based on eligible players
     useEffect(() => {
-        if (allTeams.length > 0 && selectedTeams.length === 0) {
-            setSelectedTeams(allTeams.map(team => team.id.toString()));
-        }
-    }, [allTeams, selectedTeams.length]);
+        if (eligiblePlayersWithValidation.length > 0 && allTeams.length > 0 && !filtersInitialized) {
 
-    // Get team lookup for better names
+            // Get positions that have eligible players
+            const availablePositions = Object.keys(DRAFT_RULES.positions).filter(position =>
+                eligiblePlayersWithValidation.some(item => item.position === position)
+            );
+
+            // Get teams that have eligible players
+            const availableTeamCodes = allTeams
+                .filter(team =>
+                    eligiblePlayersWithValidation.some(item => item.player.team_code === team.code)
+                )
+                .map(team => team.code.toString());
+
+            setSelectedPositions(availablePositions);
+            setSelectedTeams(availableTeamCodes);
+            setFiltersInitialized(true);
+        }
+    }, [eligiblePlayersWithValidation, allTeams, currentUserPicks.length, filtersInitialized]);
+
+    // Reset filters when currentUserPicks changes
+    useEffect(() => {
+        if (filtersInitialized) {
+            setFiltersInitialized(false);
+        }
+    }, [currentUserPicks.length]);
+
+    // Team lookup for display names
     const teamLookup = useMemo(() => {
         return allTeams.reduce((acc, team) => {
-            acc[team.id] = team.name || team.short_name || `Team ${team.id}`;
+            acc[team.code] = team.name || team.short_name;
             return acc;
         }, {} as Record<number, string>);
     }, [allTeams]);
 
-    // Filter players based on draft rules (eligible players only)
-    const { eligiblePlayers, hiddenCount, violations } = useEligiblePlayers(availablePlayers, currentUserPicks);
-
-    // Apply user filters on top of eligible players
-    const filteredPlayers = useMemo(() => {
-        return eligiblePlayers.filter(player => {
-            // Search term filter
+    // Apply user filters to eligible players
+    const filteredPlayersWithValidation = useMemo(() => {
+        return eligiblePlayersWithValidation.filter(({ player, position }) => {
+            // Search filter
             if (searchTerm) {
                 const searchLower = searchTerm.toLowerCase();
                 const fullName = `${player.first_name} ${player.second_name}`.toLowerCase();
@@ -61,32 +105,59 @@ export function DraftPlayers({
             }
 
             // Position filter
-            const playerPosition = getPlayerPosition(player);
-            if (!selectedPositions.includes(playerPosition)) {
+            if (!selectedPositions.includes(position)) {
                 return false;
             }
 
             // Team filter
-            if (!selectedTeams.includes(player.team.toString())) {
+            if (!selectedTeams.includes(player.team_code.toString())) {
                 return false;
             }
 
             return true;
         });
-    }, [eligiblePlayers, searchTerm, selectedPositions, selectedTeams]);
+    }, [eligiblePlayersWithValidation, searchTerm, selectedPositions, selectedTeams]);
 
-    // Count filtered out eligible players (for display)
-    const filteredOutCount = eligiblePlayers.length - filteredPlayers.length;
+    // Calculate stats for display
+    const stats = useMemo(() => {
+        const totalAvailable = availablePlayers.length;
+        const totalEligible = eligiblePlayersWithValidation.length;
+        const totalFiltered = filteredPlayersWithValidation.length;
+        const hiddenByRules = totalAvailable - totalEligible;
+        const hiddenByFilters = totalEligible - totalFiltered;
+
+        return {
+            totalAvailable,
+            totalEligible,
+            totalFiltered,
+            hiddenByRules,
+            hiddenByFilters
+        };
+    }, [availablePlayers.length, eligiblePlayersWithValidation.length, filteredPlayersWithValidation.length]);
+
+    // Don't render until filters are initialized
+    if (!filtersInitialized && availablePlayers.length > 0) {
+        return (
+            <div className="card">
+                <div className="card-header">
+                    <h2 className="card-title">Available Players</h2>
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
+                        Loading filters...
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="card">
             <div className="card-header">
                 <h2 className="card-title">Available Players</h2>
 
-                {/* Multi-select Filters */}
-                <MultiSelectFilters
+                {/* Pass pre-computed data to avoid recalculation */}
+                <DraftFilters
                     availablePlayers={availablePlayers}
-                    currentUserPicks={currentUserPicks}
+                    squadComposition={squadComposition}
                     allTeams={allTeams}
                     selectedPositions={selectedPositions}
                     selectedTeams={selectedTeams}
@@ -95,44 +166,35 @@ export function DraftPlayers({
                     onTeamsChange={setSelectedTeams}
                     onSearchChange={setSearchTerm}
                 />
-
-                {/* Results summary */}
-                <div className={styles.resultsSummary}>
-                    <span>Showing {filteredPlayers.length} players</span>
-                    {filteredOutCount > 0 && (
-                        <span>({filteredOutCount} eligible but filtered out)</span>
-                    )}
-                    {hiddenCount > 0 && (
-                        <span>({hiddenCount} blocked by draft rules)</span>
-                    )}
-                </div>
             </div>
 
             <div className={styles.playersList}>
-                {filteredPlayers.length === 0 ? (
+                {filteredPlayersWithValidation.length === 0 ? (
                     <div className={styles.emptyState}>
                         <div className={styles.emptyIcon}>
-                            {eligiblePlayers.length === 0 ? '🚫' : '🔍'}
+                            {stats.totalEligible === 0 ? '🚫' : '🔍'}
                         </div>
                         <p>
-                            {eligiblePlayers.length === 0
+                            {stats.totalEligible === 0
                                 ? 'No players available due to draft rules.'
                                 : 'No players match your current filters.'
                             }
                         </p>
-                        {filteredOutCount > 0 && (
+                        {stats.hiddenByFilters > 0 && (
                             <p className={styles.filterHint}>
-                                Try adjusting your position or team filters to see more players.
+                                Try adjusting your position or team filters to see {stats.hiddenByFilters} more eligible players.
+                            </p>
+                        )}
+                        {stats.hiddenByRules > 0 && (
+                            <p className={styles.rulesHint}>
+                                {stats.hiddenByRules} players are hidden due to draft rules.
                             </p>
                         )}
                     </div>
                 ) : (
                     <div>
-                        {filteredPlayers.map((player) => {
-                            const playerPosition = getPlayerPosition(player);
-                            const teamName = teamLookup[player.team] || `Team ${player.team}`;
-                            const validation = validateDraftEligibility(currentUserPicks, player);
-
+                        {filteredPlayersWithValidation.map(({ player, validation, position }) => {
+                            const teamName = teamLookup[player.team_code];
                             const itemClass = `${styles.playerItem} ${!isUserTurn ? styles.disabled : ''}`;
 
                             return (
@@ -142,11 +204,10 @@ export function DraftPlayers({
                                     onClick={() => isUserTurn && onSelectPlayer(player.id.toString())}
                                 >
                                     <div className={styles.playerContent}>
-                                        {/* Player Info */}
                                         <div className={styles.playerInfo}>
                                             <div className={styles.playerName}>
                                                 <span>{player.first_name} {player.second_name}</span>
-                                                {validation.canAddToSub && !validation.isEligible && (
+                                                {validation.canAddToSub && (
                                                     <span className={styles.subOnlyBadge}>
                                                         SUB ONLY
                                                     </span>
@@ -154,19 +215,18 @@ export function DraftPlayers({
                                             </div>
                                             <div className={styles.playerDetails}>
                                                 <span className={styles.positionBadge}>
-                                                    {getPositionDisplayName(playerPosition)}
+                                                    {getPositionDisplayName(position)}
                                                 </span>
                                                 <span>•</span>
                                                 <span>{teamName}</span>
                                                 <span>•</span>
-                                                <span>{player.total_points} pts</span>
+                                                <span>£{(player.now_cost / 10).toFixed(1)}m</span>
                                             </div>
                                         </div>
 
-                                        {/* Price */}
                                         <div className={styles.playerPrice}>
                                             <div className={styles.priceValue}>
-                                                £{(player.now_cost / 10).toFixed(1)}m
+                                                {player.draft.pointsTotal} pts
                                             </div>
                                         </div>
                                     </div>

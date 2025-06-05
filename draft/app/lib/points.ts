@@ -275,7 +275,7 @@ export function getPositionDisplayName(position: CustomPosition): string {
         fb: 'Full-back',
         cb: 'Centre-back',
         mid: 'Midfielder',
-        wa: 'Winger/Attacking Mid',
+        wa: 'Wide Attack',
         ca: 'Centre Attacker'
     };
 

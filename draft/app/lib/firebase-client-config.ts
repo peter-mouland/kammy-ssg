@@ -25,10 +25,9 @@ const REALTIME_APP_NAME = 'realtime-draft';
 let realtimeDB;
 
 export function getRealtimeDbInstance() {
-    console.log('getRealtimeDbInstance')
     if (!realtimeDB) {
         const existingApps = getApps();
-        let realtimeApp = existingApps.find(app => console.log(app) || app.name === REALTIME_APP_NAME);
+        let realtimeApp = existingApps.find(app =>  app.name === REALTIME_APP_NAME);
         if (!realtimeApp) {
             realtimeApp = initializeApp(realtimeConfig, REALTIME_APP_NAME);
             console.log('🔥 Firebase Realtime Database client initialized for project:', realtimeConfig.projectId);

@@ -1,23 +1,48 @@
 /* components/draft-filters.module.css */
 
-.draftFilters {
-    background: #fef3c7;
-    border: 1px solid #f59e0b;
-    border-radius: 8px;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+.filtersContainer {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 0.75rem;
+    align-items: end;
+    margin: 1rem 0;
 }
 
-.filtersTitle {
+.clearButton {
+    padding: 0.5rem 1rem;
+    background: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
     font-size: 0.875rem;
-    font-weight: 500;
-    color: #92400e;
-    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    white-space: nowrap;
 }
 
-.violationsList {
-    margin: 0;
-    padding-left: 1.25rem;
+.clearButton:hover {
+    background: #4b5563;
+}
+
+.clearButton:focus {
+    outline: none;
+    background: #4b5563;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.resultsSummary {
+    grid-column: 1 / -1;
     font-size: 0.75rem;
-    color: #92400e;
+    color: #6b7280;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filtersContainer {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
 }

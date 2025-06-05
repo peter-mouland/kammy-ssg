@@ -214,7 +214,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                                             {player.first_name} {player.second_name}
                                         </span>
                                                                     <span className={styles.playerTeam}>
-                                            {teams[player.team]?.short_name || 'Unknown'}
+                                            {teams[player.team_code]?.short_name}
                                         </span>
                                     </div>
                                 </Link>

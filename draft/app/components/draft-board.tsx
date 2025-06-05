@@ -81,7 +81,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                                         }}>
                                             <span>{getPositionDisplayName(pick.position)}</span>
                                             <span>•</span>
-                                            <span>{pick.team}</span>
+                                            <span>{pick.teamName}</span>
                                             <span>•</span>
                                             <span>£{pick.price}m</span>
                                         </div>

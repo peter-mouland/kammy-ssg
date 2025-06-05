@@ -255,7 +255,6 @@ function GameweekPointsStatus() {
 
 // Then handle the response in useEffect
     React.useEffect(() => {
-        console.log(status)
         if (statusFetcher.data?.success) {
             setStatus(statusFetcher.data.data);
         }
