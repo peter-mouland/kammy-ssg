@@ -1,7 +1,6 @@
-// app/components/player-gameweek-table.tsx
+import { Table, TableColumn, TableBadge } from "./table";
 import { formatPointsDisplay } from '../lib/points';
 import { isStatRelevant } from '../lib/is-stat-relevant';
-import styles from './player-gameweek-table.module.css';
 
 interface GameweekStatWithPoints {
     gameweek: number;
@@ -16,6 +15,7 @@ interface GameweekStatWithPoints {
     penaltiesSaved: number;
     bonus: number;
     opponent: number;
+    opponentName?: string;
     wasHome: boolean;
     teamHScore: number;
     teamAScore: number;
@@ -47,157 +47,265 @@ export function PlayerGameweekTable({
                                         position,
                                         currentGameweek
                                     }: PlayerGameweekTableProps) {
-    const positionLower = position.toLowerCase();
+    // Helper functions
+    const getStatDisplay = (value: number, stat: string, position: string): React.ReactNode => {
+        if (!isStatRelevant(stat, position)) {
+            return '-';
+        }
 
-    return (
-        <div className={styles.tableContainer}>
-            <table className={styles.gameweekTable}>
-                <thead>
-                <tr>
-                    <th className={styles.gameweekHeader}>GW</th>
-                    <th>Min</th>
-                    <th>Goals</th>
-                    <th>Assists</th>
-                    {isStatRelevant('clean_sheets', position) && <th>CS</th>}
-                    {isStatRelevant('goals_conceded', position) && <th>GC</th>}
-                    {isStatRelevant('saves', position) && <th>Saves</th>}
-                    {isStatRelevant('penalties_saved', position) && <th>Pen S</th>}
-                    <th>YC</th>
-                    <th>RC</th>
-                    {isStatRelevant('bonus', position) && <th>Bonus</th>}
-                    <th className={styles.pointsHeader}>Custom Pts</th>
-                    <th className={styles.pointsHeader}>FPL Pts</th>
-                    <th>Opponent</th>
-                    <th>Result</th>
-                </tr>
-                </thead>
-                <tbody>
-                {gameweekStats.map((gw) => (
-                    <GameweekRow
-                        key={gw.gameweek}
-                        gameweek={gw}
-                        position={positionLower}
-                        isCurrentGameweek={gw.gameweek === currentGameweek}
-                    />
-                ))}
-                </tbody>
-            </table>
+        if (value === 0) return '0';
 
-            {gameweekStats.length === 0 && (
-                <div className={styles.noData}>
-                    No gameweek data available for this player.
+        // Color coding for different stats
+        if (stat === 'goals' || stat === 'assists' || stat === 'clean_sheets' ||
+            stat === 'saves' || stat === 'penalties_saved' || stat === 'bonus') {
+            return <span style={{ color: 'var(--color-success)' }}>{value}</span>;
+        }
+
+        if (stat === 'goals_conceded' || stat === 'yellow_cards' || stat === 'red_cards') {
+            return <span style={{ color: 'var(--color-error)' }}>{value}</span>;
+        }
+
+        return value;
+    };
+
+    const renderMatchResult = (gw: GameweekStatWithPoints): React.ReactNode => {
+        if (gw.minutes === 0) {
+            return <TableBadge variant="gray">DNP</TableBadge>;
+        }
+
+        const playerScore = gw.wasHome ? gw.teamHScore : gw.teamAScore;
+        const opponentScore = gw.wasHome ? gw.teamAScore : gw.teamHScore;
+
+        let variant: 'success' | 'warning' | 'error' = 'warning';
+        if (playerScore > opponentScore) variant = 'success';
+        if (playerScore < opponentScore) variant = 'error';
+
+        return (
+            <TableBadge variant={variant}>
+                {gw.wasHome ? 'H' : 'A'} {playerScore}-{opponentScore}
+            </TableBadge>
+        );
+    };
+
+    const columns: TableColumn<GameweekStatWithPoints>[] = [
+        {
+            key: 'gameweek',
+            header: 'GW',
+            accessor: 'gameweek',
+            width: 80,
+            fixed: true,
+            render: (gameweek, gw) => (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                    <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
+                        {gameweek}
+                    </span>
+                    {gameweek === currentGameweek && (
+                        <TableBadge variant="error">LIVE</TableBadge>
+                    )}
                 </div>
-            )}
-        </div>
-    );
-}
+            )
+        },
+        {
+            key: 'minutes',
+            header: 'Min',
+            accessor: 'minutes',
+            align: 'center',
+            width: 60,
+            render: (minutes) => minutes === 0 ?
+                <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>0</span> :
+                minutes
+        },
+        {
+            key: 'goals',
+            header: 'Goals',
+            accessor: 'goals',
+            align: 'center',
+            width: 60,
+            render: (goals) => getStatDisplay(goals, 'goals', position)
+        },
+        {
+            key: 'assists',
+            header: 'Assists',
+            accessor: 'assists',
+            align: 'center',
+            width: 70,
+            render: (assists) => getStatDisplay(assists, 'assists', position)
+        }
+    ];
 
-interface GameweekRowProps {
-    gameweek: GameweekStatWithPoints;
-    position: string;
-    isCurrentGameweek: boolean;
-}
-
-function GameweekRow({ gameweek: gw, position, isCurrentGameweek }: GameweekRowProps) {
-    const hasCustomPoints = gw.customPoints !== null;
-
-    return (
-        <tr className={`${styles.gameweekRow} ${isCurrentGameweek ? styles.currentGameweek : ''} ${!hasCustomPoints ? styles.noCustomPoints : ''}`}>
-            <td className={styles.gameweekCell}>
-                <span className={styles.gameweekNumber}>
-                    {gw.gameweek}
-                    {isCurrentGameweek && <span className={styles.liveBadge}>LIVE</span>}
-                </span>
-            </td>
-
-            <td className={gw.minutes === 0 ? styles.noPlay : ''}>{gw.minutes}</td>
-
-            <td className={gw.goals > 0 ? styles.positive : ''}>{gw.goals}</td>
-
-            <td className={gw.assists > 0 ? styles.positive : ''}>{gw.assists}</td>
-
-            {isStatRelevant('clean_sheets', position) && (
-                <td className={gw.cleanSheets > 0 ? styles.positive : ''}>{gw.cleanSheets}</td>
-            )}
-
-            {isStatRelevant('goals_conceded', position) && (
-                <td className={gw.goalsConceded > 0 ? styles.negative : ''}>{gw.goalsConceded}</td>
-            )}
-
-            {isStatRelevant('saves', position) && (
-                <td className={gw.saves > 0 ? styles.positive : ''}>{gw.saves}</td>
-            )}
-
-            {isStatRelevant('penalties_saved', position) && (
-                <td className={gw.penaltiesSaved > 0 ? styles.positive : ''}>{gw.penaltiesSaved}</td>
-            )}
-
-            <td className={gw.yellowCards > 0 ? styles.negative : ''}>{gw.yellowCards}</td>
-
-            <td className={gw.redCards > 0 ? styles.negative : ''}>{gw.redCards}</td>
-
-            {isStatRelevant('bonus', position) && (
-                <td className={gw.bonus > 0 ? styles.positive : ''}>{gw.bonus}</td>
-            )}
-
-            <td className={`${styles.pointsCell} ${styles.customPoints}`}>
-                {hasCustomPoints ? (
-                    <span className={gw.customPoints!.total > 0 ? styles.positive : gw.customPoints!.total < 0 ? styles.negative : ''}>
-                        {formatPointsDisplay(gw.customPoints!.total)}
-                    </span>
-                ) : (
-                    <span className={styles.noData} title="Custom points not calculated for this gameweek">
-                        -
-                    </span>
-                )}
-            </td>
-
-            <td className={`${styles.pointsCell} ${styles.fplPoints}`}>
-                <span className={gw.fplPoints > 0 ? styles.positive : gw.fplPoints < 0 ? styles.negative : ''}>
-                    {gw.fplPoints}
-                </span>
-            </td>
-
-            <td className={styles.opponentCell}>
-                <span className={styles.opponent}>
-                    {gw.wasHome ? '' : '@'}{gw.opponentName}
-                </span>
-            </td>
-
-            <td className={styles.resultCell}>
-                <MatchResult
-                    wasHome={gw.wasHome}
-                    teamHScore={gw.teamHScore}
-                    teamAScore={gw.teamAScore}
-                    minutes={gw.minutes}
-                />
-            </td>
-        </tr>
-    );
-}
-
-interface MatchResultProps {
-    wasHome: boolean;
-    teamHScore: number;
-    teamAScore: number;
-    minutes: number;
-}
-
-function MatchResult({ wasHome, teamHScore, teamAScore, minutes }: MatchResultProps) {
-    if (minutes === 0) {
-        return <span className={styles.noPlay}>DNP</span>;
+    // Add position-specific columns
+    if (isStatRelevant('clean_sheets', position)) {
+        columns.push({
+            key: 'cleanSheets',
+            header: 'CS',
+            accessor: 'cleanSheets',
+            align: 'center',
+            width: 50,
+            render: (cs) => getStatDisplay(cs, 'clean_sheets', position)
+        });
     }
 
-    const playerScore = wasHome ? teamHScore : teamAScore;
-    const opponentScore = wasHome ? teamAScore : teamHScore;
+    if (isStatRelevant('goals_conceded', position)) {
+        columns.push({
+            key: 'goalsConceded',
+            header: 'GC',
+            accessor: 'goalsConceded',
+            align: 'center',
+            width: 50,
+            render: (gc) => getStatDisplay(gc, 'goals_conceded', position)
+        });
+    }
 
-    let resultClass = styles.draw;
-    if (playerScore > opponentScore) resultClass = styles.win;
-    if (playerScore < opponentScore) resultClass = styles.loss;
+    if (isStatRelevant('saves', position)) {
+        columns.push({
+            key: 'saves',
+            header: 'Saves',
+            accessor: 'saves',
+            align: 'center',
+            width: 60,
+            render: (saves) => getStatDisplay(saves, 'saves', position)
+        });
+    }
+
+    if (isStatRelevant('penalties_saved', position)) {
+        columns.push({
+            key: 'penaltiesSaved',
+            header: 'Pen S',
+            accessor: 'penaltiesSaved',
+            align: 'center',
+            width: 60,
+            render: (ps) => getStatDisplay(ps, 'penalties_saved', position)
+        });
+    }
+
+    // Always show cards
+    columns.push(
+        {
+            key: 'yellowCards',
+            header: 'YC',
+            accessor: 'yellowCards',
+            align: 'center',
+            width: 50,
+            render: (yc) => getStatDisplay(yc, 'yellow_cards', position)
+        },
+        {
+            key: 'redCards',
+            header: 'RC',
+            accessor: 'redCards',
+            align: 'center',
+            width: 50,
+            render: (rc) => getStatDisplay(rc, 'red_cards', position)
+        }
+    );
+
+    // Add bonus if relevant
+    if (isStatRelevant('bonus', position)) {
+        columns.push({
+            key: 'bonus',
+            header: 'Bonus',
+            accessor: 'bonus',
+            align: 'center',
+            width: 60,
+            render: (bonus) => getStatDisplay(bonus, 'bonus', position)
+        });
+    }
+
+    // Add points columns
+    columns.push(
+        {
+            key: 'customPoints',
+            header: 'Custom Pts',
+            align: 'center',
+            width: 90,
+            variant: 'bold',
+            render: (_, gw) => {
+                if (!gw.customPoints) {
+                    return <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>-</span>;
+                }
+
+                const total = gw.customPoints.total;
+                const color = total > 0 ? 'var(--color-success)' :
+                    total < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
+
+                return (
+                    <span style={{
+                        color,
+                        fontWeight: 'var(--font-weight-semibold)',
+                        backgroundColor: 'var(--color-primary-light)',
+                        padding: 'var(--spacing-1) var(--spacing-2)',
+                        borderRadius: 'var(--radius-sm)'
+                    }}>
+                        {formatPointsDisplay(total)}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'fplPoints',
+            header: 'FPL Pts',
+            accessor: 'fplPoints',
+            align: 'center',
+            width: 80,
+            variant: 'bold',
+            render: (fplPoints) => {
+                const color = fplPoints > 0 ? 'var(--color-success)' :
+                    fplPoints < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
+
+                return (
+                    <span style={{
+                        color,
+                        fontWeight: 'var(--font-weight-semibold)',
+                        backgroundColor: 'var(--color-gray-50)',
+                        padding: 'var(--spacing-1) var(--spacing-2)',
+                        borderRadius: 'var(--radius-sm)'
+                    }}>
+                        {fplPoints}
+                    </span>
+                );
+            }
+        },
+        {
+            key: 'opponent',
+            header: 'Opponent',
+            width: 100,
+            hideOnMobile: true,
+            render: (_, gw) => (
+                <div style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--font-weight-medium)' }}>
+                    <span style={{ color: 'var(--color-gray-800)' }}>
+                        {gw.wasHome ? '' : '@'}{gw.opponentName || `Team ${gw.opponent}`}
+                    </span>
+                </div>
+            )
+        },
+        {
+            key: 'result',
+            header: 'Result',
+            width: 80,
+            align: 'center',
+            hideOnMobile: true,
+            render: (_, gw) => renderMatchResult(gw)
+        }
+    );
 
     return (
-        <span className={`${styles.matchResult} ${resultClass}`}>
-            {wasHome ? 'H' : 'A'} {playerScore}-{opponentScore}
-        </span>
+        <Table
+            data={gameweekStats}
+            columns={columns}
+            sortable={false} // Gameweeks are naturally ordered
+            size="compact"
+            bordered
+            empty={{
+                icon: '📊',
+                title: 'No gameweek data available',
+                description: 'Player statistics will appear once gameweeks are played'
+            }}
+            rowClassName={(gw) => {
+                const classes = [];
+                if (gw.gameweek === currentGameweek) classes.push('current-gameweek');
+                if (!gw.customPoints) classes.push('no-custom-points');
+                return classes.join(' ');
+            }}
+            containerClassName="gameweek-table"
+        />
     );
 }

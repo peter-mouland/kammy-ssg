@@ -1,5 +1,5 @@
+import { Table, type TableColumn } from "./table";
 import { getPositionDisplayName } from '../lib/points';
-import styles from './draft-board.module.css';
 
 interface DraftPickData {
     pickNumber: number;
@@ -7,7 +7,6 @@ interface DraftPickData {
     playerName: string;
     position: string;
     teamName: string;
-    price: number;
 }
 
 interface DraftBoardProps {
@@ -15,56 +14,78 @@ interface DraftBoardProps {
 }
 
 export function DraftBoard({ draftPicks }: DraftBoardProps) {
+    const columns: TableColumn<DraftPickData>[] = [
+        {
+            key: 'pickNumber',
+            header: '#',
+            accessor: 'pickNumber',
+            width: 60,
+            align: 'center',
+            variant: 'bold',
+            render: (pickNumber) => `#${pickNumber}`
+        },
+        {
+            key: 'playerName',
+            header: 'Player',
+            accessor: 'playerName',
+            variant: 'bold',
+            minWidth: 150
+        },
+        {
+            key: 'position',
+            header: 'Position',
+            accessor: 'position',
+            align: 'center',
+            hideOnMobile: true,
+            render: (position) => getPositionDisplayName(position)
+        },
+        {
+            key: 'teamName',
+            header: 'Team',
+            accessor: 'teamName',
+            hideOnMobile: true,
+            variant: 'muted'
+        },
+        {
+            key: 'manager',
+            header: 'Drafted By',
+            accessor: 'userId',
+            variant: 'muted',
+            render: (userId) => userId // You might want to map this to actual manager names
+        }
+    ];
+
+    // Sort picks by most recent first (highest pick number)
+    const sortedPicks = [...draftPicks]
+        .sort((a, b) => b.pickNumber - a.pickNumber)
+        .slice(0, 20); // Show last 20 picks
+
     return (
         <div className="card">
             <div className="card-header">
                 <h2 className="card-title">Draft Board</h2>
-                <p style={{ color: '#6b7280' }}>
+                <p style={{ color: 'var(--color-gray-500)' }}>
                     {draftPicks.length} picks made
                 </p>
             </div>
 
-            <div className={styles.draftBoard}>
-                {draftPicks.length === 0 ? (
-                    <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>📋</div>
-                        <p className={styles.emptyMessage}>
-                            No picks made yet. Draft will begin soon!
-                        </p>
-                    </div>
-                ) : (
-                    <div className={styles.picksList}>
-                        {draftPicks
-                            .sort((a, b) => b.pickNumber - a.pickNumber)
-                            .slice(0, 20)
-                            .map((pick) => (
-                                <div key={pick.pickNumber} className={styles.pickItem}>
-                                    <div className={styles.pickHeader}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <span className={styles.pickNumber}>
-                                                #{pick.pickNumber}
-                                            </span>
-                                            <span className={styles.playerName}>
-                                                {pick.playerName}
-                                            </span>
-                                        </div>
-                                        <span className={styles.managerName}>
-                                            {pick.userId}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.pickDetails}>
-                                        <span>{getPositionDisplayName(pick.position)}</span>
-                                        <span>•</span>
-                                        <span>{pick.teamName}</span>
-                                        <span>•</span>
-                                        <span>£{pick.price}m</span>
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
-                )}
-            </div>
+            <Table
+                data={sortedPicks}
+                columns={columns}
+                size="compact"
+                maxHeight="350px"
+                sortable={false} // Already sorted by recency
+                empty={{
+                    icon: '📋',
+                    title: 'No picks made yet',
+                    description: 'Draft will begin soon!'
+                }}
+                rowClassName={(pick, index) => {
+                    // Highlight recent picks
+                    if (index < 3) return 'recent-pick';
+                    return '';
+                }}
+            />
         </div>
     );
 }
