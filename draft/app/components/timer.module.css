@@ -1,5 +1,24 @@
-/* Tilt-n-Move-Shaking Animation */
+/* Timer display styles */
+.timerDisplay {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.15rem;
+}
 
+.timeText {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.warning {
+    color: #f59e0b;
+}
+
+.urgent {
+    color: #ef4444;
+}
+
+/* Tilt-n-Move-Shaking Animation */
 @keyframes tiltNMoveShaking {
     0% {
         transform: translate(0, 0) rotate(0deg);
@@ -97,8 +116,6 @@
     }
 }
 
-/* Usage examples in your components */
-
 /* For error states */
 .errorShake {
     animation: tiltNMoveShaking 0.5s ease-in-out;
@@ -113,8 +130,9 @@
 .attentionShake {
     animation: tiltNMoveShaking 1.4s ease-in-out infinite;
 }
+
 .attentionImportantShake {
-    animation: tiltNMoveShaking 7s ease-in-out infinite;
+    animation: tiltNMoveShaking 0.7s ease-in-out infinite;
 }
 
 /* For form validation errors */

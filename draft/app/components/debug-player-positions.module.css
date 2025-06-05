@@ -1,0 +1,47 @@
+.debugContainer {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+}
+
+.debugTitle {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.playersGrid {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.playerRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem;
+    border-radius: 4px;
+    background: white;
+}
+
+.playerRow.unknown {
+    background: #fee2e2;
+}
+
+.playerName {
+    font-weight: 500;
+}
+
+.playerDetails {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.debugFooter {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}

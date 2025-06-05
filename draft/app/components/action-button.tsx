@@ -1,4 +1,4 @@
-import styles from './cache-status.module.css';
+import styles from './action-button.module.css';
 
 interface ActionButtonProps {
     title: string;
@@ -11,14 +11,14 @@ interface ActionButtonProps {
 }
 
 export function ActionButton({
-                          title,
-                          description,
-                          icon,
-                          actionType,
-                          onExecute,
-                          disabled,
-                          recommended
-                      }: ActionButtonProps) {
+                                 title,
+                                 description,
+                                 icon,
+                                 actionType,
+                                 onExecute,
+                                 disabled,
+                                 recommended
+                             }: ActionButtonProps) {
     return (
         <div className={`${styles.actionButton} ${recommended ? styles.recommended : ''}`}>
             <button

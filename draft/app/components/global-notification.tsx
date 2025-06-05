@@ -1,11 +1,16 @@
 import { useRevalidator } from 'react-router';
 import { useEffect, useState } from 'react';
+import styles from './global-notification.module.css';
 
-const useNotification = (last_updated) => {
+interface NotificationProps {
+    lastUpdated: string;
+}
+
+const useNotification = (lastUpdated: string) => {
     const revalidator = useRevalidator();
     const [notifications, setNotifications] = useState<string[]>([]);
     const [isConnected, setIsConnected] = useState(false);
-    const [lastUpdateTime, setLastUpdateTime] = useState<string>(last_updated);
+    const [lastUpdateTime, setLastUpdateTime] = useState<string>(lastUpdated);
 
     // Real-time updates using Server-Sent Events
     useEffect(() => {
@@ -49,76 +54,42 @@ const useNotification = (last_updated) => {
             eventSource.close();
         };
     }, [revalidator]);
-    return { notifications, isConnected, lastUpdateTime }
-}
 
-export const Notifications = ({ lastUpdated }) => {
+    return { notifications, isConnected, lastUpdateTime };
+};
+
+export function Notifications({ lastUpdated }: NotificationProps) {
     const { notifications, isConnected, lastUpdateTime } = useNotification(lastUpdated);
+
     return (
         <div>
-
-            <header style={{ marginBottom: "30px", textAlign: "center" }}>
-                <h1 style={{
-                    color: "#37003c",
-                    margin: "0 0 10px 0",
-                    fontSize: "2.5rem",
-                    fontWeight: "700"
-                }}>
+            <header className={styles.header}>
+                <h1 className={styles.mainTitle}>
                     ⚽ FPL Live Tracker
                 </h1>
-                <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "20px",
-                    fontSize: "14px",
-                    color: "#6b7280"
-                }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <div style={{
-                            width: "8px",
-                            height: "8px",
-                            borderRadius: "50%",
-                            backgroundColor: isConnected ? "#10b981" : "#ef4444"
-                        }}></div>
+                <div className={styles.statusContainer}>
+                    <div className={styles.statusItem}>
+                        <div
+                            className={`${styles.statusIndicator} ${isConnected ? styles.connected : styles.disconnected}`}
+                        />
                         <span>{isConnected ? "Live Updates" : "Disconnected"}</span>
                     </div>
                     <span>Updated: {new Date(lastUpdateTime).toLocaleTimeString()}</span>
                 </div>
             </header>
 
-            {
-                notifications.length > 0 && (
-                    <div style={{
-                        backgroundColor: "#f0f9ff",
-                        border: "1px solid #0ea5e9",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        marginBottom: "25px",
-                        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
-                    }}>
-                        <h3 style={{
-                            margin: "0 0 15px 0",
-                            color: "#0369a1",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px"
-                        }}>
-                            📢 Live Updates
-                        </h3>
-                        {notifications.map((notification, index) => (
-                            <div key={index} style={{
-                                padding: "8px 0",
-                                    borderBottom: index < notifications.length - 1 ? "1px solid #bae6fd" : "none",
-                                    fontFamily: "monospace",
-                                    fontSize: "13px"
-                            }}>
-                                {notification}
-                            </div>
-                        ))}
-                    </div>
-                )
-            }
-    </div>
-    )
+            {notifications.length > 0 && (
+                <div className={styles.notificationsContainer}>
+                    <h3 className={styles.notificationsTitle}>
+                        📢 Live Updates
+                    </h3>
+                    {notifications.map((notification, index) => (
+                        <div key={index} className={styles.notificationItem}>
+                            {notification}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 }

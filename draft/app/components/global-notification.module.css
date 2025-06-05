@@ -1,0 +1,82 @@
+.header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.mainTitle {
+    color: #37003c;
+    margin: 0 0 10px 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.statusContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.statusItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.statusIndicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.statusIndicator.connected {
+    background-color: #10b981;
+}
+
+.statusIndicator.disconnected {
+    background-color: #ef4444;
+}
+
+.notificationsContainer {
+    background-color: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.notificationsTitle {
+    margin: 0 0 15px 0;
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.notificationItem {
+    padding: 8px 0;
+    font-family: monospace;
+    font-size: 13px;
+    border-bottom: 1px solid #bae6fd;
+}
+
+.notificationItem:last-child {
+    border-bottom: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mainTitle {
+        font-size: 2rem;
+    }
+
+    .statusContainer {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

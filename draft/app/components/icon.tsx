@@ -1,3 +1,5 @@
+import styles from './icon.module.css';
+
 interface IconProps {
     type: 'trophy' | 'chart' | 'team' | 'settings' | 'target' | 'stats' |
         'active' | 'inactive' | 'timer' | 'search' | 'draft' | 'refresh' |
@@ -36,18 +38,23 @@ export function Icon({ type, fallback, className = '' }: IconProps) {
 
     return (
         <span
-            className={`emoji ${className}`}
+            className={`${styles.emoji} ${className}`}
             role="img"
             aria-label={displayText}
             title={displayText}
         >
-      {icon.emoji}
-    </span>
+            {icon.emoji}
+        </span>
     );
 }
 
 // Alternative text-based icons for critical UI elements
-export function TextIcon({ type, children }: { type: string; children?: React.ReactNode }) {
+interface TextIconProps {
+    type: 'active' | 'inactive' | 'check' | 'error' | 'warning' | 'up' | 'down' | 'left' | 'right';
+    children?: React.ReactNode;
+}
+
+export function TextIcon({ type, children }: TextIconProps) {
     const iconText = {
         active: '[●]',
         inactive: '[○]',
@@ -61,17 +68,9 @@ export function TextIcon({ type, children }: { type: string; children?: React.Re
     };
 
     return (
-        <span
-            style={{
-                fontFamily: 'monospace',
-                fontWeight: 'bold',
-                color: type === 'active' ? '#10b981' :
-                    type === 'error' ? '#ef4444' :
-                        type === 'warning' ? '#f59e0b' : 'inherit'
-            }}
-        >
-      {iconText[type as keyof typeof iconText] || `[${type.toUpperCase()}]`}
+        <span className={`${styles.textIcon} ${styles[type]}`}>
+            {iconText[type] || `[${type.toUpperCase()}]`}
             {children && ` ${children}`}
-    </span>
+        </span>
     );
 }

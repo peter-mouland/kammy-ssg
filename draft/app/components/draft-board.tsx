@@ -1,4 +1,14 @@
 import { getPositionDisplayName } from '../lib/points';
+import styles from './draft-board.module.css';
+
+interface DraftPickData {
+    pickNumber: number;
+    userId: string;
+    playerName: string;
+    position: string;
+    teamName: string;
+    price: number;
+}
 
 interface DraftBoardProps {
     draftPicks: DraftPickData[];
@@ -14,84 +24,47 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                 </p>
             </div>
 
-            <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+            <div className={styles.draftBoard}>
                 {draftPicks.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📋</div>
-                        <p>No picks made yet. Draft will begin soon!</p>
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>📋</div>
+                        <p className={styles.emptyMessage}>
+                            No picks made yet. Draft will begin soon!
+                        </p>
                     </div>
                 ) : (
-                    <div>
+                    <div className={styles.picksList}>
                         {draftPicks
                             .sort((a, b) => b.pickNumber - a.pickNumber)
                             .slice(0, 20)
-                            .map((pick, index) => {
-                                const isLastItem = index === draftPicks.slice(0, 20).length - 1;
-
-                                return (
-                                    <div
-                                        key={pick.pickNumber}
-                                        style={{
-                                            padding: '0.5rem',
-                                            borderBottom: isLastItem ? 'none' : '1px solid #f3f4f6',
-                                            backgroundColor: 'white'
-                                        }}
-                                    >
-                                        {/* Top Line: Pick # + Player Name + Manager */}
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            marginBottom: '0.25rem'
-                                        }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: '#3b82f6',
-                            minWidth: '2rem'
-                        }}>
-                          #{pick.pickNumber}
-                        </span>
-                                                <span style={{
-                                                    fontWeight: '600',
-                                                    fontSize: '0.875rem',
-                                                    color: '#111827'
-                                                }}>
-                          {pick.playerName}
-                        </span>
-                                            </div>
-
-                                            <span style={{
-                                                fontSize: '0.75rem',
-                                                color: '#374151',
-                                                fontWeight: '500'
-                                            }}>
-                        {pick.userId}
-                      </span>
+                            .map((pick) => (
+                                <div key={pick.pickNumber} className={styles.pickItem}>
+                                    <div className={styles.pickHeader}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span className={styles.pickNumber}>
+                                                #{pick.pickNumber}
+                                            </span>
+                                            <span className={styles.playerName}>
+                                                {pick.playerName}
+                                            </span>
                                         </div>
-
-                                        {/* Bottom Line: Position + Team + Price */}
-                                        <div style={{
-                                            fontSize: '0.75rem',
-                                            color: '#6b7280',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.5rem'
-                                        }}>
-                                            <span>{getPositionDisplayName(pick.position)}</span>
-                                            <span>•</span>
-                                            <span>{pick.teamName}</span>
-                                            <span>•</span>
-                                            <span>£{pick.price}m</span>
-                                        </div>
+                                        <span className={styles.managerName}>
+                                            {pick.userId}
+                                        </span>
                                     </div>
-                                );
-                            })}
+
+                                    <div className={styles.pickDetails}>
+                                        <span>{getPositionDisplayName(pick.position)}</span>
+                                        <span>•</span>
+                                        <span>{pick.teamName}</span>
+                                        <span>•</span>
+                                        <span>£{pick.price}m</span>
+                                    </div>
+                                </div>
+                            ))}
                     </div>
                 )}
             </div>
         </div>
     );
 }
-

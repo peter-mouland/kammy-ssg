@@ -1,18 +1,29 @@
-export const SelectDivision = ({ divisions, selectedDivision, handleDivisionChange }) => {
-    return (
-        <label htmlFor="division-select" style={{ fontWeight: '500' }}>
-            <span style={{ margin: "0 1rem 0 0" }}>Select Division:</span>
+import styles from './select-division.module.css';
 
+interface Division {
+    id: string;
+    label: string;
+}
+
+interface SelectDivisionProps {
+    divisions: Division[];
+    selectedDivision: string | null;
+    handleDivisionChange: (divisionId: string) => void;
+}
+
+export function SelectDivision({
+                                   divisions,
+                                   selectedDivision,
+                                   handleDivisionChange
+                               }: SelectDivisionProps) {
+    return (
+        <label htmlFor="division-select" className={styles.selectContainer}>
+            <span className={styles.selectLabel}>Select Division:</span>
             <select
                 id="division-select"
                 value={selectedDivision || "all"}
                 onChange={(e) => handleDivisionChange(e.target.value)}
-                style={{
-                    padding: '0.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    backgroundColor: 'white'
-                }}
+                className={styles.selectInput}
             >
                 <option value="all">All Divisions</option>
                 {divisions.map((division) => (
@@ -22,5 +33,5 @@ export const SelectDivision = ({ divisions, selectedDivision, handleDivisionChan
                 ))}
             </select>
         </label>
-    )
+    );
 }
