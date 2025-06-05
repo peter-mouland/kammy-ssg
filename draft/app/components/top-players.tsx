@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Icon } from "./icon";
-import { Table, TableColumn } from "./table";
+import { Table, type TableColumn } from "./table";
 import type { FplPlayerData } from "../types";
 
 interface TopPlayersProps {

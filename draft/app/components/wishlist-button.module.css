@@ -1,0 +1,205 @@
+/* components/wishlist-button.module.css */
+
+.container {
+    position: relative;
+    display: inline-block;
+}
+
+.wishlistButton {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+}
+
+.wishlistButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Size variants */
+.small {
+    height: 24px;
+    width: 24px;
+    font-size: 12px;
+}
+
+.medium {
+    height: 32px;
+    width: 32px;
+    font-size: 14px;
+}
+
+.large {
+    height: 40px;
+    width: 40px;
+    font-size: 16px;
+}
+
+.withLabel {
+    border-radius: 8px;
+    padding: 0 12px;
+    width: auto;
+    gap: 4px;
+}
+
+/* State variants */
+.active {
+    background-color: var(--color-warning-light, #fef3c7);
+    border-color: var(--color-warning-border, #f59e0b);
+    color: var(--color-warning, #b45309);
+}
+
+.active:hover {
+    background-color: var(--color-warning-hover, #fde68a);
+}
+
+.inactive {
+    background-color: var(--color-gray-50, #f9fafb);
+    border-color: var(--color-gray-300, #d1d5db);
+    color: var(--color-gray-600, #4b5563);
+}
+
+.inactive:hover {
+    background-color: var(--color-gray-100, #f3f4f6);
+}
+
+.icon {
+    width: 12px;
+    height: 12px;
+}
+
+.small .icon {
+    width: 10px;
+    height: 10px;
+}
+
+.large .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Backdrop */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+}
+
+/* Dropdown */
+.dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    width: 256px;
+    background-color: var(--color-white, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    z-index: 50;
+}
+
+.dropdownContent {
+    padding: 12px;
+}
+
+.dropdownHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.dropdownTitle {
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0;
+    font-size: 14px;
+}
+
+.createButton {
+    color: var(--color-primary, #2563eb);
+    font-size: 12px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.createButton:hover {
+    color: var(--color-primary-hover, #1d4ed8);
+}
+
+.wishlistList {
+    max-height: 192px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.emptyMessage {
+    color: var(--color-gray-500, #6b7280);
+    font-size: 12px;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.wishlistItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.wishlistItem:hover {
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    accent-color: var(--color-primary-hover, #2563eb);
+}
+
+.wishlistInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.colorDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.wishlistLabel {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+}
+
+.playerCount {
+    font-size: 11px;
+    color: var(--color-gray-500, #6b7280);
+}

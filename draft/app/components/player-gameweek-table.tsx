@@ -1,4 +1,4 @@
-import { Table, TableColumn, TableBadge } from "./table";
+import { Table, type TableColumn, TableBadge } from "./table";
 import { formatPointsDisplay } from '../lib/points';
 import { isStatRelevant } from '../lib/is-stat-relevant';
 

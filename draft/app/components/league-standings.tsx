@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Icon } from "./icon";
-import { Table, TableColumn, RankBadge, TableBadge } from "./table";
+import { Table, type TableColumn, RankBadge, TableBadge } from "./table";
 import type { UserTeamData } from "../types";
 
 interface LeagueStandingsProps {

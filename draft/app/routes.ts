@@ -8,6 +8,7 @@ export default [
     route("draft/admin", "routes/draft-admin.tsx"),
     route("players/:playerId", "routes/player.$playerId.tsx"),
     route("players", "routes/players.tsx"),
+    route("wishlists", "routes/wishlists.tsx"),
 
     // API routes
     route("api/sheets", "routes/api.sheets.ts"),

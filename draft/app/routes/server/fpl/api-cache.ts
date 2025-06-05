@@ -726,6 +726,36 @@ export class FplApiCache {
     }
 
     /**
+     * Get enhanced player data (with draft calculations)
+     */
+    async getPlayersById() {
+        return this.withPromiseDeduplication('enhanced-players-by-id', async () => {
+            const startTime = performance.now();
+            console.log('🔄 getPlayersById() - Start');
+            const elements = await this.fplCache.getElements();
+            const byId = elements.reduce((acc, e) => ({
+                ...acc,
+                [e.id]: e,
+            }), {})
+            console.log(`✅ getEnhancedPlayerData() - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`);
+            return byId;
+        });
+    }
+    async getTeamsByCode() {
+        return this.withPromiseDeduplication('teams-by-id', async () => {
+            const startTime = performance.now();
+            console.log('🔄 getTeamsByCode() - Start');
+            const elements = await this.fplCache.getTeams();
+            const byId = elements.reduce((acc, e) => ({
+                ...acc,
+                [e.code]: e,
+            }), {})
+            console.log(`✅ getTeamsByCode() - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`);
+            return byId;
+        });
+    }
+
+    /**
      * Force regeneration of enhanced data
      */
     async refreshEnhancedData(): Promise<EnhancedPlayerData[]> {

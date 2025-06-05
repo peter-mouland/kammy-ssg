@@ -1,0 +1,410 @@
+/* components/wishlist-item.module.css */
+
+/* WishlistItem styles */
+.item {
+    padding: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.item:hover {
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.selected {
+    background-color: var(--color-primary-50, #eff6ff);
+    border-right: 2px solid var(--color-primary-500, #3b82f6);
+}
+
+.content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.info {
+    flex: 1;
+    min-width: 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.colorDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.description {
+    font-size: 12px;
+    color: var(--color-gray-500, #6b7280);
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.playerCount {
+    font-size: 12px;
+    color: var(--color-gray-500, #6b7280);
+}
+
+.date {
+    font-size: 11px;
+    color: var(--color-gray-400, #9ca3af);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.actionButton {
+    padding: 4px;
+    color: var(--color-gray-400, #9ca3af);
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.actionButton:hover {
+    color: var(--color-gray-600, #4b5563);
+}
+
+.deleteButton:hover {
+    color: var(--color-red-600, #dc2626);
+}
+
+.actionIcon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Edit form styles */
+.editContainer {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.editFields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editInput {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 12px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    border-radius: 6px;
+    background-color: var(--color-white, #ffffff);
+    color: var(--color-gray-900, #111827);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.editInput:focus {
+    outline: none;
+    border-color: var(--color-primary-500, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.editInput::placeholder {
+    color: var(--color-gray-500, #6b7280);
+}
+
+.editActions {
+    display: flex;
+    gap: 8px;
+}
+
+.editButton {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.editButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.saveButton {
+    background-color: var(--color-primary-600, #2563eb);
+    color: var(--color-white, #ffffff);
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: var(--color-primary-700, #1d4ed8);
+}
+
+.cancelButton {
+    background-color: var(--color-gray-300, #d1d5db);
+    color: var(--color-gray-700, #374151);
+}
+
+.cancelButton:hover {
+    background-color: var(--color-gray-400, #9ca3af);
+}
+
+/* WishlistDetails styles */
+.details {
+    background-color: var(--color-white, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    overflow: hidden;
+}
+
+.detailsHeader {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.detailsTitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.detailsColorDot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.detailsName {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0;
+}
+
+.detailsDescription {
+    font-size: 14px;
+    color: var(--color-gray-600, #4b5563);
+    margin: 0 0 12px 0;
+}
+
+.detailsMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detailsCount {
+    font-size: 14px;
+    color: var(--color-gray-500, #6b7280);
+}
+
+.detailsDate {
+    font-size: 12px;
+    color: var(--color-gray-400, #9ca3af);
+}
+
+.searchContainer {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    border-radius: 6px;
+    background-color: var(--color-white, #ffffff);
+    color: var(--color-gray-900, #111827);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-primary-500, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+    color: var(--color-gray-500, #6b7280);
+}
+
+.playersContainer {
+    max-height: 384px;
+    overflow-y: auto;
+}
+
+.emptyPlayers {
+    padding: 64px 32px;
+    text-align: center;
+}
+
+.emptyPlayersIcon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    color: var(--color-gray-400, #9ca3af);
+}
+
+.emptyPlayersTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0 0 4px 0;
+}
+
+.emptyPlayersMessage {
+    font-size: 14px;
+    color: var(--color-gray-500, #6b7280);
+    margin: 0 0 16px 0;
+}
+
+.browseButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    color: var(--color-gray-700, #374151);
+    background-color: var(--color-white, #ffffff);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.browseButton:hover {
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.playersList {
+    /* No additional styles - children handle their own styling */
+}
+
+/* WishlistPlayerRow styles */
+.playerRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    transition: background-color 0.2s ease;
+}
+
+.playerRow:hover {
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.playerRow:last-child {
+    border-bottom: none;
+}
+
+.playerInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.playerAvatar {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-gray-200, #e5e7eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playerPosition {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-gray-600, #4b5563);
+}
+
+.playerDetails {
+    /* No additional styles needed */
+}
+
+.playerName {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0 0 2px 0;
+}
+
+.playerMeta {
+    font-size: 12px;
+    color: var(--color-gray-500, #6b7280);
+    margin: 0;
+}
+
+.playerActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.viewLink {
+    font-size: 12px;
+    color: var(--color-primary-600, #2563eb);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.viewLink:hover {
+    color: var(--color-primary-700, #1d4ed8);
+}
+
+.removeButton {
+    padding: 4px;
+    color: var(--color-gray-400, #9ca3af);
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.removeButton:hover {
+    color: var(--color-red-600, #dc2626);
+}
+
+.removeIcon {
+    width: 16px;
+    height: 16px;
+}

@@ -12,6 +12,7 @@ import {
 
 import globalStyles from "./root.css?url";
 import designTokens from "./design-tokens.css?url";
+import { WishlistProvider } from './lib/wishlists/use-wishlists';
 
 export const meta: MetaFunction = () => {
     return [
@@ -46,32 +47,36 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Links />
         </head>
         <body>
-        <div className="header">
-            <div className="container">
-                <nav className="nav">
-                    <a href="/" className="logo">Fantasy Draft</a>
-                    <a href="/">Dashboard</a>
-                    <a href="/my-team">League Standings</a>
-                    <a href="/players">Players</a>
-                    <a href="/draft">Draft</a>
-                </nav>
-            </div>
-        </div>
 
-        <main className="main">
-            <div className="container">
-                {children}
+        <WishlistProvider>
+            <div className="header">
+                <div className="container">
+                    <nav className="nav">
+                        <a href="/" className="logo">Fantasy Draft</a>
+                        <a href="/">Dashboard</a>
+                        <a href="/my-team">League Standings</a>
+                        <a href="/players">Players</a>
+                        <a href="/wishlists">Wishlists</a>
+                        <a href="/draft">Draft</a>
+                    </nav>
+                </div>
             </div>
-        </main>
 
-        <footer className="footer">
-            <div className="container">
-                <p>&copy; 2025 Fantasy Football Draft Application</p>
-            </div>
-        </footer>
+            <main className="main">
+                <div className="container">
+                    {children}
+                </div>
+            </main>
 
-        <ScrollRestoration />
-        <Scripts />
+            <footer className="footer">
+                <div className="container">
+                    <p>&copy; 2025 Fantasy Football Draft Application</p>
+                </div>
+            </footer>
+
+            <ScrollRestoration />
+            <Scripts />
+        </WishlistProvider>
         </body>
         </html>
     );
