@@ -1,28 +1,26 @@
-/* components/draft-order.module.css */
-
 .draftOrder {
-    background: white;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    border: var(--card-border);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
 }
 
 .draftOrderHeader {
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 1rem;
+    margin-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+    padding-bottom: var(--spacing-4);
 }
 
 .draftOrderHeader h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
+    margin: 0 0 var(--spacing-4) 0;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-800);
 }
 
 .draftStatus {
-    margin-top: 0.5rem;
+    margin-top: var(--spacing-2);
 }
 
 /* Draft Complete Status */
@@ -30,27 +28,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem;
-    background: linear-gradient(135deg, #10ac84, #00d2d3);
-    border-radius: 0.5rem;
-    color: white;
+    padding: var(--spacing-4);
+    background: linear-gradient(135deg, var(--color-success), var(--color-info));
+    border-radius: var(--radius-lg);
+    color: var(--color-white);
     text-align: center;
     animation: celebrationPulse 2s ease-in-out infinite;
 }
 
 .completeIcon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-3xl);
+    margin-bottom: var(--spacing-2);
 }
 
 .completeText {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-1);
 }
 
 .completeSubtext {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     opacity: 0.9;
 }
 
@@ -59,36 +57,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.75rem;
-    background: #fef3c7;
-    border: 1px solid #fbbf24;
-    border-radius: 0.5rem;
-    color: #92400e;
+    padding: var(--spacing-3);
+    background: var(--color-warning-light);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-lg);
+    color: var(--color-warning-text);
 }
 
 .upNextLabel {
-    font-size: 0.75rem;
+    font-size: var(--font-xs);
     text-transform: uppercase;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-1);
 }
 
 .nextPickerName {
-    font-weight: bold;
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-base);
+    margin-bottom: var(--spacing-1);
 }
 
 .pickNumber {
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
     opacity: 0.8;
 }
 
 /* Draft Loading */
 .draftLoading {
     text-align: center;
-    padding: 1rem;
-    color: #6b7280;
+    padding: var(--spacing-4);
+    color: var(--color-gray-500);
     font-style: italic;
 }
 
@@ -99,123 +97,123 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--spacing-2);
 }
 
 .draftOrderItem {
     display: flex;
     align-items: center;
-    padding: 0.25rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    background: #fafafa;
-    transition: all 0.2s ease;
+    padding: var(--spacing-1);
+    border: var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--color-gray-50);
+    transition: var(--button-transition);
 }
 
 .draftOrderItem:hover {
-    background: #f3f4f6;
-    border-color: #d1d5db;
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-300);
 }
 
 .draftOrderItem.currentTurn {
-    background: #dbeafe;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .draftOrderItem.nextTurn {
-    background: #fef3c7;
-    border-color: #f59e0b;
+    background: var(--color-warning-light);
+    border-color: var(--color-warning);
 }
 
 .orderPosition {
-    font-weight: bold;
-    font-size: 1.125rem;
-    color: #374151;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-lg);
+    color: var(--color-gray-700);
     min-width: 2.5rem;
     text-align: center;
 }
 
 .userInfo {
     flex: 1;
-    margin-left: 1rem;
+    margin-left: var(--spacing-4);
 }
 
 .userName {
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-800);
+    margin-bottom: var(--spacing-1);
 }
 
 .teamName {
-    font-size: 0.875rem;
-    color: #6b7280;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
 }
 
 .turnIndicator {
-    margin-left: 1rem;
+    margin-left: var(--spacing-4);
 }
 
 .pickingNow {
-    background: #3b82f6;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     animation: pulse 2s ease-in-out infinite;
 }
 
 .nextIndicator {
-    margin-left: 1rem;
+    margin-left: var(--spacing-4);
 }
 
 .onDeck {
-    background: #f59e0b;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    background: var(--color-warning);
+    color: var(--color-white);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 /* Draft Progress */
 .draftProgress {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-gray-200);
 }
 
 .progressBar {
     width: 100%;
-    height: 0.5rem;
-    background: #e5e7eb;
-    border-radius: 9999px;
+    height: var(--progress-height);
+    background: var(--progress-bg);
+    border-radius: var(--progress-border-radius);
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-2);
 }
 
 .progressFill {
     height: 100%;
-    background: #45b7d1;
-    transition: all 0.3s ease;
-    border-radius: 9999px;
+    background: var(--color-info);
+    transition: var(--transition-slow);
+    border-radius: var(--progress-border-radius);
 }
 
 .progressText {
     text-align: center;
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-weight: 500;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-medium);
 }
 
 .completeBadge {
-    color: #10ac84;
-    font-weight: bold;
+    color: var(--color-success);
+    font-weight: var(--font-weight-bold);
 }
 
 /* Animations */
@@ -228,21 +226,12 @@
     }
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .draftOrderItem {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
     }
 
     .orderPosition {
@@ -261,18 +250,18 @@
     }
 
     .nextPicker {
-        padding: 0.5rem;
+        padding: var(--spacing-2);
     }
 
     .draftCompleteStatus {
-        padding: 0.75rem;
+        padding: var(--spacing-3);
     }
 
     .completeIcon {
-        font-size: 1.5rem;
+        font-size: var(--font-2xl);
     }
 
     .completeText {
-        font-size: 1rem;
+        font-size: var(--font-base);
     }
 }

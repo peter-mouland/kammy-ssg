@@ -1,56 +1,56 @@
 /* Division card */
 .divisionCard {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    background-color: #f9fafb;
-    transition: all 0.2s ease;
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    background-color: var(--color-gray-50);
+    transition: var(--button-transition);
 }
 
 .divisionCard.active {
-    border-color: #10b981;
-    background-color: #f0fdf4;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-success);
+    background-color: var(--color-success-light);
+    box-shadow: var(--shadow-md);
 }
 
 /* Division header */
 .divisionHeader {
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-4);
 }
 
 .divisionTitleRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--spacing-2);
 }
 
 .divisionTitle {
     margin: 0;
-    font-weight: 600;
-    line-height: 1;
-    color: #111827;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    color: var(--color-gray-900);
 }
 
 .divisionTitle.active {
-    color: #059669;
+    color: var(--color-success);
 }
 
 .divisionStats {
-    font-size: 0.875rem;
-    color: #6b7280;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
 }
 
 /* Action buttons */
 .actionButton {
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
     border: none;
-    color: white;
+    color: var(--color-white);
     cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
+    font-weight: var(--font-weight-medium);
+    transition: var(--button-transition);
     min-width: 120px;
 }
 
@@ -60,58 +60,58 @@
 }
 
 .actionButton.generate {
-    background-color: #f59e0b;
+    background-color: var(--color-warning);
 }
 
 .actionButton.generate:hover:not(:disabled) {
-    background-color: #d97706;
+    background-color: var(--color-warning-hover);
     transform: translateY(-1px);
 }
 
 .actionButton.start {
-    background-color: #10b981;
+    background-color: var(--color-success);
 }
 
 .actionButton.start:hover:not(:disabled) {
-    background-color: #059669;
+    background-color: var(--color-success-hover);
     transform: translateY(-1px);
 }
 
 .actionButton.stop {
-    background-color: #ef4444;
+    background-color: var(--color-error);
 }
 
 .actionButton.stop:hover:not(:disabled) {
-    background-color: #dc2626;
+    background-color: var(--color-error-hover);
     transform: translateY(-1px);
 }
 
 .actionButton.disabled {
-    background-color: #6b7280;
+    background-color: var(--color-gray-500);
 }
 
 /* Draft order section */
 .draftOrderSection {
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-4);
 }
 
 .draftOrderTitle {
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #374151;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-2);
+    color: var(--color-gray-700);
 }
 
 .draftOrderList {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: var(--spacing-1);
 }
 
 .draftOrderItem {
-    font-size: 0.875rem;
-    padding: 0.25rem 0;
-    border-bottom: 1px solid #f3f4f6;
+    font-size: var(--font-sm);
+    padding: var(--spacing-1) 0;
+    border-bottom: 1px solid var(--color-gray-100);
 }
 
 .draftOrderItem:last-child {
@@ -119,51 +119,42 @@
 }
 
 .draftOrderPosition {
-    font-weight: 600;
-    color: #059669;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
     min-width: 2rem;
     display: inline-block;
 }
 
 .draftOrderMeta {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid #f3f4f6;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-2);
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--color-gray-100);
 }
 
 /* Empty state */
 .emptyState {
     text-align: center;
-    padding: 1rem;
-    color: #6b7280;
-    background-color: #f3f4f6;
-    border-radius: 0.375rem;
-    border: 2px dashed #d1d5db;
+    padding: var(--spacing-4);
+    color: var(--color-gray-500);
+    background-color: var(--color-gray-100);
+    border-radius: var(--radius-md);
+    border: 2px dashed var(--color-gray-300);
 }
 
 /* Status indicators */
 .activeIndicator {
-    color: #10b981;
-    font-weight: 600;
+    color: var(--color-success);
+    font-weight: var(--font-weight-semibold);
     animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .divisionTitleRow {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
         align-items: flex-start;
     }
 
@@ -173,6 +164,6 @@
     }
 
     .divisionCard {
-        padding: 1rem;
+        padding: var(--spacing-4);
     }
 }

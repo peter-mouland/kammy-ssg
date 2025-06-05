@@ -1,9 +1,8 @@
-/* components/toast-manager/toast-manager.module.css */
 .toastContainer {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1000;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    z-index: var(--z-toast);
     pointer-events: none;
 }
 
@@ -13,13 +12,13 @@
     right: 0;
     min-width: 300px;
     max-width: 400px;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
     transform: translateX(100%);
     opacity: 0;
-    transition: all 0.3s ease-out;
-    margin-bottom: 0.5rem;
+    transition: var(--transition-slow);
+    margin-bottom: var(--spacing-2);
 }
 
 .toast.visible {
@@ -33,39 +32,39 @@
 }
 
 .toast.success {
-    background-color: #dcfce7;
-    border: 1px solid #86efac;
-    color: #166534;
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success-text);
 }
 
 .toast.error {
-    background-color: #fef2f2;
-    border: 1px solid #fca5a5;
-    color: #dc2626;
+    background-color: var(--color-error-light);
+    border: 1px solid var(--color-error-border);
+    color: var(--color-error);
 }
 
 .toast.warning {
-    background-color: #fef3c7;
-    border: 1px solid #fbbf24;
-    color: #92400e;
+    background-color: var(--color-warning-light);
+    border: 1px solid var(--color-warning-border);
+    color: var(--color-warning-text);
 }
 
 .toast.info {
-    background-color: #dbeafe;
-    border: 1px solid #93c5fd;
-    color: #1d4ed8;
+    background-color: var(--color-info-light);
+    border: 1px solid var(--color-info-border);
+    color: var(--color-info);
 }
 
 .toastContent {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    gap: var(--spacing-4);
 }
 
 .toastMessage {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: var(--font-sm);
+    line-height: var(--line-height-normal);
     flex: 1;
 }
 
@@ -74,7 +73,7 @@
     border: none;
     color: inherit;
     cursor: pointer;
-    font-size: 1.25rem;
+    font-size: var(--font-xl);
     line-height: 1;
     padding: 0;
     margin: 0;
@@ -84,8 +83,8 @@
     justify-content: center;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+    border-radius: var(--radius-full);
+    transition: var(--transition-normal);
 }
 
 .dismissButton:hover {
@@ -100,9 +99,9 @@
 /* Responsive design */
 @media (max-width: 640px) {
     .toastContainer {
-        left: 1rem;
-        right: 1rem;
-        top: 1rem;
+        left: var(--spacing-4);
+        right: var(--spacing-4);
+        top: var(--spacing-4);
     }
 
     .toast {

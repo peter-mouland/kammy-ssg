@@ -1,55 +1,54 @@
-/* app/components/player-gameweek-table.module.css */
 .tableContainer {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    background: var(--color-white);
+    border: var(--card-border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .gameweekTable {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: var(--font-sm);
 }
 
 .gameweekTable th {
-    background: #f8fafc;
-    padding: 12px 8px;
+    background: var(--table-header-bg);
+    padding: var(--table-padding-cell);
     text-align: center;
-    font-weight: 600;
-    color: #64748b;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-600);
+    border-bottom: var(--table-border);
+    font-size: var(--font-xs);
     text-transform: uppercase;
 }
 
 .gameweekHeader {
     text-align: left !important;
-    padding-left: 16px !important;
+    padding-left: var(--spacing-4) !important;
 }
 
 .pointsHeader {
-    background: #dbeafe !important;
-    color: #2563eb !important;
+    background: var(--color-primary-light) !important;
+    color: var(--color-primary) !important;
 }
 
 .gameweekTable td {
-    padding: 12px 8px;
+    padding: var(--table-padding-cell);
     text-align: center;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--color-gray-100);
 }
 
 .gameweekRow:hover {
-    background: #f8fafc;
+    background: var(--table-row-hover);
 }
 
 .currentGameweek {
-    background: #dbeafe !important;
+    background: var(--color-primary-light) !important;
 }
 
 .currentGameweek:hover {
-    background: #dbeafe !important;
+    background: var(--color-primary-light) !important;
     opacity: 0.9;
 }
 
@@ -59,105 +58,105 @@
 
 .gameweekCell {
     text-align: left !important;
-    padding-left: 16px !important;
+    padding-left: var(--spacing-4) !important;
 }
 
 .gameweekNumber {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .liveBadge {
-    background: #dc2626;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 700;
+    background: var(--color-error);
+    color: var(--color-white);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-bold);
     text-transform: uppercase;
 }
 
 .pointsCell {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
 }
 
 .customPoints {
-    background: #dbeafe;
+    background: var(--color-primary-light);
 }
 
 .fplPoints {
-    background: #f3e8ff;
+    background: var(--color-gray-50);
 }
 
 .positive {
-    color: #059669;
+    color: var(--color-success);
 }
 
 .negative {
-    color: #dc2626;
+    color: var(--color-error);
 }
 
 .noPlay {
-    color: #94a3b8;
+    color: var(--color-gray-400);
     font-style: italic;
 }
 
 .noData {
-    color: #94a3b8;
+    color: var(--color-gray-400);
     font-style: italic;
 }
 
 .resultCell {
-    font-size: 12px;
+    font-size: var(--font-xs);
 }
 
 .opponentCell {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
 }
 
 .opponent {
-    color: #1e293b;
+    color: var(--color-gray-800);
 }
 
 .matchResult {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-semibold);
 }
 
 .win {
-    background: #dcfce7;
-    color: #059669;
+    background: var(--color-success-light);
+    color: var(--color-success);
 }
 
 .draw {
-    background: #fef3c7;
-    color: #d97706;
+    background: var(--color-warning-light);
+    color: var(--color-warning-hover);
 }
 
 .loss {
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--color-error-light);
+    color: var(--color-error);
 }
 
 .noData {
     text-align: center;
-    padding: 40px;
-    color: #64748b;
+    padding: var(--spacing-10);
+    color: var(--color-gray-600);
     font-style: italic;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
     .gameweekTable {
-        font-size: 12px;
+        font-size: var(--font-xs);
     }
 
     .gameweekTable th,
     .gameweekTable td {
-        padding: 8px 4px;
+        padding: var(--spacing-2) var(--spacing-1);
     }
 }

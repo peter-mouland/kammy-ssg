@@ -11,6 +11,7 @@ import {
 } from "react-router";
 
 import globalStyles from "./root.css?url";
+import designTokens from "./design-tokens.css?url";
 
 export const meta: MetaFunction = () => {
     return [
@@ -32,6 +33,7 @@ export const links: LinksFunction = () => [
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
     },
     { rel: "stylesheet", href: globalStyles },
+    { rel: "stylesheet", href: designTokens },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

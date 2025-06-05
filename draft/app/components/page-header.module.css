@@ -1,6 +1,5 @@
-/* Page header */
 .pageHeader {
-    margin-bottom: 2rem;
+    margin-bottom: var(--spacing-8);
 }
 
 .primary {
@@ -10,20 +9,19 @@
 }
 
 .pageTitle {
-    font-size: 2.25rem;
-    font-weight: bold;
-    line-height: 1.1;
+    font-size: var(--font-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
 }
 
 .pageSubtitle {
-    color: #6b7280;
-    font-size: 1.125rem;
+    color: var(--color-gray-500);
+    font-size: var(--font-lg);
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .pageTitle {
-        font-size: 1.875rem;
+        font-size: var(--font-3xl);
     }
 }

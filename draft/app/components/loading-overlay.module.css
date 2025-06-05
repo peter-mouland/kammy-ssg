@@ -1,71 +1,65 @@
 .turnAlert {
-    border: 2px solid #059669;
-    background-color: rgb(240, 253, 244);
-    padding: 1rem;
-    border-radius: 0.75rem;
-    margin-bottom: 2rem;
+    border: 2px solid var(--color-success);
+    background-color: var(--color-success-light);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-8);
     text-align: center;
     position: relative;
 }
 
 .turnTitle {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #059669;
+    margin: 0 0 var(--spacing-2) 0;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
 }
 
 .timer {
-    color: #059669;
-    font-weight: 500;
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
 }
 
 .submittingIndicator {
     position: absolute;
     top: 50%;
-    right: 1rem;
+    right: var(--spacing-4);
     transform: translateY(-50%);
 }
-
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-2);
 }
 
 .spinner {
-    border: 2px solid #e5e7eb;
-    border-top: 2px solid #3b82f6;
-    border-radius: 50%;
+    border: 2px solid var(--color-gray-200);
+    border-top: 2px solid var(--color-primary);
+    border-radius: var(--radius-full);
     animation: spin 1s linear infinite;
 }
 
 .spinner.small {
-    width: 1rem;
-    height: 1rem;
+    width: var(--spacing-4);
+    height: var(--spacing-4);
 }
 
 .spinner.medium {
-    width: 2rem;
-    height: 2rem;
+    width: var(--spacing-8);
+    height: var(--spacing-8);
 }
 
 .spinner.large {
-    width: 3rem;
-    height: 3rem;
+    width: var(--spacing-12);
+    height: var(--spacing-12);
 }
 
 .message {
-    font-size: 0.875rem;
-    color: #6b7280;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
     text-align: center;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
 
 .progressBar {
@@ -74,13 +68,13 @@
     left: 0;
     right: 0;
     height: 4px;
-    background-color: rgba(59, 130, 246, 0.1);
-    z-index: 999;
+    background-color: var(--color-primary-light);
+    z-index: var(--z-toast);
 }
 
 .progressIndicator {
     height: 100%;
-    background-color: #3b82f6;
+    background-color: var(--color-primary);
     animation: progress 2s ease-in-out infinite;
     transform-origin: left;
 }

@@ -1,8 +1,8 @@
 .selectContainer {
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    font-weight: 500;
+    gap: var(--spacing-4);
+    font-weight: var(--font-weight-medium);
 }
 
 .selectLabel {
@@ -11,18 +11,18 @@
 }
 
 .selectInput {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    background-color: white;
-    font-size: 0.875rem;
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    font-size: var(--font-sm);
     min-width: 150px;
 }
 
 .selectInput:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-shadow);
 }
 
 /* Responsive adjustments */
@@ -30,7 +30,7 @@
     .selectContainer {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
     }
 
     .selectInput {

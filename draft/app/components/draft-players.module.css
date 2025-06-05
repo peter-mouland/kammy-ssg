@@ -1,38 +1,37 @@
-/* components/draft-players.module.css */
-
+/* ===== draft-players.module.css ===== */
 .searchControls {
     display: grid;
     grid-template-columns: 1fr auto auto auto;
-    gap: 0.5rem;
+    gap: var(--spacing-2);
     align-items: end;
-    margin-top: 1rem;
+    margin-top: var(--spacing-4);
 }
 
 .searchInput {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
 }
 
 .selectInput {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    background-color: white;
-    font-size: 0.875rem;
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    font-size: var(--font-sm);
     min-width: 120px;
 }
 
 .searchButton {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: var(--button-padding-md);
+    font-size: var(--font-sm);
 }
 
 .resultsSummary {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-top: 0.5rem;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-2);
     display: flex;
     justify-content: space-between;
 }
@@ -44,41 +43,41 @@
 
 .emptyState {
     text-align: center;
-    padding: 2rem;
-    color: #6b7280;
+    padding: var(--spacing-8);
+    color: var(--color-gray-500);
 }
 
 .emptyIcon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: var(--font-3xl);
+    margin-bottom: var(--spacing-4);
 }
 
 .clearFiltersButton {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background: #3b82f6;
-    color: white;
+    margin-top: var(--spacing-4);
+    padding: var(--button-padding-md);
+    background: var(--color-primary);
+    color: var(--color-white);
     border: none;
-    border-radius: 0.375rem;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    font-size: 0.875rem;
+    font-size: var(--font-sm);
 }
 
 .clearFiltersButton:hover {
-    background: #2563eb;
+    background: var(--color-primary-hover);
 }
 
 .playerItem {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    background-color: white;
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+    background-color: var(--color-white);
     cursor: pointer;
     opacity: 1;
-    transition: all 0.2s;
+    transition: var(--button-transition);
 }
 
 .playerItem:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-gray-50);
 }
 
 .playerItem.disabled {
@@ -87,7 +86,7 @@
 }
 
 .playerItem.disabled:hover {
-    background-color: white;
+    background-color: var(--color-white);
 }
 
 .playerContent {
@@ -101,36 +100,36 @@
 }
 
 .playerName {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-1);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-2);
 }
 
 .subOnlyBadge {
-    font-size: 0.625rem;
-    background: #fbbf24;
-    color: white;
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.75rem;
-    font-weight: 500;
+    font-size: var(--font-xs);
+    background: var(--color-warning);
+    color: var(--color-white);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    font-weight: var(--font-weight-medium);
 }
 
 .playerDetails {
-    font-size: 0.75rem;
-    color: #6b7280;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-2);
 }
 
 .positionBadge {
-    background: #e5e7eb;
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-weight: 500;
-    font-size: 0.625rem;
+    background: var(--color-gray-200);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-xs);
 }
 
 .playerPrice {
@@ -138,16 +137,16 @@
 }
 
 .priceValue {
-    font-weight: 600;
-    color: #059669;
-    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+    font-size: var(--font-sm);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .searchControls {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: var(--spacing-3);
     }
 
     .selectInput {
@@ -156,24 +155,23 @@
 
     .resultsSummary {
         flex-direction: column;
-        gap: 0.25rem;
+        gap: var(--spacing-1);
     }
 
     .playerContent {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
     }
 
     .playerPrice {
         align-self: flex-end;
     }
 }
-/* Add these to your existing draft-players.module.css */
 
 .filterHint {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-top: 0.5rem;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-2);
     font-style: italic;
 }

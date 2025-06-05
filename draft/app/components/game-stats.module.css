@@ -1,12 +1,12 @@
 .statsGrid {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--spacing-3);
 }
 
 .statItem {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f3f4f6;
+    padding: var(--spacing-2) 0;
+    border-bottom: 1px solid var(--color-gray-100);
 }
 
 .statItem:last-child {
@@ -14,15 +14,15 @@
 }
 
 .statValue {
-    font-size: 2rem;
-    font-weight: bold;
-    line-height: 1;
+    font-size: var(--font-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
 }
 
 .statLabel {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+    color: var(--color-gray-500);
+    font-size: var(--font-sm);
+    margin-top: var(--spacing-1);
 }
 
 /* Alternative grid layout for wider cards */
@@ -30,14 +30,14 @@
     .statsGrid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: var(--spacing-4);
     }
 
     .statItem {
         border-bottom: none;
-        padding: 1rem;
+        padding: var(--spacing-4);
         text-align: center;
-        border-radius: 0.375rem;
-        background-color: #f9fafb;
+        border-radius: var(--radius-md);
+        background-color: var(--color-gray-50);
     }
 }

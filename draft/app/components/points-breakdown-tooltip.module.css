@@ -8,52 +8,41 @@
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: var(--z-tooltip);
+    background: var(--color-white);
+    border: var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
     padding: 0;
     min-width: 280px;
     max-width: 320px;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-sm);
+    animation: fadeIn var(--transition-normal);
 }
 
 .tooltipHeader {
-    padding: 0.75rem;
-    border-bottom: 1px solid #f3f4f6;
-    background-color: #f9fafb;
-    border-radius: 0.5rem 0.5rem 0 0;
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--color-gray-100);
+    background-color: var(--color-gray-50);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .playerName {
     margin: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
 }
 
 .position {
-    font-size: 0.75rem;
-    color: #6b7280;
-    margin-top: 0.25rem;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-1);
 }
 
 .breakdownList {
-    padding: 0.5rem;
+    padding: var(--spacing-2);
     max-height: 300px;
     overflow-y: auto;
 }
@@ -61,10 +50,10 @@
 .breakdownItem {
     display: grid;
     grid-template-columns: 1fr auto auto;
-    gap: 0.5rem;
-    padding: 0.375rem 0.5rem;
-    border-radius: 0.25rem;
-    margin-bottom: 0.25rem;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-1);
     align-items: center;
 }
 
@@ -73,72 +62,72 @@
 }
 
 .breakdownItem.positive {
-    background-color: #f0fdf4;
-    border-left: 3px solid #22c55e;
+    background-color: var(--color-success-light);
+    border-left: 3px solid var(--color-success);
 }
 
 .breakdownItem.negative {
-    background-color: #fef2f2;
-    border-left: 3px solid #ef4444;
+    background-color: var(--color-error-light);
+    border-left: 3px solid var(--color-error);
 }
 
 .breakdownItem.neutral {
-    background-color: #f8fafc;
-    border-left: 3px solid #94a3b8;
+    background-color: var(--color-gray-50);
+    border-left: 3px solid var(--color-gray-400);
 }
 
 .breakdownItem.notRelevant {
-    background-color: #f9fafb;
-    border-left: 3px solid #d1d5db;
+    background-color: var(--color-gray-50);
+    border-left: 3px solid var(--color-gray-300);
     opacity: 0.6;
 }
 
 .statLabel {
-    font-weight: 500;
-    color: #374151;
-    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    font-size: var(--font-xs);
 }
 
 .statFormula {
-    font-size: 0.75rem;
-    color: #6b7280;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
     font-family: monospace;
 }
 
 .statPoints {
-    font-weight: 600;
-    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-xs);
     text-align: right;
     min-width: 2rem;
 }
 
 .positive .statPoints {
-    color: #16a34a;
+    color: var(--color-success);
 }
 
 .negative .statPoints {
-    color: #dc2626;
+    color: var(--color-error);
 }
 
 .neutral .statPoints {
-    color: #6b7280;
+    color: var(--color-gray-500);
 }
 
 .notRelevant .statPoints {
-    color: #9ca3af;
+    color: var(--color-gray-400);
 }
 
 .tooltipFooter {
-    padding: 0.75rem;
-    border-top: 1px solid #f3f4f6;
-    background-color: #f9fafb;
-    border-radius: 0 0 0.5rem 0.5rem;
+    padding: var(--spacing-3);
+    border-top: 1px solid var(--color-gray-100);
+    background-color: var(--color-gray-50);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .totalPoints {
     text-align: center;
-    color: #111827;
-    font-size: 0.875rem;
+    color: var(--color-gray-900);
+    font-size: var(--font-sm);
 }
 
 .tooltipArrow {
@@ -150,7 +139,7 @@
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-top: 8px solid white;
+    border-top: 8px solid var(--color-white);
 }
 
 .tooltipArrow::before {
@@ -162,7 +151,7 @@
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-top: 8px solid #e5e7eb;
+    border-top: 8px solid var(--color-gray-200);
 }
 
 /* Responsive adjustments */
@@ -170,26 +159,27 @@
     .tooltip {
         min-width: 260px;
         max-width: 300px;
-        font-size: 0.75rem;
+        font-size: var(--font-xs);
     }
 
     .tooltipHeader {
-        padding: 0.5rem;
+        padding: var(--spacing-2);
     }
 
     .breakdownList {
-        padding: 0.375rem;
+        padding: var(--spacing-2);
         max-height: 250px;
     }
 
     .breakdownItem {
-        padding: 0.25rem 0.375rem;
+        padding: var(--spacing-1) var(--spacing-2);
     }
 
     .tooltipFooter {
-        padding: 0.5rem;
+        padding: var(--spacing-2);
     }
 }
+
 
 /* Handle tooltip positioning near screen edges */
 .tooltip.rightEdge {
@@ -201,22 +191,4 @@
 .tooltip.leftEdge {
     left: 0;
     transform: none;
-}
-
-/* Scrollbar styling for breakdown list */
-.breakdownList::-webkit-scrollbar {
-    width: 4px;
-}
-
-.breakdownList::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
-
-.breakdownList::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 2px;
-}
-
-.breakdownList::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
 }

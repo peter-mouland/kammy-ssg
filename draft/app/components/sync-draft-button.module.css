@@ -1,5 +1,3 @@
-/* components/sync-draft-button.module.css */
-
 .syncButtonContainer {
     display: inline-block;
 }
@@ -7,18 +5,18 @@
 .syncButton {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-    border-radius: 0.375rem;
+    gap: var(--spacing-2);
+    font-weight: var(--button-font-weight);
+    border-radius: var(--button-border-radius);
     border: 1px solid;
-    transition: all 0.2s ease;
+    transition: var(--button-transition);
     cursor: pointer;
     text-decoration: none;
     outline: none;
 }
 
 .syncButton:focus {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .syncButton:disabled {
@@ -29,65 +27,65 @@
 
 /* Sizes */
 .small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+    padding: var(--button-padding-sm);
+    font-size: var(--font-xs);
 }
 
 .medium {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: var(--button-padding-md);
+    font-size: var(--font-sm);
 }
 
 .large {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    padding: var(--button-padding-lg);
+    font-size: var(--font-base);
 }
 
 /* Variants */
 .primary {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
-    color: white;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
 }
 
 .primary:hover:not(:disabled) {
-    background-color: #2563eb;
-    border-color: #2563eb;
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .secondary {
-    background-color: #f3f4f6;
-    border-color: #d1d5db;
-    color: #374151;
+    background-color: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-700);
 }
 
 .secondary:hover:not(:disabled) {
-    background-color: #e5e7eb;
-    border-color: #9ca3af;
+    background-color: var(--color-gray-200);
+    border-color: var(--color-gray-400);
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 /* States */
 .loading {
-    background-color: #f59e0b !important;
-    border-color: #f59e0b !important;
-    color: white !important;
+    background-color: var(--color-warning) !important;
+    border-color: var(--color-warning) !important;
+    color: var(--color-white) !important;
 }
 
 .success {
-    background-color: #10b981 !important;
-    border-color: #10b981 !important;
-    color: white !important;
+    background-color: var(--color-success) !important;
+    border-color: var(--color-success) !important;
+    color: var(--color-white) !important;
     animation: successPulse 0.5s ease-out;
 }
 
 .error {
-    background-color: #ef4444 !important;
-    border-color: #ef4444 !important;
-    color: white !important;
+    background-color: var(--color-error) !important;
+    border-color: var(--color-error) !important;
+    color: var(--color-white) !important;
 }
 
 @keyframes successPulse {
@@ -97,7 +95,7 @@
 }
 
 .icon {
-    font-size: 1rem;
+    font-size: var(--font-base);
     line-height: 1;
 }
 
@@ -107,30 +105,30 @@
 
 /* Messages */
 .successMessage {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: #059669;
-    font-weight: 500;
+    margin-top: var(--spacing-2);
+    font-size: var(--font-sm);
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
 }
 
 .errorMessage {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    color: #dc2626;
+    margin-top: var(--spacing-2);
+    font-size: var(--font-sm);
+    color: var(--color-error);
 }
 
 .syncDetails {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: #6b7280;
-    background-color: #f9fafb;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    border: 1px solid #e5e7eb;
+    margin-top: var(--spacing-2);
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    background-color: var(--color-gray-50);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    border: var(--card-border);
 }
 
 .syncDetails div {
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--spacing-1);
 }
 
 .syncDetails div:last-child {

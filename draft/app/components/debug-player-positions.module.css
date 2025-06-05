@@ -1,5 +1,5 @@
 .debugContainer {
-    background: #f3f4f6;
+    background: var(--color-gray-100);
     border: 1px solid #d1d5db;
     border-radius: 8px;
     padding: 1rem;
