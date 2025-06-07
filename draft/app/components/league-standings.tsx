@@ -73,12 +73,6 @@ export function LeagueStandings({ standings }: LeagueStandingsProps) {
                 }}
                 rowClassName={(team) => team.leagueRank <= 3 ? 'highlight-top' : ''}
             />
-
-            <div style={{ marginTop: 'var(--spacing-4)', textAlign: 'center' }}>
-                <Link to="/my-team" className="btn btn-secondary">
-                    View Full Standings
-                </Link>
-            </div>
         </div>
     );
 }

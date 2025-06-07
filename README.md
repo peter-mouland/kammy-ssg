@@ -46,7 +46,7 @@ app/
 │       └── player-stats.ts         # Player statistics management
 ├── routes/
 │   ├── _index.tsx                 # Dashboard page
-│   ├── my-team.tsx                # Team management page
+│   ├── league-standings.tsx                # Team management page
 │   ├── draft.tsx                  # Live draft interface
 │   ├── draft-admin.tsx         # Draft setup page
 │   ├── player.$playerId.tsx       # Player detail page

@@ -1,6 +1,5 @@
 // components/draft-team.tsx (fixed version)
 import type { DraftPickData } from "../types";
-import { getPositionDisplayName } from '../lib/points';
 import styles from './draft-team.module.css';
 
 interface DraftTeamProps {
@@ -105,20 +104,17 @@ const PositionSlot = (slot: PositionSlot) => {
         styles.emptySlotText,
         styles[slot.position]
     ].join(' ');
-console.log(slot)
+
     return (
         <div key={slot.id} className={slotClasses}>
             {slot.isEmpty ? (
                 <span className={textClasses}>
-                    {getPositionDisplayName(slot.position)}
+                    &nbsp;
                 </span>
             ) : (
                 <div className={styles.playerInfo}>
                     <div className={styles.playerName}>
                         {slot.player?.playerName}
-                    </div>
-                    <div className={styles.playerPosition}>
-                        {getPositionDisplayName(slot.position)}
                     </div>
                     <div className={styles.playerPosition}>
                         {slot.player?.teamName}

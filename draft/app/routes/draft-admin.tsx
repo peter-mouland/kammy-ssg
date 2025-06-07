@@ -1,6 +1,6 @@
 // app/routes/draft-admin.tsx - Enhanced with clear data functionality
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from 'react-router';
-import { data, useFetcher, useLoaderData, useActionData } from "react-router";
+import { data, useLoaderData, useActionData } from "react-router";
 import * as React from "react";
 import { requestFormData } from '../lib/form-data';
 import { DivisionCard } from "../components/division-card";
@@ -11,7 +11,6 @@ import { ClearDataButton } from '../components/clear-data-button';
 import styles from './draft-admin.module.css';
 import { SyncDraftButton } from '../components/sync-draft-button';
 import { CacheStatus } from '../components/cache-status';
-import { ActionButton } from '../components/action-button';
 
 
 export const meta: MetaFunction = () => {
@@ -72,9 +71,11 @@ export default function DraftAdmin() {
     return (
         <div className={styles.draftAdminContainer}>
             <PageHeader
-                title="Draft Setup"
+                title="Admin Tools"
                 subTitle="Generate draft orders and manage the draft process"
             />
+
+            <CacheStatus autoRefresh={false} />
 
             <AdminPanel
                 draftOrders={draftOrders}
@@ -113,14 +114,6 @@ export default function DraftAdmin() {
 function AdminPanel({ divisions, userTeamsByDivision, draftOrders, draftState }) {
     return (
         <div className={styles.adminPanel}>
-            <h3 className={styles.adminTitle}>🔧 Admin Tools</h3>
-
-            {/* Cache Status Section */}
-            <div className={styles.adminSection}>
-                <CacheStatus autoRefresh={false} />
-            </div>
-
-            {/* Cache Management Section */}
             <div className={styles.adminSection}>
                 <h4 className={styles.sectionTitle}>Manual Cache Management</h4>
                 <div className={styles.adminDescription}>

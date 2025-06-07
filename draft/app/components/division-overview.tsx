@@ -51,12 +51,6 @@ export function DivisionOverview({ divisions, leagueStandings }: DivisionOvervie
                     );
                 })}
             </div>
-
-            <div className={styles.actionContainer}>
-                <Link to="/my-team" className="btn btn-secondary">
-                    Manage Teams
-                </Link>
-            </div>
         </div>
     );
 }

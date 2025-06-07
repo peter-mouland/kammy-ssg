@@ -54,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <nav className="nav">
                         <a href="/" className="logo">Fantasy Draft</a>
                         <a href="/">Dashboard</a>
-                        <a href="/my-team">League Standings</a>
+                        <a href="/leagues">League Standings</a>
                         <a href="/players">Players</a>
                         <a href="/wishlists">Wishlists</a>
                         <a href="/draft">Draft</a>

@@ -18,12 +18,6 @@ export function QuickActions() {
                 <Link to="/draft/admin" className="btn btn-secondary">
                     ⚙️ Draft Setup
                 </Link>
-                <Link to="/my-team" className="btn btn-secondary">
-                    👥 Team Management
-                </Link>
-                <Link to="/player/1" className="btn btn-secondary">
-                    📊 Player Stats
-                </Link>
             </div>
         </div>
     );

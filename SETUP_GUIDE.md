@@ -207,7 +207,7 @@ app/
 │   └── sheets.ts             # Google Sheets integration
 ├── routes/
 │   ├── home.tsx              # Main dashboard
-│   ├── my-team.tsx           # League management
+│   ├── league-standings.tsx           # League management
 │   ├── player.tsx            # Player details
 │   ├── api.live-scores.ts    # Server-Sent Events
 │   ├── api.sheets.ts         # Sheets API operations

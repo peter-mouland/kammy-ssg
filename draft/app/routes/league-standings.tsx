@@ -1,4 +1,4 @@
-// app/routes/my-team.tsx
+// app/routes/league-standings.tsx
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { useLoaderData, useActionData, Form, useSearchParams } from "react-router";
@@ -31,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
         const url = new URL(request.url);
 
         // Dynamic import to keep server code on server
-        const { getMyTeamData } = await import("./server/my-team.server");
+        const { getMyTeamData } = await import("./server/league-standings.server");
         const loaderData = await getMyTeamData(url);
 
         return data<LoaderData>(loaderData);
@@ -47,7 +47,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const formData = await requestFormData({ request, context });
 
         // Dynamic import to keep server code on server
-        const { handleMyTeamAction } = await import("./server/my-team.server");
+        const { handleMyTeamAction } = await import("./server/league-standings.server");
         const result = await handleMyTeamAction(formData);
 
         return data<ActionData>(result);
@@ -80,7 +80,7 @@ const getPositionStyle = (rank: number) => ({
     fontWeight: '600'
 });
 
-export default function MyTeam() {
+export default function LeagueStandings() {
     const { userTeams, divisions, selectedDivision } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
     const [searchParams, setSearchParams] = useSearchParams();

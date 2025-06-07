@@ -1,4 +1,4 @@
-// app/routes/server/my-team.server.ts
+// app/routes/server/league-standings.server.ts
 import { readUserTeams, getUserTeamsByDivision } from "./sheets/user-teams";
 import { readDivisions } from "./sheets/divisions";
 import type { UserTeamData, DivisionData } from "../../types";
