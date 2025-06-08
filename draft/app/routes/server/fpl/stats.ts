@@ -45,6 +45,7 @@ export const convertToPlayerGameweeksStats = (gameweekData: FplPlayerGameweekDat
 export const convertToPlayerGameweekStats = (gw: FplPlayerGameweekData): PlayerGameweekStatsData => {
     return {
         playerId: gw.element.toString(),
+        // playerCode: gw.code.toString(),
         gameweek: gw.round,
         appearance: gw.minutes,
         goals: gw.goals_scored,

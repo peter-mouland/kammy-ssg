@@ -14,11 +14,11 @@ export default [
     route("api/sheets", "routes/api.sheets.ts"),
     route("api/live-scores", "routes/api.live-scores.ts"),
     route("api/draft/live", "routes/api.draft.live.ts"),
+    route("api/round-points", "routes/api.round-points.ts"),
 
     // Admin API routes for Firestore management
     route("api/admin/clear-firestore", "./routes/api.admin.clear-firestore.ts"),
     route("api/admin/firestore-stats", "./routes/api.admin.firestore-stats.ts"),
-
 
     // debugging routes
     route("debug", "routes/debug.tsx"),

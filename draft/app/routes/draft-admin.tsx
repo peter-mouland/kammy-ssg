@@ -11,6 +11,7 @@ import { ClearDataButton } from '../components/clear-data-button';
 import styles from './draft-admin.module.css';
 import { SyncDraftButton } from '../components/sync-draft-button';
 import { CacheStatus } from '../components/cache-status';
+import { RoundPointsButton } from '../components/round-points-button';
 
 
 export const meta: MetaFunction = () => {
@@ -76,7 +77,15 @@ export default function DraftAdmin() {
             />
 
             <CacheStatus autoRefresh={false} />
+            <div className={styles.adminSection}>
+                <h4 className={styles.sectionTitle}>Round Points Generation</h4>
+                <div className={styles.adminDescription}>
+                    Generate round-by-round points using your custom scoring system.
+                    Each column represents points earned in one specific round.
+                </div>
 
+                <RoundPointsButton variant="primary" size="medium" />
+            </div>
             <AdminPanel
                 draftOrders={draftOrders}
                 draftState={draftState}
@@ -155,6 +164,7 @@ function AdminPanel({ divisions, userTeamsByDivision, draftOrders, draftState })
                     💡 <strong>Tip:</strong> Use this after manually editing picks in sheets or if Firebase shows wrong turn/state.
                 </div>
 
+                <br />
                 <SyncDraftButton
                     divisionId={draftState?.currentDivisionId}
                     disabled={!draftState?.currentDivisionId || !draftState?.isActive}

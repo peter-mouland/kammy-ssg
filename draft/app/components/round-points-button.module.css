@@ -1,0 +1,263 @@
+/* components/round-points-button.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Base button styles */
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.button:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Size variants */
+.small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.medium {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.large {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+/* Color variants */
+.primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-color: #2563eb;
+}
+
+.primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.secondary {
+    background: #e0e7ff;
+    color: #3730a3;
+    border-color: #c7d2fe;
+}
+
+.secondary:hover:not(:disabled) {
+    background: #c7d2fe;
+}
+
+/* Status states */
+.loading {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+    cursor: wait;
+}
+
+.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    animation: successPulse 0.5s ease-out;
+}
+
+.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Status button */
+.statusButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.statusButton:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.statusButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+}
+
+.statusButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Icons */
+.icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+/* Spinner animation */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+.spinnerTrack {
+    opacity: 0.25;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Message cards */
+.errorMessage {
+    padding: 0.75rem;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 0.375rem;
+}
+
+.errorMessage p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #991b1b;
+}
+
+.successMessage {
+    padding: 0.75rem;
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    border-radius: 0.375rem;
+}
+
+.successMessage p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #065f46;
+}
+
+/* Summary card */
+.summaryCard {
+    padding: 1rem;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    border-radius: 0.375rem;
+}
+
+.summaryTitle {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e3a8a;
+}
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    font-size: 0.875rem;
+}
+
+.summaryItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.summaryLabel {
+    color: #1d4ed8;
+    font-weight: 500;
+}
+
+.summaryValue {
+    color: #1e3a8a;
+}
+
+/* Info card */
+.infoCard {
+    padding: 0.75rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+}
+
+.infoText {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .buttonGroup {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .summaryItem {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
