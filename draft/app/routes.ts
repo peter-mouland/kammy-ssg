@@ -5,7 +5,6 @@ export default [
     index("routes/_index.tsx"),
     route("leagues", "routes/league-standings.tsx"),
     route("draft", "routes/draft.tsx"),
-    route("draft/admin", "routes/draft-admin.tsx"),
     route("players/:playerId", "routes/player.$playerId.tsx"),
     route("players", "routes/players.tsx"),
     route("wishlists", "routes/wishlists.tsx"),
@@ -17,6 +16,7 @@ export default [
     route("api/round-points", "routes/api.round-points.ts"),
 
     // Admin API routes for Firestore management
+    route("admin", "routes/admin-dashboard.tsx"),
     route("api/admin/clear-firestore", "./routes/api.admin.clear-firestore.ts"),
     route("api/admin/firestore-stats", "./routes/api.admin.firestore-stats.ts"),
 
