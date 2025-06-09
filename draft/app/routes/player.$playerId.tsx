@@ -6,7 +6,7 @@ import type { PlayerDetailData } from "../types";
 import { PlayerGameweekTable } from "../components/player-gameweek-table";
 import { PlayerHighlights } from "../components/player-highlights";
 import { PageHeader } from '../components/page-header';
-import { getPositionColor } from '../lib/points';
+import { getPositionColor } from '../lib/scoring';
 import styles from './player.$playerid.module.css';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

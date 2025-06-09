@@ -7,7 +7,7 @@ import {
     getSquadComposition,
 } from '../lib/draft/draft-rules';
 import { DraftFilters } from './draft-filters';
-import { getPositionDisplayName } from '../lib/points';
+import { getPositionDisplayName } from '../lib/scoring';
 import styles from './draft-players.module.css';
 
 interface DraftPlayersProps {

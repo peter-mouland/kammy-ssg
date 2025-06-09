@@ -168,7 +168,7 @@ export class GameweekPointsService {
         console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
 
         // Import the gameweek points generation function
-        const { generateGameweekPointsData } = await import('../scoring/generate-gameweek-points');
+        const { generateGameweekData } = await import('../../../lib/scoring');
         const { readPlayers } = await import('../sheets/players');
 
         // Get required data
@@ -197,7 +197,7 @@ export class GameweekPointsService {
         }, {});
 
         // Generate gameweek points data for specific gameweeks
-        const gameweekPointsById = generateGameweekPointsData(
+        const gameweekPointsById = generateGameweekData(
             filteredFplPlayers,
             fplPlayerGameweeksById,
             sheetsPlayersById,
@@ -325,8 +325,8 @@ export class GameweekPointsService {
 
             // Get sample player data to determine available gameweeks
             const fplPlayers = await fplApiCache.getFplPlayers();
-            const samplePlayerIds = fplPlayers.slice(0, 5).map(p => p.id);
-            const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(samplePlayerIds);
+            const playerIds = fplPlayers.map(p => p.id);
+            const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
             const availableGameweeks = this.getAvailableGameweeks(fplPlayerGameweeksById);
 
             // Regenerate ALL available gameweeks

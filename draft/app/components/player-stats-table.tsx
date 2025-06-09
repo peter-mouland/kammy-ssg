@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { WishlistButton } from './wishlist-button';
 import { WishlistTags } from './wishlist-tags';
 import { getPlayerPosition } from '../lib/draft/draft-rules';
-import { getPositionDisplayName } from '../lib/points';
+import { getPositionDisplayName } from '../lib/scoring';
 import type { EnhancedPlayerData } from '../types';
 import styles from './player-stats-table.module.css';
 

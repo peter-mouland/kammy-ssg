@@ -6,7 +6,7 @@ import {
     createAppError,
     type SheetRange
 } from './common';
-import { calculateGameweekPoints } from '../../../lib/points';
+import { calculateGameweekPoints } from '../../../lib/scoring';
 
 // Sheet configuration
 const PLAYER_ROUND_POINTS_SHEET_NAME = 'player-round-points';
@@ -46,7 +46,7 @@ async function generateRoundPointsData(): Promise<RoundPointsData[]> {
     // Import required modules
     const { fplApiCache } = await import('../fpl/api-cache');
     const { readPlayers } = await import('./players');
-    const { convertToPlayerGameweeksStats } = await import('../fpl/stats');
+    const { convertToPlayerGameweeksStats } = await import('../../../lib/scoring');
 
     try {
         // Get required data (reusing existing logic)

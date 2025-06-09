@@ -1,6 +1,5 @@
 import { Table, type TableColumn, TableBadge } from "./table";
-import { formatPointsDisplay } from '../lib/points';
-import { isStatRelevant } from '../lib/is-stat-relevant';
+import { isStatRelevant, formatPointsDisplay } from '../lib/scoring';
 
 interface GameweekStatWithPoints {
     gameweek: number;

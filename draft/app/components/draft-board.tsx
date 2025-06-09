@@ -1,5 +1,5 @@
 import { Table, type TableColumn } from "./table";
-import { getPositionDisplayName } from '../lib/points';
+import { getPositionDisplayName } from '../lib/scoring';
 
 interface DraftPickData {
     pickNumber: number;
@@ -56,9 +56,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
     ];
 
     // Sort picks by most recent first (highest pick number)
-    const sortedPicks = [...draftPicks]
-        .sort((a, b) => b.pickNumber - a.pickNumber)
-        .slice(0, 20); // Show last 20 picks
+    const sortedPicks = [...draftPicks].sort((a, b) => b.pickNumber - a.pickNumber)
 
     return (
         <div className="card">

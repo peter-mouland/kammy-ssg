@@ -6,9 +6,8 @@ import type {
 import type { FplPlayerSeasonData } from './api';
 import { FplCache } from '../firestore-cache/fpl-cache';
 import { fplApi } from './api';
-import * as fplStats from './stats';
 import { processBatched } from '../utils/batch-processor';
-import { generateEnhancedData } from '../scoring/generate-enhanced-data';
+import { generateSeasonData } from '../../../lib/scoring';
 import { readPlayers } from '../sheets/players';
 
 const currentSeason = '2024-25';
@@ -151,7 +150,7 @@ export class FplApiCache {
 
             console.log('📡 getFplTeams() - Cache miss, getting from bootstrap');
             const bootstrap = await this.getFplBootstrapData();
-            const result = fplStats.extractFplTeams(bootstrap);
+            const result = bootstrap.teams;
             console.log(`✅ getFplTeams() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
             return result;
         });
@@ -194,7 +193,7 @@ export class FplApiCache {
 
             console.log('📡 getCurrentGameweek() - Cache miss, getting from bootstrap');
             const bootstrap = await this.getFplBootstrapData();
-            const result = fplStats.getCurrentGameweekFromBootstrap(bootstrap);
+            const result = this.getCurrentGameweekFromBootstrap(bootstrap);
             console.log(`✅ getCurrentGameweek() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
             return result;
         });
@@ -309,32 +308,6 @@ export class FplApiCache {
         }, 600000); // 10 minutes timeout for large batches
     }
 
-    // === FILTERED DATA METHODS ===
-
-    /**
-     * Get players by position
-     */
-    async getPlayersByPosition(elementType: number): Promise<FplPlayerData[]> {
-        const startTime = performance.now();
-        console.log(`🔄 getPlayersByPosition(${elementType}) - Start`);
-
-        const result = await this.fplCache.getPlayersByPosition(elementType);
-        console.log(`✅ getPlayersByPosition(${elementType}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
-        return result;
-    }
-
-    /**
-     * Get players by team
-     */
-    async getPlayersByTeam(teamCode: number): Promise<FplPlayerData[]> {
-        const startTime = performance.now();
-        console.log(`🔄 getPlayersByTeam(${teamCode}) - Start`);
-
-        const result = await this.fplCache.getPlayersByTeam(teamCode);
-        console.log(`✅ getPlayersByTeam(${teamCode}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
-        return result;
-    }
-
     /**
      * Search players by name
      */
@@ -347,19 +320,6 @@ export class FplApiCache {
         return result;
     }
 
-    /**
-     * Batch fetch multiple players' data
-     */
-    async batchFetchPlayersData(playerIds: number[]): Promise<FplPlayerData[]> {
-        const startTime = performance.now();
-        console.log(`🔄 batchFetchPlayersData([${playerIds.length} players]) - Start`);
-
-        const result = await this.fplCache.getPlayersByIds(playerIds);
-        console.log(`✅ batchFetchPlayersData() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
-        return result;
-    }
-
-    // === STATS-BASED METHODS ===
 
     /**
      * Get top performers
@@ -369,23 +329,16 @@ export class FplApiCache {
         console.log(`🔄 getTopPerformers(${limit}) - Start`);
 
         const players = await this.getFplPlayers();
-        const result = fplStats.getTopPerformers(players, limit);
+
+        const result = players
+                .filter(player => player.minutes > 0)
+                .sort((a, b) => b.total_points - a.total_points)
+                .slice(0, 10);
+
         console.log(`✅ getTopPerformers(${limit}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
         return result;
     }
 
-    /**
-     * Get player form
-     */
-    async getPlayerForm(playerId: number): Promise<number> {
-        const startTime = performance.now();
-        console.log(`🔄 getPlayerForm(${playerId}) - Start`);
-
-        const player = await this.getFplPlayer(playerId);
-        const result = player ? fplStats.getPlayerForm(player) : 0;
-        console.log(`✅ getPlayerForm(${playerId}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
-        return result;
-    }
 
     /**
      * Get comprehensive cache status
@@ -624,7 +577,7 @@ export class FplApiCache {
 
             // Step 5: Generate enhanced data
             console.log('🔄 Step 5/6: Generating enhanced player data...');
-            const enhancedPlayers = generateEnhancedData(fplPlayers, fplPlayerGameweeksById, sheetsPlayersById, teams);
+            const enhancedPlayers = generateSeasonData(fplPlayers, fplPlayerGameweeksById, sheetsPlayersById);
             console.log(`✅ Step 5/6: Generated enhanced data for ${enhancedPlayers.length} players`);
 
             // Step 6: Cache the results (only for players that have valid data)
@@ -685,7 +638,7 @@ export class FplApiCache {
         }, {});
 
         console.log('🔄 generateEnhancedDataFast() - Generating enhanced data (without detailed stats)...');
-        const enhancedPlayers = generateEnhancedData(fplPlayers, emptyDetailedStats, sheetsPlayersById, teams);
+        const enhancedPlayers = generateSeasonData(fplPlayers, emptyDetailedStats, sheetsPlayersById);
 
         // Cache the results (only for players that have valid data)
         const draftDataById: Record<number, any> = {};
@@ -724,6 +677,10 @@ export class FplApiCache {
             return enhancedPlayers;
         }, 1200000); // 20 minutes timeout for enhanced data generation
     }
+    getCurrentGameweekFromBootstrap = (bootstrap: FplBootstrapData): number => {
+        const currentEvent = bootstrap.events.find(event => event.is_current);
+        return currentEvent?.id || 1;
+    }
 
     /**
      * Get enhanced player data (with draft calculations)
@@ -741,6 +698,7 @@ export class FplApiCache {
             return byId;
         });
     }
+
     async getTeamsByCode() {
         return this.withPromiseDeduplication('teams-by-id', async () => {
             const startTime = performance.now();

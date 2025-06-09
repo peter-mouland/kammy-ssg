@@ -1,19 +1,61 @@
-// src/lib/scoring/generate-gameweek-points.ts
-import type { CustomPosition, FplPlayerData } from '../../../types';
-import { convertToPlayerGameweeksStats } from '../fpl/stats';
-import { calculateGameweekPoints } from '../../../lib/points';
+// src/lib/scoring/generators.ts - High-level data generation
+
+import type {
+    CustomPosition,
+    EnhancedPlayerData,
+    FplPlayerData
+} from '../../types';
+import { convertToPlayerGameweeksStats } from './data-conversion';
+import { calculateSeasonPoints, calculateGameweekPoints, getFullBreakdown } from './calculations';
 
 /**
- * Generate gameweek points data structure for specific gameweeks
- * This creates the precise data structure we want to store in element summaries
+ * Generate season-level enhanced data
+ * Used by: api-cache.ts for full player listings
  */
-export const generateGameweekPointsData = (
+export function generateSeasonData(
+    fplPlayers: FplPlayerData[],
+    fplPlayerGameweeksById: Record<number, any>,
+    sheetsPlayersById: Record<string, any>
+): EnhancedPlayerData[] {
+    console.log(`🔄 generateSeasonData - Processing ${fplPlayers.length} players`);
+
+    return fplPlayers
+        .filter((fplPlayer: FplPlayerData) => sheetsPlayersById[fplPlayer.id])
+        .map((fplPlayer: FplPlayerData) => {
+            const playerSheet = sheetsPlayersById[fplPlayer.id];
+            const gameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
+            const playerGameweekStats = convertToPlayerGameweeksStats(gameweekData);
+
+            const position = playerSheet.position.toLowerCase() as CustomPosition;
+            const breakdown = calculateSeasonPoints(playerGameweekStats, position);
+            const fullBreakdown = getFullBreakdown(playerGameweekStats, position, breakdown);
+
+            return {
+                ...fplPlayer,
+                draft: {
+                    position: playerSheet.position,
+                    pointsTotal: breakdown.points.total,
+                    pointsBreakdown: fullBreakdown,
+                    __generatedFor: {
+                        type: 'season' as const,
+                        generatedAt: new Date().toISOString()
+                    }
+                }
+            };
+        });
+}
+
+/**
+ * Generate gameweek-level data for smart updates
+ * Used by: gameweek-points-service.ts for selective updates
+ */
+export function generateGameweekData(
     fplPlayers: FplPlayerData[],
     fplPlayerGameweeksById: Record<number, any>,
     sheetsPlayersById: Record<string, any>,
     targetGameweeks: number[]
-): Record<number, { draft: { gameweekPoints: Record<number, any> } }> => {
-    console.log(`🔄 generateGameweekPointsData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(', ')}`);
+): Record<number, { draft: { gameweekPoints: Record<number, any> } }> {
+    console.log(`🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(', ')}`);
 
     const result: Record<number, { draft: { gameweekPoints: Record<number, any> } }> = {};
 
@@ -23,23 +65,16 @@ export const generateGameweekPointsData = (
             const playerSheet = sheetsPlayersById[fplPlayer.id];
             const position = playerSheet.position.toLowerCase() as CustomPosition;
 
-            // Get all gameweek data for this player
             const allGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
-
-            // Convert to your gameweek stats format
             const playerGameweekStats = convertToPlayerGameweeksStats(allGameweekData);
 
-            // Create gameweek points object for only the target gameweeks
             const gameweekPoints: Record<number, any> = {};
 
             targetGameweeks.forEach(gameweek => {
-                // Find the stats for this specific gameweek
                 const gameweekStats = playerGameweekStats.find(gw => gw.gameweek === gameweek);
 
                 if (gameweekStats) {
-                    // Calculate points for this specific gameweek
                     const pointsBreakdown = calculateGameweekPoints(gameweekStats, position);
-
                     gameweekPoints[gameweek] = {
                         points: pointsBreakdown,
                         stats: {
@@ -62,7 +97,7 @@ export const generateGameweekPointsData = (
 
                     console.log(`✅ Player ${fplPlayer.id} GW${gameweek}: ${pointsBreakdown.total} points`);
                 } else {
-                    // No data for this gameweek (player didn't play or gameweek hasn't happened)
+                    // No data available
                     gameweekPoints[gameweek] = {
                         points: {
                             appearance: 0,
@@ -100,70 +135,9 @@ export const generateGameweekPointsData = (
                 }
             });
 
-            // Create the structure that matches what updateElementSummariesWithDraft expects
-            result[fplPlayer.id] = {
-                draft: {
-                    gameweekPoints
-                }
-            };
+            result[fplPlayer.id] = { draft: { gameweekPoints } };
         });
 
-    console.log(`✅ generateGameweekPointsData - Generated points for ${Object.keys(result).length} players`);
+    console.log(`✅ generateGameweekData - Generated points for ${Object.keys(result).length} players`);
     return result;
-};
-
-/**
- * Utility function to calculate season totals from gameweek points
- * This can be used to get current season total from the gameweek-specific data
- */
-export const calculateSeasonTotalFromGameweekPoints = (
-    gameweekPoints: Record<number, any>
-): { totalPoints: number; gameweeksPlayed: number } => {
-    let totalPoints = 0;
-    let gameweeksPlayed = 0;
-
-    Object.values(gameweekPoints).forEach((gw: any) => {
-        if (gw.points && !gw.metadata?.noData) {
-            totalPoints += gw.points.total;
-            if (gw.points.appearance > 0) {
-                gameweeksPlayed++;
-            }
-        }
-    });
-
-    return { totalPoints, gameweeksPlayed };
-};
-
-/**
- * Utility function to get the latest gameweek points for a player
- */
-export const getLatestGameweekPoints = (
-    gameweekPoints: Record<number, any>
-): { gameweek: number; points: any } | null => {
-    const gameweeks = Object.keys(gameweekPoints)
-        .map(Number)
-        .sort((a, b) => b - a); // Sort descending to get latest first
-
-    for (const gameweek of gameweeks) {
-        const gwData = gameweekPoints[gameweek];
-        if (gwData && !gwData.metadata?.noData) {
-            return {
-                gameweek,
-                points: gwData.points
-            };
-        }
-    }
-
-    return null;
-};
-
-/**
- * Utility function to check if a player has data for a specific gameweek
- */
-export const hasGameweekData = (
-    gameweekPoints: Record<number, any>,
-    gameweek: number
-): boolean => {
-    const gwData = gameweekPoints[gameweek];
-    return gwData && !gwData.metadata?.noData;
-};
+}

@@ -1,5 +1,5 @@
 // app/components/player-highlights.tsx
-import { formatPointsDisplay } from '../lib/points';
+import { formatPointsDisplay } from '../lib/scoring';
 import styles from './player-highlights.module.css';
 
 interface PlayerHighlightsProps {

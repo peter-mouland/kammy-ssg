@@ -1,7 +1,7 @@
 // components/draft-filters.tsx
 import React, { useMemo } from 'react';
 import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES } from '../lib/draft/draft-rules';
-import { getPositionDisplayName } from '../lib/points';
+import { getPositionDisplayName } from '../lib/scoring';
 import { DraftFiltersSearch } from './draft-filters-search';
 import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters-multi-select';
 import styles from './draft-filters.module.css';
