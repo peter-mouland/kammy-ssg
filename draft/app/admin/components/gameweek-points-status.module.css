@@ -1,0 +1,56 @@
+/* gameweek-points-status.module.css */
+
+.statusContainer {
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+}
+
+.statusTitle {
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.statusGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.statusItem {
+    text-align: left;
+}
+
+.statusLabel {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 0.25rem;
+}
+
+.statusValue {
+    font-weight: 600;
+}
+
+.statusValue.warning {
+    color: #9c4221;
+}
+
+.statusValue.healthy {
+    color: #22543d;
+}
+
+.reasonText {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #718096;
+}
+
+.loading {
+    padding: 1rem;
+    color: #718096;
+    font-style: italic;
+}

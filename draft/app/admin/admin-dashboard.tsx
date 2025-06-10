@@ -5,6 +5,14 @@ import {
     useActionData,
 } from 'react-router';
 import * as Icons from './components/admin-icons'
+import { ActionCard } from './components/action-card'
+import { NavButton } from './components/nav-button'
+import { StatusCard } from './components/status-card'
+import { DraftCard } from './components/draft-card'
+import { SystemHealthBadge } from './components/system-health-badge'
+import { CacheStatusDisplay } from './components/cache-status-display'
+import { GameweekPointsStatus } from './components/gameweek-points-status'
+import { GameweekPointsButton } from './components/gameweek-points-button'
 import styles from './admin-dashboard.module.css';
 
 export const AdminDashboard = () => {
@@ -109,55 +117,6 @@ export const AdminDashboard = () => {
     );
 };
 
-// Navigation Button Component
-const NavButton = ({ active, onClick, icon, label }) => (
-    <button
-        onClick={onClick}
-        className={`${styles.navButton} ${active ? styles.active : ''}`}
-    >
-        <span className={styles.navIcon}>{icon}</span>
-        {label}
-    </button>
-);
-
-// System Health Badge Component
-const SystemHealthBadge = () => {
-    const fetcher = useFetcher();
-    const [status, setStatus] = useState('unknown');
-
-    React.useEffect(() => {
-        // Auto-load cache status on mount
-        if (!fetcher.data && fetcher.state === 'idle') {
-            fetcher.submit({ actionType: 'getCacheStatus' }, { method: 'post' });
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (fetcher.data?.success && fetcher.data?.data?.health) {
-            setStatus(fetcher.data.data.health.overall);
-        }
-    }, [fetcher.data]);
-
-    const getIcon = () => {
-        switch (status) {
-            case 'healthy': return <Icons.CheckIcon />;
-            case 'warning': return <Icons.AlertIcon />;
-            case 'critical': return <Icons.AlertIcon />;
-            default: return <Icons.ClockIcon />;
-        }
-    };
-
-    return (
-        <div className={`${styles.healthBadge} ${styles[status]}`}>
-            {getIcon()}
-            <span style={{ marginLeft: '0.25rem' }}>
-        {status === 'healthy' ? 'System Healthy' :
-            status === 'warning' ? 'Minor Issues' :
-                status === 'critical' ? 'Critical Issues' : 'Checking...'}
-      </span>
-        </div>
-    );
-};
 
 // Overview Section
 const OverviewSection = () => {
@@ -217,15 +176,6 @@ const OverviewSection = () => {
         </div>
     );
 };
-
-// Status Card Component
-const StatusCard = ({ value, label, percentage, status }) => (
-    <div className={`${styles.statusCard} ${styles[status]}`}>
-        <div className={styles.statusValue}>{value}</div>
-        <div className={styles.statusLabel}>{label}</div>
-        <div className={styles.statusPercentage}>{percentage}</div>
-    </div>
-);
 
 // Quick Actions Section
 const QuickActionsSection = ({ cacheData }) => {
@@ -298,54 +248,6 @@ const QuickActionsSection = ({ cacheData }) => {
     );
 };
 
-// Action Card Component
-const ActionCard = ({ title, description, icon, buttonText, actionType, onExecute, fetcher, recommended, disabled }) => {
-    const isLoading = fetcher.state === 'submitting' && fetcher.formData?.get('actionType') === actionType;
-    const hasSuccess = fetcher.data?.success && fetcher.formData?.get('actionType') === actionType;
-    const hasError = fetcher.data?.error && fetcher.formData?.get('actionType') === actionType;
-
-    return (
-        <div className={`${styles.actionCard} ${recommended ? styles.recommended : ''}`}>
-            <div className={styles.actionTitle}>
-                {icon}
-                {title}
-                {recommended && <span style={{ fontSize: '0.75rem', color: '#4299e1' }}>RECOMMENDED</span>}
-            </div>
-            <div className={styles.actionDescription}>{description}</div>
-            <button
-                className={`${styles.actionButton} ${recommended ? styles.primary : styles.secondary}`}
-                onClick={() => onExecute(actionType)}
-                disabled={disabled || isLoading}
-            >
-                {isLoading ? (
-                    <>
-                        <span className={styles.spinner}></span>
-                        Loading...
-                    </>
-                ) : hasSuccess ? (
-                    '✓ Complete'
-                ) : hasError ? (
-                    '✗ Failed'
-                ) : (
-                    buttonText
-                )}
-            </button>
-
-            {hasSuccess && fetcher.data?.message && (
-                <div className={styles.successMessage}>
-                    {fetcher.data.message}
-                </div>
-            )}
-
-            {hasError && (
-                <div className={styles.errorMessage}>
-                    {fetcher.data.error}
-                </div>
-            )}
-        </div>
-    );
-};
-
 // Divisions Section - Using your existing DraftCard logic
 const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draftState, actionData }) => (
     <div>
@@ -408,92 +310,6 @@ const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draftState,
     </div>
 );
 
-// Division Card Component - Matching your existing logic
-const DraftCard = ({ division, teams, orders, draftState }) => {
-    const fetcher = useFetcher();
-    const isLoading = fetcher.state === "submitting";
-
-    const handleAction = (actionType) => {
-        fetcher.submit(
-            { actionType, divisionId: division.id },
-            { method: "post" }
-        );
-    };
-
-    const isActive = !!(draftState?.isActive && draftState.currentDivisionId === division.id);
-
-    const getDivisionStatus = () => {
-        if (teams.length === 0) {
-            return { status: "No Teams", color: "#6b7280", disabled: true, variant: 'disabled' };
-        }
-        if (orders.length === 0) {
-            return {
-                status: "🎲 Generate Order",
-                color: "#f59e0b",
-                disabled: false,
-                action: "generateOrder",
-                variant: 'generate'
-            };
-        }
-        if (isActive) {
-            return {
-                status: "🛑 Stop Draft",
-                color: "#ef4444",
-                disabled: false,
-                action: "stopDraft",
-                variant: 'stop'
-            };
-        }
-        if (draftState?.isActive) {
-            return {
-                status: "⚪️ Start Draft",
-                color: "#6b7280",
-                disabled: true,
-                action: "startDraft",
-                variant: 'disabled'
-            };
-        }
-        return {
-            status: "🟢 Start Draft",
-            color: "#10b981",
-            disabled: false,
-            action: "startDraft",
-            variant: 'start'
-        };
-    };
-
-    const divisionStatus = getDivisionStatus();
-
-    return (
-        <div className={`${styles.divisionCard} ${isActive ? styles.active : ''}`}>
-            <div className={styles.divisionHeader}>
-                <div>
-                    <h3 className={`${styles.divisionTitle} ${isActive ? styles.active : ''}`}>
-                        {isActive && '🟢 '}
-                        {division.label}
-                    </h3>
-                    <div className={styles.divisionStats}>
-                        {teams.length} teams {orders.length > 0 ? '' : ' • No order yet'}
-                    </div>
-                </div>
-                <button
-                    onClick={() => handleAction(divisionStatus.action)}
-                    className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}
-                    disabled={divisionStatus.disabled || isLoading}
-                >
-                    {isLoading ? 'Loading...' : divisionStatus.status}
-                </button>
-            </div>
-
-            {orders.length > 0 && (
-                <div style={{ fontSize: '0.875rem', color: '#718096', marginTop: '0.5rem' }}>
-                    Draft order generated • {orders.length} teams
-                </div>
-            )}
-        </div>
-    );
-};
-
 // Data Management Section
 const DataManagementSection = ({ expandedSections, toggleSection }) => {
     const fetcher = useFetcher();
@@ -529,7 +345,7 @@ const DataManagementSection = ({ expandedSections, toggleSection }) => {
                         <Icons.TrashIcon />
                         Manual Cache Clearing
                     </h2>
-                    <ChevronIcon expanded={expandedSections.has('cache-management')} />
+                    <Icons.ChevronIcon expanded={expandedSections.has('cache-management')} />
                 </div>
                 <div className={`${styles.collapsibleContent} ${expandedSections.has('cache-management') ? styles.expanded : ''}`}>
                     <div className={styles.sectionContent}>
@@ -639,144 +455,6 @@ const FirebaseSyncSection = () => {
     );
 };
 
-// Cache Status Display Component
-const CacheStatusDisplay = () => {
-    const fetcher = useFetcher();
-    const [cacheData, setCacheData] = useState(null);
-    const [lastRefresh, setLastRefresh] = useState(null);
-
-    const refreshStatus = () => {
-        fetcher.submit({ actionType: 'getCacheStatus' }, { method: 'post' });
-        setLastRefresh(new Date());
-    };
-
-    React.useEffect(() => {
-        if (!cacheData) {
-            refreshStatus();
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (fetcher.data?.success && fetcher.data?.data) {
-            setCacheData(fetcher.data.data);
-        }
-    }, [fetcher.data]);
-
-    if (!cacheData) {
-        return <div>Loading cache status...</div>;
-    }
-
-    const getHealthColor = (health) => {
-        switch (health) {
-            case 'healthy': return styles.healthy;
-            case 'warning': return styles.warning;
-            case 'critical': return styles.critical;
-            default: return '';
-        }
-    };
-
-    return (
-        <div>
-            {/* Overall Health */}
-            <div className={`${styles.statusCard} ${getHealthColor(cacheData.health?.overall)} ${styles.healthCard}`}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>
-              {cacheData.health?.overall === 'healthy' ? '✅' :
-                  cacheData.health?.overall === 'warning' ? '⚠️' : '❌'}
-            </span>
-                        <span style={{ fontWeight: 600, textTransform: 'uppercase' }}>
-              {cacheData.health?.overall || 'UNKNOWN'}
-            </span>
-                    </div>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
-            {cacheData.completionPercentage}% Complete
-          </span>
-                </div>
-
-                {cacheData.health?.issues?.length > 0 && (
-                    <div style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
-                        <strong>Issues:</strong>
-                        <ul style={{ margin: '0.5rem 0', paddingLeft: '1rem' }}>
-                            {cacheData.health.issues.map((issue, index) => (
-                                <li key={index}>{issue}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
-
-            {/* Data Counts */}
-            <div className={styles.statusGrid} style={{ marginTop: '1rem' }}>
-                <DataCount
-                    label="Teams"
-                    count={cacheData.counts?.teams || 0}
-                    missing={cacheData.missing?.teams}
-                    expected={20}
-                />
-                <DataCount
-                    label="Events"
-                    count={cacheData.counts?.events || 0}
-                    missing={cacheData.missing?.events}
-                    expected={38}
-                />
-                <DataCount
-                    label="Players"
-                    count={cacheData.counts?.elements || 0}
-                    missing={cacheData.missing?.elements}
-                    expected={600}
-                />
-                <DataCount
-                    label="Player Stats"
-                    count={cacheData.counts?.elementSummaries || 0}
-                    missing={cacheData.missing?.elementSummaries}
-                    expected={cacheData.counts?.elements || 600}
-                />
-            </div>
-
-            {/* Recommendations */}
-            {cacheData.health?.recommendations?.length > 0 && (
-                <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '0.5rem' }}>
-                    <h5 style={{ margin: '0 0 0.5rem 0' }}>💡 Recommendations:</h5>
-                    <ul style={{ margin: 0, paddingLeft: '1rem' }}>
-                        {cacheData.health.recommendations.map((rec, index) => (
-                            <li key={index} style={{ fontSize: '0.875rem' }}>{rec}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
-            {/* Last Updated */}
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                <button onClick={refreshStatus} className={styles.refreshButton}>
-                    <Icons.RefreshIcon />
-                    Refresh Status
-                </button>
-                {lastRefresh && (
-                    <div style={{ fontSize: '0.75rem', color: '#718096', marginTop: '0.5rem' }}>
-                        Last updated: {lastRefresh.toLocaleTimeString()}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-};
-
-// Data Count Component
-const DataCount = ({ label, count, missing, expected }) => {
-    const percentage = expected > 0 ? Math.round((count / expected) * 100) : 0;
-
-    return (
-        <div className={`${styles.statusCard} ${missing ? styles.warning : styles.healthy}`}>
-            <div className={styles.statusValue}>{count.toLocaleString()}</div>
-            <div className={styles.statusLabel}>{label}</div>
-            {!missing && (
-                <div className={styles.statusPercentage}>{percentage}%</div>
-            )}
-        </div>
-    );
-};
-
 // Points & Scoring Section
 const PointsScoringSection = () => {
     const fetcher = useFetcher();
@@ -839,120 +517,6 @@ const PointsScoringSection = () => {
                     </div>
                 </div>
             </div>
-        </div>
-    );
-};
-
-// Gameweek Points Status Component
-const GameweekPointsStatus = () => {
-    const fetcher = useFetcher();
-    const [status, setStatus] = useState(null);
-
-    React.useEffect(() => {
-        fetcher.submit({ actionType: 'getGameweekPointsStatus' }, { method: 'post' });
-    }, []);
-
-    React.useEffect(() => {
-        if (fetcher.data?.success && fetcher.data?.data) {
-            setStatus(fetcher.data.data);
-        }
-    }, [fetcher.data]);
-
-    if (!status) return <div>Loading points status...</div>;
-
-    return (
-        <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '0.5rem' }}>
-            <h4 style={{ margin: '0 0 1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                🎯 Gameweek Points Status
-            </h4>
-            <div className={styles.statusGrid}>
-                <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: '0.875rem', color: '#718096' }}>Current Gameweek:</div>
-                    <div style={{ fontWeight: 600 }}>{status.currentGameweek}</div>
-                </div>
-                <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: '0.875rem', color: '#718096' }}>Last Generated:</div>
-                    <div style={{ fontWeight: 600 }}>
-                        GW{status.lastGameweek}
-                        {status.lastGenerated && ` (${new Date(status.lastGenerated).toLocaleDateString()})`}
-                    </div>
-                </div>
-                <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: '0.875rem', color: '#718096' }}>Status:</div>
-                    <div style={{
-                        fontWeight: 600,
-                        color: status.needsUpdate ? '#9c4221' : '#22543d'
-                    }}>
-                        {status.needsUpdate ? '⚠️ Update Needed' : '✅ Up to Date'}
-                    </div>
-                </div>
-            </div>
-            {status.needsUpdate && (
-                <div style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#718096' }}>
-                    <strong>Reason:</strong> {status.reason}
-                </div>
-            )}
-        </div>
-    );
-};
-
-// Round Points Button Component
-const GameweekPointsButton = () => {
-    const fetcher = useFetcher();
-
-    const handleGenerateGameweekPoints = () => {
-        fetcher.submit(
-            { actionType: 'generateGameweekPoints' },
-            { method: 'post', action: '/scoring/api/gw-points' }
-        );
-    };
-
-    const isLoading = fetcher.state === 'submitting';
-    const isSuccess = fetcher.data?.success;
-    const error = fetcher.data?.error;
-
-    return (
-        <div>
-            <button
-                onClick={handleGenerateGameweekPoints}
-                disabled={isLoading}
-                className={`${styles.actionButton} ${styles.primary}`}
-                style={{ width: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-                {isLoading ? (
-                    <>
-                        <span className={styles.spinner}></span>
-                        Generating...
-                    </>
-                ) : isSuccess ? (
-                    <>
-                        <Icons.CheckIcon />
-                        Generated!
-                    </>
-                ) : error ? (
-                    <>
-                        <Icons.AlertIcon />
-                        Failed
-                    </>
-                ) : (
-                    <>
-                        <Icons.TargetIcon />
-                        Generate Round Points
-                    </>
-                )}
-            </button>
-
-            {isSuccess && fetcher.data?.message && (
-                <div className={styles.successMessage}>
-                    {fetcher.data.message}
-                </div>
-            )}
-
-            {error && (
-                <div className={styles.errorMessage}>
-                    {error}
-                </div>
-            )}
         </div>
     );
 };
