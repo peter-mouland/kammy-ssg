@@ -1,5 +1,5 @@
 // Division Types
-import type { FplPlayerGameweekData } from '../server/fpl/api';
+import type { FplPlayerGameweekData } from '../routes/server/fpl/api';
 
 export interface DivisionData {
     id: string;
@@ -71,8 +71,6 @@ export interface DraftOrderData {
 
 // Player Stats Types
 export interface PlayerGameweekStatsData {
-    playerId: string;
-    gameweek: number;
     appearance: number;
     goals: number;
     assists: number;
@@ -83,30 +81,10 @@ export interface PlayerGameweekStatsData {
     redCards: number;
     saves: number;
     bonus: number;
-    fixtureMinutes: number;
-    updatedAt: Date;
-}
-
-export interface PlayerSeasonStatsData {
-    playerId: string;
-    season: string;
-    appearance: number;
-    gamesPlayed: number;
-    goals: number;
-    assists: number;
-    cleanSheets: number;
-    goalsConceded: number;
-    penaltiesSaved: number;
-    yellowCards: number;
-    redCards: number;
-    saves: number;
-    bonus: number;
-    updatedAt: Date;
 }
 
 // Custom Position Types
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
-
 
 export interface PlayerData {
     id: string;
@@ -148,14 +126,6 @@ export interface PointsBreakdown {
     total: number;
 }
 
-export interface GameweekFixture {
-    playerId: string;
-    gameweek: number;
-    fixtureMinutes: number;
-    opponent: string;
-    isHome: boolean;
-}
-
 // API Response Types
 export interface ApiResponse<T> {
     success: boolean;
@@ -174,8 +144,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 // FPL API Types
-// Filtered FPL Player Data Type (essential fields only)
-export interface FilteredFplPlayerData {
+export interface FplPlayerData {
     code: number;
     chance_of_playing_next_round: number | null;
     chance_of_playing_this_round: number | null;

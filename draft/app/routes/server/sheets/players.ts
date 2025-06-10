@@ -1,5 +1,5 @@
-import { readSheetRange, type SheetRange } from './common';
-import type { PlayerData } from '../../types';
+import { readSheetRange, type SheetRange } from './utils/common';
+import type { PlayerData } from '../../../types';
 
 const PLAYERS_SHEET_NAME = 'Players';
 

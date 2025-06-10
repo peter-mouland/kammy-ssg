@@ -880,18 +880,17 @@ const PointsScoringSection = () => {
                 <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>
                         <TargetIcon />
-                        Round Points Generation
+                        Gameweek Game Points 👉 GSheets
                     </h2>
                 </div>
                 <div className={styles.sectionContent}>
                     <div className={styles.warningMessage}>
-                        💡 <strong>Round Points:</strong> Generates a sheet with one column per round (up to 38),
-                        showing your custom scoring system points for each player's performance in each specific round.
-                        Uses the same point calculation logic as gameweek points but mapped to individual fixtures.
+                        💡 <strong>Gameweek Game Points:</strong> Generates a sheet with one column per gameweek game,
+                        showing points for each player's performance in each specific game that gameweek.
                     </div>
 
                     <div style={{ marginTop: '1rem' }}>
-                        <RoundPointsButton />
+                        <GameweekPointsButton />
                     </div>
                 </div>
             </div>
@@ -953,13 +952,13 @@ const GameweekPointsStatus = () => {
 };
 
 // Round Points Button Component
-const RoundPointsButton = () => {
+const GameweekPointsButton = () => {
     const fetcher = useFetcher();
 
-    const handleGenerateRoundPoints = () => {
+    const handleGenerateGameweekPoints = () => {
         fetcher.submit(
-            { actionType: 'generateRoundPoints' },
-            { method: 'post', action: '/api/round-points' }
+            { actionType: 'generateGameweekPoints' },
+            { method: 'post', action: '/api/gw-points' }
         );
     };
 
@@ -970,7 +969,7 @@ const RoundPointsButton = () => {
     return (
         <div>
             <button
-                onClick={handleGenerateRoundPoints}
+                onClick={handleGenerateGameweekPoints}
                 disabled={isLoading}
                 className={`${styles.actionButton} ${styles.primary}`}
                 style={{ width: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}

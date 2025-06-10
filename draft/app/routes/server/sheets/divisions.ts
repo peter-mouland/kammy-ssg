@@ -1,4 +1,4 @@
-import type { DivisionData } from '../../types';
+import type { DivisionData } from '../../../types';
 import {
     readSheetRange,
     writeSheetRange,
@@ -8,7 +8,7 @@ import {
     parseSheetNumber,
     createAppError,
     type SheetRange
-} from './common';
+} from './utils/common';
 
 // Sheet configuration
 const DIVISIONS_SHEET_NAME = 'Divisions';

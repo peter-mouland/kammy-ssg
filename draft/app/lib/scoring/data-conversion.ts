@@ -3,7 +3,7 @@
 import type {
     FplPlayerGameweekData,
     PlayerGameweekStatsData
-} from '../../../types';
+} from '../../types';
 
 /**
  * Convert FPL gameweek data to internal format
@@ -17,8 +17,6 @@ export function convertToPlayerGameweeksStats(gameweekData: FplPlayerGameweekDat
  */
 export function convertToPlayerGameweekStats(gw: FplPlayerGameweekData): PlayerGameweekStatsData {
     return {
-        playerId: gw.element.toString(),
-        gameweek: gw.round,
         appearance: gw.minutes,
         goals: gw.goals_scored,
         assists: gw.assists,
@@ -29,7 +27,5 @@ export function convertToPlayerGameweekStats(gw: FplPlayerGameweekData): PlayerG
         saves: gw.saves,
         penaltiesSaved: gw.penalties_saved,
         bonus: gw.bonus,
-        fixtureMinutes: gw.minutes,
-        updatedAt: new Date()
     };
 }

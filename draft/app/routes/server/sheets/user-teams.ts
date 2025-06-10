@@ -1,4 +1,4 @@
-import type { UserTeamData } from '../../types';
+import type { UserTeamData } from '../../../types';
 import {
     readSheetRange,
     writeSheetRange,
@@ -9,7 +9,7 @@ import {
     parseSheetDate,
     createAppError,
     type SheetRange
-} from './common';
+} from './utils/common';
 
 // Sheet configuration
 const USER_TEAMS_SHEET_NAME = 'UserTeams';

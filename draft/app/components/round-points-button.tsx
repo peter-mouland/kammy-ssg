@@ -3,17 +3,17 @@ import { useState } from 'react';
 import { useFetcher } from 'react-router';
 import styles from './round-points-button.module.css';
 
-interface RoundPointsButtonProps {
+interface GameweekPointsButtonProps {
     variant?: 'primary' | 'secondary';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
 }
 
-export function RoundPointsButton({
+export function GameweekPointsButton({
                                         variant = 'primary',
                                         size = 'medium',
                                         disabled = false
-                                    }: RoundPointsButtonProps) {
+                                    }: GameweekPointsButtonProps) {
     const fetcher = useFetcher();
     const [summary, setSummary] = useState<any>(null);
 
@@ -21,17 +21,17 @@ export function RoundPointsButton({
     const isSuccess = fetcher.data?.success;
     const error = fetcher.data?.error;
 
-    const handleGenerateRoundPoints = () => {
+    const handleGenerateGameweekPoints = () => {
         fetcher.submit(
-            { actionType: 'generateRoundPoints' },
-            { method: 'post', action: '/api/round-points' }
+            { actionType: 'generateGameweekPoints' },
+            { method: 'post', action: '/api/gw-points' }
         );
     };
 
     const handleGetStatus = () => {
         fetcher.submit(
-            { actionType: 'getRoundPointsStatus' },
-            { method: 'post', action: '/api/round-points' }
+            { actionType: 'getGameweekPointsStatus' },
+            { method: 'post', action: '/api/gw-points' }
         );
     };
 
@@ -100,7 +100,7 @@ export function RoundPointsButton({
             {/* Main Generate Button */}
             <div className={styles.buttonGroup}>
                 <button
-                    onClick={handleGenerateRoundPoints}
+                    onClick={handleGenerateGameweekPoints}
                     disabled={disabled || isLoading}
                     className={getButtonClasses()}
                 >

@@ -3,7 +3,7 @@ import type {
     FplBootstrapData,
     FplPlayerData
 } from '../../../types';
-import { createAppError } from '../sheets/common';
+import { createAppError } from '../sheets/utils/common';
 
 // FPL API endpoints
 const FPL_BASE_URL = 'https://fantasy.premierleague.com/api';

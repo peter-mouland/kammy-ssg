@@ -1,5 +1,5 @@
 // Enhanced draft.ts with smart header mapping - OPTIMIZED FOR API CALLS
-import type { DraftPickData, DraftStateData } from '../../types';
+import type { DraftPickData, DraftStateData } from '../../../types';
 import {
     readSheetRange,
     writeSheetRange,
@@ -11,7 +11,7 @@ import {
     parseSheetBoolean,
     createAppError,
     type SheetRange
-} from './common';
+} from './utils/common';
 
 // Draft picks sheet configuration
 const DRAFT_PICKS_SHEET_NAME = 'Draft';

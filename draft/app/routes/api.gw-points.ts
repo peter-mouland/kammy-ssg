@@ -1,4 +1,4 @@
-// app/routes/api.round-points.ts
+// app/routes/api.gw-points.ts
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { data } from "react-router";
 import { requestFormData } from '../lib/form-data';
@@ -10,19 +10,19 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 
         switch (action) {
             case "summary":
-                const { getRoundPointsSummary } = await import("./server/sheets/player-round-points");
-                const summary = await getRoundPointsSummary();
+                const { getGameweekPointsSummary } = await import("./server/sheets/player-gw-points");
+                const summary = await getGameweekPointsSummary();
                 return data({
                     success: true,
                     data: summary
                 });
 
             case "read":
-                const { readPlayerRoundPointsFromSheet } = await import("./server/sheets/player-round-points");
-                const roundPoints = await readPlayerRoundPointsFromSheet();
+                const { readPlayerGameweekPointsFromSheet } = await import("./server/sheets/player-gw-points");
+                const gameweekPoints = await readPlayerGameweekPointsFromSheet();
                 return data({
                     success: true,
-                    data: roundPoints
+                    data: gameweekPoints
                 });
 
             default:
@@ -54,24 +54,24 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         }
 
         switch (actionType) {
-            case "generateRoundPoints":
-                console.log('🔄 API: Generating round points...');
+            case "generateGameweekPoints":
+                console.log('🔄 API: Generating gw points...');
 
-                const { writePlayerRoundPointsToSheet } = await import("./server/sheets/player-round-points");
-                await writePlayerRoundPointsToSheet();
+                const { writePlayerGameweekPointsToSheet } = await import("./server/sheets/player-gw-points");
+                await writePlayerGameweekPointsToSheet();
 
                 return data({
                     success: true,
-                    message: "Round points generated successfully and written to sheet"
+                    message: "Gameweek points generated successfully and written to sheet"
                 });
 
-            case "getRoundPointsStatus":
-                const { getRoundPointsSummary } = await import("./server/sheets/player-round-points");
-                const statusSummary = await getRoundPointsSummary();
+            case "getGameweekPointsStatus":
+                const { getGameweekPointsSummary } = await import("./server/sheets/player-gw-points");
+                const statusSummary = await getGameweekPointsSummary();
 
                 return data({
                     success: true,
-                    message: "Round points status retrieved",
+                    message: "Gameweek points status retrieved",
                     data: statusSummary
                 });
 

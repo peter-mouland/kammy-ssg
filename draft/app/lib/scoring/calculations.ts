@@ -4,10 +4,23 @@ import type {
     CustomPosition,
     PlayerGameweekStatsData,
     PointsBreakdown,
-    GameweekFixture
 } from '../../types';
 import { isStatRelevant } from './utils';
 import { POSITION_RULES } from './rules';
+
+const baselineStats: PointsBreakdown = {
+    appearance: 0,
+    goals: 0,
+    assists: 0,
+    cleanSheets: 0,
+    yellowCards: 0,
+    redCards: 0,
+    saves: 0,
+    penaltiesSaved: 0,
+    goalsConceded: 0,
+    bonus: 0,
+    total: 0
+};
 
 /**
  * Calculate appearance points based on minutes played
@@ -106,17 +119,9 @@ export function calculateGoalsConcededPenalty(goalsConceded: number, position: C
 export function calculateGameweekPoints(
     stats: PlayerGameweekStatsData,
     position: CustomPosition,
-    fixtures?: GameweekFixture[]
 ): PointsBreakdown {
-    // Handle multiple fixtures in the same gameweek
-    let appearance = stats.appearance;
-    if (fixtures && fixtures.length > 1) {
-        // If there are multiple fixtures, use the sum of fixture minutes
-        appearance = fixtures.reduce((sum, fixture) => sum + fixture.fixtureMinutes, 0);
-    }
-
     const breakdown: PointsBreakdown = {
-        appearance: calculateAppearancePoints(appearance, position),
+        appearance: calculateAppearancePoints(stats.appearance, position),
         goals: calculateGoalPoints(stats.goals, position),
         assists: calculateAssistPoints(stats.assists, position),
         cleanSheets: calculateCleanSheetPoints(stats.cleanSheets, position),
@@ -144,32 +149,9 @@ export function calculateSeasonPoints(
     gameweekStats: PlayerGameweekStatsData[],
     position: CustomPosition,
 ): { points: PointsBreakdown; stats: PointsBreakdown } {
-    const points: PointsBreakdown = {
-        appearance: 0,
-        goals: 0,
-        assists: 0,
-        cleanSheets: 0,
-        yellowCards: 0,
-        redCards: 0,
-        saves: 0,
-        penaltiesSaved: 0,
-        goalsConceded: 0,
-        bonus: 0,
-        total: 0
-    };
-    const stats: PointsBreakdown = {
-        appearance: 0,
-        goals: 0,
-        assists: 0,
-        cleanSheets: 0,
-        yellowCards: 0,
-        redCards: 0,
-        saves: 0,
-        penaltiesSaved: 0,
-        goalsConceded: 0,
-        bonus: 0,
-        total: 0
-    };
+
+    const points = baselineStats;
+    const stats = baselineStats;
 
     // Sum up all gameweek breakdowns
     gameweekStats.forEach(gwStats => {

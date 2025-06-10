@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs } from "react-router";
 import { useLoaderData } from "react-router";
-import { testConnection } from "./server/sheets/common";
+import { testConnection } from "./server/sheets/utils/common";
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const tests = [];

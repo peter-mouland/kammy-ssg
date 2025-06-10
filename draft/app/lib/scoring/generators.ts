@@ -8,6 +8,19 @@ import type {
 import { convertToPlayerGameweeksStats } from './data-conversion';
 import { calculateSeasonPoints, calculateGameweekPoints, getFullBreakdown } from './calculations';
 
+const baselineStats = {
+    appearance: 0,
+    goals: 0,
+    assists: 0,
+    cleanSheets: 0,
+    goalsConceded: 0,
+    yellowCards: 0,
+    redCards: 0,
+    saves: 0,
+    penaltiesSaved: 0,
+    bonus: 0
+};
+
 /**
  * Generate season-level enhanced data
  * Used by: api-cache.ts for full player listings
@@ -67,72 +80,23 @@ export function generateGameweekData(
 
             const allGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
             const playerGameweekStats = convertToPlayerGameweeksStats(allGameweekData);
-
             const gameweekPoints: Record<number, any> = {};
 
             targetGameweeks.forEach(gameweek => {
                 const gameweekStats = playerGameweekStats.find(gw => gw.gameweek === gameweek);
 
-                if (gameweekStats) {
-                    const pointsBreakdown = calculateGameweekPoints(gameweekStats, position);
-                    gameweekPoints[gameweek] = {
-                        points: pointsBreakdown,
-                        stats: {
-                            appearance: gameweekStats.appearance,
-                            goals: gameweekStats.goals,
-                            assists: gameweekStats.assists,
-                            cleanSheets: gameweekStats.cleanSheets,
-                            goalsConceded: gameweekStats.goalsConceded,
-                            yellowCards: gameweekStats.yellowCards,
-                            redCards: gameweekStats.redCards,
-                            saves: gameweekStats.saves,
-                            penaltiesSaved: gameweekStats.penaltiesSaved,
-                            bonus: gameweekStats.bonus
-                        },
-                        metadata: {
-                            generatedAt: new Date().toISOString(),
-                            position: position
-                        }
-                    };
+                const pointsBreakdown = calculateGameweekPoints(gameweekStats || baselineStats, position);
+                gameweekPoints[gameweek] = {
+                    points: pointsBreakdown,
+                    stats: gameweekStats,
+                    metadata: {
+                        generatedAt: new Date().toISOString(),
+                        position: position,
+                        noData: !gameweekStats
+                    }
+                };
 
-                    console.log(`✅ Player ${fplPlayer.id} GW${gameweek}: ${pointsBreakdown.total} points`);
-                } else {
-                    // No data available
-                    gameweekPoints[gameweek] = {
-                        points: {
-                            appearance: 0,
-                            goals: 0,
-                            assists: 0,
-                            cleanSheets: 0,
-                            yellowCards: 0,
-                            redCards: 0,
-                            saves: 0,
-                            penaltiesSaved: 0,
-                            goalsConceded: 0,
-                            bonus: 0,
-                            total: 0
-                        },
-                        stats: {
-                            appearance: 0,
-                            goals: 0,
-                            assists: 0,
-                            cleanSheets: 0,
-                            goalsConceded: 0,
-                            yellowCards: 0,
-                            redCards: 0,
-                            saves: 0,
-                            penaltiesSaved: 0,
-                            bonus: 0
-                        },
-                        metadata: {
-                            generatedAt: new Date().toISOString(),
-                            position: position,
-                            noData: true
-                        }
-                    };
-
-                    console.log(`ℹ️ Player ${fplPlayer.id} GW${gameweek}: No data available`);
-                }
+                console.log(`✅ Player ${fplPlayer.id} GW${gameweek}: ${pointsBreakdown.total} points`);
             });
 
             result[fplPlayer.id] = { draft: { gameweekPoints } };
