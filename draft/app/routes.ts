@@ -2,26 +2,17 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
     // Main pages
-    index("routes/_index.tsx"),
-    route("leagues", "routes/league-standings.tsx"),
-    route("draft", "routes/draft.tsx"),
-    route("players/:playerId", "routes/player.$playerId.tsx"),
-    route("players", "routes/players.tsx"),
-    route("wishlists", "routes/wishlists.tsx"),
+    index("homepage/homepage.route.tsx"),
+    route("leagues", "leagues/league-standings.route.tsx"),
+    route("draft", "draft/draft.route.tsx"),
+    route("players/:playerId", "players/player.route.tsx"),
+    route("players", "players/players.route.tsx"),
+    route("wishlists", "wishlist/wishlists.route.tsx"),
 
     // API routes
-    route("api/sheets", "routes/api.sheets.ts"),
-    route("api/live-scores", "routes/api.live-scores.ts"),
-    route("api/draft/live", "routes/api.draft.live.ts"),
-    route("api/gw-points", "routes/api.gw-points.ts"),
+    route("scoring/api/gw-points", "scoring/api/api.gw-points.ts"),
 
     // Admin API routes for Firestore management
-    route("admin", "routes/admin-dashboard.tsx"),
-    route("api/admin/clear-firestore", "./routes/api.admin.clear-firestore.ts"),
-    route("api/admin/firestore-stats", "./routes/api.admin.firestore-stats.ts"),
-
-    // debugging routes
-    route("debug", "routes/debug.tsx"),
+    route("admin", "admin/admin-dashboard.route.tsx"),
+    route("debug", "admin/debug.route.tsx"),
 ] satisfies RouteConfig;
-
-// route("api/cron", "routes/api.cron.ts"),

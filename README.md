@@ -45,11 +45,11 @@ app/
 │       ├── draft-order.ts          # Draft order management
 │       └── player-stats.ts         # Player statistics management
 ├── routes/
-│   ├── _index.tsx                 # Dashboard page
+│   ├── admin-dashboard.tsx                 # Dashboard page
 │   ├── league-standings.tsx                # Team management page
 │   ├── draft.tsx                  # Live draft interface
 │   ├── draft-admin.tsx         # Draft setup page
-│   ├── player.$playerId.tsx       # Player detail page
+│   ├── player.page.tsx       # Player detail page
 │   ├── api.sheets.ts              # Sheets CRUD API
 │   └── api.live-scores.ts         # Server-Sent Events for live updates
 ├── types/

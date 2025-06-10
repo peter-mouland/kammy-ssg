@@ -12,7 +12,7 @@ import {
 
 import globalStyles from "./root.css?url";
 import designTokens from "./design-tokens.css?url";
-import { WishlistProvider } from './lib/wishlists/use-wishlists';
+import { WishlistProvider } from './wishlist/lib/use-wishlists';
 
 export const meta: MetaFunction = () => {
     return [
