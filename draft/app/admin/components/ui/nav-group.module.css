@@ -1,0 +1,24 @@
+.nav_group {
+    display: flex;
+}
+
+.direction_vertical {
+    flex-direction: column;
+}
+
+.direction_horizontal {
+    flex-direction: row;
+    overflow-x: auto;
+}
+
+.gap_sm {
+    gap: 0.25rem;
+}
+
+.gap_md {
+    gap: 0.5rem;
+}
+
+.gap_lg {
+    gap: 0.75rem;
+}

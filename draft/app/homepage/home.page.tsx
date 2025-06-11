@@ -3,8 +3,8 @@ import { useLoaderData } from "react-router";
 import { TopPlayers } from "../players/components/top-players"; // players
 import { LeagueStandings } from "../leagues/components/league-standings"; // leagues
 import { DivisionOverview } from "../leagues/components/division-overview"; // leagues
-import { RecentActivity } from "../admin/components/recent-activity"; // admin
-import { SystemStatus } from "../admin/components/system-status"; // admin
+import { RecentActivity } from "../admin/components/ui/recent-activity"; // admin
+import { SystemStatus } from "../admin/components/ui/system-status"; // admin
 import { GameStats } from "../scoring/components/game-stats"; // scoring
 import { PageHeader } from '../_shared/components/page-header'; // shared
 import { LayoutGrid } from '../_shared/components/layout-grid'; //shared

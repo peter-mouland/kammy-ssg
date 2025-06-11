@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.spacing_sm {
+    gap: 1rem;
+}
+
+.spacing_md {
+    gap: 1.5rem;
+}
+
+.spacing_lg {
+    gap: 2rem;
+}

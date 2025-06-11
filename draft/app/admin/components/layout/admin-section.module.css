@@ -1,9 +1,3 @@
-.data_management_container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
 .section {
     background: white;
     border-radius: 8px;
@@ -17,6 +11,40 @@
     background: #f9fafb;
 }
 
+.collapsible_header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.collapsible_header:hover {
+    background: #f3f4f6;
+}
+
+.header_content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.header_text {
+    flex: 1;
+}
+
+.header_actions {
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
 .section_title {
     display: flex;
     align-items: center;
@@ -27,47 +55,30 @@
     margin: 0;
 }
 
+.section_description {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
 .section_content {
     padding: 1.5rem;
+    transition: all 0.3s ease-in-out;
 }
 
-.collapsible_header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    background: #f9fafb;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color 0.2s;
-}
-
-.collapsible_header:hover {
-    background: #f3f4f6;
-}
-
-.collapsible_title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-}
-
-.collapsible_content {
+.section_content.collapsed {
+    padding: 0 1.5rem;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
 }
 
-.collapsible_content.expanded {
-    max-height: 1000px;
+.chevron {
+    transition: transform 0.2s;
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-left: 1rem;
 }
 
-.action_grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
+.chevron.expanded {
+    transform: rotate(180deg);
 }

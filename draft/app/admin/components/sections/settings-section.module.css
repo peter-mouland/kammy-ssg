@@ -1,0 +1,16 @@
+.coming_soon {
+    text-align: center;
+    color: #6b7280;
+}
+
+.coming_soon h3 {
+    margin: 1rem 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.coming_soon p {
+    margin: 0;
+    font-size: 0.875rem;
+}

@@ -1,9 +1,8 @@
-
-
-// /admin/components/sections/firebase-sync-section.tsx
+// /admin/components/sections/firebase-sync-section.tsx (REFACTORED)
 import React from 'react';
 import { useLoaderData, useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
+import { AdminMessage } from '../ui/admin-message';
 import styles from './firebase-sync-section.module.css';
 
 export const FirebaseSyncSection = () => {
@@ -27,11 +26,11 @@ export const FirebaseSyncSection = () => {
     const hasError = fetcher.data?.error;
 
     return (
-        <div className={styles.syncContainer}>
+        <div className={styles.sync_container}>
             <button
                 onClick={handleSync}
                 disabled={!draftState?.currentDivisionId || !draftState?.isActive || isLoading}
-                className={`${styles.actionButton} ${styles.primary}`}
+                className={`${styles.action_button} ${styles.primary}`}
             >
                 {isLoading ? (
                     <>
@@ -57,21 +56,21 @@ export const FirebaseSyncSection = () => {
             </button>
 
             {!draftState?.isActive && (
-                <div className={styles.warningMessage}>
-                    ⚠️ No active draft to sync. Start a draft first.
-                </div>
+                <AdminMessage type="warning">
+                    No active draft to sync. Start a draft first.
+                </AdminMessage>
             )}
 
             {hasSuccess && fetcher.data?.message && (
-                <div className={styles.successMessage}>
+                <AdminMessage type="success">
                     {fetcher.data.message}
-                </div>
+                </AdminMessage>
             )}
 
             {hasError && (
-                <div className={styles.errorMessage}>
+                <AdminMessage type="error">
                     {fetcher.data.error}
-                </div>
+                </AdminMessage>
             )}
         </div>
     );

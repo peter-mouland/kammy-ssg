@@ -1,0 +1,29 @@
+.action_bar {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.align_left {
+    justify-content: flex-start;
+}
+
+.align_center {
+    justify-content: center;
+}
+
+.align_right {
+    justify-content: flex-end;
+}
+
+.gap_sm {
+    gap: 0.5rem;
+}
+
+.gap_md {
+    gap: 0.75rem;
+}
+
+.gap_lg {
+    gap: 1rem;
+}
