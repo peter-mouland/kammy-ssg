@@ -1,6 +1,6 @@
-// src/lib/firestore-cache/gameweek-points-service.ts
-import { FirestoreClient } from './firestore-client';
-import { fplApiCache } from '../fpl/api-cache';
+// /scoring/server/services/gameweek-points-service.ts
+import { FirestoreClient } from '../../../_shared/lib/firestore-cache/firestore-client';
+import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 
 export interface GameweekPointsMetadata {
     lastGeneratedGameweek: number;
@@ -168,19 +168,24 @@ export class GameweekPointsService {
         console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
 
         // Import the gameweek points generation function
-        const { generateGameweekData } = await import('../../../scoring/lib');
-        const { readPlayers } = await import('../sheets/players');
+        const { generateGameweekData } = await import('../../lib/generators');
+        const { readPlayers } = await import('../../../_shared/lib/sheets/players');
 
         // Get required data
         const [sheetsPlayers, fplPlayers, fplTeams] = await Promise.all([
             readPlayers(),
             fplApiCache.getFplPlayers(),
-            fplApiCache.getFplTeams(),
+            fplApiCache.getFplTeams()
         ]);
 
+        // Create sheets players lookup
+        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
+            acc[player.id] = player;
+            return acc;
+        }, {});
+
         // Filter FPL players to only include those in sheets
-        const sheetsPlayerIds = new Set(sheetsPlayers.map(p => p.id));
-        const filteredFplPlayers = fplPlayers.filter(player => sheetsPlayerIds.has(player.id));
+        const filteredFplPlayers = fplPlayers.filter(player => sheetsPlayersById[player.id]);
 
         if (filteredFplPlayers.length === 0) {
             throw new Error('No players found that exist in both FPL data and sheets');
@@ -190,14 +195,8 @@ export class GameweekPointsService {
         const playerIds = filteredFplPlayers.map(p => p.id);
         const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
 
-        // Prepare data structures
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
-            acc[player.id] = player;
-            return acc;
-        }, {});
-
-        // Generate gameweek points data for specific gameweeks
-        const gameweekPointsById = generateGameweekData(
+        // Generate gameweek points data
+        const gameweekPointsData = generateGameweekData(
             filteredFplPlayers,
             fplPlayerGameweeksById,
             sheetsPlayersById,
@@ -205,22 +204,23 @@ export class GameweekPointsService {
         );
 
         // Update element summaries with gameweek points data using existing function
-        await fplApiCache['fplCache'].updateElementSummariesWithDraft(gameweekPointsById);
+        await fplApiCache['fplCache'].updateElementSummariesWithDraft(gameweekPointsData);
 
-        console.log(`✅ Generated gameweek points for ${Object.keys(gameweekPointsById).length} players`);
-        return { playerCount: Object.keys(gameweekPointsById).length };
+        console.log(`✅ Generated points for ${Object.keys(gameweekPointsData).length} players`);
+        return { playerCount: Object.keys(gameweekPointsData).length };
     }
 
     /**
-     * Get current points generation metadata
+     * Get metadata about points generation
      */
-    async getPointsMetadata(): Promise<GameweekPointsMetadata | null> {
+    private async getPointsMetadata(): Promise<GameweekPointsMetadata | null> {
         try {
-            const doc = await this.client.getDocument<GameweekPointsMetadata>(
+            const doc = await this.client.getDocument(
                 this.client.collections.CACHE_STATE,
                 this.METADATA_DOC_ID
             );
-            return doc ? doc.data : null;
+
+            return doc?.data as GameweekPointsMetadata || null;
         } catch (error) {
             console.error('Error getting points metadata:', error);
             return null;
@@ -228,11 +228,12 @@ export class GameweekPointsService {
     }
 
     /**
-     * Update points generation metadata
+     * Update metadata about points generation
      */
-    async updatePointsMetadata(metadata: Partial<GameweekPointsMetadata>): Promise<void> {
+    private async updatePointsMetadata(metadata: Partial<GameweekPointsMetadata>): Promise<void> {
         try {
             const existing = await this.getPointsMetadata();
+
             const updatedMetadata: GameweekPointsMetadata = {
                 lastGeneratedGameweek: metadata.lastGeneratedGameweek ?? existing?.lastGeneratedGameweek ?? 0,
                 lastGeneratedAt: metadata.lastGeneratedAt ?? existing?.lastGeneratedAt ?? new Date().toISOString(),
@@ -295,6 +296,9 @@ export class GameweekPointsService {
         }
     }
 
+    /**
+     * Get available gameweeks from player data
+     */
     getAvailableGameweeks(
         fplPlayerGameweeksById: Record<number, any>
     ): number[] {

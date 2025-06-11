@@ -1,5 +1,3 @@
-// src/lib/scoring/generators.ts - High-level data generation
-
 import type {
     CustomPosition,
     EnhancedPlayerData,

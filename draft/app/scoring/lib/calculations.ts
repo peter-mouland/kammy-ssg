@@ -1,5 +1,3 @@
-// src/lib/scoring/calculations.ts - Core point calculation logic
-
 import type {
     CustomPosition,
     PlayerGameweekStatsData,

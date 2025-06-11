@@ -1,5 +1,5 @@
 // /admin/server/actions/points-actions.ts
-import { GameweekPointsService } from "../../../_shared/lib/firestore-cache/gameweek-points-service";
+import { GameweekPointsService } from "../../../scoring/server/services/gameweek-points.service";
 import type { AdminActionResult } from "../../types";
 
 // EXACT COPY from "generateGameWeekPoints" case (with original detailed response)

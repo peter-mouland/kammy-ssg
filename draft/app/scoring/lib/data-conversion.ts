@@ -1,5 +1,3 @@
-// src/lib/scoring/data-conversion.ts - Data transformation utilities
-
 import type {
     FplPlayerGameweekData,
     PlayerGameweekStatsData
