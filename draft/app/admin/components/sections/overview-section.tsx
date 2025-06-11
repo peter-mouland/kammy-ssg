@@ -1,4 +1,4 @@
-// /admin/components/sections/overview-section.tsx
+// /admin/components/sections/overview-section.tsx (UPDATED for route structure)
 import React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
@@ -11,18 +11,22 @@ interface SectionProps {
     expandedSections: Set<string>;
     toggleSection: (section: string) => void;
 }
+
 export const OverviewSection = ({
                                     expandedSections,
                                     toggleSection
-                                } : SectionProps) => {
+                                }: SectionProps) => {
     const fetcher = useFetcher();
-    const clearDatafetcher = useFetcher();
+    const clearDataFetcher = useFetcher();
     const [cacheData, setCacheData] = React.useState(null);
 
     // Fetch cache status when component mounts (not firestore stats)
     React.useEffect(() => {
         if (fetcher.state === 'idle' && !cacheData) {
-            fetcher.submit({ actionType: 'getCacheStatus' }, { method: 'post' });
+            fetcher.submit(
+                { actionType: 'getCacheStatus' },
+                { method: 'post' }
+            );
         }
     }, [fetcher, cacheData]);
 
@@ -33,14 +37,18 @@ export const OverviewSection = ({
         }
     }, [fetcher.data]);
 
-
     const executeAction = (actionType: string, variant?: string) => {
         const formData = new FormData();
         formData.append('actionType', actionType);
         formData.append('variant', variant || 'all');
-        clearDatafetcher.submit(formData, { method: 'post' });
+        clearDataFetcher.submit(
+            formData,
+            {
+                method: 'post',
+                action: '?index'  // Submit to the index route, not parent
+            }
+        );
     };
-
 
     // Calculate status for each card
     const getBootstrapStatus = () => {
@@ -120,7 +128,7 @@ export const OverviewSection = ({
                         buttonText="Clear Elements"
                         actionType="clearFirestoreData"
                         onExecute={(actionType) => executeAction(actionType, 'elements-only')}
-                        fetcher={clearDatafetcher}
+                        fetcher={clearDataFetcher}
                     />
                     <ActionCard
                         title="Clear FPL Data"
@@ -128,7 +136,7 @@ export const OverviewSection = ({
                         buttonText="Clear FPL"
                         actionType="clearFirestoreData"
                         onExecute={(actionType) => executeAction(actionType, 'fpl-only')}
-                        fetcher={clearDatafetcher}
+                        fetcher={clearDataFetcher}
                     />
                     <ActionCard
                         title="Clear Everything"
@@ -136,7 +144,7 @@ export const OverviewSection = ({
                         buttonText="Clear All"
                         actionType="clearFirestoreData"
                         onExecute={(actionType) => executeAction(actionType, 'all')}
-                        fetcher={clearDatafetcher}
+                        fetcher={clearDataFetcher}
                     />
                 </AdminGrid>
             </AdminSection>

@@ -18,6 +18,19 @@ export interface AdminDashboardData {
 }
 
 // ==========================================
+// ADMIN NAVIGATION TYPES
+// ==========================================
+
+export type AdminSectionKey = 'overview' | 'draft' | 'points' | 'settings';
+
+export interface AdminNavItem {
+    key: AdminSectionKey;
+    label: string;
+    icon: React.ReactNode;
+    path: string;
+}
+
+// ==========================================
 // ADMIN ACTION TYPES
 // ==========================================
 

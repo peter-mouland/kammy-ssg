@@ -1,4 +1,4 @@
-// /admin/components/sections/points-scoring-section.tsx (REFACTORED)
+// /admin/components/sections/points-scoring-section.tsx (UPDATED for route structure)
 import React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
@@ -12,7 +12,10 @@ export const PointsScoringSection = () => {
     const fetcher = useFetcher();
 
     const executeAction = (actionType: string) => {
-        fetcher.submit({ actionType }, { method: 'post' });
+        fetcher.submit(
+            { actionType },
+            { method: 'post' }  // Submit to current route
+        );
     };
 
     return (

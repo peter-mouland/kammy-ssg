@@ -1,13 +1,15 @@
-// /admin/components/sections/firebase-sync-section.tsx (REFACTORED)
+// /admin/components/sections/firebase-sync-section.tsx (UPDATED for route structure)
 import React from 'react';
 import { useLoaderData, useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { AdminMessage } from '../ui/admin-message';
+import type { AdminDashboardData } from '../../types';
 import styles from './firebase-sync-section.module.css';
 
 export const FirebaseSyncSection = () => {
-    const { draftState } = useLoaderData();
+    const data = useLoaderData() as AdminDashboardData | null;
     const fetcher = useFetcher();
+    const draftState = data?.draftState;
 
     const handleSync = () => {
         if (!draftState?.currentDivisionId) return;
@@ -17,7 +19,9 @@ export const FirebaseSyncSection = () => {
                 actionType: 'syncDraft',
                 divisionId: draftState.currentDivisionId
             },
-            { method: 'post' }
+            {
+                method: 'post'  // Submit to current route (draft)
+            }
         );
     };
 

@@ -1,4 +1,4 @@
-// /admin/components/sections/quick-actions-section.tsx (REFACTORED)
+// /admin/components/sections/quick-actions-section.tsx (UPDATED for route structure)
 import React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
@@ -13,7 +13,13 @@ export const QuickActionsSection = ({ cacheData }: QuickActionsSectionProps) => 
     const fetcher = useFetcher();
 
     const executeAction = (actionType: string) => {
-        fetcher.submit({ actionType }, { method: 'post' });
+        fetcher.submit(
+            { actionType },
+            {
+                method: 'post',
+                action: '?index'  // Submit to the index route, not parent
+            }
+        );
     };
 
     const getRecommendedAction = () => {

@@ -1,6 +1,6 @@
-// /admin/admin-dashboard.tsx
-import React, { useState } from 'react';
-import { useLoaderData, useRevalidator } from 'react-router';
+// /admin/admin-dashboard-layout.tsx
+import React from 'react';
+import { useRevalidator, useLocation, useNavigate } from 'react-router';
 import * as Icons from './components/icons/admin-icons';
 import { SystemHealthBadge } from './components/ui/system-health-badge'
 import { NavButton } from './components/ui/nav-button'
@@ -12,93 +12,59 @@ import { AppShell } from './components/layout/app-shell'
 import { ActionBar } from './components/layout/action-bar'
 import { TwoColumnLayout } from './components/layout/two-column-layout'
 
-import { OverviewSection } from './components/sections/overview-section'
-import { DraftSection } from './components/sections/draft-section'
-import { PointsScoringSection } from './components/sections/points-scoring-section'
-import { SettingsSection } from './components/sections/settings-section'
-import type {
-    AdminDashboardData,
-    AdminSectionKey,
-    AdminNavItem
-} from './types';
+import type { AdminNavItem } from './types';
+
+interface AdminDashboardLayoutProps {
+    children: React.ReactNode;
+}
 
 const navigationItems: AdminNavItem[] = [
     {
         key: 'overview',
         label: 'Overview',
-        icon: <Icons.DatabaseIcon />
+        icon: <Icons.DatabaseIcon />,
+        path: '/admin'
     },
     {
         key: 'draft',
         label: 'Draft Management',
-        icon: <Icons.UsersIcon />
+        icon: <Icons.UsersIcon />,
+        path: '/admin/draft'
     },
     {
         key: 'points',
         label: 'Points & Scoring',
-        icon: <Icons.ChartIcon />
+        icon: <Icons.ChartIcon />,
+        path: '/admin/points'
     },
     {
         key: 'settings',
         label: 'Settings',
-        icon: <Icons.SettingsIcon />
+        icon: <Icons.SettingsIcon />,
+        path: '/admin/settings'
     }
 ];
 
-export const AdminDashboard: React.FC = () => {
-    const {
-        divisions,
-        draftOrders,
-        userTeamsByDivision,
-        draftState
-    } = useLoaderData() as AdminDashboardData;
-
+export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) => {
     const revalidator = useRevalidator();
-    const [activeSection, setActiveSection] = useState<AdminSectionKey>('overview');
-    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
-
-    const toggleSection = (section: string): void => {
-        const newExpanded = new Set(expandedSections);
-        if (newExpanded.has(section)) {
-            newExpanded.delete(section);
-        } else {
-            newExpanded.add(section);
-        }
-        setExpandedSections(newExpanded);
-    };
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const handleRefreshAll = () => {
         // Revalidate the route data (refetch from loader)
         revalidator.revalidate();
     };
 
-    const renderContent = (): React.ReactNode => {
-        switch (activeSection) {
-            case 'overview':
-                return <OverviewSection
-                    expandedSections={expandedSections}
-                    toggleSection={toggleSection}
-                />;
-            case 'draft':
-                return (
-                    <DraftSection
-                        divisions={divisions}
-                        draftOrders={draftOrders}
-                        userTeamsByDivision={userTeamsByDivision}
-                        draftState={draftState}
-                    />
-                );
-            case 'points':
-                return <PointsScoringSection />;
-            case 'settings':
-                return <SettingsSection />;
-            default:
-                return <OverviewSection
-                    expandedSections={expandedSections}
-                    toggleSection={toggleSection}
-                />;
-        }
+    const getActiveSection = () => {
+        const path = location.pathname;
+        if (path === '/admin') return 'overview';
+        if (path.startsWith('/admin/draft')) return 'draft';
+        if (path.startsWith('/admin/points')) return 'points';
+        if (path.startsWith('/admin/settings')) return 'settings';
+        return 'overview';
     };
+
+    const activeSection = getActiveSection();
 
     return (
         <AppShell background="gray">
@@ -126,7 +92,7 @@ export const AdminDashboard: React.FC = () => {
                                 <NavButton
                                     key={item.key}
                                     active={activeSection === item.key}
-                                    onClick={() => setActiveSection(item.key)}
+                                    onClick={() => navigate(item.path)}
                                     icon={item.icon}
                                     label={item.label}
                                 />
@@ -135,7 +101,7 @@ export const AdminDashboard: React.FC = () => {
                     </TwoColumnLayout.Sidebar>
 
                     <TwoColumnLayout.Content>
-                        {renderContent()}
+                        {children}
                     </TwoColumnLayout.Content>
                 </TwoColumnLayout.ContentContainer>
             </TwoColumnLayout.Container>
@@ -143,4 +109,4 @@ export const AdminDashboard: React.FC = () => {
     );
 };
 
-export default AdminDashboard;
+export default AdminLayout;

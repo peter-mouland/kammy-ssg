@@ -1,26 +1,14 @@
-import React, { useState } from 'react';
-import { useFetcher } from 'react-router';
+import React from 'react';
 import * as Icons from '../icons/admin-icons';
+import { useCacheStatus } from '../../hooks/use-cache-status';
 import styles from './system-health-badge.module.css';
 
 type HealthStatus = 'healthy' | 'warning' | 'critical' | 'unknown';
 
 export const SystemHealthBadge = () => {
-    const fetcher = useFetcher();
-    const [status, setStatus] = useState<HealthStatus>('unknown');
+    const { data, loading } = useCacheStatus();
 
-    React.useEffect(() => {
-        // Auto-load cache status on mount
-        if (!fetcher.data && fetcher.state === 'idle') {
-            fetcher.submit({ actionType: 'getCacheStatus' }, { method: 'post' });
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (fetcher.data?.success && fetcher.data?.data?.health) {
-            setStatus(fetcher.data.data.health.overall);
-        }
-    }, [fetcher.data]);
+    const status: HealthStatus = loading ? 'unknown' : (data?.health?.overall || 'unknown');
 
     const getIcon = () => {
         switch (status) {
@@ -36,7 +24,7 @@ export const SystemHealthBadge = () => {
             case 'healthy': return 'System Healthy';
             case 'warning': return 'Minor Issues';
             case 'critical': return 'Critical Issues';
-            default: return 'Checking...';
+            default: return loading ? 'Checking...' : 'Status Unknown';
         }
     };
 

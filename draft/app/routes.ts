@@ -12,7 +12,15 @@ export default [
     // API routes
     route("scoring/api/gw-points", "scoring/api/api.gw-points.ts"),
 
-    // Admin API routes for Firestore management
-    route("admin", "admin/admin-dashboard.route.tsx"),
+    // Admin routes with nested sections
+    route("admin", "admin/admin.route.tsx", [
+        index("admin/admin-overview.route.tsx"),
+        route("draft", "admin/admin-draft.route.tsx"),
+        route("points", "admin/admin-points.route.tsx"),
+        route("settings", "admin/admin-settings.route.tsx"),
+    ]),
+    route("admin/api/cache-status", "admin/api/api.cache-status.ts"),
+
+    // Debug route
     route("debug", "admin/debug.route.tsx"),
 ] satisfies RouteConfig;
