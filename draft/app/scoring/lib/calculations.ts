@@ -148,8 +148,8 @@ export function calculateSeasonPoints(
     position: CustomPosition,
 ): { points: PointsBreakdown; stats: PointsBreakdown } {
 
-    const points = baselineStats;
-    const stats = baselineStats;
+    const points = { ...baselineStats };
+    const stats = { ...baselineStats };
 
     // Sum up all gameweek breakdowns
     gameweekStats.forEach(gwStats => {
