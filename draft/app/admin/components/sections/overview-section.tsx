@@ -1,4 +1,3 @@
-// /admin/components/sections/overview-section.tsx (REFACTORED)
 import React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
@@ -10,6 +9,7 @@ export const OverviewSection = () => {
     const fetcher = useFetcher();
     const { cacheData } = fetcher.data || {};
 
+    console.log(fetcher, cacheData)
     // Fetch cache data when component mounts
     React.useEffect(() => {
         if (fetcher.state === 'idle' && !fetcher.data) {
