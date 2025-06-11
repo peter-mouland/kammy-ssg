@@ -168,7 +168,7 @@ export class GameweekPointsService {
         console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
 
         // Import the gameweek points generation function
-        const { generateGameweekData } = await import('../../../lib/scoring');
+        const { generateGameweekData } = await import('../../../scoring/lib');
         const { readPlayers } = await import('../sheets/players');
 
         // Get required data

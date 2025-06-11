@@ -1,6 +1,6 @@
-// /admin/admin-dashboard.tsx (FULLY TYPED)
+// /admin/admin-dashboard.tsx
 import React, { useState } from 'react';
-import { useLoaderData } from 'react-router';
+import { useLoaderData, useRevalidator } from 'react-router';
 import * as Icons from './components/icons/admin-icons';
 import { SystemHealthBadge } from './components/ui/system-health-badge'
 import { NavButton } from './components/ui/nav-button'
@@ -22,7 +22,6 @@ import type {
     AdminSectionKey,
     AdminNavItem
 } from './types';
-
 
 const navigationItems: AdminNavItem[] = [
     {
@@ -60,6 +59,7 @@ export const AdminDashboard: React.FC = () => {
         draftState
     } = useLoaderData() as AdminDashboardData;
 
+    const revalidator = useRevalidator();
     const [activeSection, setActiveSection] = useState<AdminSectionKey>('overview');
     const [expandedSections, setExpandedSections] = useState<Set<string>>(
         new Set(['cache-management'])
@@ -75,6 +75,10 @@ export const AdminDashboard: React.FC = () => {
         setExpandedSections(newExpanded);
     };
 
+    const handleRefreshAll = () => {
+        // Revalidate the route data (refetch from loader)
+        revalidator.revalidate();
+    };
 
     const renderContent = (): React.ReactNode => {
         switch (activeSection) {
@@ -115,7 +119,10 @@ export const AdminDashboard: React.FC = () => {
                         actions={
                             <ActionBar align="right">
                                 <SystemHealthBadge />
-                                <RefreshButton />
+                                <RefreshButton
+                                    onClick={handleRefreshAll}
+                                    loading={revalidator.state === 'loading'}
+                                />
                             </ActionBar>
                         }
                     />

@@ -6,7 +6,7 @@ import {
 } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { AdminDashboard } from './admin-dashboard';
-
+import type { AdminActionType } from './types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -35,8 +35,8 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
 export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
     try {
         const formData = await requestFormData({ request, context });
-        const actionType = formData.get("actionType") as string | null;
-        const divisionId = formData.get("divisionId") as string | null;
+        const actionType = formData.get("actionType");
+        const divisionId = formData.get("divisionId");
 
         if (!actionType) {
             return data<ActionData>({ error: "Action type is required" });
@@ -45,7 +45,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const { handleDraftAction } = await import("../admin/server/admin-dashboard.server");
 
         const result = await handleDraftAction({
-            actionType: actionType.trim(),
+            actionType: actionType.trim() as AdminActionType,
             divisionId: divisionId?.trim() || undefined
         });
 
