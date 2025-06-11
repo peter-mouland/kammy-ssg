@@ -10,9 +10,7 @@ function isValidAdminToken(token: string): boolean {
 
 // EXACT COPY from "clearFirestoreData" case
 export async function handleClearFirestoreData(params: AdminActionParams): Promise<AdminActionResult> {
-    const { authToken, variant = 'all' } = params;
-
-    const clearVariant = variant || 'all';
+    const { variant: clearVariant = 'all' } = params;
     const clearService = new FirestoreClearService();
 
     try {
@@ -40,14 +38,7 @@ export async function handleClearFirestoreData(params: AdminActionParams): Promi
     }
 }
 
-// EXACT COPY from "getFirestoreStats" case
 export async function handleGetFirestoreStats(params: AdminActionParams): Promise<AdminActionResult> {
-    const { authToken } = params;
-
-    // Validate auth token
-    // if (!authToken || !isValidAdminToken(authToken)) {
-    //     throw new Error("Unauthorized: Invalid admin token");
-    // }
 
     try {
         const clearService = new FirestoreClearService();
@@ -66,7 +57,6 @@ export async function handleGetFirestoreStats(params: AdminActionParams): Promis
     }
 }
 
-// EXACT COPY from "populateBootstrapData" case
 export async function handlePopulateBootstrapData(): Promise<AdminActionResult> {
     try {
         console.log('🔄 Populating bootstrap data...');

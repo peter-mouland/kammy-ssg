@@ -5,9 +5,18 @@ import * as Icons from '../icons/admin-icons';
 import { StatusCard } from '../ui/status-card';
 import { AdminSection, AdminGrid, AdminContainer } from '../layout';
 import { QuickActionsSection } from './quick-actions-section';
+import { ActionCard } from '../ui/action-card';
 
-export const OverviewSection = () => {
+interface SectionProps {
+    expandedSections: Set<string>;
+    toggleSection: (section: string) => void;
+}
+export const OverviewSection = ({
+                                    expandedSections,
+                                    toggleSection
+                                } : SectionProps) => {
     const fetcher = useFetcher();
+    const clearDatafetcher = useFetcher();
     const [cacheData, setCacheData] = React.useState(null);
 
     // Fetch cache status when component mounts (not firestore stats)
@@ -23,6 +32,15 @@ export const OverviewSection = () => {
             setCacheData(fetcher.data.data);
         }
     }, [fetcher.data]);
+
+
+    const executeAction = (actionType: string, variant?: string) => {
+        const formData = new FormData();
+        formData.append('actionType', actionType);
+        formData.append('variant', variant || 'all');
+        clearDatafetcher.submit(formData, { method: 'post' });
+    };
+
 
     // Calculate status for each card
     const getBootstrapStatus = () => {
@@ -48,10 +66,9 @@ export const OverviewSection = () => {
     const getDraftDataStatus = () => {
         if (!cacheData) return { status: 'warning', value: '...' };
 
-        const hasEnhanced = (cacheData.hasEnhancedData) > 0;
         return {
-            status: hasEnhanced ? 'healthy' : 'warning',
-            value: hasEnhanced ? 'Ready' : 'Pending'
+            status: cacheData.hasEnhancedData ? 'healthy' : 'warning',
+            value: cacheData.hasEnhancedData ? 'Ready' : 'Pending'
         };
     };
 
@@ -88,6 +105,41 @@ export const OverviewSection = () => {
             </AdminSection>
 
             <QuickActionsSection cacheData={cacheData} />
+
+            <AdminSection
+                title="Manual Cache Clearing"
+                icon={<Icons.TrashIcon />}
+                collapsible={true}
+                expanded={expandedSections.has('cache-management')}
+                onToggle={() => toggleSection('cache-management')}
+            >
+                <AdminGrid columns="auto" minWidth="250px">
+                    <ActionCard
+                        title="Clear Player Summaries"
+                        description="Clear player summaries only (fastest)"
+                        buttonText="Clear Elements"
+                        actionType="clearFirestoreData"
+                        onExecute={(actionType) => executeAction(actionType, 'elements-only')}
+                        fetcher={clearDatafetcher}
+                    />
+                    <ActionCard
+                        title="Clear FPL Data"
+                        description="Clear FPL bootstrap + elements"
+                        buttonText="Clear FPL"
+                        actionType="clearFirestoreData"
+                        onExecute={(actionType) => executeAction(actionType, 'fpl-only')}
+                        fetcher={clearDatafetcher}
+                    />
+                    <ActionCard
+                        title="Clear Everything"
+                        description="Clear everything (nuclear option)"
+                        buttonText="Clear All"
+                        actionType="clearFirestoreData"
+                        onExecute={(actionType) => executeAction(actionType, 'all')}
+                        fetcher={clearDatafetcher}
+                    />
+                </AdminGrid>
+            </AdminSection>
         </AdminContainer>
     );
 };

@@ -14,7 +14,6 @@ import { TwoColumnLayout } from './components/layout/two-column-layout'
 
 import { OverviewSection } from './components/sections/overview-section'
 import { DraftSection } from './components/sections/draft-section'
-import { DataManagementSection } from './components/sections/data-management-section'
 import { PointsScoringSection } from './components/sections/points-scoring-section'
 import { SettingsSection } from './components/sections/settings-section'
 import type {
@@ -27,17 +26,12 @@ const navigationItems: AdminNavItem[] = [
     {
         key: 'overview',
         label: 'Overview',
-        icon: <Icons.BarChartIcon />
+        icon: <Icons.DatabaseIcon />
     },
     {
         key: 'draft',
         label: 'Draft Management',
         icon: <Icons.UsersIcon />
-    },
-    {
-        key: 'data',
-        label: 'Data Management',
-        icon: <Icons.DatabaseIcon />
     },
     {
         key: 'points',
@@ -61,9 +55,7 @@ export const AdminDashboard: React.FC = () => {
 
     const revalidator = useRevalidator();
     const [activeSection, setActiveSection] = useState<AdminSectionKey>('overview');
-    const [expandedSections, setExpandedSections] = useState<Set<string>>(
-        new Set(['cache-management'])
-    );
+    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
     const toggleSection = (section: string): void => {
         const newExpanded = new Set(expandedSections);
@@ -83,7 +75,10 @@ export const AdminDashboard: React.FC = () => {
     const renderContent = (): React.ReactNode => {
         switch (activeSection) {
             case 'overview':
-                return <OverviewSection />;
+                return <OverviewSection
+                    expandedSections={expandedSections}
+                    toggleSection={toggleSection}
+                />;
             case 'draft':
                 return (
                     <DraftSection
@@ -93,19 +88,15 @@ export const AdminDashboard: React.FC = () => {
                         draftState={draftState}
                     />
                 );
-            case 'data':
-                return (
-                    <DataManagementSection
-                        expandedSections={expandedSections}
-                        toggleSection={toggleSection}
-                    />
-                );
             case 'points':
                 return <PointsScoringSection />;
             case 'settings':
                 return <SettingsSection />;
             default:
-                return <OverviewSection />;
+                return <OverviewSection
+                    expandedSections={expandedSections}
+                    toggleSection={toggleSection}
+                />;
         }
     };
 
