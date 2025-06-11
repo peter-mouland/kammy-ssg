@@ -1,0 +1,245 @@
+/* app/routes/draft.module.css */
+
+.draftContainer {
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Loading States */
+.initialLoading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.loadingDetails {
+    text-align: center;
+    color: #6b7280;
+}
+
+.loadingSubtext {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Header */
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Alerts */
+.navigationAlert {
+    background-color: #dbeafe;
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+/* Draft Interface */
+.draftInterface {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.playersSection {
+    position: relative;
+}
+
+.rightColumn {
+    display: grid;
+    grid-template-rows: 0.7fr 1.3fr;
+    gap: 2rem;
+}
+
+/* Optimistic Overlay */
+.optimisticOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    z-index: 10;
+}
+
+.optimisticContent {
+    text-align: center;
+}
+
+.optimisticMessage {
+    margin-top: 1rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Draft Inactive State */
+.draftInactive {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+}
+
+.inactiveIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.inactiveTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.inactiveMessage {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Debug Info */
+.debugInfo {
+    margin-top: 2rem;
+    font-size: 0.875rem;
+}
+
+.debugSummary {
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.debugContent {
+    background-color: var(--color-gray-100);
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow: auto;
+    margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .draftContainer {
+        padding: 0.5rem;
+    }
+
+    .draftInterface {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .rightColumn {
+        grid-template-rows: auto auto;
+        gap: 1rem;
+    }
+
+    .headerActions {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 480px) {
+    .initialLoading {
+        padding: 1rem;
+    }
+
+    .loadingDetails {
+        font-size: 0.875rem;
+    }
+
+    .draftInactive {
+        padding: 2rem 1rem;
+    }
+
+    .inactiveIcon {
+        font-size: 3rem;
+    }
+
+    .inactiveTitle {
+        font-size: 1.25rem;
+    }
+}
+
+/* Add to your draft.module.css */
+
+.removePickButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.removePickButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff5252, #e53e3e);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.removePickButton:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.removePickButton:disabled {
+    background: #cbd5e0;
+    color: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.removeCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: bold;
+    animation: pulseCount 0.3s ease-out;
+}
+
+@keyframes pulseCount {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .removePickButton {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .removeCount {
+        min-width: 1.25rem;
+        height: 1.25rem;
+        font-size: 0.7rem;
+    }
+}

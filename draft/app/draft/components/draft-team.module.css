@@ -1,0 +1,253 @@
+teamContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+/* Individual team card */
+.teamCard {
+    flex: 0 1 calc(50% - var(--spacing-2));
+    margin-bottom: var(--spacing-8);
+    padding: var(--spacing-4);
+    border: var(--card-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--white);
+}
+
+/* Team header */
+.teamHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.teamName {
+    margin: 0;
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.playerCount {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    background-color: var(--color-gray-100);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-md);
+}
+
+/* Formation grid */
+.formationGrid {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr 1fr auto;
+    gap: var(--spacing-2);
+    align-items: start;
+}
+
+/* Position column */
+.positionColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.positionHeader {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-2);
+    text-align: center;
+}
+
+/* Position slots */
+.positionSlot {
+    min-height: var(--position-slot-size);
+    min-width: var(--position-slot-size);
+    border: var(--position-slot-border);
+    border-radius: var(--position-slot-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--position-slot-padding);
+    margin: var(--position-slot-margin);
+}
+
+.positionSlot.empty {
+    background-color: transparent;
+}
+
+.positionSlot.filled {
+    /* Background color will be set via CSS custom properties */
+}
+
+/* Position colors - using CSS custom properties for dynamic colors */
+.positionSlot.gk {
+    border-color: var(--color-position-gk);
+}
+
+.positionSlot.gk.filled {
+    background-color: var(--color-position-gk-light);
+}
+
+.positionSlot.cb,
+.positionSlot.fb {
+    border-color: var(--color-position-def);
+}
+
+.positionSlot.cb.filled,
+.positionSlot.fb.filled {
+    background-color: var(--color-position-def-light);
+}
+
+.positionSlot.mid {
+    border-color: var(--color-position-mid);
+}
+
+.positionSlot.mid.filled {
+    background-color: var(--color-position-mid-light);
+}
+
+.positionSlot.wa {
+    border-color: var(--color-warning);
+}
+
+.positionSlot.wa.filled {
+    background-color: var(--color-warning-light);
+}
+
+.positionSlot.ca {
+    border-color: var(--color-position-att);
+}
+
+.positionSlot.ca.filled {
+    background-color: var(--color-position-att-light);
+}
+
+.positionSlot.sub {
+    border-color: var(--color-gray-500);
+}
+
+.positionSlot.sub.filled {
+    background-color: var(--color-gray-200);
+}
+
+/* Empty slot text */
+.emptySlotText {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    opacity: 0.6;
+}
+
+.emptySlotText.gk {
+    color: var(--color-position-gk);
+}
+
+.emptySlotText.cb,
+.emptySlotText.fb {
+    color: var(--color-position-def);
+}
+
+.emptySlotText.mid {
+    color: var(--color-position-mid);
+}
+
+.emptySlotText.wa {
+    color: var(--color-warning);
+}
+
+.emptySlotText.ca {
+    color: var(--color-position-att);
+}
+
+.emptySlotText.sub {
+    color: var(--color-gray-500);
+}
+
+/* Player info */
+.playerInfo {
+    text-align: center;
+}
+
+.playerName {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-1);
+}
+
+.playerPosition {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .teamCard {
+        flex: 1 1 100%;
+    }
+
+    .formationGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-1);
+    }
+
+    .positionSlot {
+        min-height: 2.5rem;
+        min-width: 2.5rem;
+        padding: var(--spacing-1);
+    }
+
+    .playerName {
+        font-size: var(--font-xs);
+    }
+
+    .playerPosition {
+        font-size: 0.5rem;
+    }
+}
+
+/* Compact version for squad status */
+.teamCard.compact {
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3);
+    flex: 1 1 100%;
+}
+
+.teamCard.compact .teamHeader {
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+}
+
+.teamCard.compact .formationGrid {
+    gap: var(--spacing-2);
+}
+
+.teamCard.compact .positionSlot {
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    padding: var(--spacing-2);
+    margin: var(--spacing-1);
+}
+
+.teamCard.compact .playerName {
+    font-size: var(--font-xs);
+}
+
+.teamCard.compact .playerPosition {
+    font-size: 0.5rem;
+}
+
+.teamCard.compact .positionHeader {
+    font-size: var(--font-xs);
+    margin-bottom: var(--spacing-2);
+}
+
+/* Complete indicator for player count */
+.playerCount.complete {
+    background-color: var(--color-success-light);
+    color: var(--color-success);
+    border: 1px solid var(--color-success-border);
+}

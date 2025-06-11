@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "app/routes/api.cron.ts": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}

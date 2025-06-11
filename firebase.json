@@ -1,0 +1,37 @@
+{
+  "hosting": {
+    "predeploy": "yarn workspace draft build",
+    "public": "draft/build/client",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "function": "api"
+      },
+      {
+        "source": "**",
+        "function": "ssr"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css|woff2|woff|ttf)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000, immutable"
+          }
+        ]
+      }
+    ]
+  },
+  "functions": {
+    "predeploy": "yarn workspace functions build",
+    "source": "functions",
+    "runtime": "nodejs20"
+  }
+}

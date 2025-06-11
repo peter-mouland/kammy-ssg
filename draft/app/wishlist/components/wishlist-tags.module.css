@@ -1,0 +1,40 @@
+/* components/wishlist-tags.module.css */
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-white, #ffffff);
+    border-radius: 12px;
+    line-height: 1;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-white, #ffffff);
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+.moreTag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-gray-600, #4b5563);
+    background-color: var(--color-gray-200, #e5e7eb);
+    border-radius: 12px;
+    line-height: 1;
+}

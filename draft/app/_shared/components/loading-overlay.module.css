@@ -1,0 +1,86 @@
+.turnAlert {
+    border: 2px solid var(--color-success);
+    background-color: var(--color-success-light);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-8);
+    text-align: center;
+    position: relative;
+}
+
+.turnTitle {
+    margin: 0 0 var(--spacing-2) 0;
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+}
+
+.timer {
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.submittingIndicator {
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-4);
+    transform: translateY(-50%);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.spinner {
+    border: 2px solid var(--color-gray-200);
+    border-top: 2px solid var(--color-primary);
+    border-radius: var(--radius-full);
+    animation: spin 1s linear infinite;
+}
+
+.spinner.small {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+}
+
+.spinner.medium {
+    width: var(--spacing-8);
+    height: var(--spacing-8);
+}
+
+.spinner.large {
+    width: var(--spacing-12);
+    height: var(--spacing-12);
+}
+
+.message {
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    text-align: center;
+}
+
+.progressBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: var(--color-primary-light);
+    z-index: var(--z-toast);
+}
+
+.progressIndicator {
+    height: 100%;
+    background-color: var(--color-primary);
+    animation: progress 2s ease-in-out infinite;
+    transform-origin: left;
+}
+
+@keyframes progress {
+    0% { transform: scaleX(0); }
+    50% { transform: scaleX(0.5); }
+    100% { transform: scaleX(1); }
+}

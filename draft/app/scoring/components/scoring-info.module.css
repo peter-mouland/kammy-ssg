@@ -1,0 +1,40 @@
+.scoringInfo {
+    background-color: var(--color-gray-50);
+    border: var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+}
+
+.scoringTitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-4);
+}
+
+.scoringGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-3);
+}
+
+.scoringItem {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+    padding: var(--spacing-2);
+    background-color: var(--color-white);
+    border-radius: var(--radius-sm);
+    border: var(--card-border);
+}
+
+.scoringItem strong {
+    color: var(--color-gray-900);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .scoringGrid {
+        grid-template-columns: 1fr;
+    }
+}

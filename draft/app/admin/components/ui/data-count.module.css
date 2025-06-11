@@ -1,0 +1,38 @@
+/* data-count.module.css */
+
+.statusCard {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.statusCard.healthy {
+    border-color: #68d391;
+    background-color: #f0fff4;
+}
+
+.statusCard.warning {
+    border-color: #f6ad55;
+    background-color: #fffaf0;
+}
+
+.statusValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.statusLabel {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+}
+
+.statusPercentage {
+    font-size: 0.75rem;
+    color: #4a5568;
+}

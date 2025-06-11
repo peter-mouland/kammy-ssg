@@ -1,0 +1,456 @@
+/* Table container */
+.tableContainer {
+    background: var(--color-white);
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.tableContainer.bordered {
+    border: var(--table-border);
+}
+
+.tableContainer.shadow {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Table wrapper for scrolling */
+.tableWrapper {
+    overflow-x: auto;
+    max-height: var(--table-max-height, none);
+    overflow-y: auto;
+}
+
+/* Base table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-sm);
+}
+
+/* Table sizing variants */
+.table.compact {
+    font-size: var(--font-xs);
+}
+
+.table.comfortable {
+    font-size: var(--font-base);
+}
+
+/* Header styles */
+.table th {
+    background-color: var(--table-header-bg);
+    padding: var(--table-padding-cell);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-700);
+    border-bottom: var(--table-border);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table.compact th {
+    padding: var(--spacing-2) var(--spacing-1);
+}
+
+.table.comfortable th {
+    padding: var(--spacing-4) var(--spacing-3);
+}
+
+/* Sortable headers */
+.sortableHeader {
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition-normal);
+    position: relative;
+}
+
+.sortableHeader:hover {
+    background-color: var(--color-gray-100);
+}
+
+.sortableHeader:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+}
+
+/* Sort indicators */
+.sortIndicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.sortIcon {
+    font-size: var(--font-xs);
+    color: var(--color-gray-400);
+    transition: var(--transition-fast);
+}
+
+.sortableHeader:hover .sortIcon {
+    color: var(--color-gray-600);
+}
+
+.sortableHeader.sorted .sortIcon {
+    color: var(--color-primary);
+}
+
+/* Cell styles */
+.table td {
+    padding: var(--table-padding-cell);
+    border-bottom: 1px solid var(--color-gray-100);
+    vertical-align: middle;
+}
+
+.table.compact td {
+    padding: var(--spacing-2) var(--spacing-1);
+}
+
+.table.comfortable td {
+    padding: var(--spacing-4) var(--spacing-3);
+}
+
+/* Row styles */
+.table tbody tr {
+    transition: var(--transition-fast);
+}
+
+.table tbody tr:hover {
+    background-color: var(--table-row-hover);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Row variants */
+.rowSelected {
+    background-color: var(--color-primary-light) !important;
+}
+
+.rowHighlighted {
+    background-color: var(--color-warning-light) !important;
+}
+
+.rowDisabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Cell alignment */
+.cellLeft {
+    text-align: left;
+}
+
+.cellCenter {
+    text-align: center;
+}
+
+.cellRight {
+    text-align: right;
+}
+
+/* Cell variants */
+.cellNumeric {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--font-weight-medium);
+}
+
+.cellBold {
+    font-weight: var(--font-weight-semibold);
+}
+
+.cellMuted {
+    color: var(--color-gray-500);
+}
+
+.cellSuccess {
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.cellWarning {
+    color: var(--color-warning);
+    font-weight: var(--font-weight-medium);
+}
+
+.cellError {
+    color: var(--color-error);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Badge cell */
+.cellBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+}
+
+.cellBadge.primary {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.cellBadge.success {
+    background-color: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.cellBadge.warning {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.cellBadge.error {
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+}
+
+.cellBadge.gray {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+/* Position badges */
+.positionBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    min-width: 2.5rem;
+}
+
+.positionBadge.gk {
+    background-color: var(--color-position-gk-light);
+    color: var(--color-position-gk-text);
+}
+
+.positionBadge.def {
+    background-color: var(--color-position-def-light);
+    color: var(--color-position-def-text);
+}
+
+.positionBadge.mid {
+    background-color: var(--color-position-mid-light);
+    color: var(--color-position-mid-text);
+}
+
+.positionBadge.att {
+    background-color: var(--color-position-att-light);
+    color: var(--color-position-att-text);
+}
+
+/* Rank badge (for standings) */
+.rankBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-8);
+    height: var(--spacing-8);
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.rankBadge.top {
+    background-color: var(--color-warning);
+    color: var(--color-white);
+}
+
+.rankBadge.regular {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+/* Loading state */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-16);
+    color: var(--color-gray-500);
+}
+
+/* Empty state */
+.emptyState {
+    text-align: center;
+    padding: var(--spacing-16);
+    color: var(--color-gray-500);
+}
+
+.emptyIcon {
+    font-size: var(--font-4xl);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+}
+
+.emptyTitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-2);
+}
+
+.emptyDescription {
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+}
+
+/* Actions in cells */
+.cellActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.actionButton {
+    padding: var(--spacing-1);
+    border: none;
+    background: none;
+    color: var(--color-gray-500);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionButton:hover {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+}
+
+.actionButton:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+.actionButton.primary {
+    color: var(--color-primary);
+}
+
+.actionButton.primary:hover {
+    background-color: var(--color-primary-light);
+}
+
+.actionButton.success {
+    color: var(--color-success);
+}
+
+.actionButton.success:hover {
+    background-color: var(--color-success-light);
+}
+
+.actionButton.error {
+    color: var(--color-error);
+}
+
+.actionButton.error:hover {
+    background-color: var(--color-error-light);
+}
+
+/* Pagination container */
+.paginationContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-4);
+    border-top: 1px solid var(--color-gray-200);
+    background-color: var(--color-gray-50);
+}
+
+.paginationInfo {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+}
+
+.paginationControls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+/* Responsive behavior */
+@media (max-width: 1024px) {
+    .table {
+        font-size: var(--font-xs);
+    }
+
+    .table th,
+    .table td {
+        padding: var(--spacing-2) var(--spacing-1);
+    }
+}
+
+@media (max-width: 768px) {
+    .tableContainer {
+        border-radius: var(--radius-md);
+    }
+
+    .table th,
+    .table td {
+        padding: var(--spacing-1) var(--spacing-1);
+    }
+
+    /* Hide less important columns on mobile */
+    .hideOnMobile {
+        display: none;
+    }
+
+    .rankBadge {
+        width: var(--spacing-6);
+        height: var(--spacing-6);
+        font-size: var(--font-xs);
+    }
+}
+
+/* Scrollbar styling */
+.tableWrapper::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+    background: var(--color-gray-300);
+    border-radius: var(--radius-sm);
+}
+
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-400);
+}
+
+/* Fixed column support */
+.fixedColumn {
+    position: sticky;
+    left: 0;
+    background-color: inherit;
+    z-index: 5;
+}
+
+.fixedColumn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -1px;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--color-gray-200);
+}

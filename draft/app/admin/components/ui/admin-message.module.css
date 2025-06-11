@@ -1,0 +1,42 @@
+.message {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border: 1px solid;
+    font-size: 0.875rem;
+}
+
+.icon {
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.content {
+    flex: 1;
+}
+
+.success {
+    background: #d1fae5;
+    border-color: #10b981;
+    color: #065f46;
+}
+
+.error {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.warning {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.info {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    color: #1e40af;
+}

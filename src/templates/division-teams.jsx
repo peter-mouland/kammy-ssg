@@ -52,44 +52,41 @@ const Index = ({ data, pageContext: { gameWeekIndex, divisionId } }) => {
                                 <StatsTable.Th separator>Next Gw</StatsTable.Th>
                             </StatsTable.Thead>
                             <StatsTable.Tbody>
-                                {Squad.players.map(
-                                    (SquadPlayer) =>
-                                        console.log(SquadPlayer) || (
-                                            <StatsTable.Tr
-                                                key={SquadPlayer.code}
-                                                hasChanged={SquadPlayer.hasChanged}
-                                                hasWarning={
-                                                    isAdmin && SquadPlayer.hasWarnings(Squad.warnings, Squads.warnings)
-                                                }
-                                            >
-                                                <StatsTable.Td>
-                                                    <Player.AllInfo player={SquadPlayer} />
-                                                </StatsTable.Td>
-                                                <StatsTable.Td>
-                                                    <strong>{SquadPlayer.gameWeekStats.points.value}</strong>
-                                                </StatsTable.Td>
+                                {Squad.players.map((SquadPlayer) => (
+                                    <StatsTable.Tr
+                                        key={SquadPlayer.code}
+                                        hasChanged={SquadPlayer.hasChanged}
+                                        hasWarning={
+                                            isAdmin && SquadPlayer.hasWarnings(Squad.warnings, Squads.warnings)
+                                        }
+                                    >
+                                        <StatsTable.Td>
+                                            <Player.AllInfo player={SquadPlayer} />
+                                        </StatsTable.Td>
+                                        <StatsTable.Td>
+                                            <strong>{SquadPlayer.gameWeekStats.points.value}</strong>
+                                        </StatsTable.Td>
 
-                                                {/* remove first item, 'points', so we can make it bold, above*/}
-                                                {StatsList.all.slice(1).map((Stat) => (
-                                                    <StatsTable.Td key={Stat.id} desktopOnly>
-                                                        {SquadPlayer.gameWeekStats[Stat.id].value}
-                                                    </StatsTable.Td>
+                                        {/* remove first item, 'points', so we can make it bold, above*/}
+                                        {StatsList.all.slice(1).map((Stat) => (
+                                            <StatsTable.Td key={Stat.id} desktopOnly>
+                                                {SquadPlayer.gameWeekStats[Stat.id].value}
+                                            </StatsTable.Td>
+                                        ))}
+                                        <StatsTable.Td separator>
+                                            <em>
+                                                {SquadPlayer.nextGameWeekFixtures.map((f) => (
+                                                    <React.Fragment key={f.fixture_id}>
+                                                        {f.oponent.club}{' '}
+                                                        <span style={{ fontSize: '0.8em', color: 'grey' }}>
+                                                            ({f.oponent.awayOrHomeLabel})
+                                                        </span>
+                                                    </React.Fragment>
                                                 ))}
-                                                <StatsTable.Td separator>
-                                                    <em>
-                                                        {SquadPlayer.nextGameWeekFixtures.map((f) => (
-                                                            <React.Fragment key={f.fixture_id}>
-                                                                {f.oponent.club}{' '}
-                                                                <span style={{ fontSize: '0.8em', color: 'grey' }}>
-                                                                    ({f.oponent.awayOrHomeLabel})
-                                                                </span>
-                                                            </React.Fragment>
-                                                        ))}
-                                                    </em>
-                                                </StatsTable.Td>
-                                            </StatsTable.Tr>
-                                        ),
-                                )}
+                                            </em>
+                                        </StatsTable.Td>
+                                    </StatsTable.Tr>
+                                ))}
                             </StatsTable.Tbody>
                         </StatsTable.Table>
                     </React.Fragment>

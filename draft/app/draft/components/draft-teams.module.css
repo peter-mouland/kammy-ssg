@@ -1,0 +1,6 @@
+/* Team formation container */
+.teamContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}

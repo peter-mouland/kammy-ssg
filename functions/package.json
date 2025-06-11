@@ -1,0 +1,38 @@
+{
+  "name": "functions",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": "10.2.0"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@react-router/express": "^7.0.0",
+    "@react-router/node": "^7.0.0",
+    "@react-router/serve": "^7.0.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "express": "^4.0.0",
+    "firebase": "^11.8.1",
+    "firebase-admin": "13.4.0",
+    "firebase-functions": "^6.3.2",
+    "google-auth-library": "^9.14.1",
+    "googleapis": "^144.0.0",
+    "isbot": "^5.1.28",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.8.3"
+  }
+}

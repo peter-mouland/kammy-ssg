@@ -1,0 +1,45 @@
+.emoji {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.textIcon {
+    font-family: monospace;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.textIcon.active {
+    color: #10b981;
+}
+
+.textIcon.error {
+    color: #ef4444;
+}
+
+.textIcon.warning {
+    color: #f59e0b;
+}
+
+.textIcon.inactive {
+    color: #6b7280;
+}
+
+.textIcon.check {
+    color: #10b981;
+}
+
+.textIcon.up {
+    color: #10b981;
+}
+
+.textIcon.down {
+    color: #ef4444;
+}
+
+.textIcon.left,
+.textIcon.right {
+    color: #6b7280;
+}

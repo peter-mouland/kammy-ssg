@@ -1,0 +1,46 @@
+.filtersContainer {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: var(--spacing-3);
+    align-items: end;
+    margin: var(--spacing-4) 0;
+}
+
+.clearButton {
+    padding: var(--button-padding-md);
+    background: var(--color-gray-500);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--button-border-radius);
+    font-size: var(--font-sm);
+    cursor: pointer;
+    transition: var(--button-transition);
+    white-space: nowrap;
+}
+
+.clearButton:hover {
+    background: var(--color-gray-600);
+}
+
+.clearButton:focus {
+    outline: none;
+    background: var(--color-gray-600);
+    box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.resultsSummary {
+    grid-column: 1 / -1;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filtersContainer {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-2);
+    }
+}

@@ -1,0 +1,75 @@
+.confettiContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: var(--z-confetti);
+    overflow: hidden;
+}
+
+.confettiPiece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    transition: none;
+}
+
+.confettiPiece.circle {
+    border-radius: var(--radius-full);
+}
+
+.confettiPiece.square {
+    border-radius: var(--radius-sm);
+}
+
+.celebrationOverlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    animation: celebrationBounce 1s ease-out;
+}
+
+.celebrationTitle {
+    font-size: var(--font-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-bottom: var(--spacing-4);
+}
+
+.celebrationSubtitle {
+    font-size: var(--font-2xl);
+    color: var(--color-white);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes celebrationBounce {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .celebrationTitle {
+        font-size: var(--font-3xl);
+    }
+
+    .celebrationSubtitle {
+        font-size: var(--font-xl);
+    }
+}

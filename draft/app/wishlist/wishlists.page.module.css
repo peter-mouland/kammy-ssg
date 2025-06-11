@@ -1,0 +1,191 @@
+/* app/routes/wishlists.module.css */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 256px;
+}
+
+.loadingSpinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--color-primary-600, #2563eb);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loadingText {
+    color: var(--color-gray-600, #4b5563);
+    margin: 0;
+}
+
+.createButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--color-primary-600, #2563eb);
+    color: var(--color-white, #ffffff);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.createButton:hover {
+    background-color: var(--color-primary-700, #1d4ed8);
+}
+
+.createButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.createIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.sidebar {
+    /* No additional styles needed - inherits from layout */
+}
+
+.sidebarCard {
+    background-color: var(--color-white, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    overflow: hidden;
+}
+
+.sidebarHeader {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+}
+
+.sidebarTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0;
+}
+
+.createFormContainer {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.wishlistsList {
+    /* No additional styles - children handle their own styling */
+}
+
+.emptyState {
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.emptyIcon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    color: var(--color-gray-400, #9ca3af);
+}
+
+.emptyTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0 0 4px 0;
+}
+
+.emptyMessage {
+    font-size: 12px;
+    color: var(--color-gray-500, #6b7280);
+    margin: 0 0 16px 0;
+}
+
+.emptyButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 6px;
+    color: var(--color-gray-700, #374151);
+    background-color: var(--color-white, #ffffff);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.emptyButton:hover {
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.main {
+    /* No additional styles needed - inherits from layout */
+}
+
+.placeholder {
+    background-color: var(--color-white, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    height: 384px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholderContent {
+    text-align: center;
+}
+
+.placeholderIcon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    color: var(--color-gray-400, #9ca3af);
+}
+
+.placeholderTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-gray-900, #111827);
+    margin: 0 0 4px 0;
+}
+
+.placeholderMessage {
+    color: var(--color-gray-500, #6b7280);
+    margin: 0;
+}

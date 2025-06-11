@@ -1,0 +1,27 @@
+.pageHeader {
+    margin-bottom: var(--spacing-8);
+}
+
+.primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pageTitle {
+    font-size: var(--font-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+.pageSubtitle {
+    color: var(--color-gray-500);
+    font-size: var(--font-lg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .pageTitle {
+        font-size: var(--font-3xl);
+    }
+}

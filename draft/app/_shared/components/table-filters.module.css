@@ -1,0 +1,108 @@
+/* components/table-filters.module.css */
+
+.filtersContainer {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    background-color: var(--color-gray-50, #f9fafb);
+}
+
+.filtersRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+    .filtersRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filterLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-gray-700, #374151);
+}
+
+.searchInput,
+.selectInput {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-gray-300, #d1d5db);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--color-white, #ffffff);
+    color: var(--color-gray-900, #111827);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchInput:focus,
+.selectInput:focus {
+    outline: none;
+    border-color: var(--color-primary-500, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+    color: var(--color-gray-500, #6b7280);
+}
+
+.filtersActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.resetButton {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: var(--color-gray-200, #e5e7eb);
+    color: var(--color-gray-700, #374151);
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+}
+
+.resetButton:hover {
+    background-color: var(--color-gray-300, #d1d5db);
+}
+
+.resetButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.updatingIndicator {
+    font-size: 14px;
+    color: var(--color-gray-500, #6b7280);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.updatingIndicator::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--color-gray-300, #d1d5db);
+    border-top: 2px solid var(--color-primary-500, #3b82f6);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

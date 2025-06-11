@@ -74,9 +74,9 @@ function forSaveBonus(saves = 0, playerPositionId) {
     return 0;
 }
 
-function forBonus(bonusPoints = 0, playerPositionId) {
+function forBonus(bonus = 0, playerPositionId) {
     if (playerPositionId === 'cb' || playerPositionId === 'mid') {
-        return bonusPoints || 0;
+        return bonus || 0;
     }
     return 0;
 }

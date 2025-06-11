@@ -1,0 +1,17 @@
+.shell {
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.bg_light {
+    background-color: #ffffff;
+}
+
+.bg_dark {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.bg_gray {
+    background-color: #f8fafc;
+}

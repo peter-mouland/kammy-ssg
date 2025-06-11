@@ -1,0 +1,40 @@
+.selectContainer {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    font-weight: var(--font-weight-medium);
+}
+
+.selectLabel {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.selectInput {
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    font-size: var(--font-sm);
+    min-width: 150px;
+}
+
+.selectInput:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-shadow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .selectContainer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+    }
+
+    .selectInput {
+        width: 100%;
+        min-width: auto;
+    }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "draft",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@4.9.1",
+  "engines": {
+    "node": "20.x",
+    "npm": "10.2.0"
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production react-router build",
+    "dev": "react-router dev",
+    "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@react-router/node": "^7.0.0",
+    "@react-router/serve": "^7.0.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "firebase": "^11.8.1",
+    "google-auth-library": "^9.14.1",
+    "googleapis": "^144.0.0",
+    "isbot": "^5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router": "^7.0.0"
+  },
+  "devDependencies": {
+    "@react-router/dev": "^7.0.0",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "firebase-tools": "^14.4.0",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1"
+  }
+}

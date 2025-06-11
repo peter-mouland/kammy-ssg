@@ -1,0 +1,55 @@
+.subtitle {
+    color: var(--color-gray-500);
+    margin: var(--spacing-2) 0 0 0;
+}
+
+.tableContainer {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.rankBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-8);
+    height: var(--spacing-8);
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.topRank {
+    background-color: var(--color-warning);
+    color: var(--color-white);
+}
+
+.regularRank {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+.teamName {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+}
+
+.division {
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+}
+
+.managerName {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+}
+
+.points {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.actionContainer {
+    margin-top: var(--spacing-4);
+    text-align: center;
+}

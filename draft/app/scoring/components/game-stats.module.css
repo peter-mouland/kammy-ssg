@@ -1,0 +1,43 @@
+.statsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.statItem {
+    padding: var(--spacing-2) 0;
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.statItem:last-child {
+    border-bottom: none;
+}
+
+.statValue {
+    font-size: var(--font-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+.statLabel {
+    color: var(--color-gray-500);
+    font-size: var(--font-sm);
+    margin-top: var(--spacing-1);
+}
+
+/* Alternative grid layout for wider cards */
+@media (min-width: 640px) {
+    .statsGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-4);
+    }
+
+    .statItem {
+        border-bottom: none;
+        padding: var(--spacing-4);
+        text-align: center;
+        border-radius: var(--radius-md);
+        background-color: var(--color-gray-50);
+    }
+}

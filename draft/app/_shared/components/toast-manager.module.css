@@ -1,0 +1,114 @@
+.toastContainer {
+    position: fixed;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+    z-index: var(--z-toast);
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    position: absolute;
+    right: 0;
+    min-width: 300px;
+    max-width: 400px;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: var(--transition-slow);
+    margin-bottom: var(--spacing-2);
+}
+
+.toast.visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.leaving {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.toast.success {
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success-text);
+}
+
+.toast.error {
+    background-color: var(--color-error-light);
+    border: 1px solid var(--color-error-border);
+    color: var(--color-error);
+}
+
+.toast.warning {
+    background-color: var(--color-warning-light);
+    border: 1px solid var(--color-warning-border);
+    color: var(--color-warning-text);
+}
+
+.toast.info {
+    background-color: var(--color-info-light);
+    border: 1px solid var(--color-info-border);
+    color: var(--color-info);
+}
+
+.toastContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.toastMessage {
+    font-size: var(--font-sm);
+    line-height: var(--line-height-normal);
+    flex: 1;
+}
+
+.dismissButton {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: var(--font-xl);
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    transition: var(--transition-normal);
+}
+
+.dismissButton:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dismissButton:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .toastContainer {
+        left: var(--spacing-4);
+        right: var(--spacing-4);
+        top: var(--spacing-4);
+    }
+
+    .toast {
+        position: relative;
+        right: auto;
+        min-width: auto;
+        max-width: none;
+        width: 100%;
+    }
+}
