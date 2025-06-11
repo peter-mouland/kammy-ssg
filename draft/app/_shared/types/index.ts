@@ -1,6 +1,4 @@
 // Division Types
-import type { FplPlayerGameweekData } from '../routes/server/fpl/api';
-
 export interface DivisionData {
     id: string;
     label: string;

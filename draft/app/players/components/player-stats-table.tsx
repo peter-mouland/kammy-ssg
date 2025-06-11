@@ -2,9 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';
 import { WishlistTags } from '../../wishlist/components/wishlist-tags';
+import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
 import { getPlayerPosition } from '../../draft/lib/draft-rules'; // todo: global game settings?
 import { getPositionDisplayName } from '../../scoring/lib';
-import type { EnhancedPlayerData } from '../types';
+import type { EnhancedPlayerData } from '../../_shared/types';
 import styles from './player-stats-table.module.css';
 
 interface PlayerStatsTableProps {
@@ -251,7 +252,6 @@ interface PlayerRowProps {
 
 function PlayerRow({ player, teams }: PlayerRowProps) {
     const position = getPlayerPosition(player);
-    const playerPoints = player.draft?.pointsTotal || player.total_points || 0;
     const playerPrice = player.now_cost / 10;
     const playerForm = parseFloat(player.form || '0');
 
@@ -328,13 +328,10 @@ function PlayerRow({ player, teams }: PlayerRowProps) {
             {/* Points */}
             <td className={styles.cell}>
                 <div className={styles.points}>
-                    {playerPoints.toLocaleString()}
+                    <PointsBreakdownTooltip player={player}>
+                        {player.draft.pointsTotal}
+                    </PointsBreakdownTooltip>
                 </div>
-                {player.draft?.pointsTotal && (
-                    <div className={styles.customPoints}>
-                        Custom: {player.draft.pointsTotal}
-                    </div>
-                )}
             </td>
 
             {/* Form */}
@@ -364,5 +361,3 @@ function PlayerRow({ player, teams }: PlayerRowProps) {
         </tr>
     );
 }
-
-// CSS Module goes in player-stats-table.module.css (next artifact)

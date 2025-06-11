@@ -1,5 +1,6 @@
 import { Table, type TableColumn, TableBadge } from "../../_shared/components/table";
 import { isStatRelevant, formatPointsDisplay } from '../../scoring/lib';
+// import { PointsBreakdownTooltip } from './points-breakdown-tooltip'
 
 interface GameweekStatWithPoints {
     gameweek: number;
