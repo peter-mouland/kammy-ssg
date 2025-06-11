@@ -7,170 +7,16 @@
     overflow: hidden;
 }
 
-/* Filters */
-.filtersContainer {
-    padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
-    background-color: var(--color-gray-50, #f9fafb);
-}
-
-.filtersGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-}
-
-@media (max-width: 768px) {
-    .filtersGrid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.filterGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.filterLabel {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-gray-700, #374151);
-}
-
-.filterInput,
-.filterSelect {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
-    border-radius: 6px;
-    font-size: 14px;
-    background-color: var(--color-white, #ffffff);
-    color: var(--color-gray-900, #111827);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.filterInput:focus,
-.filterSelect:focus {
-    outline: none;
-    border-color: var(--color-primary-500, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.filterInput::placeholder {
-    color: var(--color-gray-500, #6b7280);
-}
-
-.clearButton {
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 14px;
-    background-color: var(--color-gray-200, #e5e7eb);
-    color: var(--color-gray-700, #374151);
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-self: end;
-}
-
-.clearButton:hover {
-    background-color: var(--color-gray-300, #d1d5db);
-}
-
+/* Results count */
 .resultsCount {
-    margin-top: 16px;
+    padding: 12px 16px;
     font-size: 14px;
     color: var(--color-gray-600, #4b5563);
-}
-
-/* Table */
-.tableContainer {
-    overflow-x: auto;
-}
-
-.table {
-    min-width: 100%;
-    border-collapse: collapse;
-}
-
-.tableHead {
     background-color: var(--color-gray-50, #f9fafb);
-}
-
-.sortableHeader {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--color-gray-500, #6b7280);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.sortableHeader:hover {
-    background-color: var(--color-gray-100, #f3f4f6);
-}
-
-.header {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--color-gray-500, #6b7280);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.headerContent {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.sortIcons {
-    display: flex;
-    flex-direction: column;
-}
-
-.sortIcon {
-    width: 12px;
-    height: 12px;
-    color: var(--color-gray-300, #d1d5db);
-    transition: color 0.2s ease;
-}
-
-.activeSortIcon {
-    color: var(--color-primary-600, #2563eb);
-}
-
-.tableBody {
-    background-color: var(--color-white, #ffffff);
-}
-
-.tableRow {
     border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
-    transition: background-color 0.2s ease;
 }
 
-.tableRow:hover {
-    background-color: var(--color-gray-50, #f9fafb);
-}
-
-/* Cells */
-.cell {
-    padding: 16px;
-    vertical-align: top;
-    white-space: nowrap;
-}
-
-.playerCell {
-    padding: 16px;
-    vertical-align: top;
-}
-
+/* Player Info Styles */
 .playerInfo {
     display: flex;
     align-items: center;
@@ -216,6 +62,7 @@
     color: var(--color-gray-500, #6b7280);
 }
 
+/* Position Badge */
 .positionBadge {
     display: inline-flex;
     align-items: center;
@@ -226,29 +73,13 @@
     color: var(--color-white, #ffffff);
 }
 
+/* Team Name */
 .teamName {
     font-size: 14px;
     color: var(--color-gray-900, #111827);
 }
 
-.price {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-gray-900, #111827);
-}
-
-.points {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-gray-900, #111827);
-}
-
-.customPoints {
-    font-size: 12px;
-    color: var(--color-gray-500, #6b7280);
-    margin-top: 2px;
-}
-
+/* Form Badge */
 .formBadge {
     display: inline-flex;
     align-items: center;
@@ -278,6 +109,7 @@
     background-color: var(--color-red-50, #fef2f2);
 }
 
+/* Actions */
 .actions {
     display: flex;
     align-items: center;
@@ -294,53 +126,4 @@
 
 .viewLink:hover {
     color: var(--color-primary-700, #1d4ed8);
-}
-
-/* Empty state */
-.emptyState {
-    text-align: center;
-    padding: 96px 24px;
-}
-
-.emptyIcon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 12px;
-    color: var(--color-gray-400, #9ca3af);
-}
-
-.emptyTitle {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--color-gray-900, #111827);
-    margin: 0 0 4px 0;
-}
-
-.emptyMessage {
-    color: var(--color-gray-500, #6b7280);
-    margin: 0;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .cell,
-    .playerCell {
-        padding: 12px 8px;
-    }
-
-    .playerInfo {
-        gap: 8px;
-    }
-
-    .playerAvatar {
-        width: 32px;
-        height: 32px;
-        font-size: 10px;
-    }
-
-    .actions {
-        flex-direction: column;
-        gap: 4px;
-        align-items: flex-start;
-    }
 }

@@ -56,12 +56,11 @@ export function PlayerGameweekTable({
         if (value === 0) return '0';
 
         // Color coding for different stats
-        if (stat === 'goals' || stat === 'assists' || stat === 'clean_sheets' ||
-            stat === 'saves' || stat === 'penalties_saved' || stat === 'bonus') {
+        if (['goals', 'assists', 'clean_sheets', 'saves', 'penalties_saved', 'bonus'].includes(stat)) {
             return <span style={{ color: 'var(--color-success)' }}>{value}</span>;
         }
 
-        if (stat === 'goals_conceded' || stat === 'yellow_cards' || stat === 'red_cards') {
+        if (['goals_conceded', 'yellow_cards', 'red_cards'].includes(stat)) {
             return <span style={{ color: 'var(--color-error)' }}>{value}</span>;
         }
 
