@@ -1,3 +1,5 @@
+/* Location: app/players/components/top-players.tsx */
+
 import { Link } from "react-router";
 import { Icon } from "../../_shared/components/icon";
 import { Table, type TableColumn } from "../../_shared/components/table";

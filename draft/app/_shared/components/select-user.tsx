@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/select-user.tsx */
+
 import styles from './select-user.module.css';
 
 interface User {

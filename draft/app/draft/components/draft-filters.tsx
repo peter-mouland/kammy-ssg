@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-filters.tsx */
+
 import React, { useMemo } from 'react';
 import { DraftFiltersSearch } from './draft-filters-search';
 import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters-multi-select';

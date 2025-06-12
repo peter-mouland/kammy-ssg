@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/table.tsx */
+
 import React, { useState, useMemo } from 'react';
 import styles from './table.module.css';
 

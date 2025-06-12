@@ -1,3 +1,5 @@
+/* Location: app/admin/admin.route.tsx */
+
 import {
     type MetaFunction,
     type LoaderFunctionArgs,

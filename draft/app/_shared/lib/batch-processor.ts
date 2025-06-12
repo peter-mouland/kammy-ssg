@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/batch-processor.ts */
+
 export interface BatchProcessorOptions {
     batchSize?: number;
     maxConcurrent?: number;

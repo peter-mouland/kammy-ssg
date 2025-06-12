@@ -1,3 +1,5 @@
+/* Location: app/homepage/home.page.tsx */
+
 // app/routes/dashboard.tsx
 import { useLoaderData } from "react-router";
 import { TopPlayers } from "../players/components/top-players"; // players

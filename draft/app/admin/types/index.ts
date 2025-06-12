@@ -1,3 +1,5 @@
+/* Location: app/admin/types/index.ts */
+
 // /admin/types/index.ts
 
 // Re-export all admin types

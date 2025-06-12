@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/nav-button.tsx */
+
 import React from 'react';
 import styles from './nav-button.module.css';
 

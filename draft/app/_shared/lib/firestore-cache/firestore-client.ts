@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/firestore-client.ts */
+
 // src/lib/firestore-cache/firestore-client.ts
 import { getFirestoreInstance } from './firebase.admin'; // Your firebase config
 import type { CacheDocument } from './types';

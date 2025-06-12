@@ -1,3 +1,5 @@
+/* Location: app/draft/components/connection-status.tsx */
+
 // components/connection-status/connection-status.tsx
 import { LoadingSpinner } from '../../_shared/components/loading-overlay';
 import styles from './connection-status.module.css';

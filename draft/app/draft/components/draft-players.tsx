@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-players.tsx */
+
 // components/draft-players.tsx - Optimized version
 import React, { useState, useMemo, useEffect } from 'react';
 import {

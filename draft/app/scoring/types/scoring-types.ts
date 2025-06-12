@@ -1,3 +1,5 @@
+/* Location: app/scoring/types/scoring-types.ts */
+
 // /scoring/types/scoring-types.ts
 
 // ================================

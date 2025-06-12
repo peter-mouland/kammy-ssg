@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/recent-activity.tsx */
+
 import type { DivisionData } from "../types";
 
 import styles from './recent-activity.module.css';

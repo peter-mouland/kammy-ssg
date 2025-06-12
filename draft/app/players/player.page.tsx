@@ -1,3 +1,5 @@
+/* Location: app/players/player.page.tsx */
+
 // app/routes/players.$playerId.tsx
 import { useLoaderData, Link } from "react-router";
 import { PlayerGameweekTable } from "./components/player-gameweek-table";

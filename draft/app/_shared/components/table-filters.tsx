@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/table-filters.tsx */
+
 import React from 'react';
 import type { TableFilters } from '../hooks/use-table-filters';
 import styles from './table-filters.module.css';

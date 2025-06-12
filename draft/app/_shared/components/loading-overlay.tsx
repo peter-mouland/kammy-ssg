@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/loading-overlay.tsx */
+
 // components/loading-overlay/loading-overlay.tsx
 import styles from './loading-overlay.module.css';
 

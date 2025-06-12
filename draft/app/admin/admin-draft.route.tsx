@@ -1,3 +1,5 @@
+/* Location: app/admin/admin-draft.route.tsx */
+
 import React from 'react';
 import { type ActionFunctionArgs, type LoaderFunctionArgs, data, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';

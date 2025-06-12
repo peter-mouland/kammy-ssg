@@ -1,3 +1,5 @@
+/* Location: app/draft/api/api.draft.live-sse.ts */
+
 // app/routes/api.draft.live.ts - Enhanced SSE endpoint
 import { type LoaderFunctionArgs } from "react-router";
 

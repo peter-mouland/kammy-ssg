@@ -1,3 +1,5 @@
+/* Location: app/wishlist/lib/use-wishlists.tsx */
+
 import React, { createContext, useContext, useReducer, useEffect, useCallback, type ReactNode } from 'react';
 import { getWishlistsFromStorage, saveWishlistsToStorage } from './local-storage';
 

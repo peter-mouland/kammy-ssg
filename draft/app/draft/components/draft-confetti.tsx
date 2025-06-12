@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-confetti.tsx */
+
 import React, { useEffect, useState } from 'react';
 import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
 

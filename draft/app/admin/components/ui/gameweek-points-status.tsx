@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/gameweek-points-status.tsx */
+
 import React, { useState } from 'react';
 import { useFetcher } from 'react-router';
 import styles from './gameweek-points-status.module.css';

@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/sheets/players.ts */
+
 import { readSheetRange, type SheetRange } from './utils/common';
 import type { PlayerData } from '../../types';
 

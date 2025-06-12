@@ -1,3 +1,5 @@
+/* Location: app/leagues/components/league-standings.tsx */
+
 import { Icon } from "../../_shared/components/icon";
 import { Table, type TableColumn, RankBadge, TableBadge } from "../../_shared/components/table";
 import type { UserTeamData } from "../../_shared/types";

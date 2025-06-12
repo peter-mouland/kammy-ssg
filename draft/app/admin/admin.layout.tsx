@@ -1,3 +1,5 @@
+/* Location: app/admin/admin.layout.tsx */
+
 // /admin/admin-dashboard-layout.tsx
 import React from 'react';
 import { useRevalidator, useLocation, useNavigate } from 'react-router';

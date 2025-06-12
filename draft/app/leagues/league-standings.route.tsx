@@ -1,3 +1,5 @@
+/* Location: app/leagues/league-standings.route.tsx */
+
 // app/routes/league-standings.tsx - Fixed to show separate division standings
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";

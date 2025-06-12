@@ -1,3 +1,5 @@
+/* Location: app/players/players.page.tsx */
+
 // app/routes/players.tsx
 import { useLoaderData } from "react-router";
 import { PlayerStatsTable } from "./components/player-stats-table";

@@ -1,3 +1,5 @@
+/* Location: app/draft/draft.route.tsx */
+
 // app/routes/draft.tsx - Refactored with components and CSS modules
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";

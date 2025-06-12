@@ -1,3 +1,5 @@
+/* Location: app/homepage/homepage.route.tsx */
+
 // app/routes/dashboard.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";

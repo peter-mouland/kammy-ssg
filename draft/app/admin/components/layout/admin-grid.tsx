@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/admin-grid.tsx */
+
 
 // /admin/components/layout/admin-grid.tsx
 import React from 'react';

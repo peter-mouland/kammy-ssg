@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/system-health-badge.tsx */
+
 import React from 'react';
 import * as Icons from '../icons/admin-icons';
 import { useCacheStatus } from '../../hooks/use-cache-status';

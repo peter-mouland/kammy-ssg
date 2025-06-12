@@ -1,3 +1,5 @@
+/* Location: app/wishlist/components/wishlist-button.tsx */
+
 // components/wishlist-button.tsx
 import React, { useState } from 'react';
 import { useWishlists } from '../lib/use-wishlists';

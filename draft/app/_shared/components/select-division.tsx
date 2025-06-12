@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/select-division.tsx */
+
 import styles from './select-division.module.css';
 
 interface Division {

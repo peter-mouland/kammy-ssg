@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/admin-message.tsx */
+
 
 // /admin/components/layout/admin-message.tsx
 import React from 'react';

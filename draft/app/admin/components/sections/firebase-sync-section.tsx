@@ -1,3 +1,5 @@
+/* Location: app/admin/components/sections/firebase-sync-section.tsx */
+
 // /admin/components/sections/firebase-sync-section.tsx (UPDATED for route structure)
 import React from 'react';
 import { useLoaderData, useFetcher } from 'react-router';

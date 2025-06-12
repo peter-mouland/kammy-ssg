@@ -1,3 +1,5 @@
+/* Location: app/admin/components/sections/draft-section.tsx */
+
 // /admin/components/sections/draft-section.tsx (REFACTORED)
 import React from 'react';
 import { useActionData } from 'react-router';

@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/firebase.admin.ts */
+
 import { initializeApp, getApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getApps } from 'firebase/app';

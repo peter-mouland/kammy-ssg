@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/sheets/utils/common.ts */
+
 import { google } from 'googleapis';
 import type { AppError } from '../../../types';
 

@@ -1,3 +1,5 @@
+/* Location: app/leagues/league-standings.tsx */
+
 import { useLoaderData, useActionData, Form, useSearchParams } from "react-router";
 import type { UserTeamData, DivisionData } from "../types";
 import { SelectDivision } from '../_shared/components/select-division';

@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/sheets/draft.ts */
+
 // Enhanced draft.ts with smart header mapping - OPTIMIZED FOR API CALLS
 import type { DraftPickData, DraftStateData } from '../../types';
 import {

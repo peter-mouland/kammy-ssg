@@ -1,3 +1,5 @@
+/* Location: app/leagues/server/league-standings.server.ts */
+
 // app/routes/server/league-standings.server.ts
 import { readUserTeams, getUserTeamsByDivision, recalculateLeagueRanks } from "../../_shared/lib/sheets/user-teams";
 import { readDivisions } from "../../_shared/lib/sheets/divisions";

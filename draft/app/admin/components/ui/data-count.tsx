@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/data-count.tsx */
+
 import React from 'react';
 import styles from './data-count.module.css';
 

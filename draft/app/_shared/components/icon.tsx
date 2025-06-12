@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/icon.tsx */
+
 import styles from './icon.module.css';
 
 interface IconProps {

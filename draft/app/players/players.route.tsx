@@ -1,3 +1,5 @@
+/* Location: app/players/players.route.tsx */
+
 // app/routes/players.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";

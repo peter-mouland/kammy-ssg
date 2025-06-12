@@ -1,3 +1,5 @@
+/* Location: app/admin/server/overview-actions.server.ts */
+
 // /admin/server/overview-actions.server.ts
 import type { AdminActionResult, ClearVariant } from '../types';
 

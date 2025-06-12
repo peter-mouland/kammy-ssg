@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/nav-group.tsx */
+
 // /admin/components/layout/nav-group.tsx
 import React from 'react';
 import styles from './nav-group.module.css';

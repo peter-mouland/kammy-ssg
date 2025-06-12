@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/refresh-button.tsx */
+
 // /admin/components/ui/refresh-button.tsx
 import React from 'react';
 import * as Icons from '../icons/admin-icons';

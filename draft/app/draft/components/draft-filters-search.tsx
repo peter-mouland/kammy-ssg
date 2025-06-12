@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-filters-search.tsx */
+
 // components/draft-filters-search.tsx
 import React from 'react';
 import styles from './draft-filters-search.module.css';

@@ -1,3 +1,5 @@
+/* Location: app/admin/server/points-actions.server.ts */
+
 // /admin/server/points-actions.server.ts
 import type { AdminActionResult } from '../types';
 

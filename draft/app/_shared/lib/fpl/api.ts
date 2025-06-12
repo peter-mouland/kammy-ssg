@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/fpl/api.ts */
+
 // src/lib/fpl/api.ts
 import type {
     FplBootstrapData,

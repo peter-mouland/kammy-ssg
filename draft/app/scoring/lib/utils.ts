@@ -1,3 +1,5 @@
+/* Location: app/scoring/lib/utils.ts */
+
 /**
  * Get the latest gameweek points for a player
  */

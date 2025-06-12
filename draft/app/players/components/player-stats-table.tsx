@@ -1,3 +1,5 @@
+/* Location: app/players/components/player-stats-table.tsx */
+
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';

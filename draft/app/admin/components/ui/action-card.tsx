@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/action-card.tsx */
+
 import React from 'react';
 import { useFetcher } from 'react-router';
 import styles from './action-card.module.css';

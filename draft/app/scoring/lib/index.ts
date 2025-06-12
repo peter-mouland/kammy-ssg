@@ -1,3 +1,5 @@
+/* Location: app/scoring/lib/index.ts */
+
 // Core calculation functions
 export {
     calculateSeasonTotalFromGameweekPoints,

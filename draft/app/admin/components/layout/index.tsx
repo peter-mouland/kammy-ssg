@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/index.tsx */
+
 // /admin/components/layout/index.ts
 
 export { AdminSection } from './admin-section';

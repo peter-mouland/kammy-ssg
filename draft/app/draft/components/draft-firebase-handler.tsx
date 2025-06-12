@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-firebase-handler.tsx */
+
 // components/draft-firebase-handler.tsx
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { ref, onValue, off, get, set } from 'firebase/database';

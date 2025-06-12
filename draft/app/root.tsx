@@ -1,3 +1,5 @@
+/* Location: app/root.tsx */
+
 import {
     Links,
     Meta,

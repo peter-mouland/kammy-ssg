@@ -1,3 +1,5 @@
+/* Location: app/admin/types/admin-types.ts */
+
 // /admin/types/admin-types.ts
 import type {
     DivisionData,

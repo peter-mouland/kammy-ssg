@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/loading-overlay.module.css */
+
 .turnAlert {
     border: 2px solid var(--color-success);
     background-color: var(--color-success-light);

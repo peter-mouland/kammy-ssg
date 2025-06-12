@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/sheets/divisions.ts */
+
 import type { DivisionData } from '../../types';
 import {
     readSheetRange,

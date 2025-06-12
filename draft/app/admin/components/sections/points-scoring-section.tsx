@@ -1,3 +1,5 @@
+/* Location: app/admin/components/sections/points-scoring-section.tsx */
+
 // /admin/components/sections/points-scoring-section.tsx (UPDATED for route structure)
 import React from 'react';
 import { useFetcher } from 'react-router';

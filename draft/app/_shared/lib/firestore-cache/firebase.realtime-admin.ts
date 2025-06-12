@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/firebase.realtime-admin.ts */
+
 // lib/firebase-admin-realtime.ts - Realtime Database Admin SDK with unique app name
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getDatabase } from 'firebase-admin/database';

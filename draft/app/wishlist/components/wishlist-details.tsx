@@ -1,3 +1,5 @@
+/* Location: app/wishlist/components/wishlist-details.tsx */
+
 
 // components/wishlist-details.tsx
 import React, { useState } from 'react';

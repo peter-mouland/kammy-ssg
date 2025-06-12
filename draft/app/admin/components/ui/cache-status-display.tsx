@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/cache-status-display.tsx */
+
 import React, { useState } from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';

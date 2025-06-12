@@ -1,3 +1,5 @@
+/* Location: app/wishlist/lib/types.ts */
+
 
 // types/wishlist.ts
 export interface Wishlist {

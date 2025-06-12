@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/action-bar.tsx */
+
 import React from 'react';
 import styles from './action-bar.module.css';
 

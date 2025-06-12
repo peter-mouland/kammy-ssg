@@ -1,3 +1,5 @@
+/* Location: app/wishlist/lib/wishlist-manager.ts */
+
 import type { WishlistData, WishlistColors } from './types';
 
 export class WishlistManager {

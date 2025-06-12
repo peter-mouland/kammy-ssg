@@ -1,3 +1,5 @@
+/* Location: app/scoring/api/api.gw-points.ts */
+
 // app/routes/api.gw-points.ts
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { data } from "react-router";

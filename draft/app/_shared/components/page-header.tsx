@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/page-header.tsx */
+
 import styles from './page-header.module.css';
 
 export const PageHeader = ({ title, subTitle, actions }) => (

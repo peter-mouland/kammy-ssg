@@ -1,3 +1,5 @@
+/* Location: app/players/components/player-gameweek-table.tsx */
+
 import { Table, type TableColumn, TableBadge } from "../../_shared/components/table";
 import { isStatRelevant, formatPointsDisplay } from '../../scoring/lib';
 // import { PointsBreakdownTooltip } from './points-breakdown-tooltip'

@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-filters-multi-select.tsx */
+
 // components/draft-filters-multi-select.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './draft-filters-multi-select.module.css';

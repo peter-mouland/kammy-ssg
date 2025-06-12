@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/system-status.tsx */
+
 import styles from './system-status.module.css';
 
 export function SystemStatus() {

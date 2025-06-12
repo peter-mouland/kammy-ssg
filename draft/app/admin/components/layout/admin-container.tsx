@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/admin-container.tsx */
+
 // /admin/components/layout/admin-container.tsx
 import React from 'react';
 import styles from './admin-container.module.css';

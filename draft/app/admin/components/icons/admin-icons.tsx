@@ -1,3 +1,5 @@
+/* Location: app/admin/components/icons/admin-icons.tsx */
+
 // Icon Components
 export const RefreshIcon = () => (
     <svg style={{ width: '1rem', height: '1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">

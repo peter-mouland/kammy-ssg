@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/admin-section.tsx */
+
 import React from 'react';
 import styles from './admin-section.module.css';
 

@@ -1,3 +1,5 @@
+/* Location: app/scoring/lib/generators.ts */
+
 import type {
     CustomPosition,
     EnhancedPlayerData,

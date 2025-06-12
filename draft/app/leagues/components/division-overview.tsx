@@ -1,3 +1,5 @@
+/* Location: app/leagues/components/division-overview.tsx */
+
 import { Icon } from "../../_shared/components/icon";
 import styles from './division-overview.module.css';
 import type { DivisionData, UserTeamData } from "../../_shared/types";

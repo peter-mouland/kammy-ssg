@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/global-notification.tsx */
+
 import { useRevalidator } from 'react-router';
 import { useEffect, useState } from 'react';
 import styles from './global-notification.module.css';

@@ -1,3 +1,5 @@
+/* Location: app/_shared/types/index.ts */
+
 // Division Types
 export interface DivisionData {
     id: string;

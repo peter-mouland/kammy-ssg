@@ -1,3 +1,5 @@
+/* Location: app/wishlist/wishlists.route.tsx */
+
 // app/routes/wishlists.tsx
 import { type MetaFunction } from 'react-router';
 import { fplApiCache } from '../_shared/lib/fpl/api-cache';

@@ -1,3 +1,5 @@
+/* Location: app/players/components/player-highlights.tsx */
+
 // app/components/player-highlights.tsx
 import { formatPointsDisplay } from '../../scoring/lib';
 import styles from './player-highlights.module.css';

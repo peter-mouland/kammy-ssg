@@ -1,3 +1,5 @@
+/* Location: app/scoring/components/scoring-info.tsx */
+
 import styles from './scoring-info.module.css';
 
 export const ScoringInfo = () => (

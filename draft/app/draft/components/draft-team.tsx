@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-team.tsx */
+
 // components/draft-team.tsx (fixed version)
 import type { DraftPickData } from "../types";
 import styles from './draft-team.module.css';

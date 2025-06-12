@@ -1,3 +1,5 @@
+/* Location: app/draft/lib/use-optimistic-picks.ts */
+
 // hooks/use-optimistic-picks.ts
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useActionData } from 'react-router';

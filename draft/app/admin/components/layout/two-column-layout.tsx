@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/two-column-layout.tsx */
+
 import React from 'react';
 import styles from './two-column-layout.module.css';
 

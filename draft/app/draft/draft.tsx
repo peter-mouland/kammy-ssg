@@ -1,3 +1,5 @@
+/* Location: app/draft/draft.tsx */
+
 import { useLoaderData, useFetcher, useSearchParams, useNavigation, useActionData, useRevalidator } from "react-router";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import * as React from "react";

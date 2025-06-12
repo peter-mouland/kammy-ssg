@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/firebase-draft-sync.ts */
+
 // lib/firebase-draft-sync.ts
 import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
 

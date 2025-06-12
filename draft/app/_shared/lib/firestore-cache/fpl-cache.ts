@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/fpl-cache.ts */
+
 // src/lib/firestore-cache/fpl-cache.ts
 import { FirestoreClient } from './firestore-client'
 import type { FplBootstrapData, FplPlayerData } from '../../types'

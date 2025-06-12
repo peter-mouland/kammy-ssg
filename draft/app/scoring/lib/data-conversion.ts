@@ -1,3 +1,5 @@
+/* Location: app/scoring/lib/data-conversion.ts */
+
 import type {
     FplPlayerGameweekData,
     PlayerGameweekStatsData

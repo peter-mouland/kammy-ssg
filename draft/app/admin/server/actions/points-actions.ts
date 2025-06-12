@@ -1,3 +1,5 @@
+/* Location: app/admin/server/actions/points-actions.ts */
+
 // /admin/server/actions/points-actions.ts
 import { GameweekPointsService } from "../../../scoring/server/services/gameweek-points.service";
 import type { AdminActionResult } from "../../types";

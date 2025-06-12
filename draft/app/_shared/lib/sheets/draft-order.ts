@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/sheets/draft-order.ts */
+
 import type { DraftOrderData } from '../../types';
 import {
     readSheetRange,

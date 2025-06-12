@@ -1,3 +1,5 @@
+/* Location: app/admin/hooks/use-cache-status.ts */
+
 // /admin/hooks/use-cache-status.ts
 import { useState, useEffect } from 'react';
 

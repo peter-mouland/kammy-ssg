@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-order.tsx */
+
 // Updated Draft-order.jsx with completion detection
 import * as React from 'react';
 import { DraftConfetti } from './draft-confetti';

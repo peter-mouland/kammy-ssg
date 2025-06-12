@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/types.ts */
+
 // src/lib/firestore-cache/types.ts
 export interface CacheDocument {
     id: string;

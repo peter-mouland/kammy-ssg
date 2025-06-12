@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/firestore-cache/clear-service.ts */
+
 // lib/firestore-cache/clear-service.ts
 import { FirestoreClient } from './firestore-client';
 

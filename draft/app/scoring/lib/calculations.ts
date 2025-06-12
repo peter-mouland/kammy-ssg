@@ -1,3 +1,5 @@
+/* Location: app/scoring/lib/calculations.ts */
+
 import type {
     CustomPosition,
     PlayerGameweekStatsData,

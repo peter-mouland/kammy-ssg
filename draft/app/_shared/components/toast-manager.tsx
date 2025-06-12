@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/toast-manager.tsx */
+
 // components/toast-manager/toast-manager.tsx
 import { useState, useCallback, useEffect } from 'react';
 import styles from './toast-manager.module.css';

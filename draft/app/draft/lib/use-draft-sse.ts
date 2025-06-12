@@ -1,3 +1,5 @@
+/* Location: app/draft/lib/use-draft-sse.ts */
+
 // hooks/use-draft-sse.ts - Optimized to prevent excessive rerenders
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRevalidator } from 'react-router';

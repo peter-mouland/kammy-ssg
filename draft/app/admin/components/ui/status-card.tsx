@@ -1,3 +1,5 @@
+/* Location: app/admin/components/ui/status-card.tsx */
+
 // /admin/components/ui/status-card.tsx
 import React from 'react';
 import styles from './status-card.module.css';

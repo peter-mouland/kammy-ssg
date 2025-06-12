@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-filters.module.css */
+
 .filtersContainer {
     display: grid;
     grid-template-columns: 1fr auto auto auto;

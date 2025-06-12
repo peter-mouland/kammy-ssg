@@ -1,3 +1,5 @@
+/* Location: app/admin/components/layout/app-shell.tsx */
+
 // /admin/components/layout/app-shell.tsx
 import React from 'react';
 import styles from './app-shell.module.css';

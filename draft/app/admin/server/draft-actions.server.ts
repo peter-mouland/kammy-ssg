@@ -1,3 +1,5 @@
+/* Location: app/admin/server/draft-actions.server.ts */
+
 // /admin/server/draft-actions.server.ts
 import type { AdminActionResult } from '../types';
 

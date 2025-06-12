@@ -1,3 +1,5 @@
+/* Location: app/scoring/components/game-stats.tsx */
+
 import styles from './game-stats.module.css';
 import type { DivisionData, UserTeamData, FplPlayerData } from "../types";
 

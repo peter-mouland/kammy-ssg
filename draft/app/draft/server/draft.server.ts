@@ -1,3 +1,5 @@
+/* Location: app/draft/server/draft.server.ts */
+
 import { readDraftState, addDraftPick, getDraftPicksByDivision, updateDraftState } from '../../_shared/lib/sheets/draft';
 import { getDraftOrderByDivision } from '../../_shared/lib/sheets/draft-order';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';

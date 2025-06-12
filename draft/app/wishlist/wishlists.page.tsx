@@ -1,3 +1,5 @@
+/* Location: app/wishlist/wishlists.page.tsx */
+
 // app/routes/wishlists.tsx
 import { type MetaFunction, useLoaderData } from 'react-router';
 import { useState, useMemo } from "react";

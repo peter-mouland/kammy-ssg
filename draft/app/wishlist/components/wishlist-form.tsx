@@ -1,3 +1,5 @@
+/* Location: app/wishlist/components/wishlist-form.tsx */
+
 // components/wishlist-form.tsx - FIXED VERSION
 import React, { useState } from 'react';
 import { useWishlists } from '../lib/use-wishlists';

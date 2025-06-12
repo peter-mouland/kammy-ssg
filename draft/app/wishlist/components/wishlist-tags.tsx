@@ -1,3 +1,5 @@
+/* Location: app/wishlist/components/wishlist-tags.tsx */
+
 // components/wishlist-tags.tsx
 import React from 'react';
 import { useWishlists } from '../lib/use-wishlists';

@@ -1,3 +1,5 @@
+/* Location: app/wishlist/lib/local-storage.ts */
+
 const WISHLISTS_STORAGE_KEY = 'fantasy-wishlists';
 
 export function getWishlistsFromStorage(): Wishlist[] {

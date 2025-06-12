@@ -1,3 +1,5 @@
+/* Location: app/scoring/lib/rules.ts */
+
 // Position point multipliers and rules
 export const POSITION_RULES = {
     gk: {

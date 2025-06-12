@@ -1,3 +1,5 @@
+/* Location: app/_shared/hooks/use-table-filters.tsx */
+
 import { useSearchParams } from 'react-router';
 import { useState, useEffect, useCallback, useRef } from 'react';
 

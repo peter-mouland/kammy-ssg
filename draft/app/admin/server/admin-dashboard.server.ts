@@ -1,3 +1,5 @@
+/* Location: app/admin/server/admin-dashboard.server.ts */
+
 // /admin/server/admin-dashboard.server.ts
 import { AdminDraftService } from './services/admin-draft-service';
 import type { AdminDashboardData } from '../types';

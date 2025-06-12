@@ -1,3 +1,5 @@
+/* Location: app/draft/components/draft-sse-handler.tsx */
+
 // components/draft-sse-handler/draft-sse-handler.tsx
 import { useEffect, useRef } from 'react';
 import { useDraftSSE } from '../lib/use-draft-sse';

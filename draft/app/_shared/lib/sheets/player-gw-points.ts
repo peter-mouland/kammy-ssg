@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/sheets/player-gw-points.ts */
+
 // app/routes/server/sheets/player-gw-points.ts
 import type { FplPlayerData, CustomPosition } from '../../types';
 import { createAppError } from './utils/common';

@@ -1,3 +1,5 @@
+/* Location: app/draft/lib/generate-draft-sequence.ts */
+
 import type { DraftOrderData } from '../../types';
 
 /**

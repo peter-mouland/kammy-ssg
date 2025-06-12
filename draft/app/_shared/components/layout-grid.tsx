@@ -1,3 +1,5 @@
+/* Location: app/_shared/components/layout-grid.tsx */
+
 import styles from './layout-grid.module.css';
 
 export const LayoutGrid = ({ children }) => (

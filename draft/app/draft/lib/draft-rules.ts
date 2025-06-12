@@ -1,3 +1,5 @@
+/* Location: app/draft/lib/draft-rules.ts */
+
 // lib/draft/draft-rules.ts - Clean version with ONLY fixed existing functions
 import { useMemo } from 'react';
 

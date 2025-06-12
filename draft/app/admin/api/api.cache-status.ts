@@ -1,3 +1,5 @@
+/* Location: app/admin/api/api.cache-status.ts */
+
 // /admin/api/api.cache-status.ts
 import { type LoaderFunctionArgs, data } from 'react-router';
 

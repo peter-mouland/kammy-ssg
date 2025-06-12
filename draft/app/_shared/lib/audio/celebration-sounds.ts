@@ -1,3 +1,5 @@
+/* Location: app/_shared/lib/audio/celebration-sounds.ts */
+
 // lib/audio/celebration-sounds.ts
 
 /**

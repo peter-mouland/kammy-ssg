@@ -1,3 +1,5 @@
+/* Location: app/draft/lib/get-next-draft-state.ts */
+
 import type { DraftOrderData, DraftStateData } from '../../types';
 
 /**
