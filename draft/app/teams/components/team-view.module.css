@@ -1,0 +1,227 @@
+/* Location: app/teams/components/team-view.module.css */
+
+.teamViewContainer {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.teamInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.teamName {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.managerName {
+    font-size: 18px;
+    color: #4b5563;
+    margin: 0;
+}
+
+.divisionBadge {
+    background: var(--color-primary);
+    color: #ffffff;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 500;
+    width: fit-content;
+}
+
+/* Time travel banner */
+.timeTravelBanner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.timeTravelIcon {
+    font-size: 18px;
+}
+
+.backToCurrentButton {
+    background: #ffffff;
+    color: #111827;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: auto;
+}
+
+.backToCurrentButton:hover {
+    background: #f3f4f6;
+    transform: translateY(-1px);
+}
+
+/* Main content */
+.mainContent {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 24px;
+    align-items: start;
+}
+
+.pitchColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.infoColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Substitutes section */
+.substitutesSection {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.playerCount {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.substitutesList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+/* Formation info */
+.formationInfo {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formationDisplay {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-align: center;
+    margin: 12px 0;
+    padding: 8px;
+    background: #dbeafe;
+    border-radius: 6px;
+}
+
+.formationBreakdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.positionCount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 6px;
+}
+
+.positionLabel {
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .mainContent {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .infoColumn {
+        order: -1;
+    }
+
+    .substitutesList {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .teamViewContainer {
+        padding: 8px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .timeTravelBanner {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .backToCurrentButton {
+        margin-left: 0;
+        align-self: center;
+    }
+
+    .teamName {
+        font-size: 20px;
+    }
+
+    .managerName {
+        font-size: 16px;
+    }
+
+    .substitutesList {
+        grid-template-columns: 1fr;
+    }
+
+    .formationBreakdown {
+        grid-template-columns: 1fr;
+    }
+}

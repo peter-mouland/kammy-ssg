@@ -1,0 +1,453 @@
+/* Location: app/teams/components/team-stats.module.css */
+
+.teamStats {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.title::before {
+    content: '📊';
+    font-size: 20px;
+}
+
+/* Stats Grid */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.statCard {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.statCard:hover {
+    background: #f3f4f6;
+    transform: translateY(-1px);
+}
+
+.statValue {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.statLabel {
+    font-size: 14px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.loanOut {
+    color: #ef4444;
+}
+
+.loanIn {
+    color: #22c55e;
+}
+
+/* Position Breakdown */
+.positionBreakdown {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.positionStats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.positionStat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 6px;
+}
+
+.positionIcon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.positionInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+}
+
+.positionName {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.positionCount {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-primary);
+    background: #dbeafe;
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+/* Gameweek Info */
+.gameweekInfo {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+}
+
+.currentBadge {
+    background: #22c55e;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+.lastUpdated {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.updateLabel {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.updateTime {
+    font-size: 14px;
+    color: #111827;
+    font-weight: 500;
+}
+
+/* Points Summary */
+.pointsSummary {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+}
+
+.pointsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.pointsCard {
+    background: linear-gradient(135deg, #dbeafe 0%, var(--color-primary) 100%);
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.pointsValue {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.pointsLabel {
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.pointsNote {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .positionStat {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .positionInfo {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .pointsGrid {
+        grid-template-columns: 1fr;
+    }
+}/* Location: app/teams/components/team-stats.module.css */
+
+.teamStats {
+    background: var(--color-white);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--color-gray-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.title::before {
+    content: '📊';
+    font-size: var(--text-xl);
+}
+
+/* Stats Grid */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+}
+
+.statCard {
+    background: var(--color-gray-50);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    text-align: center;
+    border: 1px solid var(--color-gray-200);
+    transition: all 0.2s ease;
+}
+
+.statCard:hover {
+    background: var(--color-gray-100);
+    transform: translateY(-1px);
+}
+
+.statValue {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    margin-bottom: var(--space-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+}
+
+.statLabel {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+    font-weight: var(--font-medium);
+}
+
+.loanOut {
+    color: var(--color-red-500);
+}
+
+.loanIn {
+    color: var(--color-green-500);
+}
+
+/* Position Breakdown */
+.positionBreakdown {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: var(--space-4);
+}
+
+.sectionTitle {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    color: var(--color-gray-800);
+    margin: 0 0 var(--space-3) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.positionStats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.positionStat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+}
+
+.positionIcon {
+    font-size: var(--text-lg);
+    width: 24px;
+    text-align: center;
+}
+
+.positionInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+}
+
+.positionName {
+    font-size: var(--text-sm);
+    color: var(--color-gray-700);
+    font-weight: var(--font-medium);
+}
+
+.positionCount {
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+    background: var(--color-primary-light);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+/* Gameweek Info */
+.gameweekInfo {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: var(--space-4);
+}
+
+.currentBadge {
+    background: var(--color-green-500);
+    color: var(--color-white);
+    font-size: var(--text-xs);
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    font-weight: var(--font-bold);
+    margin-left: var(--space-2);
+}
+
+.lastUpdated {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.updateLabel {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+}
+
+.updateTime {
+    font-size: var(--text-sm);
+    color: var(--color-gray-900);
+    font-weight: var(--font-medium);
+}
+
+/* Points Summary */
+.pointsSummary {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: var(--space-4);
+}
+
+.pointsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.pointsCard {
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    text-align: center;
+    color: var(--color-white);
+}
+
+.pointsValue {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--space-1);
+}
+
+.pointsLabel {
+    font-size: var(--text-sm);
+    opacity: 0.9;
+    font-weight: var(--font-medium);
+}
+
+.pointsNote {
+    font-size: var(--text-xs);
+    color: var(--color-gray-500);
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .positionStat {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-2);
+    }
+
+    .positionInfo {
+        flex-direction: column;
+        gap: var(--space-1);
+    }
+
+    .pointsGrid {
+        grid-template-columns: 1fr;
+    }
+}

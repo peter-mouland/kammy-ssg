@@ -1,0 +1,271 @@
+/* Location: app/teams/components/football-pitch.module.css */
+
+.pitchContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pitch {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: linear-gradient(
+        90deg,
+        #2d5a2d 0%,
+        #4a7c4a 25%,
+        #2d5a2d 50%,
+        #4a7c4a 75%,
+        #2d5a2d 100%
+    );
+    border: 3px solid #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Pitch markings */
+.pitchMarkings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.centerLine {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #ffffff;
+    transform: translateY(-50%);
+}
+
+.centerCircle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.penaltyArea {
+    position: absolute;
+    left: 50%;
+    width: 120px;
+    height: 60px;
+    border: 2px solid #ffffff;
+    transform: translateX(-50%);
+}
+
+.topPenaltyArea {
+    top: 0;
+    border-top: none;
+}
+
+.bottomPenaltyArea {
+    bottom: 0;
+    border-bottom: none;
+}
+
+.goalArea {
+    position: absolute;
+    left: 50%;
+    width: 60px;
+    height: 30px;
+    border: 2px solid #ffffff;
+    transform: translateX(-50%);
+}
+
+.topGoalArea {
+    top: 0;
+    border-top: none;
+}
+
+.bottomGoalArea {
+    bottom: 0;
+    border-bottom: none;
+}
+
+/* Formation layout */
+.formationLayout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+}
+
+.centralAttackerLine,
+.wideAttackerLine,
+.midfielderLine,
+.fullbackLine,
+.centrebackLine,
+.goalkeeperLine {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Specific positioning for each line */
+.centralAttackerLine {
+    margin-top: 8px;
+    min-height: 60px;
+}
+
+.wideAttackerLine {
+    margin-top: 4px;
+    min-height: 60px;
+}
+
+.midfielderLine {
+    flex: 1;
+    min-height: 60px;
+}
+
+.fullbackLine {
+    margin-bottom: 4px;
+    min-height: 60px;
+}
+
+.centrebackLine {
+    margin-bottom: 4px;
+    min-height: 60px;
+}
+
+.goalkeeperLine {
+    margin-bottom: 8px;
+    min-height: 60px;
+}
+
+/* Player positioning */
+.playerPosition {
+    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-width: 80px;
+    max-width: 120px;
+}
+
+/* Dynamic positioning based on number of players */
+.playerPosition {
+    margin-left: calc(var(--player-index) * 10px - (var(--total-players) - 1) * 5px);
+}
+
+/* Position-specific styling and colors */
+.centralAttacker {
+    --position-color: #dc2626; /* Red for central attackers */
+}
+
+.wideAttacker {
+    --position-color: #ea580c; /* Orange for wide attackers */
+}
+
+.midfielder {
+    --position-color: #3b82f6; /* Blue for midfielders */
+}
+
+.fullback {
+    --position-color: #ca8a04; /* Yellow for fullbacks */
+}
+
+.centreback {
+    --position-color: #16a34a; /* Green for centre backs */
+}
+
+.goalkeeper {
+    --position-color: #7c3aed; /* Purple for goalkeeper */
+}
+
+/* Wide players positioning */
+.wideAttackerLine .playerPosition:first-child {
+    margin-right: auto;
+}
+
+.wideAttackerLine .playerPosition:last-child {
+    margin-left: auto;
+}
+
+.fullbackLine .playerPosition:first-child {
+    margin-right: auto;
+}
+
+.fullbackLine .playerPosition:last-child {
+    margin-left: auto;
+}
+
+/* Central players grouping */
+.centralAttackerLine .playerPosition,
+.centrebackLine .playerPosition {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+/* Historical overlay */
+.historicalOverlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.historicalLabel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.historicalLabel::before {
+    content: '⏰';
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .pitch {
+        aspect-ratio: 3/4;
+    }
+
+    .formationLayout {
+        padding: 8px;
+    }
+
+    .playerPosition {
+        min-width: 60px;
+        max-width: 80px;
+    }
+
+    .centralAttackerLine,
+    .wideAttackerLine,
+    .midfielderLine,
+    .fullbackLine,
+    .centrebackLine,
+    .goalkeeperLine {
+        gap: 4px;
+        min-height: 50px;
+    }
+
+    /* Tighter spacing on mobile */
+    .centralAttackerLine,
+    .centrebackLine {
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+}

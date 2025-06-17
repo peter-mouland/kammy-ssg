@@ -1,0 +1,258 @@
+/* Location: app/teams/components/gameweek-selector.module.css */
+
+.gameweekSelector {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #f9fafb;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    min-width: 200px;
+}
+
+.selectorHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.currentBadge {
+    background: #22c55e;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    font-weight: 700;
+}
+
+/* Selector controls */
+.selectorControls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.navButton {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.navButton:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.navButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Gameweek display */
+.gameweekDisplay {
+    position: relative;
+    flex: 1;
+}
+
+.gameweekButton {
+    width: 100%;
+    background: #ffffff;
+    border: 2px solid var(--color-primary);
+    border-radius: 6px;
+    padding: 4px 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.gameweekButton:hover {
+    background: #dbeafe;
+}
+
+.gameweekNumber {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.dropdownIcon {
+    color: #6b7280;
+    font-size: 14px;
+    transition: transform 0.2s ease;
+}
+
+.gameweekButton:hover .dropdownIcon {
+    transform: rotate(180deg);
+}
+
+/* Dropdown */
+.gameweekDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    margin-top: 4px;
+}
+
+.dropdownContent {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.gameweekOption {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 0.2s ease;
+}
+
+.gameweekOption:hover {
+    background: #f3f4f6;
+}
+
+.gameweekOption.selected {
+    background: #dbeafe;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.gameweekOption.current {
+    border-left: 3px solid #22c55e;
+}
+
+.currentLabel {
+    font-size: 12px;
+    color: #16a34a;
+    font-weight: 500;
+}
+
+.draftLabel {
+    font-size: 12px;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+/* Quick jump buttons */
+.quickJump {
+    display: flex;
+    gap: 8px;
+}
+
+.quickJumpButton {
+    flex: 1;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quickJumpButton:hover {
+    background: #d1d5db;
+    color: #111827;
+}
+
+/* Timeline */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.timelineTrack {
+    position: relative;
+    height: 4px;
+    background: #d1d5db;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.timelineProgress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary) 0%, #1e40af 100%);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.timelineThumb {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    background: var(--color-primary);
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+}
+
+.timelineLabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.timelineStart,
+.timelineEnd {
+    font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .gameweekSelector {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .selectorControls {
+        gap: 4px;
+    }
+
+    .navButton {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .gameweekNumber {
+        font-size: 16px;
+    }
+
+    .quickJump {
+        flex-direction: column;
+    }
+}

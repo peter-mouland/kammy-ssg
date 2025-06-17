@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './points-breakdown-tooltip.module.css';
-import type { EnhancedPlayerData } from '../types';
+import type { EnhancedPlayerData } from '../../_shared/types';
 
 interface PointsBreakdownTooltipProps {
     player: EnhancedPlayerData;
