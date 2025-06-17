@@ -1,7 +1,7 @@
 /* Location: app/draft/components/draft-teams.tsx */
 
 // components/draft-teams.tsx (multiple teams view)
-import type { DraftPickData, DraftOrderData } from "../types";
+import type { DraftPickData, DraftOrderData } from "../../_shared/types";
 import { DraftTeam } from './draft-team';
 import styles from './draft-team.module.css';
 

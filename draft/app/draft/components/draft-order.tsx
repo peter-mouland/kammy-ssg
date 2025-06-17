@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { DraftConfetti } from './draft-confetti';
 import { useToast } from '../../_shared/components/toast-manager';
+import { calculateNextPicker } from '../lib/calculate-next-picker';
 
 import styles from './draft-order.module.css';
 
@@ -12,22 +13,12 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [celebrationShown, setCelebrationShown] = React.useState(false);
 
-    const getNextPicker = () => {
-        if (!draftState?.isActive || draftSequence.length === 0) return null;
-
-        const actualPicksMade = draftPicks.length;
-        const nextPickNumber = actualPicksMade + 1;
-
-        const nextPickInSequence = draftSequence.find(pick => pick.pickNumber === nextPickNumber);
-        return nextPickInSequence || null;
-    };
-
     const isDraftComplete = () => {
         if (!draftState?.isActive || draftSequence.length === 0) return false;
         return draftPicks.length >= draftSequence.length;
     };
 
-    const nextPicker = getNextPicker();
+    const nextPicker = calculateNextPicker(draftState, draftOrder);
     const draftComplete = isDraftComplete();
 
     // Handle draft completion celebration
@@ -105,7 +96,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
 
             {/* Rest of your existing draft order component */}
             <ul className={styles.draftOrderList}>
-                {draftOrder.map((user, index) => (
+                {draftOrder.map((user, index) => (console.log(user.userId, nextPicker?.userId, draftComplete)) || (
                     <li
                         key={user.userId}
                         className={`${styles.draftOrderItem} ${

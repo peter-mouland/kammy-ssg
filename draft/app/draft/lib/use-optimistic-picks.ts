@@ -1,9 +1,7 @@
-/* Location: app/draft/lib/use-optimistic-picks.ts */
-
-// hooks/use-optimistic-picks.ts
+// /draft/lib/use-optimistic-picks.ts - FIXED with clearOptimisticPicks
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useActionData } from 'react-router';
-import type { DraftPickData } from '../types';
+import type { DraftPickData } from '../../_shared/types';
 
 interface OptimisticPick extends DraftPickData {
     isOptimistic?: boolean;
@@ -23,6 +21,7 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
             if (actionData?.success) {
                 setOptimisticPicks([]);
             } else if (actionData?.error) {
+                // Remove failed optimistic picks after a delay
                 setTimeout(() => {
                     setOptimisticPicks(prev => prev.filter(pick =>
                         !pick.isOptimistic ||
@@ -33,19 +32,18 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
         }
     }, [actionData]);
 
-    // Clean up old optimistic picks (less frequent)
+    // Clean up old optimistic picks periodically
     useEffect(() => {
         const cleanup = setInterval(() => {
             setOptimisticPicks(prev => {
                 const filtered = prev.filter(pick =>
                     !pick.isOptimistic ||
                     !pick.timestamp ||
-                    Date.now() - pick.timestamp < 10000
+                    Date.now() - pick.timestamp < 10000 // Remove picks older than 10 seconds
                 );
-                // Only update state if something actually changed
                 return filtered.length !== prev.length ? filtered : prev;
             });
-        }, 10000); // Check every 10 seconds
+        }, 10000);
 
         return () => clearInterval(cleanup);
     }, []);
@@ -59,8 +57,17 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
         setOptimisticPicks(prev => [...prev, optimisticPick]);
     }, []);
 
+    // MISSING FUNCTION: Clear all optimistic picks manually
+    const clearOptimisticPicks = useCallback(() => {
+        console.log('🧹 Clearing all optimistic picks');
+        setOptimisticPicks([]);
+    }, []);
+
+    // Combine real picks with valid optimistic picks
     const allPicks = useMemo(() => {
         const realPicks = initialPicks.map(pick => ({ ...pick, isOptimistic: false }));
+
+        // Filter out optimistic picks that have become real
         const validOptimisticPicks = optimisticPicks.filter(pick =>
             !realPicks.some(realPick =>
                 realPick.playerId === pick.playerId &&
@@ -74,6 +81,7 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
     return {
         optimisticPicks: allPicks,
         addOptimisticPick,
+        clearOptimisticPicks, // ADDED: Missing function
         hasOptimisticPicks: optimisticPicks.length > 0
     };
 }

@@ -129,28 +129,18 @@ export class FirebaseDraftSync {
             const picksPerTeam = draftState.picksPerTeam || 15;
             const totalPossiblePicks = totalTeams * picksPerTeam;
 
+            // Use shared draft logic for consistency
+            const { calculateCurrentPicker } = await import('../../../draft/lib/calculate-next-picker');
+
             // Determine whose turn it is based on picks made
             let currentPick = picksCount + 1;
             let currentUserId = draftState.currentUserId;
             let isActive = draftState.isActive && currentPick <= totalPossiblePicks;
 
             if (isActive && currentPick <= totalPossiblePicks) {
-                // Calculate whose turn it is using snake draft logic
-                const currentRound = Math.ceil(currentPick / totalTeams);
-                const positionInRound = ((currentPick - 1) % totalTeams) + 1;
-
-                let actualPosition: number;
-                if (currentRound % 2 === 0) {
-                    // Even rounds: reverse order (snake draft)
-                    actualPosition = totalTeams - positionInRound + 1;
-                } else {
-                    // Odd rounds: normal order
-                    actualPosition = positionInRound;
-                }
-
-                const currentUser = draftOrder.find(order => order.position === actualPosition);
-                if (currentUser) {
-                    currentUserId = currentUser.userId;
+                const currentPicker = calculateCurrentPicker(draftState, draftOrder);
+                if (currentPicker) {
+                    currentUserId = currentPicker.userId;
                 }
             }
 
