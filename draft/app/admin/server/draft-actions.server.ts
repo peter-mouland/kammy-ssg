@@ -1,3 +1,5 @@
+/* Location: app/admin/server/draft-actions.server.ts */
+
 // /admin/server/draft-actions.server.ts
 import type { AdminActionResult } from '../types';
 
@@ -31,6 +33,10 @@ export async function handleDraftActions(params: DraftActionParams): Promise<Adm
             case "syncDraft": {
                 const { handleSyncDraft } = await import('./actions/draft-actions');
                 return await handleSyncDraft({ actionType, divisionId });
+            }
+            case "resetDraft": {
+                const { handleResetDraft } = await import('./actions/draft-actions');
+                return await handleResetDraft({ actionType, divisionId });
             }
             case "commitTeamsToFirestore": {
                 const { handleCommitTeamsToFirestore } = await import('./actions/team-commit-actions');

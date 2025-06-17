@@ -10,7 +10,7 @@ import { DraftOrder } from './components/draft-order';
 import { DraftTeams } from './components/draft-teams';
 import { DraftTeam } from './components/draft-team';
 import { DraftPlayers } from './components/draft-players';
-import { DraftWithFirebase } from './components/draft-firebase-handler';
+import { DraftFirebaseHandler } from './components/draft-firebase-handler';
 import { DraftConfetti } from './components/draft-confetti';
 import { ConnectionStatus, ConnectionAlert } from './components/connection-status';
 
@@ -251,7 +251,7 @@ export const Draft = () => {
     // Memoized filtered players
     const availablePlayersFiltered = useMemo(() => {
         const pickedPlayerIds = new Set(optimisticPicks.map(pick => pick.playerId));
-        return loaderData.availablePlayers.filter(player => !pickedPlayerIds.has(player.id.toString()));
+        return loaderData.availablePlayers?.filter(player => !pickedPlayerIds.has(player.id.toString()));
     }, [loaderData.availablePlayers, optimisticPicks]);
 
     // Show initial loading state
@@ -289,8 +289,8 @@ export const Draft = () => {
             <LoadingOverlay show={isPending || hasOptimisticPicks} />
 
             {/* Firebase Handler - manages real-time connections */}
-            <DraftWithFirebase
-                divisionId={loaderData.selectedDivision}
+            <DraftFirebaseHandler
+                divisionId={loaderData.draftState?.currentDivisionId}
                 currentUserId={loaderData.currentUser}
                 isDraftActive={loaderData.draftState?.isActive || false}
             >
@@ -318,7 +318,7 @@ export const Draft = () => {
 
                         {/* Turn Alert */}
                         <TurnAlert
-                            isUserTurn={loaderData.isUserTurn}
+                            isUserTurn={loaderData.isUserTurn && loaderData.draftState?.isActive}
                             isSubmitting={isSubmitting}
                         />
 
@@ -347,18 +347,17 @@ export const Draft = () => {
                                     <DraftTeam
                                         userId={loaderData.draftState.currentUserId}
                                         userName={loaderData.draftState.currentUserId}
-                                        draftPicks={loaderData.draftPicks.filter(pick => pick.userId === loaderData.draftState.currentUserId)}
+                                        draftPicks={loaderData.draftPicks?.filter(pick => pick.userId === loaderData.draftState.currentUserId)}
                                         isCompact={true}
                                     />
 
-                                    <MemoizedDraftPlayers
+                                    {availablePlayersFiltered && <MemoizedDraftPlayers
                                         onSelectPlayer={handleMakePick}
                                         availablePlayers={availablePlayersFiltered}
                                         isUserTurn={loaderData.isUserTurn && !isSubmitting}
-                                        currentUserPicks={loaderData.draftPicks.filter(pick => pick.userId === loaderData.currentUser)}
+                                        currentUserPicks={loaderData.draftPicks?.filter(pick => pick.userId === loaderData.currentUser)}
                                         allTeams={loaderData.teams} // You'll need to add this to loader data
-
-                                    />
+                                    />}
 
                                     {/* Optimistic feedback overlay */}
                                     {hasOptimisticPicks && (
@@ -421,7 +420,7 @@ export const Draft = () => {
                                         isConnected,
                                         hasError,
                                         hasOptimisticPicks,
-                                        optimisticPicksCount: optimisticPicks.filter(p => p.isOptimistic).length,
+                                        optimisticPicksCount: optimisticPicks?.filter(p => p.isOptimistic).length,
                                         navigationState: navigation.state,
                                         fetcherState: fetcher.state,
                                         currentPickCount: loaderData.draftPicks.length,
@@ -434,7 +433,7 @@ export const Draft = () => {
                         )}
                     </>
                 )}
-            </DraftWithFirebase>
+            </DraftFirebaseHandler>
         </div>
     );
 }

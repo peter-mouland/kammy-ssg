@@ -1,3 +1,5 @@
+/* Location: app/admin/server/actions/team-commit-actions.ts */
+
 // /admin/server/actions/team-commit-actions.ts
 import { getFirestoreInstance } from "../../../_shared/lib/firestore-cache/firebase.admin";
 import { getDraftPicksByDivision } from "../../../_shared/lib/sheets/draft";
@@ -11,7 +13,23 @@ interface FirestoreTeamMember {
     player: string; // web_name
     playerCode: number;
     onLoanTo: string | null;
+    onLoanStart: string | null; // ISO date string when loan started
     isSub: boolean;
+    gameweek: number; // Current gameweek (draft = 0)
+}
+
+interface DivisionTeamsDocument {
+    divisionId: string;
+    gameweek: number;
+    lastUpdated: string; // ISO timestamp
+    teams: Record<string, FirestoreTeamMember[]>; // userId -> array of team members
+    metadata: {
+        totalPlayers: number;
+        totalTeams: number;
+        draftCompleted: boolean;
+        createdAt: string;
+        updatedAt: string;
+    };
 }
 
 export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<ActionResult> {
@@ -40,7 +58,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
 
         // Get FPL player data to get web_name and playerCode
         const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-        const allPlayers = await fplApiCache.getBootstrapElements();
+        const allPlayers = await fplApiCache.getFplPlayers();
 
         // Create player lookup map
         const playerLookup = new Map(
@@ -57,12 +75,10 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
             teamsByUser.get(pick.userId)!.push(pick);
         });
 
-        // Get Firestore instance
-        const db = getFirestoreInstance();
-        const batch = db.batch();
-        let totalMembersCommitted = 0;
+        // Process each user's team into the new structure
+        const teamsData: Record<string, FirestoreTeamMember[]> = {};
+        let totalMembersProcessed = 0;
 
-        // Process each user's team
         for (const [userId, picks] of teamsByUser) {
             const userTeam = userTeams.find(team => team.userId === userId);
 
@@ -107,6 +123,9 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 ca: 2
             };
 
+            // Initialize user's team array
+            teamsData[userId] = [];
+
             // Process each pick for this user
             for (let i = 0; i < sortedPicks.length; i++) {
                 const pick = sortedPicks[i];
@@ -137,26 +156,43 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 const teamMember: FirestoreTeamMember = {
                     userId,
                     teamPosition,
-                    playerPosition: playerPosition === 'unknown' ? 'mid' : playerPosition, // fallback for unknown positions
+                    playerPosition,
                     player: fplPlayer.web_name,
                     playerCode: fplPlayer.code,
                     onLoanTo: null,
-                    isSub
+                    onLoanStart: null,
+                    isSub,
+                    gameweek: 0 // Draft is gameweek 0
                 };
 
-                // Create document ID: divisionId_userId_playerCode
-                const docId = `${divisionId}_${userId}_${fplPlayer.code}`;
-                const docRef = db.collection('teams').doc(docId);
-
-                batch.set(docRef, teamMember);
-                totalMembersCommitted++;
+                teamsData[userId].push(teamMember);
+                totalMembersProcessed++;
             }
         }
 
-        // Commit the batch
-        await batch.commit();
+        // Create the division document structure
+        const now = new Date().toISOString();
+        const divisionDocument: DivisionTeamsDocument = {
+            divisionId,
+            gameweek: 0, // Draft is gameweek 0
+            lastUpdated: now,
+            teams: teamsData,
+            metadata: {
+                totalPlayers: totalMembersProcessed,
+                totalTeams: teamsByUser.size,
+                draftCompleted: true,
+                createdAt: now,
+                updatedAt: now
+            }
+        };
 
-        const message = `Teams committed to Firestore! ${totalMembersCommitted} players across ${teamsByUser.size} teams in division ${divisionId}`;
+        // Get Firestore instance and save the single document
+        const db = getFirestoreInstance();
+        const docRef = db.collection('division-teams').doc(divisionId);
+
+        await docRef.set(divisionDocument);
+
+        const message = `Teams committed to Firestore! ${totalMembersProcessed} players across ${teamsByUser.size} teams in division ${divisionId} (single document)`;
 
         console.log(`✅ ${message}`);
 
@@ -166,8 +202,10 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
             data: {
                 divisionId,
                 teamsCount: teamsByUser.size,
-                playersCount: totalMembersCommitted,
-                timestamp: new Date().toISOString()
+                playersCount: totalMembersProcessed,
+                documentPath: `division-teams/${divisionId}`,
+                gameweek: 0,
+                timestamp: now
             }
         };
 

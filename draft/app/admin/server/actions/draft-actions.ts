@@ -119,17 +119,44 @@ export async function handleSyncDraft(params: DraftActionParams): Promise<Action
         // Import Firebase sync
         const { FirebaseDraftSync } = await import('../../../_shared/lib/firestore-cache/firebase-draft-sync');
 
-        // Sync the draft state from sheets to Firebase
-        const syncResult = await FirebaseDraftSync.syncDraftFromSheets(divisionId);
+        // Sync the draft state from sheets to Firebase (normal sync)
+        const syncResult = await FirebaseDraftSync.syncDraftFromSheets(divisionId, false);
 
         return {
             success: true,
-            message: `Draft synced for division ${divisionId}! ${syncResult.picksCount} picks, current pick: ${syncResult.currentPick}`,
+            message: `Draft synced for division ${divisionId}! ${syncResult.picksCount} picks, current pick: ${syncResult.currentPick}${syncResult.isActive ? `, turn: ${syncResult.currentUserId}` : ' (completed)'}`,
             data: syncResult
         };
     } catch (error) {
         console.error('Sync draft error:', error);
         throw new Error(`Failed to sync draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+export async function handleResetDraft(params: DraftActionParams): Promise<ActionResult> {
+    const { divisionId } = params;
+
+    if (!divisionId) {
+        throw new Error("Division ID is required");
+    }
+
+    try {
+        console.log(`🔄 RESETTING draft for division: ${divisionId}`);
+
+        // Import Firebase sync
+        const { FirebaseDraftSync } = await import('../../../_shared/lib/firestore-cache/firebase-draft-sync');
+
+        // Force reset and sync the draft state from sheets to Firebase
+        const syncResult = await FirebaseDraftSync.syncDraftFromSheets(divisionId, true);
+
+        return {
+            success: true,
+            message: `Draft RESET and synced for division ${divisionId}! All Firebase data cleared and rebuilt from Google Sheets. ${syncResult.picksCount} picks, current pick: ${syncResult.currentPick}${syncResult.isActive ? `, turn: ${syncResult.currentUserId}` : ' (completed)'}`,
+            data: { ...syncResult, resetPerformed: true }
+        };
+    } catch (error) {
+        console.error('Reset draft error:', error);
+        throw new Error(`Failed to reset draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }
 
