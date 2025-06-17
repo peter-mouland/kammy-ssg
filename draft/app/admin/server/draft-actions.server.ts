@@ -1,5 +1,3 @@
-/* Location: app/admin/server/draft-actions.server.ts */
-
 // /admin/server/draft-actions.server.ts
 import type { AdminActionResult } from '../types';
 
@@ -33,6 +31,14 @@ export async function handleDraftActions(params: DraftActionParams): Promise<Adm
             case "syncDraft": {
                 const { handleSyncDraft } = await import('./actions/draft-actions');
                 return await handleSyncDraft({ actionType, divisionId });
+            }
+            case "commitTeamsToFirestore": {
+                const { handleCommitTeamsToFirestore } = await import('./actions/team-commit-actions');
+                return await handleCommitTeamsToFirestore({ actionType, divisionId });
+            }
+            case "getDraftPicksCount": {
+                const { handleGetDraftPicksCount } = await import('./actions/draft-actions');
+                return await handleGetDraftPicksCount({ actionType, divisionId });
             }
             default:
                 throw new Error(`Invalid draft action type: ${actionType}`);

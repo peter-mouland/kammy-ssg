@@ -1,5 +1,3 @@
-/* Location: app/admin/types/admin-types.ts */
-
 // /admin/types/admin-types.ts
 import type {
     DivisionData,
@@ -42,6 +40,9 @@ export type AdminActionType =
     | 'startDraft'
     | 'stopDraft'
     | 'syncDraft'
+    | 'invalidateDraftCache'
+    | 'commitTeamsToFirestore'
+    | 'getDraftPicksCount'
     | 'clearFirestoreData'
     | 'getFirestoreStats'
     | 'getCacheStatus'

@@ -11,6 +11,8 @@ import {
     createAppError,
     type SheetRange
 } from './utils/common';
+import { sheetsCache } from './cache/sheets-cache-service';
+import { CACHE_CONFIG } from './cache-config';
 
 // Sheet configuration
 const DRAFT_ORDER_SHEET_NAME = 'DraftOrder';
@@ -31,7 +33,7 @@ const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderData, (val
 /**
  * Read all draft orders from the sheet
  */
-export async function readDraftOrders(): Promise<DraftOrderData[]> {
+async function originalReadDraftOrders(): Promise<DraftOrderData[]> {
     try {
 
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
@@ -59,7 +61,13 @@ export async function readDraftOrders(): Promise<DraftOrderData[]> {
         );
     }
 }
-
+export async function readDraftOrders() {
+    return sheetsCache.get(
+        'draft-orders-all',
+        () => originalReadDraftOrders(),
+        { ttlMs: CACHE_CONFIG.draftOrders }
+    );
+}
 /**
  * Write draft orders to the sheet (overwrites existing data)
  */
@@ -95,7 +103,7 @@ export async function writeDraftOrders(
 /**
  * Get draft order for a specific division
  */
-export async function getDraftOrderByDivision(
+export async function originalGetDraftOrderByDivision(
     divisionId: string
 ): Promise<DraftOrderData[]> {
     try {
@@ -112,6 +120,13 @@ export async function getDraftOrderByDivision(
             error
         );
     }
+}
+export async function getDraftOrderByDivision(divisionId: string) {
+    return sheetsCache.get(
+        `draft-order-division-${divisionId}`,
+        () => originalGetDraftOrderByDivision(divisionId),
+        { ttlMs: CACHE_CONFIG.divisionDraftOrder }
+    );
 }
 
 /**

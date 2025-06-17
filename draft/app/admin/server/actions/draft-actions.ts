@@ -8,7 +8,7 @@ import {
     clearDraftOrder,
     draftOrderExists
 } from "../../../_shared/lib/sheets/draft-order";
-import { updateDraftState, readDraftState } from "../../../_shared/lib/sheets/draft";
+import { updateDraftState, readDraftState, getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
 import type { DraftStateData, DraftActionParams, ActionResult } from "../../types";
 
 export async function handleGenerateOrder(params: DraftActionParams): Promise<ActionResult> {
@@ -130,5 +130,35 @@ export async function handleSyncDraft(params: DraftActionParams): Promise<Action
     } catch (error) {
         console.error('Sync draft error:', error);
         throw new Error(`Failed to sync draft: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+export async function handleGetDraftPicksCount(params: DraftActionParams): Promise<ActionResult> {
+    const { divisionId } = params;
+
+    if (!divisionId) {
+        throw new Error("Division ID is required");
+    }
+
+    try {
+        console.log(`🔄 Getting draft picks count for division: ${divisionId}`);
+
+        // Get actual draft picks from the Google Sheets
+        const draftPicks = await getDraftPicksByDivision(divisionId);
+        const pickCount = draftPicks.length;
+
+        return {
+            success: true,
+            message: `Found ${pickCount} draft picks for division ${divisionId}`,
+            data: {
+                divisionId,
+                pickCount,
+                timestamp: new Date().toISOString()
+            }
+        };
+
+    } catch (error) {
+        console.error('Get draft picks count error:', error);
+        throw new Error(`Failed to get draft picks count: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }

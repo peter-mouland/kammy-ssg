@@ -1,6 +1,4 @@
-/* Location: app/admin/components/sections/draft-section.tsx */
-
-// /admin/components/sections/draft-section.tsx (REFACTORED)
+// /admin/components/sections/draft-section.tsx (UPDATED)
 import React from 'react';
 import { useActionData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
@@ -8,6 +6,7 @@ import { DraftCard } from '../ui/draft-card';
 import { AdminMessage } from '../ui/admin-message';
 import { AdminSection, AdminGrid, AdminContainer } from '../layout';
 import { FirebaseSyncSection } from './firebase-sync-section';
+import { CommitTeamsSection } from './commit-teams-section';
 
 interface DraftSectionProps {
     divisions: any[];
@@ -54,6 +53,13 @@ export const DraftSection = ({
                     </AdminMessage>
                 )}
             </AdminSection>
+
+            <CommitTeamsSection
+                divisions={divisions}
+                draftOrders={draftOrders}
+                userTeamsByDivision={userTeamsByDivision}
+                draftState={draftState}
+            />
 
             <AdminSection
                 title="Firebase + GSheets Sync"

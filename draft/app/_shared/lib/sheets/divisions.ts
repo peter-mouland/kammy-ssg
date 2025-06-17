@@ -11,6 +11,8 @@ import {
     createAppError,
     type SheetRange
 } from './utils/common';
+import { sheetsCache } from './cache/sheets-cache-service';
+import { CACHE_CONFIG } from './cache-config';
 
 // Sheet configuration
 const DIVISIONS_SHEET_NAME = 'Divisions';
@@ -28,7 +30,7 @@ const DIVISIONS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DivisionData, (value: 
 /**
  * Read all divisions from the sheet
  */
-export async function readDivisions(): Promise<DivisionData[]> {
+export async function originalReadDivisions(): Promise<DivisionData[]> {
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
 
     try {
@@ -56,6 +58,14 @@ export async function readDivisions(): Promise<DivisionData[]> {
         );
     }
 }
+export async function readDivisions() {
+    return sheetsCache.get(
+        'divisions',
+        () => originalReadDivisions(),
+        { ttlMs: CACHE_CONFIG.divisions }
+    );
+}
+
 
 /**
  * Write divisions to the sheet (overwrites existing data)

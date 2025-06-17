@@ -14,6 +14,8 @@ import {
     createAppError,
     type SheetRange
 } from './utils/common';
+import { sheetsCache } from './cache/sheets-cache-service';
+import { CACHE_CONFIG } from './cache-config';
 
 // Draft picks sheet configuration
 const DRAFT_PICKS_SHEET_NAME = 'Draft';
@@ -192,7 +194,7 @@ function convertToRowsWithHeaders<T>(
 /**
  * Read all draft picks from the sheet - SINGLE API CALL
  */
-export async function readDraftPicks(): Promise<DraftPickData[]> {
+async function originalReadDraftPicks(): Promise<DraftPickData[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
@@ -231,6 +233,13 @@ export async function readDraftPicks(): Promise<DraftPickData[]> {
             error
         );
     }
+}
+export async function readDraftPicks() {
+    return sheetsCache.get(
+        'draft-picks-all',
+        () => originalReadDraftPicks(),
+        { ttlMs: CACHE_CONFIG.draftPicks }
+    );
 }
 
 /**
@@ -290,7 +299,7 @@ export async function addDraftPick(draftPick: DraftPickData): Promise<void> {
 /**
  * Get draft picks by division ID - reuse cached data
  */
-export async function getDraftPicksByDivision(divisionId: string): Promise<DraftPickData[]> {
+async function originalGetDraftPicksByDivision(divisionId: string): Promise<DraftPickData[]> {
     try {
         const allPicks = await readDraftPicks(); // Single API call (or uses cache)
         return allPicks
@@ -304,11 +313,18 @@ export async function getDraftPicksByDivision(divisionId: string): Promise<Draft
         );
     }
 }
+export async function getDraftPicksByDivision(divisionId: string) {
+    return sheetsCache.get(
+        `draft-picks-division-${divisionId}`,
+        () => originalGetDraftPicksByDivision(divisionId),
+        { ttlMs: CACHE_CONFIG.divisionDraftPicks }
+    );
+}
 
 /**
  * Read current draft state - SINGLE API CALL
  */
-export async function readDraftState(): Promise<DraftStateData | null> {
+async function originalReadDraftState(): Promise<DraftStateData | null> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
@@ -347,6 +363,13 @@ export async function readDraftState(): Promise<DraftStateData | null> {
             error
         );
     }
+}
+export async function readDraftState() {
+    return sheetsCache.get(
+        'draft-state',
+        () => originalReadDraftState(),
+        { ttlMs: CACHE_CONFIG.draftState }
+    );
 }
 
 /**

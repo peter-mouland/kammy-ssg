@@ -12,6 +12,8 @@ import {
     createAppError,
     type SheetRange
 } from './utils/common';
+import { sheetsCache } from './cache/sheets-cache-service';
+import { CACHE_CONFIG } from './cache-config';
 
 // Sheet configuration
 const USER_TEAMS_SHEET_NAME = 'UserTeams';
@@ -40,7 +42,7 @@ const USER_TEAMS_TRANSFORM_FUNCTIONS: Partial<Record<keyof UserTeamData, (value:
 /**
  * Read all user teams from the sheet
  */
-export async function readUserTeams(
+async function originalReadUserTeams(
 ): Promise<UserTeamData[]> {
     try {
 
@@ -68,6 +70,13 @@ export async function readUserTeams(
             error
         );
     }
+}
+export async function readUserTeams() {
+    return sheetsCache.get(
+      'user-teams-all',
+      () => originalReadUserTeams(),
+      { ttlMs: CACHE_CONFIG.userTeams }
+    );
 }
 
 /**
@@ -152,7 +161,7 @@ export async function findUserTeamById(
 /**
  * Get user teams by division ID
  */
-export async function getUserTeamsByDivision(
+async function originalGetUserTeamsByDivision(
     divisionId: string
 ): Promise<UserTeamData[]> {
     try {
@@ -165,6 +174,13 @@ export async function getUserTeamsByDivision(
             error
         );
     }
+}
+export async function getUserTeamsByDivision(divisionId: string) {
+    return sheetsCache.get(
+      `user-teams-division-${divisionId}`,
+      () => originalGetUserTeamsByDivision(divisionId),
+      { ttlMs: CACHE_CONFIG.divisionUserTeams }
+    );
 }
 
 /**

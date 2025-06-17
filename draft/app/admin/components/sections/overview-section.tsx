@@ -1,10 +1,9 @@
-/* Location: app/admin/components/sections/overview-section.tsx */
-
-// /admin/components/sections/overview-section.tsx (UPDATED for route structure)
+// /admin/components/sections/overview-section.tsx (UPDATED with Cache Monitor)
 import React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { StatusCard } from '../ui/status-card';
+import { CacheMonitor } from '../ui/cache-monitor';
 import { AdminSection, AdminGrid, AdminContainer } from '../layout';
 import { QuickActionsSection } from './quick-actions-section';
 import { ActionCard } from '../ui/action-card';
@@ -89,8 +88,9 @@ export const OverviewSection = ({
     return (
         <AdminContainer>
             <AdminSection
-                title="System Overview"
+                title="System Health"
                 icon={<Icons.BarChartIcon />}
+                description="Monitor system status and data availability"
             >
                 <AdminGrid columns="auto" minWidth="200px">
                     <StatusCard
@@ -115,6 +115,17 @@ export const OverviewSection = ({
             </AdminSection>
 
             <QuickActionsSection cacheData={cacheData} />
+
+
+
+            {/* Cache Monitor Section */}
+            <AdminSection
+                title="Google Sheets Cache"
+                icon={<Icons.DatabaseIcon />}
+                description="Monitor API usage and cache performance to prevent quota issues"
+            >
+                <CacheMonitor autoRefresh={true} refreshInterval={30000} />
+            </AdminSection>
 
             <AdminSection
                 title="Manual Cache Clearing"

@@ -1,6 +1,7 @@
 /* Location: app/draft/server/draft.server.ts */
 
 import { readDraftState, addDraftPick, getDraftPicksByDivision, updateDraftState } from '../../_shared/lib/sheets/draft';
+import { cacheInvalidation } from '../../_shared/lib/sheets/cache/cached-sheet-functions';
 import { getDraftOrderByDivision } from '../../_shared/lib/sheets/draft-order';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
@@ -81,103 +82,100 @@ export async function loadDraftData(url: URL) {
 }
 
 export async function makeDraftPick(formData: FormData) {
+    console.log('🎯 Making draft pick...');
+
     const divisionId = formData.get("divisionId")?.toString();
     const playerId = formData.get("playerId")?.toString();
     const userId = formData.get("userId")?.toString();
 
-    if (!divisionId || !playerId || !userId) {
-        throw new Error("Missing required fields for pick");
+    if (!playerId || !userId || !divisionId) {
+        throw new Error("Missing required fields for draft pick");
     }
-
-    const allPlayers = await fplApiCache.getFplPlayers();
-    const allTeams = await fplApiCache.getFplTeams();
-    const player = allPlayers.find(p => p.id.toString() === playerId);
-    const team = allTeams.find(t => t.code === player.team_code);
-
-    if (!player) {
-        throw new Error("Player not found");
-    }
-    if (!team) {
-        throw new Error(`Team ${player.team_code} not found`);
-    }
-
-    const [draftState, existingPicks, draftOrder, userTeams] = await Promise.all([
-        readDraftState(),
-        getDraftPicksByDivision(divisionId),
-        getDraftOrderByDivision(divisionId),
-        readUserTeams(),
-    ]);
-
-    if (!draftState?.isActive) {
-        throw new Error("Draft is not active");
-    }
-
-    if (draftState.currentUserId !== userId) {
-        throw new Error("Not your turn to pick");
-    }
-
-    // Check if player already picked
-    const alreadyPicked = existingPicks.some(pick => pick.playerId === playerId);
-    if (alreadyPicked) {
-        throw new Error("Player has already been drafted");
-    }
-
-    const pickNumber = existingPicks.length + 1;
-    const round = Math.ceil(pickNumber / draftOrder.length);
-    const userName = userTeams.find(team => team.userId === userId)?.userName || 'Unknown User';
-
-    const draftPick: DraftPickData = {
-        pickNumber,
-        round,
-        userId,
-        playerId: player.id.toString(),
-        playerName: player.web_name,
-        teamName: team.name,
-        teamCode: player.team_code,
-        position: player.draft.position,
-        pickedAt: new Date(),
-        divisionId
-    };
-
-    // Add the pick to sheets
-    await addDraftPick(draftPick);
-
-    // Calculate next draft state
-    const nextDraftState = getNextDraftState(draftState, draftOrder);
-    await updateDraftState(nextDraftState);
-
-    // Get next state variables
-    const nextPickNumber = nextDraftState.currentPick;
-    const nextUserId = nextDraftState.currentUserId;
-    const nextUserName = userTeams.find(team => team.userId === nextUserId)?.userName || 'Unknown User';
 
     try {
-        // ONLY sync to Firebase when a pick is actually made
-        // This will use the deduplication logic we added earlier
-        await FirebaseDraftSync.broadcastPickMade(divisionId, draftPick, {
-            currentPick: nextPickNumber,
-            currentUserId: nextUserId,
-            isActive: nextDraftState.isActive,
-            totalPicks: draftOrder.length * (draftState.picksPerTeam || 15)
-        });
+        // Get current state using CACHED function
+        const draftState = await readDraftState();
 
-        console.log(`🔥 Pick synced to Firebase: ${draftPick.playerName} by ${userName}`);
-    } catch (error) {
-        console.error("🔥 Failed to sync pick to Firebase:", error);
-        // Don't throw - the pick was still saved to your main database
-    }
-
-    return {
-        success: true,
-        pick: {
-            ...draftPick,
-            userName,
-            nextUser: nextDraftState.isActive ? {
-                userId: nextUserId,
-                userName: nextUserName,
-                pickNumber: nextPickNumber
-            } : null
+        if (!draftState?.isActive) {
+            throw new Error("Draft is not currently active");
         }
-    };
-}
 
+        if (draftState.currentUserId !== userId) {
+            throw new Error("It's not your turn to pick");
+        }
+
+        // Get player data
+        const allPlayers = await fplApiCache.getFplPlayers();
+        const player = allPlayers.find(p => p.id.toString() === playerId);
+
+        if (!player) {
+            throw new Error("Player not found");
+        }
+
+        // Get team data
+        const teams = await fplApiCache.getFplTeams();
+        const team = teams.find(t => t.code === player.team_code);
+
+        if (!team) {
+            throw new Error("Team not found for player");
+        }
+
+        // Create draft pick
+        const draftPick: DraftPickData = {
+            pickNumber: draftState.currentPick,
+            round: Math.ceil(draftState.currentPick / 10), // Assuming 10 teams per round
+            userId,
+            playerId,
+            playerName: player.web_name,
+            teamCode: player.team_code,
+            teamName: team.name,
+            position: player.draft?.position || 'unknown',
+            pickedAt: new Date(),
+            divisionId
+        };
+
+        // Add pick to sheets
+        await addDraftPick(draftPick);
+
+        // Get updated draft order and state
+        const draftOrder = await getDraftOrderByDivision(divisionId);
+        const nextState = getNextDraftState(draftState, draftOrder);
+
+        // Update draft state
+        await updateDraftState(nextState);
+
+        // IMPORTANT: Invalidate cache after making changes
+        cacheInvalidation.invalidateDraftData(divisionId);
+
+        // Sync to Firebase AND broadcast to SSE connections
+        try {
+            await FirebaseDraftSync.broadcastPickMade(divisionId, draftPick, {
+                currentPick: nextState.currentPick,
+                currentUserId: nextState.currentUserId,
+                isActive: nextState.isActive,
+                totalPicks: draftOrder.length * (draftState.picksPerTeam || 12)
+            });
+
+            console.log(`✅ Draft pick successful and broadcast: ${player.web_name} to ${userId}`);
+        } catch (syncError) {
+            console.warn('Firebase sync or SSE broadcast failed after pick:', syncError);
+            // Don't fail the pick if sync fails
+        }
+
+        console.log(`✅ Draft pick successful: ${player.web_name} to ${userId}`);
+
+        return {
+            success: true,
+            pick: draftPick,
+            action: "makePick"
+        };
+
+    } catch (error) {
+        console.error('❌ Draft pick failed:', error);
+
+        // Invalidate cache on error too, in case of partial updates
+        cacheInvalidation.invalidateDraftData(divisionId);
+
+        throw error;
+    }
+}

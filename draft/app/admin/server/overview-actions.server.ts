@@ -1,15 +1,14 @@
-/* Location: app/admin/server/overview-actions.server.ts */
-
-// /admin/server/overview-actions.server.ts
+// /admin/server/overview-actions.server.ts - UPDATED WITH CACHE ACTIONS
 import type { AdminActionResult, ClearVariant } from '../types';
 
 interface OverviewActionParams {
     actionType: string;
     variant?: ClearVariant;
+    divisionId?: string;
 }
 
 export async function handleOverviewActions(params: OverviewActionParams): Promise<AdminActionResult> {
-    const { actionType, variant } = params;
+    const { actionType, variant, divisionId } = params;
 
     try {
         switch (actionType) {
@@ -38,6 +37,19 @@ export async function handleOverviewActions(params: OverviewActionParams): Promi
             case "getCacheStatus": {
                 const { handleGetCacheStatus } = await import('./actions/system-actions');
                 return await handleGetCacheStatus();
+            }
+            // Cache Monitoring Actions
+            case "getCacheStats": {
+                const { handleGetCacheStats } = await import('./actions/cache-monitor-actions');
+                return await handleGetCacheStats();
+            }
+            case "clearCache": {
+                const { handleClearCache } = await import('./actions/cache-monitor-actions');
+                return await handleClearCache();
+            }
+            case "invalidateDraftCache": {
+                const { handleInvalidateDraftCache } = await import('./actions/cache-monitor-actions');
+                return await handleInvalidateDraftCache({ actionType, divisionId });
             }
             // Points Actions accessible from Overview
             case "generateGameWeekPoints": {
