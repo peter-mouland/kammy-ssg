@@ -1,181 +1,127 @@
-/* Location: app/teams/components/football-pitch.tsx */
-
-// /teams/components/football-pitch.tsx
+// app/teams/components/football-pitch.tsx
 import React from 'react';
+import type { FormationDisplayProps } from '../types/team-view-types';
+import { PositionSlotCard } from './position-slot-card';
 import { PlayerCard } from './player-card';
-import type { FirestoreTeamMember } from '../types';
+import {
+    getFormationSlots,
+    createPositionSlot
+} from '../../_shared/lib/position-slot-utils';
 import styles from './football-pitch.module.css';
 
-interface FormationData {
-    goalkeeper: FirestoreTeamMember[];
-    centrebacks: FirestoreTeamMember[];
-    fullbacks: FirestoreTeamMember[];
-    midfielders: FirestoreTeamMember[];
-    wideattackers: FirestoreTeamMember[];
-    centralattackers: FirestoreTeamMember[];
-}
+export const FootballPitch: React.FC<FormationDisplayProps> = ({
+                                                                   roster,
+                                                                   gameweek,
+                                                                   isHistorical
+                                                               }) => {
+    const formationSlots = getFormationSlots();
 
-interface FootballPitchProps {
-    formation: FormationData;
-    gameweek: number;
-    isHistorical: boolean;
-}
+    // Helper to render position group
+    const renderPositionGroup = (
+        slots: string[],
+        positionClass: string,
+        groupLabel: string
+    ) => (
+            <>
+                {slots.map((slotKey, index) => {
+                    const positionSlot = roster[slotKey as keyof typeof roster];
 
-export const FootballPitch: React.FC<FootballPitchProps> = ({
-                                                                formation,
-                                                                gameweek,
-                                                                isHistorical
-                                                            }) => {
+                    if (!positionSlot) {
+                        // Empty slot
+                        return (
+                            <div key={slotKey} className={styles.emptySlot}>
+                                <div className={styles.emptySlotLabel}>
+                                    {groupLabel} {index + 1}
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div className={styles.playerPosition}
+                            key={slotKey}
+                        >
+                            <PositionSlotCard
+                                slot={slotKey as any}
+                                positionSlot={positionSlot}
+                                gameweek={gameweek}
+                                isHistorical={isHistorical}
+                                showPoints={true}
+                            />
+                        </div>
+                    );
+                })}
+        </>
+    );
+
     return (
-        <div className={styles.pitchContainer}>
-            <div className={styles.pitch}>
-                {/* Pitch markings */}
-                <div className={styles.pitchMarkings}>
-                    <div className={styles.centerCircle}></div>
-                    <div className={styles.centerLine}></div>
-                    <div className={styles.penaltyArea + ' ' + styles.topPenaltyArea}></div>
-                    <div className={styles.penaltyArea + ' ' + styles.bottomPenaltyArea}></div>
-                    <div className={styles.goalArea + ' ' + styles.topGoalArea}></div>
-                    <div className={styles.goalArea + ' ' + styles.bottomGoalArea}></div>
+        <div className={styles.footballPitch}>
+            <div className={styles.pitchBackground}>
+                {/* Goal */}
+                <div className={styles.goal}>
+                    <div className={styles.goalLine}></div>
                 </div>
 
                 {/* Formation Layout */}
-                <div className={styles.formationLayout}>
-                    {/* Central Attackers (most forward) */}
+                <div className={styles.formation}>
                     <div className={styles.centralAttackerLine}>
-                        {formation.centralattackers.map((player, index) => (
-                            <div
-                                key={`${player.playerCode}-${gameweek}`}
-                                className={`${styles.playerPosition} ${styles.centralAttacker}`}
-                                style={{
-                                    '--player-index': index,
-                                    '--total-players': formation.centralattackers.length
-                                } as React.CSSProperties}
-                            >
-                                <PlayerCard
-                                    player={player}
-                                    isSubstitute={false}
-                                    gameweek={gameweek}
-                                    isOnPitch={true}
-                                    positionLabel="CA"
-                                />
-                            </div>
-                        ))}
+                        {renderPositionGroup(
+                            formationSlots.centralAttackers,
+                            'attackers',
+                            'CA'
+                        )}
                     </div>
-
-                    {/* Wide Attackers (left and right, slightly behind CA) */}
                     <div className={styles.wideAttackerLine}>
-                        {formation.wideattackers.map((player, index) => (
-                            <div
-                                key={`${player.playerCode}-${gameweek}`}
-                                className={`${styles.playerPosition} ${styles.wideAttacker}`}
-                                style={{
-                                    '--player-index': index,
-                                    '--total-players': formation.wideattackers.length
-                                } as React.CSSProperties}
-                            >
-                                <PlayerCard
-                                    player={player}
-                                    isSubstitute={false}
-                                    gameweek={gameweek}
-                                    isOnPitch={true}
-                                    positionLabel="WA"
-                                />
-                            </div>
-                        ))}
+                        {renderPositionGroup(
+                            formationSlots.wideAttackers,
+                            'wideAttackers',
+                            'WA'
+                        )}
                     </div>
-
-                    {/* Midfielders */}
                     <div className={styles.midfielderLine}>
-                        {formation.midfielders.map((player, index) => (
-                            <div
-                                key={`${player.playerCode}-${gameweek}`}
-                                className={`${styles.playerPosition} ${styles.midfielder}`}
-                                style={{
-                                    '--player-index': index,
-                                    '--total-players': formation.midfielders.length
-                                } as React.CSSProperties}
-                            >
-                                <PlayerCard
-                                    player={player}
-                                    isSubstitute={false}
-                                    gameweek={gameweek}
-                                    isOnPitch={true}
-                                    positionLabel="MID"
-                                />
-                            </div>
-                        ))}
+                    {renderPositionGroup(
+                        formationSlots.midfielders,
+                        'midfielders',
+                        'MID'
+                    )}
                     </div>
 
-                    {/* Full Backs (left and right, slightly ahead of CB) */}
                     <div className={styles.fullbackLine}>
-                        {formation.fullbacks.map((player, index) => (
-                            <div
-                                key={`${player.playerCode}-${gameweek}`}
-                                className={`${styles.playerPosition} ${styles.fullback}`}
-                                style={{
-                                    '--player-index': index,
-                                    '--total-players': formation.fullbacks.length
-                                } as React.CSSProperties}
-                            >
-                                <PlayerCard
-                                    player={player}
-                                    isSubstitute={false}
-                                    gameweek={gameweek}
-                                    isOnPitch={true}
-                                    positionLabel="FB"
-                                />
-                            </div>
-                        ))}
+                    {renderPositionGroup(
+                        formationSlots.fullbacks,
+                        'fullbacks',
+                        'FB'
+                    )}
                     </div>
-
-                    {/* Centre Backs (central, near goal) */}
                     <div className={styles.centrebackLine}>
-                        {formation.centrebacks.map((player, index) => (
-                            <div
-                                key={`${player.playerCode}-${gameweek}`}
-                                className={`${styles.playerPosition} ${styles.centreback}`}
-                                style={{
-                                    '--player-index': index,
-                                    '--total-players': formation.centrebacks.length
-                                } as React.CSSProperties}
-                            >
-                                <PlayerCard
-                                    player={player}
-                                    isSubstitute={false}
-                                    gameweek={gameweek}
-                                    isOnPitch={true}
-                                    positionLabel="CB"
-                                />
-                            </div>
-                        ))}
+                    {/* Centre Backs */}
+                    {renderPositionGroup(
+                        formationSlots.centrebacks,
+                        'centrebacks',
+                        'CB'
+                    )}
                     </div>
-
-                    {/* Goalkeeper */}
                     <div className={styles.goalkeeperLine}>
-                        {formation.goalkeeper.map((player) => (
-                            <div
-                                key={`${player.playerCode}-${gameweek}`}
-                                className={`${styles.playerPosition} ${styles.goalkeeper}`}
-                            >
-                                <PlayerCard
-                                    player={player}
-                                    isSubstitute={false}
-                                    gameweek={gameweek}
-                                    isOnPitch={true}
-                                    positionLabel="GK"
-                                />
-                            </div>
-                        ))}
+                    {/* Goalkeeper */}
+                    {renderPositionGroup(
+                        formationSlots.goalkeeper,
+                        'goalkeeper',
+                        'GK'
+                    )}
                     </div>
                 </div>
 
-                {/* Historical Indicator */}
-                {isHistorical && (
-                    <div className={styles.historicalOverlay}>
-                        <span className={styles.historicalLabel}>Historical View</span>
-                    </div>
-                )}
+                {/* Penalty Area */}
+                <div className={styles.penaltyArea}>
+                    <div className={styles.penaltyLine}></div>
+                </div>
+            </div>
+
+            {/* Formation Info */}
+            <div className={styles.formationInfo}>
+                <div className={styles.gameweekInfo}>
+                    Gameweek {gameweek} {isHistorical && '(Historical)'}
+                </div>
             </div>
         </div>
     );

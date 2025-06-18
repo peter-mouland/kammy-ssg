@@ -5,7 +5,7 @@ import type {
     EnhancedPlayerData,
     FplPlayerData
 } from '../../_shared/types';
-import { convertToPlayerGameweeksStats } from './data-conversion';
+import { convertToPlayerGameweeksStats, convertToPlayerGameweekStats } from './data-conversion';
 import { calculateSeasonPoints, calculateGameweekPoints, getFullBreakdown } from './calculations';
 
 const baselineStats = {
@@ -79,16 +79,22 @@ export function generateGameweekData(
             const position = playerSheet.position.toLowerCase() as CustomPosition;
 
             const allGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
-            const playerGameweekStats = convertToPlayerGameweeksStats(allGameweekData);
             const gameweekPoints: Record<number, any> = {};
 
             targetGameweeks.forEach(gameweek => {
-                const gameweekStats = playerGameweekStats.find(gw => gw.gameweek === gameweek);
+                const gameweekData = allGameweekData.find(gw => gw.round === gameweek); // step 1: find gw
+                const gameweekStats = gameweekData ? convertToPlayerGameweekStats(gameweekData) : null; // step 2: remove gw from stats
+
+                if (!gameweekStats){
+                    console.error(`🚨 no stats for gw${gameweek}`);
+                    console.log(` - max history : ${allGameweekData.length}`)
+                    console.log(` - player : ${fplPlayer.id} ${fplPlayer.web_name} ${position}`)
+                }
 
                 const pointsBreakdown = calculateGameweekPoints(gameweekStats || baselineStats, position);
                 gameweekPoints[gameweek] = {
-                    points: pointsBreakdown,
-                    stats: gameweekStats,
+                    points: pointsBreakdown || null, // not all players have been playing since gw 1
+                    stats: gameweekStats || null, // not all players have been playing since gw 1
                     metadata: {
                         generatedAt: new Date().toISOString(),
                         position: position,

@@ -1,10 +1,13 @@
-/* Location: app/teams/server/team.server.ts */
-
-// /teams/server/team.server.ts
-import { getFirestoreInstance } from '../../_shared/lib/firestore-cache/firebase.admin';
+// app/teams/server/team.server.ts
+import {
+    getUserTeamForGameweek,
+    getUserTeamHistory,
+    getAvailableGameweeks as getAvailableGameweeksFromService
+} from '../../_shared/services/division-teams.service';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
-import type { TeamViewData, TeamData, CurrentUser, Division } from '../types';
+import type { TeamViewData } from '../types/team-view-types';
+import type { TeamGameweekData } from '../../_shared/types/division-teams-types';
 
 export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
     try {
@@ -28,17 +31,30 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             throw new Error("Division not found");
         }
 
-        // Get current gameweek (you might want to get this from your game state)
+        // Get current gameweek
         const currentGameweek = await getCurrentGameweek();
 
-        // Get team data from Firestore
-        const currentTeam = await getTeamForGameweek(userTeam.divisionId, currentGameweek);
+        // Get current team data from new division-teams structure
+        const currentTeam = await getUserTeamForGameweek(
+            userTeam.divisionId,
+            currentUser.id,
+            currentGameweek
+        );
+
+        if (!currentTeam) {
+            throw new Error("Current team data not found - division may not be set up yet");
+        }
 
         // Get historical team data
-        const gameweekHistory = await getTeamHistory(userTeam.divisionId, currentUser.id);
+        const gameweekHistory = await getUserTeamHistory(
+            userTeam.divisionId,
+            currentUser.id,
+            0, // Start from draft (gameweek 0)
+            currentGameweek
+        );
 
-        // Get available gameweeks
-        const availableGameweeks = getAvailableGameweeks(gameweekHistory, currentGameweek);
+        // Get available gameweeks from service
+        const availableGameweeks = await getAvailableGameweeksFromService(userTeam.divisionId);
 
         return {
             currentUser: {
@@ -53,7 +69,7 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             currentGameweek,
             currentTeam,
             gameweekHistory,
-            availableGameweeks
+            availableGameweeks: availableGameweeks.sort((a, b) => a - b)
         };
 
     } catch (error) {
@@ -62,137 +78,71 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
     }
 }
 
-async function getCurrentUser(url: URL): Promise<{ id: string; divisionId: string } | null> {
-    // TODO: Implement authentication logic
-    // This should get the current user from session/cookies/auth
-    // For now, return a mock user - replace with your auth system
-    const userId = url.searchParams.get('userId') || 'naked';
-    const divisionId = url.searchParams.get('divisionId') || 'leagueOne';
+/**
+ * Get specific user's team from division for a gameweek
+ */
+export async function getUserTeamFromDivision(
+    divisionId: string,
+    userId: string,
+    gameweek?: number
+): Promise<TeamGameweekData | null> {
+    try {
+        const targetGameweek = gameweek ?? await getCurrentGameweek();
+        return await getUserTeamForGameweek(divisionId, userId, targetGameweek);
+    } catch (error) {
+        console.error('Get user team from division error:', error);
+        return null;
+    }
+}
 
+/**
+ * Placeholder functions - implement these based on your auth and game state logic
+ */
+async function getCurrentUser(url: URL): Promise<{ id: string; divisionId: string } | null> {
+    // TODO: Implement actual user authentication
+    // This might come from cookies, session, JWT, etc.
+
+    // For now, return a mock user - replace with real auth logic
     return {
-        id: userId,
-        divisionId: divisionId
+        id: 'naked',
+        divisionId: 'leagueOne'
     };
 }
 
 async function getCurrentGameweek(): Promise<number> {
-    // TODO: Implement gameweek logic
-    // This should get the current gameweek from your game state
-    // For now, return a mock value
-    return 5;
-}
-
-async function getTeamForGameweek(divisionId: string, gameweek: number): Promise<TeamData> {
     try {
-        const db = getFirestoreInstance();
-        const docRef = db.collection('division-teams').doc(divisionId);
-
-        const doc = await docRef.get();
-        if (!doc.exists) {
-            throw new Error(`No teams found for division ${divisionId}`);
-        }
-
-        const data = doc.data();
-
-        // If requesting current gameweek, return current data
-        if (gameweek === data.gameweek) {
-            const allPlayers: any[] = [];
-
-            // Flatten all players from all teams for the current user
-            Object.values(data.teams).forEach((teamPlayers: any) => {
-                allPlayers.push(...teamPlayers);
-            });
-
-            return {
-                gameweek: data.gameweek,
-                players: allPlayers,
-                lastUpdated: data.lastUpdated
-            };
-        }
-
-        // For historical data, we'd need to implement versioning
-        // For now, return current data but with requested gameweek
-        const allPlayers: any[] = [];
-        Object.values(data.teams).forEach((teamPlayers: any) => {
-            allPlayers.push(...teamPlayers.map((p: any) => ({ ...p, gameweek })));
-        });
-
-        return {
-            gameweek,
-            players: allPlayers,
-            lastUpdated: data.lastUpdated
-        };
-
+        // Import FPL API cache to get current gameweek
+        const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
+        const currentGameweek = await fplApiCache.getCurrentGameweek();
+        return currentGameweek || 1; // Fallback to GW1 if unable to determine
     } catch (error) {
-        console.error('Get team for gameweek error:', error);
-        throw new Error(`Failed to get team for gameweek ${gameweek}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        console.error('Error getting current gameweek:', error);
+        return 1; // Fallback to GW1
     }
 }
 
-async function getTeamHistory(divisionId: string, userId: string): Promise<TeamData[]> {
+/**
+ * Helper function to check if division has been set up with new structure
+ */
+export async function isDivisionSetUpWithNewStructure(divisionId: string): Promise<boolean> {
     try {
-        // TODO: Implement proper historical data storage
-        // For now, return mock historical data
-        const currentTeam = await getTeamForGameweek(divisionId, await getCurrentGameweek());
-
-        // Generate mock historical data for demonstration
-        const history: TeamData[] = [];
-        for (let gw = 0; gw <= await getCurrentGameweek(); gw++) {
-            // Filter players for this specific user
-            const userPlayers = currentTeam.players.filter(p => p.userId === userId);
-
-            history.push({
-                gameweek: gw,
-                players: userPlayers.map(p => ({ ...p, gameweek: gw })),
-                lastUpdated: currentTeam.lastUpdated
-            });
-        }
-
-        return history;
-
+        const currentGameweek = await getCurrentGameweek();
+        const teamData = await getUserTeamForGameweek(divisionId, 'any_user', currentGameweek);
+        return teamData !== null;
     } catch (error) {
-        console.error('Get team history error:', error);
-        throw new Error(`Failed to get team history: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return false;
     }
 }
 
-function getAvailableGameweeks(history: TeamData[], currentGameweek: number): number[] {
-    // Get unique gameweeks from history, ensuring we include 0 (draft) and current
-    const gameweeks = new Set([0, currentGameweek]);
+/**
+ * Migration helper - convert old team structure to new if needed
+ */
+export async function ensureDivisionMigrated(divisionId: string): Promise<void> {
+    const isSetUp = await isDivisionSetUpWithNewStructure(divisionId);
 
-    history.forEach(team => {
-        gameweeks.add(team.gameweek);
-    });
-
-    return Array.from(gameweeks).sort((a, b) => a - b);
-}
-
-// Utility function to get specific user's team from division data
-export async function getUserTeamFromDivision(divisionId: string, userId: string, gameweek?: number): Promise<TeamData | null> {
-    try {
-        const db = getFirestoreInstance();
-        const docRef = db.collection('division-teams').doc(divisionId);
-
-        const doc = await docRef.get();
-        if (!doc.exists) {
-            return null;
-        }
-
-        const data = doc.data();
-        const userTeam = data.teams[userId];
-
-        if (!userTeam) {
-            return null;
-        }
-
-        return {
-            gameweek: gameweek || data.gameweek,
-            players: userTeam,
-            lastUpdated: data.lastUpdated
-        };
-
-    } catch (error) {
-        console.error('Get user team from division error:', error);
-        return null;
+    if (!isSetUp) {
+        console.warn(`Division ${divisionId} not set up with new structure - migration may be needed`);
+        // TODO: Implement migration logic or point to admin tools
+        throw new Error(`Division ${divisionId} needs to be migrated to new structure. Please use admin tools.`);
     }
 }

@@ -33,7 +33,7 @@ interface TeamFormation {
 }
 
 const createUserFormation = (userPicks, userId, userName): TeamFormation => {
-    console.log(`Creating formation for ${userName}:`, userPicks); // Debug log
+    console.log(`Creating formation for ${userName}`); // Debug log
 
     const formation: TeamFormation = {
         userId,

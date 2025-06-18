@@ -1,6 +1,4 @@
-/* Location: app/scoring/server/services/gameweek-points.service.ts */
-
-// /scoring/server/services/gameweek-points-service.ts
+// app/scoring/server/services/gameweek-points.service.ts
 import { FirestoreClient } from '../../../_shared/lib/firestore-cache/firestore-client';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 
@@ -23,6 +21,12 @@ export interface GameweekUpdateResult {
     playerCount: number;
     previousGameweek?: number;
     currentGameweek: number;
+    pointsPopulationResult?: {
+        divisionsProcessed: number;
+        documentsUpdated: number;
+        playersUpdated: number;
+        errors: string[];
+    };
 }
 
 export class GameweekPointsService {
@@ -76,6 +80,21 @@ export class GameweekPointsService {
                 currentGameweek
             );
 
+            // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
+            console.log('🔄 Populating points into division-teams documents...');
+            const { populatePointsIntoDivisionDocuments } = await import('../../../_shared/services/division-teams-points-population.service');
+
+            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
+                updateNeeded.gameweeksToGenerate,
+                currentGameweek
+            );
+
+            if (pointsPopulationResult.errors.length > 0) {
+                console.warn('⚠️ Some points population errors:', pointsPopulationResult.errors);
+            }
+
+            console.log(`✅ Points population complete: ${pointsPopulationResult.playersUpdated} players updated`);
+
             // Update metadata
             await this.updatePointsMetadata({
                 lastGeneratedGameweek: currentGameweek,
@@ -99,11 +118,78 @@ export class GameweekPointsService {
                 gameweeksGenerated: updateNeeded.gameweeksToGenerate,
                 playerCount: generationResult.playerCount,
                 currentGameweek,
-                previousGameweek: lastGeneratedGameweek
+                previousGameweek: lastGeneratedGameweek,
+                pointsPopulationResult // Include points population result
             };
 
         } catch (error) {
             console.error('❌ GameweekPointsService - Update failed:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Force regeneration of all points (for manual refresh)
+     */
+    async forceFullRegeneration(): Promise<GameweekUpdateResult> {
+        console.log('🔄 GameweekPointsService - Force full regeneration...');
+
+        try {
+            const currentGameweek = await fplApiCache.getCurrentGameweek();
+            if (!currentGameweek) {
+                throw new Error('Could not determine current gameweek');
+            }
+
+            // Get sample player data to determine available gameweeks
+            const fplPlayers = await fplApiCache.getFplPlayers();
+            const playerIds = fplPlayers.map(p => p.id);
+            const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
+            const availableGameweeks = this.getAvailableGameweeks(fplPlayerGameweeksById);
+
+            // Regenerate ALL available gameweeks
+            const result = await this.generatePointsForGameweeks(availableGameweeks, currentGameweek);
+
+            // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
+            console.log('🔄 Populating points into division-teams documents...');
+            const { populatePointsIntoDivisionDocuments } = await import('../../../_shared/services/division-teams-points-population.service');
+
+            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
+                availableGameweeks,
+                currentGameweek
+            );
+
+            if (pointsPopulationResult.errors.length > 0) {
+                console.warn('⚠️ Some points population errors:', pointsPopulationResult.errors);
+            }
+
+            console.log(`✅ Points population complete: ${pointsPopulationResult.playersUpdated} players updated`);
+
+            // Update metadata
+            await this.updatePointsMetadata({
+                lastGeneratedGameweek: currentGameweek,
+                lastGeneratedAt: new Date().toISOString(),
+                currentGameweek,
+                generationHistory: [
+                    {
+                        gameweek: currentGameweek,
+                        generatedAt: new Date().toISOString(),
+                        playerCount: result.playerCount,
+                        type: 'full'
+                    }
+                ]
+            });
+
+            return {
+                updated: true,
+                reason: 'Full regeneration of all gameweeks requested',
+                gameweeksGenerated: availableGameweeks,
+                playerCount: result.playerCount,
+                currentGameweek,
+                pointsPopulationResult // Include points population result
+            };
+
+        } catch (error) {
+            console.error('❌ GameweekPointsService - Force regeneration failed:', error);
             throw error;
         }
     }
@@ -213,7 +299,27 @@ export class GameweekPointsService {
     }
 
     /**
-     * Get metadata about points generation
+     * Get available gameweeks from player data
+     */
+    private getAvailableGameweeks(
+        fplPlayerGameweeksById: Record<number, any>
+    ): number[] {
+        const gameweekSet = new Set<number>();
+
+        Object.values(fplPlayerGameweeksById).forEach((playerData: any) => {
+            if (playerData?.history) {
+                playerData.history.forEach((gw: any) => {
+                    gameweekSet.add(gw.round);
+                });
+            }
+        });
+
+        return Array.from(gameweekSet).sort((a, b) => a - b);
+    }
+
+
+    /**
+     * Get points metadata from cache
      */
     private async getPointsMetadata(): Promise<GameweekPointsMetadata | null> {
         try {
@@ -222,7 +328,7 @@ export class GameweekPointsService {
                 this.METADATA_DOC_ID
             );
 
-            return doc?.data as GameweekPointsMetadata || null;
+            return doc?.data || null;
         } catch (error) {
             console.error('Error getting points metadata:', error);
             return null;
@@ -230,7 +336,7 @@ export class GameweekPointsService {
     }
 
     /**
-     * Update metadata about points generation
+     * Update points metadata in cache
      */
     private async updatePointsMetadata(metadata: Partial<GameweekPointsMetadata>): Promise<void> {
         try {
@@ -294,75 +400,6 @@ export class GameweekPointsService {
             };
         } catch (error) {
             console.error('Error getting points status:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get available gameweeks from player data
-     */
-    getAvailableGameweeks(
-        fplPlayerGameweeksById: Record<number, any>
-    ): number[] {
-        const gameweekSet = new Set<number>();
-
-        Object.values(fplPlayerGameweeksById).forEach((playerData: any) => {
-            if (playerData?.history) {
-                playerData.history.forEach((gw: any) => {
-                    gameweekSet.add(gw.round);
-                });
-            }
-        });
-
-        return Array.from(gameweekSet).sort((a, b) => a - b);
-    }
-
-    /**
-     * Force regeneration of all points (for manual refresh)
-     */
-    async forceFullRegeneration(): Promise<GameweekUpdateResult> {
-        console.log('🔄 GameweekPointsService - Force full regeneration...');
-
-        try {
-            const currentGameweek = await fplApiCache.getCurrentGameweek();
-            if (!currentGameweek) {
-                throw new Error('Could not determine current gameweek');
-            }
-
-            // Get sample player data to determine available gameweeks
-            const fplPlayers = await fplApiCache.getFplPlayers();
-            const playerIds = fplPlayers.map(p => p.id);
-            const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
-            const availableGameweeks = this.getAvailableGameweeks(fplPlayerGameweeksById);
-
-            // Regenerate ALL available gameweeks
-            const result = await this.generatePointsForGameweeks(availableGameweeks, currentGameweek);
-
-            // Update metadata
-            await this.updatePointsMetadata({
-                lastGeneratedGameweek: currentGameweek,
-                lastGeneratedAt: new Date().toISOString(),
-                currentGameweek,
-                generationHistory: [
-                    {
-                        gameweek: currentGameweek,
-                        generatedAt: new Date().toISOString(),
-                        playerCount: result.playerCount,
-                        type: 'full'
-                    }
-                ]
-            });
-
-            return {
-                updated: true,
-                reason: 'Full regeneration of all gameweeks requested',
-                gameweeksGenerated: availableGameweeks,
-                playerCount: result.playerCount,
-                currentGameweek
-            };
-
-        } catch (error) {
-            console.error('❌ GameweekPointsService - Force regeneration failed:', error);
             throw error;
         }
     }

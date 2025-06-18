@@ -156,7 +156,6 @@ export async function makeDraftPick(formData: FormData) {
         // Get updated draft order and state
         const draftOrder = await getDraftOrderByDivision(divisionId);
         const nextState = getNextDraftState(draftState, draftOrder);
-console.log({nextState})
         // Update draft state
         await updateDraftState(nextState);
 

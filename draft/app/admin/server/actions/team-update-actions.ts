@@ -30,7 +30,8 @@ export async function handleUpdateTeamsGameweek(params: UpdateTeamsParams): Prom
         console.log(`🔄 Updating teams to gameweek ${gameweek} for division: ${divisionId}`);
 
         const db = getFirestoreInstance();
-        const docRef = db.collection('division-teams').doc(divisionId);
+        const docId = `${divisionId}_gw${gameweek}`;
+        const docRef = db.collection('division-teams').doc(docId);
 
         // Get current document
         const doc = await docRef.get();
@@ -88,6 +89,7 @@ export async function handleUpdateTeamsGameweek(params: UpdateTeamsParams): Prom
  */
 export async function handlePlayerLoans(
     divisionId: string,
+    gameweek: number,
     loanUpdates: PlayerLoanUpdate[]
 ): Promise<ActionResult> {
     if (!divisionId || !loanUpdates.length) {
@@ -98,7 +100,8 @@ export async function handlePlayerLoans(
         console.log(`🔄 Processing ${loanUpdates.length} loan updates for division: ${divisionId}`);
 
         const db = getFirestoreInstance();
-        const docRef = db.collection('division-teams').doc(divisionId);
+        const docId = `${divisionId}_gw${gameweek}`;
+        const docRef = db.collection('division-teams').doc(docId);
 
         // Get current document
         const doc = await docRef.get();
@@ -163,10 +166,11 @@ export async function handlePlayerLoans(
 /**
  * Get teams for a division (utility function)
  */
-export async function getTeamsForDivision(divisionId: string) {
+export async function getTeamsForDivision(divisionId: string, gameweek: number) {
     try {
         const db = getFirestoreInstance();
-        const docRef = db.collection('division-teams').doc(divisionId);
+        const docId = `${divisionId}_gw${gameweek}`;
+        const docRef = db.collection('division-teams').doc(docId);
 
         const doc = await docRef.get();
         if (!doc.exists) {

@@ -1,15 +1,7 @@
-/* Location: app/teams/components/football-pitch.module.css */
+/* app/teams/components/football-pitch.module.css */
 
-.pitchContainer {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-}
+.footballPitch {
 
-.pitch {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 2/3;
     background: linear-gradient(
         90deg,
         #2d5a2d 0%,
@@ -18,93 +10,26 @@
         #4a7c4a 75%,
         #2d5a2d 100%
     );
+
+    /*aspect-ratio: 2/3;*/
+    /*background-size: 20px 20px;*/
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    min-height: 500px;
+    position: relative;
     border: 3px solid #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Pitch markings */
-.pitchMarkings {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
+.pitchBackground {
+    position: relative;
+    height: 100%;
+    min-height: 450px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.centerLine {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #ffffff;
-    transform: translateY(-50%);
-}
-
-.centerCircle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80px;
-    height: 80px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.penaltyArea {
-    position: absolute;
-    left: 50%;
-    width: 120px;
-    height: 60px;
-    border: 2px solid #ffffff;
-    transform: translateX(-50%);
-}
-
-.topPenaltyArea {
-    top: 0;
-    border-top: none;
-}
-
-.bottomPenaltyArea {
-    bottom: 0;
-    border-bottom: none;
-}
-
-.goalArea {
-    position: absolute;
-    left: 50%;
-    width: 60px;
-    height: 30px;
-    border: 2px solid #ffffff;
-    transform: translateX(-50%);
-}
-
-.topGoalArea {
-    top: 0;
-    border-top: none;
-}
-
-.bottomGoalArea {
-    bottom: 0;
-    border-bottom: none;
-}
-
-/* Formation layout */
-.formationLayout {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 16px;
-}
 
 .centralAttackerLine,
 .wideAttackerLine,
@@ -214,58 +139,125 @@
     margin-right: 4px;
 }
 
-/* Historical overlay */
-.historicalOverlay {
+
+/* Goal styling */
+.goal {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #ffffff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
+    top: -3px;
+    left: 30%;
+    right: 30%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 3px;
 }
 
-.historicalLabel {
+.goalLine {
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.6);
+    margin-top: 2px;
+}
+
+/* Penalty area */
+.penaltyArea {
+    position: absolute;
+    bottom: -3px;
+    left: 25%;
+    right: 25%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 3px;
+}
+
+.penaltyLine {
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* Empty slot styling */
+.emptySlot {
+    width: 80px;
+    height: 60px;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    backdrop-filter: blur(5px);
 }
 
-.historicalLabel::before {
-    content: '⏰';
+.emptySlotLabel {
+    font-size: var(--font-xs);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
 }
 
-/* Responsive design */
+/* Formation info */
+.formationInfo {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    backdrop-filter: blur(10px);
+}
+
+.formationName {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+}
+
+.gameweekInfo {
+    font-size: var(--font-xs);
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 2px;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .pitch {
-        aspect-ratio: 3/4;
+    .footballPitch {
+        padding: 16px;
+        min-height: 400px;
     }
 
-    .formationLayout {
-        padding: 8px;
+    .pitchBackground {
+        min-height: 350px;
     }
 
-    .playerPosition {
-        min-width: 60px;
-        max-width: 80px;
+    .formation {
+        padding: 12px;
+        gap: 6px;
     }
 
-    .centralAttackerLine,
-    .wideAttackerLine,
-    .midfielderLine,
-    .fullbackLine,
-    .centrebackLine,
-    .goalkeeperLine {
-        gap: 4px;
-        min-height: 50px;
+    .positionRow {
+        gap: 12px;
     }
 
-    /* Tighter spacing on mobile */
-    .centralAttackerLine,
-    .centrebackLine {
-        margin-top: 4px;
-        margin-bottom: 4px;
+    .emptySlot {
+        width: 60px;
+        height: 50px;
+    }
+
+    .formationInfo {
+        position: static;
+        margin-top: 12px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .positionRow {
+        gap: 8px;
+    }
+
+    .emptySlot {
+        width: 50px;
+        height: 40px;
     }
 }

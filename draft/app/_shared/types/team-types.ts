@@ -6,6 +6,7 @@ export interface FirestoreTeamMember {
     teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
     playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
     player: string; // web_name from FPL
+    playerId: number; // FPL player code
     playerCode: number; // FPL player code
     onLoanTo: string | null; // userId of team receiving loan
     onLoanStart: string | null; // ISO date string when loan started
