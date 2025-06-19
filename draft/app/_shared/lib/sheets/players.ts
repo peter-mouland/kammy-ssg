@@ -1,11 +1,11 @@
 /* Location: app/_shared/lib/sheets/players.ts */
 
 import { readSheetRange, type SheetRange } from './utils/common';
-import type { PlayerData } from '../../types';
+import type { PlayersSheetData } from '../../types/sheets-types';
 
 const PLAYERS_SHEET_NAME = 'Players';
 
-export async function readPlayers(): Promise<PlayerData[]> {
+export async function readPlayers(): Promise<PlayersSheetData[]> {
     try {
         console.log(`Reading Sheet Players ...`);
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
@@ -24,9 +24,6 @@ export async function readPlayers(): Promise<PlayerData[]> {
         const headers = data[0].map((h: string) => h.toLowerCase().trim());
         const rows = data.slice(1);
 
-        // console.log('Players spreadsheet headers:', headers);
-        // console.log('Sample row:', rows[0]);
-
         const gsheetPlayers = rows.map((row: any[], index: number) => {
             try {
                 // Helper function to get value by header name
@@ -40,15 +37,15 @@ export async function readPlayers(): Promise<PlayerData[]> {
                     return value;
                 };
 
-                const getNumberValue = (headerName: string): number | undefined => {
+                const getNumberValue = (headerName: string): number => {
                     const value = getValue(headerName);
-                    const num = parseInt(value);
-                    return isNaN(num) ? undefined : num;
+                    const num = parseInt(value, 10);
+                    return num;
                 };
 
-                const player: PlayerData = {
-                    id: getValue('id') || getValue('player_id'),
-                    code: getValue('code'),
+                const player: PlayersSheetData = {
+                    id: getNumberValue('id') || getNumberValue('player_id'),
+                    code: getNumberValue('code'),
                     firstName: getValue('first') || getValue('firstname') || getValue('first_name'),
                     lastName: getValue('last') || getValue('lastname') || getValue('last_name') || getValue('second_name'),
                     position: getValue('position') || getValue('pos'), // This is crucial
@@ -67,7 +64,7 @@ export async function readPlayers(): Promise<PlayerData[]> {
                 console.error(`Error processing player row ${index}:`, error, row);
                 return null;
             }
-        }).filter((player): player is PlayerData => player !== null);
+        }).filter((player) => player !== null);
         console.log(`...found ${gsheetPlayers.length} gSheet Players ...`);
         return gsheetPlayers
     } catch (error) {

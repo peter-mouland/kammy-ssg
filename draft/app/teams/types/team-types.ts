@@ -1,7 +1,7 @@
 // app/teams/types/team-types.ts
 
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { PointsBreakdown } from '../../scoring/types/scoring-types';
+import type { PointsBreakdown, Points } from '../../scoring/types/scoring-types';
 
 /**
  * Core team and division data structures
@@ -25,19 +25,6 @@ export interface UserTeamData {
     lastUpdated: Date;
 }
 
-// Team component types
-export interface FirestoreTeamMember {
-    userId: string;
-    teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
-    playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
-    player: string; // web_name from FPL
-    playerId: number; // FPL player code
-    playerCode: number; // FPL player code
-    onLoanTo: string | null; // userId of team receiving loan
-    onLoanStart: string | null; // ISO date string when loan started
-    isSub: boolean; // true if on bench
-    gameweek: number; // current gameweek (draft = 0)
-}
 
 
 export interface WeeklyPointsData {
@@ -68,9 +55,22 @@ export type PositionSlotKey =
     | 'ca_0' | 'ca_1'
     | 'sub_0';
 
+
+// Team component types
+export interface FirestoreTeamMember {
+    userId: string;
+    teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
+    playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
+    player: string; // web_name from FPL
+    playerId: number; // FPL player code
+    playerCode: number; // FPL player code
+    onLoanTo: string | null; // userId of team receiving loan
+    onLoanStart: string | null; // ISO date string when loan started
+    isSub: boolean; // true if on bench
+    gameweek: number; // current gameweek (draft = 0)
+}
 /**
  * Team position slot with player data and points
- * MOVED: From division-teams-types.ts to proper teams domain
  */
 export interface TeamPositionSlot {
     // Player info (from draft/transfers)
@@ -90,13 +90,13 @@ export interface TeamPositionSlot {
     // Points data per gameweek
     gameweek: {
         stats: PlayerGameweekStatsData;
-        points: PointsBreakdown;
+        points: Points;
     };
 
     // Season totals for this position slot
     season: {
         stats: PlayerGameweekStatsData; // cumulative stats
-        points: PointsBreakdown; // cumulative points
+        points: Points; // cumulative points
     };
 }
 
@@ -158,8 +158,8 @@ export interface TeamFormation {
  * Loan status for team management
  */
 export interface LoanStatus {
-    loanedOut: TeamPositionSlot[];
-    loanedIn: TeamPositionSlot[];
+    loanedOut: FirestoreTeamMember[];
+    loanedIn: FirestoreTeamMember[];
 }
 
 export type DivisionId = 'leagueOne' | 'championship' | 'premierLeague';

@@ -15,7 +15,6 @@ export async function getDashboardData(): Promise<DashboardData> {
         divisions
     ] = await Promise.all([
         fplApiCache.getFplEvents(),
-        fplApiCache.getTopPerformers(20),
         readUserTeams(),
         readDivisions()
     ]);

@@ -3,8 +3,8 @@
 // src/lib/fpl/api.ts
 import type {
     FplBootstrapData,
-    FplPlayerData
-} from '../../types';
+    FplPlayerSeasonData
+} from './fpl-types';
 import { createAppError } from '../sheets/utils/common';
 
 // FPL API endpoints
@@ -14,47 +14,6 @@ const FPL_PLAYER_DETAIL_URL = (playerId: number) => `${FPL_BASE_URL}/element-sum
 const FPL_GAMEWEEK_LIVE_URL = (gameweek: number) => `${FPL_BASE_URL}/event/${gameweek}/live/`;
 const FPL_ENTRY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${entryId}/`;
 const FPL_ENTRY_HISTORY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${entryId}/history/`;
-
-// Type definitions for FPL API responses
-export interface FplPlayerGameweekData {
-    element: number; // player ID
-    fixture: number;
-    opponent_team: number;
-    total_points: number;
-    was_home: boolean;
-    kickoff_time: string;
-    team_h_score: number;
-    team_a_score: number;
-    round: number;
-    minutes: number;
-    goals_scored: number;
-    assists: number;
-    clean_sheets: number;
-    goals_conceded: number;
-    own_goals: number;
-    penalties_saved: number;
-    penalties_missed: number;
-    yellow_cards: number;
-    red_cards: number;
-    saves: number;
-    bonus: number;
-    bps: number;
-    influence: string;
-    creativity: string;
-    threat: string;
-    ict_index: string;
-    starts: number;
-    expected_goals: string;
-    expected_assists: string;
-    expected_goal_involvements: string;
-    expected_goals_conceded: string;
-}
-
-export interface FplPlayerSeasonData {
-    history: FplPlayerGameweekData[];
-    history_past: any[];
-    fixtures: any[];
-}
 
 /**
  * FPL API Client - pure data fetching from FPL endpoints

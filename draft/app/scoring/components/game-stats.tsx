@@ -2,7 +2,7 @@
 
 import styles from './game-stats.module.css';
 import type { UserTeamData, DivisionSheetData } from "../../teams/types/team-types";
-import type { FplPlayerData } from '../../players/types/player-types';
+import type { FplPlayerData } from '../../_shared/lib/fpl/fpl-types';
 
 interface GameStatsProps {
     divisions: DivisionSheetData[];

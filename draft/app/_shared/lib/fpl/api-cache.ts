@@ -1,14 +1,14 @@
 /* Location: app/_shared/lib/fpl/api-cache.ts */
 
 // src/lib/fpl/api-cache.ts
-import type { FplBootstrapData } from '../../types';
-import type { FplPlayerData } from '../../../players/types/player-types';
-import type { FplPlayerSeasonData } from './api';
+import type { FplBootstrapData, FplPlayerData, FplPlayerGameweekData, FplPlayerSeasonData, FplTeam } from './fpl-types';
 import { FplCache } from '../firestore-cache/fpl-cache';
 import { fplApi } from './api';
 import { processBatched } from '../batch-processor';
 import { generateSeasonData } from '../../../scoring/lib'; // todo: shared lib should not have a domain in it
 import { readPlayers } from '../sheets/players';
+import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import type { PlayersSheetData } from '../../types/sheets-types';
 
 const currentSeason = '2024-25';
 
@@ -97,10 +97,10 @@ export class FplApiCache {
             this.fplCache.getTeams(),
             this.fplCache.getEvents(),
             this.fplCache.getElements()
-        ]);
+        ]) ;
 
         if (teams && events && elements) {
-            return { teams, events, elements } as FplBootstrapData;
+            return { teams, events, elements } as unknown as FplBootstrapData;
         }
 
         return null;
@@ -109,7 +109,7 @@ export class FplApiCache {
     /**
      * Get all FPL players
      */
-    async getFplPlayers(): Promise<FplPlayerData[]> {
+    async getFplPlayers(): Promise<EnhancedPlayerData[]> {
         return this.withPromiseDeduplication('players', async () => {
             const startTime = performance.now();
             console.log('🔄 getFplPlayers() - Start');
@@ -126,7 +126,7 @@ export class FplApiCache {
                 console.log('📡 getFplPlayers() - Cache miss, getting from bootstrap');
                 const bootstrap = await this.getFplBootstrapData();
                 console.log(`✅ getFplPlayers() - Complete with ${bootstrap.elements.length} players in ${(performance.now() - startTime).toFixed(2)}ms`);
-                return bootstrap.elements;
+                return bootstrap.elements as unknown as EnhancedPlayerData[];
             } catch (error) {
                 console.error('❌ getFplPlayers() - Error:', error);
                 throw error;
@@ -204,7 +204,7 @@ export class FplApiCache {
     /**
      * Get FPL player by ID
      */
-    async getFplPlayer(playerId: number): Promise<FplPlayerData | null> {
+    async getFplPlayer(playerId: number): Promise<EnhancedPlayerData | null> {
         return this.withPromiseDeduplication(`player-${playerId}`, async () => {
             const startTime = performance.now();
             console.log(`🔄 getFplPlayer(${playerId}) - Start`);
@@ -251,10 +251,10 @@ export class FplApiCache {
             try {
                 console.log('🔄 Step 5 getBatchPlayerDetailedStats:');
                 cached = await this.fplCache.batchGetElementSummaries(playerIds);
-
-            } catch (error) {
-                console.error('❌ Step 5 FAILED:', error.message);
-                throw new Error(`Step 5 failed: ${error.message}`);
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+                console.error('❌ Step 5 FAILED:', errorMessage);
+                throw new Error(`Step 5 failed: ${errorMessage}`);
             }
             const cachedPlayerIds = Object.keys(cached).map(Number);
             const missingPlayerIds = playerIds.filter(id => !cachedPlayerIds.includes(id));
@@ -294,9 +294,10 @@ export class FplApiCache {
                         console.log('🔄 Step 6 populateElementSummaries:');
                         await this.fplCache.populateElementSummaries(freshData);
 
-                    } catch (error) {
-                        console.error('❌ Step 6 FAILED:', error.message);
-                        throw new Error(`Step 6 failed: ${error.message}`);
+                    } catch (error: unknown) {
+                        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+                        console.error('❌ Step 6 FAILED:', errorMessage);
+                        throw new Error(`Step 6 failed: ${errorMessage}`);
                     }
                 }
             }
@@ -311,7 +312,7 @@ export class FplApiCache {
     /**
      * Search players by name
      */
-    async searchPlayersByName(searchTerm: string): Promise<FplPlayerData[]> {
+    async searchPlayersByName(searchTerm: string): Promise<EnhancedPlayerData[]> {
         const startTime = performance.now();
         console.log(`🔄 searchPlayersByName("${searchTerm}") - Start`);
 
@@ -319,26 +320,6 @@ export class FplApiCache {
         console.log(`✅ searchPlayersByName("${searchTerm}") - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
         return result;
     }
-
-
-    /**
-     * Get top performers
-     */
-    async getTopPerformers(limit = 10): Promise<FplPlayerData[]> {
-        const startTime = performance.now();
-        console.log(`🔄 getTopPerformers(${limit}) - Start`);
-
-        const players = await this.getFplPlayers();
-
-        const result = players
-                .filter(player => player.minutes > 0)
-                .sort((a, b) => b.total_points - a.total_points)
-                .slice(0, 10);
-
-        console.log(`✅ getTopPerformers(${limit}) - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
-        return result;
-    }
-
 
     /**
      * Get comprehensive cache status
@@ -542,7 +523,8 @@ export class FplApiCache {
                 readPlayers(),
                 this.getFplPlayers(),
                 this.getFplTeams(),
-            ]);
+            ]) as [PlayersSheetData[], EnhancedPlayerData[], FplTeam[]];
+
             console.log(`✅ Step 1/6: Loaded ${allFplPlayers.length} FPL players, ${sheetsPlayers.length} sheets players`);
 
             // Step 2: Filter FPL players to only include those in sheets
@@ -564,7 +546,7 @@ export class FplApiCache {
                 return acc;
             }, {});
 
-            const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayerData>, player) => {
+            const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
                 acc[player.id] = player;
                 return acc;
             }, {});
@@ -612,7 +594,7 @@ export class FplApiCache {
             readPlayers(),
             this.getFplPlayers(),
             this.getFplTeams(),
-        ]);
+        ]) as [PlayersSheetData[], EnhancedPlayerData[], FplTeam[]];
 
         // Filter FPL players to only include those in sheets
         const sheetsPlayerIds = sheetsPlayers.map(p => p.id);
@@ -632,7 +614,7 @@ export class FplApiCache {
             return acc;
         }, {});
 
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayerData>, player) => {
+        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
             acc[player.id] = player;
             return acc;
         }, {});

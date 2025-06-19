@@ -1,10 +1,10 @@
 /* Location: app/scoring/lib/generators.ts */
 
 import type { EnhancedPlayerData } from '../types/scoring-types';
-import type { FplPlayerData, CustomPosition, PlayerSheetsData } from '../../players/types/player-types';
+import type { CustomPosition, PlayerSheetsData } from '../../players/types/player-types';
 import { convertToPlayerGameweeksStats, convertToPlayerGameweekStats } from './data-conversion';
 import { calculateSeasonPoints, calculateGameweekPoints, getFullBreakdown } from './calculations';
-import type { FplPlayerSeasonData } from '../../_shared/lib/fpl/api';
+import type { FplPlayerData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
 
 const baselineStats = {
     appearance: 0,
@@ -24,15 +24,15 @@ const baselineStats = {
  * Used by: api-cache.ts for full player listings
  */
 export function generateSeasonData(
-    fplPlayers: FplPlayerData[],
+    fplPlayers: EnhancedPlayerData[],
     fplPlayerGameweeksById: Record<number, any>,
     sheetsPlayersById: Record<string, any>
 ): EnhancedPlayerData[] {
     console.log(`🔄 generateSeasonData - Processing ${fplPlayers.length} players`);
 
     return fplPlayers
-        .filter((fplPlayer: FplPlayerData) => sheetsPlayersById[fplPlayer.id])
-        .map((fplPlayer: FplPlayerData) => {
+        .filter((fplPlayer) => sheetsPlayersById[fplPlayer.id])
+        .map((fplPlayer) => {
             const playerSheet = sheetsPlayersById[fplPlayer.id];
             const gameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
             const playerGameweekStats = convertToPlayerGameweeksStats(gameweekData);

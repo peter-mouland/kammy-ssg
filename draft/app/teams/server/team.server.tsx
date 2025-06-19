@@ -99,9 +99,14 @@ export async function getUserTeamFromDivision(
  * Placeholder functions - implement these based on your auth and game state logic
  */
 async function getCurrentUser(url: URL): Promise<CurrentUser | null> {
-    // Implementation needed - get user from session/auth
+    // todo: Implementation needed - get user from session/auth
     // This is a placeholder that needs proper authentication logic
-    throw new Error("getCurrentUser not implemented - needs authentication logic");
+    return {
+        teamName: 'Naked Juans',
+        userName: 'Pete',
+        id: 'naked',
+        divisionId: 'leagueOne',
+    }
 }
 
 async function getCurrentGameweek(): Promise<number> {

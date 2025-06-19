@@ -3,7 +3,7 @@
 import { Link } from "react-router";
 import { Icon } from "../../_shared/components/icon";
 import { Table, type TableColumn } from "../../_shared/components/table";
-import type { FplPlayerData } from "../../_shared/types";
+import type { FplPlayerData } from "../../_shared/lib/fpl/fpl-types";
 
 interface TopPlayersProps {
     players: FplPlayerData[];

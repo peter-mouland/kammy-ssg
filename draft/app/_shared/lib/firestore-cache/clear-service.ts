@@ -81,7 +81,7 @@ export class FirestoreClearService {
     /**
      * Clear a specific collection with batching
      */
-    private async clearCollection(
+    async clearCollection(
         collectionName: string,
         progressCallback?: (progress: { completed: number; total: number }) => void
     ): Promise<void> {

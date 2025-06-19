@@ -12,7 +12,7 @@ export class FirestoreClient {
         CACHE_STATE: 'cache-state'
     } as const;
 
-    private get db() {
+    get db() {
         return getFirestoreInstance();
     }
 

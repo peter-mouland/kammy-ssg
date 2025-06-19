@@ -4,6 +4,11 @@ import type { PositionSlotCardProps } from '../types/team-types';
 import { getPositionSlotDisplayName } from '../../_shared/lib/position-slot-utils';
 import styles from './position-slot-card.module.css';
 
+// Format points display
+const formatPoints = (points: number) => {
+    return points > 0 ? `+${points}` : points.toString();
+};
+
 export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
                                                                       slot,
                                                                       positionSlot,
@@ -18,10 +23,6 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
     const displayPoints = showPoints ? (isHistorical ? gameweekData.points : season.points) : null;
     const displayStats = isHistorical ? gameweekData.stats : season.stats;
 
-    // Format points display
-    const formatPoints = (points: number) => {
-        return points > 0 ? `+${points}` : points.toString();
-    };
 
     // Get main stats to display
     const mainStats = [

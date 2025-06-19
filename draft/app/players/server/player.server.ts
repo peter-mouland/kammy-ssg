@@ -1,7 +1,7 @@
 /* Location: app/players/server/player.server.ts */
 
 // app/routes/server/player-detail.server.ts
-import type { PlayerDetailData, GameweekStatWithPoints } from "../../_shared/types";
+import type { GameweekStatWithPoints, PlayerDetailData } from '../../scoring/types/scoring-types';
 
 export async function getPlayerDetailData(playerId: number): Promise<PlayerDetailData> {
     try {

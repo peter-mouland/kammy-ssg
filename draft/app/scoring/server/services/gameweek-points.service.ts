@@ -261,10 +261,9 @@ export class GameweekPointsService {
         const { readPlayers } = await import('../../../_shared/lib/sheets/players');
 
         // Get required data
-        const [sheetsPlayers, fplPlayers, fplTeams] = await Promise.all([
+        const [sheetsPlayers, fplPlayers] = await Promise.all([
             readPlayers(),
             fplApiCache.getFplPlayers(),
-            fplApiCache.getFplTeams()
         ]);
 
         // Create sheets players lookup

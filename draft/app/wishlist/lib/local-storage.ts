@@ -1,4 +1,5 @@
 /* Location: app/wishlist/lib/local-storage.ts */
+import type { Wishlist } from '../types/wishlist-types';
 
 const WISHLISTS_STORAGE_KEY = 'fantasy-wishlists';
 

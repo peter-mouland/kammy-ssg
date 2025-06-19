@@ -1,11 +1,12 @@
 /* Location: app/_shared/lib/firestore-cache/fpl-cache.ts */
 
-// src/lib/firestore-cache/fpl-cache.ts
 import { FirestoreClient } from './firestore-client'
-import type { FplBootstrapData, FplPlayerData } from '../../types'
+import type { FplBootstrapData, FplGameweek, FplPlayerData, FplPlayerGameweekData, FplPlayerSeasonData, FplTeam } from '../fpl/fpl-types';
 
 import { processBatchedReads } from '../batch-processor';
 import { FirestoreClearService } from './clear-service';
+import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import type { CustomPosition } from '../../../players/types/player-types';
 
 // Filtered FPL Player Data Type (absolute essentials only)
 export interface FilteredFplPlayerData {
@@ -13,11 +14,11 @@ export interface FilteredFplPlayerData {
     first_name: string;
     second_name: string;
     web_name: string;
-    team: number;
+    team_code: number;
     // Remove all season stats - these should come from element summary instead
 }
 
-export const convertFplElementToCache = (element) => ({
+export const convertFplElementToCache = (element: FplPlayerData) => ({
     id: element.id,
     code: element.code,
     first_name: element.first_name,
@@ -28,7 +29,7 @@ export const convertFplElementToCache = (element) => ({
     now_cost: element.now_cost,
 })
 
-export const convertFplElementHistoryToCache = (element) => ({
+export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) => ({
     element: element.element,
     round: element.round,
     fixture: element.fixture,
@@ -49,6 +50,9 @@ export const convertFplElementHistoryToCache = (element) => ({
 })
 
 export class FplCache {
+    private client: FirestoreClient;
+    public clearService: FirestoreClearService;
+
     constructor() {
         this.client = new FirestoreClient();
         this.clearService = new FirestoreClearService()
@@ -59,34 +63,34 @@ export class FplCache {
     /**
      * Get teams from cache
      */
-    async getTeams(): Promise<any[] | null> {
-        const doc = await this.client.getDocument(
+    async getTeams(): Promise<FplTeam[]> {
+        const doc = await this.client.getDocument<FplTeam[]>(
             this.client.collections.FPL_BOOTSTRAP,
             'teams'
         );
 
-        return doc ? doc.data : null;
+        return doc ? doc.data : [];
     }
 
     /**
      * Get events from cache
      */
-    async getEvents(): Promise<any[] | null> {
-        const doc = await this.client.getDocument(
+    async getEvents(): Promise<FplGameweek[]> {
+        const doc = await this.client.getDocument<FplGameweek[]>(
             this.client.collections.FPL_BOOTSTRAP,
             'events'
         );
 
-        return doc ? doc.data : null;
+        return doc ? doc.data : [];
     }
 
     /**
      * Get elements from cache
      */
-    async getElements(): Promise<FilteredFplPlayerData[] | null> {
+    async getElements(): Promise<EnhancedPlayerData[]> {
         try {
             console.log('🔄 getElements() - Reading from Firestore...');
-            const doc = await this.client.getDocument<FilteredFplPlayerData[]>(
+            const doc = await this.client.getDocument<EnhancedPlayerData[]>(
                 this.client.collections.FPL_BOOTSTRAP,
                 'elements'
             );
@@ -96,7 +100,7 @@ export class FplCache {
                 return doc.data;
             } else {
                 console.log('ℹ️ getElements() - No cached elements found');
-                return null;
+                return [];
             }
         } catch (error) {
             console.error('❌ getElements() - Error reading from cache:', error);
@@ -188,7 +192,7 @@ export class FplCache {
         await this.client.setDocument(
             this.client.collections.FPL_BOOTSTRAP,
             'elements',
-            { source: 'fpl-with-draft', data: updatedElements, timestamp: Date.now() }
+            { source: 'fpl-with-draft', data: updatedElements }
         );
     }
 
@@ -214,7 +218,7 @@ export class FplCache {
                 await this.client.setDocument(
                     this.client.collections.FPL_ELEMENTS,
                     `element-${playerIdStr}`,
-                    { source: 'fpl-with-draft', data: updatedSummary, timestamp: Date.now() }
+                    { source: 'fpl-with-draft', data: updatedSummary }
                 );
             }
         }
@@ -227,7 +231,7 @@ export class FplCache {
      */
     async hasDraftData(): Promise<boolean> {
         const elements = await this.getElements();
-        return elements ? elements.some(element => element.draft) : false;
+        return elements ? elements.some(element => 'draft' in element) : false;
     }
 
     /**
@@ -253,45 +257,45 @@ export class FplCache {
     /**
      * Get players by team (from cached elements)
      */
-    async getPlayersByTeam(teamCode: number): Promise<FplPlayerData[]> {
+    async getPlayersByTeam(teamCode: number): Promise<EnhancedPlayerData[]> {
         const elements = await this.getElements();
         if (!elements) return [];
 
         return elements
             .filter(player => player.team_code === teamCode)
-            .sort((a, b) => b.total_points - a.total_points);
+            .sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
     }
 
     /**
      * Get players by position (from cached elements)
      */
-    async getPlayersByPosition(elementType: number): Promise<FplPlayerData[]> {
+    async getPlayersByPosition(position: CustomPosition): Promise<EnhancedPlayerData[]> {
         const elements = await this.getElements();
         if (!elements) return [];
 
         return elements
-            .filter(player => player.element_type === elementType)
-            .sort((a, b) => b.total_points - a.total_points);
+            .filter(player => player.draft.position === position)
+            .sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
     }
 
     /**
      * Get specific players by IDs (from cached elements)
      */
-    async getPlayersByIds(playerIds: number[]): Promise<FplPlayerData[]> {
+    async getPlayersByIds(playerIds: number[]): Promise<EnhancedPlayerData[]> {
         const elements = await this.getElements();
         if (!elements) return [];
 
         const playerMap = new Map(elements.map(player => [player.id, player]));
         return playerIds
             .map(id => playerMap.get(id))
-            .filter((player): player is FplPlayerData => player !== undefined)
+            .filter((player): player is EnhancedPlayerData => player !== undefined)
             .sort((a, b) => a.id - b.id);
     }
 
     /**
      * Search players by name (from cached elements)
      */
-    async searchPlayersByName(searchTerm: string): Promise<FplPlayerData[]> {
+    async searchPlayersByName(searchTerm: string): Promise<EnhancedPlayerData[]> {
         const elements = await this.getElements();
         if (!elements) return [];
 
@@ -478,7 +482,7 @@ export class FplCache {
     async debugElementsSize(): Promise<void> {
         try {
             console.log('🔍 Checking elements document...');
-            const doc = await this.client.getDocument(
+            const doc = await this.client.getDocument<EnhancedPlayerData[]>(
                 this.client.collections.FPL_BOOTSTRAP,
                 'elements'
             );
