@@ -1,45 +1,7 @@
-/* Location: app/scoring/types/scoring-types.ts */
+// app/scoring/types/scoring-types.ts
 
-// /scoring/types/scoring-types.ts
+import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 
-// ================================
-// CORE SCORING TYPES
-// ================================
-
-/**
- * Custom position types for our fantasy system
- */
-export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
-
-/**
- * Player stats for a single gameweek
- */
-export interface PlayerGameweekStatsData {
-    appearance: number;
-    goals: number;
-    assists: number;
-    cleanSheets: number;
-    goalsConceded: number;
-    penaltiesSaved: number;
-    yellowCards: number;
-    redCards: number;
-    saves: number;
-    bonus: number;
-}
-
-/**
- * Extended gameweek stats with additional metadata
- */
-export interface ExtendedPlayerGameweekStatsData extends PlayerGameweekStatsData {
-    playerId?: string;
-    gameweek?: number;
-    fixtureMinutes?: number;
-    updatedAt?: Date;
-}
-
-/**
- * Points breakdown for a player (gameweek or season)
- */
 export interface PointsBreakdown {
     appearance: number;
     goals: number;
@@ -54,54 +16,33 @@ export interface PointsBreakdown {
     total: number;
 }
 
-/**
- * Detailed breakdown with formulas and relevance info
- */
-export interface DetailedPointsBreakdown {
-    [key: string]: {
-        label: string;
-        stat: number;
-        points: number;
-        formula: string | string[];
-        isRelevant: boolean;
-    };
+export interface DetailedPointsBreakdown extends PointsBreakdown {
+    explanations: PointsBreakdownExplanation;
 }
 
-/**
- * Fixture information for gameweek calculations
- */
-export interface GameweekFixture {
-    fixtureId: number;
-    gameweek: number;
-    fixtureMinutes: number;
-    opponent: number;
-    wasHome: boolean;
-    teamHScore: number;
-    teamAScore: number;
+export interface PointsBreakdownExplanation {
+    appearance?: string;
+    goals?: string;
+    assists?: string;
+    cleanSheets?: string;
+    yellowCards?: string;
+    redCards?: string;
+    saves?: string;
+    penaltiesSaved?: string;
+    goalsConceded?: string;
+    bonus?: string;
 }
 
 // ================================
-// SCORING RULES & CONFIGURATION
+// SCORING RULES TYPES
 // ================================
 
-/**
- * Appearance point rules
- */
-export interface AppearanceRules {
-    under45Min: number;
-    over45Min: number;
-}
-
-/**
- * Position-specific scoring rules
- */
 export interface PositionScoringRules {
-    goalPoints: number;
-    assists: number;
-    yellowCard: number;
-    redCardPenalty: number;
-    appearance: AppearanceRules;
-    cleanSheetPoints?: number;
+    appearance?: number;
+    goals?: number;
+    assists?: number;
+    cleanSheets?: number;
+    goalsConceded?: number;
     goalsConcededPenalty?: number;
     savesThreshold?: number;
     savesRatio?: number;
@@ -109,9 +50,6 @@ export interface PositionScoringRules {
     bonus?: number;
 }
 
-/**
- * Complete position rules configuration
- */
 export interface ScoringRulesConfig {
     gk: PositionScoringRules;
     fb: PositionScoringRules;
@@ -122,63 +60,9 @@ export interface ScoringRulesConfig {
 }
 
 // ================================
-// GAMEWEEK POINTS SERVICE TYPES
-// ================================
-
-/**
- * Metadata about gameweek points generation
- */
-export interface GameweekPointsMetadata {
-    lastGeneratedGameweek: number;
-    lastGeneratedAt: string;
-    currentGameweek: number;
-    generationHistory: Array<{
-        gameweek: number;
-        generatedAt: string;
-        playerCount: number;
-        type: 'full' | 'selective';
-    }>;
-}
-
-/**
- * Result of a gameweek points update operation
- */
-export interface GameweekUpdateResult {
-    updated: boolean;
-    reason: string;
-    gameweeksGenerated: number[];
-    playerCount: number;
-    previousGameweek?: number;
-    currentGameweek: number;
-}
-
-/**
- * Status of gameweek points generation
- */
-export interface GameweekPointsStatus {
-    lastGenerated: string | null;
-    lastGameweek: number;
-    currentGameweek: number;
-    needsUpdate: boolean;
-    reason: string;
-}
-
-/**
- * Parameters for points update operations
- */
-export interface PointsUpdateParams {
-    needed: boolean;
-    reason: string;
-    gameweeksToGenerate: number[];
-}
-
-// ================================
 // FPL DATA INTEGRATION TYPES
 // ================================
 
-/**
- * FPL API gameweek data structure
- */
 export interface FplPlayerGameweekData {
     element: number; // player ID
     fixture: number;
@@ -213,22 +97,16 @@ export interface FplPlayerGameweekData {
     expected_goals_conceded: string;
 }
 
-/**
- * FPL player season data structure
- */
 export interface FplPlayerSeasonData {
     history: FplPlayerGameweekData[];
-    history_past: any[];
-    fixtures: any[];
+    history_past: unknown[];
+    fixtures: unknown[];
 }
 
 // ================================
 // ENHANCED PLAYER DATA TYPES
 // ================================
 
-/**
- * Gameweek stat with calculated points
- */
 export interface GameweekStatWithPoints {
     gameweek: number;
     // Basic stats
@@ -260,9 +138,6 @@ export interface GameweekStatWithPoints {
     generatedAt: string | null;
 }
 
-/**
- * Season totals with performance metrics
- */
 export interface SeasonTotals {
     // Basic stats
     gamesPlayed: number;
@@ -292,25 +167,19 @@ export interface SeasonTotals {
     cleanSheetPercentage: number;
 }
 
-/**
- * Complete player detail data with scoring information
- */
 export interface PlayerDetailData {
-    player: any; // FPL player data
+    player: unknown; // FIXED: was 'any', proper type should come from players domain
     team: {
         id: number;
         name: string;
         short_name: string;
     };
-    position: string;
+    position: CustomPosition;
     gameweekStats: GameweekStatWithPoints[];
     seasonTotals: SeasonTotals;
     currentGameweek: number;
 }
 
-/**
- * Enhanced player data with draft information
- */
 export interface EnhancedPlayerData {
     // Base FPL player data
     id: number;
@@ -318,11 +187,11 @@ export interface EnhancedPlayerData {
     second_name: string;
     web_name: string;
     team: number;
-    [key: string]: any; // Allow other FPL properties
+    [key: string]: unknown; // FIXED: was 'any'
 
     // Enhanced draft data
     draft: {
-        position: string;
+        position: CustomPosition;
         pointsTotal: number;
         pointsBreakdown: DetailedPointsBreakdown;
         gameweekPoints?: Record<number, PointsBreakdown>;
@@ -338,43 +207,67 @@ export interface EnhancedPlayerData {
 // DATA GENERATION TYPES
 // ================================
 
-/**
- * Parameters for generating gameweek data
- */
 export interface GameweekDataParams {
     targetGameweeks: number[];
     currentGameweek: number;
 }
 
-/**
- * Result of gameweek data generation
- */
 export interface GameweekDataResult {
     playerCount: number;
     gameweeksGenerated: number[];
     generatedAt: string;
 }
 
-/**
- * Parameters for season data generation
- */
 export interface SeasonDataParams {
     includeBreakdown?: boolean;
     targetGameweeks?: number[];
 }
 
 // ================================
+// GAMEWEEK POINTS SERVICE TYPES
+// ================================
+
+export interface GameweekPointsMetadata {
+    lastGeneratedGameweek: number;
+    lastGeneratedAt: string;
+    currentGameweek: number;
+    generationHistory: Array<{
+        gameweek: number;
+        generatedAt: string;
+        playerCount: number;
+        type: 'full' | 'selective';
+    }>;
+}
+
+export interface GameweekUpdateResult {
+    updated: boolean;
+    reason: string;
+    gameweeksGenerated: number[];
+    playerCount: number;
+    previousGameweek?: number;
+    currentGameweek: number;
+}
+
+export interface GameweekPointsStatus {
+    lastGenerated: string | null;
+    lastGameweek: number;
+    currentGameweek: number;
+    needsUpdate: boolean;
+    reason: string;
+}
+
+export interface PointsUpdateParams {
+    needed: boolean;
+    reason: string;
+    gameweeksToGenerate: number[];
+}
+
+// ================================
 // UTILITY TYPES
 // ================================
 
-/**
- * Stat relevance checker function type
- */
-export type StatRelevanceChecker = (stat: string, position: string) => boolean;
+export type StatRelevanceChecker = (stat: string, position: CustomPosition) => boolean;
 
-/**
- * Position display configuration
- */
 export interface PositionDisplayConfig {
     name: string;
     shortName: string;
@@ -382,9 +275,6 @@ export interface PositionDisplayConfig {
     order: number;
 }
 
-/**
- * Points display formatting options
- */
 export interface PointsDisplayOptions {
     showPrefix?: boolean;
     decimalPlaces?: number;
@@ -395,18 +285,12 @@ export interface PointsDisplayOptions {
 // VALIDATION TYPES
 // ================================
 
-/**
- * Scoring rule validation result
- */
 export interface ScoringRuleValidation {
     isValid: boolean;
     errors: string[];
     warnings: string[];
 }
 
-/**
- * Gameweek data validation result
- */
 export interface GameweekDataValidation {
     isComplete: boolean;
     missingPlayers: number[];
@@ -415,22 +299,7 @@ export interface GameweekDataValidation {
 }
 
 // ================================
-// EXPORT HELPERS
+// TYPE GUARDS (functions belong in utils, not types file)
 // ================================
-
-/**
- * Type guard to check if a position is valid
- */
-export function isValidCustomPosition(position: string): position is CustomPosition {
-    return ['gk', 'fb', 'cb', 'mid', 'wa', 'ca'].includes(position.toLowerCase());
-}
-
-/**
- * Type guard to check if points breakdown is complete
- */
-export function isCompletePointsBreakdown(breakdown: any): breakdown is PointsBreakdown {
-    return breakdown &&
-        typeof breakdown.total === 'number' &&
-        typeof breakdown.appearance === 'number' &&
-        typeof breakdown.goals === 'number';
-}
+// REMOVED: Functions don't belong in types files
+// These should be moved to app/scoring/utils/type-guards.ts

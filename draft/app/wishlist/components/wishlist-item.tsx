@@ -2,16 +2,16 @@
 
 // components/wishlist-item.tsx
 import React, { useState } from 'react';
-import type { WishlistData } from '../types/wishlists';
+import type { Wishlist } from '../types/wishlist-types';
 import styles from './wishlist-item.module.css';
 
 interface WishlistItemProps {
-    wishlist: WishlistData;
+    wishlist: Wishlist;
     isSelected: boolean;
     isEditing: boolean;
     onSelect: () => void;
     onEdit: () => void;
-    onSave: (updates: Partial<WishlistData>) => void;
+    onSave: (updates: Partial<Wishlist>) => void;
     onCancel: () => void;
     onDelete: () => void;
 }

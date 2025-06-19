@@ -6,19 +6,19 @@ import { useWishlists } from '../lib/use-wishlists';
 import styles from './wishlist-tags.module.css';
 
 interface WishlistTagsProps {
-    playerId: string;
+    playerId: number;
     maxVisible?: number;
 }
 
 export function WishlistTags({ playerId, maxVisible = 3 }: WishlistTagsProps) {
     const { getWishlistsForPlayer } = useWishlists();
     const playerWishlists = getWishlistsForPlayer(playerId);
-
+console.log({playerId, playerWishlists, t: typeof playerId})
     if (playerWishlists.length === 0) return null;
 
     const visibleWishlists = playerWishlists.slice(0, maxVisible);
     const hiddenCount = playerWishlists.length - maxVisible;
-
+console.log(visibleWishlists)
     return (
         <div className={styles.container}>
             {visibleWishlists.map(wishlist => (

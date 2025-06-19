@@ -1,7 +1,6 @@
-/* Location: app/draft/components/draft-team.tsx */
+// app/draft/components/draft-team.tsx
 
-// components/draft-team.tsx (fixed version)
-import type { DraftPickData } from "../types";
+import type { DraftPickData } from "../types/draft-types";
 import styles from './draft-team.module.css';
 
 interface DraftTeamProps {
@@ -32,8 +31,8 @@ interface TeamFormation {
     };
 }
 
-const createUserFormation = (userPicks, userId, userName): TeamFormation => {
-    console.log(`Creating formation for ${userName}`); // Debug log
+const createUserFormation = (userPicks: DraftPickData[], userId: string, userName: string): TeamFormation => {
+    console.log(`Creating formation for ${userName}`);
 
     const formation: TeamFormation = {
         userId,

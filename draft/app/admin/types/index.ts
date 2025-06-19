@@ -1,16 +1,20 @@
-/* Location: app/admin/types/index.ts */
-
-// /admin/types/index.ts
+// app/admin/types/index.ts
 
 // Re-export all admin types
 export * from './admin-types';
 
-// Re-export shared types that are commonly used in admin
+// Re-export domain types that are commonly used in admin
+// FIXED: Import from proper domain locations instead of shared types
 export type {
     DivisionData,
     UserTeamData,
+} from '../../teams/types/team-types';
+
+export type {
     DraftOrderData,
     DraftStateData,
-    FplPlayerData
-} from '../../_shared/types';
+} from '../../draft/types/draft-types';
 
+export type {
+    FplPlayerData
+} from '../../players/types/player-types';

@@ -1,5 +1,5 @@
 // /draft/lib/calculate-next-picker.ts
-import type { DraftOrderData, DraftStateData } from '../../_shared/types';
+import type { DraftOrderData, DraftStateData } from '../types/draft-types';
 
 /**
  * Calculate who picks next in the draft sequence

@@ -4,11 +4,11 @@
 import React, { useState } from 'react';
 import { useWishlists } from '../lib/use-wishlists';
 import { CreateWishlistForm } from './wishlist-form';
-import type { FplPlayerData } from '../../_shared/types';
+import type { FplElementType } from '../../_shared/types';
 import styles from './wishlist-button.module.css';
 
 interface WishlistButtonProps {
-    player: FplPlayerData;
+    player: FplElementType;
     size?: 'small' | 'medium' | 'large';
     showLabel?: boolean;
 }
@@ -18,14 +18,14 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
     const [isOpen, setIsOpen] = useState(false);
     const [showCreateForm, setShowCreateForm] = useState(false);
 
-    const playerWishlists = getWishlistsForPlayer(player.id.toString());
+    const playerWishlists = getWishlistsForPlayer(player.id);
     const hasWishlists = playerWishlists.length > 0;
 
     const handleToggleWishlist = (wishlistId: string, isCurrentlyInList: boolean) => {
         if (isCurrentlyInList) {
-            removePlayerFromWishlist(wishlistId, player.id.toString());
+            removePlayerFromWishlist(wishlistId, player.id);
         } else {
-            addPlayerToWishlist(wishlistId, player.id.toString());
+            addPlayerToWishlist(wishlistId, player.id);
         }
     };
 
@@ -94,7 +94,7 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
                                     <p className={styles.emptyMessage}>No wishlists yet. Create one above!</p>
                                 ) : (
                                     wishlists.map(wishlist => {
-                                        const isInList = wishlist.playerIds.includes(player.id.toString());
+                                        const isInList = wishlist.playerIds.includes(player.id);
                                         return (
                                             <label
                                                 key={wishlist.id}

@@ -3,11 +3,10 @@
 // components/wishlist-form.tsx - FIXED VERSION
 import React, { useState } from 'react';
 import { useWishlists } from '../lib/use-wishlists';
-import type { WishlistData } from '../lib/types';
 import styles from './wishlist-form.module.css';
 
 interface CreateWishlistFormProps {
-    onSuccess: (newWishlist?: WishlistData) => void;
+    onSuccess: () => void;
     onCancel: () => void;
 }
 
@@ -24,13 +23,13 @@ export function CreateWishlistForm({ onSuccess, onCancel }: CreateWishlistFormPr
 
         setIsSubmitting(true);
         try {
-            await addWishlist({ label: label.trim(), description: description.trim() || undefined, color: selectedColor });
+            await addWishlist({ label: label.trim(), description: description.trim(), color: selectedColor });
             setLabel('');
             setDescription('');
 
             // Small delay to ensure React has processed the state update
             setTimeout(() => {
-                onSuccess(label.trim());
+                onSuccess();
             }, 100);
         } catch (error) {
             console.error('Error creating wishlist:', error);

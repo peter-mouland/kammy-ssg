@@ -1,10 +1,15 @@
-// /admin/types/admin-types.ts
+// app/admin/types/admin-types.ts
+
+// Import types from their proper domains
 import type {
     DivisionData,
-    UserTeamData,
+    UserTeamData
+} from '../../teams/types/team-types';
+
+import type {
     DraftOrderData,
     DraftStateData
-} from '../../_shared/types';
+} from '../../draft/types/draft-types';
 
 // ==========================================
 // ADMIN DASHBOARD DATA TYPES
@@ -66,7 +71,7 @@ export interface AdminActionResult {
     success: boolean;
     error?: string;
     message?: string;
-    data?: any;
+    data?: unknown; // FIXED: was 'any'
 }
 
 // ==========================================

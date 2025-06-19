@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, type ReactNode } from 'react';
 import { getWishlistsFromStorage, saveWishlistsToStorage } from './local-storage';
+import type { Wishlist, WishlistContextType } from '../types/wishlist-types'
 
 interface WishlistState {
     wishlists: Wishlist[];
@@ -18,7 +19,7 @@ const WishlistColors = {
     pink: '#EC4899',
     yellow: '#EAB308',
     gray: '#6B7280'
-} as const;
+} as Record<string, Wishlist['color']>;
 
 type WishlistAction =
     | { type: 'LOAD_WISHLISTS_START' }
@@ -104,7 +105,7 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                         ? {
                             ...wishlist,
                             playerIds: [...wishlist.playerIds, action.payload.playerId],
-                            updatedAt: new Date()
+                            updatedAt: new Date().toISOString()
                         }
                         : wishlist
                 ),
@@ -122,7 +123,7 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                         ? {
                             ...wishlist,
                             playerIds: wishlist.playerIds.filter(id => id !== action.payload.playerId),
-                            updatedAt: new Date()
+                            updatedAt: new Date().toISOString()
                         }
                         : wishlist
                 ),
@@ -137,24 +138,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
     }
 }
 
-interface WishlistContextType {
-    // State
-    wishlists: Wishlist[];
-    isLoading: boolean;
-    error: string | null;
-
-    // Actions
-    addWishlist: (wishlist: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt'>) => void;
-    updateWishlist: (wishlist: Wishlist) => void;
-    deleteWishlist: (id: string) => void;
-    addPlayerToWishlist: (wishlistId: string, playerId: number) => void;
-    removePlayerFromWishlist: (wishlistId: string, playerId: number) => void;
-
-    // Getters
-    getWishlistById: (id: string) => Wishlist | undefined;
-    getWishlistsForPlayer: (playerId: number) => Wishlist[];
-    isPlayerInWishlist: (wishlistId: string, playerId: number) => boolean;
-}
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
@@ -186,24 +169,25 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }, [state.wishlists]);
 
     // Actions
-    const addWishlist = useCallback((wishlistData: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const addWishlist = useCallback((wishlistData: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt' | 'playerIds'>) => {
         const newWishlist: Wishlist = {
             ...wishlistData,
             playerIds: [],
             id: `wishlist-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            createdAt: new Date(),
-            updatedAt: new Date()
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         };
 
-        console.log('🎯 Context addWishlist called with:', newWishlist.name);
+        console.log('🎯 Context addWishlist called with:', newWishlist.label);
         dispatch({ type: 'ADD_WISHLIST', payload: newWishlist });
     }, []);
 
-    const updateWishlist = useCallback((wishlist: Wishlist) => {
+    const updateWishlist = useCallback((wishlist: Wishlist, updates: Partial<Wishlist>) => {
         console.log('🎯 Context updateWishlist called with:', wishlist.id);
         const updatedWishlist = {
             ...wishlist,
-            updatedAt: new Date()
+            ...updates,
+            updatedAt: new Date().toISOString()
         };
         dispatch({ type: 'UPDATE_WISHLIST', payload: updatedWishlist });
     }, []);

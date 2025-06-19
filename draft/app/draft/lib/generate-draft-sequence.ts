@@ -1,6 +1,6 @@
 /* Location: app/draft/lib/generate-draft-sequence.ts */
 
-import type { DraftOrderData } from '../../types';
+import type { DraftOrderData } from '../types/draft-types';
 
 /**
  * Generate complete draft sequence showing snake pattern

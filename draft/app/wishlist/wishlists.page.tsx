@@ -8,13 +8,13 @@ import { CreateWishlistForm } from "./components/wishlist-form";
 import { WishlistItem } from "./components/wishlist-item";
 import { WishlistDetails } from "./components/wishlist-details";
 import { PageHeader } from '../_shared/components/page-header';
-import type { WishlistData } from "./lib/types";
+import type { Wishlist } from "./types/wishlist-types";
 import styles from './wishlists.page.module.css';
 
 export const WishlistsPage = () => {
     const {
         wishlists,
-        loading,
+        isLoading,
         deleteWishlist,
         updateWishlist,
         removePlayerFromWishlist,
@@ -42,12 +42,12 @@ export const WishlistsPage = () => {
         }
     };
 
-    const handleEditWishlist = async (wishlist: WishlistData, updates: Partial<WishlistData>) => {
-        await updateWishlist(wishlist.id, updates);
+    const handleEditWishlist = async (wishlist: Wishlist, updates: Partial<Wishlist>) => {
+        await updateWishlist(wishlist, updates);
         setEditingWishlist(null);
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className={styles.loading}>
                 <div className={styles.loadingSpinner} />
@@ -85,8 +85,8 @@ export const WishlistsPage = () => {
                         {showCreateForm && (
                             <div className={styles.createFormContainer}>
                                 <CreateWishlistForm
-                                    onSuccess={() => handleCreateSuccess(false)}
-                                    onCancel={() => handleCreateSuccess(false)}
+                                    onSuccess={() => handleCreateSuccess()}
+                                    onCancel={() => handleCreateSuccess()}
                                 />
                             </div>
                         )}

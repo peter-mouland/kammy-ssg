@@ -199,7 +199,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             key: 'wishlists',
             header: 'Wishlists',
             render: (_, player) => (
-                <WishlistTags playerId={player.id.toString()} maxVisible={2} />
+                <WishlistTags playerId={player.id} maxVisible={2} />
             )
         },
         {

@@ -5,9 +5,8 @@ import {
 } from './division-teams.service';
 import { readDivisions } from '../lib/sheets/divisions';
 import type {
-    DivisionTeamsDocument,
     TeamPositionSlot,
-    PositionSlot
+    PositionSlotKey,
 } from '../types/division-teams-types';
 import type { PlayerGameweekStatsData, PointsBreakdown } from '../../scoring/types/scoring-types';
 
@@ -130,8 +129,8 @@ async function populatePointsForDivisionGameweek(
             }
 
             // Update each position slot
-            for (const [slotKey, positionSlot] of Object.entries(teamData.roster)) {
-                const slot = slotKey as PositionSlot;
+            for (const [slotKey, positionSlot] of Object.entries<TeamPositionSlot>(teamData.roster)) {
+                const slot = slotKey as PositionSlotKey;
                 const playerCode = positionSlot.player.playerCode;
                 const playerId = positionSlot.player.playerId;
                 const player = await fplApiCache['fplCache'].getElementGameweek(playerId);

@@ -1,10 +1,10 @@
 /* Location: app/wishlist/lib/wishlist-manager.ts */
 
-import type { WishlistData, WishlistColors } from './types';
+import type { Wishlist } from '../types/wishlist-types';
 
 export class WishlistManager {
     private static readonly STORAGE_KEY = 'fantasy-wishlists';
-    private static readonly COLORS: WishlistColors = {
+    private static readonly COLORS = {
         blue: '#3B82F6',
         green: '#10B981',
         purple: '#8B5CF6',
@@ -20,7 +20,7 @@ export class WishlistManager {
         return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
     }
 
-    static getWishlists(): WishlistData[] {
+    static getWishlists(): Wishlist[] {
         if (!this.isClient) {
             console.log('Server-side: returning empty wishlists array');
             return [];
@@ -37,7 +37,7 @@ export class WishlistManager {
         }
     }
 
-    static saveWishlists(wishlists: WishlistData[]): void {
+    static saveWishlists(wishlists: Wishlist[]): void {
         if (!this.isClient) {
             console.warn('Server-side: cannot save wishlists to localStorage');
             return;
@@ -52,7 +52,7 @@ export class WishlistManager {
         }
     }
 
-    static createWishlist(label: string, description?: string, color?: string): WishlistData {
+    static createWishlist(label: string, description?: string, color?: string): Wishlist {
         if (!this.isClient) {
             throw new Error('Cannot create wishlist on server-side');
         }
@@ -62,7 +62,7 @@ export class WishlistManager {
         const availableColors = Object.values(this.COLORS).filter(c => !usedColors.has(c));
         const selectedColor = color || availableColors[0] || this.COLORS.blue;
 
-        const newWishlist: WishlistData = {
+        const newWishlist: Wishlist = {
             id: this.generateId(),
             label,
             description,
@@ -77,7 +77,7 @@ export class WishlistManager {
         return newWishlist;
     }
 
-    static updateWishlist(id: string, updates: Partial<Omit<WishlistData, 'id' | 'createdAt'>>): boolean {
+    static updateWishlist(id: string, updates: Partial<Omit<Wishlist, 'id' | 'createdAt'>>): boolean {
         if (!this.isClient) {
             console.warn('Server-side: cannot update wishlist');
             return false;
@@ -113,7 +113,7 @@ export class WishlistManager {
         return true;
     }
 
-    static addPlayerToWishlist(wishlistId: string, playerId: string): boolean {
+    static addPlayerToWishlist(wishlistId: string, playerId: number): boolean {
         if (!this.isClient) {
             console.warn('Server-side: cannot add player to wishlist');
             return false;
@@ -131,7 +131,7 @@ export class WishlistManager {
         return true;
     }
 
-    static removePlayerFromWishlist(wishlistId: string, playerId: string): boolean {
+    static removePlayerFromWishlist(wishlistId: string, playerId: number): boolean {
         if (!this.isClient) {
             console.warn('Server-side: cannot remove player from wishlist');
             return false;
@@ -152,13 +152,13 @@ export class WishlistManager {
         return true;
     }
 
-    static getPlayerWishlists(playerId: string): WishlistData[] {
+    static getPlayerWishlists(playerId: number): Wishlist[] {
         return this.getWishlists().filter(wishlist =>
             wishlist.playerIds.includes(playerId)
         );
     }
 
-    static isPlayerInWishlist(playerId: string, wishlistId: string): boolean {
+    static isPlayerInWishlist(playerId: number, wishlistId: string): boolean {
         const wishlist = this.getWishlists().find(w => w.id === wishlistId);
         return wishlist?.playerIds.includes(playerId) || false;
     }
@@ -172,7 +172,7 @@ export class WishlistManager {
         return Object.values(this.COLORS).filter(color => !usedColors.has(color));
     }
 
-    static getAllColors(): WishlistColors {
+    static getAllColors() {
         return this.COLORS;
     }
 

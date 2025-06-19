@@ -1,10 +1,12 @@
 // app/_shared/types/division-teams-types.ts
-import type { PlayerGameweekStatsData, PointsBreakdown } from '../../scoring/types/scoring-types';
+
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { PointsBreakdown } from '../../scoring/types/scoring-types';
 
 /**
  * Position slot identifier (e.g., "gk_0", "cb_0", "cb_1", "sub_0")
  */
-export type PositionSlot = "gk_0" | "sub_0" | "cb_0" | "cb_1" | "fb_0" | "fb_1" | "mid_0" | "mid_1" | "wa_0" | "wa_1" | "ca_0" | "ca_1";
+export type PositionSlotKey = "gk_0" | "sub_0" | "cb_0" | "cb_1" | "fb_0" | "fb_1" | "mid_0" | "mid_1" | "wa_0" | "wa_1" | "ca_0" | "ca_1";
 
 /**
  * Player information and points for a specific position slot
@@ -37,9 +39,7 @@ export interface TeamPositionSlot {
     };
 }
 
-type Roster = {
-    [positionSlot: PositionSlot]: TeamPositionSlot;
-};
+type Roster = Record<PositionSlotKey, TeamPositionSlot>
 
 /**
  * Complete division teams document structure
@@ -111,7 +111,7 @@ export interface PlayerAssignmentData {
  */
 export interface LoanUpdateOperation {
     userId: string;
-    positionSlot: PositionSlot;
+    positionSlot: PositionSlotKey;
     onLoanTo: string | null;
     onLoanStart: string | null;
 }
@@ -120,7 +120,7 @@ export interface LoanUpdateOperation {
  * Points update operation
  */
 export interface PositionPointsUpdate {
-    positionSlot: PositionSlot;
+    positionSlot: PositionSlotKey;
     gameweekStats: PlayerGameweekStatsData;
     gameweekPoints: PointsBreakdown;
     seasonStats: PlayerGameweekStatsData;

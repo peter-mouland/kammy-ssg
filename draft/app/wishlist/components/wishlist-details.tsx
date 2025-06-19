@@ -1,19 +1,21 @@
-/* Location: app/wishlist/components/wishlist-details.tsx */
+// app/wishlist/components/wishlist-details.tsx
 
+import React from 'react';
+import type { Wishlist } from '../types/wishlist-types';
 
-// components/wishlist-details.tsx
-import React, { useState } from 'react';
 import styles from './wishlist-item.module.css';
 
 interface WishlistDetailsProps {
-    wishlist: WishlistData;
-    onRemovePlayer: (wishlistId: string, playerId: string) => void;
+    wishlist: Wishlist;
+    onRemovePlayer: (wishlistId: string, playerId: number) => void;
+    playersById: any,
+    teamsByCode: any,
 }
 
 export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePlayer }: WishlistDetailsProps) {
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = React.useState('');
 
-    const handleRemovePlayer = (playerId: string) => {
+    const handleRemovePlayer = (playerId: number) => {
         if (confirm('Remove this player from the wishlist?')) {
             onRemovePlayer(wishlist.id, playerId);
         }
@@ -94,10 +96,11 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
 
 // components/wishlist-player-row.tsx
 interface WishlistPlayerRowProps {
-    playerId: string;
     wishlistId: string;
     searchTerm: string;
     onRemove: () => void;
+    player: any,
+    teamsByCode: any,
 }
 
 function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: WishlistPlayerRowProps) {

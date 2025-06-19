@@ -8,7 +8,7 @@ import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import { getNextDraftState } from "../lib/get-next-draft-state";
 import { generateDraftSequence } from "../lib/generate-draft-sequence";
-import type { DraftPickData, DraftOrderData } from "../../_shared/types";
+import type { DraftPickData, DraftOrderData } from "../types/draft-types";
 
 import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
 

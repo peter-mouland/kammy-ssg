@@ -1,6 +1,6 @@
 /* Location: app/draft/lib/get-next-draft-state.ts */
 
-import type { DraftOrderData, DraftStateData } from '../../types';
+import type { DraftOrderData, DraftStateData } from '../types/draft-types';
 
 /**
  * Calculate the next user in snake draft order
