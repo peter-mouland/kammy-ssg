@@ -1,6 +1,6 @@
 // app/teams/components/football-pitch.tsx
 import React from 'react';
-import type { FormationDisplayProps } from '../types/team-view-types';
+import type { FormationDisplayProps } from '../types/team-types';
 import { PositionSlotCard } from './position-slot-card';
 import { PlayerCard } from './player-card';
 import {

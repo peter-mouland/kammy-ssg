@@ -6,7 +6,7 @@ export * from './admin-types';
 // Re-export domain types that are commonly used in admin
 // FIXED: Import from proper domain locations instead of shared types
 export type {
-    DivisionData,
+    DivisionSheetData,
     UserTeamData,
 } from '../../teams/types/team-types';
 

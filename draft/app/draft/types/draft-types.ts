@@ -80,7 +80,7 @@ export interface DraftPlayer {
 /**
  * Position slot for team formation display
  */
-export interface PositionSlot {
+export interface DraftPositionSlot {
     id: string;
     position: string;
     player?: DraftPickData;
@@ -94,13 +94,13 @@ export interface TeamFormation {
     userId: string;
     userName: string;
     positions: {
-        gk: PositionSlot[];
-        cb: PositionSlot[];
-        fb: PositionSlot[];
-        mid: PositionSlot[];
-        wa: PositionSlot[];
-        ca: PositionSlot[];
-        sub: PositionSlot[];
+        gk: DraftPositionSlot[];
+        cb: DraftPositionSlot[];
+        fb: DraftPositionSlot[];
+        mid: DraftPositionSlot[];
+        wa: DraftPositionSlot[];
+        ca: DraftPositionSlot[];
+        sub: DraftPositionSlot[];
     };
 }
 

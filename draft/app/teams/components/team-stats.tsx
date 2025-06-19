@@ -1,6 +1,6 @@
 // app/teams/components/team-stats.tsx
 import React, { useMemo } from 'react';
-import type { TeamStatsProps, TeamStatsData } from '../types/team-view-types';
+import type { TeamStatsProps, TeamStatsData } from '../types/team-types';
 import {
     calculateRosterTotalPoints,
     getRosterTopScorer,

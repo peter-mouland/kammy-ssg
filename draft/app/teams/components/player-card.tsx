@@ -2,7 +2,7 @@
 
 // /teams/components/player-card.tsx
 import React from 'react';
-import type { FirestoreTeamMember } from '../types';
+import type { FirestoreTeamMember } from '../types/team-types';
 import styles from './player-card.module.css';
 
 interface PlayerCardProps {

@@ -4,7 +4,7 @@
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { TeamView } from './components/team-view';
-import type { TeamViewData } from './types';
+import type { TeamViewData } from './types/team-types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const { loadTeamData } = await import('./server/team.server');
         const url = new URL(request.url);

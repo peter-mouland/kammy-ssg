@@ -4,7 +4,7 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { requestFormData } from '../_shared/lib/form-data';
-import type { UserTeamData, DivisionData } from "../_shared/types";
+import type { UserTeamData, DivisionSheetData } from "../teams/types/team-types";
 import { LeagueStandings } from './league-standings'
 
 export const meta: MetaFunction = () => {
@@ -16,7 +16,7 @@ export const meta: MetaFunction = () => {
 
 interface LoaderData {
     userTeamsByDivision: Record<string, UserTeamData[]>;
-    divisions: DivisionData[];
+    divisions: DivisionSheetData[];
     selectedDivision?: string;
 }
 
@@ -25,7 +25,7 @@ interface ActionData {
     error?: string;
 }
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
         const selectedDivision = url.searchParams.get("division");
@@ -42,7 +42,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
 

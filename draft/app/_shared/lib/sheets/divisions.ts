@@ -1,6 +1,6 @@
 /* Location: app/_shared/lib/sheets/divisions.ts */
 
-import type { DivisionData } from '../../types';
+import type { DivisionSheetData } from '../../../teams/types/team-types';
 import {
     readSheetRange,
     writeSheetRange,
@@ -17,20 +17,20 @@ import { CACHE_CONFIG } from './cache-config';
 // Sheet configuration
 const DIVISIONS_SHEET_NAME = 'Divisions';
 const DIVISIONS_HEADERS = {
-    'ID': 'id' as keyof DivisionData,
-    'Label': 'label' as keyof DivisionData,
-    'Order': 'order' as keyof DivisionData
+    'ID': 'id' as keyof DivisionSheetData,
+    'Label': 'label' as keyof DivisionSheetData,
+    'Order': 'order' as keyof DivisionSheetData
 };
 
 // Transform functions for parsing
-const DIVISIONS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DivisionData, (value: any) => any>> = {
+const DIVISIONS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DivisionSheetData, (value: any) => any>> = {
     order: parseSheetNumber
 };
 
 /**
  * Read all divisions from the sheet
  */
-export async function originalReadDivisions(): Promise<DivisionData[]> {
+export async function originalReadDivisions(): Promise<DivisionSheetData[]> {
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
 
     try {
@@ -45,7 +45,7 @@ export async function originalReadDivisions(): Promise<DivisionData[]> {
             return [];
         }
 
-        return parseHeaderBasedData<DivisionData>(
+        return parseHeaderBasedData<DivisionSheetData>(
             rawData,
             DIVISIONS_HEADERS,
             DIVISIONS_TRANSFORM_FUNCTIONS
@@ -71,7 +71,7 @@ export async function readDivisions() {
  * Write divisions to the sheet (overwrites existing data)
  */
 export async function writeDivisions(
-    divisions: DivisionData[]
+    divisions: DivisionSheetData[]
 ): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
@@ -96,7 +96,7 @@ export async function writeDivisions(
  * Add a new division to the sheet
  */
 export async function addDivision(
-    division: DivisionData
+    division: DivisionSheetData
 ): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
@@ -122,7 +122,7 @@ export async function addDivision(
  */
 export async function findDivisionById(
     divisionId: string
-): Promise<DivisionData | null> {
+): Promise<DivisionSheetData | null> {
     try {
         const divisions = await readDivisions();
         return divisions.find(div => div.id === divisionId) || null;
@@ -138,7 +138,7 @@ export async function findDivisionById(
 /**
  * Get divisions ordered by their order field
  */
-export async function getDivisionsOrdered(): Promise<DivisionData[]> {
+export async function getDivisionsOrdered(): Promise<DivisionSheetData[]> {
     try {
         const divisions = await readDivisions();
         return divisions.sort((a, b) => a.order - b.order);
@@ -156,7 +156,7 @@ export async function getDivisionsOrdered(): Promise<DivisionData[]> {
  */
 export async function updateDivision(
     divisionId: string,
-    updates: Partial<DivisionData>
+    updates: Partial<DivisionSheetData>
 ): Promise<boolean> {
     try {
         const divisions = await readDivisions();
@@ -207,7 +207,7 @@ export async function deleteDivision(
 /**
  * Validate division data
  */
-export function validateDivisionData(data: Partial<DivisionData>): string[] {
+export function validateDivisionData(data: Partial<DivisionSheetData>): string[] {
     const errors: string[] = [];
 
     if (!data.id || typeof data.id !== 'string' || data.id.trim().length === 0) {

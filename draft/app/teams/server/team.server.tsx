@@ -6,8 +6,7 @@ import {
 } from '../../_shared/services/division-teams.service';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
-import type { TeamViewData } from '../types/team-view-types';
-import type { TeamGameweekData } from '../../_shared/types/division-teams-types';
+import type { TeamViewData, TeamGameweekData, CurrentUser, Division, DivisionSheetData } from '../types/team-types';
 
 export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
     try {
@@ -60,11 +59,12 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             currentUser: {
                 id: currentUser.id,
                 userName: userTeam.userName,
-                teamName: userTeam.teamName
+                teamName: userTeam.teamName,
+                divisionId:  userTeam.divisionId,
             },
             division: {
                 id: division.id,
-                name: division.name
+                name: division.label
             },
             currentGameweek,
             currentTeam,
@@ -98,15 +98,10 @@ export async function getUserTeamFromDivision(
 /**
  * Placeholder functions - implement these based on your auth and game state logic
  */
-async function getCurrentUser(url: URL): Promise<{ id: string; divisionId: string } | null> {
-    // TODO: Implement actual user authentication
-    // This might come from cookies, session, JWT, etc.
-
-    // For now, return a mock user - replace with real auth logic
-    return {
-        id: 'naked',
-        divisionId: 'leagueOne'
-    };
+async function getCurrentUser(url: URL): Promise<CurrentUser | null> {
+    // Implementation needed - get user from session/auth
+    // This is a placeholder that needs proper authentication logic
+    throw new Error("getCurrentUser not implemented - needs authentication logic");
 }
 
 async function getCurrentGameweek(): Promise<number> {

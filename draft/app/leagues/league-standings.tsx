@@ -1,7 +1,7 @@
 /* Location: app/leagues/league-standings.tsx */
 
 import { useLoaderData, useActionData, Form, useSearchParams } from "react-router";
-import type { UserTeamData, DivisionData } from "../types";
+import type { UserTeamData, DivisionSheetData } from "../teams/types/team-types";
 import { SelectDivision } from '../_shared/components/select-division';
 import { PageHeader } from '../_shared/components/page-header';
 
@@ -30,7 +30,7 @@ function DivisionStandingsTable({
                                     teams,
                                     showDivisionColumn = false
                                 }: {
-    division: DivisionData;
+    division: DivisionSheetData;
     teams: UserTeamData[];
     showDivisionColumn?: boolean;
 }) {

@@ -3,6 +3,7 @@
 import React from 'react';
 import { useFetcher } from 'react-router';
 import styles from './draft-card.module.css';
+import type { DivisionId } from '../../../teams/types/team-types';
 
 interface DivisionData {
     id: string;
@@ -12,6 +13,7 @@ interface DivisionData {
 interface UserTeamData {
     userId: string;
     userName: string;
+    divisionId: DivisionId
 }
 
 interface DraftOrderData {

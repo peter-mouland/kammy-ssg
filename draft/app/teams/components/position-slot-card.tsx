@@ -1,6 +1,6 @@
 // app/teams/components/position-slot-card.tsx
 import React from 'react';
-import type { PositionSlotCardProps } from '../types/team-view-types';
+import type { PositionSlotCardProps } from '../types/team-types';
 import { getPositionSlotDisplayName } from '../../_shared/lib/position-slot-utils';
 import styles from './position-slot-card.module.css';
 

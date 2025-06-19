@@ -2,7 +2,7 @@
 
 // Import types from their proper domains
 import type {
-    DivisionData,
+    DivisionSheetData,
     UserTeamData
 } from '../../teams/types/team-types';
 
@@ -16,7 +16,7 @@ import type {
 // ==========================================
 
 export interface AdminDashboardData {
-    divisions: DivisionData[];
+    divisions: DivisionSheetData[];
     draftOrders: Record<string, DraftOrderData[]>;
     userTeamsByDivision: Record<string, UserTeamData[]>;
     draftState: DraftStateData | null;

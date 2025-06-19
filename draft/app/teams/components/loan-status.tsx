@@ -3,7 +3,7 @@
 // /teams/components/loan-status.tsx
 import React from 'react';
 import { PlayerCard } from './player-card';
-import type { FirestoreTeamMember } from '../types';
+import type { FirestoreTeamMember } from '../types/team-types';
 import styles from './loan-status.module.css';
 
 interface LoanStatusProps {

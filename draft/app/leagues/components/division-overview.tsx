@@ -2,10 +2,10 @@
 
 import { Icon } from "../../_shared/components/icon";
 import styles from './division-overview.module.css';
-import type { DivisionData, UserTeamData } from "../../_shared/types";
+import type { DivisionSheetData, UserTeamData } from "../../teams/types/team-types";
 
 interface DivisionOverviewProps {
-    divisions: DivisionData[];
+    divisions: DivisionSheetData[];
     leagueStandings: UserTeamData[];
 }
 

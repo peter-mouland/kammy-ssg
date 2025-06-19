@@ -1,6 +1,6 @@
 /* Location: app/_shared/lib/sheets/user-teams.ts */
 
-import type { UserTeamData } from '../../types';
+import type { UserTeamData } from '../../../teams/types/team-types';
 import {
     readSheetRange,
     writeSheetRange,

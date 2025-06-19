@@ -1,10 +1,10 @@
 // app/_shared/lib/roster-conversion-utils.ts
 import type {
-    PositionSlot,
+    TeamFormation,
+    LoanStatus,
+    PositionSlotKey,
     TeamPositionSlot,
-    PlayerAssignmentData
-} from '../types/division-teams-types';
-import type { TeamFormation, LoanStatus } from '../../teams/types/team-view-types';
+    PlayerAssignmentData } from '../../teams/types/team-types';
 import {
     getFormationSlots,
     parsePositionSlot,
@@ -19,8 +19,8 @@ import type { PlayerGameweekStatsData, PointsBreakdown } from '../../scoring/typ
 export function convertLegacyPlayersToRoster(
     legacyPlayers: any[],
     gameweek: number = 0
-): Record<PositionSlot, TeamPositionSlot> {
-    const roster: Record<PositionSlot, TeamPositionSlot> = {} as Record<PositionSlot, TeamPositionSlot>;
+): Record<PositionSlotKey, TeamPositionSlot> {
+    const roster: Record<PositionSlotKey, TeamPositionSlot> = {} as Record<PositionSlotKey, TeamPositionSlot>;
 
     // Sort players by position priority and sub status
     const sortedPlayers = legacyPlayers.sort((a, b) => {
@@ -72,7 +72,7 @@ export function convertLegacyPlayersToRoster(
  * Convert roster to formation structure for display components
  */
 export function convertRosterToFormation(
-    roster: Record<PositionSlot, TeamPositionSlot>
+    roster: Record<PositionSlotKey, TeamPositionSlot>
 ): TeamFormation {
     const formation: TeamFormation = {
         goalkeeper: [],
@@ -117,7 +117,7 @@ export function convertRosterToFormation(
  * Extract loan status from roster
  */
 export function extractLoanStatus(
-    roster: Record<PositionSlot, TeamPositionSlot>,
+    roster: Record<PositionSlotKey, TeamPositionSlot>,
     currentUserId: string
 ): LoanStatus {
     const loanedOut: TeamPositionSlot[] = [];
@@ -140,12 +140,12 @@ export function extractLoanStatus(
  * Get substitute players from roster
  */
 export function getSubstitutePlayers(
-    roster: Record<PositionSlot, TeamPositionSlot>
+    roster: Record<PositionSlotKey, TeamPositionSlot>
 ): TeamPositionSlot[] {
     const substitutes: TeamPositionSlot[] = [];
 
     for (const [slot, positionSlot] of Object.entries(roster)) {
-        const { isSub } = parsePositionSlot(slot as PositionSlot);
+        const { isSub } = parsePositionSlot(slot as PositionSlotKey);
         if (isSub) {
             substitutes.push(positionSlot);
         }
@@ -158,7 +158,7 @@ export function getSubstitutePlayers(
  * Get starting XI players from roster
  */
 export function getStartingXIPlayers(
-    roster: Record<PositionSlot, TeamPositionSlot>
+    roster: Record<PositionSlotKey, TeamPositionSlot>
 ): TeamPositionSlot[] {
     const startingXI: TeamPositionSlot[] = [];
 
@@ -176,7 +176,7 @@ export function getStartingXIPlayers(
  */
 export function createPlayerAssignment(
     positionSlot: TeamPositionSlot,
-    slot: PositionSlot
+    slot: PositionSlotKey
 ): PlayerAssignmentData {
     return {
         playerId: positionSlot.player.playerId,
@@ -196,7 +196,7 @@ export function createPlayerAssignment(
  * Calculate total points for roster
  */
 export function calculateRosterTotalPoints(
-    roster: Record<PositionSlot, TeamPositionSlot>,
+    roster: Record<PositionSlotKey, TeamPositionSlot>,
     useSeasonPoints: boolean = true
 ): number {
     let total = 0;
@@ -213,17 +213,17 @@ export function calculateRosterTotalPoints(
  * Get top scorer from roster
  */
 export function getRosterTopScorer(
-    roster: Record<PositionSlot, TeamPositionSlot>,
+    roster: Record<PositionSlotKey, TeamPositionSlot>,
     useSeasonPoints: boolean = true
-): { slot: PositionSlot; player: TeamPositionSlot; points: number } | null {
-    let topScorer: { slot: PositionSlot; player: TeamPositionSlot; points: number } | null = null;
+): { slot: PositionSlotKey; player: TeamPositionSlot; points: number } | null {
+    let topScorer: { slot: PositionSlotKey; player: TeamPositionSlot; points: number } | null = null;
 
     for (const [slot, positionSlot] of Object.entries(roster)) {
         const points = useSeasonPoints ? positionSlot.season.points.total : positionSlot.gameweek.points.total;
 
         if (!topScorer || points > topScorer.points) {
             topScorer = {
-                slot: slot as PositionSlot,
+                slot: slot as PositionSlotKey,
                 player: positionSlot,
                 points
             };

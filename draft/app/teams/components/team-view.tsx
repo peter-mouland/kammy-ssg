@@ -6,8 +6,7 @@ import { GameweekSelector } from './gameweek-selector';
 import { TeamStats } from './team-stats';
 import { PositionSlotCard } from './position-slot-card';
 import { LoanStatus } from './loan-status';
-import type { TeamViewData } from '../types/team-view-types';
-import type { TeamGameweekData } from '../../_shared/types/division-teams-types';
+import type { TeamViewData, TeamGameweekData } from '../types/team-types';
 import {
     convertRosterToFormation,
     extractLoanStatus,
