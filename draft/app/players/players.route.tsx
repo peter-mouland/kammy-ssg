@@ -3,8 +3,8 @@
 // app/routes/players.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
-import type { PlayerStatsData } from "../_shared/types";
-import { PlayersPage } from '../players/players.page'
+import { PlayersPage } from './players.page'
+import type { PlayerStatsData } from './types/player-types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         // Dynamic import to keep server code on server
         const { getPlayerStatsData } = await import("../players/server/players.server");

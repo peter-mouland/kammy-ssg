@@ -3,8 +3,8 @@
 // app/routes/players.$playerId.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
-import type { PlayerDetailData } from "../_shared/types";
-import { PlayerPage } from '../players/player.page'
+import type { PlayerDetailData } from './types/player-types';
+import { PlayerPage } from './player.page'
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
     const playerName = data?.player ? `${data.player.first_name} ${data.player.second_name}` : 'Player';
@@ -14,7 +14,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     ];
 };
 
-export async function loader({ params }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ params }: LoaderFunctionArgs) {
     const playerId = params.playerId;
 
     if (!playerId || isNaN(Number(playerId))) {

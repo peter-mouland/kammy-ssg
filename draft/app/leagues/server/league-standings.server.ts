@@ -3,7 +3,7 @@
 // app/routes/server/league-standings.server.ts
 import { readUserTeams, getUserTeamsByDivision, recalculateLeagueRanks } from "../../_shared/lib/sheets/user-teams";
 import { readDivisions } from "../../_shared/lib/sheets/divisions";
-import type { UserTeamData, DivisionSheetData } from "../../teams/types/team-types";
+import type { UserTeamData, DivisionSheetData, DivisionId } from '../../teams/types/team-types';
 
 export interface LeagueStandingsLoaderData {
     userTeamsByDivision: Record<string, UserTeamData[]>;
@@ -11,7 +11,7 @@ export interface LeagueStandingsLoaderData {
     selectedDivision?: string;
 }
 
-export async function getLeagueStandingsData(selectedDivision): Promise<LeagueStandingsLoaderData> {
+export async function getLeagueStandingsData(selectedDivision: DivisionId): Promise<LeagueStandingsLoaderData> {
 
     // Fetch divisions first
     const divisions = await readDivisions();

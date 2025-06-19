@@ -4,7 +4,7 @@ import styles from './page-header.module.css';
 
 interface PageHeaderProps {
     title: string;
-    subTitle?: string;
+    subTitle?: React.ReactNode;
     actions?: React.ReactNode;
 }
 

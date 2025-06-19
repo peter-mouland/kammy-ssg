@@ -5,9 +5,10 @@ import { useLoaderData } from "react-router";
 import { PlayerStatsTable } from "./components/player-stats-table";
 import { ScoringInfo } from '../scoring/components/scoring-info';
 import { PageHeader } from '../_shared/components/page-header';
+import type { PlayerStatsData } from './types/player-types';
 
 export const PlayersPage = () => {
-    const { players, teams, positions } = useLoaderData<typeof loader>();
+    const { players, teams, positions } = useLoaderData<PlayerStatsData>();
 
     return (
         <div>

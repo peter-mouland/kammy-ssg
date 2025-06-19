@@ -5,12 +5,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface TableFilters {
     search?: string;
-    status?: string;
-    category?: string;
+    status?: string | number;
+    category?: string | number;
     page?: number;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
-    [key: string]: string | number | undefined;
+    [key: string]: string | number | undefined; // any filter
 }
 
 export interface UseTableFiltersOptions {

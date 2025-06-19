@@ -10,7 +10,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     // Fetch data in parallel
     const [
         events,
-        topPlayers,
         userTeams,
         divisions
     ] = await Promise.all([
@@ -28,7 +27,6 @@ export async function getDashboardData(): Promise<DashboardData> {
         .slice(0, 10);
 
     return {
-        topPlayers,
         leagueStandings,
         divisions,
         currentGameweek

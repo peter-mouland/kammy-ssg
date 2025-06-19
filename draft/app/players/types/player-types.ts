@@ -1,5 +1,7 @@
 // app/players/types/player-types.ts
 
+import type { GameweekStatWithPoints, SeasonTotals, EnhancedPlayerData } from '../../scoring/types/scoring-types';
+
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
 
 export interface PlayerSheetsData {
@@ -44,4 +46,28 @@ export interface PlayerSearchFilters {
     nameSearch?: string;
     sortBy?: 'name' | 'price' | 'points' | 'position';
     sortOrder?: 'asc' | 'desc';
+}
+
+export interface PlayerDetailData {
+    player: EnhancedPlayerData;
+    team: {
+        id: number;
+        name: string;
+        short_name: string;
+    };
+    position: CustomPosition;
+    gameweekStats: GameweekStatWithPoints[];
+    seasonTotals: SeasonTotals;
+    currentGameweek: number;
+}
+
+type Positions = {
+    [K in CustomPosition]: CustomPosition;
+};
+
+
+export interface PlayerStatsData {
+    players: EnhancedPlayerData[];
+    teams: Record<number, string>;
+    positions: Positions;
 }

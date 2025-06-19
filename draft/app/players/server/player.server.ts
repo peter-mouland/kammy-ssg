@@ -1,7 +1,8 @@
 /* Location: app/players/server/player.server.ts */
 
 // app/routes/server/player-detail.server.ts
-import type { GameweekStatWithPoints, PlayerDetailData } from '../../scoring/types/scoring-types';
+import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
+import type { CustomPosition, PlayerDetailData } from '../types/player-types';
 
 export async function getPlayerDetailData(playerId: number): Promise<PlayerDetailData> {
     try {
@@ -41,16 +42,13 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         }, {} as Record<number, any>);
 
         // Get detailed player stats and gameweek points (all from cache)
-        const [playerDetailedStats, gameweekPointsData] = await Promise.all([
+        const [playerDetailedStats] = await Promise.all([
             fplApiCache.getPlayerDetailedStats(playerId),
-            getPlayerGameweekPoints(playerId)
         ]);
 
         // Process gameweek data
         const gameweekStats = processGameweekData(
             playerDetailedStats.history || [],
-            gameweekPointsData,
-            enhancedPlayer.position,
             teamLookup
         );
 
@@ -62,7 +60,7 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         return {
             player: fplPlayer,
             team,
-            position: enhancedPlayer.position,
+            position: enhancedPlayer.draft.position.toLowerCase() as CustomPosition,
             gameweekStats,
             seasonTotals,
             currentGameweek: currentGameweek || 1
@@ -77,16 +75,14 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
 /**
  * Get gameweek points data for a player
  */
-async function getPlayerGameweekPoints(playerId: number): Promise<Record<number, any> | null> {
+async function getPlayerGameweekPoints(playerId: number) {
     try {
         const { fplApiCache } = await import("../../_shared/lib/fpl/api-cache");
 
         // Get element summary which contains gameweek points
         const elementSummary = await fplApiCache['fplCache'].getElementGameweek(playerId);
 
-        if (elementSummary?.draft?.gameweekPoints) {
-            return elementSummary.draft.gameweekPoints;
-        }
+        // todo: we don't have this
 
         return null;
     } catch (error) {
@@ -100,8 +96,6 @@ async function getPlayerGameweekPoints(playerId: number): Promise<Record<number,
  */
 function processGameweekData(
     fplHistory: any[],
-    gameweekPointsData: Record<number, any> | null,
-    position: string,
     teamLookup: Record<number, any>
 ): GameweekStatWithPoints[] {
     const gameweekStats: GameweekStatWithPoints[] = [];
@@ -109,7 +103,6 @@ function processGameweekData(
     // Process each gameweek from FPL history
     fplHistory.forEach(gwData => {
         const gameweek = gwData.round;
-        const pointsData = gameweekPointsData?.[gameweek];
 
         const gameweekStat: GameweekStatWithPoints = {
             gameweek,
@@ -133,25 +126,13 @@ function processGameweekData(
             teamAScore: gwData.team_a_score,
 
             // Custom points (if available)
-            customPoints: pointsData ? {
-                appearance: pointsData.points?.appearance || 0,
-                goals: pointsData.points?.goals || 0,
-                assists: pointsData.points?.assists || 0,
-                cleanSheets: pointsData.points?.cleanSheets || 0,
-                goalsConceded: pointsData.points?.goalsConceded || 0,
-                yellowCards: pointsData.points?.yellowCards || 0,
-                redCards: pointsData.points?.redCards || 0,
-                saves: pointsData.points?.saves || 0,
-                penaltiesSaved: pointsData.points?.penaltiesSaved || 0,
-                bonus: pointsData.points?.bonus || 0,
-                total: pointsData.points?.total || 0
-            } : null,
+            customPoints: null,
 
             // FPL points
             fplPoints: gwData.total_points,
 
             // Metadata
-            generatedAt: pointsData?.metadata?.generatedAt || null
+            generatedAt: null
         };
 
         gameweekStats.push(gameweekStat);
@@ -181,7 +162,8 @@ function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[]) {
 
         // Points
         totalFplPoints: gameweekStats.reduce((sum, gw) => sum + gw.fplPoints, 0),
-        totalCustomPoints: gameweekStats.reduce((sum, gw) => sum + (gw.customPoints?.total || 0), 0),
+        // todo: needed for player page
+        totalCustomPoints: 0,
 
         // Averages
         averageMinutes: 0,

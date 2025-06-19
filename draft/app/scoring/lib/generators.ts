@@ -61,7 +61,7 @@ export function generateSeasonData(
  * Used by: gameweek-points-service.ts for selective updates
  */
 export function generateGameweekData(
-    fplPlayers: FplPlayerData[],
+    fplPlayers: EnhancedPlayerData[],
     fplPlayerGameweeksById: Record<number, FplPlayerSeasonData>,
     sheetsPlayersById: Record<number, PlayerSheetsData>,
     targetGameweeks: number[]
@@ -71,8 +71,8 @@ export function generateGameweekData(
     const result: Record<number, { draft: { gameweekPoints: Record<number, any> } }> = {};
 
     fplPlayers
-        .filter((fplPlayer: FplPlayerData) => sheetsPlayersById[fplPlayer.id])
-        .forEach((fplPlayer: FplPlayerData) => {
+        .filter((fplPlayer) => sheetsPlayersById[fplPlayer.id])
+        .forEach((fplPlayer) => {
             const playerSheet = sheetsPlayersById[fplPlayer.id];
             const position = playerSheet.position.toLowerCase() as CustomPosition;
 

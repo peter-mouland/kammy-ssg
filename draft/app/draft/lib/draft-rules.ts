@@ -2,6 +2,7 @@
 
 // lib/draft/draft-rules.ts - Clean version with ONLY fixed existing functions
 import { useMemo } from 'react';
+import type { CustomPosition } from '../../players/types/player-types';
 
 // Draft rules configuration
 export const DRAFT_RULES = {
@@ -43,8 +44,8 @@ export interface TeamCounts {
 }
 
 // Get player position from draft.position (our custom positions)
-export const getPlayerPosition = (player: any): string => {
-    return (player.position || player.draft?.position)?.toLowerCase() || 'unknown';  // userPicks uses player.position. targetPlayer uses draft.position
+export const getPlayerPosition = (player: any): CustomPosition => {
+    return (player.position || player.draft?.position)?.toLowerCase();  // userPicks uses player.position. targetPlayer uses draft.position
 };
 
 // Calculate current squad composition (regular function) - FIXED
@@ -71,7 +72,7 @@ export function getSquadComposition(userPicks: any[]) {
         teamCounts[teamCode].count++;
 
         // Count positions properly - main squad vs substitutes
-        if (position in DRAFT_RULES.positions && position !== 'unknown') {
+        if (position in DRAFT_RULES.positions) {
             const positionRule = DRAFT_RULES.positions[position as keyof typeof DRAFT_RULES.positions];
             const currentInPosition = positionTracker[position] || 0;
 
@@ -103,10 +104,6 @@ export function validateDraftEligibility(squadComposition: any, targetPlayer: an
     }
 
     const playerPosition = getPlayerPosition(targetPlayer);
-    if (playerPosition === 'unknown') {
-        return { isEligible: false, violations: ['Player has no position'], canAddToSub: false };
-    }
-
     const violations: string[] = [];
     const playerTeamCode = targetPlayer.team_code;
 

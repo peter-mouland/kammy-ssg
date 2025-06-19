@@ -2,41 +2,8 @@
 
 import { Table, type TableColumn, TableBadge } from "../../_shared/components/table";
 import { isStatRelevant, formatPointsDisplay } from '../../scoring/lib';
+import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 // import { PointsBreakdownTooltip } from './points-breakdown-tooltip'
-
-interface GameweekStatWithPoints {
-    gameweek: number;
-    minutes: number;
-    goals: number;
-    assists: number;
-    cleanSheets: number;
-    goalsConceded: number;
-    yellowCards: number;
-    redCards: number;
-    saves: number;
-    penaltiesSaved: number;
-    bonus: number;
-    opponent: number;
-    opponentName?: string;
-    wasHome: boolean;
-    teamHScore: number;
-    teamAScore: number;
-    customPoints: {
-        appearance: number;
-        goals: number;
-        assists: number;
-        cleanSheets: number;
-        goalsConceded: number;
-        yellowCards: number;
-        redCards: number;
-        saves: number;
-        penaltiesSaved: number;
-        bonus: number;
-        total: number;
-    } | null;
-    fplPoints: number;
-    generatedAt: string | null;
-}
 
 interface PlayerGameweekTableProps {
     gameweekStats: GameweekStatWithPoints[];
@@ -224,7 +191,7 @@ export function PlayerGameweekTable({
                     return <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>-</span>;
                 }
 
-                const total = gw.customPoints.total;
+                const total = gw.customPoints;
                 const color = total > 0 ? 'var(--color-success)' :
                     total < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
 

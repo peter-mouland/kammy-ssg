@@ -1,7 +1,7 @@
 /* Location: app/players/server/players.server.ts */
 
 import { fplApiCache } from "../../_shared/lib/fpl/api-cache";
-import type { PlayerStatsData } from "../../_shared/types";
+import type { PlayerStatsData } from '../types/player-types';
 
 export async function getPlayerStatsData(): Promise<PlayerStatsData> {
 

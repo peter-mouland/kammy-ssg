@@ -107,18 +107,6 @@ export interface SeasonTotals {
     cleanSheetPercentage: number;
 }
 
-export interface PlayerDetailData {
-    player: unknown; // FIXED: was 'any', proper type should come from players domain
-    team: {
-        id: number;
-        name: string;
-        short_name: string;
-    };
-    position: CustomPosition;
-    gameweekStats: GameweekStatWithPoints[];
-    seasonTotals: SeasonTotals;
-    currentGameweek: number;
-}
 
 export interface PointsBreakdown {
     appearance: PointsBreakdownItem;

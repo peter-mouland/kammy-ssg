@@ -4,7 +4,7 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { requestFormData } from '../_shared/lib/form-data';
-import type { UserTeamData, DivisionSheetData } from "../teams/types/team-types";
+import type { UserTeamData, DivisionSheetData, DivisionId } from '../teams/types/team-types';
 import { LeagueStandings } from './league-standings'
 
 export const meta: MetaFunction = () => {
@@ -28,7 +28,7 @@ interface ActionData {
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
-        const selectedDivision = url.searchParams.get("division");
+        const selectedDivision : DivisionId = url.searchParams.get("division");
 
         // Dynamic import to keep server code on server
         const { getLeagueStandingsData } = await import("../leagues/server/league-standings.server");

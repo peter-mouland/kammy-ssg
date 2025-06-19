@@ -122,8 +122,8 @@ export class FplCache {
     /**
      * Get element summary data (individual player gameweek breakdown)
      */
-    async getElementGameweek(playerId: number): Promise<any | null> {
-        const doc = await this.client.getDocument(
+    async getElementGameweek(playerId: number): Promise<FplPlayerSeasonData | null> {
+        const doc = await this.client.getDocument<FplPlayerSeasonData>(
             this.client.collections.FPL_ELEMENTS,
             `element-${playerId}`
         );

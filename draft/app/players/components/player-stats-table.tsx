@@ -8,10 +8,11 @@ import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdow
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
 import { getPositionDisplayName } from '../../scoring/lib';
 import { Table, type TableColumn } from '../../_shared/components/table';
-import type { EnhancedPlayerData } from '../../_shared/types';
 import styles from './player-stats-table.module.css';
 import { TableFilters } from '../../_shared/components/table-filters';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { CustomPosition } from '../types/player-types';
 
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];
@@ -19,7 +20,7 @@ interface PlayerStatsTableProps {
     positions: Record<string, string>;
 }
 
-export function formatPlayerName(player: Player, style: 'full' | 'short' | 'web' = 'full'): string {
+export function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 'web' = 'full'): string {
     switch (style) {
         case 'full':
             return `${player.first_name} ${player.second_name}`;
@@ -84,7 +85,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
         return styles.formPoor;
     };
 
-    const getPositionColor = (pos: string) => {
+    const getPositionColor = (pos: CustomPosition) => {
         const colors = {
             gk: 'var(--color-emerald-500, #10b981)',
             cb: 'var(--color-blue-500, #3b82f6)',
@@ -93,7 +94,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             wa: 'var(--color-amber-500, #f59e0b)',
             ca: 'var(--color-red-500, #ef4444)'
         };
-        return colors[pos.toLowerCase()] || 'var(--color-gray-500, #6b7280)';
+        return colors[pos] || 'var(--color-gray-500, #6b7280)';
     };
 
     // Define table columns using the EXACT same pattern as league-standings
@@ -159,20 +160,9 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             )
         },
         {
-            key: 'price',
-            header: 'Price',
-            accessor: 'now_cost',
-            sortable: true,
-            variant: 'numeric',
-            render: (_, player) => {
-                const playerPrice = player.now_cost / 10;
-                return `£${playerPrice.toFixed(1)}m`;
-            }
-        },
-        {
             key: 'points',
             header: 'Points',
-            accessor: (player) => player.draft?.pointsTotal || player.total_points || 0,
+            accessor: (player) => player.draft?.pointsTotal || 0,
             sortable: true,
             variant: 'numeric',
             render: (_, player) => (
@@ -181,20 +171,20 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                 </PointsBreakdownTooltip>
             )
         },
-        {
-            key: 'form',
-            header: 'Form',
-            accessor: (player) => parseFloat(player.form || '0'),
-            sortable: true,
-            render: (_, player) => {
-                const playerForm = parseFloat(player.form || '0');
-                return (
-                    <span className={`${styles.formBadge} ${getFormColor(playerForm)}`}>
-                        {playerForm.toFixed(1)}
-                    </span>
-                );
-            }
-        },
+        // {
+        //     key: 'form',
+        //     header: 'Form',
+        //     accessor: (player) => parseFloat(player.form || '0'),
+        //     sortable: true,
+        //     render: (_, player) => {
+        //         const playerForm = parseFloat(player.form || '0');
+        //         return (
+        //             <span className={`${styles.formBadge} ${getFormColor(playerForm)}`}>
+        //                 {playerForm.toFixed(1)}
+        //             </span>
+        //         );
+        //     }
+        // },
         {
             key: 'wishlists',
             header: 'Wishlists',

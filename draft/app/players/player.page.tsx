@@ -7,6 +7,7 @@ import { PlayerHighlights } from "./components/player-highlights";
 import { PageHeader } from '../_shared/components/page-header';
 import { getPositionColor } from '../scoring/lib';
 import styles from './player.page.module.css';
+import type { PlayerDetailData } from './types/player-types';
 
 export const PlayerPage = () => {
     const {
@@ -16,10 +17,10 @@ export const PlayerPage = () => {
         gameweekStats,
         seasonTotals,
         currentGameweek
-    } = useLoaderData<typeof loader>();
+    } = useLoaderData<PlayerDetailData>();
 
     const playerName = `${player.first_name} ${player.second_name}`;
-    const positionColor = getPositionColor(position.toLowerCase());
+    const positionColor = getPositionColor(position);
 
     return (
         <div className={styles.playerDetailContainer}>
@@ -42,7 +43,6 @@ export const PlayerPage = () => {
                             {position}
                         </span>
                         <span className={styles.team}>{team.name}</span>
-                        <span className={styles.price}>£{(player.now_cost / 10).toFixed(1)}m</span>
                     </div>
                 }
             />
