@@ -3,7 +3,7 @@
 // app/routes/dashboard.tsx
 import { type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
-import { HomePage } from "../homepage/home.page";
+import { HomePage } from './home.page';
 
 export const meta: MetaFunction = () => {
     return [
@@ -12,7 +12,7 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         // Dynamic import to keep server code on server
         const { getDashboardData } = await import("../homepage/server/dashboard.server");

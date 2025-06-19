@@ -2,7 +2,13 @@
 
 import styles from './page-header.module.css';
 
-export const PageHeader = ({ title, subTitle, actions }) => (
+interface PageHeaderProps {
+    title: string;
+    subTitle?: string;
+    actions?: React.ReactNode;
+}
+
+export const PageHeader = ({ title, subTitle, actions }: PageHeaderProps) => (
     <div className={styles.pageHeader}>
         <div className={styles.primary}>
             <h1 className={styles.pageTitle}>{title}</h1>

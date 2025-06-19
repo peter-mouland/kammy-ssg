@@ -9,10 +9,11 @@ import { RecentActivity } from "../admin/components/ui/recent-activity"; // admi
 import { SystemStatus } from "../admin/components/ui/system-status"; // admin
 import { GameStats } from "../scoring/components/game-stats"; // scoring
 import { PageHeader } from '../_shared/components/page-header'; // shared
-import { LayoutGrid } from '../_shared/components/layout-grid'; //shared
+import { LayoutGrid } from '../_shared/components/layout-grid';
+import type { DashboardData } from './types/homepage-types';
 
 export const HomePage = () => {
-    const { topPlayers, leagueStandings, divisions, currentGameweek } = useLoaderData<typeof loader>();
+    const { topPlayers, leagueStandings, divisions, currentGameweek } = useLoaderData<DashboardData>();
 
     return (
         <div>

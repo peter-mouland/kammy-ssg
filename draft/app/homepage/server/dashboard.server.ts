@@ -4,15 +4,7 @@
 import { fplApiCache } from "../../_shared/lib/fpl/api-cache";
 import { readUserTeams } from "../../_shared/lib/sheets/user-teams";
 import { readDivisions } from "../../_shared/lib/sheets/divisions";
-import type { UserTeamData, DivisionSheetData } from "../../teams/types/team-types";
-import type { FplPlayerData } from "../../players/types/player-types";
-
-export interface DashboardData {
-    topPlayers: FplPlayerData[];
-    leagueStandings: UserTeamData[];
-    divisions: DivisionSheetData[];
-    currentGameweek: number;
-}
+import type { DashboardData } from '../types/homepage-types';
 
 export async function getDashboardData(): Promise<DashboardData> {
     // Fetch data in parallel

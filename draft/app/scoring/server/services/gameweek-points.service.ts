@@ -242,7 +242,8 @@ export class GameweekPointsService {
         // Case 4: Current gameweek is somehow less than last generated (shouldn't happen)
         return {
             needed: false,
-            reason: `Current gameweek (${currentGameweek}) is less than last generated (${lastGeneratedGameweek})`
+            reason: `Current gameweek (${currentGameweek}) is less than last generated (${lastGeneratedGameweek})`,
+            gameweeksToGenerate: [],
         };
     }
 
@@ -323,7 +324,7 @@ export class GameweekPointsService {
      */
     private async getPointsMetadata(): Promise<GameweekPointsMetadata | null> {
         try {
-            const doc = await this.client.getDocument(
+            const doc = await this.client.getDocument<GameweekPointsMetadata>(
                 this.client.collections.CACHE_STATE,
                 this.METADATA_DOC_ID
             );

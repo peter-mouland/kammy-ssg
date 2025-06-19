@@ -56,6 +56,7 @@ export type AdminActionType =
     | 'populateElementSummaries'
     | 'generateGameWeekPoints'
     | 'forceRegenerateAllPoints'
+    | 'ensureDivisionDocument'
     | 'getGameweekPointsStatus';
 
 export type ClearVariant = 'all' | 'fpl-only' | 'elements-only';
