@@ -2,7 +2,7 @@
 
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
 
-export interface PlayerData {
+export interface PlayerSheetsData {
     id: string;
     code: string;
     firstName: string;
@@ -11,10 +11,6 @@ export interface PlayerData {
     team: string;
     fplId?: number;
     webName?: string;
-    nationality?: string;
-    age?: number;
-    value?: number;
-    notes?: string;
 }
 
 export interface FplPlayerData {

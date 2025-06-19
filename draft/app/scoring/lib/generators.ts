@@ -1,12 +1,10 @@
 /* Location: app/scoring/lib/generators.ts */
 
-import type {
-    CustomPosition,
-    EnhancedPlayerData,
-    FplPlayerData
-} from '../../_shared/types';
+import type { EnhancedPlayerData } from '../types/scoring-types';
+import type { FplPlayerData, CustomPosition, PlayerSheetsData } from '../../players/types/player-types';
 import { convertToPlayerGameweeksStats, convertToPlayerGameweekStats } from './data-conversion';
 import { calculateSeasonPoints, calculateGameweekPoints, getFullBreakdown } from './calculations';
+import type { FplPlayerSeasonData } from '../../_shared/lib/fpl/api';
 
 const baselineStats = {
     appearance: 0,
@@ -64,8 +62,8 @@ export function generateSeasonData(
  */
 export function generateGameweekData(
     fplPlayers: FplPlayerData[],
-    fplPlayerGameweeksById: Record<number, any>,
-    sheetsPlayersById: Record<string, any>,
+    fplPlayerGameweeksById: Record<number, FplPlayerSeasonData>,
+    sheetsPlayersById: Record<number, PlayerSheetsData>,
     targetGameweeks: number[]
 ): Record<number, { draft: { gameweekPoints: Record<number, any> } }> {
     console.log(`🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(', ')}`);

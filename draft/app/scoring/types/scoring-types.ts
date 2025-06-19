@@ -1,8 +1,8 @@
 // app/scoring/types/scoring-types.ts
 
-import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { CustomPosition } from '../../players/types/player-types';
 
-export interface PointsBreakdown {
+export interface Points {
     appearance: number;
     goals: number;
     assists: number;
@@ -14,23 +14,6 @@ export interface PointsBreakdown {
     goalsConceded: number;
     bonus: number;
     total: number;
-}
-
-export interface DetailedPointsBreakdown extends PointsBreakdown {
-    explanations: PointsBreakdownExplanation;
-}
-
-export interface PointsBreakdownExplanation {
-    appearance?: string;
-    goals?: string;
-    assists?: string;
-    cleanSheets?: string;
-    yellowCards?: string;
-    redCards?: string;
-    saves?: string;
-    penaltiesSaved?: string;
-    goalsConceded?: string;
-    bonus?: string;
 }
 
 // ================================
@@ -129,7 +112,7 @@ export interface GameweekStatWithPoints {
     teamAScore: number;
 
     // Points breakdown
-    customPoints: PointsBreakdown | null;
+    customPoints: number | null;
 
     // FPL original points
     fplPoints: number;
@@ -180,6 +163,27 @@ export interface PlayerDetailData {
     currentGameweek: number;
 }
 
+export interface PointsBreakdown {
+    appearance: PointsBreakdownItem;
+    goals: PointsBreakdownItem;
+    assists: PointsBreakdownItem;
+    cleanSheets: PointsBreakdownItem;
+    yellowCards: PointsBreakdownItem;
+    redCards: PointsBreakdownItem;
+    saves: PointsBreakdownItem;
+    penaltiesSaved: PointsBreakdownItem;
+    goalsConceded: PointsBreakdownItem;
+    bonus: PointsBreakdownItem;
+    total: PointsBreakdownItem;
+}
+
+export interface PointsBreakdownItem {
+    label: string;
+    isRelevant?: boolean;
+    points: number;
+    formula: string | string[];
+}
+
 export interface EnhancedPlayerData {
     // Base FPL player data
     id: number;
@@ -193,12 +197,12 @@ export interface EnhancedPlayerData {
     draft: {
         position: CustomPosition;
         pointsTotal: number;
-        pointsBreakdown: DetailedPointsBreakdown;
-        gameweekPoints?: Record<number, PointsBreakdown>;
+        pointsBreakdown: PointsBreakdown;
+        gameweekPoints?: Record<number, Points>;
         __generatedFor?: {
             gameweeks?: number[];
             generatedAt: string;
-            type: 'selective' | 'full';
+            type: 'selective' | 'full' | 'season';
         };
     };
 }

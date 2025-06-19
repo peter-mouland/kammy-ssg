@@ -1,14 +1,11 @@
 /* Location: app/scoring/lib/calculations.ts */
 
-import type {
-    CustomPosition,
-    PlayerGameweekStatsData,
-    PointsBreakdown,
-} from '../../_shared/types';
+import type { Points } from '../types/scoring-types';
+import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 import { isStatRelevant } from './utils';
 import { POSITION_RULES } from './rules';
 
-const baselineStats: PointsBreakdown = {
+const baselineStats: Points = {
     appearance: 0,
     goals: 0,
     assists: 0,
@@ -119,8 +116,8 @@ export function calculateGoalsConcededPenalty(goalsConceded: number, position: C
 export function calculateGameweekPoints(
     stats: PlayerGameweekStatsData,
     position: CustomPosition,
-): PointsBreakdown {
-    const breakdown: PointsBreakdown = {
+): Points {
+    const breakdown: Points = {
         appearance: calculateAppearancePoints(stats.appearance, position),
         goals: calculateGoalPoints(stats.goals, position),
         assists: calculateAssistPoints(stats.assists, position),
@@ -148,7 +145,7 @@ export function calculateGameweekPoints(
 export function calculateSeasonPoints(
     gameweekStats: PlayerGameweekStatsData[],
     position: CustomPosition,
-): { points: PointsBreakdown; stats: PointsBreakdown } {
+): { points: Points; stats: Points } {
 
     const points = { ...baselineStats };
     const stats = { ...baselineStats };
@@ -179,7 +176,7 @@ export function calculateSeasonPoints(
 export function getFullBreakdown(
     gameweeks: any[],
     position: CustomPosition,
-    { points, stats }: { points: PointsBreakdown; stats: PointsBreakdown }
+    { points, stats }: { points: Points; stats: Points }
 ) {
     const rules = POSITION_RULES[position.toLowerCase() as keyof typeof POSITION_RULES] || {};
 
@@ -258,7 +255,8 @@ export function getFullBreakdown(
             stat: stats.penaltiesSaved,
             points: points.penaltiesSaved || 0,
             formula: isStatRelevant('penalties_saved', position) ?
-                `${stats.penaltiesSaved} × ${rules.penaltiesSaved || 0} pts` : 'Not applicable for this position',
+                `${stats.penaltiesSaved} × ${'penaltiesSaved' in rules ? rules.penaltiesSaved : 0} pts` :
+                'Not applicable for this position',
             isRelevant: isStatRelevant('penalties_saved', position),
         },
         goalsConceded: {
@@ -275,7 +273,7 @@ export function getFullBreakdown(
             stat: stats.bonus,
             points: points.bonus || 0,
             formula: isStatRelevant('bonus', position) ?
-                `${stats.bonus} × ${rules.bonus || 0} pts` : 'Not applicable for this position',
+                `${stats.bonus} × ${'bonus' in rules ? rules.bonus : 0} pts` : 'Not applicable for this position',
             isRelevant: isStatRelevant('bonus', position),
         },
         total: {

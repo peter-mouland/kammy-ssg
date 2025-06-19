@@ -1,9 +1,7 @@
 /* Location: app/scoring/lib/data-conversion.ts */
 
-import type {
-    FplPlayerGameweekData,
-    PlayerGameweekStatsData
-} from '../../_shared/types';
+import type { FplPlayerGameweekData } from '../types/scoring-types';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 
 /**
  * Convert FPL gameweek data to internal format

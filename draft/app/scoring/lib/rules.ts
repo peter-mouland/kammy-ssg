@@ -1,7 +1,51 @@
 /* Location: app/scoring/lib/rules.ts */
+interface AppearanceRules {
+    under45Min: number;
+    over45Min: number;
+}
+
+interface BasePositionRules {
+    goalPoints: number;
+    assists: number;
+    cleanSheetPoints: number;
+    yellowCard: number;
+    redCardPenalty: number;
+    appearance: AppearanceRules;
+}
+
+interface GoalkeeperRules extends BasePositionRules {
+    savesThreshold: number;
+    savesRatio: number;
+    penaltiesSaved: number;
+    goalsConcededPenalty: number;
+}
+
+interface DefenderRules extends BasePositionRules {
+    goalsConcededPenalty: number;
+}
+
+interface CenterBackRules extends DefenderRules {
+    bonus: number;
+}
+
+interface MidfielderRules extends BasePositionRules {
+    bonus: number;
+}
+
+interface AttackerRules extends BasePositionRules {
+}
+
+type PositionRules = {
+    gk: GoalkeeperRules;
+    fb: DefenderRules;
+    cb: CenterBackRules;
+    mid: MidfielderRules;
+    wa: AttackerRules;
+    ca: AttackerRules;
+}
 
 // Position point multipliers and rules
-export const POSITION_RULES = {
+export const POSITION_RULES: PositionRules = {
     gk: {
         goalPoints: 10,
         assists: 3,

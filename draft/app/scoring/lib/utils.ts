@@ -1,5 +1,4 @@
 /* Location: app/scoring/lib/utils.ts */
-import type { PointsBreakdown } from '../types/scoring-types'
 import type { CustomPosition } from '../../players/types/player-types';
 
 /**

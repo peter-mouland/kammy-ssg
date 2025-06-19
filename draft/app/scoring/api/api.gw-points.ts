@@ -1,11 +1,10 @@
 /* Location: app/scoring/api/api.gw-points.ts */
 
-// app/routes/api.gw-points.ts
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { data } from "react-router";
 import { requestFormData } from '../../_shared/lib/form-data';
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
         const action = url.searchParams.get("action");
@@ -43,7 +42,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
         const actionType = formData.get("actionType") as string | null;

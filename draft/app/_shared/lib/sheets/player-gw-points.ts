@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/player-gw-points.ts */
 
 // app/routes/server/sheets/player-gw-points.ts
-import type { FplPlayerData, CustomPosition } from '../../types';
+import type { CustomPosition, FplPlayerData } from '../../../players/types/player-types';
 import { createAppError } from './utils/common';
 import { saveDataToSheet } from './utils/write-data-to-sheets';
 import { readDataFromSheetWithHeaders } from './utils/read-data-from-sheets';

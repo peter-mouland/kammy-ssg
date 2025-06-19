@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import styles from './points-breakdown-tooltip.module.css';
-import type { EnhancedPlayerData } from '../../_shared/types';
+import type { EnhancedPlayerData, PointsBreakdownItem } from '../types/scoring-types';
 
 interface PointsBreakdownTooltipProps {
     player: EnhancedPlayerData;
     children: React.ReactNode;
 }
 
-const BreakdownItem = (item) => (
+const BreakdownItem = (item: PointsBreakdownItem) => (
     <div
         key={item.label}
         className={`${styles.breakdownItem} ${!item.isRelevant ? styles.notRelevant : ''} ${item.points > 0 ? styles.positive : item.points < 0 ? styles.negative : styles.neutral}`}

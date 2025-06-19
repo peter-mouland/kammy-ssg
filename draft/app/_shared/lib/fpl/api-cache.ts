@@ -1,10 +1,8 @@
 /* Location: app/_shared/lib/fpl/api-cache.ts */
 
 // src/lib/fpl/api-cache.ts
-import type {
-    FplBootstrapData,
-    FplPlayerData,
-} from '../../types';
+import type { FplBootstrapData } from '../../types';
+import type { FplPlayerData } from '../../../players/types/player-types';
 import type { FplPlayerSeasonData } from './api';
 import { FplCache } from '../firestore-cache/fpl-cache';
 import { fplApi } from './api';
