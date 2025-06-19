@@ -1,7 +1,7 @@
 /* Location: app/admin/server/actions/system-actions.ts */
 
 // /admin/server/actions/system-actions.ts
-import type { AdminActionResult } from "../../types";
+import type { AdminActionResult } from "../../types/admin-types";
 
 // IMPROVED version of "getCacheStatus" to provide better data structure
 export async function handleGetCacheStatus(): Promise<AdminActionResult> {

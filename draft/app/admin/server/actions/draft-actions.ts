@@ -9,9 +9,10 @@ import {
     draftOrderExists
 } from "../../../_shared/lib/sheets/draft-order";
 import { updateDraftState, readDraftState, getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
-import type { DraftStateData, DraftActionParams, ActionResult } from "../../types";
+import type { DraftActionParams, AdminActionResult } from "../../types/admin-types";
+import type { DraftStateData } from '../../../draft/types/draft-types';
 
-export async function handleGenerateOrder(params: DraftActionParams): Promise<ActionResult> {
+export async function handleGenerateOrder(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {
@@ -35,7 +36,7 @@ export async function handleGenerateOrder(params: DraftActionParams): Promise<Ac
     };
 }
 
-export async function handleClearOrder(params: DraftActionParams): Promise<ActionResult> {
+export async function handleClearOrder(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {
@@ -49,7 +50,7 @@ export async function handleClearOrder(params: DraftActionParams): Promise<Actio
     };
 }
 
-export async function handleStartDraft(params: DraftActionParams): Promise<ActionResult> {
+export async function handleStartDraft(params: DraftActionParams): Promise<AdminActionResult> {
     console.log('Processing startDraft action');
 
     const { divisionId } = params;
@@ -87,7 +88,7 @@ export async function handleStartDraft(params: DraftActionParams): Promise<Actio
     };
 }
 
-export async function handleStopDraft(): Promise<ActionResult> {
+export async function handleStopDraft(): Promise<AdminActionResult> {
     const currentDraftState = await readDraftState();
     if (!currentDraftState?.isActive) {
         throw new Error("No active draft to stop");
@@ -106,7 +107,7 @@ export async function handleStopDraft(): Promise<ActionResult> {
     };
 }
 
-export async function handleSyncDraft(params: DraftActionParams): Promise<ActionResult> {
+export async function handleSyncDraft(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {
@@ -133,7 +134,7 @@ export async function handleSyncDraft(params: DraftActionParams): Promise<Action
     }
 }
 
-export async function handleResetDraft(params: DraftActionParams): Promise<ActionResult> {
+export async function handleResetDraft(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {
@@ -160,7 +161,7 @@ export async function handleResetDraft(params: DraftActionParams): Promise<Actio
     }
 }
 
-export async function handleGetDraftPicksCount(params: DraftActionParams): Promise<ActionResult> {
+export async function handleGetDraftPicksCount(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {

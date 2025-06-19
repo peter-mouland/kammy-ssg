@@ -1,12 +1,7 @@
 /* Location: app/admin/server/draft-actions.server.ts */
 
 // /admin/server/draft-actions.server.ts
-import type { AdminActionResult } from '../types';
-
-interface DraftActionParams {
-    actionType: string;
-    divisionId?: string;
-}
+import type { AdminActionResult, DraftActionParams } from '../types/admin-types';
 
 export async function handleDraftActions(params: DraftActionParams): Promise<AdminActionResult> {
     const { actionType, divisionId } = params;

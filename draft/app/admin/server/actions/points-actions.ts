@@ -1,6 +1,6 @@
 // app/admin/server/actions/points-actions.ts
 import { GameweekPointsService } from "../../../scoring/server/services/gameweek-points.service";
-import type { AdminActionResult } from "../../types";
+import type { AdminActionResult } from "../../types/admin-types";
 
 // Enhanced "Smart Points Update" action with division teams integration
 export async function handleGenerateGameweekPoints(): Promise<AdminActionResult> {

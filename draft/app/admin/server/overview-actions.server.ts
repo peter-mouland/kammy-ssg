@@ -1,10 +1,11 @@
 // /admin/server/overview-actions.server.ts - UPDATED WITH CACHE ACTIONS
-import type { AdminActionResult, ClearVariant } from '../types';
+import type { AdminActionResult, ClearVariant } from '../types/admin-types';
+import type { DivisionId } from '../../teams/types/team-types';
 
 interface OverviewActionParams {
     actionType: string;
     variant?: ClearVariant;
-    divisionId?: string;
+    divisionId?: DivisionId;
 }
 
 export async function handleOverviewActions(params: OverviewActionParams): Promise<AdminActionResult> {

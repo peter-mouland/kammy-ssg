@@ -1,7 +1,7 @@
 /* Location: app/admin/server/points-actions.server.ts */
 
 // /admin/server/points-actions.server.ts
-import type { AdminActionResult } from '../types';
+import type { AdminActionResult } from '../types/admin-types';
 
 interface PointsActionParams {
     actionType: string;

@@ -1,6 +1,6 @@
 // /admin/server/actions/cache-monitor-actions.ts
 import { getCacheStats, cacheInvalidation } from "../../../_shared/lib/sheets/cache/cached-sheet-functions";
-import type { AdminActionParams, AdminActionResult } from "../../types";
+import type { AdminActionParams, AdminActionResult } from "../../types/admin-types";
 
 export async function handleGetCacheStats(): Promise<AdminActionResult> {
     try {

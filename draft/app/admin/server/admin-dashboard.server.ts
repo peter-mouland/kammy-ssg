@@ -2,7 +2,7 @@
 
 // /admin/server/admin-dashboard.server.ts
 import { AdminDraftService } from './services/admin-draft-service';
-import type { AdminDashboardData } from '../types';
+import type { AdminDashboardData } from '../types/admin-types';
 
 /**
  * Main data loader for admin dashboard

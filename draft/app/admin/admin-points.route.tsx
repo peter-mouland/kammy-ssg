@@ -1,7 +1,7 @@
 /* Location: app/admin/admin-points.route.tsx */
 
 import React from 'react';
-import { type ActionFunctionArgs, type LoaderFunctionArgs, data, useLoaderData } from 'react-router';
+import { type ActionFunctionArgs, type LoaderFunctionArgs, data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { PointsScoringSection } from './components/sections/points-scoring-section';
 
@@ -12,7 +12,7 @@ interface ActionData {
     data?: any;
 }
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const { getDraftAdminData } = await import("./server/admin-dashboard.server");
         const draftAdminData = await getDraftAdminData();
@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
         const actionType = formData.get("actionType");

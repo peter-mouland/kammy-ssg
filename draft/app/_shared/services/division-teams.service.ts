@@ -4,8 +4,7 @@ import type {
     DivisionTeamsDocument,
     TeamGameweekData,
     UserTeamRoster,
-    DivisionTeamsUpdateParams
-} from '../types/division-teams-types';
+} from '../../teams/types/team-types';
 
 /**
  * Get division teams document for specific gameweek

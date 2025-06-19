@@ -4,14 +4,14 @@ import { getDraftPicksByDivision } from "../../../_shared/lib/sheets/draft";
 import { getUserTeamsByDivision } from "../../../_shared/lib/sheets/user-teams";
 import { fplApi } from "../../../_shared/lib/fpl/api";
 import { convertLegacyPlayersToRoster } from "../../../_shared/lib/roster-conversion-utils";
-import type { DraftActionParams, ActionResult } from "../../types";
+import type { DraftActionParams, AdminActionResult } from "../../types/admin-types";
 import type {
     DivisionTeamsDocument,
     TeamPositionSlot,
     PositionSlotKey
 } from "../../../teams/types/team-types";
 
-export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<ActionResult> {
+export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {
@@ -131,7 +131,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
 export async function createNextGameweekDocument(params: {
     divisionId: string;
     currentGameweek: number;
-}): Promise<ActionResult> {
+}): Promise<AdminActionResult> {
     const { divisionId, currentGameweek } = params;
     const nextGameweek = currentGameweek + 1;
 
@@ -140,7 +140,7 @@ export async function createNextGameweekDocument(params: {
 
         // Get current gameweek document
         const { getDivisionTeamsDocument } = await import("../../../_shared/services/division-teams.service");
-        const currentDoc = await getDivisionTeamsDocument(divisionId, currentGameweek);
+        const currentDoc: DivisionTeamsDocument | null = await getDivisionTeamsDocument(divisionId, currentGameweek);
 
         if (!currentDoc) {
             throw new Error(`Current gameweek document not found for ${divisionId} GW${currentGameweek}`);

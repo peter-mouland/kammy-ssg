@@ -4,7 +4,8 @@ import React from 'react';
 import { type ActionFunctionArgs, type LoaderFunctionArgs, data, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { DraftSection } from './components/sections/draft-section';
-import type { AdminDashboardData } from './types';
+import type { AdminActionType, AdminDashboardData } from './types/admin-types';
+import type { DivisionId } from '../teams/types/team-types';
 
 interface ActionData {
     success?: boolean;
@@ -13,7 +14,7 @@ interface ActionData {
     data?: any;
 }
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const { getDraftAdminData } = await import("./server/admin-dashboard.server");
         const draftAdminData = await getDraftAdminData();
@@ -24,11 +25,11 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     }
 }
 
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
-        const actionType = formData.get("actionType");
-        const divisionId = formData.get("divisionId");
+        const actionType = formData.get("actionType")?.trim() as AdminActionType;
+        const divisionId = formData.get("divisionId")?.trim() as DivisionId;
 
         if (!actionType) {
             return data<ActionData>({ error: "Action type is required" });
@@ -36,10 +37,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
         const { handleDraftActions } = await import("./server/draft-actions.server");
 
-        const result = await handleDraftActions({
-            actionType: actionType.trim(),
-            divisionId: divisionId?.trim() || undefined
-        });
+        const result = await handleDraftActions({ actionType, divisionId });
 
         return data<ActionData>(result);
 

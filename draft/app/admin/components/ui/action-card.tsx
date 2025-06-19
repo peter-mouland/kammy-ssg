@@ -7,7 +7,7 @@ import styles from './action-card.module.css';
 interface ActionCardProps {
     title: string;
     description: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     buttonText: string;
     actionType: string;
     onExecute: (actionType: string) => void;

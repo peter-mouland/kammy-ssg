@@ -3,11 +3,9 @@
 import {
     type MetaFunction,
     type LoaderFunctionArgs,
-    // type ActionFunctionArgs,
     data,
     Outlet
 } from 'react-router';
-// import { requestFormData } from '../_shared/lib/form-data';
 import { AdminLayout } from './admin.layout';
 
 export const meta: MetaFunction = () => {
@@ -66,7 +64,7 @@ export const meta: MetaFunction = () => {
 //     }
 // }
 
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const { getDraftAdminData } = await import("./server/admin-dashboard.server");
         const draftAdminData = await getDraftAdminData();

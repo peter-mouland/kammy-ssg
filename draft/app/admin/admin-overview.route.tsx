@@ -1,10 +1,10 @@
 /* Location: app/admin/admin-overview.route.tsx */
 
 import React, { useState } from 'react';
-import { type ActionFunctionArgs, data, useRouteLoaderData } from 'react-router';
+import { type ActionFunctionArgs, data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { OverviewSection } from './components/sections/overview-section';
-import type { AdminDashboardData } from './types';
+import type { AdminActionType, ClearVariant } from './types/admin-types';
 
 interface ActionData {
     success?: boolean;
@@ -13,11 +13,11 @@ interface ActionData {
     data?: any;
 }
 
-export async function action({ request, context }: ActionFunctionArgs): Promise<Response> {
+export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
-        const actionType = formData.get("actionType");
-        const variant = formData.get("variant");
+        const actionType = formData.get("actionType")?.trim() as AdminActionType;
+        const variant = formData.get("variant")?.trim() as ClearVariant;
 
         if (!actionType) {
             return data<ActionData>({ error: "Action type is required" });
@@ -26,8 +26,8 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
         const { handleOverviewActions } = await import("./server/overview-actions.server");
 
         const result = await handleOverviewActions({
-            actionType: actionType.trim(),
-            variant: variant?.trim() || undefined
+            actionType: actionType,
+            variant: variant
         });
 
         return data<ActionData>(result);

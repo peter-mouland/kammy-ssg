@@ -2,7 +2,7 @@
 
 // /admin/server/actions/cache-actions.ts
 import { FirestoreClearService } from "../../../_shared/lib/firestore-cache/clear-service";
-import type { AdminActionParams, AdminActionResult } from "../../types";
+import type { AdminActionParams, AdminActionResult } from "../../types/admin-types";
 
 // Helper function from original
 function isValidAdminToken(token: string): boolean {
@@ -51,6 +51,7 @@ export async function handleGetFirestoreStats(params: AdminActionParams): Promis
 
         return {
             success: true,
+            message: 'Success',
             data: { stats, estimate, timestamp: new Date().toISOString() }
         };
     } catch (error) {

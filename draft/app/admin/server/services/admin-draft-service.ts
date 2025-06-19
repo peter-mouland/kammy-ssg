@@ -10,6 +10,7 @@ import type {
     DraftOrderData,
     AdminDashboardData
 } from "../../types";
+import type { DivisionId } from '../../../teams/types/team-types';
 
 export class AdminDraftService {
     /**
@@ -28,11 +29,11 @@ export class AdminDraftService {
         const draftOrders: Record<string, DraftOrderData[]> = {};
         const userTeamsByDivision: Record<string, UserTeamsSheetData[]> = {};
 
-        const getDraftOrderByDivision = (divisionId) => draftOrder
+        const getDraftOrderByDivision = (divisionId: DivisionId) => draftOrder
             .filter(order => order.divisionId === divisionId)
             .sort((a, b) => a.position - b.position);
 
-        const getUserTeamsByDivision = (divisionId) => {
+        const getUserTeamsByDivision = (divisionId: DivisionId) => {
             return teams.filter(team => team.divisionId === divisionId);
         }
 

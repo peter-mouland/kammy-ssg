@@ -80,18 +80,3 @@ export const SyncIcon = () => (
     </svg>
 );
 
-export const ChevronIcon = ({ expanded }) => (
-    <svg
-        style={{
-            width: '1rem',
-            height: '1rem',
-            transition: 'transform 0.2s',
-            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)'
-        }}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-    </svg>
-);

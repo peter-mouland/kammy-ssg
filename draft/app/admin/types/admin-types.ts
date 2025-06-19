@@ -2,8 +2,9 @@
 
 // Import types from their proper domains
 import type {
+    DivisionId,
     DivisionSheetData,
-    UserTeamsSheetData
+    UserTeamsSheetData,
 } from '../../teams/types/team-types';
 
 import type {
@@ -57,6 +58,7 @@ export type AdminActionType =
     | 'generateGameWeekPoints'
     | 'forceRegenerateAllPoints'
     | 'ensureDivisionDocument'
+    | 'resetDraft'
     | 'autoCommitTeamsToFirestore'
     | 'getGameweekPointsStatus';
 
@@ -64,7 +66,7 @@ export type ClearVariant = 'all' | 'fpl-only' | 'elements-only';
 
 export interface AdminActionParams {
     actionType: AdminActionType;
-    divisionId?: string;
+    divisionId?: DivisionId;
     authToken?: string;
     variant?: ClearVariant;
 }
