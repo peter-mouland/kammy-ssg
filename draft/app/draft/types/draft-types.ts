@@ -1,9 +1,46 @@
 // app/draft/types/draft-types.ts
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../teams/types/team-types';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+
 
 /**
  * Draft domain type definitions
  * Contains all types related to the drafting process
  */
+
+export type DraftSequence = Array<{ pick: number; userId: string; userName: string }>;
+
+export interface DraftLoaderData {
+    draftState: DraftStateData | null;
+    draftPicks: DraftPickData[];
+    draftOrder: DraftOrderData[];
+    availablePlayers:  EnhancedPlayerData[];
+    currentUser: string;
+    isUserTurn: boolean;
+    divisions: DivisionSheetData[];
+    userTeams: UserTeamsSheetData[];
+    selectedDivision: DivisionId;
+    selectedUser: string;
+    draftSequence: DraftSequence;
+    teams: FplTeam[];
+    filters: {
+        selectedUser: string;
+        search: string;
+        position: string;
+    };
+}
+
+export interface DraftActionData {
+    success?: boolean;
+    error?: string;
+    pick?: DraftPickData;
+    action?: string;
+}
+
+
+
 
 export interface DraftPickData {
     pickNumber: number;
@@ -14,23 +51,22 @@ export interface DraftPickData {
     teamCode: number;
     teamName: string;
     position: string;
-    price: number;
     pickedAt: Date;
-    divisionId: string;
+    divisionId: DivisionId;
 }
 
 export interface DraftStateData {
     isActive: boolean;
     currentPick: number;
     currentUserId: string;
-    currentDivisionId: string;
+    currentDivisionId: DivisionId;
     picksPerTeam: number;
     startedAt: Date | null;
     completedAt: Date | null;
 }
 
 export interface DraftOrderData {
-    divisionId: string;
+    divisionId: DivisionId;
     position: number;
     userId: string;
     userName: string;
@@ -65,7 +101,6 @@ export interface DraftPlayer {
     teamCode: number;
     teamName: string;
     position: string;
-    price: number;
     isAvailable: boolean;
     isDrafted: boolean;
     draftedBy?: string;
@@ -161,36 +196,27 @@ export interface DraftCompleteMessage {
     timestamp: Date;
 }
 
-/**
- * Draft loader data structure
- */
-export interface DraftLoaderData {
-    draftState: DraftStateData | null;
-    draftPicks: DraftPickData[];
-    draftOrder: DraftOrderData[];
-    availablePlayers: DraftPlayer[];
-    divisions: Array<{ id: string; label: string }>;
-    userTeams: Array<{ userId: string; userName: string }>;
-    currentUser: string;
-    selectedDivision: string;
-    selectedUser: string;
-    draftSequence: Array<{ pick: number; userId: string; userName: string }>;
-    teams: Record<number, string>;
-    filters: {
-        selectedUser: string;
-        search: string;
-        position: string;
+
+export interface PositionCounts {
+    gk: number;
+    cb: number;
+    fb: number;
+    mid: number;
+    wa: number;
+    ca: number;
+    sub: number;
+    total: number;
+}
+
+export interface TeamCounts {
+    [teamCode: number]: {
+        count: number;
+        teamName: string;
     };
 }
 
-/**
- * Draft action data for form submissions
- */
-export interface DraftActionData {
-    success?: boolean;
-    error?: string;
-    data?: {
-        pick?: DraftPickData;
-        state?: DraftStateData;
-    };
-}
+
+export type SquadComposition = {
+    positionCounts: PositionCounts;
+    teamCounts: TeamCounts;
+};

@@ -8,11 +8,12 @@ import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import { getNextDraftState } from "../lib/get-next-draft-state";
 import { generateDraftSequence } from "../lib/generate-draft-sequence";
-import type { DraftPickData, DraftOrderData } from "../types/draft-types";
+import type { DraftPickData, DraftOrderData, DraftStateData, DraftLoaderData } from '../types/draft-types';
 
 import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
+import type { DivisionId } from '../../teams/types/team-types';
 
-export async function loadDraftData(url: URL) {
+export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     const selectedUser = url.searchParams.get("user") || "";
     const search = url.searchParams.get("search") || "";
     const position = url.searchParams.get("position") || "";
@@ -24,9 +25,9 @@ export async function loadDraftData(url: URL) {
         readUserTeams(),
         fplApiCache.getFplPlayers(),
         fplApiCache.getFplTeams()
-    ]);
+    ])
 
-    const divisionId = draftState?.currentDivisionId || divisions[0]?.id || "";
+    const divisionId: DivisionId = draftState?.currentDivisionId || divisions[0]?.id || "";
 
     let draftPicks: DraftPickData[] = [];
     let draftOrder: DraftOrderData[] = [];
@@ -58,12 +59,12 @@ export async function loadDraftData(url: URL) {
         availablePlayers = availablePlayers.filter(p => p.draft.position === position);
     }
 
-    availablePlayers.sort((a, b) => b.total_points - a.total_points);
+    availablePlayers.sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
 
     const currentUser = selectedUser || userTeams.find(team => team.divisionId === divisionId)?.userId || "";
-    const isUserTurn = draftState?.isActive &&
+    const isUserTurn = !!((draftState?.isActive &&
         draftState.currentDivisionId === divisionId &&
-        draftState.currentUserId === currentUser;
+        draftState.currentUserId === currentUser));
 
     return {
         draftState,
@@ -86,10 +87,10 @@ export async function loadDraftData(url: URL) {
     };
 }
 
-export async function makeDraftPick(formData: FormData) {
+export async function makeDraftPick(formData: FormData | URLSearchParams) {
     console.log('🎯 Making draft pick...');
 
-    const divisionId = formData.get("divisionId")?.toString();
+    const divisionId = formData.get("divisionId")?.toString() as DivisionId;
     const playerId = formData.get("playerId")?.toString();
     const userId = formData.get("userId")?.toString();
 

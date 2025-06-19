@@ -5,10 +5,17 @@ import * as React from 'react';
 import { DraftConfetti } from './draft-confetti';
 import { useToast } from '../../_shared/components/toast-manager';
 import { calculateNextPicker } from '../lib/calculate-next-picker';
+import type { DraftOrderData, DraftPickData, DraftSequence, DraftStateData } from '../types/draft-types';
 
 import styles from './draft-order.module.css';
 
-export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }) {
+type DraftOrderProps = {
+    draftOrder: DraftOrderData[],
+    draftPicks: DraftPickData[],
+    draftSequence: DraftSequence,
+    draftState: DraftStateData,
+}
+export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState } : DraftOrderProps) {
     const { showToast } = useToast();
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [celebrationShown, setCelebrationShown] = React.useState(false);
@@ -96,7 +103,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
 
             {/* Rest of your existing draft order component */}
             <ul className={styles.draftOrderList}>
-                {draftOrder.map((user, index) => (console.log(user.userId, nextPicker?.userId, draftComplete)) || (
+                {draftOrder.map((user, index) => (
                     <li
                         key={user.userId}
                         className={`${styles.draftOrderItem} ${
@@ -108,7 +115,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                         <div className={styles.orderPosition}>#{index + 1}</div>
                         <div className={styles.userInfo}>
                             <div className={styles.userName}>{user.userName}</div>
-                            <div className={styles.teamName}>{user.teamName}</div>
+                            <div className={styles.teamName}>{user.divisionId}</div>
                         </div>
                         {user.userId === draftState?.currentUserId && !draftComplete && (
                             <div className={styles.turnIndicator}>

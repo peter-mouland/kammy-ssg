@@ -8,8 +8,8 @@ import type { DraftActionParams, ActionResult } from "../../types";
 import type {
     DivisionTeamsDocument,
     TeamPositionSlot,
-    PositionSlot
-} from "../../../_shared/types/division-teams-types";
+    PositionSlotKey
+} from "../../../teams/types/team-types";
 
 export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<ActionResult> {
     const { divisionId } = params;
@@ -46,7 +46,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         }
 
         // Convert each user's picks to new roster structure
-        const teamsData: Record<string, { roster: Record<PositionSlot, TeamPositionSlot> }> = {};
+        const teamsData: Record<string, { roster: Record<PositionSlotKey, TeamPositionSlot> }> = {};
         let totalPlayersProcessed = 0;
 
         for (const [userId, userPicks] of teamsByUser) {
@@ -147,13 +147,13 @@ export async function createNextGameweekDocument(params: {
         }
 
         // Create new document with same roster structure but reset gameweek points
-        const newTeamsData: Record<string, { roster: Record<PositionSlot, TeamPositionSlot> }> = {};
+        const newTeamsData: Record<string, { roster: Record<PositionSlotKey, TeamPositionSlot> }> = {};
 
         for (const [userId, teamData] of Object.entries(currentDoc.teams)) {
-            const newRoster: Record<PositionSlot, TeamPositionSlot> = {} as Record<PositionSlot, TeamPositionSlot>;
+            const newRoster: Record<PositionSlotKey, TeamPositionSlot> = {} as Record<PositionSlotKey, TeamPositionSlot>;
 
             for (const [slot, positionSlot] of Object.entries(teamData.roster)) {
-                newRoster[slot as PositionSlot] = {
+                newRoster[slot as PositionSlotKey] = {
                     ...positionSlot,
                     // Reset gameweek data, keep season data
                     gameweek: {

@@ -11,6 +11,7 @@ import {
 import { DraftFilters } from './draft-filters';
 import { getPositionDisplayName } from '../../scoring/lib';
 import styles from './draft-players.module.css';
+import type { CustomPosition } from '../../players/types/player-types';
 
 interface DraftPlayersProps {
     onSelectPlayer: (playerId: string) => void;
@@ -23,7 +24,7 @@ interface DraftPlayersProps {
 interface PlayerWithValidation {
     player: any;
     validation: ReturnType<typeof validateDraftEligibility>;
-    position: string;
+    position: CustomPosition;
 }
 
 export function DraftPlayers({

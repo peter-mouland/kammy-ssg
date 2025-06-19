@@ -50,15 +50,6 @@ export function TopPlayers({ players }: TopPlayersProps) {
             sortable: true,
             variant: 'numeric',
             render: (points) => points.toLocaleString()
-        },
-        {
-            key: 'price',
-            header: 'Price',
-            accessor: 'now_cost',
-            sortable: true,
-            variant: 'success',
-            align: 'right',
-            render: (cost) => `£${(cost / 10).toFixed(1)}m`
         }
     ];
 

@@ -1,6 +1,6 @@
 /* Location: app/draft/server/auto-commit.server.ts */
 
-import type { ActionResult } from '../../admin/types';
+import type { AdminActionResult } from '../../admin/types';
 
 /**
  * Auto-commit teams to Firestore when draft completes
@@ -9,11 +9,7 @@ import type { ActionResult } from '../../admin/types';
  * to maintain domain boundaries while enabling automatic
  * team commitment on draft completion.
  */
-export async function autoCommitTeamsToFirestore(divisionId: string): Promise<{
-    success: boolean;
-    message: string;
-    error?: string;
-}> {
+export async function autoCommitTeamsToFirestore(divisionId: string): Promise<AdminActionResult> {
     try {
         console.log(`🔄 Auto-committing teams for completed draft: ${divisionId}`);
 
@@ -21,7 +17,7 @@ export async function autoCommitTeamsToFirestore(divisionId: string): Promise<{
         // admin domain code from appearing in client bundles
         const { handleCommitTeamsToFirestore } = await import('../../admin/server/actions/team-commit-actions');
 
-        const result: ActionResult = await handleCommitTeamsToFirestore({
+        const result = await handleCommitTeamsToFirestore({
             actionType: 'autoCommitTeamsToFirestore',
             divisionId
         });

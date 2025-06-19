@@ -3,6 +3,7 @@
 // lib/firebase-realtime.ts - SEPARATE config just for Realtime Database
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
+import { Database } from '@firebase/database';
 
 // Realtime Database specific config
 const realtimeConfig = {
@@ -24,7 +25,7 @@ if (!realtimeConfig.apiKey || !realtimeConfig.databaseURL) {
 const REALTIME_APP_NAME = 'realtime-draft';
 
 // Get or create the Realtime Database app
-let realtimeDB;
+let realtimeDB: Database;
 
 export function getRealtimeDbInstance() {
     if (!realtimeDB) {

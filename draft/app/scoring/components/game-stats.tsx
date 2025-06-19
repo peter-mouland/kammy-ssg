@@ -1,12 +1,12 @@
 /* Location: app/scoring/components/game-stats.tsx */
 
 import styles from './game-stats.module.css';
-import type { UserTeamData, DivisionSheetData } from "../../teams/types/team-types";
+import type { UserTeamsSheetData, DivisionSheetData } from "../../teams/types/team-types";
 import type { FplPlayerData } from '../../_shared/lib/fpl/fpl-types';
 
 interface GameStatsProps {
     divisions: DivisionSheetData[];
-    leagueStandings: UserTeamData[];
+    leagueStandings: UserTeamsSheetData[];
     topPlayers: FplPlayerData[];
     currentGameweek: number;
 }

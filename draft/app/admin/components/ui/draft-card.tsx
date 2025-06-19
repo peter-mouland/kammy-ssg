@@ -3,17 +3,11 @@
 import React from 'react';
 import { useFetcher } from 'react-router';
 import styles from './draft-card.module.css';
-import type { DivisionId } from '../../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../../teams/types/team-types';
 
 interface DivisionData {
     id: string;
     label: string;
-}
-
-interface UserTeamData {
-    userId: string;
-    userName: string;
-    divisionId: DivisionId
 }
 
 interface DraftOrderData {
@@ -28,7 +22,7 @@ interface DraftStateData {
 
 interface DraftCardProps {
     division: DivisionData;
-    teams: UserTeamData[];
+    teams: UserTeamsSheetData[];
     orders: DraftOrderData[];
     draftState: DraftStateData | null;
 }

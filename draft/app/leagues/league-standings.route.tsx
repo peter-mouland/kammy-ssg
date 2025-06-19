@@ -4,7 +4,7 @@
 import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
 import { data } from "react-router";
 import { requestFormData } from '../_shared/lib/form-data';
-import type { UserTeamData, DivisionSheetData, DivisionId } from '../teams/types/team-types';
+import type { UserTeamsSheetData, DivisionSheetData, DivisionId } from '../teams/types/team-types';
 import { LeagueStandings } from './league-standings'
 
 export const meta: MetaFunction = () => {
@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 interface LoaderData {
-    userTeamsByDivision: Record<string, UserTeamData[]>;
+    userTeamsByDivision: Record<string, UserTeamsSheetData[]>;
     divisions: DivisionSheetData[];
     selectedDivision?: string;
 }

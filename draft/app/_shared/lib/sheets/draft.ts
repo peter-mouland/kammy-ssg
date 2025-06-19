@@ -1,7 +1,6 @@
 /* Location: app/_shared/lib/sheets/draft.ts */
 
 // Enhanced draft.ts with smart header mapping - OPTIMIZED FOR API CALLS
-import type { DraftPickData, DraftStateData } from '../../types';
 import {
     readSheetRange,
     writeSheetRange,
@@ -16,20 +15,21 @@ import {
 } from './utils/common';
 import { sheetsCache } from './cache/sheets-cache-service';
 import { CACHE_CONFIG } from './cache-config';
+import type { DraftPickData, DraftStateData } from '../../../draft/types/draft-types';
 
 // Draft picks sheet configuration
 const DRAFT_PICKS_SHEET_NAME = 'Draft';
-const DRAFT_PICKS_HEADERS = {
-    'Pick Number': 'pickNumber' as keyof DraftPickData,
-    'Round': 'round' as keyof DraftPickData,
-    'User ID': 'userId' as keyof DraftPickData,
-    'Player ID': 'playerId' as keyof DraftPickData,
-    'Player Name': 'playerName' as keyof DraftPickData,
-    'Team Code': 'teamCode' as keyof DraftPickData,
-    'Team Name': 'teamName' as keyof DraftPickData,
-    'Position': 'position' as keyof DraftPickData,
-    'Picked At': 'pickedAt' as keyof DraftPickData,
-    'Division ID': 'divisionId' as keyof DraftPickData
+const DRAFT_PICKS_HEADERS: Record<string, keyof DraftPickData> = {
+    'Pick Number': 'pickNumber',
+    'Round': 'round',
+    'User ID': 'userId',
+    'Player ID': 'playerId',
+    'Player Name': 'playerName',
+    'Team Code': 'teamCode',
+    'Team Name': 'teamName',
+    'Position': 'position',
+    'Picked At': 'pickedAt',
+    'Division ID': 'divisionId'
 };
 
 // Transform functions for parsing and writing
@@ -46,14 +46,14 @@ const DRAFT_PICKS_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickData,
 
 // Draft state sheet configuration
 const DRAFT_STATE_SHEET_NAME = 'DraftState';
-const DRAFT_STATE_HEADERS = {
-    'Is Active': 'isActive' as keyof DraftStateData,
-    'Current Pick': 'currentPick' as keyof DraftStateData,
-    'Current User ID': 'currentUserId' as keyof DraftStateData,
-    'Current Division ID': 'currentDivisionId' as keyof DraftStateData,
-    'Picks Per Team': 'picksPerTeam' as keyof DraftStateData,
-    'Started At': 'startedAt' as keyof DraftStateData,
-    'Completed At': 'completedAt' as keyof DraftStateData
+const DRAFT_STATE_HEADERS: Record<string, keyof DraftStateData> = {
+    'Is Active': 'isActive',
+    'Current Pick': 'currentPick',
+    'Current User ID': 'currentUserId',
+    'Current Division ID': 'currentDivisionId',
+    'Picks Per Team': 'picksPerTeam',
+    'Started At': 'startedAt',
+    'Completed At': 'completedAt'
 };
 
 const DRAFT_STATE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftStateData, (value: any) => any>> = {

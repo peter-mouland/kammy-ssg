@@ -3,7 +3,7 @@
 // Import types from their proper domains
 import type {
     DivisionSheetData,
-    UserTeamData
+    UserTeamsSheetData
 } from '../../teams/types/team-types';
 
 import type {
@@ -18,7 +18,7 @@ import type {
 export interface AdminDashboardData {
     divisions: DivisionSheetData[];
     draftOrders: Record<string, DraftOrderData[]>;
-    userTeamsByDivision: Record<string, UserTeamData[]>;
+    userTeamsByDivision: Record<string, UserTeamsSheetData[]>;
     draftState: DraftStateData | null;
 }
 
@@ -57,6 +57,7 @@ export type AdminActionType =
     | 'generateGameWeekPoints'
     | 'forceRegenerateAllPoints'
     | 'ensureDivisionDocument'
+    | 'autoCommitTeamsToFirestore'
     | 'getGameweekPointsStatus';
 
 export type ClearVariant = 'all' | 'fpl-only' | 'elements-only';
@@ -71,7 +72,7 @@ export interface AdminActionParams {
 export interface AdminActionResult {
     success: boolean;
     error?: string;
-    message?: string;
+    message: string;
     data?: unknown; // FIXED: was 'any'
 }
 
@@ -81,4 +82,3 @@ export interface AdminActionResult {
 
 // Keep these for backward compatibility with existing code
 export type DraftActionParams = AdminActionParams;
-export type ActionResult = AdminActionResult;

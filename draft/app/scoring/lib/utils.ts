@@ -1,5 +1,6 @@
 /* Location: app/scoring/lib/utils.ts */
 import type { CustomPosition } from '../../players/types/player-types';
+import { DRAFT_RULES } from '../../draft/lib/draft-rules';
 
 /**
  * Get the latest gameweek points for a player
@@ -108,14 +109,14 @@ export const isStatRelevant = (stat: string, position: string): boolean => {
 /**
  * Get position display name from custom position enum
  */
-export function getPositionDisplayName(position: CustomPosition): string {
+export function getPositionDisplayName(position: CustomPosition): string | CustomPosition {
     const displayNames = {
-        gk: 'Goalkeeper',
-        fb: 'Full-back',
-        cb: 'Centre-back',
-        mid: 'Midfielder',
-        wa: 'Wide Attack',
-        ca: 'Centre Attacker'
+        gk: DRAFT_RULES.positions.gk.name,
+        fb: DRAFT_RULES.positions.fb.name,
+        cb: DRAFT_RULES.positions.cb.name,
+        mid: DRAFT_RULES.positions.mid.name,
+        wa: DRAFT_RULES.positions.wa.name,
+        ca: DRAFT_RULES.positions.ca.name
     };
 
     return displayNames[position?.toLowerCase() as CustomPosition] || position;

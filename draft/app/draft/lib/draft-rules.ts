@@ -2,10 +2,27 @@
 
 // lib/draft/draft-rules.ts - Clean version with ONLY fixed existing functions
 import { useMemo } from 'react';
-import type { CustomPosition } from '../../players/types/player-types';
+import type { CustomPosition, CustomPositionName, PositionNameMap } from '../../players/types/player-types';
+import type { SquadComposition, PositionCounts, TeamCounts } from '../types/draft-types';
+
+
+// Positions configuration type using mapped type
+export type PositionsConfig = {
+    [K in CustomPosition]: {
+        max: number;
+        name: PositionNameMap[K];
+    };
+};
+
+export type DraftRules = {
+    positions: PositionsConfig;
+    maxPlayersPerTeam: number;
+    maxSubstitutes: number;
+    totalSquadSize: number;
+};
 
 // Draft rules configuration
-export const DRAFT_RULES = {
+export const DRAFT_RULES: DraftRules = {
     positions: {
         gk: { max: 1, name: 'Goalkeeper' },
         cb: { max: 2, name: 'Centre Back' },
@@ -25,31 +42,12 @@ export interface DraftValidationResult {
     canAddToSub: boolean;
 }
 
-export interface PositionCounts {
-    gk: number;
-    cb: number;
-    fb: number;
-    mid: number;
-    wa: number;
-    ca: number;
-    sub: number;
-    total: number;
-}
-
-export interface TeamCounts {
-    [teamCode: number]: {
-        count: number;
-        teamName: string;
-    };
-}
-
 // Get player position from draft.position (our custom positions)
 export const getPlayerPosition = (player: any): CustomPosition => {
     return (player.position || player.draft?.position)?.toLowerCase();  // userPicks uses player.position. targetPlayer uses draft.position
 };
 
-// Calculate current squad composition (regular function) - FIXED
-export function getSquadComposition(userPicks: any[]) {
+export function getSquadComposition(userPicks: any[]): SquadComposition {
     const positionCounts: PositionCounts = {
         gk: 0, cb: 0, fb: 0, mid: 0, wa: 0, ca: 0, sub: 0, total: 0
     };

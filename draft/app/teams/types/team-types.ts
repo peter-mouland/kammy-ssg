@@ -12,16 +12,11 @@ export interface DivisionSheetData {
     order: number;
 }
 
-export interface UserTeamData {
+export interface UserTeamsSheetData {
     userId: string;
     userName: string;
     teamName: string;
-    fplId: string;
     divisionId: DivisionId;
-    currentGwPoints: number;
-    totalPoints: number;
-    overallRank: number;
-    leagueRank: number;
     lastUpdated: Date;
 }
 

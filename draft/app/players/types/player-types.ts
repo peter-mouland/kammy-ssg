@@ -3,6 +3,17 @@
 import type { GameweekStatWithPoints, SeasonTotals, EnhancedPlayerData } from '../../scoring/types/scoring-types';
 
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
+export type CustomPositionName = 'Goalkeeper' | 'Full Back' | 'Centre Back' | 'Midfielder' | 'Wide Attacker' | 'Centre Attacker';
+// Map position codes to their full names
+export type PositionNameMap = {
+    gk: 'Goalkeeper';
+    fb: 'Full Back';
+    cb: 'Centre Back';
+    mid: 'Midfielder';
+    wa: 'Wide Attacker';
+    ca: 'Centre Attacker';
+};
+
 
 export interface PlayerSheetsData {
     id: string;
@@ -20,7 +31,6 @@ export interface PlayerPositionData {
     customPosition: CustomPosition;
     team: string;
     name: string;
-    price: number;
 }
 
 export interface PlayerGameweekStatsData {
@@ -34,18 +44,6 @@ export interface PlayerGameweekStatsData {
     redCards: number;
     saves: number;
     bonus: number;
-}
-
-export interface PlayerSearchFilters {
-    position?: CustomPosition;
-    team?: string;
-    priceRange?: {
-        min: number;
-        max: number;
-    };
-    nameSearch?: string;
-    sortBy?: 'name' | 'price' | 'points' | 'position';
-    sortOrder?: 'asc' | 'desc';
 }
 
 export interface PlayerDetailData {

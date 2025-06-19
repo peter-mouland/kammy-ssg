@@ -145,7 +145,6 @@ npm run preview
 | Player Name | Player's full name |
 | Team | Player's club team |
 | Position | Player position |
-| Price | Player price in millions |
 | Picked At | Timestamp of pick |
 | Division ID | Division conducting draft |
 

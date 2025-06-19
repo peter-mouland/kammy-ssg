@@ -6,10 +6,12 @@ import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters
 import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES } from '../lib/draft-rules';
 import { getPositionDisplayName } from '../../scoring/lib';
 import styles from './draft-filters.module.css';
+import type { SquadComposition, PositionCounts, TeamCounts } from '../types/draft-types';
+import type { CustomPosition } from '../../players/types/player-types';
 
 interface DraftFiltersProps {
     availablePlayers: any[];
-    squadComposition: any[];
+    squadComposition: SquadComposition;
     allTeams: any[];
     selectedPositions: string[];
     selectedTeams: string[];
@@ -75,7 +77,9 @@ export function DraftFilters({
         });
 
         // Convert to MultiSelectOption format
-        const positionOptions: MultiSelectOption[] = Object.entries(DRAFT_RULES.positions).map(([position]) => ({
+        const positions = Object.keys(DRAFT_RULES.positions) as (keyof typeof DRAFT_RULES.positions)[];
+
+        const positionOptions: MultiSelectOption[] = positions.map((position) => ({
             id: position,
             label: getPositionDisplayName(position),
             count: positionCounts[position]?.eligible || 0,

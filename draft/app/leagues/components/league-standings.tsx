@@ -2,14 +2,14 @@
 
 import { Icon } from "../../_shared/components/icon";
 import { Table, type TableColumn, RankBadge, TableBadge } from "../../_shared/components/table";
-import type { UserTeamData } from "../../teams/types/team-types";
+import type { UserTeamsSheetData } from "../../teams/types/team-types";
 
 interface LeagueStandingsProps {
-    standings: UserTeamData[];
+    standings: UserTeamsSheetData[];
 }
 
 export function LeagueStandings({ standings }: LeagueStandingsProps) {
-    const columns: TableColumn<UserTeamData>[] = [
+    const columns: TableColumn<UserTeamsSheetData>[] = [
         {
             key: 'rank',
             header: 'Rank',

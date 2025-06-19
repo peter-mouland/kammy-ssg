@@ -6,6 +6,7 @@ import { useRevalidator } from 'react-router';
 import { ref, onValue, off, get } from 'firebase/database';
 import { useToast } from '../../_shared/components/toast-manager';
 import { getRealtimeDbInstance } from '../lib/firebase-client-config';
+import type { ConnectionStatusProps } from './connection-status';
 
 interface DraftEvent {
     type: 'pick-made' | 'turn-change' | 'draft-started' | 'draft-ended' | 'draft-synced' | 'draft-reset';
@@ -19,6 +20,7 @@ interface DraftFirebaseHandlerProps {
     divisionId: string;
     currentUserId: string;
     isDraftActive: boolean;
+    children: (props: ConnectionStatusProps) => React.ReactNode;
 }
 
 export const DraftFirebaseHandler: React.FC<DraftFirebaseHandlerProps> = ({
@@ -328,9 +330,7 @@ export const DraftFirebaseHandler: React.FC<DraftFirebaseHandlerProps> = ({
         <>
             {children({
                  connectionState,
-                 isConnected: connectionState === 'connected',
-                 hasError,
-                 reconnect: revalidator
+                 onReconnect: revalidator.revalidate
              })}
         </>
     )

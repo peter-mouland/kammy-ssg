@@ -186,7 +186,6 @@ Configure in `vercel.json`:
     - Weekly summary notifications
 
 2. **Advanced Analytics**
-    - Player price change tracking
     - Transfer recommendations
     - League performance charts
 

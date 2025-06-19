@@ -2,11 +2,11 @@
 
 import { Icon } from "../../_shared/components/icon";
 import styles from './division-overview.module.css';
-import type { DivisionSheetData, UserTeamData } from "../../teams/types/team-types";
+import type { DivisionSheetData, UserTeamsSheetData } from "../../teams/types/team-types";
 
 interface DivisionOverviewProps {
     divisions: DivisionSheetData[];
-    leagueStandings: UserTeamData[];
+    leagueStandings: UserTeamsSheetData[];
 }
 
 export function DivisionOverview({ divisions, leagueStandings }: DivisionOverviewProps) {

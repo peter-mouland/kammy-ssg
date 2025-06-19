@@ -6,7 +6,7 @@ import { readUserTeams, getUserTeamsByDivision } from '../../../_shared/lib/shee
 import { readDraftOrders, getDraftOrderByDivision } from '../../../_shared/lib/sheets/draft-order';
 import { readDraftState } from "../../../_shared/lib/sheets/draft";
 import type {
-    UserTeamData,
+    UserTeamsSheetData,
     DraftOrderData,
     AdminDashboardData
 } from "../../types";
@@ -26,7 +26,7 @@ export class AdminDraftService {
 
         // Fetch user teams and draft orders for each division
         const draftOrders: Record<string, DraftOrderData[]> = {};
-        const userTeamsByDivision: Record<string, UserTeamData[]> = {};
+        const userTeamsByDivision: Record<string, UserTeamsSheetData[]> = {};
 
         const getDraftOrderByDivision = (divisionId) => draftOrder
             .filter(order => order.divisionId === divisionId)

@@ -7,7 +7,7 @@ export * from './admin-types';
 // FIXED: Import from proper domain locations instead of shared types
 export type {
     DivisionSheetData,
-    UserTeamData,
+    UserTeamsSheetData,
 } from '../../teams/types/team-types';
 
 export type {

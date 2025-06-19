@@ -4,10 +4,10 @@
 import { LoadingSpinner } from '../../_shared/components/loading-overlay';
 import styles from './connection-status.module.css';
 
-interface ConnectionStatusProps {
+export interface ConnectionStatusProps {
     connectionState: 'connecting' | 'connected' | 'disconnected' | 'error';
     isRevalidating?: boolean;
-    onReconnect?: () => void;
+    onReconnect: () => void;
 }
 
 export function ConnectionStatus({

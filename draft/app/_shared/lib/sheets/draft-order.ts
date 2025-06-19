@@ -1,6 +1,6 @@
 /* Location: app/_shared/lib/sheets/draft-order.ts */
 
-import type { DraftOrderData } from '../../types';
+import type { DraftOrderData } from '../../../draft/types/draft-types';
 import {
     readSheetRange,
     writeSheetRange,
@@ -16,12 +16,12 @@ import { CACHE_CONFIG } from './cache-config';
 
 // Sheet configuration
 const DRAFT_ORDER_SHEET_NAME = 'DraftOrder';
-const DRAFT_ORDER_HEADERS = {
-    'Division ID': 'divisionId' as keyof DraftOrderData,
-    'Position': 'position' as keyof DraftOrderData,
-    'User ID': 'userId' as keyof DraftOrderData,
-    'User Name': 'userName' as keyof DraftOrderData,
-    'Generated At': 'generatedAt' as keyof DraftOrderData
+const DRAFT_ORDER_HEADERS : Record<string, keyof DraftOrderData> = {
+    'Division ID': 'divisionId',
+    'Position': 'position',
+    'User ID': 'userId',
+    'User Name': 'userName',
+    'Generated At': 'generatedAt'
 };
 
 // Transform functions for parsing

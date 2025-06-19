@@ -109,7 +109,6 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
     const playerName = player.web_name;
     const playerTeam = teamsByCode[player.team_code].name;
     const playerPosition = player.draft.position;
-    const playerPrice = "£8.5m";
 
     // Simple search filter
     const matchesSearch = !searchTerm ||
@@ -126,7 +125,7 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
                 </div>
                 <div className={styles.playerDetails}>
                     <h4 className={styles.playerName}>{playerName}</h4>
-                    <p className={styles.playerMeta}>{playerTeam} • {playerPrice}</p>
+                    <p className={styles.playerMeta}>{playerTeam}</p>
                 </div>
             </div>
 

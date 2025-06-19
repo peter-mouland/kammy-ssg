@@ -32,6 +32,7 @@ import { useOptimisticPicks } from './lib/use-optimistic-picks';
 
 // Styles
 import styles from './draft.module.css';
+import type { DraftActionData, DraftLoaderData } from './types/draft-types';
 
 
 // Memoized components to prevent unnecessary rerenders
@@ -41,10 +42,10 @@ const MemoizedTeamDraft = React.memo(DraftTeams);
 const MemoizedDraftPlayers = React.memo(DraftPlayers);
 
 export const Draft = () => {
-    const loaderData = useLoaderData<typeof loader>();
-    const actionData = useActionData<typeof action>();
+    const loaderData = useLoaderData<DraftLoaderData>();
+    const actionData = useActionData<DraftActionData>();
     const navigation = useNavigation();
-    const fetcher = useFetcher<ActionData>();
+    const fetcher = useFetcher<DraftActionData>();
     const revalidator = useRevalidator();
     const [searchParams, setSearchParams] = useSearchParams();
     const { showToast } = useToast();
@@ -212,6 +213,7 @@ export const Draft = () => {
             });
             return;
         }
+        const teamName = loaderData.teams.find((t) => t.code === selectedPlayer.team_code)?.name;
 
         // Create optimistic pick
         const optimisticPick = {
@@ -220,10 +222,9 @@ export const Draft = () => {
             userId: loaderData.currentUser,
             playerId,
             playerName: selectedPlayer.web_name || `${selectedPlayer.first_name} ${selectedPlayer.second_name}`,
-            teamCode: selectedPlayer.teamCode,
-            teamName: selectedPlayer.teamName,
+            teamCode: selectedPlayer.team_code,
+            teamName: teamName || 'Unknown',
             position: selectedPlayer.draft.position,
-            price: selectedPlayer.now_cost / 10,
             pickedAt: new Date(),
             divisionId: loaderData.selectedDivision
         };
@@ -290,11 +291,11 @@ export const Draft = () => {
 
             {/* Firebase Handler - manages real-time connections */}
             <DraftFirebaseHandler
-                divisionId={loaderData.draftState?.currentDivisionId}
+                divisionId={loaderData.draftState?.currentDivisionId!}
                 currentUserId={loaderData.currentUser}
                 isDraftActive={loaderData.draftState?.isActive || false}
             >
-                {({ connectionState, isConnected, hasError, reconnect }) => (
+                {({ connectionState, onReconnect }) => (
                     <>
                         {/* Header with connection status */}
                         <PageHeader
@@ -304,7 +305,7 @@ export const Draft = () => {
                                     <ConnectionStatus
                                         connectionState={connectionState}
                                         isRevalidating={revalidator.state === "loading"}
-                                        onReconnect={reconnect}
+                                        onReconnect={onReconnect}
                                     />
                                     <SelectUser
                                         users={loaderData.userTeams}
@@ -318,15 +319,15 @@ export const Draft = () => {
 
                         {/* Turn Alert */}
                         <TurnAlert
-                            isUserTurn={loaderData.isUserTurn && loaderData.draftState?.isActive}
+                            isUserTurn={!!(loaderData.isUserTurn && loaderData.draftState?.isActive)}
                             isSubmitting={isSubmitting}
                         />
 
                         {/* Connection Alert */}
                         <ConnectionAlert
-                            isConnected={isConnected}
+                            isConnected={connectionState === 'connected'}
                             isDraftActive={loaderData.draftState?.isActive || false}
-                            onReconnect={reconnect}
+                            onReconnect={onReconnect}
                         />
 
                         {/* Navigation Alert */}
@@ -347,7 +348,7 @@ export const Draft = () => {
                                     <DraftTeam
                                         userId={loaderData.draftState.currentUserId}
                                         userName={loaderData.draftState.currentUserId}
-                                        draftPicks={loaderData.draftPicks?.filter(pick => pick.userId === loaderData.draftState.currentUserId)}
+                                        draftPicks={loaderData.draftPicks?.filter(pick => pick.userId === loaderData.draftState?.currentUserId)}
                                         isCompact={true}
                                     />
 
@@ -417,8 +418,6 @@ export const Draft = () => {
                                         isSubmitting,
                                         isPending,
                                         connectionState,
-                                        isConnected,
-                                        hasError,
                                         hasOptimisticPicks,
                                         optimisticPicksCount: optimisticPicks?.filter(p => p.isOptimistic).length,
                                         navigationState: navigation.state,

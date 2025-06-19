@@ -1,12 +1,12 @@
 /* Location: app/leagues/server/league-standings.server.ts */
 
 // app/routes/server/league-standings.server.ts
-import { readUserTeams, getUserTeamsByDivision, recalculateLeagueRanks } from "../../_shared/lib/sheets/user-teams";
+import { readUserTeams, getUserTeamsByDivision } from "../../_shared/lib/sheets/user-teams";
 import { readDivisions } from "../../_shared/lib/sheets/divisions";
-import type { UserTeamData, DivisionSheetData, DivisionId } from '../../teams/types/team-types';
+import type { UserTeamsSheetData, DivisionSheetData, DivisionId } from '../../teams/types/team-types';
 
 export interface LeagueStandingsLoaderData {
-    userTeamsByDivision: Record<string, UserTeamData[]>;
+    userTeamsByDivision: Record<string, UserTeamsSheetData[]>;
     divisions: DivisionSheetData[];
     selectedDivision?: string;
 }
@@ -22,7 +22,7 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
 
         return {
             userTeamsByDivision: {
-                [selectedDivision]: userTeams.sort((a, b) => b.totalPoints - a.totalPoints)
+                [selectedDivision]: userTeams
             },
             divisions,
             selectedDivision
@@ -31,7 +31,7 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
 
     // Get all teams and organize by division
     const allUserTeams = await readUserTeams();
-    const userTeamsByDivision: Record<string, UserTeamData[]> = {};
+    const userTeamsByDivision: Record<string, UserTeamsSheetData[]> = {};
 
     // Initialize empty arrays for all divisions
     divisions.forEach(division => {
@@ -48,7 +48,7 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
 
     // Sort teams within each division by total points (descending)
     Object.keys(userTeamsByDivision).forEach(divisionId => {
-        userTeamsByDivision[divisionId].sort((a, b) => b.totalPoints - a.totalPoints);
+        userTeamsByDivision[divisionId]
     });
 
     return {
@@ -63,24 +63,6 @@ export async function handleLeagueStandingsAction(formData: FormData) {
     const divisionId = formData.get("divisionId");
 
     switch (actionType) {
-        case "refreshRankings":
-            // Recalculate rankings for specific division or all divisions
-            const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
-
-            if (divisionId && typeof divisionId === 'string') {
-                await recalculateLeagueRanks(spreadsheetId, divisionId);
-                return {
-                    success: true,
-                    message: `Rankings refreshed for division: ${divisionId}`
-                };
-            } else {
-                await recalculateLeagueRanks(spreadsheetId);
-                return {
-                    success: true,
-                    message: "Rankings refreshed for all divisions"
-                };
-            }
-
         default:
             throw new Error("Invalid action type");
     }
