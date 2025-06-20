@@ -2,13 +2,13 @@
 
 // components/wishlist-button.tsx
 import { useState } from 'react';
-import type { FplElementType } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { useWishlists } from '../lib/use-wishlists';
 import styles from './wishlist-button.module.css';
 import { CreateWishlistForm } from './wishlist-form';
 
 interface WishlistButtonProps {
-    player: FplElementType;
+    player: EnhancedPlayerData;
     size?: 'small' | 'medium' | 'large';
     showLabel?: boolean;
 }
@@ -41,6 +41,7 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
     return (
         <div className={styles.container}>
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={buttonClasses}
                 title={hasWishlists ? `In ${playerWishlists.length} wishlist(s)` : 'Add to wishlist'}
@@ -65,13 +66,14 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
 
             {isOpen && (
                 <>
-                    <div className={styles.backdrop} onClick={() => setIsOpen(false)} />
+                    <button type={'button'} className={styles.backdrop} onClick={() => setIsOpen(false)} />
 
                     <div className={styles.dropdown}>
                         <div className={styles.dropdownContent}>
                             <div className={styles.dropdownHeader}>
                                 <h3 className={styles.dropdownTitle}>Add to Wishlist</h3>
                                 <button
+                                    type={'button'}
                                     onClick={() => setShowCreateForm(!showCreateForm)}
                                     className={styles.createButton}
                                 >

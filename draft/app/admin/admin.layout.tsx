@@ -12,7 +12,7 @@ import { NavButton } from './components/ui/nav-button';
 import { NavGroup } from './components/ui/nav-group';
 import { RefreshButton } from './components/ui/refresh-button';
 import { SystemHealthBadge } from './components/ui/system-health-badge';
-import type { AdminNavItem } from './types';
+import type { AdminNavItem } from './types/admin-types';
 
 interface AdminDashboardLayoutProps {
     children: React.ReactNode;

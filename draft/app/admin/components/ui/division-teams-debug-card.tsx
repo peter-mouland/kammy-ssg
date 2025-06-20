@@ -18,7 +18,6 @@ export const DivisionTeamsDebugCard = () => {
             actionType="ensureDivisionTeamDocuments"
             onExecute={executeAction}
             fetcher={fetcher}
-            variant="secondary"
         />
     );
 };
