@@ -2,9 +2,9 @@
 
 // /teams/components/loan-status.tsx
 import type React from 'react';
-import { PlayerCard } from './player-card';
 import type { FirestoreTeamMember } from '../types/team-types';
 import styles from './loan-status.module.css';
+import { PlayerCard } from './player-card';
 
 interface LoanStatusProps {
     loanedOut: FirestoreTeamMember[];

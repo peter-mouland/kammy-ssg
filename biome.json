@@ -27,6 +27,10 @@
         "lineEnding": "lf"
     },
     "javascript": {
+        "parser": {
+           "unsafeParameterDecoratorsEnabled": false,
+           "jsxEverywhere": false
+        },
         "formatter": {
             "quoteStyle": "single",
             "jsxQuoteStyle": "double",

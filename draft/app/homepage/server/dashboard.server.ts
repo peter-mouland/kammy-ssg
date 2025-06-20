@@ -2,8 +2,8 @@
 
 // Server-only imports - these won't be included in client bundle
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
-import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
+import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { DashboardData } from '../types/homepage-types';
 
 export async function getDashboardData(): Promise<DashboardData> {

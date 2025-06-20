@@ -1,6 +1,7 @@
 // app/_shared/services/division-teams.service.ts
-import { getFirestoreInstance } from '../lib/firestore-cache/firebase.admin';
+
 import type { DivisionTeamsDocument, TeamGameweekData, UserTeamRoster } from '../../teams/types/team-types';
+import { getFirestoreInstance } from '../lib/firestore-cache/firebase.admin';
 
 /**
  * Get division teams document for specific gameweek

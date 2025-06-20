@@ -2,9 +2,9 @@
 
 // app/routes/players.tsx
 import { useLoaderData } from 'react-router';
-import { PlayerStatsTable } from './components/player-stats-table';
-import { ScoringInfo } from '../scoring/components/scoring-info';
 import { PageHeader } from '../_shared/components/page-header';
+import { ScoringInfo } from '../scoring/components/scoring-info';
+import { PlayerStatsTable } from './components/player-stats-table';
 import type { PlayerStatsData } from './types/player-types';
 
 export const PlayersPage = () => {

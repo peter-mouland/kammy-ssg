@@ -1,9 +1,9 @@
 /* Location: app/leagues/server/league-standings.server.ts */
 
-// app/routes/server/league-standings.server.ts
-import { readUserTeams, getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
-import type { UserTeamsSheetData, DivisionSheetData, DivisionId } from '../../teams/types/team-types';
+// app/routes/server/league-standings.server.ts
+import { getUserTeamsByDivision, readUserTeams } from '../../_shared/lib/sheets/user-teams';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
 export interface LeagueStandingsLoaderData {
     userTeamsByDivision: Record<string, UserTeamsSheetData[]>;

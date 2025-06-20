@@ -2,11 +2,10 @@
 
 // Updated Draft-order.jsx with completion detection
 import * as React from 'react';
-import { DraftConfetti } from './draft-confetti';
 import { useToast } from '../../_shared/components/toast-manager';
 import { calculateNextPicker } from '../lib/calculate-next-picker';
 import type { DraftOrderData, DraftPickData, DraftSequence, DraftStateData } from '../types/draft-types';
-
+import { DraftConfetti } from './draft-confetti';
 import styles from './draft-order.module.css';
 
 type DraftOrderProps = {

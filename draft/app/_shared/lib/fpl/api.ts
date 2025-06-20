@@ -1,8 +1,8 @@
 /* Location: app/_shared/lib/fpl/api.ts */
 
+import { createAppError } from '../sheets/utils/common';
 // src/lib/fpl/api.ts
 import type { FplBootstrapData, FplPlayerSeasonData } from './fpl-types';
-import { createAppError } from '../sheets/utils/common';
 
 // FPL API endpoints
 const FPL_BASE_URL = 'https://fantasy.premierleague.com/api';

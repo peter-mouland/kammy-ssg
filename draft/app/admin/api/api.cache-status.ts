@@ -1,7 +1,7 @@
 /* Location: app/admin/api/api.cache-status.ts */
 
 // /admin/api/api.cache-status.ts
-import { type LoaderFunctionArgs, data } from 'react-router';
+import { data, type LoaderFunctionArgs } from 'react-router';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {

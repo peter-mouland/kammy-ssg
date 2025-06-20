@@ -1,5 +1,5 @@
 // /draft/lib/use-optimistic-picks.ts - FIXED with clearOptimisticPicks
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useActionData } from 'react-router';
 import type { DraftPickData } from '../types/draft-types';
 

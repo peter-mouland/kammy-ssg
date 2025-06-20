@@ -2,17 +2,17 @@
 
 import { useMemo } from 'react';
 import { Link } from 'react-router';
-import { WishlistButton } from '../../wishlist/components/wishlist-button';
-import { WishlistTags } from '../../wishlist/components/wishlist-tags';
-import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
-import { getPlayerPosition } from '../../draft/lib/draft-rules';
-import { getPositionDisplayName } from '../../scoring/lib';
 import { Table, type TableColumn } from '../../_shared/components/table';
-import styles from './player-stats-table.module.css';
 import { TableFilters } from '../../_shared/components/table-filters';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import { getPlayerPosition } from '../../draft/lib/draft-rules';
+import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
+import { getPositionDisplayName } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import { WishlistButton } from '../../wishlist/components/wishlist-button';
+import { WishlistTags } from '../../wishlist/components/wishlist-tags';
 import type { CustomPosition } from '../types/player-types';
+import styles from './player-stats-table.module.css';
 
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];

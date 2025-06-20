@@ -1,10 +1,10 @@
 /* Location: app/admin/admin-draft.route.tsx */
 
-import { type ActionFunctionArgs, type LoaderFunctionArgs, data, useLoaderData } from 'react-router';
+import { type ActionFunctionArgs, data, type LoaderFunctionArgs, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
+import type { DivisionId } from '../teams/types/team-types';
 import { DraftSection } from './components/sections/draft-section';
 import type { AdminActionType, AdminDashboardData } from './types/admin-types';
-import type { DivisionId } from '../teams/types/team-types';
 
 interface ActionData {
     success?: boolean;

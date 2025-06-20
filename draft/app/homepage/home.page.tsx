@@ -2,14 +2,14 @@
 
 // app/routes/dashboard.tsx
 import { useLoaderData } from 'react-router';
-import { TopPlayers } from '../players/components/top-players'; // players
-import { LeagueStandings } from '../leagues/components/league-standings'; // leagues
-import { DivisionOverview } from '../leagues/components/division-overview'; // leagues
+import { LayoutGrid } from '../_shared/components/layout-grid';
+import { PageHeader } from '../_shared/components/page-header'; // shared
 import { RecentActivity } from '../admin/components/ui/recent-activity'; // admin
 import { SystemStatus } from '../admin/components/ui/system-status'; // admin
+import { DivisionOverview } from '../leagues/components/division-overview'; // leagues
+import { LeagueStandings } from '../leagues/components/league-standings'; // leagues
+import { TopPlayers } from '../players/components/top-players'; // players
 import { GameStats } from '../scoring/components/game-stats'; // scoring
-import { PageHeader } from '../_shared/components/page-header'; // shared
-import { LayoutGrid } from '../_shared/components/layout-grid';
 import type { DashboardData } from './types/homepage-types';
 
 export const HomePage = () => {

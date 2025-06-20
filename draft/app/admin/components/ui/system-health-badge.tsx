@@ -1,7 +1,7 @@
 /* Location: app/admin/components/ui/system-health-badge.tsx */
 
-import * as Icons from '../icons/admin-icons';
 import { useCacheStatus } from '../../hooks/use-cache-status';
+import * as Icons from '../icons/admin-icons';
 import styles from './system-health-badge.module.css';
 
 type HealthStatus = 'healthy' | 'warning' | 'critical' | 'unknown';

@@ -1,6 +1,7 @@
 /* Location: app/scoring/lib/utils.ts */
-import type { CustomPosition } from '../../players/types/player-types';
+
 import { DRAFT_RULES } from '../../draft/lib/draft-rules';
+import type { CustomPosition } from '../../players/types/player-types';
 
 /**
  * Get the latest gameweek points for a player

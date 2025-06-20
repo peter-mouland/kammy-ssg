@@ -1,9 +1,9 @@
 /* Location: app/scoring/lib/calculations.ts */
 
-import type { Points } from '../types/scoring-types';
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
-import { isStatRelevant } from './utils';
+import type { Points } from '../types/scoring-types';
 import { POSITION_RULES } from './rules';
+import { isStatRelevant } from './utils';
 
 const baselineStats: Points = {
     appearance: 0,

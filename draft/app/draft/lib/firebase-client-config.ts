@@ -1,9 +1,9 @@
 /* Location: app/draft/lib/firebase-client-config.ts */
 
-// lib/firebase-realtime.ts - SEPARATE config just for Realtime Database
-import { initializeApp, getApps } from 'firebase/app';
-import { getDatabase } from 'firebase/database';
 import type { Database } from '@firebase/database';
+// lib/firebase-realtime.ts - SEPARATE config just for Realtime Database
+import { getApps, initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
 
 // Realtime Database specific config
 const realtimeConfig = {

@@ -1,11 +1,11 @@
 /* Location: app/players/player.page.tsx */
 
 // app/routes/players.$playerId.tsx
-import { useLoaderData, Link } from 'react-router';
-import { PlayerGameweekTable } from './components/player-gameweek-table';
-import { PlayerHighlights } from './components/player-highlights';
+import { Link, useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { getPositionColor } from '../scoring/lib';
+import { PlayerGameweekTable } from './components/player-gameweek-table';
+import { PlayerHighlights } from './components/player-highlights';
 import styles from './player.page.module.css';
 import type { PlayerDetailData } from './types/player-types';
 

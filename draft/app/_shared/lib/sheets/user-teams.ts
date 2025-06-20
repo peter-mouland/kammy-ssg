@@ -1,9 +1,9 @@
 /* Location: app/_shared/lib/sheets/user-teams.ts */
 
 import type { UserTeamsSheetData } from '../../../teams/types/team-types';
-import { readSheetRange, parseHeaderBasedData, parseSheetDate, createAppError, type SheetRange } from './utils/common';
 import { sheetsCache } from './cache/sheets-cache-service';
 import { CACHE_CONFIG } from './cache-config';
+import { createAppError, parseHeaderBasedData, parseSheetDate, readSheetRange, type SheetRange } from './utils/common';
 
 // Sheet configuration
 const USER_TEAMS_SHEET_NAME = 'UserTeams';

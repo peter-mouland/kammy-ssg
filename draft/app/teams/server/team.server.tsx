@@ -1,12 +1,13 @@
 // app/teams/server/team.server.ts
-import {
-    getUserTeamForGameweek,
-    getUserTeamHistory,
-    getAvailableGameweeks as getAvailableGameweeksFromService,
-} from '../../_shared/services/division-teams.service';
+
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
-import type { TeamViewData, TeamGameweekData, CurrentUser } from '../types/team-types';
+import {
+    getAvailableGameweeks as getAvailableGameweeksFromService,
+    getUserTeamForGameweek,
+    getUserTeamHistory,
+} from '../../_shared/services/division-teams.service';
+import type { CurrentUser, TeamGameweekData, TeamViewData } from '../types/team-types';
 
 export async function loadTeamData(url: URL, _params: any): Promise<TeamViewData> {
     try {

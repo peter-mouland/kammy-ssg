@@ -2,7 +2,6 @@
 
 import React from 'react';
 import type { Wishlist } from '../types/wishlist-types';
-
 import styles from './wishlist-item.module.css';
 
 interface WishlistDetailsProps {

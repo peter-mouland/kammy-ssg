@@ -2,7 +2,6 @@
 
 import type { MetaFunction } from 'react-router';
 import { fplApiCache } from '../_shared/lib/fpl/api-cache';
-
 import { WishlistsPage } from './wishlists.page';
 
 export const meta: MetaFunction = () => {

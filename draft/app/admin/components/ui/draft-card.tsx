@@ -1,8 +1,8 @@
 /* Location: app/admin/components/ui/draft-card.tsx */
 
 import { useFetcher } from 'react-router';
-import styles from './draft-card.module.css';
 import type { UserTeamsSheetData } from '../../../teams/types/team-types';
+import styles from './draft-card.module.css';
 
 interface DivisionData {
     id: string;

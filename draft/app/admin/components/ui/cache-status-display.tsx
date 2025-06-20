@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
-import { DataCount } from './data-count';
 import styles from './cache-status-display.module.css';
+import { DataCount } from './data-count';
 
 interface CacheHealthData {
     health?: {

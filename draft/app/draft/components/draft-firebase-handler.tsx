@@ -1,9 +1,9 @@
 /* Location: app/draft/components/draft-firebase-handler.tsx */
 
+import { get, off, onValue, ref } from 'firebase/database';
 // /draft/components/draft-firebase-handler.tsx - UPDATED WITH SYNC EVENT HANDLING
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
-import { ref, onValue, off, get } from 'firebase/database';
 import { useToast } from '../../_shared/components/toast-manager';
 import { getRealtimeDbInstance } from '../lib/firebase-client-config';
 import type { ConnectionStatusProps } from './connection-status';

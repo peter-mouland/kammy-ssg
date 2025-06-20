@@ -1,10 +1,10 @@
 /* Location: app/leagues/league-standings.route.tsx */
 
 // app/routes/league-standings.tsx - Fixed to show separate division standings
-import type { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from 'react-router';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
-import type { UserTeamsSheetData, DivisionSheetData, DivisionId } from '../teams/types/team-types';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../teams/types/team-types';
 import { LeagueStandings } from './league-standings';
 
 export const meta: MetaFunction = () => {

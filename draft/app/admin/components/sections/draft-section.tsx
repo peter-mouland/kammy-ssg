@@ -1,10 +1,10 @@
 import { useActionData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
-import { DraftCard } from '../ui/draft-card';
+import { AdminContainer, AdminGrid, AdminSection } from '../layout';
 import { AdminMessage } from '../ui/admin-message';
-import { AdminSection, AdminGrid, AdminContainer } from '../layout';
-import { FirebaseSyncSection } from './firebase-sync-section';
+import { DraftCard } from '../ui/draft-card';
 import { CommitTeamsSection } from './commit-teams-section';
+import { FirebaseSyncSection } from './firebase-sync-section';
 
 interface DraftSectionProps {
     divisions: any[];

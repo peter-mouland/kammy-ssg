@@ -1,8 +1,8 @@
 // app/draft/types/draft-types.ts
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types';
-import type { UserTeamsSheetData } from '../../teams/types/team-types';
+
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
 /**
  * Draft domain type definitions

@@ -1,33 +1,28 @@
 /* Location: app/draft/draft.tsx */
 
-import { useLoaderData, useFetcher, useSearchParams, useNavigation, useActionData, useRevalidator } from 'react-router';
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import * as React from 'react';
-
-// Components
-import { DraftBoard } from './components/draft-board';
-import { DraftOrder } from './components/draft-order';
-import { DraftTeams } from './components/draft-teams';
-import { DraftTeam } from './components/draft-team';
-import { DraftPlayers } from './components/draft-players';
-import { DraftFirebaseHandler } from './components/draft-firebase-handler';
-import { DraftConfetti } from './components/draft-confetti';
-import { ConnectionStatus, ConnectionAlert } from './components/connection-status';
-
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useActionData, useFetcher, useLoaderData, useNavigation, useRevalidator, useSearchParams } from 'react-router';
+import { LoadingOverlay, LoadingSpinner, TurnAlert } from '../_shared/components/loading-overlay';
+import { PageHeader } from '../_shared/components/page-header';
 // shared components
 import { SelectUser } from '../_shared/components/select-user';
-import { PageHeader } from '../_shared/components/page-header';
 import { ToastManager, useToast } from '../_shared/components/toast-manager';
-import { LoadingOverlay, LoadingSpinner, TurnAlert } from '../_shared/components/loading-overlay';
-
 // Audio imports
-import { playPickSuccessSound, playErrorSound, playYourTurnSound } from '../_shared/lib/audio/celebration-sounds';
-
-// Hooks
-import { useOptimisticPicks } from './lib/use-optimistic-picks';
-
+import { playErrorSound, playPickSuccessSound, playYourTurnSound } from '../_shared/lib/audio/celebration-sounds';
+import { ConnectionAlert, ConnectionStatus } from './components/connection-status';
+// Components
+import { DraftBoard } from './components/draft-board';
+import { DraftConfetti } from './components/draft-confetti';
+import { DraftFirebaseHandler } from './components/draft-firebase-handler';
+import { DraftOrder } from './components/draft-order';
+import { DraftPlayers } from './components/draft-players';
+import { DraftTeam } from './components/draft-team';
+import { DraftTeams } from './components/draft-teams';
 // Styles
 import styles from './draft.module.css';
+// Hooks
+import { useOptimisticPicks } from './lib/use-optimistic-picks';
 import type { DraftActionData, DraftLoaderData } from './types/draft-types';
 
 // Memoized components to prevent unnecessary rerenders

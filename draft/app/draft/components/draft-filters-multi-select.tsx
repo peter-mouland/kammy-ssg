@@ -1,7 +1,7 @@
 /* Location: app/draft/components/draft-filters-multi-select.tsx */
 
 // components/draft-filters-multi-select.tsx
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './draft-filters-multi-select.module.css';
 
 export interface MultiSelectOption {

@@ -1,10 +1,10 @@
 /* Location: app/draft/draft.route.tsx */
 
-import type { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from 'react-router';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { Draft } from './draft';
-import type { DraftLoaderData, DraftActionData } from './types/draft-types';
+import type { DraftActionData, DraftLoaderData } from './types/draft-types';
 
 export const meta: MetaFunction = () => {
     return [

@@ -1,19 +1,18 @@
 /* Location: app/root.tsx */
 
 import {
+    isRouteErrorResponse,
     Links,
+    type LinksFunction,
     Meta,
+    type MetaFunction,
     Outlet,
     Scripts,
     ScrollRestoration,
-    isRouteErrorResponse,
     useRouteError,
-    type MetaFunction,
-    type LinksFunction,
 } from 'react-router';
-
-import globalStyles from './root.css?url';
 import designTokens from './design-tokens.css?url';
+import globalStyles from './root.css?url';
 import { WishlistProvider } from './wishlist/lib/use-wishlists';
 
 export const meta: MetaFunction = () => {

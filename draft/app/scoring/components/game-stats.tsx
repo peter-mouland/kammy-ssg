@@ -1,8 +1,8 @@
 /* Location: app/scoring/components/game-stats.tsx */
 
-import styles from './game-stats.module.css';
-import type { UserTeamsSheetData, DivisionSheetData } from '../../teams/types/team-types';
 import type { FplPlayerData } from '../../_shared/lib/fpl/fpl-types';
+import type { DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
+import styles from './game-stats.module.css';
 
 interface GameStatsProps {
     divisions: DivisionSheetData[];

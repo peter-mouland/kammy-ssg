@@ -1,6 +1,8 @@
 /* Location: app/_shared/lib/firestore-cache/fpl-cache.ts */
 
-import { FirestoreClient } from './firestore-client';
+import type { CustomPosition } from '../../../players/types/player-types';
+import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import { processBatchedReads } from '../batch-processor';
 import type {
     FplBootstrapData,
     FplGameweek,
@@ -9,11 +11,8 @@ import type {
     FplPlayerSeasonData,
     FplTeam,
 } from '../fpl/fpl-types';
-
-import { processBatchedReads } from '../batch-processor';
 import { FirestoreClearService } from './clear-service';
-import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
-import type { CustomPosition } from '../../../players/types/player-types';
+import { FirestoreClient } from './firestore-client';
 
 // Filtered FPL Player Data Type (absolute essentials only)
 export interface FilteredFplPlayerData {

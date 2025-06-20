@@ -1,12 +1,12 @@
 /* Location: app/draft/components/draft-players.tsx */
 
 // components/draft-players.tsx - Optimized version
-import { useState, useMemo, useEffect } from 'react';
-import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES, getSquadComposition } from '../lib/draft-rules';
-import { DraftFilters } from './draft-filters';
-import { getPositionDisplayName } from '../../scoring/lib';
-import styles from './draft-players.module.css';
+import { useEffect, useMemo, useState } from 'react';
 import type { CustomPosition } from '../../players/types/player-types';
+import { getPositionDisplayName } from '../../scoring/lib';
+import { DRAFT_RULES, getPlayerPosition, getSquadComposition, validateDraftEligibility } from '../lib/draft-rules';
+import { DraftFilters } from './draft-filters';
+import styles from './draft-players.module.css';
 
 interface DraftPlayersProps {
     onSelectPlayer: (playerId: string) => void;

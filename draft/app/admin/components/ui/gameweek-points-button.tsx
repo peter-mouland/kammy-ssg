@@ -1,8 +1,8 @@
 /* Location: app/admin/components/ui/gameweek-points-button.tsx */
 
 import { useFetcher } from 'react-router';
-import styles from './gameweek-points-button.module.css';
 import * as Icons from '../icons/admin-icons';
+import styles from './gameweek-points-button.module.css';
 
 export const GameweekPointsButton = () => {
     const fetcher = useFetcher();

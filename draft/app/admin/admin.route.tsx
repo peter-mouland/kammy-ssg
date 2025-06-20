@@ -1,6 +1,6 @@
 /* Location: app/admin/admin.route.tsx */
 
-import { type MetaFunction, type LoaderFunctionArgs, data, Outlet } from 'react-router';
+import { data, type LoaderFunctionArgs, type MetaFunction, Outlet } from 'react-router';
 import { AdminLayout } from './admin.layout';
 
 export const meta: MetaFunction = () => {

@@ -1,9 +1,9 @@
 /* Location: app/leagues/league-standings.tsx */
 
-import { useLoaderData, useActionData, Form, useSearchParams } from 'react-router';
-import type { UserTeamsSheetData, DivisionSheetData } from '../teams/types/team-types';
-import { SelectDivision } from '../_shared/components/select-division';
+import { Form, useActionData, useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
+import { SelectDivision } from '../_shared/components/select-division';
+import type { DivisionSheetData, UserTeamsSheetData } from '../teams/types/team-types';
 
 const getPositionIcon = (rank: number) => {
     if (rank === 1) return '🥇';

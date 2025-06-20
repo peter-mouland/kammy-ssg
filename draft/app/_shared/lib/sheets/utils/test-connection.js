@@ -1,6 +1,7 @@
 // scripts/test-google-connection.js
-import https from 'https';
+
 import dns from 'dns';
+import https from 'https';
 
 const endpoints = ['oauth2.googleapis.com', 'sheets.googleapis.com', 'www.googleapis.com', 'accounts.google.com'];
 

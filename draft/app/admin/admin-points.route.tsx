@@ -1,6 +1,6 @@
 /* Location: app/admin/admin-points.route.tsx */
 
-import { type ActionFunctionArgs, type LoaderFunctionArgs, data } from 'react-router';
+import { type ActionFunctionArgs, data, type LoaderFunctionArgs } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { PointsScoringSection } from './components/sections/points-scoring-section';
 

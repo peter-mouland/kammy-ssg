@@ -3,8 +3,8 @@
 // app/routes/players.$playerId.tsx
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
-import type { PlayerDetailData } from './types/player-types';
 import { PlayerPage } from './player.page';
+import type { PlayerDetailData } from './types/player-types';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
     const playerName = data?.player ? `${data.player.first_name} ${data.player.second_name}` : 'Player';

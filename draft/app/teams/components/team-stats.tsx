@@ -1,14 +1,14 @@
 // app/teams/components/team-stats.tsx
 import type React from 'react';
 import { useMemo } from 'react';
-import type { TeamStatsProps, TeamStatsData } from '../types/team-types';
+import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
 import {
     calculateRosterTotalPoints,
     getRosterTopScorer,
     getStartingXIPlayers,
     getSubstitutePlayers,
 } from '../../_shared/lib/roster-conversion-utils';
-import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
+import type { TeamStatsData, TeamStatsProps } from '../types/team-types';
 import styles from './team-stats.module.css';
 
 export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurrentGameweek }) => {

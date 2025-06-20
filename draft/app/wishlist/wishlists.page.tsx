@@ -1,13 +1,12 @@
 /* Location: app/wishlist/wishlists.page.tsx */
 
-// app/routes/wishlists.tsx
+import { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
-import { useState, useMemo } from 'react';
-import { useWishlists } from './lib/use-wishlists';
+import { PageHeader } from '../_shared/components/page-header';
+import { WishlistDetails } from './components/wishlist-details';
 import { CreateWishlistForm } from './components/wishlist-form';
 import { WishlistItem } from './components/wishlist-item';
-import { WishlistDetails } from './components/wishlist-details';
-import { PageHeader } from '../_shared/components/page-header';
+import { useWishlists } from './lib/use-wishlists';
 import type { Wishlist } from './types/wishlist-types';
 import styles from './wishlists.page.module.css';
 
@@ -99,7 +98,7 @@ export const WishlistsPage = () => {
                                     <p className={styles.emptyMessage}>
                                         Create your first wishlist to start tracking players.
                                     </p>
-                                    <button onClick={() => setShowCreateForm(true)} className={styles.emptyButton}>
+                                    <button type={'button'} onClick={() => setShowCreateForm(true)} className={styles.emptyButton}>
                                         Create Wishlist
                                     </button>
                                 </div>

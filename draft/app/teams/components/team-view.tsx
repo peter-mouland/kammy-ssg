@@ -1,13 +1,13 @@
 // app/teams/components/team-view.tsx
 import { useMemo } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
+import { extractLoanStatus, getSubstitutePlayers } from '../../_shared/lib/roster-conversion-utils';
+import type { TeamGameweekData, TeamViewData } from '../types/team-types';
 import { FootballPitch } from './football-pitch';
 import { GameweekSelector } from './gameweek-selector';
-import { TeamStats } from './team-stats';
-import { PositionSlotCard } from './position-slot-card';
 import { LoanStatus } from './loan-status';
-import type { TeamViewData, TeamGameweekData } from '../types/team-types';
-import { extractLoanStatus, getSubstitutePlayers } from '../../_shared/lib/roster-conversion-utils';
+import { PositionSlotCard } from './position-slot-card';
+import { TeamStats } from './team-stats';
 import styles from './team-view.module.css';
 
 export const TeamView = () => {

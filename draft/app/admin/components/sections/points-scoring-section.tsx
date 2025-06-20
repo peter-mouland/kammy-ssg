@@ -2,11 +2,11 @@
 
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
+import { AdminContainer, AdminGrid, AdminSection } from '../layout';
 import { ActionCard } from '../ui/action-card';
 import { AdminMessage } from '../ui/admin-message';
-import { GameweekPointsStatus } from '../ui/gameweek-points-status';
 import { GameweekPointsButton } from '../ui/gameweek-points-button';
-import { AdminSection, AdminGrid, AdminContainer } from '../layout';
+import { GameweekPointsStatus } from '../ui/gameweek-points-status';
 
 export const PointsScoringSection = () => {
     const fetcher = useFetcher();

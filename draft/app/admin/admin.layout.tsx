@@ -2,18 +2,16 @@
 
 // /admin/admin-dashboard-layout.tsx
 import type React from 'react';
-import { useRevalidator, useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useRevalidator } from 'react-router';
 import * as Icons from './components/icons/admin-icons';
-import { SystemHealthBadge } from './components/ui/system-health-badge';
+import { ActionBar } from './components/layout/action-bar';
+import { AdminSection } from './components/layout/admin-section';
+import { AppShell } from './components/layout/app-shell';
+import { TwoColumnLayout } from './components/layout/two-column-layout';
 import { NavButton } from './components/ui/nav-button';
 import { NavGroup } from './components/ui/nav-group';
 import { RefreshButton } from './components/ui/refresh-button';
-
-import { AdminSection } from './components/layout/admin-section';
-import { AppShell } from './components/layout/app-shell';
-import { ActionBar } from './components/layout/action-bar';
-import { TwoColumnLayout } from './components/layout/two-column-layout';
-
+import { SystemHealthBadge } from './components/ui/system-health-badge';
 import type { AdminNavItem } from './types';
 
 interface AdminDashboardLayoutProps {

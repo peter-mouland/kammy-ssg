@@ -1,7 +1,7 @@
 /* Location: app/leagues/components/league-standings.tsx */
 
 import { Icon } from '../../_shared/components/icon';
-import { Table, type TableColumn, RankBadge, TableBadge } from '../../_shared/components/table';
+import { RankBadge, Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import type { UserTeamsSheetData } from '../../teams/types/team-types';
 
 interface LeagueStandingsProps {

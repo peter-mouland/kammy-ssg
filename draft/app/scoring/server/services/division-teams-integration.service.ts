@@ -1,6 +1,7 @@
 // app/_shared/services/division-teams-integration.service.ts
-import { divisionDocumentExists } from '../../../_shared/services/division-teams.service';
+
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
+import { divisionDocumentExists } from '../../../_shared/services/division-teams.service';
 import type { DivisionId } from '../../../teams/types/team-types';
 
 /**

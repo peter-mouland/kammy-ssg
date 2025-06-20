@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/players.ts */
 
-import { readSheetRange, type SheetRange } from './utils/common';
 import type { PlayersSheetData } from '../../types/sheets-types';
+import { readSheetRange, type SheetRange } from './utils/common';
 
 const PLAYERS_SHEET_NAME = 'Players';
 
