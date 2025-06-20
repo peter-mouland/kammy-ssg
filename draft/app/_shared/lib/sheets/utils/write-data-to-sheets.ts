@@ -133,7 +133,9 @@ async function SaveDataToSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_HEADER_ORDER',
                 'headerOrder is required and must contain at least one header',
-                { providedOptions: options },
+                {
+                    providedOptions: options,
+                },
             );
         }
 
@@ -142,10 +144,13 @@ async function SaveDataToSheet<T extends Record<string, any>>(
         const sheetRange: SheetRange = { spreadsheetId: SPREADSHEET_ID, range };
 
         // Create header mapping from header order
-        const headerMapping = headerOrder.reduce((acc, key) => {
-            acc[key] = key as keyof T;
-            return acc;
-        }, {} as Record<string, keyof T>);
+        const headerMapping = headerOrder.reduce(
+            (acc, key) => {
+                acc[key] = key as keyof T;
+                return acc;
+            },
+            {} as Record<string, keyof T>,
+        );
 
         let existingHeaders: string[] = [];
         let sheetIsEmpty = false;
@@ -264,7 +269,9 @@ export async function saveDataToSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_HEADER_ORDER',
                 'headerOrder is required and must contain at least one header',
-                { providedOptions: options },
+                {
+                    providedOptions: options,
+                },
             );
         }
 

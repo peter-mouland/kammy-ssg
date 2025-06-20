@@ -6,4 +6,6 @@ interface LayoutGridProps {
     children: React.ReactNode;
 }
 
-export const LayoutGrid : React.FC<LayoutGridProps> = ({ children }) => <div className={styles.divisionGrid}>{children}</div>;
+export const LayoutGrid: React.FC<LayoutGridProps> = ({ children }) => (
+    <div className={styles.divisionGrid}>{children}</div>
+);

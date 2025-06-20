@@ -2,19 +2,13 @@
 
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../../scoring/types/scoring-types';
-import type {
-    LoanStatus,
-    PositionSlotKey,
-    TeamPositionSlot,
-} from '../../teams/types/team-types';
+import type { LoanStatus, PositionSlotKey, TeamPositionSlot } from '../../teams/types/team-types';
 import { getNextAvailableSlot, parsePositionSlot, STARTING_XI_SLOTS } from './position-slot-utils';
 
 /**
  * Convert legacy FirestoreTeamMember array to new roster structure
  */
-export function convertLegacyPlayersToRoster(
-    legacyPlayers: any[],
-): Record<PositionSlotKey, TeamPositionSlot> {
+export function convertLegacyPlayersToRoster(legacyPlayers: any[]): Record<PositionSlotKey, TeamPositionSlot> {
     const roster: Record<PositionSlotKey, TeamPositionSlot> = {} as Record<PositionSlotKey, TeamPositionSlot>;
 
     // Sort players by position priority and sub status

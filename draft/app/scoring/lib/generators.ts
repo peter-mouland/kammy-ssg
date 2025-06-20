@@ -67,9 +67,7 @@ export function generateGameweekData(
     targetGameweeks: number[],
 ): Record<number, { draft: { gameweekPoints: Record<number, any> } }> {
     console.log(
-        `🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(
-            ', ',
-        )}`,
+        `🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(', ')}`,
     );
 
     const result: Record<number, { draft: { gameweekPoints: Record<number, any> } }> = {};

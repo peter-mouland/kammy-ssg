@@ -203,9 +203,7 @@ export function getFullBreakdown(
             stat: stats.appearance,
             points: points.appearance || 0,
             formula: [
-                `${gameweeks.filter((g) => g.appearance >= 45).length} games (45+ min) × ${
-                    rules.appearance?.over45Min || 0
-                }pts`,
+                `${gameweeks.filter((g) => g.appearance >= 45).length} games (45+ min) × ${rules.appearance?.over45Min || 0}pts`,
                 `${gameweeks.filter((g) => g.appearance > 0 && g.appearance < 45).length} games (<45 min) × ${
                     rules.appearance?.under45Min || 0
                 }pt`,

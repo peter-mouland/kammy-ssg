@@ -236,9 +236,7 @@ export class FplApiCache {
             const cached = await this.fplCache.getElementGameweek(playerId);
             if (cached) {
                 console.log(
-                    `✅ getPlayerDetailedStats(${playerId}) - Cache hit in ${(performance.now() - startTime).toFixed(
-                        2,
-                    )}ms`,
+                    `✅ getPlayerDetailedStats(${playerId}) - Cache hit in ${(performance.now() - startTime).toFixed(2)}ms`,
                 );
                 return cached;
             }
@@ -515,9 +513,7 @@ export class FplApiCache {
                 const playerIds = players.map((p: any) => p.id);
                 results.elementSummaries = await this.getBatchPlayerDetailedStats(playerIds);
                 console.log(
-                    `✅ preloadCommonData() - Element summaries loaded: ${
-                        Object.keys(results.elementSummaries).length
-                    } players`,
+                    `✅ preloadCommonData() - Element summaries loaded: ${Object.keys(results.elementSummaries).length} players`,
                 );
             }
 

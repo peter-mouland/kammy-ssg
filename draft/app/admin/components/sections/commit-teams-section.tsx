@@ -1,11 +1,11 @@
 // /admin/components/sections/commit-teams-section.tsx
 import type React from 'react';
 import { useState } from 'react';
-import { useActionData, } from 'react-router';
+import { useActionData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { CommitTeamsButton } from '../ui/commit-teams-button';
 import { AdminMessage } from '../ui/admin-message';
-import { AdminSection, } from '../layout';
+import { AdminSection } from '../layout';
 import styles from './commit-teams-section.module.css';
 
 interface CommitTeamsSectionProps {
@@ -80,9 +80,7 @@ export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
                             <div className={styles.statusItem}>
                                 <span className={styles.statusLabel}>Draft Status:</span>
                                 <span
-                                    className={`${styles.statusValue} ${
-                                        isComplete ? styles.statusComplete : styles.statusInProgress
-                                    }`}
+                                    className={`${styles.statusValue} ${isComplete ? styles.statusComplete : styles.statusInProgress}`}
                                 >
                                     {isDraftActive ? '⏳ Active' : '✅ Ready to Commit'}
                                 </span>

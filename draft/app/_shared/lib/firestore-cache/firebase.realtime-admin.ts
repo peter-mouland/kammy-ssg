@@ -11,7 +11,7 @@ const serviceAccountJson = atob(process.env.MY_FIREBASE_SERVICE_ACCOUNT_KEY || '
 const serviceAccount = JSON.parse(serviceAccountJson);
 
 // Get or create the Realtime Database app
-let realtimeDB : Database;
+let realtimeDB: Database;
 
 export function getRealtimeAdminDbInstance() {
     if (!realtimeDB) {

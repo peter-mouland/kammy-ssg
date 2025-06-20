@@ -301,7 +301,9 @@ export class FirebaseDraftSync {
     // Clear cache for debugging
     static clearCache(divisionId?: string) {
         if (divisionId) {
-            const keysToDelete = Array.from(FirebaseDraftSync.stateCache.keys()).filter((key) => key.startsWith(divisionId));
+            const keysToDelete = Array.from(FirebaseDraftSync.stateCache.keys()).filter((key) =>
+                key.startsWith(divisionId),
+            );
             keysToDelete.forEach((key) => FirebaseDraftSync.stateCache.delete(key));
             console.log(`🔥 Cleared cache for division ${divisionId}`);
         } else {

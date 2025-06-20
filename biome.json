@@ -1,185 +1,185 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
-  "files": {
-    "includes": ["draft/app/**/*"],
-    "experimentalScannerIgnores": [
-      "dist/",
-      "build/",
-      "node_modules/",
-      ".firebase/",
-      "functions/lib/",
-      "coverage/",
-      "*.min.js",
-      "public/"
-    ]
-  },
-  "formatter": {
-    "enabled": true,
-    "formatWithErrors": false,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 120,
-    "lineEnding": "lf"
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single",
-      "jsxQuoteStyle": "double",
-      "semicolons": "always",
-      "trailingCommas": "all",
-      "bracketSpacing": true,
-      "bracketSameLine": false,
-      "arrowParentheses": "asNeeded",
-      "quoteProperties": "asNeeded"
-    }
-  },
-  "linter": {
-    "enabled": true,
-    "domains": {
-      "react": "recommended",
-      "test": "recommended"
+    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
     },
-    "rules": {
-      "recommended": true,
-      "a11y": {
-        "recommended": true
-      },
-      "complexity": {
-        "recommended": true,
-        "noExtraBooleanCast": "error",
-        "noUselessCatch": "error",
-        "noUselessConstructor": "error",
-        "noUselessEmptyExport": "error",
-        "noUselessFragments": "error",
-        "noUselessLabel": "error",
-        "noUselessLoneBlockStatements": "error",
-        "noUselessRename": "error",
-        "noUselessSwitchCase": "error",
-        "noUselessTernary": "error",
-        "noUselessThisAlias": "error"
-      },
-      "correctness": {
-        "recommended": true,
-        "noUnusedVariables": "error",
-        "noUnusedImports": "error",
-        "useExhaustiveDependencies": "off",
-        "useHookAtTopLevel": "error",
-        "noUnreachable": "error",
-        "noInvalidBuiltinInstantiation": "error",
-        "noInnerDeclarations": "error",
-        "noInvalidConstructorSuper": "error",
-        "noInvalidUseBeforeDeclaration": "error"
-      },
-      "nursery": {
-        "useSortedClasses": "off"
-      },
-      "performance": {
-        "recommended": true,
-        "noAccumulatingSpread": "warn",
-        "noDelete": "error"
-      },
-      "security": {
-        "recommended": true
-      },
-      "style": {
-        "recommended": true,
-        "noDefaultExport": "off",
-        "noImplicitBoolean": "off",
-        "noNegationElse": "warn",
-        "noParameterAssign": "warn",
-        "noParameterProperties": "off",
-        "noUnusedTemplateLiteral": "warn",
-        "useBlockStatements": "off",
-        "useCollapsedElseIf": "warn",
-        "useConsistentArrayType": {
-          "level": "error",
-          "options": {
-            "syntax": "shorthand"
-          }
-        },
-        "useFilenamingConvention": {
-          "level": "error",
-          "options": {
-            "strictCase": false,
-            "filenameCases": ["kebab-case"]
-          }
-        },
-        "useForOf": "warn",
-        "useFragmentSyntax": "error",
-        "useImportType": "error",
-        "useNamingConvention": {
-          "level": "error",
-          "options": {
-            "strictCase": false,
-            "conventions": [
-              {
-                "selector": {
-                  "kind": "function"
-                },
-                "formats": ["camelCase", "PascalCase"]
-              },
-              {
-                "selector": {
-                  "kind": "variable"
-                },
-                "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
-              },
-              {
-                "selector": {
-                  "kind": "typeLike"
-                },
-                "formats": ["PascalCase"]
-              },
-              {
-                "selector": {
-                  "kind": "objectLiteralProperty"
-                },
-                "formats": ["camelCase", "PascalCase", "snake_case"]
-              },
-              {
-                "selector": {
-                  "kind": "classProperty"
-                },
-                "formats": ["camelCase", "CONSTANT_CASE", "snake_case"]
-              }
-            ]
-          }
-        },
-        "useNodejsImportProtocol": "off",
-        "useNumberNamespace": "error",
-        "useSelfClosingElements": "error",
-        "useShorthandAssign": "error",
-        "useSingleVarDeclarator": "warn",
-        "useTemplate": "warn"
-      },
-      "suspicious": {
-        "recommended": true,
-        "noArrayIndexKey": "warn",
-        "noAssignInExpressions": "error",
-        "noDebugger": "error",
-        "noDuplicateJsxProps": "error",
-        "noEmptyBlockStatements": "warn",
-        "noExplicitAny": "warn",
-        "noImplicitAnyLet": "error"
-      }
-    }
-  },
-  "assist": {
-    "actions": {
-      "source": {
-        "organizeImports": {
-          "level": "on",
-          "options": {
-            "groups": [":URL:", ":NODE:"]
-          }
+    "files": {
+        "includes": ["draft/app/**/*"],
+        "experimentalScannerIgnores": [
+            "dist/",
+            "build/",
+            "node_modules/",
+            ".firebase/",
+            "functions/lib/",
+            "coverage/",
+            "*.min.js",
+            "public/"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120,
+        "lineEnding": "lf"
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "jsxQuoteStyle": "double",
+            "semicolons": "always",
+            "trailingCommas": "all",
+            "bracketSpacing": true,
+            "bracketSameLine": false,
+            "arrowParentheses": "always",
+            "quoteProperties": "asNeeded"
         }
-      }
-    }
-  },
-  "overrides": []
+    },
+    "linter": {
+        "enabled": true,
+        "domains": {
+            "react": "recommended",
+            "test": "recommended"
+        },
+        "rules": {
+            "recommended": true,
+            "a11y": {
+                "recommended": true
+            },
+            "complexity": {
+                "recommended": true,
+                "noExtraBooleanCast": "error",
+                "noUselessCatch": "error",
+                "noUselessConstructor": "error",
+                "noUselessEmptyExport": "error",
+                "noUselessFragments": "error",
+                "noUselessLabel": "error",
+                "noUselessLoneBlockStatements": "error",
+                "noUselessRename": "error",
+                "noUselessSwitchCase": "error",
+                "noUselessTernary": "error",
+                "noUselessThisAlias": "error"
+            },
+            "correctness": {
+                "recommended": true,
+                "noUnusedVariables": "error",
+                "noUnusedImports": "error",
+                "useExhaustiveDependencies": "off",
+                "useHookAtTopLevel": "error",
+                "noUnreachable": "error",
+                "noInvalidBuiltinInstantiation": "error",
+                "noInnerDeclarations": "error",
+                "noInvalidConstructorSuper": "error",
+                "noInvalidUseBeforeDeclaration": "error"
+            },
+            "nursery": {
+                "useSortedClasses": "off"
+            },
+            "performance": {
+                "recommended": true,
+                "noAccumulatingSpread": "warn",
+                "noDelete": "error"
+            },
+            "security": {
+                "recommended": true
+            },
+            "style": {
+                "recommended": true,
+                "noDefaultExport": "off",
+                "noImplicitBoolean": "off",
+                "noNegationElse": "warn",
+                "noParameterAssign": "warn",
+                "noParameterProperties": "off",
+                "noUnusedTemplateLiteral": "warn",
+                "useBlockStatements": "off",
+                "useCollapsedElseIf": "warn",
+                "useConsistentArrayType": {
+                    "level": "error",
+                    "options": {
+                        "syntax": "shorthand"
+                    }
+                },
+                "useFilenamingConvention": {
+                    "level": "error",
+                    "options": {
+                        "strictCase": false,
+                        "filenameCases": ["kebab-case"]
+                    }
+                },
+                "useForOf": "warn",
+                "useFragmentSyntax": "error",
+                "useImportType": "error",
+                "useNamingConvention": {
+                    "level": "error",
+                    "options": {
+                        "strictCase": false,
+                        "conventions": [
+                            {
+                                "selector": {
+                                    "kind": "function"
+                                },
+                                "formats": ["camelCase", "PascalCase"]
+                            },
+                            {
+                                "selector": {
+                                    "kind": "variable"
+                                },
+                                "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
+                            },
+                            {
+                                "selector": {
+                                    "kind": "typeLike"
+                                },
+                                "formats": ["PascalCase"]
+                            },
+                            {
+                                "selector": {
+                                    "kind": "objectLiteralProperty"
+                                },
+                                "formats": ["camelCase", "PascalCase", "snake_case"]
+                            },
+                            {
+                                "selector": {
+                                    "kind": "classProperty"
+                                },
+                                "formats": ["camelCase", "CONSTANT_CASE", "snake_case"]
+                            }
+                        ]
+                    }
+                },
+                "useNodejsImportProtocol": "off",
+                "useNumberNamespace": "error",
+                "useSelfClosingElements": "error",
+                "useShorthandAssign": "error",
+                "useSingleVarDeclarator": "warn",
+                "useTemplate": "warn"
+            },
+            "suspicious": {
+                "recommended": true,
+                "noArrayIndexKey": "warn",
+                "noAssignInExpressions": "error",
+                "noDebugger": "error",
+                "noDuplicateJsxProps": "error",
+                "noEmptyBlockStatements": "warn",
+                "noExplicitAny": "warn",
+                "noImplicitAnyLet": "error"
+            }
+        }
+    },
+    "assist": {
+        "actions": {
+            "source": {
+                "organizeImports": {
+                    "level": "on",
+                    "options": {
+                        "groups": [":URL:", ":NODE:"]
+                    }
+                }
+            }
+        }
+    },
+    "overrides": []
 }

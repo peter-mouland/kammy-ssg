@@ -6,7 +6,7 @@ import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters
 import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES } from '../lib/draft-rules';
 import { getPositionDisplayName } from '../../scoring/lib';
 import styles from './draft-filters.module.css';
-import type { SquadComposition, } from '../types/draft-types';
+import type { SquadComposition } from '../types/draft-types';
 
 interface DraftFiltersProps {
     availablePlayers: any[];
@@ -33,10 +33,13 @@ export function DraftFilters({
 }: DraftFiltersProps) {
     // Create team lookup
     const teamLookup = useMemo(() => {
-        return allTeams.reduce((acc, team) => {
-            acc[team.code] = team.name || team.short_name;
-            return acc;
-        }, {} as Record<number, string>);
+        return allTeams.reduce(
+            (acc, team) => {
+                acc[team.code] = team.name || team.short_name;
+                return acc;
+            },
+            {} as Record<number, string>,
+        );
     }, [allTeams]);
 
     // Calculate availability for positions and teams

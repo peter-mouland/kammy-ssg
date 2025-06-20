@@ -75,9 +75,7 @@ export class GameweekPointsService {
             console.log(`📝 Will generate gameweeks: ${updateNeeded.gameweeksToGenerate.join(', ')}`);
 
             // Perform selective points generation
-            const generationResult = await this.generatePointsForGameweeks(
-                updateNeeded.gameweeksToGenerate,
-            );
+            const generationResult = await this.generatePointsForGameweeks(updateNeeded.gameweeksToGenerate);
 
             // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
@@ -85,9 +83,7 @@ export class GameweekPointsService {
                 '../../../_shared/services/division-teams-points-population.service'
             );
 
-            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
-                updateNeeded.gameweeksToGenerate,
-            );
+            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(updateNeeded.gameweeksToGenerate);
 
             if (pointsPopulationResult.errors.length > 0) {
                 console.warn('⚠️ Some points population errors:', pointsPopulationResult.errors);
@@ -154,9 +150,7 @@ export class GameweekPointsService {
                 '../../../_shared/services/division-teams-points-population.service'
             );
 
-            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
-                availableGameweeks,
-            );
+            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(availableGameweeks);
 
             if (pointsPopulationResult.errors.length > 0) {
                 console.warn('⚠️ Some points population errors:', pointsPopulationResult.errors);
@@ -248,9 +242,7 @@ export class GameweekPointsService {
     /**
      * Generate points for specific gameweeks
      */
-    private async generatePointsForGameweeks(
-        targetGameweeks: number[],
-    ): Promise<{ playerCount: number }> {
+    private async generatePointsForGameweeks(targetGameweeks: number[]): Promise<{ playerCount: number }> {
         console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
 
         // Import the gameweek points generation function

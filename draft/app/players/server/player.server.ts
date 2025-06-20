@@ -36,10 +36,13 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         }
 
         // Create team lookup for opponent names
-        const teamLookup = fplTeams.reduce((acc, t) => {
-            acc[t.id] = t;
-            return acc;
-        }, {} as Record<number, any>);
+        const teamLookup = fplTeams.reduce(
+            (acc, t) => {
+                acc[t.id] = t;
+                return acc;
+            },
+            {} as Record<number, any>,
+        );
 
         // Get detailed player stats and gameweek points (all from cache)
         const [playerDetailedStats] = await Promise.all([fplApiCache.getPlayerDetailedStats(playerId)]);

@@ -241,15 +241,16 @@ export const Draft = () => {
             );
         },
         [
-            loaderData.currentUser, 
-            loaderData.selectedDivision, 
-            loaderData.availablePlayers, 
-            loaderData.draftOrder.length, 
-            isSubmitting, 
-            optimisticPicks.length, 
-            addOptimisticPick, 
-            fetcher, 
-            showToast, loaderData.teams.find
+            loaderData.currentUser,
+            loaderData.selectedDivision,
+            loaderData.availablePlayers,
+            loaderData.draftOrder.length,
+            isSubmitting,
+            optimisticPicks.length,
+            addOptimisticPick,
+            fetcher,
+            showToast,
+            loaderData.teams.find,
         ],
     );
 
@@ -273,9 +274,7 @@ export const Draft = () => {
     }
 
     const title = loaderData.draftState?.isActive
-        ? `🟢 Live ${
-              loaderData.divisions.find((d) => d.id === loaderData.draftState?.currentDivisionId)?.label
-          } Draft Room`
+        ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.draftState?.currentDivisionId)?.label} Draft Room`
         : '⚪️ Draft Room';
 
     return (

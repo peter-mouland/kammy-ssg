@@ -217,8 +217,8 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
                     fplPoints > 0
                         ? 'var(--color-success)'
                         : fplPoints < 0
-                        ? 'var(--color-error)'
-                        : 'var(--color-gray-500)';
+                          ? 'var(--color-error)'
+                          : 'var(--color-gray-500)';
 
                 return (
                     <span

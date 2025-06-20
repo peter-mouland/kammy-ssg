@@ -75,9 +75,7 @@ export function CreateWishlistForm({ onSuccess, onCancel }: CreateWishlistFormPr
                                 type="button"
                                 onClick={() => setSelectedColor(color)}
                                 disabled={isSubmitting}
-                                className={`${styles.colorButton} ${
-                                    selectedColor === color ? styles.colorButtonSelected : ''
-                                }`}
+                                className={`${styles.colorButton} ${selectedColor === color ? styles.colorButtonSelected : ''}`}
                                 style={{ backgroundColor: color }}
                                 title={name}
                             />

@@ -17,7 +17,7 @@ interface ToastManagerProps {
 
 // biome-ignore lint/correctness/noUnusedVariables: <is used>
 let showToast: ((toast: Omit<Toast, 'id'>) => void) | null = null;
-let dismissAllToasts : (() => void) | null = null;
+let dismissAllToasts: (() => void) | null = null;
 
 export function ToastManager({ maxToasts = 3 }: ToastManagerProps) {
     const [toasts, setToasts] = useState<Toast[]>([]);
@@ -108,7 +108,12 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
         >
             <div className={styles.toastContent}>
                 <span className={styles.toastMessage}>{toast.message}</span>
-                <button onClick={handleDismiss} type={'button'} className={styles.dismissButton} aria-label="Dismiss notification">
+                <button
+                    onClick={handleDismiss}
+                    type={'button'}
+                    className={styles.dismissButton}
+                    aria-label="Dismiss notification"
+                >
                     ×
                 </button>
             </div>

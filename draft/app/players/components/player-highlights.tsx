@@ -99,8 +99,8 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
                                             seasonTotals.cleanSheetPercentage >= 50
                                                 ? '#059669'
                                                 : seasonTotals.cleanSheetPercentage >= 30
-                                                ? '#d97706'
-                                                : '#dc2626',
+                                                  ? '#d97706'
+                                                  : '#dc2626',
                                     }}
                                 >
                                     <span className={styles.segmentLabel}>{seasonTotals.cleanSheetPercentage}%</span>
@@ -126,8 +126,8 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
                                         seasonTotals.averageMinutes >= 70
                                             ? '#059669'
                                             : seasonTotals.averageMinutes >= 45
-                                            ? '#d97706'
-                                            : '#dc2626',
+                                              ? '#d97706'
+                                              : '#dc2626',
                                 }}
                             >
                                 <span className={styles.segmentLabel}>{seasonTotals.averageMinutes}min</span>

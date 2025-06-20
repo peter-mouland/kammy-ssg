@@ -39,9 +39,7 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
             {/* Points Display */}
             {showPoints && displayPoints && (
                 <div
-                    className={`${styles.pointsDisplay} ${
-                        displayPoints.total >= 0 ? styles.positive : styles.negative
-                    }`}
+                    className={`${styles.pointsDisplay} ${displayPoints.total >= 0 ? styles.positive : styles.negative}`}
                 >
                     {formatPoints(displayPoints.total)}
                 </div>

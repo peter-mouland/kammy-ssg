@@ -9,9 +9,7 @@ import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './divisio
 /**
  * Populate points data from scoring system into division-teams documents
  */
-export async function populatePointsIntoDivisionDocuments(
-    targetGameweeks: number[],
-): Promise<{
+export async function populatePointsIntoDivisionDocuments(targetGameweeks: number[]): Promise<{
     divisionsProcessed: number;
     documentsUpdated: number;
     playersUpdated: number;

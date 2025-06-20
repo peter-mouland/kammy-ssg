@@ -67,9 +67,7 @@ export function Notifications({ lastUpdated }: NotificationProps) {
                 <div className={styles.statusContainer}>
                     <div className={styles.statusItem}>
                         <div
-                            className={`${styles.statusIndicator} ${
-                                isConnected ? styles.connected : styles.disconnected
-                            }`}
+                            className={`${styles.statusIndicator} ${isConnected ? styles.connected : styles.disconnected}`}
                         />
                         <span>{isConnected ? 'Live Updates' : 'Disconnected'}</span>
                     </div>

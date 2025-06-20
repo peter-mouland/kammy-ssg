@@ -7,9 +7,7 @@ import type { DivisionId } from '../../../teams/types/team-types';
  * Ensure all divisions have the required gameweek documents
  * Uses the existing team commit logic for proper document creation
  */
-export async function ensureDivisionGameweekDocuments(
-    targetGameweeks: number[],
-): Promise<{
+export async function ensureDivisionGameweekDocuments(targetGameweeks: number[]): Promise<{
     divisionsProcessed: number;
     documentsCreated: number;
     errors: string[];
@@ -31,10 +29,7 @@ export async function ensureDivisionGameweekDocuments(
                 results.divisionsProcessed++;
 
                 for (const gameweek of targetGameweeks) {
-                    const documentCreated = await ensureSingleDivisionGameweekDocument(
-                        division.id,
-                        gameweek,
-                    );
+                    const documentCreated = await ensureSingleDivisionGameweekDocument(division.id, gameweek);
 
                     if (documentCreated) {
                         results.documentsCreated++;
@@ -66,10 +61,7 @@ export async function ensureDivisionGameweekDocuments(
 /**
  * Ensure a specific division has a document for a specific gameweek
  */
-async function ensureSingleDivisionGameweekDocument(
-    divisionId: DivisionId,
-    targetGameweek: number,
-): Promise<boolean> {
+async function ensureSingleDivisionGameweekDocument(divisionId: DivisionId, targetGameweek: number): Promise<boolean> {
     try {
         // Check if document already exists
         const exists = await divisionDocumentExists(divisionId, targetGameweek);
@@ -148,4 +140,3 @@ async function createNextGameweekDocument(divisionId: string, targetGameweek: nu
         return false;
     }
 }
-

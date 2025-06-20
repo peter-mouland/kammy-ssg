@@ -29,7 +29,9 @@
     border-radius: 6px;
     background-color: var(--color-white, #ffffff);
     color: var(--color-gray-900, #111827);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .input:focus {
@@ -61,7 +63,9 @@
     border-radius: 50%;
     border: 2px solid var(--color-gray-300, #d1d5db);
     cursor: pointer;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .colorButton:hover {

@@ -4,7 +4,7 @@
  * Sheet-related types that are used across multiple domains
  */
 
-export type SheetReadOptions = {}
+export type SheetReadOptions = {};
 
 export interface SheetRange {
     spreadsheetId: string;

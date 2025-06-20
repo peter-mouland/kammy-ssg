@@ -42,7 +42,9 @@
     font-size: 14px;
     background-color: var(--color-white, #ffffff);
     color: var(--color-gray-900, #111827);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .searchInput:focus,
@@ -94,7 +96,7 @@
 }
 
 .updatingIndicator::before {
-    content: '';
+    content: "";
     display: inline-block;
     width: 12px;
     height: 12px;

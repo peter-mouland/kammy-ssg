@@ -145,7 +145,7 @@
 }
 
 .tooltipArrow::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -9px;
     left: -8px;

@@ -151,7 +151,7 @@
 }
 
 .infoTitle::before {
-    content: '💡';
+    content: "💡";
 }
 
 .infoText {

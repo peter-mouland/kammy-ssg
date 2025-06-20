@@ -304,16 +304,12 @@ export function Table<T = any>({
                                         const cellClasses = [
                                             column.align &&
                                                 styles[
-                                                    `cell${
-                                                        column.align.charAt(0).toUpperCase() + column.align.slice(1)
-                                                    }`
+                                                    `cell${column.align.charAt(0).toUpperCase() + column.align.slice(1)}`
                                                 ],
                                             column.variant &&
                                                 column.variant !== 'default' &&
                                                 styles[
-                                                    `cell${
-                                                        column.variant.charAt(0).toUpperCase() + column.variant.slice(1)
-                                                    }`
+                                                    `cell${column.variant.charAt(0).toUpperCase() + column.variant.slice(1)}`
                                                 ],
                                             column.hideOnMobile && styles.hideOnMobile,
                                             column.fixed && styles.fixedColumn,

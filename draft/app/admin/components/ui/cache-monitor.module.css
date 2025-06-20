@@ -148,7 +148,7 @@
 }
 
 .details summary::before {
-    content: '▶';
+    content: "▶";
     font-size: var(--font-xs);
     color: var(--color-gray-500);
     transition: transform var(--transition-fast);

@@ -77,10 +77,13 @@ export function DraftPlayers({
 
     // Team lookup for display names
     const teamLookup = useMemo(() => {
-        return allTeams.reduce((acc, team) => {
-            acc[team.code] = team.name || team.short_name;
-            return acc;
-        }, {} as Record<number, string>);
+        return allTeams.reduce(
+            (acc, team) => {
+                acc[team.code] = team.name || team.short_name;
+                return acc;
+            },
+            {} as Record<number, string>,
+        );
     }, [allTeams]);
 
     // Apply user filters to eligible players

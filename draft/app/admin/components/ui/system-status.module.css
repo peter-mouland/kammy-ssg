@@ -47,7 +47,7 @@
 
 /* Add pulse animation for online status */
 .online::before {
-    content: '';
+    content: "";
     width: var(--status-size);
     height: var(--status-size);
     background-color: var(--color-success);

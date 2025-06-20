@@ -89,7 +89,9 @@ async function ReadDataFromSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_HEADER_ORDER',
                 'headerOrder is required and must contain at least one header',
-                { providedOptions: options },
+                {
+                    providedOptions: options,
+                },
             );
         }
 
@@ -111,10 +113,13 @@ async function ReadDataFromSheet<T extends Record<string, any>>(
         }
 
         // Create header mapping from headerOrder
-        const headerMapping = headerOrder.reduce((acc, header) => {
-            acc[header] = header as keyof T;
-            return acc;
-        }, {} as Record<string, keyof T>);
+        const headerMapping = headerOrder.reduce(
+            (acc, header) => {
+                acc[header] = header as keyof T;
+                return acc;
+            },
+            {} as Record<string, keyof T>,
+        );
 
         // Check which headers are missing and which are extra
         const normalizedActualHeaders = headers.map((h) => h.toLowerCase().trim());
@@ -223,10 +228,13 @@ export async function readDataFromSheetWithHeaders<T extends Record<string, any>
         }
 
         // Create header mapping from actual headers found
-        const headerMapping = headers.reduce((acc, header) => {
-            acc[header] = header as keyof T;
-            return acc;
-        }, {} as Record<string, keyof T>);
+        const headerMapping = headers.reduce(
+            (acc, header) => {
+                acc[header] = header as keyof T;
+                return acc;
+            },
+            {} as Record<string, keyof T>,
+        );
 
         // Parse the data using the discovered headers
         const parsedData = parseHeaderBasedData<T>(

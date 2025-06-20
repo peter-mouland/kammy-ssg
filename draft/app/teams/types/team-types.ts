@@ -100,7 +100,7 @@ export interface TeamPositionSlot {
 /**
  * Team roster structure
  */
-export type TeamRoster = Record<PositionSlotKey, TeamPositionSlot>
+export type TeamRoster = Record<PositionSlotKey, TeamPositionSlot>;
 
 /**
  * Team gameweek data structure
@@ -215,7 +215,7 @@ export interface TeamStatsData {
 /**
  * Component props interfaces
  */
-export type TeamViewProps = {}
+export type TeamViewProps = {};
 
 export interface FormationDisplayProps {
     roster: TeamRoster;

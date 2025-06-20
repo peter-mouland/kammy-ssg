@@ -76,8 +76,8 @@ export const CacheStatusDisplay = () => {
                             {cacheData.health?.overall === 'healthy'
                                 ? '✅'
                                 : cacheData.health?.overall === 'warning'
-                                ? '⚠️'
-                                : '❌'}
+                                  ? '⚠️'
+                                  : '❌'}
                         </span>
                         <span className={styles.healthText}>
                             {cacheData.health?.overall?.toUpperCase() || 'UNKNOWN'}

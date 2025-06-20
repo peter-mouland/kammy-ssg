@@ -172,8 +172,8 @@ function DivisionStandingsTable({
                                             team.currentGwPoints > 50
                                                 ? '#059669'
                                                 : team.currentGwPoints > 30
-                                                ? '#0891b2'
-                                                : '#6b7280',
+                                                  ? '#0891b2'
+                                                  : '#6b7280',
                                         fontWeight: '500',
                                     }}
                                 >
