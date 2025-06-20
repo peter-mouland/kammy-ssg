@@ -128,7 +128,7 @@ export class FirestoreClearService {
      */
     private async getAllDocumentIds(collectionName: string): Promise<string[]> {
         try {
-            const db = this.client['db']; // Access private db property
+            const db = this.client.db; // Access private db property
             const snapshot = await db.collection(collectionName).select().get();
 
             return snapshot.docs.map((doc) => doc.id);

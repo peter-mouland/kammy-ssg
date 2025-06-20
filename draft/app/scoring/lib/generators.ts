@@ -4,7 +4,7 @@ import type { EnhancedPlayerData } from '../types/scoring-types';
 import type { CustomPosition, PlayerSheetsData } from '../../players/types/player-types';
 import { convertToPlayerGameweeksStats, convertToPlayerGameweekStats } from './data-conversion';
 import { calculateSeasonPoints, calculateGameweekPoints, getFullBreakdown } from './calculations';
-import type { FplPlayerData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
+import type { FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
 
 const baselineStats = {
     appearance: 0,

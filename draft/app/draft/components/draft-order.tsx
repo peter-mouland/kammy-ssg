@@ -49,7 +49,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                 audio.play().catch(() => {
                     // Ignore audio errors (user might not have interacted with page yet)
                 });
-            } catch (error) {
+            } catch (_error) {
                 // Ignore audio errors
             }
         }

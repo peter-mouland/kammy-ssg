@@ -1,11 +1,11 @@
 // /admin/components/sections/commit-teams-section.tsx
 import type React from 'react';
 import { useState } from 'react';
-import { useActionData, useRouteLoaderData } from 'react-router';
+import { useActionData, } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { CommitTeamsButton } from '../ui/commit-teams-button';
 import { AdminMessage } from '../ui/admin-message';
-import { AdminSection, AdminGrid } from '../layout';
+import { AdminSection, } from '../layout';
 import styles from './commit-teams-section.module.css';
 
 interface CommitTeamsSectionProps {
@@ -27,7 +27,6 @@ export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
     // Get division info for selected division
     const selectedDivisionData = divisions.find((d) => d.id === selectedDivision);
     const selectedTeams = userTeamsByDivision[selectedDivision]?.length || 0;
-    const expectedPicks = selectedTeams * 12; // 12 picks per team
 
     // For now, disable pick validation to avoid API calls
     // TODO: Add draft picks count when we have better caching

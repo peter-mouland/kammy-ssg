@@ -47,7 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         } catch (error) {
             credentialsTest.details = {
                 error: error instanceof Error ? error.message : 'Unknown error',
-                firstChars: process.env.GOOGLE_SERVICE_ACCOUNT_KEY.substring(0, 50) + '...',
+                firstChars: `${process.env.GOOGLE_SERVICE_ACCOUNT_KEY.substring(0, 50)}...`,
             };
         }
     }

@@ -1,5 +1,5 @@
 // app/_shared/lib/position-slot-utils.ts
-import type { PositionSlot, TeamPositionSlot } from '../types/division-teams-types';
+import type { PositionSlotKey, TeamPositionSlot } from '../../teams/types/team-types';
 
 /**
  * Position slot configuration
@@ -17,7 +17,7 @@ export const POSITION_SLOT_CONFIG = {
 /**
  * All possible position slots in order
  */
-export const ALL_POSITION_SLOTS: PositionSlot[] = [
+export const ALL_POSITION_SLOTS: PositionSlotKey[] = [
     'gk_0',
     'cb_0',
     'cb_1',
@@ -35,7 +35,7 @@ export const ALL_POSITION_SLOTS: PositionSlot[] = [
 /**
  * Starting XI position slots (excluding substitutes)
  */
-export const STARTING_XI_SLOTS: PositionSlot[] = [
+export const STARTING_XI_SLOTS: PositionSlotKey[] = [
     'gk_0',
     'cb_0',
     'cb_1',
@@ -52,12 +52,12 @@ export const STARTING_XI_SLOTS: PositionSlot[] = [
 /**
  * Substitute position slots
  */
-export const SUBSTITUTE_SLOTS: PositionSlot[] = ['sub_0'];
+export const SUBSTITUTE_SLOTS: PositionSlotKey[] = ['sub_0'];
 
 /**
  * Parse position slot into its components
  */
-export function parsePositionSlot(slot: PositionSlot): {
+export function parsePositionSlot(slot: PositionSlotKey): {
     position: string;
     index: number;
     isSub: boolean;
@@ -76,14 +76,14 @@ export function parsePositionSlot(slot: PositionSlot): {
 export function createPositionSlot(
     position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca' | 'sub',
     index: number,
-): PositionSlot {
-    return `${position}_${index}` as PositionSlot;
+): PositionSlotKey {
+    return `${position}_${index}` as PositionSlotKey;
 }
 
 /**
  * Get all position slots for a specific position
  */
-export function getPositionSlots(position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca' | 'sub'): PositionSlot[] {
+export function getPositionSlots(position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca' | 'sub'): PositionSlotKey[] {
     const config = POSITION_SLOT_CONFIG[position];
     return Array.from({ length: config.max }, (_, i) => createPositionSlot(position, i));
 }
@@ -91,7 +91,7 @@ export function getPositionSlots(position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | '
 /**
  * Get display name for position slot
  */
-export function getPositionSlotDisplayName(slot: PositionSlot): string {
+export function getPositionSlotDisplayName(slot: PositionSlotKey): string {
     const { position, index, isSub } = parsePositionSlot(slot);
     const config = POSITION_SLOT_CONFIG[position as keyof typeof POSITION_SLOT_CONFIG];
 
@@ -124,8 +124,8 @@ export function getFormationSlots() {
 /**
  * Check if a position slot is valid
  */
-export function isValidPositionSlot(slot: string): slot is PositionSlot {
-    return ALL_POSITION_SLOTS.includes(slot as PositionSlot);
+export function isValidPositionSlot(slot: string): slot is PositionSlotKey {
+    return ALL_POSITION_SLOTS.includes(slot as PositionSlotKey);
 }
 
 /**
@@ -134,7 +134,7 @@ export function isValidPositionSlot(slot: string): slot is PositionSlot {
 export function getNextAvailableSlot(
     playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca',
     existingRoster: Record<string, TeamPositionSlot>,
-): PositionSlot | null {
+): PositionSlotKey | null {
     // Try to find available slot in target position
     const targetSlots = getPositionSlots(playerPosition);
     for (const slot of targetSlots) {
@@ -157,7 +157,7 @@ export function getNextAvailableSlot(
 /**
  * Validate roster configuration
  */
-export function validateRosterConfiguration(roster: Record<string, TeamPositionSlot>): {
+export function validateRosterConfiguration(roster: Record<PositionSlotKey, TeamPositionSlot>): {
     isValid: boolean;
     errors: string[];
     warnings: string[];
@@ -166,8 +166,7 @@ export function validateRosterConfiguration(roster: Record<string, TeamPositionS
     const warnings: string[] = [];
 
     // Check for required positions
-    const requiredSlots = STARTING_XI_SLOTS;
-    for (const slot of requiredSlots) {
+    for (const slot of STARTING_XI_SLOTS) {
         if (!roster[slot]) {
             errors.push(`Missing player in ${getPositionSlotDisplayName(slot)}`);
         }
@@ -175,7 +174,7 @@ export function validateRosterConfiguration(roster: Record<string, TeamPositionS
 
     // Check for duplicate players
     const playerCodes = new Set<number>();
-    for (const [slot, positionSlot] of Object.entries(roster)) {
+    for (const [_slot, positionSlot] of Object.entries(roster)) {
         if (playerCodes.has(positionSlot.player.playerCode)) {
             errors.push(`Duplicate player ${positionSlot.player.playerName} in multiple positions`);
         }
@@ -184,7 +183,7 @@ export function validateRosterConfiguration(roster: Record<string, TeamPositionS
 
     // Check position assignments
     for (const [slot, positionSlot] of Object.entries(roster)) {
-        const { position } = parsePositionSlot(slot as PositionSlot);
+        const { position } = parsePositionSlot(slot as PositionSlotKey);
         const expectedTeamPosition = position === 'sub' ? 'sub' : position;
 
         if (positionSlot.player.teamPosition !== expectedTeamPosition) {
@@ -213,7 +212,7 @@ export function getRosterSummary(roster: Record<string, TeamPositionSlot>) {
     };
 
     for (const [slot, positionSlot] of Object.entries(roster)) {
-        const { position, isSub } = parsePositionSlot(slot as PositionSlot);
+        const { position, isSub } = parsePositionSlot(slot as PositionSlotKey);
 
         if (isSub) {
             summary.substitutes++;

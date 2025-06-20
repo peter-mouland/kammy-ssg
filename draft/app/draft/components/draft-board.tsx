@@ -78,7 +78,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                     title: 'No picks made yet',
                     description: 'Draft will begin soon!',
                 }}
-                rowClassName={(pick, index) => {
+                rowClassName={(_pick, index) => {
                     // Highlight recent picks
                     if (index < 3) return 'recent-pick';
                     return '';

@@ -59,7 +59,6 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
 
 export async function handleLeagueStandingsAction(formData: FormData) {
     const actionType = formData.get('actionType');
-    const divisionId = formData.get('divisionId');
 
     switch (actionType) {
         default:

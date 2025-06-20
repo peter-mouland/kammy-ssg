@@ -5,7 +5,6 @@ import {
     readSheetRange,
     writeSheetRange,
     appendToSheet,
-    parseHeaderBasedData,
     convertToSheetRows,
     parseSheetNumber,
     parseSheetDate,
@@ -377,9 +376,9 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
             // Apply write transforms manually
             const transformedRows = dataRows.map((row) => {
                 const transformedRow = [...row];
-                Object.entries(DRAFT_STATE_HEADERS).forEach(([header, key], index) => {
+                Object.entries(DRAFT_STATE_HEADERS).forEach(([_header, key], index) => {
                     if (DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS[key]) {
-                        transformedRow[index] = DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS[key]!(transformedRow[index]);
+                        transformedRow[index] = DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS[key]?.(transformedRow[index]);
                     }
                 });
                 return transformedRow;
@@ -502,12 +501,12 @@ export async function debugSheetStructure(): Promise<{
         const draftStateMapping: Record<string, number> = {};
 
         Object.keys(DRAFT_PICKS_HEADERS).forEach((header) => {
-            const index = draftPicksHeaders!.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
+            const index = draftPicksHeaders?.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
             draftPicksMapping[header] = index;
         });
 
         Object.keys(DRAFT_STATE_HEADERS).forEach((header) => {
-            const index = draftStateHeaders!.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
+            const index = draftStateHeaders?.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
             draftStateMapping[header] = index;
         });
 

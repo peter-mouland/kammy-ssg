@@ -1,7 +1,7 @@
 /* Location: app/draft/components/draft-players.tsx */
 
 // components/draft-players.tsx - Optimized version
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES, getSquadComposition } from '../lib/draft-rules';
 import { DraftFilters } from './draft-filters';
 import { getPositionDisplayName } from '../../scoring/lib';
@@ -66,14 +66,14 @@ export function DraftPlayers({
             setSelectedTeams(availableTeamCodes);
             setFiltersInitialized(true);
         }
-    }, [eligiblePlayersWithValidation, allTeams, currentUserPicks.length, filtersInitialized]);
+    }, [eligiblePlayersWithValidation, allTeams, filtersInitialized]);
 
     // Reset filters when currentUserPicks changes
     useEffect(() => {
         if (filtersInitialized) {
             setFiltersInitialized(false);
         }
-    }, [currentUserPicks.length]);
+    }, [filtersInitialized]);
 
     // Team lookup for display names
     const teamLookup = useMemo(() => {

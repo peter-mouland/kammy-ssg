@@ -42,7 +42,7 @@ export const Draft = () => {
     const navigation = useNavigation();
     const fetcher = useFetcher<DraftActionData>();
     const revalidator = useRevalidator();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [_searchParams, setSearchParams] = useSearchParams();
     const { showToast } = useToast();
 
     // Track previous pick count to detect new picks from Firebase
@@ -241,15 +241,15 @@ export const Draft = () => {
             );
         },
         [
-            loaderData.currentUser,
-            loaderData.selectedDivision,
-            loaderData.availablePlayers,
-            loaderData.draftOrder.length,
-            isSubmitting,
-            optimisticPicks.length,
-            addOptimisticPick,
-            fetcher,
-            showToast,
+            loaderData.currentUser, 
+            loaderData.selectedDivision, 
+            loaderData.availablePlayers, 
+            loaderData.draftOrder.length, 
+            isSubmitting, 
+            optimisticPicks.length, 
+            addOptimisticPick, 
+            fetcher, 
+            showToast, loaderData.teams.find
         ],
     );
 

@@ -47,7 +47,7 @@ export function useTableFilters(options: UseTableFiltersOptions = {}): UseTableF
                 // Handle numeric values
                 if (key === 'page' || key.endsWith('Id') || key.endsWith('Count')) {
                     const numValue = Number.parseInt(value, 10);
-                    if (!isNaN(numValue)) {
+                    if (!Number.isNaN(numValue)) {
                         filters[key] = numValue;
                     }
                 } else {

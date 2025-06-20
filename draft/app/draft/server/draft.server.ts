@@ -13,7 +13,7 @@ import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import { getNextDraftState } from '../lib/get-next-draft-state';
 import { generateDraftSequence } from '../lib/generate-draft-sequence';
-import type { DraftPickData, DraftOrderData, DraftStateData, DraftLoaderData } from '../types/draft-types';
+import type { DraftPickData, DraftOrderData, DraftLoaderData } from '../types/draft-types';
 
 import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
 import type { DivisionId } from '../../teams/types/team-types';
@@ -114,7 +114,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         }
 
         if (draftState.currentUserId !== userId) {
-            throw new Error("It's not your turn to pick: " + userId + ' != ' + draftState.currentUserId);
+            throw new Error(`It's not your turn to pick: ${userId} != ${draftState.currentUserId}`);
         }
 
         if (!divisionId) {

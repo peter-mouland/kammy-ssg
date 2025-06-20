@@ -74,7 +74,7 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
             topScorer,
             positionBreakdown,
         };
-    }, [teamData.roster, gameweek, isCurrentGameweek]);
+    }, [teamData.roster, gameweek, isCurrentGameweek, teamData]);
 
     // Format points display
     const formatPoints = (points: number) => {

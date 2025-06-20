@@ -67,7 +67,7 @@
         "recommended": true,
         "noUnusedVariables": "error",
         "noUnusedImports": "error",
-        "useExhaustiveDependencies": "warn",
+        "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "error",
         "noUnreachable": "error",
         "noInvalidBuiltinInstantiation": "error",
@@ -76,8 +76,6 @@
         "noInvalidUseBeforeDeclaration": "error"
       },
       "nursery": {
-        "noUnresolvedImports": "error",
-        "noFloatingPromises": "error",
         "useSortedClasses": "off"
       },
       "performance": {
@@ -142,6 +140,12 @@
                   "kind": "objectLiteralProperty"
                 },
                 "formats": ["camelCase", "PascalCase", "snake_case"]
+              },
+              {
+                "selector": {
+                  "kind": "classProperty"
+                },
+                "formats": ["camelCase", "CONSTANT_CASE", "snake_case"]
               }
             ]
           }

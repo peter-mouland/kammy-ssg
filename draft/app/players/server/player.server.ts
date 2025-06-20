@@ -69,12 +69,12 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
 /**
  * Get gameweek points data for a player
  */
-async function getPlayerGameweekPoints(playerId: number) {
+async function _getPlayerGameweekPoints(playerId: number) {
     try {
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get element summary which contains gameweek points
-        const elementSummary = await fplApiCache['fplCache'].getElementGameweek(playerId);
+        const _elementSummary = await fplApiCache.fplCache.getElementGameweek(playerId);
 
         // todo: we don't have this
 

@@ -280,7 +280,7 @@ export function parseSheetDate(value: any): Date | null {
 
     if (typeof value === 'string') {
         const parsed = new Date(value);
-        return isNaN(parsed.getTime()) ? null : parsed;
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
     }
 
     if (typeof value === 'number') {
@@ -299,7 +299,7 @@ export function parseSheetNumber(value: any): number {
     if (typeof value === 'number') return value;
     if (typeof value === 'string') {
         const parsed = Number.parseFloat(value);
-        return isNaN(parsed) ? 0 : parsed;
+        return Number.isNaN(parsed) ? 0 : parsed;
     }
     return 0;
 }

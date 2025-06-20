@@ -4,12 +4,6 @@
 import { FirestoreClearService } from '../../../_shared/lib/firestore-cache/clear-service';
 import type { AdminActionParams, AdminActionResult } from '../../types/admin-types';
 
-// Helper function from original
-function isValidAdminToken(token: string): boolean {
-    const adminToken = process.env.ADMIN_TOKEN || 'admin-secret-token';
-    return token === adminToken;
-}
-
 // EXACT COPY from "clearFirestoreData" case
 export async function handleClearFirestoreData(params: AdminActionParams): Promise<AdminActionResult> {
     const { variant: clearVariant = 'all' } = params;
@@ -40,7 +34,7 @@ export async function handleClearFirestoreData(params: AdminActionParams): Promi
     }
 }
 
-export async function handleGetFirestoreStats(params: AdminActionParams): Promise<AdminActionResult> {
+export async function handleGetFirestoreStats(_params: AdminActionParams): Promise<AdminActionResult> {
     try {
         const clearService = new FirestoreClearService();
         const [stats, estimate] = await Promise.all([

@@ -254,7 +254,7 @@ function DivisionStandingsTable({
 export const LeagueStandings = () => {
     const { userTeamsByDivision, divisions, selectedDivision } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [_searchParams, setSearchParams] = useSearchParams();
 
     const handleDivisionChange = (divisionId: string) => {
         if (divisionId === 'all') {

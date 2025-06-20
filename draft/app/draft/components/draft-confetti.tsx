@@ -1,6 +1,6 @@
 /* Location: app/draft/components/draft-confetti.tsx */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
 
 interface ConfettiProps {
@@ -98,7 +98,7 @@ export function DraftConfetti({ show, onComplete, duration = 3000, playSound = t
             clearInterval(addInterval);
             clearTimeout(stopTimeout);
         };
-    }, [show, duration, onComplete, playSound]);
+    }, [show, duration, onComplete, playSound, createConfettiPiece]);
 
     useEffect(() => {
         if (!isActive || confetti.length === 0) return;

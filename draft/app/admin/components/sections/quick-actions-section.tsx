@@ -1,7 +1,5 @@
 /* Location: app/admin/components/sections/quick-actions-section.tsx */
 
-// /admin/components/sections/quick-actions-section.tsx (UPDATED for route structure)
-import React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { ActionCard } from '../ui/action-card';

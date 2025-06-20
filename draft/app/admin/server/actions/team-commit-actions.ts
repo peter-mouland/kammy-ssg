@@ -1,11 +1,11 @@
 // app/admin/server/actions/team-commit-actions.ts
-import { createDivisionTeamsDocument } from '../../../_shared/services/division-teams.service';
-import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
-import { getUserTeamsByDivision } from '../../../_shared/lib/sheets/user-teams';
+
 import { fplApi } from '../../../_shared/lib/fpl/api';
 import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
-import type { DraftActionParams, AdminActionResult } from '../../types/admin-types';
-import type { DivisionTeamsDocument, TeamPositionSlot, PositionSlotKey } from '../../../teams/types/team-types';
+import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
+import { createDivisionTeamsDocument } from '../../../_shared/services/division-teams.service';
+import type { DivisionTeamsDocument, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
 
 export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
@@ -18,9 +18,8 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         console.log(`🔄 Committing teams to new structure for division: ${divisionId}`);
 
         // Get draft picks and user teams for the division
-        const [draftPicks, userTeams, bootstrap] = await Promise.all([
+        const [draftPicks, bootstrap] = await Promise.all([
             getDraftPicksByDivision(divisionId),
-            getUserTeamsByDivision(divisionId),
             fplApi.getFplBootstrapData(),
         ]);
 
@@ -38,7 +37,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
             if (!teamsByUser.has(pick.userId)) {
                 teamsByUser.set(pick.userId, []);
             }
-            teamsByUser.get(pick.userId)!.push(pick);
+            teamsByUser.get(pick.userId)?.push(pick);
         }
 
         // Convert each user's picks to new roster structure
@@ -53,7 +52,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 const fplPlayer = fplPlayersMap.get(pick.playerId);
                 if (!fplPlayer) {
                     console.warn(`FPL player not found for ID ${pick.playerId}`);
-                } else if (pick.playerId == fplPlayer?.code) {
+                } else if (pick.playerId === fplPlayer?.code) {
                     console.warn(`🚨 FPL player ID id CODE ${pick.playerId}`);
                 }
 
@@ -72,7 +71,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
             });
 
             // Convert to new roster structure
-            const roster = convertLegacyPlayersToRoster(legacyPlayers, 0);
+            const roster = convertLegacyPlayersToRoster(legacyPlayers);
 
             teamsData[userId] = { roster };
             totalPlayersProcessed += Object.keys(roster).length;

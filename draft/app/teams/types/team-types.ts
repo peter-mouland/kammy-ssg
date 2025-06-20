@@ -1,7 +1,7 @@
 // app/teams/types/team-types.ts
 
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { PointsBreakdown, Points } from '../../scoring/types/scoring-types';
+import type { Points, PointsBreakdown } from '../../scoring/types/scoring-types';
 
 /**
  * Core team and division data structures
@@ -100,9 +100,7 @@ export interface TeamPositionSlot {
 /**
  * Team roster structure
  */
-export type TeamRoster = {
-    [positionSlot in PositionSlotKey]: TeamPositionSlot;
-};
+export type TeamRoster = Record<PositionSlotKey, TeamPositionSlot>
 
 /**
  * Team gameweek data structure
@@ -154,8 +152,8 @@ export interface TeamFormation {
  * Loan status for team management
  */
 export interface LoanStatus {
-    loanedOut: FirestoreTeamMember[];
-    loanedIn: FirestoreTeamMember[];
+    loanedOut: TeamPositionSlot[];
+    loanedIn: TeamPositionSlot[];
 }
 
 export type DivisionId = 'leagueOne' | 'championship' | 'premierLeague';

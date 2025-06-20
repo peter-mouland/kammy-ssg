@@ -158,7 +158,7 @@ async function SaveDataToSheet<T extends Record<string, any>>(
 
             existingHeaders = headers;
             sheetIsEmpty = headers.length === 0 && existingData.length === 0;
-        } catch (error) {
+        } catch (_error) {
             // If reading fails, assume sheet is empty or doesn't exist
             sheetIsEmpty = true;
         }

@@ -9,7 +9,7 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({ roster, gamewee
     const formationSlots = getFormationSlots();
 
     // Helper to render position group
-    const renderPositionGroup = (slots: string[], positionClass: string, groupLabel: string) => (
+    const renderPositionGroup = (slots: string[], _positionClass: string, groupLabel: string) => (
         <>
             {slots.map((slotKey, index) => {
                 const positionSlot = roster[slotKey as keyof typeof roster];

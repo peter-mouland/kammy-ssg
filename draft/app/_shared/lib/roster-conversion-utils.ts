@@ -1,20 +1,19 @@
 // app/_shared/lib/roster-conversion-utils.ts
+
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { Points } from '../../scoring/types/scoring-types';
 import type {
-    TeamFormation,
     LoanStatus,
     PositionSlotKey,
     TeamPositionSlot,
-    PlayerAssignmentData,
 } from '../../teams/types/team-types';
-import { getFormationSlots, parsePositionSlot, getNextAvailableSlot, STARTING_XI_SLOTS } from './position-slot-utils';
-import type { PlayerGameweekStatsData, PointsBreakdown } from '../../scoring/types/scoring-types';
+import { getNextAvailableSlot, parsePositionSlot, STARTING_XI_SLOTS } from './position-slot-utils';
 
 /**
  * Convert legacy FirestoreTeamMember array to new roster structure
  */
 export function convertLegacyPlayersToRoster(
     legacyPlayers: any[],
-    gameweek: number = 0,
 ): Record<PositionSlotKey, TeamPositionSlot> {
     const roster: Record<PositionSlotKey, TeamPositionSlot> = {} as Record<PositionSlotKey, TeamPositionSlot>;
 
@@ -62,37 +61,6 @@ export function convertLegacyPlayersToRoster(
     }
 
     return roster;
-}
-
-/**
- * Convert roster to formation structure for display components
- */
-export function convertRosterToFormation(roster: Record<PositionSlotKey, TeamPositionSlot>): TeamFormation {
-    const formation: TeamFormation = {
-        goalkeeper: [],
-        centrebacks: [],
-        fullbacks: [],
-        midfielders: [],
-        wideattackers: [],
-        centralattackers: [],
-    };
-
-    const slots = getFormationSlots();
-
-    // Map each position group
-    formation.goalkeeper = slots.goalkeeper.map((slot) => roster[slot]).filter(Boolean);
-
-    formation.centrebacks = slots.centrebacks.map((slot) => roster[slot]).filter(Boolean);
-
-    formation.fullbacks = slots.fullbacks.map((slot) => roster[slot]).filter(Boolean);
-
-    formation.midfielders = slots.midfielders.map((slot) => roster[slot]).filter(Boolean);
-
-    formation.wideattackers = slots.wideAttackers.map((slot) => roster[slot]).filter(Boolean);
-
-    formation.centralattackers = slots.centralAttackers.map((slot) => roster[slot]).filter(Boolean);
-
-    return formation;
 }
 
 /**
@@ -147,24 +115,6 @@ export function getStartingXIPlayers(roster: Record<PositionSlotKey, TeamPositio
     }
 
     return startingXI;
-}
-
-/**
- * Create player assignment data from roster slot
- */
-export function createPlayerAssignment(positionSlot: TeamPositionSlot, slot: PositionSlotKey): PlayerAssignmentData {
-    return {
-        playerId: positionSlot.player.playerId,
-        playerCode: positionSlot.player.playerCode,
-        playerName: positionSlot.player.playerName,
-        playerPosition: positionSlot.player.playerPosition,
-        teamPosition: positionSlot.player.teamPosition,
-        teamSlotIndex: positionSlot.player.teamSlotIndex,
-        isSub: positionSlot.player.isSub,
-        onLoanTo: positionSlot.player.onLoanTo,
-        onLoanStart: positionSlot.player.onLoanStart,
-        assignedAt: positionSlot.player.assignedAt,
-    };
 }
 
 /**
@@ -229,7 +179,7 @@ function createEmptyStats(): PlayerGameweekStatsData {
 /**
  * Create empty points structure
  */
-function createEmptyPoints(): PointsBreakdown {
+function createEmptyPoints(): Points {
     return {
         appearance: 0,
         goals: 0,
@@ -243,50 +193,4 @@ function createEmptyPoints(): PointsBreakdown {
         bonus: 0,
         total: 0,
     };
-}
-
-/**
- * Merge gameweek stats into season totals
- */
-export function mergeStatsIntoSeason(
-    seasonStats: PlayerGameweekStatsData,
-    gameweekStats: PlayerGameweekStatsData,
-): PlayerGameweekStatsData {
-    return {
-        appearance: seasonStats.appearance + gameweekStats.appearance,
-        goals: seasonStats.goals + gameweekStats.goals,
-        assists: seasonStats.assists + gameweekStats.assists,
-        cleanSheets: seasonStats.cleanSheets + gameweekStats.cleanSheets,
-        goalsConceded: seasonStats.goalsConceded + gameweekStats.goalsConceded,
-        penaltiesSaved: seasonStats.penaltiesSaved + gameweekStats.penaltiesSaved,
-        yellowCards: seasonStats.yellowCards + gameweekStats.yellowCards,
-        redCards: seasonStats.redCards + gameweekStats.redCards,
-        saves: seasonStats.saves + gameweekStats.saves,
-        bonus: seasonStats.bonus + gameweekStats.bonus,
-    };
-}
-
-/**
- * Merge gameweek points into season totals
- */
-export function mergePointsIntoSeason(seasonPoints: PointsBreakdown, gameweekPoints: PointsBreakdown): PointsBreakdown {
-    const merged = {
-        appearance: seasonPoints.appearance + gameweekPoints.appearance,
-        goals: seasonPoints.goals + gameweekPoints.goals,
-        assists: seasonPoints.assists + gameweekPoints.assists,
-        cleanSheets: seasonPoints.cleanSheets + gameweekPoints.cleanSheets,
-        yellowCards: seasonPoints.yellowCards + gameweekPoints.yellowCards,
-        redCards: seasonPoints.redCards + gameweekPoints.redCards,
-        saves: seasonPoints.saves + gameweekPoints.saves,
-        penaltiesSaved: seasonPoints.penaltiesSaved + gameweekPoints.penaltiesSaved,
-        goalsConceded: seasonPoints.goalsConceded + gameweekPoints.goalsConceded,
-        bonus: seasonPoints.bonus + gameweekPoints.bonus,
-        total: 0,
-    };
-
-    merged.total = Object.entries(merged)
-        .filter(([key]) => key !== 'total')
-        .reduce((sum, [, value]) => sum + value, 0);
-
-    return merged;
 }

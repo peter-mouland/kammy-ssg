@@ -1,15 +1,16 @@
 // app/_shared/services/division-teams-points-population.service.ts
-import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './division-teams.service';
+
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { PointsBreakdown } from '../../scoring/types/scoring-types';
+import type { PositionSlotKey, TeamPositionSlot } from '../../teams/types/team-types';
 import { readDivisions } from '../lib/sheets/divisions';
-import type { TeamPositionSlot, PositionSlotKey } from '../types/division-teams-types';
-import type { PlayerGameweekStatsData, PointsBreakdown } from '../../scoring/types/scoring-types';
+import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './division-teams.service';
 
 /**
  * Populate points data from scoring system into division-teams documents
  */
 export async function populatePointsIntoDivisionDocuments(
     targetGameweeks: number[],
-    currentGameweek: number,
 ): Promise<{
     divisionsProcessed: number;
     documentsUpdated: number;
@@ -126,10 +127,10 @@ async function populatePointsForDivisionGameweek(divisionId: string, gameweek: n
                 const slot = slotKey as PositionSlotKey;
                 const playerCode = positionSlot.player.playerCode;
                 const playerId = positionSlot.player.playerId;
-                const player = await fplApiCache['fplCache'].getElementGameweek(playerId);
+                const player = await fplApiCache.fplCache.getElementGameweek(playerId);
 
                 // Get points data for this player
-                const playerGameweekPoints = player.draft.gameweekPoints;
+                const playerGameweekPoints = player?.draft.gameweekPoints;
                 if (!playerGameweekPoints?.[gameweek]) {
                     console.log(`⚠️ No points data for player ${playerCode} (${typeof playerCode}) GW${gameweek}`);
                     continue;
@@ -307,7 +308,7 @@ async function createGameweekDocumentFromSource(sourceDocument: any, targetGamew
  */
 function updatePositionSlotPoints(
     positionSlot: TeamPositionSlot,
-    gameweek: number,
+    _gameweek: number,
     gameweekStats: PlayerGameweekStatsData,
     gameweekPoints: PointsBreakdown,
 ): TeamPositionSlot {

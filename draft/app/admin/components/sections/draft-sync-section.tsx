@@ -7,7 +7,7 @@ import { useActionData, useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { ResetDraftButton } from '../ui/reset-draft-button';
 import { AdminMessage } from '../ui/admin-message';
-import { AdminSection, AdminGrid } from '../layout';
+import { AdminSection, } from '../layout';
 import styles from './draft-sync-section.module.css';
 
 interface DraftSyncSectionProps {

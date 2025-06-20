@@ -1,11 +1,9 @@
 /* Location: app/admin/components/sections/firebase-sync-section.tsx */
 
-// /admin/components/sections/firebase-sync-section.tsx (UPDATED for route structure)
-import React from 'react';
-import { useLoaderData, useFetcher } from 'react-router';
+import { useFetcher, useLoaderData } from 'react-router';
+import type { AdminDashboardData } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminMessage } from '../ui/admin-message';
-import type { AdminDashboardData } from '../../types';
 import styles from './firebase-sync-section.module.css';
 
 export const FirebaseSyncSection = () => {
@@ -34,6 +32,7 @@ export const FirebaseSyncSection = () => {
     return (
         <div className={styles.sync_container}>
             <button
+                type="button"
                 onClick={handleSync}
                 disabled={!draftState?.currentDivisionId || !draftState?.isActive || isLoading}
                 className={`${styles.action_button} ${styles.primary}`}

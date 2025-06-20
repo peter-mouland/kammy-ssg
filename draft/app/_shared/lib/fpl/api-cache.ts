@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/fpl/api-cache.ts */
 
 // src/lib/fpl/api-cache.ts
-import type { FplBootstrapData, FplPlayerData, FplPlayerGameweekData, FplPlayerSeasonData, FplTeam } from './fpl-types';
+import type { FplBootstrapData, FplPlayerSeasonData, FplTeam } from './fpl-types';
 import { FplCache } from '../firestore-cache/fpl-cache';
 import { fplApi } from './api';
 import { processBatched } from '../batch-processor';
@@ -10,14 +10,14 @@ import { readPlayers } from '../sheets/players';
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
 import type { PlayersSheetData } from '../../types/sheets-types';
 
-const currentSeason = '2024-25';
+const _currentSeason = '2024-25';
 
 /**
  * FPL Data Orchestrator - manages cache and API calls
  * Provides intelligent data fetching with Firestore caching
  */
 export class FplApiCache {
-    private fplCache: FplCache;
+    fplCache: FplCache;
     private pendingPromises: Map<string, Promise<any>> = new Map();
 
     constructor() {
@@ -569,7 +569,7 @@ export class FplApiCache {
             // Step 3: Prepare data structures
             console.log('🔄 Step 3/6: Preparing data structures...');
             const playerIds = fplPlayers.map((p) => p.id);
-            const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
+            const _teams = fplTeams.reduce((acc: Record<number, string>, team) => {
                 acc[team.code] = team.name;
                 return acc;
             }, {});
@@ -642,7 +642,7 @@ export class FplApiCache {
         // Use empty detailed stats for faster generation
         const emptyDetailedStats: Record<number, FplPlayerSeasonData> = {};
 
-        const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
+        const _teams = fplTeams.reduce((acc: Record<number, string>, team) => {
             acc[team.code] = team.name;
             return acc;
         }, {});

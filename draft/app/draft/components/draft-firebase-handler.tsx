@@ -209,7 +209,7 @@ export const DraftFirebaseHandler: React.FC<DraftFirebaseHandlerProps> = ({
                 console.log('🔥 📥 Raw state snapshot received:', snapshot.exists(), snapshot.val());
 
                 const state = snapshot.val();
-                if (state && state.lastUpdate) {
+                if (state?.lastUpdate) {
                     console.log('🔥 ✅ Draft state updated:', state);
                     console.log(
                         '🔥 🕒 State lastUpdate:',
@@ -305,7 +305,7 @@ export const DraftFirebaseHandler: React.FC<DraftFirebaseHandlerProps> = ({
 
             listenersSetupRef.current = false;
         };
-    }, [isDraftActive, divisionId, lastEventId, handleDraftEvent]); // Include dependencies
+    }, [isDraftActive, divisionId, lastEventId, handleDraftEvent, currentUserId]); // Include dependencies
 
     // Cleanup timeout on unmount
     useEffect(() => {

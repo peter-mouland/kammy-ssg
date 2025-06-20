@@ -17,7 +17,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export async function loader({ params }: LoaderFunctionArgs) {
     const playerId = params.playerId;
 
-    if (!playerId || isNaN(Number(playerId))) {
+    if (!playerId || Number.isNaN(Number(playerId))) {
         throw new Response('Invalid player ID', { status: 400 });
     }
 

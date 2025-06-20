@@ -1,7 +1,5 @@
 /* Location: app/admin/components/sections/settings-section.tsx */
 
-// /admin/components/sections/settings-section.tsx (REFACTORED)
-import React from 'react';
 import * as Icons from '../icons/admin-icons';
 import { AdminSection, AdminContainer } from '../layout';
 import styles from './settings-section.module.css';

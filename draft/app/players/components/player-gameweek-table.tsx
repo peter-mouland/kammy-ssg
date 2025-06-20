@@ -58,7 +58,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'gameweek',
             width: 80,
             fixed: true,
-            render: (gameweek, gw) => (
+            render: (gameweek, _gw) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
                     <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{gameweek}</span>
                     {gameweek === currentGameweek && <TableBadge variant="error">LIVE</TableBadge>}

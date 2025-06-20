@@ -8,7 +8,7 @@ import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
 import type { TeamViewData, TeamGameweekData, CurrentUser } from '../types/team-types';
 
-export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
+export async function loadTeamData(url: URL, _params: any): Promise<TeamViewData> {
     try {
         // Get current user from session/auth (you'll need to implement this)
         const currentUser = await getCurrentUser(url);
@@ -93,7 +93,7 @@ export async function getUserTeamFromDivision(
 /**
  * Placeholder functions - implement these based on your auth and game state logic
  */
-async function getCurrentUser(url: URL): Promise<CurrentUser | null> {
+async function getCurrentUser(_url: URL): Promise<CurrentUser | null> {
     // todo: Implementation needed - get user from session/auth
     // This is a placeholder that needs proper authentication logic
     return {
@@ -124,7 +124,7 @@ export async function isDivisionSetUpWithNewStructure(divisionId: string): Promi
         const currentGameweek = await getCurrentGameweek();
         const teamData = await getUserTeamForGameweek(divisionId, 'any_user', currentGameweek);
         return teamData !== null;
-    } catch (error) {
+    } catch (_error) {
         return false;
     }
 }

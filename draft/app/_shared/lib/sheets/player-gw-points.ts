@@ -2,11 +2,11 @@
 
 // app/routes/server/sheets/player-gw-points.ts
 import type { CustomPosition } from '../../../players/types/player-types';
-import type { FplPlayerData } from '../fpl/fpl-types';
-import { createAppError } from './utils/common';
-import { saveDataToSheet } from './utils/write-data-to-sheets';
-import { readDataFromSheetWithHeaders } from './utils/read-data-from-sheets';
 import { calculateGameweekPoints, convertToPlayerGameweekStats } from '../../../scoring/lib'; // todo: should sheets have domains in it?
+import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import { createAppError } from './utils/common';
+import { readDataFromSheetWithHeaders } from './utils/read-data-from-sheets';
+import { saveDataToSheet } from './utils/write-data-to-sheets';
 
 // Sheet configuration
 const PLAYER_GW_POINTS_SHEET_NAME = 'player-gw-points';
@@ -53,20 +53,18 @@ async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekP
 
         // Process each player to generate Gameweek points
         const dataRows: PlayerGameweekPointsRow[] = [];
-        filteredFplPlayers.forEach((fplPlayer: FplPlayerData) => {
+        filteredFplPlayers.forEach((fplPlayer: EnhancedPlayerData) => {
             const playerSheet = sheetsPlayersById[fplPlayer.id];
             if (!playerSheet) return;
 
             const position = playerSheet.position.toLowerCase() as CustomPosition;
             const playerGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
             const gameweekPoints = new Map<string, number>(); // we need an ordered object
-            let colCount = 0;
-            playerGameweekData.forEach((historyEntry: any, index: number) => {
-                colCount++;
+            playerGameweekData.forEach((historyEntry: any, _index: number) => {
                 const singleGameStats = convertToPlayerGameweekStats(historyEntry);
                 const gameweekPointsBreakdown = calculateGameweekPoints(singleGameStats, position);
                 let colKey = `gw-${historyEntry.round}`;
-                if (gameweekPoints.has(colKey)) colKey = colKey + '-b';
+                if (gameweekPoints.has(colKey)) colKey += '-b';
                 gameweekPoints.set(colKey, gameweekPointsBreakdown.total);
                 colHeaders.add(colKey);
             });
@@ -74,7 +72,7 @@ async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekP
             dataRows.push({
                 playerCode: fplPlayer.code.toString(),
                 webName: fplPlayer.web_name,
-                teamName: fplPlayer.team_name,
+                teamName: fplPlayer.team_name, // todo map to name
                 position,
                 ...Object.fromEntries(gameweekPoints),
             });

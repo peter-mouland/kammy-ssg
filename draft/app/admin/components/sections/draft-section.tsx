@@ -1,5 +1,4 @@
-// /admin/components/sections/draft-section.tsx (UPDATED)
-import React from 'react';
+
 import { useActionData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { DraftCard } from '../ui/draft-card';

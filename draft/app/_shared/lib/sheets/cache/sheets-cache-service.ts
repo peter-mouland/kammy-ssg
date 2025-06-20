@@ -70,7 +70,7 @@ export class SheetsCacheService {
     /**
      * Set cache entry
      */
-    set<T>(key: string, data: T, options: CacheOptions = {}): void {
+    set<T>(key: string, data: T, _options: CacheOptions = {}): void {
         // Evict oldest entries if cache is full
         if (this.cache.size >= this.maxSize) {
             this.evictOldest();

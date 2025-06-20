@@ -87,7 +87,6 @@ export class GameweekPointsService {
 
             const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
                 updateNeeded.gameweeksToGenerate,
-                currentGameweek,
             );
 
             if (pointsPopulationResult.errors.length > 0) {
@@ -157,7 +156,6 @@ export class GameweekPointsService {
 
             const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
                 availableGameweeks,
-                currentGameweek,
             );
 
             if (pointsPopulationResult.errors.length > 0) {
@@ -288,7 +286,7 @@ export class GameweekPointsService {
         );
 
         // Update element summaries with gameweek points data using existing function
-        await fplApiCache['fplCache'].updateElementSummariesWithDraft(gameweekPointsData);
+        await fplApiCache.fplCache.updateElementSummariesWithDraft(gameweekPointsData);
 
         console.log(`✅ Generated points for ${Object.keys(gameweekPointsData).length} players`);
         return { playerCount: Object.keys(gameweekPointsData).length };

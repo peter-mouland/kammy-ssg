@@ -1,5 +1,4 @@
-// app/admin/components/ui/division-teams-debug-card.tsx
-import React from 'react';
+
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { ActionCard } from './action-card';

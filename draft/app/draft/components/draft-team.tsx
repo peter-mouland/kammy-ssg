@@ -64,7 +64,7 @@ const createUserFormation = (userPicks: DraftPickData[], userId: string, userNam
     };
 
     // Place picked players into formation
-    userPicks.forEach((pick, index) => {
+    userPicks.forEach((pick, _index) => {
         const customPosition = pick.position;
         const positionSlots = formation.positions[customPosition.toLowerCase() as keyof typeof formation.positions];
 

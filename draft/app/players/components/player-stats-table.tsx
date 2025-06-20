@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-stats-table.tsx */
 
-import React, { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';
 import { WishlistTags } from '../../wishlist/components/wishlist-tags';
@@ -72,7 +72,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
     }, [players, teams, filters.search, filters.position, filters.team]);
 
     // Helper functions for rendering
-    const getFormColor = (form: number) => {
+    const _getFormColor = (form: number) => {
         if (form >= 4.5) return styles.formExcellent;
         if (form >= 3.5) return styles.formGood;
         if (form >= 2.5) return styles.formAverage;

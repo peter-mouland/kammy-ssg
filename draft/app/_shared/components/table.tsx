@@ -330,7 +330,7 @@ export function Table<T = any>({
                                     {actions && actions.length > 0 && (
                                         <td className={styles.cellCenter}>
                                             <div className={styles.cellActions}>
-                                                {actions.map((action, actionIndex) => {
+                                                {actions.map((action) => {
                                                     if (action.hidden?.(item)) return null;
 
                                                     const isDisabled = action.disabled?.(item);
