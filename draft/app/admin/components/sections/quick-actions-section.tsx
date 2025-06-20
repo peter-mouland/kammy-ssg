@@ -19,8 +19,8 @@ export const QuickActionsSection = ({ cacheData }: QuickActionsSectionProps) => 
             { actionType },
             {
                 method: 'post',
-                action: '?index'  // Submit to the index route, not parent
-            }
+                action: '?index', // Submit to the index route, not parent
+            },
         );
     };
 

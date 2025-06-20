@@ -14,36 +14,35 @@ interface ActionData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
-        const { getDraftAdminData } = await import("./server/admin-dashboard.server");
+        const { getDraftAdminData } = await import('./server/admin-dashboard.server');
         const draftAdminData = await getDraftAdminData();
         return data(draftAdminData);
     } catch (error) {
-        console.error("Points admin loader error:", error);
-        throw new Response("Failed to load admin data", { status: 500 });
+        console.error('Points admin loader error:', error);
+        throw new Response('Failed to load admin data', { status: 500 });
     }
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
-        const actionType = formData.get("actionType");
+        const actionType = formData.get('actionType');
 
         if (!actionType) {
-            return data<ActionData>({ error: "Action type is required" });
+            return data<ActionData>({ error: 'Action type is required' });
         }
 
-        const { handlePointsActions } = await import("./server/points-actions.server");
+        const { handlePointsActions } = await import('./server/points-actions.server');
 
         const result = await handlePointsActions({
-            actionType: actionType.trim()
+            actionType: actionType.trim(),
         });
 
         return data<ActionData>(result);
-
     } catch (error) {
-        console.error("Points action error:", error);
+        console.error('Points action error:', error);
         return data<ActionData>({
-            error: error instanceof Error ? error.message : "Failed to perform points action"
+            error: error instanceof Error ? error.message : 'Failed to perform points action',
         });
     }
 }

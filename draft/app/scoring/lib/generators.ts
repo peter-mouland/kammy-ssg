@@ -16,7 +16,7 @@ const baselineStats = {
     redCards: 0,
     saves: 0,
     penaltiesSaved: 0,
-    bonus: 0
+    bonus: 0,
 };
 
 /**
@@ -26,7 +26,7 @@ const baselineStats = {
 export function generateSeasonData(
     fplPlayers: EnhancedPlayerData[],
     fplPlayerGameweeksById: Record<number, any>,
-    sheetsPlayersById: Record<string, any>
+    sheetsPlayersById: Record<string, any>,
 ): EnhancedPlayerData[] {
     console.log(`🔄 generateSeasonData - Processing ${fplPlayers.length} players`);
 
@@ -49,9 +49,9 @@ export function generateSeasonData(
                     pointsBreakdown: fullBreakdown,
                     __generatedFor: {
                         type: 'season' as const,
-                        generatedAt: new Date().toISOString()
-                    }
-                }
+                        generatedAt: new Date().toISOString(),
+                    },
+                },
             };
         });
 }
@@ -64,9 +64,13 @@ export function generateGameweekData(
     fplPlayers: EnhancedPlayerData[],
     fplPlayerGameweeksById: Record<number, FplPlayerSeasonData>,
     sheetsPlayersById: Record<number, PlayerSheetsData>,
-    targetGameweeks: number[]
+    targetGameweeks: number[],
 ): Record<number, { draft: { gameweekPoints: Record<number, any> } }> {
-    console.log(`🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(', ')}`);
+    console.log(
+        `🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(
+            ', ',
+        )}`,
+    );
 
     const result: Record<number, { draft: { gameweekPoints: Record<number, any> } }> = {};
 
@@ -79,14 +83,14 @@ export function generateGameweekData(
             const allGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
             const gameweekPoints: Record<number, any> = {};
 
-            targetGameweeks.forEach(gameweek => {
-                const gameweekData = allGameweekData.find(gw => gw.round === gameweek); // step 1: find gw
+            targetGameweeks.forEach((gameweek) => {
+                const gameweekData = allGameweekData.find((gw) => gw.round === gameweek); // step 1: find gw
                 const gameweekStats = gameweekData ? convertToPlayerGameweekStats(gameweekData) : null; // step 2: remove gw from stats
 
-                if (!gameweekStats){
+                if (!gameweekStats) {
                     console.error(`🚨 no stats for gw${gameweek}`);
-                    console.log(` - max history : ${allGameweekData.length}`)
-                    console.log(` - player : ${fplPlayer.id} ${fplPlayer.web_name} ${position}`)
+                    console.log(` - max history : ${allGameweekData.length}`);
+                    console.log(` - player : ${fplPlayer.id} ${fplPlayer.web_name} ${position}`);
                 }
 
                 const pointsBreakdown = calculateGameweekPoints(gameweekStats || baselineStats, position);
@@ -96,8 +100,8 @@ export function generateGameweekData(
                     metadata: {
                         generatedAt: new Date().toISOString(),
                         position: position,
-                        noData: !gameweekStats
-                    }
+                        noData: !gameweekStats,
+                    },
                 };
 
                 console.log(`✅ Player ${fplPlayer.id} GW${gameweek}: ${pointsBreakdown.total} points`);

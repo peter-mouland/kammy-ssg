@@ -3,7 +3,7 @@
 import { useSearchParams } from 'react-router';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-export interface TableFilters {
+export interface Filters {
     search?: string;
     status?: string | number;
     category?: string | number;
@@ -14,21 +14,19 @@ export interface TableFilters {
 }
 
 export interface UseTableFiltersOptions {
-    defaultFilters?: Partial<TableFilters>;
+    defaultFilters?: Partial<Filters>;
     debounceMs?: number;
 }
 
 export interface UseTableFiltersReturn {
-    filters: TableFilters;
+    filters: Filters;
     setFilter: (key: string, value: string | number | undefined) => void;
-    setFilters: (newFilters: Partial<TableFilters>) => void;
+    setFilters: (newFilters: Partial<Filters>) => void;
     resetFilters: () => void;
     isUpdating: boolean;
 }
 
-export function useTableFilters(
-    options: UseTableFiltersOptions = {}
-): UseTableFiltersReturn {
+export function useTableFilters(options: UseTableFiltersOptions = {}): UseTableFiltersReturn {
     const { defaultFilters = {}, debounceMs = 300 } = options;
     const [searchParams, setSearchParams] = useSearchParams();
     const timeoutRef = useRef<NodeJS.Timeout>();
@@ -41,14 +39,14 @@ export function useTableFilters(
     }, [JSON.stringify(defaultFilters)]);
 
     // Parse initial filters from URL on mount
-    const parseFiltersFromUrl = useCallback((): TableFilters => {
-        const filters: TableFilters = { ...stableDefaultFilters.current };
+    const parseFiltersFromUrl = useCallback((): Filters => {
+        const filters: Filters = { ...stableDefaultFilters.current };
 
         for (const [key, value] of searchParams.entries()) {
             if (value) {
                 // Handle numeric values
                 if (key === 'page' || key.endsWith('Id') || key.endsWith('Count')) {
-                    const numValue = parseInt(value, 10);
+                    const numValue = Number.parseInt(value, 10);
                     if (!isNaN(numValue)) {
                         filters[key] = numValue;
                     }
@@ -62,34 +60,35 @@ export function useTableFilters(
     }, [searchParams]);
 
     // Local state for immediate UI updates
-    const [localFilters, setLocalFilters] = useState<TableFilters>(() =>
-        parseFiltersFromUrl()
-    );
+    const [localFilters, setLocalFilters] = useState<Filters>(() => parseFiltersFromUrl());
 
     // Update URL with debounce (replace: true to avoid history pollution)
-    const updateUrlFilters = useCallback((filters: TableFilters) => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
+    const updateUrlFilters = useCallback(
+        (filters: Filters) => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
 
-        setIsUpdating(true);
+            setIsUpdating(true);
 
-        timeoutRef.current = setTimeout(() => {
-            const newSearchParams = new URLSearchParams();
+            timeoutRef.current = setTimeout(() => {
+                const newSearchParams = new URLSearchParams();
 
-            Object.entries(filters).forEach(([key, value]) => {
-                if (value !== undefined && value !== null && value !== '') {
-                    // Skip default values to keep URL clean
-                    if (stableDefaultFilters.current[key] !== value) {
-                        newSearchParams.set(key, String(value));
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') {
+                        // Skip default values to keep URL clean
+                        if (stableDefaultFilters.current[key] !== value) {
+                            newSearchParams.set(key, String(value));
+                        }
                     }
-                }
-            });
+                });
 
-            setSearchParams(newSearchParams, { replace: true });
-            setIsUpdating(false);
-        }, debounceMs);
-    }, [setSearchParams, debounceMs]);
+                setSearchParams(newSearchParams, { replace: true });
+                setIsUpdating(false);
+            }, debounceMs);
+        },
+        [setSearchParams, debounceMs],
+    );
 
     // Sync local filters with URL when local state changes
     useEffect(() => {
@@ -107,19 +106,19 @@ export function useTableFilters(
 
     // Update a single filter
     const setFilter = useCallback((key: string, value: string | number | undefined) => {
-        setLocalFilters(prev => ({
+        setLocalFilters((prev) => ({
             ...prev,
             [key]: value,
             // Reset page when other filters change (unless we're changing page itself)
-            ...(key !== 'page' && { page: 1 })
+            ...(key !== 'page' && { page: 1 }),
         }));
     }, []);
 
     // Update multiple filters at once
-    const setFilters = useCallback((newFilters: Partial<TableFilters>) => {
-        setLocalFilters(prev => ({
+    const setFilters = useCallback((newFilters: Partial<Filters>) => {
+        setLocalFilters((prev) => ({
             ...prev,
-            ...newFilters
+            ...newFilters,
         }));
     }, []);
 
@@ -133,6 +132,6 @@ export function useTableFilters(
         setFilter,
         setFilters,
         resetFilters,
-        isUpdating
+        isUpdating,
     };
 }

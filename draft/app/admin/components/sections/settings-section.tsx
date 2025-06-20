@@ -9,10 +9,7 @@ import styles from './settings-section.module.css';
 export const SettingsSection = () => {
     return (
         <AdminContainer>
-            <AdminSection
-                title="System Settings"
-                icon={<Icons.SettingsIcon />}
-            >
+            <AdminSection title="System Settings" icon={<Icons.SettingsIcon />}>
                 <div className={styles.coming_soon}>
                     <Icons.SettingsIcon />
                     <h3>Settings Panel Coming Soon</h3>

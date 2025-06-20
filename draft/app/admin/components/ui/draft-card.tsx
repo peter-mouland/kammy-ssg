@@ -39,54 +39,51 @@ interface DivisionStatus {
 
 export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProps) => {
     const fetcher = useFetcher();
-    const isLoading = fetcher.state === "submitting";
+    const isLoading = fetcher.state === 'submitting';
 
     const handleAction = (actionType: string) => {
-        fetcher.submit(
-            { actionType, divisionId: division.id },
-            { method: "post" }
-        );
+        fetcher.submit({ actionType, divisionId: division.id }, { method: 'post' });
     };
 
     const isActive = !!(draftState?.isActive && draftState.currentDivisionId === division.id);
 
     const getDivisionStatus = (): DivisionStatus => {
         if (teams.length === 0) {
-            return { status: "No Teams", color: "#6b7280", disabled: true, variant: 'disabled' };
+            return { status: 'No Teams', color: '#6b7280', disabled: true, variant: 'disabled' };
         }
         if (orders.length === 0) {
             return {
-                status: "🎲 Generate Order",
-                color: "#f59e0b",
+                status: '🎲 Generate Order',
+                color: '#f59e0b',
                 disabled: false,
-                action: "generateOrder",
-                variant: 'generate'
+                action: 'generateOrder',
+                variant: 'generate',
             };
         }
         if (isActive) {
             return {
-                status: "🛑 Stop Draft",
-                color: "#ef4444",
+                status: '🛑 Stop Draft',
+                color: '#ef4444',
                 disabled: false,
-                action: "stopDraft",
-                variant: 'stop'
+                action: 'stopDraft',
+                variant: 'stop',
             };
         }
         if (draftState?.isActive) {
             return {
-                status: "⚪️ Start Draft",
-                color: "#6b7280",
+                status: '⚪️ Start Draft',
+                color: '#6b7280',
                 disabled: true,
-                action: "startDraft",
-                variant: 'disabled'
+                action: 'startDraft',
+                variant: 'disabled',
             };
         }
         return {
-            status: "🟢 Start Draft",
-            color: "#10b981",
+            status: '🟢 Start Draft',
+            color: '#10b981',
             disabled: false,
-            action: "startDraft",
-            variant: 'start'
+            action: 'startDraft',
+            variant: 'start',
         };
     };
 
@@ -113,11 +110,7 @@ export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProp
                 </button>
             </div>
 
-            {orders.length > 0 && (
-                <div className={styles.orderInfo}>
-                    Draft order generated • {orders.length} teams
-                </div>
-            )}
+            {orders.length > 0 && <div className={styles.orderInfo}>Draft order generated • {orders.length} teams</div>}
         </div>
     );
 };

@@ -42,7 +42,6 @@ export interface ScoringRulesConfig {
     ca: PositionScoringRules;
 }
 
-
 // ================================
 // ENHANCED PLAYER DATA TYPES
 // ================================
@@ -106,7 +105,6 @@ export interface SeasonTotals {
     assistsPerGame: number;
     cleanSheetPercentage: number;
 }
-
 
 export interface PointsBreakdown {
     appearance: PointsBreakdownItem;

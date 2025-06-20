@@ -17,9 +17,7 @@ export const DataCount = ({ label, count, missing, expected }: DataCountProps) =
         <div className={`${styles.statusCard} ${missing ? styles.warning : styles.healthy}`}>
             <div className={styles.statusValue}>{count.toLocaleString()}</div>
             <div className={styles.statusLabel}>{label}</div>
-            {!missing && expected && (
-                <div className={styles.statusPercentage}>{percentage}%</div>
-            )}
+            {!missing && expected && <div className={styles.statusPercentage}>{percentage}%</div>}
         </div>
     );
 };

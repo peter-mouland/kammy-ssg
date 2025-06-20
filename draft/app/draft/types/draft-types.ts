@@ -4,7 +4,6 @@ import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types
 import type { UserTeamsSheetData } from '../../teams/types/team-types';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 
-
 /**
  * Draft domain type definitions
  * Contains all types related to the drafting process
@@ -16,7 +15,7 @@ export interface DraftLoaderData {
     draftState: DraftStateData | null;
     draftPicks: DraftPickData[];
     draftOrder: DraftOrderData[];
-    availablePlayers:  EnhancedPlayerData[];
+    availablePlayers: EnhancedPlayerData[];
     currentUser: string;
     isUserTurn: boolean;
     divisions: DivisionSheetData[];
@@ -38,9 +37,6 @@ export interface DraftActionData {
     pick?: DraftPickData;
     action?: string;
 }
-
-
-
 
 export interface DraftPickData {
     pickNumber: number;
@@ -196,7 +192,6 @@ export interface DraftCompleteMessage {
     timestamp: Date;
 }
 
-
 export interface PositionCounts {
     gk: number;
     cb: number;
@@ -214,7 +209,6 @@ export interface TeamCounts {
         teamName: string;
     };
 }
-
 
 export type SquadComposition = {
     positionCounts: PositionCounts;

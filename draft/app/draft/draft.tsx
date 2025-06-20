@@ -1,8 +1,8 @@
 /* Location: app/draft/draft.tsx */
 
-import { useLoaderData, useFetcher, useSearchParams, useNavigation, useActionData, useRevalidator } from "react-router";
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import * as React from "react";
+import { useLoaderData, useFetcher, useSearchParams, useNavigation, useActionData, useRevalidator } from 'react-router';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import * as React from 'react';
 
 // Components
 import { DraftBoard } from './components/draft-board';
@@ -21,11 +21,7 @@ import { ToastManager, useToast } from '../_shared/components/toast-manager';
 import { LoadingOverlay, LoadingSpinner, TurnAlert } from '../_shared/components/loading-overlay';
 
 // Audio imports
-import {
-    playPickSuccessSound,
-    playErrorSound,
-    playYourTurnSound
-} from '../_shared/lib/audio/celebration-sounds';
+import { playPickSuccessSound, playErrorSound, playYourTurnSound } from '../_shared/lib/audio/celebration-sounds';
 
 // Hooks
 import { useOptimisticPicks } from './lib/use-optimistic-picks';
@@ -33,7 +29,6 @@ import { useOptimisticPicks } from './lib/use-optimistic-picks';
 // Styles
 import styles from './draft.module.css';
 import type { DraftActionData, DraftLoaderData } from './types/draft-types';
-
 
 // Memoized components to prevent unnecessary rerenders
 const MemoizedDraftBoard = React.memo(DraftBoard);
@@ -64,10 +59,10 @@ export const Draft = () => {
     const { optimisticPicks, addOptimisticPick, hasOptimisticPicks } = useOptimisticPicks(loaderData.draftPicks);
 
     // Loading states
-    const isInitialLoading = navigation.state === "loading" && navigation.location?.pathname === "/draft";
-    const isNavigating = navigation.state === "loading" && navigation.location?.pathname !== "/draft";
-    const isSubmitting = fetcher.state === "submitting";
-    const isPending = navigation.state !== "idle" || fetcher.state !== "idle";
+    const isInitialLoading = navigation.state === 'loading' && navigation.location?.pathname === '/draft';
+    const isNavigating = navigation.state === 'loading' && navigation.location?.pathname !== '/draft';
+    const isSubmitting = fetcher.state === 'submitting';
+    const isPending = navigation.state !== 'idle' || fetcher.state !== 'idle';
 
     // Handle new picks from Firebase (when data revalidates)
     useEffect(() => {
@@ -79,17 +74,17 @@ export const Draft = () => {
             // Get the latest pick(s)
             const newPicks = loaderData.draftPicks.slice(previousPickCount);
 
-            newPicks.forEach(pick => {
+            newPicks.forEach((pick) => {
                 // Don't show toast for your own picks (those are handled by action/fetcher responses)
                 if (pick.userId !== loaderData.currentUser) {
                     // Find the user who made the pick
-                    const userTeam = loaderData.userTeams.find(team => team.userId === pick.userId);
+                    const userTeam = loaderData.userTeams.find((team) => team.userId === pick.userId);
                     const userName = userTeam?.teamName || `User ${pick.userId}`;
 
                     showToast({
                         message: `${userName} drafted ${pick.playerName}`,
                         type: 'info',
-                        duration: 4000
+                        duration: 4000,
                     });
                 }
             });
@@ -109,7 +104,7 @@ export const Draft = () => {
             showToast({
                 message: "🎯 It's your turn to pick!",
                 type: 'warning',
-                duration: 6000 // Longer duration for turn notifications
+                duration: 6000, // Longer duration for turn notifications
             });
 
             // Play your turn sound
@@ -139,9 +134,9 @@ export const Draft = () => {
             setShowDraftCompleteConfetti(true);
 
             showToast({
-                message: "🎉 DRAFT COMPLETE! All picks are in! Good luck this season! 🏆",
+                message: '🎉 DRAFT COMPLETE! All picks are in! Good luck this season! 🏆',
                 type: 'success',
-                duration: 8000
+                duration: 8000,
             });
 
             // Note: Celebration sound will be played by the confetti component
@@ -155,7 +150,7 @@ export const Draft = () => {
         if (actionData?.success && actionData.pick) {
             showToast({
                 message: `${actionData.pick.playerName} drafted successfully!`,
-                type: 'success'
+                type: 'success',
             });
 
             // Play success sound for your own picks
@@ -163,7 +158,7 @@ export const Draft = () => {
         } else if (actionData?.error) {
             showToast({
                 message: actionData.error,
-                type: 'error'
+                type: 'error',
             });
 
             // Play error sound
@@ -176,7 +171,7 @@ export const Draft = () => {
         if (fetcher.data?.success && fetcher.data.pick) {
             showToast({
                 message: `${fetcher.data.pick.playerName} drafted successfully!`,
-                type: 'success'
+                type: 'success',
             });
 
             // Play success sound for your own picks
@@ -184,7 +179,7 @@ export const Draft = () => {
         } else if (fetcher.data?.error) {
             showToast({
                 message: fetcher.data.error,
-                type: 'error'
+                type: 'error',
             });
 
             // Play error sound
@@ -192,67 +187,76 @@ export const Draft = () => {
         }
     }, [fetcher.data, showToast]);
 
-    const handleUserChange = useCallback((userId: string) => {
-        setSearchParams(prev => {
-            const newParams = new URLSearchParams(prev);
-            newParams.set("user", userId);
-            return newParams;
-        });
-    }, [setSearchParams]);
-
-    const handleMakePick = useCallback((playerId: string) => {
-        if (!loaderData.currentUser || !loaderData.selectedDivision || isSubmitting) {
-            return;
-        }
-
-        const selectedPlayer = loaderData.availablePlayers.find(p => p.id.toString() === playerId);
-        if (!selectedPlayer) {
-            showToast({
-                message: "Player not found",
-                type: 'error'
+    const handleUserChange = useCallback(
+        (userId: string) => {
+            setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.set('user', userId);
+                return newParams;
             });
-            return;
-        }
-        const teamName = loaderData.teams.find((t) => t.code === selectedPlayer.team_code)?.name;
+        },
+        [setSearchParams],
+    );
 
-        // Create optimistic pick
-        const optimisticPick = {
-            pickNumber: optimisticPicks.length + 1,
-            round: Math.ceil((optimisticPicks.length + 1) / loaderData.draftOrder.length),
-            userId: loaderData.currentUser,
-            playerId,
-            playerName: selectedPlayer.web_name || `${selectedPlayer.first_name} ${selectedPlayer.second_name}`,
-            teamCode: selectedPlayer.team_code,
-            teamName: teamName || 'Unknown',
-            position: selectedPlayer.draft.position,
-            pickedAt: new Date(),
-            divisionId: loaderData.selectedDivision
-        };
+    const handleMakePick = useCallback(
+        (playerId: string) => {
+            if (!loaderData.currentUser || !loaderData.selectedDivision || isSubmitting) {
+                return;
+            }
 
-        addOptimisticPick(optimisticPick);
+            const selectedPlayer = loaderData.availablePlayers.find((p) => p.id.toString() === playerId);
+            if (!selectedPlayer) {
+                showToast({
+                    message: 'Player not found',
+                    type: 'error',
+                });
+                return;
+            }
+            const teamName = loaderData.teams.find((t) => t.code === selectedPlayer.team_code)?.name;
 
-        fetcher.submit({
-            actionType: "makePick",
-            playerId,
-            userId: loaderData.currentUser,
-            divisionId: loaderData.selectedDivision
-        }, { method: "post" });
-    }, [
-        loaderData.currentUser,
-        loaderData.selectedDivision,
-        loaderData.availablePlayers,
-        loaderData.draftOrder.length,
-        isSubmitting,
-        optimisticPicks.length,
-        addOptimisticPick,
-        fetcher,
-        showToast
-    ]);
+            // Create optimistic pick
+            const optimisticPick = {
+                pickNumber: optimisticPicks.length + 1,
+                round: Math.ceil((optimisticPicks.length + 1) / loaderData.draftOrder.length),
+                userId: loaderData.currentUser,
+                playerId,
+                playerName: selectedPlayer.web_name || `${selectedPlayer.first_name} ${selectedPlayer.second_name}`,
+                teamCode: selectedPlayer.team_code,
+                teamName: teamName || 'Unknown',
+                position: selectedPlayer.draft.position,
+                pickedAt: new Date(),
+                divisionId: loaderData.selectedDivision,
+            };
+
+            addOptimisticPick(optimisticPick);
+
+            fetcher.submit(
+                {
+                    actionType: 'makePick',
+                    playerId,
+                    userId: loaderData.currentUser,
+                    divisionId: loaderData.selectedDivision,
+                },
+                { method: 'post' },
+            );
+        },
+        [
+            loaderData.currentUser,
+            loaderData.selectedDivision,
+            loaderData.availablePlayers,
+            loaderData.draftOrder.length,
+            isSubmitting,
+            optimisticPicks.length,
+            addOptimisticPick,
+            fetcher,
+            showToast,
+        ],
+    );
 
     // Memoized filtered players
     const availablePlayersFiltered = useMemo(() => {
-        const pickedPlayerIds = new Set(optimisticPicks.map(pick => pick.playerId));
-        return loaderData.availablePlayers?.filter(player => !pickedPlayerIds.has(player.id.toString()));
+        const pickedPlayerIds = new Set(optimisticPicks.map((pick) => pick.playerId));
+        return loaderData.availablePlayers?.filter((player) => !pickedPlayerIds.has(player.id.toString()));
     }, [loaderData.availablePlayers, optimisticPicks]);
 
     // Show initial loading state
@@ -262,17 +266,17 @@ export const Draft = () => {
                 <LoadingSpinner size="large" message="Loading draft room..." />
                 <div className={styles.loadingDetails}>
                     <div>Fetching latest draft data</div>
-                    <div className={styles.loadingSubtext}>
-                        This may take a moment...
-                    </div>
+                    <div className={styles.loadingSubtext}>This may take a moment...</div>
                 </div>
             </div>
         );
     }
 
     const title = loaderData.draftState?.isActive
-        ? `🟢 Live ${loaderData.divisions.find(d => d.id === loaderData.draftState?.currentDivisionId)?.label} Draft Room`
-        : "⚪️ Draft Room";
+        ? `🟢 Live ${
+              loaderData.divisions.find((d) => d.id === loaderData.draftState?.currentDivisionId)?.label
+          } Draft Room`
+        : '⚪️ Draft Room';
 
     return (
         <div className={styles.draftContainer}>
@@ -304,7 +308,7 @@ export const Draft = () => {
                                 <div className={styles.headerActions}>
                                     <ConnectionStatus
                                         connectionState={connectionState}
-                                        isRevalidating={revalidator.state === "loading"}
+                                        isRevalidating={revalidator.state === 'loading'}
                                         onReconnect={onReconnect}
                                     />
                                     <SelectUser
@@ -312,7 +316,6 @@ export const Draft = () => {
                                         selectedUser={loaderData.selectedUser}
                                         handleUserChange={handleUserChange}
                                     />
-
                                 </div>
                             }
                         />
@@ -331,43 +334,42 @@ export const Draft = () => {
                         />
 
                         {/* Navigation Alert */}
-                        {isNavigating && (
-                            <div className={styles.navigationAlert}>
-                                🔄 Navigating to new page...
-                            </div>
-                        )}
+                        {isNavigating && <div className={styles.navigationAlert}>🔄 Navigating to new page...</div>}
 
                         {/* Main Draft Interface */}
                         {loaderData.draftState?.isActive ? (
                             <div className={styles.draftInterface}>
                                 {/* Available Players */}
                                 <div className={styles.playersSection}>
-
                                     {/* Squad Status */}
 
                                     <DraftTeam
                                         userId={loaderData.draftState.currentUserId}
                                         userName={loaderData.draftState.currentUserId}
-                                        draftPicks={loaderData.draftPicks?.filter(pick => pick.userId === loaderData.draftState?.currentUserId)}
+                                        draftPicks={loaderData.draftPicks?.filter(
+                                            (pick) => pick.userId === loaderData.draftState?.currentUserId,
+                                        )}
                                         isCompact={true}
                                     />
 
-                                    {availablePlayersFiltered && <MemoizedDraftPlayers
-                                        onSelectPlayer={handleMakePick}
-                                        availablePlayers={availablePlayersFiltered}
-                                        isUserTurn={loaderData.isUserTurn && !isSubmitting}
-                                        currentUserPicks={loaderData.draftPicks?.filter(pick => pick.userId === loaderData.currentUser)}
-                                        allTeams={loaderData.teams} // You'll need to add this to loader data
-                                    />}
+                                    {availablePlayersFiltered && (
+                                        <MemoizedDraftPlayers
+                                            onSelectPlayer={handleMakePick}
+                                            availablePlayers={availablePlayersFiltered}
+                                            isUserTurn={loaderData.isUserTurn && !isSubmitting}
+                                            currentUserPicks={loaderData.draftPicks?.filter(
+                                                (pick) => pick.userId === loaderData.currentUser,
+                                            )}
+                                            allTeams={loaderData.teams} // You'll need to add this to loader data
+                                        />
+                                    )}
 
                                     {/* Optimistic feedback overlay */}
                                     {hasOptimisticPicks && (
                                         <div className={styles.optimisticOverlay}>
                                             <div className={styles.optimisticContent}>
                                                 <LoadingSpinner size="medium" />
-                                                <div className={styles.optimisticMessage}>
-                                                    Processing your pick...
-                                                </div>
+                                                <div className={styles.optimisticMessage}>Processing your pick...</div>
                                             </div>
                                         </div>
                                     )}
@@ -390,20 +392,13 @@ export const Draft = () => {
                         ) : (
                             <div className={styles.draftInactive}>
                                 <div className={styles.inactiveIcon}>⏳</div>
-                                <h3 className={styles.inactiveTitle}>
-                                    Draft Not Active
-                                </h3>
-                                <p className={styles.inactiveMessage}>
-                                    The draft hasn't started yet. Check back soon!
-                                </p>
+                                <h3 className={styles.inactiveTitle}>Draft Not Active</h3>
+                                <p className={styles.inactiveMessage}>The draft hasn't started yet. Check back soon!</p>
                             </div>
                         )}
 
                         {/* Team Draft - always visible */}
-                        <MemoizedTeamDraft
-                            draftPicks={optimisticPicks}
-                            draftOrder={loaderData.draftOrder}
-                        />
+                        <MemoizedTeamDraft draftPicks={optimisticPicks} draftOrder={loaderData.draftOrder} />
 
                         {/* Debug info in development */}
                         {process.env.NODE_ENV === 'development' && (
@@ -412,21 +407,25 @@ export const Draft = () => {
                                     Debug Info (Complete Audio Integration)
                                 </summary>
                                 <pre className={styles.debugContent}>
-                                    {JSON.stringify({
-                                        isInitialLoading,
-                                        isNavigating,
-                                        isSubmitting,
-                                        isPending,
-                                        connectionState,
-                                        hasOptimisticPicks,
-                                        optimisticPicksCount: optimisticPicks?.filter(p => p.isOptimistic).length,
-                                        navigationState: navigation.state,
-                                        fetcherState: fetcher.state,
-                                        currentPickCount: loaderData.draftPicks.length,
-                                        previousPickCount: previousPickCountRef.current,
-                                        draftActive: loaderData.draftState?.isActive,
-                                        components: 'Firebase toast integration + turn notifications + audio'
-                                    }, null, 2)}
+                                    {JSON.stringify(
+                                        {
+                                            isInitialLoading,
+                                            isNavigating,
+                                            isSubmitting,
+                                            isPending,
+                                            connectionState,
+                                            hasOptimisticPicks,
+                                            optimisticPicksCount: optimisticPicks?.filter((p) => p.isOptimistic).length,
+                                            navigationState: navigation.state,
+                                            fetcherState: fetcher.state,
+                                            currentPickCount: loaderData.draftPicks.length,
+                                            previousPickCount: previousPickCountRef.current,
+                                            draftActive: loaderData.draftState?.isActive,
+                                            components: 'Firebase toast integration + turn notifications + audio',
+                                        },
+                                        null,
+                                        2,
+                                    )}
                                 </pre>
                             </details>
                         )}
@@ -435,4 +434,4 @@ export const Draft = () => {
             </DraftFirebaseHandler>
         </div>
     );
-}
+};

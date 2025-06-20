@@ -14,8 +14,6 @@ export const PageHeader = ({ title, subTitle, actions }: PageHeaderProps) => (
             <h1 className={styles.pageTitle}>{title}</h1>
             {actions}
         </div>
-        {subTitle ? <p className={styles.pageSubtitle}>
-            {subTitle}
-        </p> : null }
+        {subTitle ? <p className={styles.pageSubtitle}>{subTitle}</p> : null}
     </div>
 );

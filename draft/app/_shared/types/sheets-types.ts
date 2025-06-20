@@ -4,9 +4,7 @@
  * Sheet-related types that are used across multiple domains
  */
 
-export interface SheetReadOptions {
-    // Base options for sheet reading operations
-}
+export type SheetReadOptions = {}
 
 export interface SheetRange {
     spreadsheetId: string;
@@ -40,4 +38,4 @@ export type PlayersSheetData = {
     team: string;
     fplId: number;
     webName: string;
-}
+};

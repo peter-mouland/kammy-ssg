@@ -10,12 +10,12 @@ import type { DraftOrderData, DraftPickData, DraftSequence, DraftStateData } fro
 import styles from './draft-order.module.css';
 
 type DraftOrderProps = {
-    draftOrder: DraftOrderData[],
-    draftPicks: DraftPickData[],
-    draftSequence: DraftSequence,
-    draftState: DraftStateData,
-}
-export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState } : DraftOrderProps) {
+    draftOrder: DraftOrderData[];
+    draftPicks: DraftPickData[];
+    draftSequence: DraftSequence;
+    draftState: DraftStateData;
+};
+export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }: DraftOrderProps) {
     const { showToast } = useToast();
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [celebrationShown, setCelebrationShown] = React.useState(false);
@@ -37,9 +37,9 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
 
             // Show toast notification
             showToast({
-                message: "🎉 DRAFT COMPLETE! All picks are in! Good luck this season! 🏆",
+                message: '🎉 DRAFT COMPLETE! All picks are in! Good luck this season! 🏆',
                 type: 'success',
-                duration: 8000
+                duration: 8000,
             });
 
             // Optional: Play celebration sound
@@ -66,11 +66,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
     return (
         <div className="card">
             {/* Confetti Component */}
-            <DraftConfetti
-                show={showConfetti}
-                onComplete={() => setShowConfetti(false)}
-                duration={4000}
-            />
+            <DraftConfetti show={showConfetti} onComplete={() => setShowConfetti(false)} duration={4000} />
 
             {/* Draft Order Header */}
             <div className="card-header">
@@ -78,7 +74,6 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
             </div>
 
             <div>
-
                 {/* Next Picker or Completion Status */}
                 {draftState?.isActive && (
                     <div className={styles.draftStatus}>
@@ -90,9 +85,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                                     {draftPicks.length} picks made • All teams are set!
                                 </div>
                             </div>
-                        ) : nextPicker ? (
-                            null
-                        ) : (
+                        ) : nextPicker ? null : (
                             <div className={styles.draftLoading}>
                                 <span>Calculating next pick...</span>
                             </div>
@@ -108,9 +101,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                         key={user.userId}
                         className={`${styles.draftOrderItem} ${
                             user.userId === draftState?.currentUserId ? styles.currentTurn : ''
-                        } ${
-                            user.userId === nextPicker?.userId ? styles.nextTurn : ''
-                        }`}
+                        } ${user.userId === nextPicker?.userId ? styles.nextTurn : ''}`}
                     >
                         <div className={styles.orderPosition}>#{index + 1}</div>
                         <div className={styles.userInfo}>
@@ -139,7 +130,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                             className={styles.progressFill}
                             style={{
                                 width: `${(draftPicks.length / draftSequence.length) * 100}%`,
-                                backgroundColor: draftComplete ? '#10ac84' : '#45b7d1'
+                                backgroundColor: draftComplete ? '#10ac84' : '#45b7d1',
                             }}
                         />
                     </div>

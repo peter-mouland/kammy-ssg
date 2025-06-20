@@ -12,13 +12,9 @@ export interface BatchProcessorOptions {
 export async function processBatched<T, R>(
     items: T[],
     processor: (item: T) => Promise<R>,
-    options: BatchProcessorOptions = {}
+    options: BatchProcessorOptions = {},
 ): Promise<R[]> {
-    const {
-        batchSize = 50,
-        maxConcurrent = 10,
-        logProgress = false
-    } = options;
+    const { batchSize = 50, maxConcurrent = 10, logProgress = false } = options;
 
     const results: R[] = [];
 
@@ -67,12 +63,9 @@ export interface BatchReadOptions {
 export async function processBatchedReads<T, R>(
     items: T[],
     reader: (batch: T[]) => Promise<R[]>,
-    options: BatchReadOptions = {}
+    options: BatchReadOptions = {},
 ): Promise<R[]> {
-    const {
-        batchSize = 100,
-        logProgress = false
-    } = options;
+    const { batchSize = 100, logProgress = false } = options;
 
     const results: R[] = [];
 

@@ -20,8 +20,6 @@ export interface UserTeamsSheetData {
     lastUpdated: Date;
 }
 
-
-
 export interface WeeklyPointsData {
     userId: string;
     gameweek: number;
@@ -43,13 +41,17 @@ export interface WeeklyPointsData {
  */
 export type PositionSlotKey =
     | 'gk_0'
-    | 'cb_0' | 'cb_1'
-    | 'fb_0' | 'fb_1'
-    | 'mid_0' | 'mid_1'
-    | 'wa_0' | 'wa_1'
-    | 'ca_0' | 'ca_1'
+    | 'cb_0'
+    | 'cb_1'
+    | 'fb_0'
+    | 'fb_1'
+    | 'mid_0'
+    | 'mid_1'
+    | 'wa_0'
+    | 'wa_1'
+    | 'ca_0'
+    | 'ca_1'
     | 'sub_0';
-
 
 // Team component types
 export interface FirestoreTeamMember {
@@ -94,7 +96,6 @@ export interface TeamPositionSlot {
         points: Points; // cumulative points
     };
 }
-
 
 /**
  * Team roster structure
@@ -216,9 +217,7 @@ export interface TeamStatsData {
 /**
  * Component props interfaces
  */
-export interface TeamViewProps {
-    // Props extracted from useLoaderData
-}
+export type TeamViewProps = {}
 
 export interface FormationDisplayProps {
     roster: TeamRoster;
@@ -316,9 +315,18 @@ export interface LegacyPlayerData {
  */
 export function isValidPositionSlot(slot: string): slot is PositionSlotKey {
     const validSlots: PositionSlotKey[] = [
-        'gk_0', 'cb_0', 'cb_1', 'fb_0', 'fb_1',
-        'mid_0', 'mid_1', 'wa_0', 'wa_1', 'ca_0', 'ca_1',
-        'sub_0'
+        'gk_0',
+        'cb_0',
+        'cb_1',
+        'fb_0',
+        'fb_1',
+        'mid_0',
+        'mid_1',
+        'wa_0',
+        'wa_1',
+        'ca_0',
+        'ca_1',
+        'sub_0',
     ];
     return validSlots.includes(slot as PositionSlotKey);
 }

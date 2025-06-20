@@ -12,17 +12,17 @@ interface PointsBreakdownTooltipProps {
 const BreakdownItem = (item: PointsBreakdownItem) => (
     <div
         key={item.label}
-        className={`${styles.breakdownItem} ${!item.isRelevant ? styles.notRelevant : ''} ${item.points > 0 ? styles.positive : item.points < 0 ? styles.negative : styles.neutral}`}
+        className={`${styles.breakdownItem} ${item.isRelevant ? '' : styles.notRelevant} ${
+            item.points > 0 ? styles.positive : item.points < 0 ? styles.negative : styles.neutral
+        }`}
     >
-        <div className={styles.statLabel}>
-            {item.label}
-        </div>
+        <div className={styles.statLabel}>{item.label}</div>
         <div className={styles.statFormula}>
-            {Array.isArray(item.formula) ? item.formula.map(i =>
-                <div>{i}</div>) : item.formula}
+            {Array.isArray(item.formula) ? item.formula.map((i) => <div>{i}</div>) : item.formula}
         </div>
         <div className={styles.statPoints}>
-            {item.points > 0 ? '+' : ''}{item.points}
+            {item.points > 0 ? '+' : ''}
+            {item.points}
         </div>
     </div>
 );
@@ -40,12 +40,8 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
             {isVisible && (
                 <div className={styles.tooltip}>
                     <div className={styles.tooltipHeader}>
-                        <h4 className={styles.playerName}>
-                            {player.web_name} - Points Breakdown
-                        </h4>
-                        <div className={styles.position}>
-                            {player.draft.position}
-                        </div>
+                        <h4 className={styles.playerName}>{player.web_name} - Points Breakdown</h4>
+                        <div className={styles.position}>{player.draft.position}</div>
                     </div>
 
                     <div className={styles.breakdownList}>
@@ -66,7 +62,7 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
                         </div>
                     </div>
 
-                    <div className={styles.tooltipArrow}></div>
+                    <div className={styles.tooltipArrow} />
                 </div>
             )}
         </div>

@@ -1,13 +1,13 @@
 /* Location: app/_shared/components/table-filters.tsx */
 
-import React from 'react';
-import type { TableFilters } from '../hooks/use-table-filters';
+import type React from 'react';
+import type { Filters } from '../hooks/use-table-filters';
 import styles from './table-filters.module.css';
 
 export interface TableFiltersProps {
-    filters: TableFilters;
+    filters: Filters;
     onFilterChange: (key: string, value: string | number | undefined) => void;
-    onFiltersChange: (filters: Partial<TableFilters>) => void;
+    onFiltersChange: (filters: Partial<Filters>) => void;
     onReset: () => void;
     isUpdating?: boolean;
     statusOptions?: Array<{ value: string; label: string }>;
@@ -19,18 +19,18 @@ export interface TableFiltersProps {
 }
 
 export function TableFilters({
-                                 filters,
-                                 onFilterChange,
-                                 onFiltersChange,
-                                 onReset,
-                                 isUpdating = false,
-                                 statusOptions = [],
-                                 categoryOptions = [],
-                                 showSearch = true,
-                                 showStatus = true,
-                                 showCategory = true,
-                                 showSort = true
-                             }: TableFiltersProps) {
+    filters,
+    onFilterChange,
+    onFiltersChange,
+    onReset,
+    isUpdating = false,
+    statusOptions = [],
+    categoryOptions = [],
+    showSearch = true,
+    showStatus = true,
+    showCategory = true,
+    showSort = true,
+}: TableFiltersProps) {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onFilterChange('search', e.target.value || undefined);
     };
@@ -47,7 +47,7 @@ export function TableFilters({
         const [sortBy, sortOrder] = e.target.value.split(':');
         onFiltersChange({
             sortBy: sortBy || undefined,
-            sortOrder: (sortOrder as 'asc' | 'desc') || undefined
+            sortOrder: (sortOrder as 'asc' | 'desc') || undefined,
         });
     };
 
@@ -59,12 +59,7 @@ export function TableFilters({
     };
 
     const hasActiveFilters = () => {
-        return Boolean(
-            filters.search ||
-            filters.status ||
-            filters.category ||
-            filters.sortBy
-        );
+        return Boolean(filters.search || filters.status || filters.category || filters.sortBy);
     };
 
     return (
@@ -98,7 +93,7 @@ export function TableFilters({
                             className={styles.selectInput}
                         >
                             <option value="">All Statuses</option>
-                            {statusOptions.map(option => (
+                            {statusOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
@@ -119,7 +114,7 @@ export function TableFilters({
                             className={styles.selectInput}
                         >
                             <option value="">All Categories</option>
-                            {categoryOptions.map(option => (
+                            {categoryOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
@@ -152,21 +147,12 @@ export function TableFilters({
 
             <div className={styles.filtersActions}>
                 {hasActiveFilters() && (
-                    <button
-                        type="button"
-                        onClick={onReset}
-                        className={styles.resetButton}
-                        disabled={isUpdating}
-                    >
+                    <button type="button" onClick={onReset} className={styles.resetButton} disabled={isUpdating}>
                         Clear Filters
                     </button>
                 )}
 
-                {isUpdating && (
-                    <span className={styles.updatingIndicator}>
-                        Updating...
-                    </span>
-                )}
+                {isUpdating && <span className={styles.updatingIndicator}>Updating...</span>}
             </div>
         </div>
     );

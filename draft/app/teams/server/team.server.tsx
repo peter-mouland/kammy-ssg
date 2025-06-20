@@ -2,46 +2,42 @@
 import {
     getUserTeamForGameweek,
     getUserTeamHistory,
-    getAvailableGameweeks as getAvailableGameweeksFromService
+    getAvailableGameweeks as getAvailableGameweeksFromService,
 } from '../../_shared/services/division-teams.service';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
-import type { TeamViewData, TeamGameweekData, CurrentUser, Division, DivisionSheetData } from '../types/team-types';
+import type { TeamViewData, TeamGameweekData, CurrentUser } from '../types/team-types';
 
 export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
     try {
         // Get current user from session/auth (you'll need to implement this)
         const currentUser = await getCurrentUser(url);
         if (!currentUser) {
-            throw new Error("User not authenticated");
+            throw new Error('User not authenticated');
         }
 
         // Get user's division
         const divisions = await readDivisions();
         const userTeams = await getUserTeamsByDivision(currentUser.divisionId);
-        const userTeam = userTeams.find(team => team.userId === currentUser.id);
+        const userTeam = userTeams.find((team) => team.userId === currentUser.id);
 
         if (!userTeam) {
-            throw new Error("User team not found");
+            throw new Error('User team not found');
         }
 
-        const division = divisions.find(d => d.id === userTeam.divisionId);
+        const division = divisions.find((d) => d.id === userTeam.divisionId);
         if (!division) {
-            throw new Error("Division not found");
+            throw new Error('Division not found');
         }
 
         // Get current gameweek
         const currentGameweek = await getCurrentGameweek();
 
         // Get current team data from new division-teams structure
-        const currentTeam = await getUserTeamForGameweek(
-            userTeam.divisionId,
-            currentUser.id,
-            currentGameweek
-        );
+        const currentTeam = await getUserTeamForGameweek(userTeam.divisionId, currentUser.id, currentGameweek);
 
         if (!currentTeam) {
-            throw new Error("Current team data not found - division may not be set up yet");
+            throw new Error('Current team data not found - division may not be set up yet');
         }
 
         // Get historical team data
@@ -49,7 +45,7 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             userTeam.divisionId,
             currentUser.id,
             0, // Start from draft (gameweek 0)
-            currentGameweek
+            currentGameweek,
         );
 
         // Get available gameweeks from service
@@ -60,18 +56,17 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
                 id: currentUser.id,
                 userName: userTeam.userName,
                 teamName: userTeam.teamName,
-                divisionId:  userTeam.divisionId,
+                divisionId: userTeam.divisionId,
             },
             division: {
                 id: division.id,
-                name: division.label
+                name: division.label,
             },
             currentGameweek,
             currentTeam,
             gameweekHistory,
-            availableGameweeks: availableGameweeks.sort((a, b) => a - b)
+            availableGameweeks: availableGameweeks.sort((a, b) => a - b),
         };
-
     } catch (error) {
         console.error('Load team data error:', error);
         throw new Error(`Failed to load team data: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -84,10 +79,10 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
 export async function getUserTeamFromDivision(
     divisionId: string,
     userId: string,
-    gameweek?: number
+    gameweek?: number,
 ): Promise<TeamGameweekData | null> {
     try {
-        const targetGameweek = gameweek ?? await getCurrentGameweek();
+        const targetGameweek = gameweek ?? (await getCurrentGameweek());
         return await getUserTeamForGameweek(divisionId, userId, targetGameweek);
     } catch (error) {
         console.error('Get user team from division error:', error);
@@ -106,7 +101,7 @@ async function getCurrentUser(url: URL): Promise<CurrentUser | null> {
         userName: 'Pete',
         id: 'naked',
         divisionId: 'leagueOne',
-    }
+    };
 }
 
 async function getCurrentGameweek(): Promise<number> {

@@ -1,7 +1,7 @@
 /* Location: app/teams/components/player-card.tsx */
 
 // /teams/components/player-card.tsx
-import React from 'react';
+import type React from 'react';
 import type { FirestoreTeamMember } from '../types/team-types';
 import styles from './player-card.module.css';
 
@@ -14,45 +14,39 @@ interface PlayerCardProps {
 }
 
 export const PlayerCard: React.FC<PlayerCardProps> = ({
-                                                          player,
-                                                          isSubstitute,
-                                                          gameweek,
-                                                          isOnPitch = false,
-                                                          positionLabel
-                                                      }) => {
+    player,
+    isSubstitute,
+    gameweek,
+    isOnPitch = false,
+    positionLabel,
+}) => {
     const isOnLoan = Boolean(player.onLoanTo);
     const isLoanedIn = player.onLoanTo && player.onLoanTo !== player.userId;
 
     // Get display name (truncate if too long for pitch)
-    const displayName = isOnPitch ?
-        (player.player.length > 12 ? player.player.split(' ')[0] : player.player) :
-        player.player;
+    const displayName = isOnPitch
+        ? player.player.length > 12
+            ? player.player.split(' ')[0]
+            : player.player
+        : player.player;
 
     return (
-        <div className={`
+        <div
+            className={`
             ${styles.playerCard}
             ${isSubstitute ? styles.substitute : ''}
             ${isOnPitch ? styles.onPitch : ''}
             ${isOnLoan ? styles.onLoan : ''}
             ${isLoanedIn ? styles.loanedIn : ''}
-        `}>
+        `}
+        >
             {/* Position Badge (on pitch only) */}
-            {isOnPitch && positionLabel && (
-                <div className={styles.positionBadge}>
-                    {positionLabel}
-                </div>
-            )}
+            {isOnPitch && positionLabel && <div className={styles.positionBadge}>{positionLabel}</div>}
 
             {/* Player Jersey/Avatar */}
             <div className={styles.playerJersey}>
-                <div className={styles.jerseyNumber}>
-                    {player.playerCode.toString().slice(-2)}
-                </div>
-                {isOnLoan && (
-                    <div className={styles.loanIndicator}>
-                        {isLoanedIn ? '⬅️' : '➡️'}
-                    </div>
-                )}
+                <div className={styles.jerseyNumber}>{player.playerCode.toString().slice(-2)}</div>
+                {isOnLoan && <div className={styles.loanIndicator}>{isLoanedIn ? '⬅️' : '➡️'}</div>}
             </div>
 
             {/* Player Info */}
@@ -63,12 +57,8 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
                 {!isOnPitch && (
                     <div className={styles.playerDetails}>
-                        <span className={styles.position}>
-                            {player.playerPosition.toUpperCase()}
-                        </span>
-                        {isSubstitute && (
-                            <span className={styles.subBadge}>SUB</span>
-                        )}
+                        <span className={styles.position}>{player.playerPosition.toUpperCase()}</span>
+                        {isSubstitute && <span className={styles.subBadge}>SUB</span>}
                     </div>
                 )}
 

@@ -1,9 +1,9 @@
 /* Location: app/players/components/top-players.tsx */
 
-import { Link } from "react-router";
-import { Icon } from "../../_shared/components/icon";
-import { Table, type TableColumn } from "../../_shared/components/table";
-import type { FplPlayerData } from "../../_shared/lib/fpl/fpl-types";
+import { Link } from 'react-router';
+import { Icon } from '../../_shared/components/icon';
+import { Table, type TableColumn } from '../../_shared/components/table';
+import type { FplPlayerData } from '../../_shared/lib/fpl/fpl-types';
 
 interface TopPlayersProps {
     players: FplPlayerData[];
@@ -17,7 +17,7 @@ export function TopPlayers({ players }: TopPlayersProps) {
             width: 50,
             align: 'center',
             variant: 'bold',
-            render: (_, __, index) => `#${index + 1}`
+            render: (_, __, index) => `#${index + 1}`,
         },
         {
             key: 'player',
@@ -29,11 +29,9 @@ export function TopPlayers({ players }: TopPlayersProps) {
                     <div style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-900)' }}>
                         {player.first_name} {player.second_name}
                     </div>
-                    <div style={{ fontSize: 'var(--font-sm)', color: 'var(--color-gray-500)' }}>
-                        #{player.id}
-                    </div>
+                    <div style={{ fontSize: 'var(--font-sm)', color: 'var(--color-gray-500)' }}>#{player.id}</div>
                 </div>
-            )
+            ),
         },
         {
             key: 'team',
@@ -41,7 +39,7 @@ export function TopPlayers({ players }: TopPlayersProps) {
             accessor: 'team_code',
             sortable: true,
             variant: 'muted',
-            hideOnMobile: true
+            hideOnMobile: true,
         },
         {
             key: 'points',
@@ -49,8 +47,8 @@ export function TopPlayers({ players }: TopPlayersProps) {
             accessor: 'total_points',
             sortable: true,
             variant: 'numeric',
-            render: (points) => points.toLocaleString()
-        }
+            render: (points) => points.toLocaleString(),
+        },
     ];
 
     // Show only top 10 players
@@ -76,7 +74,7 @@ export function TopPlayers({ players }: TopPlayersProps) {
                 empty={{
                     icon: '🏆',
                     title: 'No player data',
-                    description: 'Player statistics will appear once data is loaded'
+                    description: 'Player statistics will appear once data is loaded',
                 }}
                 onRowClick={(player) => {
                     // Navigate to player detail page

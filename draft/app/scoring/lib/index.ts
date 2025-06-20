@@ -20,10 +20,7 @@ export {
 } from './calculations';
 
 // Data generation functions
-export {
-    generateSeasonData,
-    generateGameweekData
-} from './generators';
+export { generateSeasonData, generateGameweekData } from './generators';
 
 // Utility functions
 export {
@@ -35,14 +32,11 @@ export {
     isStatRelevant,
     getPositionDisplayName,
     getPositionColor,
-    formatPointsDisplay
+    formatPointsDisplay,
 } from './utils';
 
 // Data conversion
-export {
-    convertToPlayerGameweeksStats,
-    convertToPlayerGameweekStats
-} from './data-conversion';
+export { convertToPlayerGameweeksStats, convertToPlayerGameweekStats } from './data-conversion';
 
 // Scoring rules/constants
 export { POSITION_RULES } from './rules';

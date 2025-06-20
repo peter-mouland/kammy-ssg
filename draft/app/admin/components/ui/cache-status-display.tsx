@@ -55,10 +55,14 @@ export const CacheStatusDisplay = () => {
 
     const getHealthColor = (health: string) => {
         switch (health) {
-            case 'healthy': return styles.healthy;
-            case 'warning': return styles.warning;
-            case 'critical': return styles.critical;
-            default: return '';
+            case 'healthy':
+                return styles.healthy;
+            case 'warning':
+                return styles.warning;
+            case 'critical':
+                return styles.critical;
+            default:
+                return '';
         }
     };
 
@@ -69,16 +73,17 @@ export const CacheStatusDisplay = () => {
                 <div className={styles.healthHeader}>
                     <div className={styles.healthStatus}>
                         <span className={styles.healthIcon}>
-                            {cacheData.health?.overall === 'healthy' ? '✅' :
-                                cacheData.health?.overall === 'warning' ? '⚠️' : '❌'}
+                            {cacheData.health?.overall === 'healthy'
+                                ? '✅'
+                                : cacheData.health?.overall === 'warning'
+                                ? '⚠️'
+                                : '❌'}
                         </span>
                         <span className={styles.healthText}>
                             {cacheData.health?.overall?.toUpperCase() || 'UNKNOWN'}
                         </span>
                     </div>
-                    <span className={styles.completionText}>
-                        {cacheData.completionPercentage}% Complete
-                    </span>
+                    <span className={styles.completionText}>{cacheData.completionPercentage}% Complete</span>
                 </div>
 
                 {cacheData.health?.issues && cacheData.health.issues.length > 0 && (
@@ -140,9 +145,7 @@ export const CacheStatusDisplay = () => {
                     Refresh Status
                 </button>
                 {lastRefresh && (
-                    <div className={styles.lastUpdated}>
-                        Last updated: {lastRefresh.toLocaleTimeString()}
-                    </div>
+                    <div className={styles.lastUpdated}>Last updated: {lastRefresh.toLocaleTimeString()}</div>
                 )}
             </div>
         </div>

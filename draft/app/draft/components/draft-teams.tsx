@@ -1,7 +1,7 @@
 /* Location: app/draft/components/draft-teams.tsx */
 
 // components/draft-teams.tsx (multiple teams view)
-import type { DraftPickData, DraftOrderData } from "../types/draft-types";
+import type { DraftPickData, DraftOrderData } from '../types/draft-types';
 import { DraftTeam } from './draft-team';
 import styles from './draft-team.module.css';
 
@@ -18,7 +18,7 @@ export function DraftTeams({ draftPicks, draftOrder }: DraftTeamsProps) {
             </div>
 
             <div className={styles.teamContainer}>
-                {draftOrder.map(order => (
+                {draftOrder.map((order) => (
                     <DraftTeam
                         key={order.userId}
                         userId={order.userId}

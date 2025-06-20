@@ -11,7 +11,7 @@ export const POSITION_SLOT_CONFIG = {
     mid: { max: 2, displayName: 'Midfielder' },
     wa: { max: 2, displayName: 'Wide Attacker' },
     ca: { max: 2, displayName: 'Centre Attacker' },
-    sub: { max: 1, displayName: 'Substitute' }
+    sub: { max: 1, displayName: 'Substitute' },
 } as const;
 
 /**
@@ -19,12 +19,17 @@ export const POSITION_SLOT_CONFIG = {
  */
 export const ALL_POSITION_SLOTS: PositionSlot[] = [
     'gk_0',
-    'cb_0', 'cb_1',
-    'fb_0', 'fb_1',
-    'mid_0', 'mid_1',
-    'wa_0', 'wa_1',
-    'ca_0', 'ca_1',
-    'sub_0'
+    'cb_0',
+    'cb_1',
+    'fb_0',
+    'fb_1',
+    'mid_0',
+    'mid_1',
+    'wa_0',
+    'wa_1',
+    'ca_0',
+    'ca_1',
+    'sub_0',
 ];
 
 /**
@@ -32,11 +37,16 @@ export const ALL_POSITION_SLOTS: PositionSlot[] = [
  */
 export const STARTING_XI_SLOTS: PositionSlot[] = [
     'gk_0',
-    'cb_0', 'cb_1',
-    'fb_0', 'fb_1',
-    'mid_0', 'mid_1',
-    'wa_0', 'wa_1',
-    'ca_0', 'ca_1'
+    'cb_0',
+    'cb_1',
+    'fb_0',
+    'fb_1',
+    'mid_0',
+    'mid_1',
+    'wa_0',
+    'wa_1',
+    'ca_0',
+    'ca_1',
 ];
 
 /**
@@ -55,8 +65,8 @@ export function parsePositionSlot(slot: PositionSlot): {
     const [position, indexStr] = slot.split('_');
     return {
         position,
-        index: parseInt(indexStr),
-        isSub: position === 'sub'
+        index: Number.parseInt(indexStr),
+        isSub: position === 'sub',
     };
 }
 
@@ -65,7 +75,7 @@ export function parsePositionSlot(slot: PositionSlot): {
  */
 export function createPositionSlot(
     position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca' | 'sub',
-    index: number
+    index: number,
 ): PositionSlot {
     return `${position}_${index}` as PositionSlot;
 }
@@ -107,7 +117,7 @@ export function getFormationSlots() {
         midfielders: getPositionSlots('mid'),
         wideAttackers: getPositionSlots('wa'),
         centralAttackers: getPositionSlots('ca'),
-        substitutes: getPositionSlots('sub')
+        substitutes: getPositionSlots('sub'),
     };
 }
 
@@ -123,9 +133,8 @@ export function isValidPositionSlot(slot: string): slot is PositionSlot {
  */
 export function getNextAvailableSlot(
     playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca',
-    existingRoster: Record<string, TeamPositionSlot>
+    existingRoster: Record<string, TeamPositionSlot>,
 ): PositionSlot | null {
-
     // Try to find available slot in target position
     const targetSlots = getPositionSlots(playerPosition);
     for (const slot of targetSlots) {
@@ -186,7 +195,7 @@ export function validateRosterConfiguration(roster: Record<string, TeamPositionS
     return {
         isValid: errors.length === 0,
         errors,
-        warnings
+        warnings,
     };
 }
 
@@ -200,7 +209,7 @@ export function getRosterSummary(roster: Record<string, TeamPositionSlot>) {
         substitutes: 0,
         loanedOut: 0,
         loanedIn: 0,
-        positions: {} as Record<string, number>
+        positions: {} as Record<string, number>,
     };
 
     for (const [slot, positionSlot] of Object.entries(roster)) {

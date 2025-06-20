@@ -1,7 +1,14 @@
 /* Location: app/_shared/lib/firestore-cache/fpl-cache.ts */
 
-import { FirestoreClient } from './firestore-client'
-import type { FplBootstrapData, FplGameweek, FplPlayerData, FplPlayerGameweekData, FplPlayerSeasonData, FplTeam } from '../fpl/fpl-types';
+import { FirestoreClient } from './firestore-client';
+import type {
+    FplBootstrapData,
+    FplGameweek,
+    FplPlayerData,
+    FplPlayerGameweekData,
+    FplPlayerSeasonData,
+    FplTeam,
+} from '../fpl/fpl-types';
 
 import { processBatchedReads } from '../batch-processor';
 import { FirestoreClearService } from './clear-service';
@@ -27,7 +34,7 @@ export const convertFplElementToCache = (element: FplPlayerData) => ({
     team_code: element.team_code,
     form: element.form,
     now_cost: element.now_cost,
-})
+});
 
 export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) => ({
     element: element.element,
@@ -47,7 +54,7 @@ export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) 
     yellow_cards: element.yellow_cards,
     team_a_score: element.team_a_score,
     team_h_score: element.team_h_score,
-})
+});
 
 export class FplCache {
     private client: FirestoreClient;
@@ -55,7 +62,7 @@ export class FplCache {
 
     constructor() {
         this.client = new FirestoreClient();
-        this.clearService = new FirestoreClearService()
+        this.clearService = new FirestoreClearService();
     }
 
     // === READ METHODS ===
@@ -64,10 +71,7 @@ export class FplCache {
      * Get teams from cache
      */
     async getTeams(): Promise<FplTeam[]> {
-        const doc = await this.client.getDocument<FplTeam[]>(
-            this.client.collections.FPL_BOOTSTRAP,
-            'teams'
-        );
+        const doc = await this.client.getDocument<FplTeam[]>(this.client.collections.FPL_BOOTSTRAP, 'teams');
 
         return doc ? doc.data : [];
     }
@@ -76,10 +80,7 @@ export class FplCache {
      * Get events from cache
      */
     async getEvents(): Promise<FplGameweek[]> {
-        const doc = await this.client.getDocument<FplGameweek[]>(
-            this.client.collections.FPL_BOOTSTRAP,
-            'events'
-        );
+        const doc = await this.client.getDocument<FplGameweek[]>(this.client.collections.FPL_BOOTSTRAP, 'events');
 
         return doc ? doc.data : [];
     }
@@ -92,7 +93,7 @@ export class FplCache {
             console.log('🔄 getElements() - Reading from Firestore...');
             const doc = await this.client.getDocument<EnhancedPlayerData[]>(
                 this.client.collections.FPL_BOOTSTRAP,
-                'elements'
+                'elements',
             );
 
             if (doc) {
@@ -125,7 +126,7 @@ export class FplCache {
     async getElementGameweek(playerId: number): Promise<FplPlayerSeasonData | null> {
         const doc = await this.client.getDocument<FplPlayerSeasonData>(
             this.client.collections.FPL_ELEMENTS,
-            `element-${playerId}`
+            `element-${playerId}`,
         );
 
         return doc ? doc.data : null;
@@ -137,22 +138,19 @@ export class FplCache {
 
     async batchGetElementSummaries(playerIds: number[]): Promise<Record<number, any>> {
         const batchReader = async (playerIdBatch: number[]) => {
-            const docIds = playerIdBatch.map(id => `element-${id}`);
-            const docs = await this.client.batchGetDocuments(
-                this.client.collections.FPL_ELEMENTS,
-                docIds
-            );
+            const docIds = playerIdBatch.map((id) => `element-${id}`);
+            const docs = await this.client.batchGetDocuments(this.client.collections.FPL_ELEMENTS, docIds);
 
             // Return tuples of [playerId, docData] for easier processing
             return playerIdBatch.map((playerId, index) => ({
                 playerId,
-                data: docs[index]?.data || null
+                data: docs[index]?.data || null,
             }));
         };
 
         const batchResults = await processBatchedReads(playerIds, batchReader, {
             batchSize: 250, // Adjust based on document sizes
-            logProgress: true
+            logProgress: true,
         });
 
         // Convert array of results back to Record format
@@ -178,22 +176,21 @@ export class FplCache {
         }
 
         // Add draft data to each element
-        const updatedElements = elements.map(element => {
+        const updatedElements = elements.map((element) => {
             const draftData = draftDataById[element.id];
             if (draftData) {
                 return {
                     ...element,
-                    draft: draftData.draft
+                    draft: draftData.draft,
                 };
             }
             return element;
         });
 
-        await this.client.setDocument(
-            this.client.collections.FPL_BOOTSTRAP,
-            'elements',
-            { source: 'fpl-with-draft', data: updatedElements }
-        );
+        await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
+            source: 'fpl-with-draft',
+            data: updatedElements,
+        });
     }
 
     /**
@@ -204,7 +201,7 @@ export class FplCache {
         console.log(`📝 Updating ${entries.length} element summaries with draft data`);
 
         for (const [playerIdStr, draftData] of entries) {
-            const playerId = parseInt(playerIdStr);
+            const playerId = Number.parseInt(playerIdStr);
 
             // Get existing element summary
             const existingSummary = await this.getElementGameweek(playerId);
@@ -212,14 +209,13 @@ export class FplCache {
                 // Add draft data to existing summary
                 const updatedSummary = {
                     ...existingSummary,
-                    draft: draftData.draft
+                    draft: draftData.draft,
                 };
 
-                await this.client.setDocument(
-                    this.client.collections.FPL_ELEMENTS,
-                    `element-${playerIdStr}`,
-                    { source: 'fpl-with-draft', data: updatedSummary }
-                );
+                await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerIdStr}`, {
+                    source: 'fpl-with-draft',
+                    data: updatedSummary,
+                });
             }
         }
 
@@ -231,7 +227,7 @@ export class FplCache {
      */
     async hasDraftData(): Promise<boolean> {
         const elements = await this.getElements();
-        return elements ? elements.some(element => 'draft' in element) : false;
+        return elements ? elements.some((element) => 'draft' in element) : false;
     }
 
     /**
@@ -241,18 +237,16 @@ export class FplCache {
         const elements = await this.getElements();
         if (!elements) return;
 
-        const clearedElements = elements.map(element => {
+        const clearedElements = elements.map((element) => {
             const { draft, ...elementWithoutDraft } = element;
             return elementWithoutDraft;
         });
 
-        await this.client.setDocument(
-            this.client.collections.FPL_BOOTSTRAP,
-            'elements',
-            { source: 'fpl', data: clearedElements }
-        );
+        await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
+            source: 'fpl',
+            data: clearedElements,
+        });
     }
-
 
     /**
      * Get players by team (from cached elements)
@@ -262,7 +256,7 @@ export class FplCache {
         if (!elements) return [];
 
         return elements
-            .filter(player => player.team_code === teamCode)
+            .filter((player) => player.team_code === teamCode)
             .sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
     }
 
@@ -274,7 +268,7 @@ export class FplCache {
         if (!elements) return [];
 
         return elements
-            .filter(player => player.draft.position === position)
+            .filter((player) => player.draft.position === position)
             .sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
     }
 
@@ -285,9 +279,9 @@ export class FplCache {
         const elements = await this.getElements();
         if (!elements) return [];
 
-        const playerMap = new Map(elements.map(player => [player.id, player]));
+        const playerMap = new Map(elements.map((player) => [player.id, player]));
         return playerIds
-            .map(id => playerMap.get(id))
+            .map((id) => playerMap.get(id))
             .filter((player): player is EnhancedPlayerData => player !== undefined)
             .sort((a, b) => a.id - b.id);
     }
@@ -301,14 +295,16 @@ export class FplCache {
 
         const normalizedSearch = searchTerm.toLowerCase().trim();
 
-        return elements.filter(player => {
+        return elements.filter((player) => {
             const firstName = player.first_name.toLowerCase();
             const secondName = player.second_name.toLowerCase();
             const webName = player.web_name.toLowerCase();
 
-            return firstName.includes(normalizedSearch) ||
+            return (
+                firstName.includes(normalizedSearch) ||
                 secondName.includes(normalizedSearch) ||
-                webName.includes(normalizedSearch);
+                webName.includes(normalizedSearch)
+            );
         });
     }
 
@@ -318,22 +314,20 @@ export class FplCache {
      * Populate teams document with fresh data
      */
     async populateTeams(teamsData: any[]): Promise<void> {
-        await this.client.setDocument(
-            this.client.collections.FPL_BOOTSTRAP,
-            'teams',
-            { source: 'fpl', data: teamsData }
-        );
+        await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'teams', {
+            source: 'fpl',
+            data: teamsData,
+        });
     }
 
     /**
      * Populate events document with fresh data
      */
     async populateEvents(eventsData: any[]): Promise<void> {
-        await this.client.setDocument(
-            this.client.collections.FPL_BOOTSTRAP,
-            'events',
-            { source: 'fpl', data: eventsData }
-        );
+        await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'events', {
+            source: 'fpl',
+            data: eventsData,
+        });
     }
 
     /**
@@ -343,20 +337,19 @@ export class FplCache {
         // Filter to only absolute essentials - just identity and team info
         const filteredElements: FilteredFplPlayerData[] = elementsData.map(convertFplElementToCache);
 
-        await this.client.setDocument(
-            this.client.collections.FPL_BOOTSTRAP,
-            'elements',
-            { source: 'fpl', data: filteredElements }
-        );
+        await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
+            source: 'fpl',
+            data: filteredElements,
+        });
     }
 
     /**
      * Populate all bootstrap documents with fresh data (chunked for large payloads)
      */
     async populateBootstrap(bootstrapData: FplBootstrapData): Promise<void> {
-        await this.populateTeams(bootstrapData.teams)
-        await this.populateEvents(bootstrapData.events)
-        await this.populateElements(bootstrapData.elements)
+        await this.populateTeams(bootstrapData.teams);
+        await this.populateEvents(bootstrapData.events);
+        await this.populateElements(bootstrapData.elements);
     }
 
     /**
@@ -365,11 +358,10 @@ export class FplCache {
     async populateElementSummary(playerId: number, summaryData: any): Promise<void> {
         const history: FilteredFplPlayerData[] = summaryData.history.map(convertFplElementHistoryToCache);
 
-        await this.client.setDocument(
-            this.client.collections.FPL_ELEMENTS,
-            `element-${playerId}`,
-            { source: 'fpl', data: { fixtures: summaryData.fixtures, history } }
-        );
+        await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerId}`, {
+            source: 'fpl',
+            data: { fixtures: summaryData.fixtures, history },
+        });
     }
 
     /**
@@ -381,11 +373,10 @@ export class FplCache {
         console.log(`📝 Writing ${entries.length} element summaries individually to avoid payload limits`);
 
         for (const [playerIdStr, data] of entries) {
-            await this.client.setDocument(
-                this.client.collections.FPL_ELEMENTS,
-                `element-${playerIdStr}`,
-                { source: 'fpl' as const, data }
-            );
+            await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerIdStr}`, {
+                source: 'fpl' as const,
+                data,
+            });
         }
 
         console.log(`✅ Successfully wrote ${entries.length} element summaries`);
@@ -437,10 +428,7 @@ export class FplCache {
         try {
             // This depends on your Firestore structure
             // You might need to query the collection directly
-            const snapshot = await this.client.db
-                .collection(this.client.collections.FPL_ELEMENTS)
-                .count()
-                .get();
+            const snapshot = await this.client.db.collection(this.client.collections.FPL_ELEMENTS).count().get();
             return snapshot.data().count;
         } catch (error) {
             console.error('Error getting element summaries count:', error);
@@ -456,7 +444,7 @@ export class FplCache {
             await Promise.all([
                 this.clearService.clearCollection('teams'),
                 this.clearService.clearCollection('events'),
-                this.clearService.clearCollection('elements')
+                this.clearService.clearCollection('elements'),
             ]);
             console.log('✅ Bootstrap data cleared');
         } catch (error) {
@@ -484,13 +472,15 @@ export class FplCache {
             console.log('🔍 Checking elements document...');
             const doc = await this.client.getDocument<EnhancedPlayerData[]>(
                 this.client.collections.FPL_BOOTSTRAP,
-                'elements'
+                'elements',
             );
 
             if (doc) {
                 const jsonString = JSON.stringify(doc.data);
                 const sizeInBytes = new Blob([jsonString]).size;
-                console.log(`📊 Elements document size: ${sizeInBytes} bytes (${(sizeInBytes / 1024 / 1024).toFixed(2)} MB)`);
+                console.log(
+                    `📊 Elements document size: ${sizeInBytes} bytes (${(sizeInBytes / 1024 / 1024).toFixed(2)} MB)`,
+                );
                 console.log(`📊 Elements count: ${doc.data.length}`);
             } else {
                 console.log('ℹ️ No elements document found');

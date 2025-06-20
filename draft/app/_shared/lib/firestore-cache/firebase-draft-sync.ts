@@ -20,7 +20,7 @@ interface DraftState {
     syncedFromSheets?: boolean;
 }
 
-const adminDatabase = getRealtimeAdminDbInstance()
+const adminDatabase = getRealtimeAdminDbInstance();
 
 export class FirebaseDraftSync {
     // Cache to prevent redundant writes
@@ -37,28 +37,28 @@ export class FirebaseDraftSync {
             const currentDataHash = JSON.stringify(updateDataWithoutTimestamp);
 
             // Check if this is the same data we just wrote
-            const cachedHash = this.stateCache.get(cacheKey);
+            const cachedHash = FirebaseDraftSync.stateCache.get(cacheKey);
             if (cachedHash === currentDataHash) {
                 console.log('🔥 SERVER: ⏭️ Skipping redundant write - data unchanged');
                 return true;
             }
 
             // Get current state to compare
-            const currentState = await this.getDraftState(divisionId);
+            const currentState = await FirebaseDraftSync.getDraftState(divisionId);
             if (currentState) {
                 // Compare relevant fields (excluding lastUpdate)
                 const currentStateForComparison = {
                     currentPick: currentState.currentPick,
                     currentUserId: currentState.currentUserId,
                     isActive: currentState.isActive,
-                    totalPicks: currentState.totalPicks
+                    totalPicks: currentState.totalPicks,
                 };
 
                 const newStateForComparison = {
                     currentPick: state.currentPick ?? currentState.currentPick,
                     currentUserId: state.currentUserId ?? currentState.currentUserId,
                     isActive: state.isActive ?? currentState.isActive,
-                    totalPicks: state.totalPicks ?? currentState.totalPicks
+                    totalPicks: state.totalPicks ?? currentState.totalPicks,
                 };
 
                 if (JSON.stringify(currentStateForComparison) === JSON.stringify(newStateForComparison)) {
@@ -70,14 +70,14 @@ export class FirebaseDraftSync {
             // Add timestamp and update
             const updateData = {
                 ...state,
-                lastUpdate: Date.now()
+                lastUpdate: Date.now(),
             };
 
             const stateRef = adminDatabase.ref(path);
             await stateRef.update(updateData);
 
             // Cache this data to prevent future redundant writes
-            this.stateCache.set(cacheKey, currentDataHash);
+            FirebaseDraftSync.stateCache.set(cacheKey, currentDataHash);
 
             console.log('🔥 SERVER: ✅ Draft state updated:', updateData);
             return true;
@@ -124,10 +124,13 @@ export class FirebaseDraftSync {
 
             const existingPicks = snapshot.val();
             const existingPickNumbers = Object.keys(existingPicks).map(Number);
-            const orphanedPickNumbers = existingPickNumbers.filter(pickNum => !validPickNumbers.includes(pickNum));
+            const orphanedPickNumbers = existingPickNumbers.filter((pickNum) => !validPickNumbers.includes(pickNum));
 
             if (orphanedPickNumbers.length > 0) {
-                console.log(`🔥 SERVER: 🧹 Removing ${orphanedPickNumbers.length} orphaned picks:`, orphanedPickNumbers);
+                console.log(
+                    `🔥 SERVER: 🧹 Removing ${orphanedPickNumbers.length} orphaned picks:`,
+                    orphanedPickNumbers,
+                );
 
                 // Remove each orphaned pick
                 for (const pickNum of orphanedPickNumbers) {
@@ -135,7 +138,7 @@ export class FirebaseDraftSync {
                     await pickRef.remove();
                 }
 
-                console.log(`🔥 SERVER: ✅ Orphaned picks removed`);
+                console.log('🔥 SERVER: ✅ Orphaned picks removed');
             }
 
             return true;
@@ -165,8 +168,8 @@ export class FirebaseDraftSync {
             const cacheKey = `${divisionId}_${event.type}_${JSON.stringify(event.data).slice(0, 50)}`;
 
             // Prevent duplicate events within 1 second
-            const lastEventTime = this.stateCache.get(cacheKey);
-            if (lastEventTime && (now - parseInt(lastEventTime)) < 1000) {
+            const lastEventTime = FirebaseDraftSync.stateCache.get(cacheKey);
+            if (lastEventTime && now - Number.parseInt(lastEventTime) < 1000) {
                 console.log('🔥 SERVER: ⏭️ Skipping duplicate event within 1s window');
                 return null;
             }
@@ -175,14 +178,14 @@ export class FirebaseDraftSync {
             const eventData: DraftEvent = {
                 ...event,
                 divisionId,
-                timestamp: now
+                timestamp: now,
             };
 
             const newEventRef = eventsRef.push();
             await newEventRef.set(eventData);
 
             // Cache this event to prevent duplicates
-            this.stateCache.set(cacheKey, now.toString());
+            FirebaseDraftSync.stateCache.set(cacheKey, now.toString());
 
             console.log('🔥 SERVER: ✅ Event added:', event.type);
             return newEventRef.key;
@@ -197,7 +200,7 @@ export class FirebaseDraftSync {
         try {
             console.log(`🔥 Broadcasting draft event: ${event.type} for division ${divisionId}`);
 
-            const eventKey = await this.addDraftEvent(divisionId, event);
+            const eventKey = await FirebaseDraftSync.addDraftEvent(divisionId, event);
 
             if (eventKey) {
                 console.log(`🔥 ✅ Draft event broadcast successful: ${event.type}`);
@@ -218,7 +221,7 @@ export class FirebaseDraftSync {
             console.log(`🔥 Broadcasting pick made: ${pick.playerName} by ${pick.userId}`);
 
             // Update the pick in Firebase
-            await this.updateDraftPick(divisionId, pick.pickNumber, {
+            await FirebaseDraftSync.updateDraftPick(divisionId, pick.pickNumber, {
                 pickNumber: pick.pickNumber,
                 round: pick.round,
                 userId: pick.userId,
@@ -229,32 +232,32 @@ export class FirebaseDraftSync {
                 position: pick.position,
                 pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt,
                 divisionId: pick.divisionId,
-                timestamp: Date.now()
+                timestamp: Date.now(),
             });
 
             // Update draft state (will be deduplicated if unchanged)
-            await this.updateDraftState(divisionId, nextState);
+            await FirebaseDraftSync.updateDraftState(divisionId, nextState);
 
             // Add pick-made event (will be deduplicated if duplicate)
-            await this.addDraftEvent(divisionId, {
+            await FirebaseDraftSync.addDraftEvent(divisionId, {
                 type: 'pick-made',
                 data: {
                     pick: {
                         ...pick,
-                        pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt
+                        pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt,
                     },
                     nextTurn: {
                         currentPick: nextState.currentPick,
                         currentUserId: nextState.currentUserId,
-                        isActive: nextState.isActive
-                    }
+                        isActive: nextState.isActive,
+                    },
                 },
-                userId: pick.userId
+                userId: pick.userId,
             });
 
             // Clean up old events periodically (every 10 picks)
             if (pick.pickNumber % 10 === 0) {
-                await this.cleanupOldEvents(divisionId);
+                await FirebaseDraftSync.cleanupOldEvents(divisionId);
             }
 
             console.log(`🔥 ✅ Pick broadcast successful: ${pick.playerName}`);
@@ -298,11 +301,11 @@ export class FirebaseDraftSync {
     // Clear cache for debugging
     static clearCache(divisionId?: string) {
         if (divisionId) {
-            const keysToDelete = Array.from(this.stateCache.keys()).filter(key => key.startsWith(divisionId));
-            keysToDelete.forEach(key => this.stateCache.delete(key));
+            const keysToDelete = Array.from(FirebaseDraftSync.stateCache.keys()).filter((key) => key.startsWith(divisionId));
+            keysToDelete.forEach((key) => FirebaseDraftSync.stateCache.delete(key));
             console.log(`🔥 Cleared cache for division ${divisionId}`);
         } else {
-            this.stateCache.clear();
+            FirebaseDraftSync.stateCache.clear();
             console.log('🔥 Cleared all Firebase sync cache');
         }
     }
@@ -322,7 +325,7 @@ export class FirebaseDraftSync {
             const [draftState, draftPicks, draftOrder] = await Promise.all([
                 readDraftState(),
                 getDraftPicksByDivision(divisionId),
-                getDraftOrderByDivision(divisionId)
+                getDraftOrderByDivision(divisionId),
             ]);
 
             if (!draftState) {
@@ -350,7 +353,7 @@ export class FirebaseDraftSync {
                 const mockPreviousState = {
                     ...draftState,
                     currentPick: picksCount,
-                    isActive: true
+                    isActive: true,
                 };
 
                 const calculatedNextState = getNextDraftState(mockPreviousState, draftOrder);
@@ -359,7 +362,7 @@ export class FirebaseDraftSync {
                 isActive = calculatedNextState.isActive;
             } else {
                 // No picks yet, use first person in draft order
-                const firstUser = draftOrder.find(order => order.position === 1);
+                const firstUser = draftOrder.find((order) => order.position === 1);
                 if (firstUser) {
                     currentUserId = firstUser.userId;
                     currentPick = 1;
@@ -367,23 +370,25 @@ export class FirebaseDraftSync {
                 }
             }
 
-            console.log(`🔥 SERVER: Calculated state from sheets: Pick ${currentPick}, User ${currentUserId}, Active ${isActive}`);
+            console.log(
+                `🔥 SERVER: Calculated state from sheets: Pick ${currentPick}, User ${currentUserId}, Active ${isActive}`,
+            );
 
             // Clear cache to force fresh sync
-            this.clearCache(divisionId);
+            FirebaseDraftSync.clearCache(divisionId);
 
             // If force reset or if we detect inconsistencies, clear everything
             if (forceReset) {
                 console.log(`🔥 SERVER: 🧹 FORCE RESET - Clearing all Firebase data for division ${divisionId}`);
-                await this.clearAllEvents(divisionId);
+                await FirebaseDraftSync.clearAllEvents(divisionId);
 
                 // Clear all picks
                 const picksRef = adminDatabase.ref(`drafts/${divisionId}/picks`);
                 await picksRef.remove();
             } else {
                 // Remove orphaned picks that don't exist in sheets
-                const validPickNumbers = draftPicks.map(pick => pick.pickNumber);
-                await this.removeOrphanedPicks(divisionId, validPickNumbers);
+                const validPickNumbers = draftPicks.map((pick) => pick.pickNumber);
+                await FirebaseDraftSync.removeOrphanedPicks(divisionId, validPickNumbers);
             }
 
             // Update Firebase with the correct state from sheets
@@ -393,15 +398,15 @@ export class FirebaseDraftSync {
                 isActive,
                 totalPicks: totalPossiblePicks,
                 lastUpdate: Date.now(),
-                syncedFromSheets: true
+                syncedFromSheets: true,
             };
 
-            await this.updateDraftState(divisionId, firebaseState);
+            await FirebaseDraftSync.updateDraftState(divisionId, firebaseState);
 
             // Sync all picks from sheets to Firebase
             console.log(`🔥 SERVER: Syncing ${draftPicks.length} picks from sheets to Firebase`);
             for (const pick of draftPicks) {
-                await this.updateDraftPick(divisionId, pick.pickNumber, {
+                await FirebaseDraftSync.updateDraftPick(divisionId, pick.pickNumber, {
                     pickNumber: pick.pickNumber,
                     round: pick.round,
                     userId: pick.userId,
@@ -412,12 +417,12 @@ export class FirebaseDraftSync {
                     position: pick.position,
                     pickedAt: pick.pickedAt instanceof Date ? pick.pickedAt.toISOString() : pick.pickedAt,
                     divisionId: pick.divisionId,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                 });
             }
 
             // Add sync event to notify clients
-            await this.addDraftEvent(divisionId, {
+            await FirebaseDraftSync.addDraftEvent(divisionId, {
                 type: forceReset ? 'draft-reset' : 'draft-synced',
                 data: {
                     message: forceReset
@@ -429,8 +434,8 @@ export class FirebaseDraftSync {
                     isActive,
                     totalPossiblePicks,
                     forceReset,
-                    timestamp: new Date().toISOString()
-                }
+                    timestamp: new Date().toISOString(),
+                },
             });
 
             console.log(`🔥 ✅ Draft ${forceReset ? 'RESET' : 'SYNC'} completed for division ${divisionId}:`, {
@@ -439,7 +444,7 @@ export class FirebaseDraftSync {
                 currentUserId,
                 isActive,
                 totalPossiblePicks,
-                forceReset
+                forceReset,
             });
 
             return {
@@ -449,9 +454,8 @@ export class FirebaseDraftSync {
                 currentUserId,
                 isActive,
                 totalPossiblePicks,
-                forceReset
+                forceReset,
             };
-
         } catch (error) {
             console.error(`🔥 ❌ Draft sync failed for division ${divisionId}:`, error);
             throw error;

@@ -1,6 +1,6 @@
 /* Location: app/admin/components/layout/admin-section.tsx */
 
-import React from 'react';
+import type React from 'react';
 import styles from './admin-section.module.css';
 
 interface AdminSectionProps {
@@ -15,15 +15,15 @@ interface AdminSectionProps {
 }
 
 export const AdminSection = ({
-                                 title,
-                                 icon,
-                                 description,
-                                 children,
-                                 actions,
-                                 collapsible = false,
-                                 expanded = true,
-                                 onToggle
-                             }: AdminSectionProps) => {
+    title,
+    icon,
+    description,
+    children,
+    actions,
+    collapsible = false,
+    expanded = true,
+    onToggle,
+}: AdminSectionProps) => {
     const HeaderComponent = collapsible ? 'button' : 'div';
 
     return (
@@ -38,29 +38,17 @@ export const AdminSection = ({
                             {icon}
                             {title}
                         </h2>
-                        {description && (
-                            <p className={styles.section_description}>{description}</p>
-                        )}
+                        {description && <p className={styles.section_description}>{description}</p>}
                     </div>
 
-                    {actions && (
-                        <div className={styles.header_actions}>
-                            {actions}
-                        </div>
-                    )}
+                    {actions && <div className={styles.header_actions}>{actions}</div>}
                 </div>
 
-                {collapsible && (
-                    <span className={`${styles.chevron} ${expanded ? styles.expanded : ''}`}>
-                        ▼
-                    </span>
-                )}
+                {collapsible && <span className={`${styles.chevron} ${expanded ? styles.expanded : ''}`}>▼</span>}
             </HeaderComponent>
 
             {children && (
-                <div className={`${styles.section_content} ${
-                    collapsible && !expanded ? styles.collapsed : ''
-                }`}>
+                <div className={`${styles.section_content} ${collapsible && !expanded ? styles.collapsed : ''}`}>
                     {children}
                 </div>
             )}

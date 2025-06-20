@@ -1,6 +1,6 @@
 /* Location: app/draft/components/draft-board.tsx */
 
-import { Table, type TableColumn } from "../../_shared/components/table";
+import { Table, type TableColumn } from '../../_shared/components/table';
 import { getPositionDisplayName } from '../../scoring/lib';
 
 interface DraftPickData {
@@ -24,14 +24,14 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
             width: 60,
             align: 'center',
             variant: 'bold',
-            render: (pickNumber) => `#${pickNumber}`
+            render: (pickNumber) => `#${pickNumber}`,
         },
         {
             key: 'playerName',
             header: 'Player',
             accessor: 'playerName',
             variant: 'bold',
-            minWidth: 150
+            minWidth: 150,
         },
         {
             key: 'position',
@@ -39,34 +39,32 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
             accessor: 'position',
             align: 'center',
             hideOnMobile: true,
-            render: (position) => getPositionDisplayName(position)
+            render: (position) => getPositionDisplayName(position),
         },
         {
             key: 'teamName',
             header: 'Team',
             accessor: 'teamName',
             hideOnMobile: true,
-            variant: 'muted'
+            variant: 'muted',
         },
         {
             key: 'manager',
             header: 'Drafted By',
             accessor: 'userId',
             variant: 'muted',
-            render: (userId) => userId // You might want to map this to actual manager names
-        }
+            render: (userId) => userId, // You might want to map this to actual manager names
+        },
     ];
 
     // Sort picks by most recent first (highest pick number)
-    const sortedPicks = [...draftPicks].sort((a, b) => b.pickNumber - a.pickNumber)
+    const sortedPicks = [...draftPicks].sort((a, b) => b.pickNumber - a.pickNumber);
 
     return (
         <div className="card">
             <div className="card-header">
                 <h2 className="card-title">Draft Board</h2>
-                <p style={{ color: 'var(--color-gray-500)' }}>
-                    {draftPicks.length} picks made
-                </p>
+                <p style={{ color: 'var(--color-gray-500)' }}>{draftPicks.length} picks made</p>
             </div>
 
             <Table
@@ -78,7 +76,7 @@ export function DraftBoard({ draftPicks }: DraftBoardProps) {
                 empty={{
                     icon: '📋',
                     title: 'No picks made yet',
-                    description: 'Draft will begin soon!'
+                    description: 'Draft will begin soon!',
                 }}
                 rowClassName={(pick, index) => {
                     // Highlight recent picks

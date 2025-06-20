@@ -1,7 +1,7 @@
 /* Location: app/admin/components/ui/reset-draft-button.tsx */
 
 // /admin/components/ui/reset-draft-button.tsx
-import React from 'react';
+import type React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import styles from './reset-draft-button.module.css';
@@ -13,10 +13,10 @@ interface ResetDraftButtonProps {
 }
 
 export const ResetDraftButton: React.FC<ResetDraftButtonProps> = ({
-                                                                      divisionId,
-                                                                      disabled = false,
-                                                                      variant = 'danger'
-                                                                  }) => {
+    divisionId,
+    disabled = false,
+    variant = 'danger',
+}) => {
     const fetcher = useFetcher();
 
     const isLoading = fetcher.state === 'submitting';
@@ -28,12 +28,12 @@ export const ResetDraftButton: React.FC<ResetDraftButtonProps> = ({
         // Strong confirmation for reset action
         const confirmed = window.confirm(
             `⚠️ RESET DRAFT FOR DIVISION ${divisionId}?\n\n` +
-            'This will COMPLETELY CLEAR all Firebase draft data and rebuild it from Google Sheets.\n\n' +
-            '• All Firebase events will be deleted\n' +
-            '• All Firebase picks will be deleted\n' +
-            '• Draft state will be recalculated from sheets\n\n' +
-            'Use this when sync isn\'t working due to data inconsistencies.\n\n' +
-            'Are you absolutely sure you want to proceed?'
+                'This will COMPLETELY CLEAR all Firebase draft data and rebuild it from Google Sheets.\n\n' +
+                '• All Firebase events will be deleted\n' +
+                '• All Firebase picks will be deleted\n' +
+                '• Draft state will be recalculated from sheets\n\n' +
+                "Use this when sync isn't working due to data inconsistencies.\n\n" +
+                'Are you absolutely sure you want to proceed?',
         );
 
         if (!confirmed) return;
@@ -41,7 +41,7 @@ export const ResetDraftButton: React.FC<ResetDraftButtonProps> = ({
         // Double confirmation for destructive action
         const doubleConfirmed = window.confirm(
             'Final confirmation: This action cannot be undone.\n\n' +
-            'Click OK to RESET the draft, or Cancel to abort.'
+                'Click OK to RESET the draft, or Cancel to abort.',
         );
 
         if (!doubleConfirmed) return;
@@ -49,9 +49,9 @@ export const ResetDraftButton: React.FC<ResetDraftButtonProps> = ({
         fetcher.submit(
             {
                 actionType: 'resetDraft',
-                divisionId
+                divisionId,
             },
-            { method: 'post' }
+            { method: 'post' },
         );
     };
 

@@ -1,31 +1,46 @@
 {
-  "name": "fantasy-football-draft",
-  "version": "1.0.0",
-  "type": "module",
-  "packageManager": "yarn@4.9.2",
-  "engines": {
-    "node": "20.x",
-    "npm": "10.2.0"
-  },
-  "scripts": {
-    "dev": "yarn workspace draft dev",
-    "build": "yarn workspace draft build && yarn copy-build && yarn workspace functions build",
-    "copy-build": "cp -r draft/build functions/",
-    "clean": "rm -rf functions/build draft/build functions/lib",
-    "preview": "yarn workspace draft preview",
-    "start": "yarn workspace draft start",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "firebase:login": "firebase login",
-    "firebase:init": "firebase init",
-    "firebase:deploy": "firebase deploy",
-    "local": "firebase emulators:start",
-    "functions:build": "yarn workspace functions build",
-    "functions:dev": "yarn workspace functions serve",
-    "functions:deploy": "yarn workspace functions build && firebase deploy --only functions"
-  },
-  "workspaces": [
-    "draft",
-    "functions"
-  ]
+    "name": "fantasy-football-draft",
+    "version": "1.0.0",
+    "type": "module",
+    "packageManager": "yarn@4.9.2",
+    "engines": {
+        "node": "20.x",
+        "npm": "10.2.0"
+    },
+    "scripts": {
+        "dev": "yarn workspace draft dev",
+        "build": "yarn workspace draft build && yarn copy-build && yarn workspace functions build",
+        "copy-build": "cp -r draft/build functions/",
+        "clean": "rm -rf functions/build draft/build functions/lib",
+        "preview": "yarn workspace draft preview",
+        "start": "yarn workspace draft start",
+        "typecheck": "tsc --noEmit",
+        "biome:all": "yarn lint:fix && yarn format:fix && check:fix",
+        "lint": "biome lint .",
+        "lint:fix": "biome lint --write",
+        "format": "biome format .",
+        "format:fix": "biome format --write",
+        "check": "biome check .",
+        "check:fix": "biome check --write",
+        "type-check": "tsc --noEmit",
+        "prepare": "husky install",
+        "--lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "firebase:login": "firebase login",
+        "firebase:init": "firebase init",
+        "firebase:deploy": "firebase deploy",
+        "local": "firebase emulators:start",
+        "functions:build": "yarn workspace functions build",
+        "functions:dev": "yarn workspace functions serve",
+        "functions:deploy": "yarn workspace functions build && firebase deploy --only functions"
+    },
+    "workspaces": [
+        "draft",
+        "functions"
+    ],
+    "devDependencies": {
+        "@biomejs/biome": "^2.0.0"
+    },
+    "dependencies": {
+        "init": "^0.1.2"
+    }
 }

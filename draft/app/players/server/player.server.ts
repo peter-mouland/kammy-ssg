@@ -9,14 +9,14 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         console.log(`🔄 Loading player detail data for player: ${playerId}`);
 
         // Import required services
-        const { fplApiCache } = await import("../../_shared/lib/fpl/api-cache");
+        const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get basic player data - all from cache
         const [fplPlayer, fplTeams, enhancedPlayers, currentGameweek] = await Promise.all([
             fplApiCache.getFplPlayer(playerId),
             fplApiCache.getFplTeams(),
             fplApiCache.getEnhancedPlayerData(),
-            fplApiCache.getCurrentGameweek()
+            fplApiCache.getCurrentGameweek(),
         ]);
 
         if (!fplPlayer) {
@@ -24,13 +24,13 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         }
 
         // Find enhanced player data (contains sheets position data)
-        const enhancedPlayer = enhancedPlayers.find(p => p.id === playerId);
+        const enhancedPlayer = enhancedPlayers.find((p) => p.id === playerId);
         if (!enhancedPlayer) {
             throw new Error(`Player ${playerId} not found in enhanced data - run "Generate Enhanced Data" first`);
         }
 
         // Get team data and create team lookup for opponents
-        const team = fplTeams.find(t => t.code === fplPlayer.team_code);
+        const team = fplTeams.find((t) => t.code === fplPlayer.team_code);
         if (!team) {
             throw new Error(`Team ${fplPlayer.team_code} not found`);
         }
@@ -42,15 +42,10 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         }, {} as Record<number, any>);
 
         // Get detailed player stats and gameweek points (all from cache)
-        const [playerDetailedStats] = await Promise.all([
-            fplApiCache.getPlayerDetailedStats(playerId),
-        ]);
+        const [playerDetailedStats] = await Promise.all([fplApiCache.getPlayerDetailedStats(playerId)]);
 
         // Process gameweek data
-        const gameweekStats = processGameweekData(
-            playerDetailedStats.history || [],
-            teamLookup
-        );
+        const gameweekStats = processGameweekData(playerDetailedStats.history || [], teamLookup);
 
         // Calculate season totals
         const seasonTotals = calculateSeasonTotals(gameweekStats);
@@ -63,9 +58,8 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
             position: enhancedPlayer.draft.position.toLowerCase() as CustomPosition,
             gameweekStats,
             seasonTotals,
-            currentGameweek: currentGameweek || 1
+            currentGameweek: currentGameweek || 1,
         };
-
     } catch (error) {
         console.error(`❌ Failed to load player detail data for player ${playerId}:`, error);
         throw error;
@@ -77,7 +71,7 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
  */
 async function getPlayerGameweekPoints(playerId: number) {
     try {
-        const { fplApiCache } = await import("../../_shared/lib/fpl/api-cache");
+        const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get element summary which contains gameweek points
         const elementSummary = await fplApiCache['fplCache'].getElementGameweek(playerId);
@@ -94,14 +88,11 @@ async function getPlayerGameweekPoints(playerId: number) {
 /**
  * Process and combine FPL stats with gameweek points
  */
-function processGameweekData(
-    fplHistory: any[],
-    teamLookup: Record<number, any>
-): GameweekStatWithPoints[] {
+function processGameweekData(fplHistory: any[], teamLookup: Record<number, any>): GameweekStatWithPoints[] {
     const gameweekStats: GameweekStatWithPoints[] = [];
 
     // Process each gameweek from FPL history
-    fplHistory.forEach(gwData => {
+    fplHistory.forEach((gwData) => {
         const gameweek = gwData.round;
 
         const gameweekStat: GameweekStatWithPoints = {
@@ -132,7 +123,7 @@ function processGameweekData(
             fplPoints: gwData.total_points,
 
             // Metadata
-            generatedAt: null
+            generatedAt: null,
         };
 
         gameweekStats.push(gameweekStat);
@@ -148,7 +139,7 @@ function processGameweekData(
 function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[]) {
     const totals = {
         // Basic stats
-        gamesPlayed: gameweekStats.filter(gw => gw.minutes > 0).length,
+        gamesPlayed: gameweekStats.filter((gw) => gw.minutes > 0).length,
         totalMinutes: gameweekStats.reduce((sum, gw) => sum + gw.minutes, 0),
         goals: gameweekStats.reduce((sum, gw) => sum + gw.goals, 0),
         assists: gameweekStats.reduce((sum, gw) => sum + gw.assists, 0),
@@ -173,7 +164,7 @@ function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[]) {
         // Performance metrics
         goalsPerGame: 0,
         assistsPerGame: 0,
-        cleanSheetPercentage: 0
+        cleanSheetPercentage: 0,
     };
 
     // Calculate averages (only for games played)

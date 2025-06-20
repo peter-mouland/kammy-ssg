@@ -1,6 +1,6 @@
 // app/admin/server/actions/points-actions.ts
-import { GameweekPointsService } from "../../../scoring/server/services/gameweek-points.service";
-import type { AdminActionResult } from "../../types/admin-types";
+import { GameweekPointsService } from '../../../scoring/server/services/gameweek-points.service';
+import type { AdminActionResult } from '../../types/admin-types';
 
 // Enhanced "Smart Points Update" action with division teams integration
 export async function handleGenerateGameweekPoints(): Promise<AdminActionResult> {
@@ -12,7 +12,9 @@ export async function handleGenerateGameweekPoints(): Promise<AdminActionResult>
 
         if (updateResult.updated) {
             // Enhanced success message with points population
-            let message = `✅ Points updated! Generated ${updateResult.gameweeksGenerated.join(', ')} for ${updateResult.playerCount} players. ${updateResult.reason}`;
+            let message = `✅ Points updated! Generated ${updateResult.gameweeksGenerated.join(', ')} for ${
+                updateResult.playerCount
+            } players. ${updateResult.reason}`;
 
             if (updateResult.pointsPopulationResult) {
                 const { playersUpdated, documentsUpdated, errors } = updateResult.pointsPopulationResult;
@@ -32,8 +34,8 @@ export async function handleGenerateGameweekPoints(): Promise<AdminActionResult>
                     currentGameweek: updateResult.currentGameweek,
                     previousGameweek: updateResult.previousGameweek,
                     reason: updateResult.reason,
-                    pointsPopulationResult: updateResult.pointsPopulationResult
-                }
+                    pointsPopulationResult: updateResult.pointsPopulationResult,
+                },
             };
         } else {
             return {
@@ -42,13 +44,15 @@ export async function handleGenerateGameweekPoints(): Promise<AdminActionResult>
                 data: {
                     currentGameweek: updateResult.currentGameweek,
                     previousGameweek: updateResult.previousGameweek,
-                    reason: updateResult.reason
-                }
+                    reason: updateResult.reason,
+                },
             };
         }
     } catch (error) {
         console.error('Generate gameweek points error:', error);
-        throw new Error(`Failed to update gameweek points: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to update gameweek points: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }
 
@@ -75,7 +79,7 @@ export async function handleForceRegenerateAllPoints(): Promise<AdminActionResul
         return {
             success: true,
             message,
-            data: result
+            data: result,
         };
     } catch (error) {
         console.error('Force regenerate all points error:', error);
@@ -93,12 +97,14 @@ export async function handleGetGameweekPointsStatus(): Promise<AdminActionResult
 
         return {
             success: true,
-            message: `Points status retrieved`,
-            data: status
+            message: 'Points status retrieved',
+            data: status,
         };
     } catch (error) {
         console.error('Get gameweek points status error:', error);
-        throw new Error(`Failed to get gameweek points status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to get gameweek points status: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }
 
@@ -110,8 +116,10 @@ export async function handleEnsureDivisionTeamDocuments(): Promise<AdminActionRe
     try {
         console.log('🔄 Ensuring division team documents exist...');
 
-        const { fplApiCache } = await import("../../../_shared/lib/fpl/api-cache");
-        const { ensureDivisionGameweekDocuments } = await import("../../../scoring/server/services/division-teams-integration.service");
+        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
+        const { ensureDivisionGameweekDocuments } = await import(
+            '../../../scoring/server/services/division-teams-integration.service'
+        );
 
         // Get current gameweek
         const currentGameweek = await fplApiCache.getCurrentGameweek();
@@ -136,11 +144,13 @@ export async function handleEnsureDivisionTeamDocuments(): Promise<AdminActionRe
             data: {
                 currentGameweek,
                 targetGameweeks,
-                ...result
-            }
+                ...result,
+            },
         };
     } catch (error) {
         console.error('Ensure division team documents error:', error);
-        throw new Error(`Failed to ensure division team documents: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to ensure division team documents: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }

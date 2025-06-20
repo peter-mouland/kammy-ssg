@@ -28,12 +28,12 @@
 }
 
 .gap_sm,
-.gap_sm  .layout_content_container {
+.gap_sm .layout_content_container {
     gap: 1rem;
 }
 
 .gap_md,
-.gap_md  .layout_content_container {
+.gap_md .layout_content_container {
     gap: 1.5rem;
 }
 

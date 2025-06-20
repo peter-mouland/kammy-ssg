@@ -1,14 +1,14 @@
 // app/_shared/lib/firestore-cache/firebase.admin.ts
 
-import { initializeApp, getApp, cert, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 let db: FirebaseFirestore.Firestore;
 
 const FIRESTORE_ADMIN_APP_NAME = 'firestore-admin';
 
 // Parse service account once
-let serviceAccount: any;
+let serviceAccount: Record<string, string>;
 if (process.env.MY_FIREBASE_SERVICE_ACCOUNT_KEY) {
     try {
         const serviceAccountJson = atob(process.env.MY_FIREBASE_SERVICE_ACCOUNT_KEY);
@@ -28,23 +28,25 @@ export function getFirestoreInstance() {
         try {
             // FIXED: Use admin SDK getApps instead of client SDK
             const existingApps = getApps();
-            let app = existingApps.find(app => app.name === FIRESTORE_ADMIN_APP_NAME);
+            let app = existingApps.find((app) => app.name === FIRESTORE_ADMIN_APP_NAME);
 
-            if (!app) {
+            if (app) {
+                console.log('🔥 Using existing Firebase Admin app:', FIRESTORE_ADMIN_APP_NAME);
+            } else {
                 // Initialize new app
-                app = initializeApp({
-                    credential: cert(serviceAccount),
-                    // databaseURL: process.env.FIREBASE_DATABASE_URL // if using Realtime Database
-                }, FIRESTORE_ADMIN_APP_NAME);
+                app = initializeApp(
+                    {
+                        credential: cert(serviceAccount),
+                        // databaseURL: process.env.FIREBASE_DATABASE_URL // if using Realtime Database
+                    },
+                    FIRESTORE_ADMIN_APP_NAME,
+                );
 
                 console.log('🔥 Firebase Admin store initialized for project:', serviceAccount.project_id);
-            } else {
-                console.log('🔥 Using existing Firebase Admin app:', FIRESTORE_ADMIN_APP_NAME);
             }
 
             // Get Firestore with custom database name if needed
             db = getFirestore(app, 'draft');
-
         } catch (error) {
             console.error('❌ Firebase Admin initialization failed:', error);
 
@@ -69,6 +71,6 @@ export function getFirestoreInstance() {
 
 // OPTIONAL: Add cleanup function for development
 export function resetFirebaseInstance() {
-    db = undefined as any;
+    db = undefined as unknown as FirebaseFirestore.Firestore;
     console.log('🔄 Firebase instance reset for hot reload');
 }

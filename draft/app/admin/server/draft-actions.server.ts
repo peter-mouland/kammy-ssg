@@ -9,35 +9,35 @@ export async function handleDraftActions(params: DraftActionParams): Promise<Adm
     try {
         switch (actionType) {
             // Draft Management Actions
-            case "generateOrder": {
+            case 'generateOrder': {
                 const { handleGenerateOrder } = await import('./actions/draft-actions');
                 return await handleGenerateOrder({ actionType, divisionId });
             }
-            case "clearOrder": {
+            case 'clearOrder': {
                 const { handleClearOrder } = await import('./actions/draft-actions');
                 return await handleClearOrder({ actionType, divisionId });
             }
-            case "startDraft": {
+            case 'startDraft': {
                 const { handleStartDraft } = await import('./actions/draft-actions');
                 return await handleStartDraft({ actionType, divisionId });
             }
-            case "stopDraft": {
+            case 'stopDraft': {
                 const { handleStopDraft } = await import('./actions/draft-actions');
                 return await handleStopDraft();
             }
-            case "syncDraft": {
+            case 'syncDraft': {
                 const { handleSyncDraft } = await import('./actions/draft-actions');
                 return await handleSyncDraft({ actionType, divisionId });
             }
-            case "resetDraft": {
+            case 'resetDraft': {
                 const { handleResetDraft } = await import('./actions/draft-actions');
                 return await handleResetDraft({ actionType, divisionId });
             }
-            case "commitTeamsToFirestore": {
+            case 'commitTeamsToFirestore': {
                 const { handleCommitTeamsToFirestore } = await import('./actions/team-commit-actions');
                 return await handleCommitTeamsToFirestore({ actionType, divisionId });
             }
-            case "getDraftPicksCount": {
+            case 'getDraftPicksCount': {
                 const { handleGetDraftPicksCount } = await import('./actions/draft-actions');
                 return await handleGetDraftPicksCount({ actionType, divisionId });
             }

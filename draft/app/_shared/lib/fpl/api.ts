@@ -1,10 +1,7 @@
 /* Location: app/_shared/lib/fpl/api.ts */
 
 // src/lib/fpl/api.ts
-import type {
-    FplBootstrapData,
-    FplPlayerSeasonData
-} from './fpl-types';
+import type { FplBootstrapData, FplPlayerSeasonData } from './fpl-types';
 import { createAppError } from '../sheets/utils/common';
 
 // FPL API endpoints
@@ -22,7 +19,7 @@ const FPL_ENTRY_HISTORY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${entr
 export class FplApi {
     private bootstrapCache: { data: FplBootstrapData | null; timestamp: number } = {
         data: null,
-        timestamp: 0
+        timestamp: 0,
     };
     private readonly CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
 
@@ -43,11 +40,7 @@ export class FplApi {
 
             return await response.json();
         } catch (error) {
-            throw createAppError(
-                'FPL_API_ERROR',
-                `Failed to fetch data from FPL API: ${url}`,
-                error
-            );
+            throw createAppError('FPL_API_ERROR', `Failed to fetch data from FPL API: ${url}`, error);
         }
     }
 
@@ -57,7 +50,7 @@ export class FplApi {
     async getFplBootstrapData(): Promise<FplBootstrapData> {
         const now = Date.now();
 
-        if (this.bootstrapCache.data && (now - this.bootstrapCache.timestamp) < this.CACHE_DURATION) {
+        if (this.bootstrapCache.data && now - this.bootstrapCache.timestamp < this.CACHE_DURATION) {
             return this.bootstrapCache.data;
         }
 
@@ -66,16 +59,12 @@ export class FplApi {
 
             this.bootstrapCache = {
                 data,
-                timestamp: now
+                timestamp: now,
             };
 
             return data;
         } catch (error) {
-            throw createAppError(
-                'FPL_BOOTSTRAP_ERROR',
-                'Failed to fetch FPL bootstrap data',
-                error
-            );
+            throw createAppError('FPL_BOOTSTRAP_ERROR', 'Failed to fetch FPL bootstrap data', error);
         }
     }
 
@@ -90,11 +79,10 @@ export class FplApi {
             throw createAppError(
                 'PLAYER_DETAILED_STATS_ERROR',
                 `Failed to get detailed stats for player: ${playerId}`,
-                error
+                error,
             );
         }
     }
-
 }
 
 // Export a singleton instance for easy use

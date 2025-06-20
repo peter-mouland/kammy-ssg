@@ -13,17 +13,13 @@ interface SelectUserProps {
     handleUserChange: (userId: string) => void;
 }
 
-export function SelectUser({
-                               users,
-                               selectedUser,
-                               handleUserChange
-                           }: SelectUserProps) {
+export function SelectUser({ users, selectedUser, handleUserChange }: SelectUserProps) {
     return (
         <label htmlFor="user-select" className={styles.selectContainer}>
             <span className={styles.selectLabel}>Select User:</span>
             <select
                 id="user-select"
-                value={selectedUser || ""}
+                value={selectedUser || ''}
                 onChange={(e) => handleUserChange(e.target.value)}
                 className={styles.selectInput}
             >

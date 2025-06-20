@@ -1,17 +1,12 @@
 /* Location: app/admin/admin.route.tsx */
 
-import {
-    type MetaFunction,
-    type LoaderFunctionArgs,
-    data,
-    Outlet
-} from 'react-router';
+import { type MetaFunction, type LoaderFunctionArgs, data, Outlet } from 'react-router';
 import { AdminLayout } from './admin.layout';
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "Draft Setup - Fantasy Football Draft" },
-        { name: "description", content: "Generate and manage draft orders for fantasy football league" },
+        { title: 'Draft Setup - Fantasy Football Draft' },
+        { name: 'description', content: 'Generate and manage draft orders for fantasy football league' },
     ];
 };
 
@@ -66,12 +61,12 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
-        const { getDraftAdminData } = await import("./server/admin-dashboard.server");
+        const { getDraftAdminData } = await import('./server/admin-dashboard.server');
         const draftAdminData = await getDraftAdminData();
         return data(draftAdminData);
     } catch (error) {
-        console.error("Draft admin loader error:", error);
-        throw new Response("Failed to load draft setup data", { status: 500 });
+        console.error('Draft admin loader error:', error);
+        throw new Response('Failed to load draft setup data', { status: 500 });
     }
 }
 

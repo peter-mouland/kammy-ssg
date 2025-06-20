@@ -35,43 +35,37 @@ export function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'sh
 
 export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTableProps) {
     // URL-synced filters for persistence - this handles ALL filter state
-    const {
-        filters,
-        setFilter,
-        resetFilters,
-        isUpdating
-    } = useTableFilters({
+    const { filters, setFilter, resetFilters, isUpdating } = useTableFilters({
         defaultFilters: {
             search: '',
             position: '',
-            team: ''
+            team: '',
         },
-        debounceMs: 300
+        debounceMs: 300,
     });
 
     // Generate filter options
-    const uniquePositions = Array.from(new Set(players.map(p => getPlayerPosition(p))))
+    const uniquePositions = Array.from(new Set(players.map((p) => getPlayerPosition(p))))
         .sort()
-        .map(pos => ({ value: pos, label: getPositionDisplayName(pos) }));
+        .map((pos) => ({ value: pos, label: getPositionDisplayName(pos) }));
 
-    const uniqueTeams = Array.from(new Set(players.map(p => p.team_code)))
+    const uniqueTeams = Array.from(new Set(players.map((p) => p.team_code)))
         .sort((a, b) => (teams[a] || '').localeCompare(teams[b] || ''))
-        .map(teamCode => ({ value: teamCode.toString(), label: teams[teamCode] || `Team ${teamCode}` }));
+        .map((teamCode) => ({ value: teamCode.toString(), label: teams[teamCode] || `Team ${teamCode}` }));
 
     // Filter players based on current filters
     const filteredPlayers = useMemo(() => {
-        return players.filter(player => {
+        return players.filter((player) => {
             const playerName = formatPlayerName(player, 'full').toLowerCase();
             const teamName = teams[player.team_code]?.toLowerCase() || '';
-            const searchMatch = !filters.search ||
+            const searchMatch =
+                !filters.search ||
                 playerName.includes(filters.search.toLowerCase()) ||
                 teamName.includes(filters.search.toLowerCase());
 
-            const positionMatch = !filters.position ||
-                getPlayerPosition(player) === filters.position;
+            const positionMatch = !filters.position || getPlayerPosition(player) === filters.position;
 
-            const teamMatch = !filters.team ||
-                player.team_code.toString() === filters.team;
+            const teamMatch = !filters.team || player.team_code.toString() === filters.team;
 
             return searchMatch && positionMatch && teamMatch;
         });
@@ -92,7 +86,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             fb: 'var(--color-blue-500, #3b82f6)',
             mid: 'var(--color-violet-500, #8b5cf6)',
             wa: 'var(--color-amber-500, #f59e0b)',
-            ca: 'var(--color-red-500, #ef4444)'
+            ca: 'var(--color-red-500, #ef4444)',
         };
         return colors[pos] || 'var(--color-gray-500, #6b7280)';
     };
@@ -108,28 +102,20 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                 const position = getPlayerPosition(player);
                 return (
                     <div className={styles.playerInfo}>
-                        <div
-                            className={styles.playerAvatar}
-                            style={{ backgroundColor: getPositionColor(position) }}
-                        >
+                        <div className={styles.playerAvatar} style={{ backgroundColor: getPositionColor(position) }}>
                             {getPositionDisplayName(position)}
                         </div>
                         <div className={styles.playerDetails}>
                             <div className={styles.playerName}>
-                                <Link
-                                    to={`/players/${player.id}`}
-                                    className={styles.playerNameLink}
-                                >
+                                <Link to={`/players/${player.id}`} className={styles.playerNameLink}>
                                     {formatPlayerName(player, 'full')}
                                 </Link>
                             </div>
-                            <div className={styles.playerWebName}>
-                                {player.web_name}
-                            </div>
+                            <div className={styles.playerWebName}>{player.web_name}</div>
                         </div>
                     </div>
                 );
-            }
+            },
         },
         {
             key: 'position',
@@ -139,14 +125,11 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             render: (_, player) => {
                 const position = getPlayerPosition(player);
                 return (
-                    <span
-                        className={styles.positionBadge}
-                        style={{ backgroundColor: getPositionColor(position) }}
-                    >
+                    <span className={styles.positionBadge} style={{ backgroundColor: getPositionColor(position) }}>
                         {getPositionDisplayName(position)}
                     </span>
                 );
-            }
+            },
         },
         {
             key: 'team',
@@ -154,10 +137,8 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             accessor: (player) => teams[player.team_code] || `Team ${player.team_code}`,
             sortable: true,
             render: (_, player) => (
-                <div className={styles.teamName}>
-                    {teams[player.team_code] || `Team ${player.team_code}`}
-                </div>
-            )
+                <div className={styles.teamName}>{teams[player.team_code] || `Team ${player.team_code}`}</div>
+            ),
         },
         {
             key: 'points',
@@ -166,10 +147,8 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             sortable: true,
             variant: 'numeric',
             render: (_, player) => (
-                <PointsBreakdownTooltip player={player}>
-                    {player.draft.pointsTotal}
-                </PointsBreakdownTooltip>
-            )
+                <PointsBreakdownTooltip player={player}>{player.draft.pointsTotal}</PointsBreakdownTooltip>
+            ),
         },
         // {
         //     key: 'form',
@@ -188,9 +167,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
         {
             key: 'wishlists',
             header: 'Wishlists',
-            render: (_, player) => (
-                <WishlistTags playerId={player.id} maxVisible={2} />
-            )
+            render: (_, player) => <WishlistTags playerId={player.id} maxVisible={2} />,
         },
         {
             key: 'actions',
@@ -198,15 +175,12 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             render: (_, player) => (
                 <div className={styles.actions}>
                     <WishlistButton player={player} size="small" showLabel={false} />
-                    <Link
-                        to={`/players/${player.id}`}
-                        className={styles.viewLink}
-                    >
+                    <Link to={`/players/${player.id}`} className={styles.viewLink}>
                         View
                     </Link>
                 </div>
-            )
-        }
+            ),
+        },
     ];
 
     return (
@@ -216,7 +190,7 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                 filters={{
                     search: filters.search || '',
                     status: filters.position || '',
-                    category: filters.team || ''
+                    category: filters.team || '',
                 }}
                 onFilterChange={(key, value) => {
                     if (key === 'search') setFilter('search', value || undefined);
@@ -226,8 +200,8 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                 onFiltersChange={() => {}}
                 onReset={resetFilters}
                 isUpdating={isUpdating}
-                statusOptions={uniquePositions.map(opt => ({ value: opt.value, label: opt.label }))}
-                categoryOptions={uniqueTeams.map(opt => ({ value: opt.value, label: opt.label }))}
+                statusOptions={uniquePositions.map((opt) => ({ value: opt.value, label: opt.label }))}
+                categoryOptions={uniqueTeams.map((opt) => ({ value: opt.value, label: opt.label }))}
                 showSearch={true}
                 showStatus={true}
                 showCategory={true}
@@ -247,11 +221,16 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
                 empty={{
                     icon: (
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
                         </svg>
                     ),
                     title: 'No players found',
-                    description: 'Try adjusting your search or filter criteria.'
+                    description: 'Try adjusting your search or filter criteria.',
                 }}
             />
         </div>

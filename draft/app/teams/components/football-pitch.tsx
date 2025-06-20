@@ -1,56 +1,42 @@
 // app/teams/components/football-pitch.tsx
-import React from 'react';
+import type React from 'react';
 import type { FormationDisplayProps } from '../types/team-types';
 import { PositionSlotCard } from './position-slot-card';
-import { PlayerCard } from './player-card';
-import {
-    getFormationSlots,
-    createPositionSlot
-} from '../../_shared/lib/position-slot-utils';
+import { getFormationSlots } from '../../_shared/lib/position-slot-utils';
 import styles from './football-pitch.module.css';
 
-export const FootballPitch: React.FC<FormationDisplayProps> = ({
-                                                                   roster,
-                                                                   gameweek,
-                                                                   isHistorical
-                                                               }) => {
+export const FootballPitch: React.FC<FormationDisplayProps> = ({ roster, gameweek, isHistorical }) => {
     const formationSlots = getFormationSlots();
 
     // Helper to render position group
-    const renderPositionGroup = (
-        slots: string[],
-        positionClass: string,
-        groupLabel: string
-    ) => (
-            <>
-                {slots.map((slotKey, index) => {
-                    const positionSlot = roster[slotKey as keyof typeof roster];
+    const renderPositionGroup = (slots: string[], positionClass: string, groupLabel: string) => (
+        <>
+            {slots.map((slotKey, index) => {
+                const positionSlot = roster[slotKey as keyof typeof roster];
 
-                    if (!positionSlot) {
-                        // Empty slot
-                        return (
-                            <div key={slotKey} className={styles.emptySlot}>
-                                <div className={styles.emptySlotLabel}>
-                                    {groupLabel} {index + 1}
-                                </div>
-                            </div>
-                        );
-                    }
-
+                if (!positionSlot) {
+                    // Empty slot
                     return (
-                        <div className={styles.playerPosition}
-                            key={slotKey}
-                        >
-                            <PositionSlotCard
-                                slot={slotKey as any}
-                                positionSlot={positionSlot}
-                                gameweek={gameweek}
-                                isHistorical={isHistorical}
-                                showPoints={true}
-                            />
+                        <div key={slotKey} className={styles.emptySlot}>
+                            <div className={styles.emptySlotLabel}>
+                                {groupLabel} {index + 1}
+                            </div>
                         </div>
                     );
-                })}
+                }
+
+                return (
+                    <div className={styles.playerPosition} key={slotKey}>
+                        <PositionSlotCard
+                            slot={slotKey as any}
+                            positionSlot={positionSlot}
+                            gameweek={gameweek}
+                            isHistorical={isHistorical}
+                            showPoints={true}
+                        />
+                    </div>
+                );
+            })}
         </>
     );
 
@@ -59,61 +45,37 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({
             <div className={styles.pitchBackground}>
                 {/* Goal */}
                 <div className={styles.goal}>
-                    <div className={styles.goalLine}></div>
+                    <div className={styles.goalLine} />
                 </div>
 
                 {/* Formation Layout */}
                 <div className={styles.formation}>
                     <div className={styles.centralAttackerLine}>
-                        {renderPositionGroup(
-                            formationSlots.centralAttackers,
-                            'attackers',
-                            'CA'
-                        )}
+                        {renderPositionGroup(formationSlots.centralAttackers, 'attackers', 'CA')}
                     </div>
                     <div className={styles.wideAttackerLine}>
-                        {renderPositionGroup(
-                            formationSlots.wideAttackers,
-                            'wideAttackers',
-                            'WA'
-                        )}
+                        {renderPositionGroup(formationSlots.wideAttackers, 'wideAttackers', 'WA')}
                     </div>
                     <div className={styles.midfielderLine}>
-                    {renderPositionGroup(
-                        formationSlots.midfielders,
-                        'midfielders',
-                        'MID'
-                    )}
+                        {renderPositionGroup(formationSlots.midfielders, 'midfielders', 'MID')}
                     </div>
 
                     <div className={styles.fullbackLine}>
-                    {renderPositionGroup(
-                        formationSlots.fullbacks,
-                        'fullbacks',
-                        'FB'
-                    )}
+                        {renderPositionGroup(formationSlots.fullbacks, 'fullbacks', 'FB')}
                     </div>
                     <div className={styles.centrebackLine}>
-                    {/* Centre Backs */}
-                    {renderPositionGroup(
-                        formationSlots.centrebacks,
-                        'centrebacks',
-                        'CB'
-                    )}
+                        {/* Centre Backs */}
+                        {renderPositionGroup(formationSlots.centrebacks, 'centrebacks', 'CB')}
                     </div>
                     <div className={styles.goalkeeperLine}>
-                    {/* Goalkeeper */}
-                    {renderPositionGroup(
-                        formationSlots.goalkeeper,
-                        'goalkeeper',
-                        'GK'
-                    )}
+                        {/* Goalkeeper */}
+                        {renderPositionGroup(formationSlots.goalkeeper, 'goalkeeper', 'GK')}
                     </div>
                 </div>
 
                 {/* Penalty Area */}
                 <div className={styles.penaltyArea}>
-                    <div className={styles.penaltyLine}></div>
+                    <div className={styles.penaltyLine} />
                 </div>
             </div>
 

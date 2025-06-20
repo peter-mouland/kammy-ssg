@@ -1,20 +1,17 @@
 // app/teams/components/team-stats.tsx
-import React, { useMemo } from 'react';
+import type React from 'react';
+import { useMemo } from 'react';
 import type { TeamStatsProps, TeamStatsData } from '../types/team-types';
 import {
     calculateRosterTotalPoints,
     getRosterTopScorer,
     getStartingXIPlayers,
-    getSubstitutePlayers
+    getSubstitutePlayers,
 } from '../../_shared/lib/roster-conversion-utils';
 import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
 import styles from './team-stats.module.css';
 
-export const TeamStats: React.FC<TeamStatsProps> = ({
-                                                        teamData,
-                                                        gameweek,
-                                                        isCurrentGameweek
-                                                    }) => {
+export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurrentGameweek }) => {
     // Calculate team statistics from roster
     const teamStats = useMemo((): TeamStatsData => {
         const { roster } = teamData;
@@ -63,7 +60,7 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
         });
 
         // Calculate averages for position breakdown
-        Object.values(positionBreakdown).forEach(breakdown => {
+        Object.values(positionBreakdown).forEach((breakdown) => {
             breakdown.averagePoints = breakdown.players > 0 ? breakdown.points / breakdown.players : 0;
         });
 
@@ -75,7 +72,7 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
             startingXIPoints,
             benchPoints,
             topScorer,
-            positionBreakdown
+            positionBreakdown,
         };
     }, [teamData.roster, gameweek, isCurrentGameweek]);
 
@@ -87,12 +84,12 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
     // Get position display name
     const getPositionDisplayName = (position: string) => {
         const names: Record<string, string> = {
-            'gk': 'Goalkeeper',
-            'cb': 'Centre Backs',
-            'fb': 'Full Backs',
-            'wa': 'Wide Attackers',
-            'ca': 'Centre Attackers',
-            'sub': 'Substitutes'
+            gk: 'Goalkeeper',
+            cb: 'Centre Backs',
+            fb: 'Full Backs',
+            wa: 'Wide Attackers',
+            ca: 'Centre Attackers',
+            sub: 'Substitutes',
         };
         return names[position] || position.toUpperCase();
     };
@@ -142,16 +139,12 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
                     <h4 className={styles.subsectionTitle}>Top Performer</h4>
                     <div className={styles.topScorerCard}>
                         <div className={styles.topScorerInfo}>
-                            <div className={styles.topScorerName}>
-                                {teamStats.topScorer.player.player.playerName}
-                            </div>
+                            <div className={styles.topScorerName}>{teamStats.topScorer.player.player.playerName}</div>
                             <div className={styles.topScorerPosition}>
                                 {teamStats.topScorer.player.player.playerPosition.toUpperCase()}
                             </div>
                         </div>
-                        <div className={styles.topScorerPoints}>
-                            {formatPoints(teamStats.topScorer.points)}
-                        </div>
+                        <div className={styles.topScorerPoints}>{formatPoints(teamStats.topScorer.points)}</div>
                     </div>
                 </div>
             )}
@@ -162,15 +155,9 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
                 <div className={styles.positionGrid}>
                     {Object.entries(teamStats.positionBreakdown).map(([position, breakdown]) => (
                         <div key={position} className={styles.positionCard}>
-                            <div className={styles.positionName}>
-                                {getPositionDisplayName(position)}
-                            </div>
-                            <div className={styles.positionPoints}>
-                                {formatPoints(breakdown.points)}
-                            </div>
-                            <div className={styles.positionAverage}>
-                                {breakdown.averagePoints.toFixed(1)} avg
-                            </div>
+                            <div className={styles.positionName}>{getPositionDisplayName(position)}</div>
+                            <div className={styles.positionPoints}>{formatPoints(breakdown.points)}</div>
+                            <div className={styles.positionAverage}>{breakdown.averagePoints.toFixed(1)} avg</div>
                         </div>
                     ))}
                 </div>

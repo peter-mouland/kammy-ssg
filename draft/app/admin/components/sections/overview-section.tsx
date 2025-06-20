@@ -13,10 +13,7 @@ interface SectionProps {
     toggleSection: (section: string) => void;
 }
 
-export const OverviewSection = ({
-                                    expandedSections,
-                                    toggleSection
-                                }: SectionProps) => {
+export const OverviewSection = ({ expandedSections, toggleSection }: SectionProps) => {
     const fetcher = useFetcher();
     const clearDataFetcher = useFetcher();
     const [cacheData, setCacheData] = React.useState(null);
@@ -24,10 +21,7 @@ export const OverviewSection = ({
     // Fetch cache status when component mounts (not firestore stats)
     React.useEffect(() => {
         if (fetcher.state === 'idle' && !cacheData) {
-            fetcher.submit(
-                { actionType: 'getCacheStatus' },
-                { method: 'post' }
-            );
+            fetcher.submit({ actionType: 'getCacheStatus' }, { method: 'post' });
         }
     }, [fetcher, cacheData]);
 
@@ -42,33 +36,30 @@ export const OverviewSection = ({
         const formData = new FormData();
         formData.append('actionType', actionType);
         formData.append('variant', variant || 'all');
-        clearDataFetcher.submit(
-            formData,
-            {
-                method: 'post',
-                action: '?index'  // Submit to the index route, not parent
-            }
-        );
+        clearDataFetcher.submit(formData, {
+            method: 'post',
+            action: '?index', // Submit to the index route, not parent
+        });
     };
 
     // Calculate status for each card
     const getBootstrapStatus = () => {
         if (!cacheData) return { status: 'warning', value: '...' };
 
-        const hasBootstrap = (cacheData.counts.elements) > 0;
+        const hasBootstrap = cacheData.counts.elements > 0;
         return {
             status: hasBootstrap ? 'healthy' : 'warning',
-            value: hasBootstrap ? '✓' : 'Missing'
+            value: hasBootstrap ? '✓' : 'Missing',
         };
     };
 
     const getPlayerStatsStatus = () => {
         if (!cacheData) return { status: 'warning', value: '...' };
 
-        const hasStats = (cacheData.counts.elementSummaries) > 0;
+        const hasStats = cacheData.counts.elementSummaries > 0;
         return {
             status: hasStats ? 'healthy' : 'warning',
-            value: hasStats ? '✓' : 'Missing'
+            value: hasStats ? '✓' : 'Missing',
         };
     };
 
@@ -77,7 +68,7 @@ export const OverviewSection = ({
 
         return {
             status: cacheData.hasEnhancedData ? 'healthy' : 'warning',
-            value: cacheData.hasEnhancedData ? 'Ready' : 'Pending'
+            value: cacheData.hasEnhancedData ? 'Ready' : 'Pending',
         };
     };
 
@@ -115,8 +106,6 @@ export const OverviewSection = ({
             </AdminSection>
 
             <QuickActionsSection cacheData={cacheData} />
-
-
 
             {/* Cache Monitor Section */}
             <AdminSection

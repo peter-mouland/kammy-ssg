@@ -6,9 +6,8 @@ import type { DraftOrderData, DraftStateData } from '../types/draft-types';
  */
 export function calculateNextPicker(
     currentDraftState: DraftStateData | null,
-    draftOrder: DraftOrderData[]
+    draftOrder: DraftOrderData[],
 ): { userId: string; userName: string; pickNumber: number } | null {
-
     if (!currentDraftState || !currentDraftState.isActive || draftOrder.length === 0) {
         return null;
     }
@@ -33,7 +32,7 @@ export function calculateNextPicker(
     const actualPosition = isSnakeRound ? totalTeams - positionInRound + 1 : positionInRound;
 
     // Find the user at this position
-    const nextUser = draftOrder.find(order => order.position === actualPosition);
+    const nextUser = draftOrder.find((order) => order.position === actualPosition);
 
     if (!nextUser) {
         console.warn(`No user found at position ${actualPosition} for pick ${nextPickNumber}`);
@@ -43,7 +42,7 @@ export function calculateNextPicker(
     return {
         userId: nextUser.userId,
         userName: nextUser.userName,
-        pickNumber: nextPickNumber
+        pickNumber: nextPickNumber,
     };
 }
 
@@ -52,9 +51,8 @@ export function calculateNextPicker(
  */
 export function calculateCurrentPicker(
     currentDraftState: DraftStateData | null,
-    draftOrder: DraftOrderData[]
+    draftOrder: DraftOrderData[],
 ): { userId: string; userName: string; pickNumber: number } | null {
-
     if (!currentDraftState || !currentDraftState.isActive || draftOrder.length === 0) {
         return null;
     }
@@ -73,7 +71,7 @@ export function calculateCurrentPicker(
     const actualPosition = isSnakeRound ? totalTeams - positionInRound + 1 : positionInRound;
 
     // Find the user at this position
-    const currentUser = draftOrder.find(order => order.position === actualPosition);
+    const currentUser = draftOrder.find((order) => order.position === actualPosition);
 
     if (!currentUser) {
         console.warn(`No user found at position ${actualPosition} for pick ${currentPickNumber}`);
@@ -83,6 +81,6 @@ export function calculateCurrentPicker(
     return {
         userId: currentUser.userId,
         userName: currentUser.userName,
-        pickNumber: currentPickNumber
+        pickNumber: currentPickNumber,
     };
 }

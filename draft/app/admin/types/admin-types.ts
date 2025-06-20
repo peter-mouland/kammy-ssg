@@ -1,16 +1,9 @@
 // app/admin/types/admin-types.ts
 
 // Import types from their proper domains
-import type {
-    DivisionId,
-    DivisionSheetData,
-    UserTeamsSheetData,
-} from '../../teams/types/team-types';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
-import type {
-    DraftOrderData,
-    DraftStateData
-} from '../../draft/types/draft-types';
+import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
 
 // ==========================================
 // ADMIN DASHBOARD DATA TYPES

@@ -1,22 +1,27 @@
 /* Location: app/draft/server/draft.server.ts */
 
-import { readDraftState, addDraftPick, getDraftPicksByDivision, updateDraftState } from '../../_shared/lib/sheets/draft';
+import {
+    readDraftState,
+    addDraftPick,
+    getDraftPicksByDivision,
+    updateDraftState,
+} from '../../_shared/lib/sheets/draft';
 import { cacheInvalidation } from '../../_shared/lib/sheets/cache/cached-sheet-functions';
 import { getDraftOrderByDivision } from '../../_shared/lib/sheets/draft-order';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
-import { getNextDraftState } from "../lib/get-next-draft-state";
-import { generateDraftSequence } from "../lib/generate-draft-sequence";
+import { getNextDraftState } from '../lib/get-next-draft-state';
+import { generateDraftSequence } from '../lib/generate-draft-sequence';
 import type { DraftPickData, DraftOrderData, DraftStateData, DraftLoaderData } from '../types/draft-types';
 
 import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
 import type { DivisionId } from '../../teams/types/team-types';
 
 export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
-    const selectedUser = url.searchParams.get("user") || "";
-    const search = url.searchParams.get("search") || "";
-    const position = url.searchParams.get("position") || "";
+    const selectedUser = url.searchParams.get('user') || '';
+    const search = url.searchParams.get('search') || '';
+    const position = url.searchParams.get('position') || '';
 
     // Fetch all required data
     const [draftState, divisions, userTeams, allPlayers, teams] = await Promise.all([
@@ -24,10 +29,10 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
         readDivisions(),
         readUserTeams(),
         fplApiCache.getFplPlayers(),
-        fplApiCache.getFplTeams()
-    ])
+        fplApiCache.getFplTeams(),
+    ]);
 
-    const divisionId: DivisionId = draftState?.currentDivisionId || divisions[0]?.id || "";
+    const divisionId: DivisionId = draftState?.currentDivisionId || divisions[0]?.id || '';
 
     let draftPicks: DraftPickData[] = [];
     let draftOrder: DraftOrderData[] = [];
@@ -36,7 +41,7 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     if (divisionId) {
         [draftPicks, draftOrder] = await Promise.all([
             getDraftPicksByDivision(divisionId),
-            getDraftOrderByDivision(divisionId)
+            getDraftOrderByDivision(divisionId),
         ]);
 
         if (draftOrder.length > 0 && draftState) {
@@ -45,26 +50,28 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     }
 
     // Filter available players
-    const draftedPlayerIds = new Set(draftPicks.map(pick => pick.playerId));
-    let availablePlayers = allPlayers.filter(player => !draftedPlayerIds.has(player.id.toString()));
+    const draftedPlayerIds = new Set(draftPicks.map((pick) => pick.playerId));
+    let availablePlayers = allPlayers.filter((player) => !draftedPlayerIds.has(player.id.toString()));
 
     // Apply filters
     if (search) {
         const searchResults = await fplApiCache.searchPlayersByName(search);
-        const searchIds = new Set(searchResults.map(p => p.id));
-        availablePlayers = availablePlayers.filter(p => searchIds.has(p.id));
+        const searchIds = new Set(searchResults.map((p) => p.id));
+        availablePlayers = availablePlayers.filter((p) => searchIds.has(p.id));
     }
 
     if (position) {
-        availablePlayers = availablePlayers.filter(p => p.draft.position === position);
+        availablePlayers = availablePlayers.filter((p) => p.draft.position === position);
     }
 
     availablePlayers.sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
 
-    const currentUser = selectedUser || userTeams.find(team => team.divisionId === divisionId)?.userId || "";
-    const isUserTurn = !!((draftState?.isActive &&
+    const currentUser = selectedUser || userTeams.find((team) => team.divisionId === divisionId)?.userId || '';
+    const isUserTurn = !!(
+        draftState?.isActive &&
         draftState.currentDivisionId === divisionId &&
-        draftState.currentUserId === currentUser));
+        draftState.currentUserId === currentUser
+    );
 
     return {
         draftState,
@@ -74,7 +81,7 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
         currentUser,
         isUserTurn,
         divisions,
-        userTeams: userTeams.filter(team => team.divisionId === divisionId),
+        userTeams: userTeams.filter((team) => team.divisionId === divisionId),
         selectedDivision: divisionId,
         selectedUser: currentUser,
         draftSequence,
@@ -82,20 +89,20 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
         filters: {
             selectedUser,
             search,
-            position
-        }
+            position,
+        },
     };
 }
 
 export async function makeDraftPick(formData: FormData | URLSearchParams) {
     console.log('🎯 Making draft pick...');
 
-    const divisionId = formData.get("divisionId")?.toString() as DivisionId;
-    const playerId = formData.get("playerId")?.toString();
-    const userId = formData.get("userId")?.toString();
+    const divisionId = formData.get('divisionId')?.toString() as DivisionId;
+    const playerId = formData.get('playerId')?.toString();
+    const userId = formData.get('userId')?.toString();
 
     if (!playerId || !userId || !divisionId) {
-        throw new Error("Missing required fields for draft pick");
+        throw new Error('Missing required fields for draft pick');
     }
 
     const draftState = await readDraftState();
@@ -103,38 +110,35 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
     try {
         // Get current draft state
         if (!draftState?.isActive) {
-            throw new Error("Draft is not currently active");
+            throw new Error('Draft is not currently active');
         }
 
         if (draftState.currentUserId !== userId) {
-            throw new Error("It's not your turn to pick: " + userId + " != " + draftState.currentUserId);
+            throw new Error("It's not your turn to pick: " + userId + ' != ' + draftState.currentUserId);
         }
 
         if (!divisionId) {
-            throw new Error("No active division found");
+            throw new Error('No active division found');
         }
 
         // Check if player is already drafted
         const existingPicks = await getDraftPicksByDivision(divisionId);
-        const isPlayerDrafted = existingPicks.some(pick => pick.playerId === playerId);
+        const isPlayerDrafted = existingPicks.some((pick) => pick.playerId === playerId);
         if (isPlayerDrafted) {
-            throw new Error("Player has already been drafted");
+            throw new Error('Player has already been drafted');
         }
 
         // Get player and team data for the pick
-        const [allPlayers, teams] = await Promise.all([
-            fplApiCache.getFplPlayers(),
-            fplApiCache.getFplTeams()
-        ]);
+        const [allPlayers, teams] = await Promise.all([fplApiCache.getFplPlayers(), fplApiCache.getFplTeams()]);
 
-        const player = allPlayers.find(p => p.id.toString() === playerId);
+        const player = allPlayers.find((p) => p.id.toString() === playerId);
         if (!player) {
-            throw new Error("Player not found");
+            throw new Error('Player not found');
         }
 
-        const team = teams.find(t => t.code === player.team_code);
+        const team = teams.find((t) => t.code === player.team_code);
         if (!team) {
-            throw new Error("Team not found for player");
+            throw new Error('Team not found for player');
         }
 
         // Create draft pick record
@@ -148,7 +152,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
             teamName: team.name,
             position: player.draft?.position || 'unknown',
             pickedAt: new Date(),
-            divisionId
+            divisionId,
         };
 
         // Add pick to sheets
@@ -168,57 +172,61 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
             console.log(`🎉 Draft completed! Auto-committing teams for division: ${divisionId}`);
 
             // Import and run auto-commit (don't await to avoid blocking the pick response)
-            import('./auto-commit.server').then(async ({ autoCommitTeamsToFirestore }) => {
-                const commitResult = await autoCommitTeamsToFirestore(divisionId);
+            import('./auto-commit.server')
+                .then(async ({ autoCommitTeamsToFirestore }) => {
+                    const commitResult = await autoCommitTeamsToFirestore(divisionId);
 
-                if (commitResult.success) {
-                    // Broadcast successful auto-commit event
-                    try {
-                        await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
-                            type: 'draft-ended',
-                            data: {
-                                message: 'Draft completed! Teams have been automatically committed to Firestore.',
-                                completedAt: nextState.completedAt,
-                                totalPicks: existingPicks.length + 1,
-                                autoCommitted: true,
-                                commitResult: commitResult.message
-                            }
-                        });
-                    } catch (broadcastError) {
-                        console.warn('Failed to broadcast auto-commit success:', broadcastError);
+                    if (commitResult.success) {
+                        // Broadcast successful auto-commit event
+                        try {
+                            await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
+                                type: 'draft-ended',
+                                data: {
+                                    message: 'Draft completed! Teams have been automatically committed to Firestore.',
+                                    completedAt: nextState.completedAt,
+                                    totalPicks: existingPicks.length + 1,
+                                    autoCommitted: true,
+                                    commitResult: commitResult.message,
+                                },
+                            });
+                        } catch (broadcastError) {
+                            console.warn('Failed to broadcast auto-commit success:', broadcastError);
+                        }
+                    } else {
+                        // Broadcast auto-commit failure (teams can still be committed manually)
+                        try {
+                            await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
+                                type: 'draft-ended',
+                                data: {
+                                    message:
+                                        'Draft completed! Auto-commit failed - please commit teams manually from the admin panel.',
+                                    completedAt: nextState.completedAt,
+                                    totalPicks: existingPicks.length + 1,
+                                    autoCommitted: false,
+                                    commitError: commitResult.error,
+                                },
+                            });
+                        } catch (broadcastError) {
+                            console.warn('Failed to broadcast auto-commit failure:', broadcastError);
+                        }
                     }
-                } else {
-                    // Broadcast auto-commit failure (teams can still be committed manually)
-                    try {
-                        await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
-                            type: 'draft-ended',
-                            data: {
-                                message: 'Draft completed! Auto-commit failed - please commit teams manually from the admin panel.',
-                                completedAt: nextState.completedAt,
-                                totalPicks: existingPicks.length + 1,
-                                autoCommitted: false,
-                                commitError: commitResult.error
-                            }
-                        });
-                    } catch (broadcastError) {
-                        console.warn('Failed to broadcast auto-commit failure:', broadcastError);
-                    }
-                }
-            }).catch((autoCommitError) => {
-                console.error('❌ Auto-commit import failed:', autoCommitError);
+                })
+                .catch((autoCommitError) => {
+                    console.error('❌ Auto-commit import failed:', autoCommitError);
 
-                // Still try to broadcast that draft ended, even if auto-commit failed
-                FirebaseDraftSync.broadcastDraftEvent(divisionId, {
-                    type: 'draft-ended',
-                    data: {
-                        message: 'Draft completed! Auto-commit system error - please commit teams manually from the admin panel.',
-                        completedAt: nextState.completedAt,
-                        totalPicks: existingPicks.length + 1,
-                        autoCommitted: false,
-                        commitError: 'Auto-commit system error'
-                    }
-                }).catch(err => console.warn('Failed to broadcast draft completion:', err));
-            });
+                    // Still try to broadcast that draft ended, even if auto-commit failed
+                    FirebaseDraftSync.broadcastDraftEvent(divisionId, {
+                        type: 'draft-ended',
+                        data: {
+                            message:
+                                'Draft completed! Auto-commit system error - please commit teams manually from the admin panel.',
+                            completedAt: nextState.completedAt,
+                            totalPicks: existingPicks.length + 1,
+                            autoCommitted: false,
+                            commitError: 'Auto-commit system error',
+                        },
+                    }).catch((err) => console.warn('Failed to broadcast draft completion:', err));
+                });
         }
 
         // Sync to Firebase AND broadcast to SSE connections
@@ -227,11 +235,13 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
                 currentPick: nextState.currentPick,
                 currentUserId: nextState.currentUserId,
                 isActive: nextState.isActive,
-                totalPicks: draftOrder.length * (draftState.picksPerTeam || 12)
+                totalPicks: draftOrder.length * (draftState.picksPerTeam || 12),
             });
 
             console.log(`✅ Draft pick processed: ${player.web_name} by ${userId}`);
-            console.log(`📊 Draft Status: Pick ${nextState.currentPick}, Active: ${nextState.isActive}, Division: ${divisionId}`);
+            console.log(
+                `📊 Draft Status: Pick ${nextState.currentPick}, Active: ${nextState.isActive}, Division: ${divisionId}`,
+            );
         } catch (syncError) {
             console.warn('Firebase sync or SSE broadcast failed after pick:', syncError);
             // Don't fail the pick if sync fails
@@ -242,9 +252,8 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         return {
             success: true,
             pick: draftPick,
-            action: "makePick"
+            action: 'makePick',
         };
-
     } catch (error) {
         console.error('❌ Draft pick failed:', error);
 

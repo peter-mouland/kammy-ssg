@@ -1,7 +1,8 @@
 /* Location: app/wishlist/components/wishlist-form.tsx */
 
 // components/wishlist-form.tsx - FIXED VERSION
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useWishlists } from '../lib/use-wishlists';
 import styles from './wishlist-form.module.css';
 
@@ -23,7 +24,7 @@ export function CreateWishlistForm({ onSuccess, onCancel }: CreateWishlistFormPr
 
         setIsSubmitting(true);
         try {
-            await addWishlist({ label: label.trim(), description: description.trim(), color: selectedColor });
+            addWishlist({ label: label.trim(), description: description.trim(), color: selectedColor });
             setLabel('');
             setDescription('');
 
@@ -74,7 +75,9 @@ export function CreateWishlistForm({ onSuccess, onCancel }: CreateWishlistFormPr
                                 type="button"
                                 onClick={() => setSelectedColor(color)}
                                 disabled={isSubmitting}
-                                className={`${styles.colorButton} ${selectedColor === color ? styles.colorButtonSelected : ''}`}
+                                className={`${styles.colorButton} ${
+                                    selectedColor === color ? styles.colorButtonSelected : ''
+                                }`}
                                 style={{ backgroundColor: color }}
                                 title={name}
                             />

@@ -1,18 +1,18 @@
 /* Location: app/admin/admin.layout.tsx */
 
 // /admin/admin-dashboard-layout.tsx
-import React from 'react';
+import type React from 'react';
 import { useRevalidator, useLocation, useNavigate } from 'react-router';
 import * as Icons from './components/icons/admin-icons';
-import { SystemHealthBadge } from './components/ui/system-health-badge'
-import { NavButton } from './components/ui/nav-button'
-import { NavGroup } from './components/ui/nav-group'
-import { RefreshButton } from './components/ui/refresh-button'
+import { SystemHealthBadge } from './components/ui/system-health-badge';
+import { NavButton } from './components/ui/nav-button';
+import { NavGroup } from './components/ui/nav-group';
+import { RefreshButton } from './components/ui/refresh-button';
 
-import { AdminSection } from './components/layout/admin-section'
-import { AppShell } from './components/layout/app-shell'
-import { ActionBar } from './components/layout/action-bar'
-import { TwoColumnLayout } from './components/layout/two-column-layout'
+import { AdminSection } from './components/layout/admin-section';
+import { AppShell } from './components/layout/app-shell';
+import { ActionBar } from './components/layout/action-bar';
+import { TwoColumnLayout } from './components/layout/two-column-layout';
 
 import type { AdminNavItem } from './types';
 
@@ -25,26 +25,26 @@ const navigationItems: AdminNavItem[] = [
         key: 'overview',
         label: 'Overview',
         icon: <Icons.DatabaseIcon />,
-        path: '/admin'
+        path: '/admin',
     },
     {
         key: 'draft',
         label: 'Draft Management',
         icon: <Icons.UsersIcon />,
-        path: '/admin/draft'
+        path: '/admin/draft',
     },
     {
         key: 'points',
         label: 'Points & Scoring',
         icon: <Icons.ChartIcon />,
-        path: '/admin/points'
+        path: '/admin/points',
     },
     {
         key: 'settings',
         label: 'Settings',
         icon: <Icons.SettingsIcon />,
-        path: '/admin/settings'
-    }
+        path: '/admin/settings',
+    },
 ];
 
 export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) => {
@@ -78,10 +78,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
                         actions={
                             <ActionBar align="right">
                                 <SystemHealthBadge />
-                                <RefreshButton
-                                    onClick={handleRefreshAll}
-                                    loading={revalidator.state === 'loading'}
-                                />
+                                <RefreshButton onClick={handleRefreshAll} loading={revalidator.state === 'loading'} />
                             </ActionBar>
                         }
                     />
@@ -102,9 +99,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
                         </NavGroup>
                     </TwoColumnLayout.Sidebar>
 
-                    <TwoColumnLayout.Content>
-                        {children}
-                    </TwoColumnLayout.Content>
+                    <TwoColumnLayout.Content>{children}</TwoColumnLayout.Content>
                 </TwoColumnLayout.ContentContainer>
             </TwoColumnLayout.Container>
         </AppShell>

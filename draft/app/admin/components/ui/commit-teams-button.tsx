@@ -1,5 +1,5 @@
 // /admin/components/ui/commit-teams-button.tsx
-import React from 'react';
+import type React from 'react';
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import styles from './commit-teams-button.module.css';
@@ -11,10 +11,10 @@ interface CommitTeamsButtonProps {
 }
 
 export const CommitTeamsButton: React.FC<CommitTeamsButtonProps> = ({
-                                                                        divisionId,
-                                                                        disabled = false,
-                                                                        variant = 'primary'
-                                                                    }) => {
+    divisionId,
+    disabled = false,
+    variant = 'primary',
+}) => {
     const fetcher = useFetcher();
 
     const isLoading = fetcher.state === 'submitting';
@@ -26,7 +26,7 @@ export const CommitTeamsButton: React.FC<CommitTeamsButtonProps> = ({
         // Confirm before committing
         const confirmed = window.confirm(
             `Are you sure you want to commit all drafted teams for division ${divisionId} to Firestore?\n\n` +
-            'This will overwrite any existing team data for this division.'
+                'This will overwrite any existing team data for this division.',
         );
 
         if (!confirmed) return;
@@ -34,9 +34,9 @@ export const CommitTeamsButton: React.FC<CommitTeamsButtonProps> = ({
         fetcher.submit(
             {
                 actionType: 'commitTeamsToFirestore',
-                divisionId
+                divisionId,
             },
-            { method: 'post' }
+            { method: 'post' },
         );
     };
 

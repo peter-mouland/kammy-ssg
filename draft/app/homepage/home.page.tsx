@@ -1,13 +1,13 @@
 /* Location: app/homepage/home.page.tsx */
 
 // app/routes/dashboard.tsx
-import { useLoaderData } from "react-router";
-import { TopPlayers } from "../players/components/top-players"; // players
-import { LeagueStandings } from "../leagues/components/league-standings"; // leagues
-import { DivisionOverview } from "../leagues/components/division-overview"; // leagues
-import { RecentActivity } from "../admin/components/ui/recent-activity"; // admin
-import { SystemStatus } from "../admin/components/ui/system-status"; // admin
-import { GameStats } from "../scoring/components/game-stats"; // scoring
+import { useLoaderData } from 'react-router';
+import { TopPlayers } from '../players/components/top-players'; // players
+import { LeagueStandings } from '../leagues/components/league-standings'; // leagues
+import { DivisionOverview } from '../leagues/components/division-overview'; // leagues
+import { RecentActivity } from '../admin/components/ui/recent-activity'; // admin
+import { SystemStatus } from '../admin/components/ui/system-status'; // admin
+import { GameStats } from '../scoring/components/game-stats'; // scoring
 import { PageHeader } from '../_shared/components/page-header'; // shared
 import { LayoutGrid } from '../_shared/components/layout-grid';
 import type { DashboardData } from './types/homepage-types';
@@ -18,7 +18,7 @@ export const HomePage = () => {
     return (
         <div>
             <PageHeader
-                title={"Fantasy Football Draft Dashboard"}
+                title={'Fantasy Football Draft Dashboard'}
                 subTitle={`Gameweek ${currentGameweek} • ${divisions.length} Divisions • ${leagueStandings.length}+ Teams`}
             />
 
@@ -27,15 +27,9 @@ export const HomePage = () => {
 
                 <LeagueStandings standings={leagueStandings} />
 
-                <DivisionOverview
-                    divisions={divisions}
-                    leagueStandings={leagueStandings}
-                />
+                <DivisionOverview divisions={divisions} leagueStandings={leagueStandings} />
 
-                <RecentActivity
-                    currentGameweek={currentGameweek}
-                    divisions={divisions}
-                />
+                <RecentActivity currentGameweek={currentGameweek} divisions={divisions} />
 
                 <SystemStatus />
 
@@ -48,4 +42,4 @@ export const HomePage = () => {
             </LayoutGrid>
         </div>
     );
-}
+};

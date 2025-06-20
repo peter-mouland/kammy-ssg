@@ -67,7 +67,7 @@ export class GameweekPointsService {
                     gameweeksGenerated: [],
                     playerCount: 0,
                     currentGameweek,
-                    previousGameweek: lastGeneratedGameweek
+                    previousGameweek: lastGeneratedGameweek,
                 };
             }
 
@@ -77,16 +77,17 @@ export class GameweekPointsService {
             // Perform selective points generation
             const generationResult = await this.generatePointsForGameweeks(
                 updateNeeded.gameweeksToGenerate,
-                currentGameweek
             );
 
             // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
-            const { populatePointsIntoDivisionDocuments } = await import('../../../_shared/services/division-teams-points-population.service');
+            const { populatePointsIntoDivisionDocuments } = await import(
+                '../../../_shared/services/division-teams-points-population.service'
+            );
 
             const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
                 updateNeeded.gameweeksToGenerate,
-                currentGameweek
+                currentGameweek,
             );
 
             if (pointsPopulationResult.errors.length > 0) {
@@ -106,12 +107,12 @@ export class GameweekPointsService {
                         gameweek: currentGameweek,
                         generatedAt: new Date().toISOString(),
                         playerCount: generationResult.playerCount,
-                        type: 'selective'
-                    }
-                ]
+                        type: 'selective',
+                    },
+                ],
             });
 
-            console.log(`✅ GameweekPointsService - Update complete`);
+            console.log('✅ GameweekPointsService - Update complete');
             return {
                 updated: true,
                 reason: updateNeeded.reason,
@@ -119,9 +120,8 @@ export class GameweekPointsService {
                 playerCount: generationResult.playerCount,
                 currentGameweek,
                 previousGameweek: lastGeneratedGameweek,
-                pointsPopulationResult // Include points population result
+                pointsPopulationResult, // Include points population result
             };
-
         } catch (error) {
             console.error('❌ GameweekPointsService - Update failed:', error);
             throw error;
@@ -142,20 +142,22 @@ export class GameweekPointsService {
 
             // Get sample player data to determine available gameweeks
             const fplPlayers = await fplApiCache.getFplPlayers();
-            const playerIds = fplPlayers.map(p => p.id);
+            const playerIds = fplPlayers.map((p) => p.id);
             const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
             const availableGameweeks = this.getAvailableGameweeks(fplPlayerGameweeksById);
 
             // Regenerate ALL available gameweeks
-            const result = await this.generatePointsForGameweeks(availableGameweeks, currentGameweek);
+            const result = await this.generatePointsForGameweeks(availableGameweeks);
 
             // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
-            const { populatePointsIntoDivisionDocuments } = await import('../../../_shared/services/division-teams-points-population.service');
+            const { populatePointsIntoDivisionDocuments } = await import(
+                '../../../_shared/services/division-teams-points-population.service'
+            );
 
             const pointsPopulationResult = await populatePointsIntoDivisionDocuments(
                 availableGameweeks,
-                currentGameweek
+                currentGameweek,
             );
 
             if (pointsPopulationResult.errors.length > 0) {
@@ -174,9 +176,9 @@ export class GameweekPointsService {
                         gameweek: currentGameweek,
                         generatedAt: new Date().toISOString(),
                         playerCount: result.playerCount,
-                        type: 'full'
-                    }
-                ]
+                        type: 'full',
+                    },
+                ],
             });
 
             return {
@@ -185,9 +187,8 @@ export class GameweekPointsService {
                 gameweeksGenerated: availableGameweeks,
                 playerCount: result.playerCount,
                 currentGameweek,
-                pointsPopulationResult // Include points population result
+                pointsPopulationResult, // Include points population result
             };
-
         } catch (error) {
             console.error('❌ GameweekPointsService - Force regeneration failed:', error);
             throw error;
@@ -199,15 +200,14 @@ export class GameweekPointsService {
      */
     private shouldUpdatePoints(
         currentGameweek: number,
-        lastGeneratedGameweek: number
+        lastGeneratedGameweek: number,
     ): { needed: boolean; reason: string; gameweeksToGenerate: number[] } {
-
         // Case 1: Never generated before
         if (lastGeneratedGameweek === 0) {
             return {
                 needed: true,
                 reason: 'No previous generation found',
-                gameweeksToGenerate: [currentGameweek]
+                gameweeksToGenerate: [currentGameweek],
             };
         }
 
@@ -226,7 +226,7 @@ export class GameweekPointsService {
             return {
                 needed: true,
                 reason: `Gameweek changed from ${lastGeneratedGameweek} to ${currentGameweek}`,
-                gameweeksToGenerate
+                gameweeksToGenerate,
             };
         }
 
@@ -235,7 +235,7 @@ export class GameweekPointsService {
             return {
                 needed: true,
                 reason: `Live update for current gameweek ${currentGameweek}`,
-                gameweeksToGenerate: [currentGameweek]
+                gameweeksToGenerate: [currentGameweek],
             };
         }
 
@@ -252,7 +252,6 @@ export class GameweekPointsService {
      */
     private async generatePointsForGameweeks(
         targetGameweeks: number[],
-        currentGameweek: number
     ): Promise<{ playerCount: number }> {
         console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
 
@@ -261,10 +260,7 @@ export class GameweekPointsService {
         const { readPlayers } = await import('../../../_shared/lib/sheets/players');
 
         // Get required data
-        const [sheetsPlayers, fplPlayers] = await Promise.all([
-            readPlayers(),
-            fplApiCache.getFplPlayers(),
-        ]);
+        const [sheetsPlayers, fplPlayers] = await Promise.all([readPlayers(), fplApiCache.getFplPlayers()]);
 
         // Create sheets players lookup
         const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
@@ -273,14 +269,14 @@ export class GameweekPointsService {
         }, {});
 
         // Filter FPL players to only include those in sheets
-        const filteredFplPlayers = fplPlayers.filter(player => sheetsPlayersById[player.id]);
+        const filteredFplPlayers = fplPlayers.filter((player) => sheetsPlayersById[player.id]);
 
         if (filteredFplPlayers.length === 0) {
             throw new Error('No players found that exist in both FPL data and sheets');
         }
 
         // Get detailed stats for filtered players
-        const playerIds = filteredFplPlayers.map(p => p.id);
+        const playerIds = filteredFplPlayers.map((p) => p.id);
         const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
 
         // Generate gameweek points data
@@ -288,7 +284,7 @@ export class GameweekPointsService {
             filteredFplPlayers,
             fplPlayerGameweeksById,
             sheetsPlayersById,
-            targetGameweeks
+            targetGameweeks,
         );
 
         // Update element summaries with gameweek points data using existing function
@@ -301,9 +297,7 @@ export class GameweekPointsService {
     /**
      * Get available gameweeks from player data
      */
-    private getAvailableGameweeks(
-        fplPlayerGameweeksById: Record<number, any>
-    ): number[] {
+    private getAvailableGameweeks(fplPlayerGameweeksById: Record<number, any>): number[] {
         const gameweekSet = new Set<number>();
 
         Object.values(fplPlayerGameweeksById).forEach((playerData: any) => {
@@ -317,7 +311,6 @@ export class GameweekPointsService {
         return Array.from(gameweekSet).sort((a, b) => a - b);
     }
 
-
     /**
      * Get points metadata from cache
      */
@@ -325,7 +318,7 @@ export class GameweekPointsService {
         try {
             const doc = await this.client.getDocument<GameweekPointsMetadata>(
                 this.client.collections.CACHE_STATE,
-                this.METADATA_DOC_ID
+                this.METADATA_DOC_ID,
             );
 
             return doc?.data || null;
@@ -346,17 +339,13 @@ export class GameweekPointsService {
                 lastGeneratedGameweek: metadata.lastGeneratedGameweek ?? existing?.lastGeneratedGameweek ?? 0,
                 lastGeneratedAt: metadata.lastGeneratedAt ?? existing?.lastGeneratedAt ?? new Date().toISOString(),
                 currentGameweek: metadata.currentGameweek ?? existing?.currentGameweek ?? 0,
-                generationHistory: metadata.generationHistory ?? existing?.generationHistory ?? []
+                generationHistory: metadata.generationHistory ?? existing?.generationHistory ?? [],
             };
 
-            await this.client.setDocument(
-                this.client.collections.CACHE_STATE,
-                this.METADATA_DOC_ID,
-                {
-                    source: 'enhanced',
-                    data: updatedMetadata
-                }
-            );
+            await this.client.setDocument(this.client.collections.CACHE_STATE, this.METADATA_DOC_ID, {
+                source: 'enhanced',
+                data: updatedMetadata,
+            });
 
             console.log('📝 Points metadata updated:', updatedMetadata);
         } catch (error) {
@@ -376,7 +365,7 @@ export class GameweekPointsService {
         reason: string;
     }> {
         try {
-            const currentGameweek = await fplApiCache.getCurrentGameweek() || 0;
+            const currentGameweek = (await fplApiCache.getCurrentGameweek()) || 0;
             const metadata = await this.getPointsMetadata();
 
             if (!metadata) {
@@ -385,7 +374,7 @@ export class GameweekPointsService {
                     lastGameweek: 0,
                     currentGameweek,
                     needsUpdate: true,
-                    reason: 'No previous generation found'
+                    reason: 'No previous generation found',
                 };
             }
 
@@ -396,7 +385,7 @@ export class GameweekPointsService {
                 lastGameweek: metadata.lastGeneratedGameweek,
                 currentGameweek,
                 needsUpdate: updateCheck.needed,
-                reason: updateCheck.reason
+                reason: updateCheck.reason,
             };
         } catch (error) {
             console.error('Error getting points status:', error);

@@ -21,13 +21,13 @@ interface DraftFiltersMultiSelectProps {
 }
 
 export function DraftFiltersMultiSelect({
-                                            options,
-                                            selectedValues,
-                                            onSelectionChange,
-                                            placeholder,
-                                            className,
-                                            sortOptions = false
-                                        }: DraftFiltersMultiSelectProps) {
+    options,
+    selectedValues,
+    onSelectionChange,
+    placeholder,
+    className,
+    sortOptions = false,
+}: DraftFiltersMultiSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +45,7 @@ export function DraftFiltersMultiSelect({
 
     const handleToggle = (optionId: string) => {
         if (selectedValues.includes(optionId)) {
-            onSelectionChange(selectedValues.filter(id => id !== optionId));
+            onSelectionChange(selectedValues.filter((id) => id !== optionId));
         } else {
             onSelectionChange([...selectedValues, optionId]);
         }
@@ -56,15 +56,13 @@ export function DraftFiltersMultiSelect({
         if (selectedValues.length === total) return `All ${placeholder}`;
         if (selectedValues.length === 0) return `No ${placeholder}`;
         if (selectedValues.length === 1) {
-            const option = options.find(opt => opt.id === selectedValues[0]);
+            const option = options.find((opt) => opt.id === selectedValues[0]);
             return option?.label || `1 ${placeholder.slice(0, -1)}`;
         }
         return `${selectedValues.length} ${placeholder}`;
     };
 
-    const sortedOptions = sortOptions
-        ? [...options].sort((a, b) => a.label.localeCompare(b.label))
-        : options;
+    const sortedOptions = sortOptions ? [...options].sort((a, b) => a.label.localeCompare(b.label)) : options;
 
     return (
         <div className={`${styles.dropdown} ${className || ''}`} ref={dropdownRef}>
@@ -79,13 +77,13 @@ export function DraftFiltersMultiSelect({
 
             {isOpen && (
                 <div className={styles.dropdownMenu}>
-                    {sortedOptions.map(option => {
+                    {sortedOptions.map((option) => {
                         const isSelected = selectedValues.includes(option.id);
                         const isDisabled = option.disabled || option.count === 0;
 
-                        const itemClass = `${styles.dropdownItem} ${
-                            isSelected ? styles.selected : ''
-                        } ${isDisabled ? styles.disabled : ''}`;
+                        const itemClass = `${styles.dropdownItem} ${isSelected ? styles.selected : ''} ${
+                            isDisabled ? styles.disabled : ''
+                        }`;
 
                         return (
                             <div

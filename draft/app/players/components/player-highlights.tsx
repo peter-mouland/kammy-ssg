@@ -11,13 +11,8 @@ interface PlayerHighlightsProps {
     position: string;
 }
 
-export function PlayerHighlights({
-                                     player,
-                                     seasonTotals,
-                                     currentGameweek,
-                                     position
-                                 }: PlayerHighlightsProps) {
-    const form = parseFloat(player.form || '0');
+export function PlayerHighlights({ player, seasonTotals, currentGameweek, position }: PlayerHighlightsProps) {
+    const form = Number.parseFloat(player.form || '0');
     const positionLower = position.toLowerCase();
 
     return (
@@ -65,10 +60,22 @@ export function PlayerHighlights({
                             <span className={styles.barValue}>{seasonTotals.goals + seasonTotals.assists} G+A</span>
                         </div>
                         <div className={styles.barContainer}>
-                            <div className={styles.barSegment} style={{width: `${Math.min(seasonTotals.goals * 5, 70)}%`, backgroundColor: '#059669'}}>
+                            <div
+                                className={styles.barSegment}
+                                style={{
+                                    width: `${Math.min(seasonTotals.goals * 5, 70)}%`,
+                                    backgroundColor: '#059669',
+                                }}
+                            >
                                 <span className={styles.segmentLabel}>{seasonTotals.goals}G</span>
                             </div>
-                            <div className={styles.barSegment} style={{width: `${Math.min(seasonTotals.assists * 5, 30)}%`, backgroundColor: '#0891b2'}}>
+                            <div
+                                className={styles.barSegment}
+                                style={{
+                                    width: `${Math.min(seasonTotals.assists * 5, 30)}%`,
+                                    backgroundColor: '#0891b2',
+                                }}
+                            >
                                 <span className={styles.segmentLabel}>{seasonTotals.assists}A</span>
                             </div>
                         </div>
@@ -79,13 +86,23 @@ export function PlayerHighlights({
                         <div className={styles.performanceBar}>
                             <div className={styles.barHeader}>
                                 <span className={styles.barLabel}>🛡️ Defense</span>
-                                <span className={styles.barValue}>{seasonTotals.cleanSheets} CS ({seasonTotals.cleanSheetPercentage}%)</span>
+                                <span className={styles.barValue}>
+                                    {seasonTotals.cleanSheets} CS ({seasonTotals.cleanSheetPercentage}%)
+                                </span>
                             </div>
                             <div className={styles.barContainer}>
-                                <div className={styles.barFull} style={{
-                                    width: `${seasonTotals.cleanSheetPercentage}%`,
-                                    backgroundColor: seasonTotals.cleanSheetPercentage >= 50 ? '#059669' : seasonTotals.cleanSheetPercentage >= 30 ? '#d97706' : '#dc2626'
-                                }}>
+                                <div
+                                    className={styles.barFull}
+                                    style={{
+                                        width: `${seasonTotals.cleanSheetPercentage}%`,
+                                        backgroundColor:
+                                            seasonTotals.cleanSheetPercentage >= 50
+                                                ? '#059669'
+                                                : seasonTotals.cleanSheetPercentage >= 30
+                                                ? '#d97706'
+                                                : '#dc2626',
+                                    }}
+                                >
                                     <span className={styles.segmentLabel}>{seasonTotals.cleanSheetPercentage}%</span>
                                 </div>
                             </div>
@@ -96,13 +113,23 @@ export function PlayerHighlights({
                     <div className={styles.performanceBar}>
                         <div className={styles.barHeader}>
                             <span className={styles.barLabel}>⏱️ Availability</span>
-                            <span className={styles.barValue}>{seasonTotals.gamesPlayed} games ({seasonTotals.averageMinutes}min avg)</span>
+                            <span className={styles.barValue}>
+                                {seasonTotals.gamesPlayed} games ({seasonTotals.averageMinutes}min avg)
+                            </span>
                         </div>
                         <div className={styles.barContainer}>
-                            <div className={styles.barFull} style={{
-                                width: `${Math.min((seasonTotals.averageMinutes / 90) * 100, 100)}%`,
-                                backgroundColor: seasonTotals.averageMinutes >= 70 ? '#059669' : seasonTotals.averageMinutes >= 45 ? '#d97706' : '#dc2626'
-                            }}>
+                            <div
+                                className={styles.barFull}
+                                style={{
+                                    width: `${Math.min((seasonTotals.averageMinutes / 90) * 100, 100)}%`,
+                                    backgroundColor:
+                                        seasonTotals.averageMinutes >= 70
+                                            ? '#059669'
+                                            : seasonTotals.averageMinutes >= 45
+                                            ? '#d97706'
+                                            : '#dc2626',
+                                }}
+                            >
                                 <span className={styles.segmentLabel}>{seasonTotals.averageMinutes}min</span>
                             </div>
                         </div>
@@ -138,18 +165,12 @@ export function PlayerHighlights({
             <div className={styles.insightsSection}>
                 <h3 className={styles.sectionTitle}>Quick Insights</h3>
                 <div className={styles.insights}>
-                    <QuickInsight
-                        icon="⚽"
-                        text={getGoalInsight(seasonTotals.goals, positionLower)}
-                    />
+                    <QuickInsight icon="⚽" text={getGoalInsight(seasonTotals.goals, positionLower)} />
                     <QuickInsight
                         icon="🎯"
                         text={getPointsInsight(seasonTotals.totalCustomPoints, seasonTotals.gamesPlayed)}
                     />
-                    <QuickInsight
-                        icon="📈"
-                        text={getFormInsight(form)}
-                    />
+                    <QuickInsight icon="📈" text={getFormInsight(form)} />
                     <QuickInsight
                         icon="⏱️"
                         text={getMinutesInsight(seasonTotals.totalMinutes, seasonTotals.gamesPlayed)}

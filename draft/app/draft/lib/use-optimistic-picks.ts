@@ -23,10 +23,11 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
             } else if (actionData?.error) {
                 // Remove failed optimistic picks after a delay
                 setTimeout(() => {
-                    setOptimisticPicks(prev => prev.filter(pick =>
-                        !pick.isOptimistic ||
-                        (pick.timestamp && Date.now() - pick.timestamp < 5000)
-                    ));
+                    setOptimisticPicks((prev) =>
+                        prev.filter(
+                            (pick) => !pick.isOptimistic || (pick.timestamp && Date.now() - pick.timestamp < 5000),
+                        ),
+                    );
                 }, 1000);
             }
         }
@@ -35,11 +36,9 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
     // Clean up old optimistic picks periodically
     useEffect(() => {
         const cleanup = setInterval(() => {
-            setOptimisticPicks(prev => {
-                const filtered = prev.filter(pick =>
-                    !pick.isOptimistic ||
-                    !pick.timestamp ||
-                    Date.now() - pick.timestamp < 10000 // Remove picks older than 10 seconds
+            setOptimisticPicks((prev) => {
+                const filtered = prev.filter(
+                    (pick) => !pick.isOptimistic || !pick.timestamp || Date.now() - pick.timestamp < 10000, // Remove picks older than 10 seconds
                 );
                 return filtered.length !== prev.length ? filtered : prev;
             });
@@ -52,9 +51,9 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
         const optimisticPick: OptimisticPick = {
             ...pick,
             isOptimistic: true,
-            timestamp: Date.now()
+            timestamp: Date.now(),
         };
-        setOptimisticPicks(prev => [...prev, optimisticPick]);
+        setOptimisticPicks((prev) => [...prev, optimisticPick]);
     }, []);
 
     // MISSING FUNCTION: Clear all optimistic picks manually
@@ -65,14 +64,14 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
 
     // Combine real picks with valid optimistic picks
     const allPicks = useMemo(() => {
-        const realPicks = initialPicks.map(pick => ({ ...pick, isOptimistic: false }));
+        const realPicks = initialPicks.map((pick) => ({ ...pick, isOptimistic: false }));
 
         // Filter out optimistic picks that have become real
-        const validOptimisticPicks = optimisticPicks.filter(pick =>
-            !realPicks.some(realPick =>
-                realPick.playerId === pick.playerId &&
-                realPick.divisionId === pick.divisionId
-            )
+        const validOptimisticPicks = optimisticPicks.filter(
+            (pick) =>
+                !realPicks.some(
+                    (realPick) => realPick.playerId === pick.playerId && realPick.divisionId === pick.divisionId,
+                ),
         );
 
         return [...realPicks, ...validOptimisticPicks].sort((a, b) => a.pickNumber - b.pickNumber);
@@ -82,6 +81,6 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
         optimisticPicks: allPicks,
         addOptimisticPick,
         clearOptimisticPicks, // ADDED: Missing function
-        hasOptimisticPicks: optimisticPicks.length > 0
+        hasOptimisticPicks: optimisticPicks.length > 0,
     };
 }

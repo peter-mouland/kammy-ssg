@@ -1,13 +1,12 @@
 /* Location: app/players/server/players.server.ts */
 
-import { fplApiCache } from "../../_shared/lib/fpl/api-cache";
+import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import type { PlayerStatsData } from '../types/player-types';
 
 export async function getPlayerStatsData(): Promise<PlayerStatsData> {
-
     const [enhancedPlayers, fplTeams] = await Promise.all([
         fplApiCache.getEnhancedPlayerData(),
-        fplApiCache.getFplTeams()
+        fplApiCache.getFplTeams(),
     ]);
 
     const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
@@ -19,12 +18,12 @@ export async function getPlayerStatsData(): Promise<PlayerStatsData> {
         players: enhancedPlayers,
         teams,
         positions: {
-            'gk': 'gk',
-            'cb': 'cb',
-            'fb': 'fb',
-            'mid': 'mid',
-            'wa': 'wa',
-            'ca': 'ca'
-        }
+            gk: 'gk',
+            cb: 'cb',
+            fb: 'fb',
+            mid: 'mid',
+            wa: 'wa',
+            ca: 'ca',
+        },
     };
 }

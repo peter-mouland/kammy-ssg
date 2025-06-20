@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import type { CustomPosition, CustomPositionName, PositionNameMap } from '../../players/types/player-types';
 import type { SquadComposition, PositionCounts, TeamCounts } from '../types/draft-types';
 
-
 // Positions configuration type using mapped type
 export type PositionsConfig = {
     [K in CustomPosition]: {
@@ -29,11 +28,11 @@ export const DRAFT_RULES: DraftRules = {
         fb: { max: 2, name: 'Full Back' },
         mid: { max: 2, name: 'Midfielder' },
         wa: { max: 2, name: 'Wide Attacker' },
-        ca: { max: 2, name: 'Centre Attacker' }
+        ca: { max: 2, name: 'Centre Attacker' },
     },
     maxPlayersPerTeam: 2,
     maxSubstitutes: 1,
-    totalSquadSize: 12
+    totalSquadSize: 12,
 };
 
 export interface DraftValidationResult {
@@ -44,22 +43,34 @@ export interface DraftValidationResult {
 
 // Get player position from draft.position (our custom positions)
 export const getPlayerPosition = (player: any): CustomPosition => {
-    return (player.position || player.draft?.position)?.toLowerCase();  // userPicks uses player.position. targetPlayer uses draft.position
+    return (player.position || player.draft?.position)?.toLowerCase(); // userPicks uses player.position. targetPlayer uses draft.position
 };
 
 export function getSquadComposition(userPicks: any[]): SquadComposition {
     const positionCounts: PositionCounts = {
-        gk: 0, cb: 0, fb: 0, mid: 0, wa: 0, ca: 0, sub: 0, total: 0
+        gk: 0,
+        cb: 0,
+        fb: 0,
+        mid: 0,
+        wa: 0,
+        ca: 0,
+        sub: 0,
+        total: 0,
     };
 
     const teamCounts: TeamCounts = {};
 
     // Track which players go to main positions vs substitutes
     const positionTracker: Record<string, number> = {
-        gk: 0, cb: 0, fb: 0, mid: 0, wa: 0, ca: 0
+        gk: 0,
+        cb: 0,
+        fb: 0,
+        mid: 0,
+        wa: 0,
+        ca: 0,
     };
 
-    userPicks.forEach(pick => {
+    userPicks.forEach((pick) => {
         const position = getPlayerPosition(pick);
 
         // Count team occurrences
@@ -117,7 +128,7 @@ export function validateDraftEligibility(squadComposition: any, targetPlayer: an
         return {
             isEligible: false,
             violations: [`Already have ${DRAFT_RULES.maxPlayersPerTeam} players from ${teamName}`],
-            canAddToSub: false
+            canAddToSub: false,
         };
     }
 
@@ -143,9 +154,9 @@ export function validateDraftEligibility(squadComposition: any, targetPlayer: an
         return {
             isEligible: false,
             violations: [
-                `Cannot add more ${positionRule.name}s - already have ${currentPositionCount} and 1 substitute`
+                `Cannot add more ${positionRule.name}s - already have ${currentPositionCount} and 1 substitute`,
             ],
-            canAddToSub: false
+            canAddToSub: false,
         };
     }
 
@@ -155,9 +166,9 @@ export function validateDraftEligibility(squadComposition: any, targetPlayer: an
             isEligible: false,
             violations: [
                 `Already have ${positionRule.max} ${positionRule.name}${positionRule.max > 1 ? 's' : ''}`,
-                `No substitute slots available (${currentSubCount}/${DRAFT_RULES.maxSubstitutes})`
+                `No substitute slots available (${currentSubCount}/${DRAFT_RULES.maxSubstitutes})`,
             ],
-            canAddToSub: false
+            canAddToSub: false,
         };
     }
 
@@ -175,7 +186,7 @@ export function validateDraftEligibility(squadComposition: any, targetPlayer: an
     return {
         isEligible,
         violations,
-        canAddToSub: canAddToSub && !canAddToPosition
+        canAddToSub: canAddToSub && !canAddToPosition,
     };
 }
 
@@ -190,20 +201,20 @@ export function getEligiblePlayers(allPlayers: any[], userPicks: any[]) {
     const eligiblePlayers: any[] = [];
     const violations = new Set<string>();
 
-    allPlayers.forEach(player => {
+    allPlayers.forEach((player) => {
         const validation = validateDraftEligibility(squadComposition, player);
 
         if (validation.isEligible) {
             eligiblePlayers.push(player);
         } else {
-            validation.violations.forEach(v => violations.add(v));
+            validation.violations.forEach((v) => violations.add(v));
         }
     });
 
     return {
         eligiblePlayers,
         hiddenCount: allPlayers.length - eligiblePlayers.length,
-        violations: Array.from(violations)
+        violations: Array.from(violations),
     };
 }
 

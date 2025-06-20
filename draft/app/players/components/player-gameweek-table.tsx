@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-gameweek-table.tsx */
 
-import { Table, type TableColumn, TableBadge } from "../../_shared/components/table";
+import { Table, type TableColumn, TableBadge } from '../../_shared/components/table';
 import { isStatRelevant, formatPointsDisplay } from '../../scoring/lib';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 // import { PointsBreakdownTooltip } from './points-breakdown-tooltip'
@@ -11,11 +11,7 @@ interface PlayerGameweekTableProps {
     currentGameweek: number;
 }
 
-export function PlayerGameweekTable({
-                                        gameweekStats,
-                                        position,
-                                        currentGameweek
-                                    }: PlayerGameweekTableProps) {
+export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }: PlayerGameweekTableProps) {
     // Helper functions
     const getStatDisplay = (value: number, stat: string, position: string): React.ReactNode => {
         if (!isStatRelevant(stat, position)) {
@@ -64,14 +60,10 @@ export function PlayerGameweekTable({
             fixed: true,
             render: (gameweek, gw) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                    <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
-                        {gameweek}
-                    </span>
-                    {gameweek === currentGameweek && (
-                        <TableBadge variant="error">LIVE</TableBadge>
-                    )}
+                    <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{gameweek}</span>
+                    {gameweek === currentGameweek && <TableBadge variant="error">LIVE</TableBadge>}
                 </div>
-            )
+            ),
         },
         {
             key: 'minutes',
@@ -79,9 +71,12 @@ export function PlayerGameweekTable({
             accessor: 'minutes',
             align: 'center',
             width: 60,
-            render: (minutes) => minutes === 0 ?
-                <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>0</span> :
-                minutes
+            render: (minutes) =>
+                minutes === 0 ? (
+                    <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>0</span>
+                ) : (
+                    minutes
+                ),
         },
         {
             key: 'goals',
@@ -89,7 +84,7 @@ export function PlayerGameweekTable({
             accessor: 'goals',
             align: 'center',
             width: 60,
-            render: (goals) => getStatDisplay(goals, 'goals', position)
+            render: (goals) => getStatDisplay(goals, 'goals', position),
         },
         {
             key: 'assists',
@@ -97,8 +92,8 @@ export function PlayerGameweekTable({
             accessor: 'assists',
             align: 'center',
             width: 70,
-            render: (assists) => getStatDisplay(assists, 'assists', position)
-        }
+            render: (assists) => getStatDisplay(assists, 'assists', position),
+        },
     ];
 
     // Add position-specific columns
@@ -109,7 +104,7 @@ export function PlayerGameweekTable({
             accessor: 'cleanSheets',
             align: 'center',
             width: 50,
-            render: (cs) => getStatDisplay(cs, 'clean_sheets', position)
+            render: (cs) => getStatDisplay(cs, 'clean_sheets', position),
         });
     }
 
@@ -120,7 +115,7 @@ export function PlayerGameweekTable({
             accessor: 'goalsConceded',
             align: 'center',
             width: 50,
-            render: (gc) => getStatDisplay(gc, 'goals_conceded', position)
+            render: (gc) => getStatDisplay(gc, 'goals_conceded', position),
         });
     }
 
@@ -131,7 +126,7 @@ export function PlayerGameweekTable({
             accessor: 'saves',
             align: 'center',
             width: 60,
-            render: (saves) => getStatDisplay(saves, 'saves', position)
+            render: (saves) => getStatDisplay(saves, 'saves', position),
         });
     }
 
@@ -142,7 +137,7 @@ export function PlayerGameweekTable({
             accessor: 'penaltiesSaved',
             align: 'center',
             width: 60,
-            render: (ps) => getStatDisplay(ps, 'penalties_saved', position)
+            render: (ps) => getStatDisplay(ps, 'penalties_saved', position),
         });
     }
 
@@ -154,7 +149,7 @@ export function PlayerGameweekTable({
             accessor: 'yellowCards',
             align: 'center',
             width: 50,
-            render: (yc) => getStatDisplay(yc, 'yellow_cards', position)
+            render: (yc) => getStatDisplay(yc, 'yellow_cards', position),
         },
         {
             key: 'redCards',
@@ -162,8 +157,8 @@ export function PlayerGameweekTable({
             accessor: 'redCards',
             align: 'center',
             width: 50,
-            render: (rc) => getStatDisplay(rc, 'red_cards', position)
-        }
+            render: (rc) => getStatDisplay(rc, 'red_cards', position),
+        },
     );
 
     // Add bonus if relevant
@@ -174,7 +169,7 @@ export function PlayerGameweekTable({
             accessor: 'bonus',
             align: 'center',
             width: 60,
-            render: (bonus) => getStatDisplay(bonus, 'bonus', position)
+            render: (bonus) => getStatDisplay(bonus, 'bonus', position),
         });
     }
 
@@ -192,21 +187,23 @@ export function PlayerGameweekTable({
                 }
 
                 const total = gw.customPoints;
-                const color = total > 0 ? 'var(--color-success)' :
-                    total < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
+                const color =
+                    total > 0 ? 'var(--color-success)' : total < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
 
                 return (
-                    <span style={{
-                        color,
-                        fontWeight: 'var(--font-weight-semibold)',
-                        backgroundColor: 'var(--color-primary-light)',
-                        padding: 'var(--spacing-1) var(--spacing-2)',
-                        borderRadius: 'var(--radius-sm)'
-                    }}>
+                    <span
+                        style={{
+                            color,
+                            fontWeight: 'var(--font-weight-semibold)',
+                            backgroundColor: 'var(--color-primary-light)',
+                            padding: 'var(--spacing-1) var(--spacing-2)',
+                            borderRadius: 'var(--radius-sm)',
+                        }}
+                    >
                         {formatPointsDisplay(total)}
                     </span>
                 );
-            }
+            },
         },
         {
             key: 'fplPoints',
@@ -216,21 +213,27 @@ export function PlayerGameweekTable({
             width: 80,
             variant: 'bold',
             render: (fplPoints) => {
-                const color = fplPoints > 0 ? 'var(--color-success)' :
-                    fplPoints < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
+                const color =
+                    fplPoints > 0
+                        ? 'var(--color-success)'
+                        : fplPoints < 0
+                        ? 'var(--color-error)'
+                        : 'var(--color-gray-500)';
 
                 return (
-                    <span style={{
-                        color,
-                        fontWeight: 'var(--font-weight-semibold)',
-                        backgroundColor: 'var(--color-gray-50)',
-                        padding: 'var(--spacing-1) var(--spacing-2)',
-                        borderRadius: 'var(--radius-sm)'
-                    }}>
+                    <span
+                        style={{
+                            color,
+                            fontWeight: 'var(--font-weight-semibold)',
+                            backgroundColor: 'var(--color-gray-50)',
+                            padding: 'var(--spacing-1) var(--spacing-2)',
+                            borderRadius: 'var(--radius-sm)',
+                        }}
+                    >
                         {fplPoints}
                     </span>
                 );
-            }
+            },
         },
         {
             key: 'opponent',
@@ -240,10 +243,11 @@ export function PlayerGameweekTable({
             render: (_, gw) => (
                 <div style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--font-weight-medium)' }}>
                     <span style={{ color: 'var(--color-gray-800)' }}>
-                        {gw.wasHome ? '' : '@'}{gw.opponentName || `Team ${gw.opponent}`}
+                        {gw.wasHome ? '' : '@'}
+                        {gw.opponentName || `Team ${gw.opponent}`}
                     </span>
                 </div>
-            )
+            ),
         },
         {
             key: 'result',
@@ -251,8 +255,8 @@ export function PlayerGameweekTable({
             width: 80,
             align: 'center',
             hideOnMobile: true,
-            render: (_, gw) => renderMatchResult(gw)
-        }
+            render: (_, gw) => renderMatchResult(gw),
+        },
     );
 
     return (
@@ -265,7 +269,7 @@ export function PlayerGameweekTable({
             empty={{
                 icon: '📊',
                 title: 'No gameweek data available',
-                description: 'Player statistics will appear once gameweeks are played'
+                description: 'Player statistics will appear once gameweeks are played',
             }}
             rowClassName={(gw) => {
                 const classes = [];

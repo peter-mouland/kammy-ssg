@@ -1,7 +1,7 @@
 /* Location: app/scoring/components/game-stats.tsx */
 
 import styles from './game-stats.module.css';
-import type { UserTeamsSheetData, DivisionSheetData } from "../../teams/types/team-types";
+import type { UserTeamsSheetData, DivisionSheetData } from '../../teams/types/team-types';
 import type { FplPlayerData } from '../../_shared/lib/fpl/fpl-types';
 
 interface GameStatsProps {
@@ -16,23 +16,23 @@ export function GameStats({ divisions, leagueStandings, topPlayers, currentGamew
         {
             value: `${leagueStandings.length}+`,
             label: 'Active Teams',
-            color: '#3b82f6'
+            color: '#3b82f6',
         },
         {
             value: divisions.length.toString(),
             label: 'Divisions',
-            color: '#10b981'
+            color: '#10b981',
         },
         {
             value: currentGameweek.toString(),
             label: 'Current Gameweek',
-            color: '#8b5cf6'
+            color: '#8b5cf6',
         },
         {
             value: `${topPlayers.length}+`,
             label: 'Players Available',
-            color: '#f59e0b'
-        }
+            color: '#f59e0b',
+        },
     ];
 
     return (
@@ -44,15 +44,10 @@ export function GameStats({ divisions, leagueStandings, topPlayers, currentGamew
             <div className={styles.statsGrid}>
                 {stats.map((stat, index) => (
                     <div key={index} className={styles.statItem}>
-                        <div
-                            className={styles.statValue}
-                            style={{ color: stat.color }}
-                        >
+                        <div className={styles.statValue} style={{ color: stat.color }}>
                             {stat.value}
                         </div>
-                        <div className={styles.statLabel}>
-                            {stat.label}
-                        </div>
+                        <div className={styles.statLabel}>{stat.label}</div>
                     </div>
                 ))}
             </div>

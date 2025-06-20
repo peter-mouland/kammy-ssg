@@ -1,7 +1,7 @@
 /* Location: app/admin/components/layout/admin-container.tsx */
 
 // /admin/components/layout/admin-container.tsx
-import React from 'react';
+import type React from 'react';
 import styles from './admin-container.module.css';
 
 interface AdminContainerProps {
@@ -10,9 +10,5 @@ interface AdminContainerProps {
 }
 
 export const AdminContainer = ({ children, spacing = 'md' }: AdminContainerProps) => {
-    return (
-        <div className={`${styles.container} ${styles[`spacing_${spacing}`]}`}>
-            {children}
-        </div>
-    );
+    return <div className={`${styles.container} ${styles[`spacing_${spacing}`]}`}>{children}</div>;
 };

@@ -14,46 +14,46 @@ export async function handleOverviewActions(params: OverviewActionParams): Promi
     try {
         switch (actionType) {
             // Data Management Actions for Overview
-            case "clearFirestoreData": {
+            case 'clearFirestoreData': {
                 const { handleClearFirestoreData } = await import('./actions/data-actions');
                 return await handleClearFirestoreData({ actionType, variant });
             }
-            case "getFirestoreStats": {
+            case 'getFirestoreStats': {
                 const { handleGetFirestoreStats } = await import('./actions/data-actions');
                 return await handleGetFirestoreStats({ actionType });
             }
-            case "populateBootstrapData": {
+            case 'populateBootstrapData': {
                 const { handlePopulateBootstrapData } = await import('./actions/data-actions');
                 return await handlePopulateBootstrapData();
             }
-            case "generateEnhancedDataFast": {
+            case 'generateEnhancedDataFast': {
                 const { handleGenerateEnhancedDataFast } = await import('./actions/data-actions');
                 return await handleGenerateEnhancedDataFast();
             }
-            case "populateElementSummaries": {
+            case 'populateElementSummaries': {
                 const { handlePopulateElementSummaries } = await import('./actions/data-actions');
                 return await handlePopulateElementSummaries();
             }
             // System Actions for Overview
-            case "getCacheStatus": {
+            case 'getCacheStatus': {
                 const { handleGetCacheStatus } = await import('./actions/system-actions');
                 return await handleGetCacheStatus();
             }
             // Cache Monitoring Actions
-            case "getCacheStats": {
+            case 'getCacheStats': {
                 const { handleGetCacheStats } = await import('./actions/cache-monitor-actions');
                 return await handleGetCacheStats();
             }
-            case "clearCache": {
+            case 'clearCache': {
                 const { handleClearCache } = await import('./actions/cache-monitor-actions');
                 return await handleClearCache();
             }
-            case "invalidateDraftCache": {
+            case 'invalidateDraftCache': {
                 const { handleInvalidateDraftCache } = await import('./actions/cache-monitor-actions');
                 return await handleInvalidateDraftCache({ actionType, divisionId });
             }
             // Points Actions accessible from Overview
-            case "generateGameWeekPoints": {
+            case 'generateGameWeekPoints': {
                 const { handleGenerateGameweekPoints } = await import('./actions/points-actions');
                 return await handleGenerateGameweekPoints();
             }

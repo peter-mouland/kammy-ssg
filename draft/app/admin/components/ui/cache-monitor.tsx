@@ -27,10 +27,7 @@ interface CacheMonitorProps {
     refreshInterval?: number;
 }
 
-export const CacheMonitor: React.FC<CacheMonitorProps> = ({
-                                                              autoRefresh = false,
-                                                              refreshInterval = 30000
-                                                          }) => {
+export const CacheMonitor: React.FC<CacheMonitorProps> = ({ autoRefresh = false, refreshInterval = 30000 }) => {
     const statsFetcher = useFetcher<{ success: boolean; data?: CacheStats; error?: string }>();
     const clearFetcher = useFetcher();
 
@@ -53,18 +50,12 @@ export const CacheMonitor: React.FC<CacheMonitorProps> = ({
     }, []);
 
     const loadStats = () => {
-        statsFetcher.submit(
-            { actionType: 'getCacheStats' },
-            { method: 'post' }
-        );
+        statsFetcher.submit({ actionType: 'getCacheStats' }, { method: 'post' });
     };
 
     const clearCache = () => {
         if (window.confirm('Are you sure you want to clear all cache? This will force fresh data loads.')) {
-            clearFetcher.submit(
-                { actionType: 'clearCache' },
-                { method: 'post' }
-            );
+            clearFetcher.submit({ actionType: 'clearCache' }, { method: 'post' });
         }
     };
 
@@ -80,11 +71,7 @@ export const CacheMonitor: React.FC<CacheMonitorProps> = ({
                     Sheets Cache Monitor
                 </h3>
                 <div className={styles.actions}>
-                    <button
-                        onClick={loadStats}
-                        disabled={isLoading}
-                        className={`${styles.button} ${styles.refresh}`}
-                    >
+                    <button onClick={loadStats} disabled={isLoading} className={`${styles.button} ${styles.refresh}`}>
                         <Icons.RefreshIcon />
                         {isLoading ? 'Loading...' : 'Refresh'}
                     </button>
@@ -100,21 +87,13 @@ export const CacheMonitor: React.FC<CacheMonitorProps> = ({
             </div>
 
             {statsFetcher.data?.error && (
-                <AdminMessage type="error">
-                    Error loading cache stats: {statsFetcher.data.error}
-                </AdminMessage>
+                <AdminMessage type="error">Error loading cache stats: {statsFetcher.data.error}</AdminMessage>
             )}
 
-            {clearFetcher.data?.success && (
-                <AdminMessage type="success">
-                    Cache cleared successfully
-                </AdminMessage>
-            )}
+            {clearFetcher.data?.success && <AdminMessage type="success">Cache cleared successfully</AdminMessage>}
 
             {clearFetcher.data?.error && (
-                <AdminMessage type="error">
-                    Error clearing cache: {clearFetcher.data.error}
-                </AdminMessage>
+                <AdminMessage type="error">Error clearing cache: {clearFetcher.data.error}</AdminMessage>
             )}
 
             {stats && (
@@ -124,7 +103,11 @@ export const CacheMonitor: React.FC<CacheMonitorProps> = ({
                         <h4 className={styles.statTitle}>Performance</h4>
                         <div className={styles.statRow}>
                             <span className={styles.statLabel}>Hit Rate:</span>
-                            <span className={`${styles.statValue} ${parseFloat(stats.hitRate) > 70 ? styles.good : styles.warning}`}>
+                            <span
+                                className={`${styles.statValue} ${
+                                    Number.parseFloat(stats.hitRate) > 70 ? styles.good : styles.warning
+                                }`}
+                            >
                                 {stats.hitRate}
                             </span>
                         </div>
@@ -187,9 +170,7 @@ export const CacheMonitor: React.FC<CacheMonitorProps> = ({
                     {/* Cache Keys (collapsible) */}
                     <div className={styles.statCard}>
                         <details className={styles.details}>
-                            <summary className={styles.statTitle}>
-                                All Cache Keys ({stats.keys.length})
-                            </summary>
+                            <summary className={styles.statTitle}>All Cache Keys ({stats.keys.length})</summary>
                             <div className={styles.keyList}>
                                 {stats.keys.map((key, index) => (
                                     <div key={index} className={styles.keyItem}>

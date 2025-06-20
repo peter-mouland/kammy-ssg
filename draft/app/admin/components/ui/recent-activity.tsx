@@ -1,6 +1,6 @@
 /* Location: app/admin/components/ui/recent-activity.tsx */
 
-import type { DivisionData } from "../types";
+import type { DivisionData } from '../types';
 
 import styles from './recent-activity.module.css';
 
@@ -14,41 +14,36 @@ export function RecentActivity({ currentGameweek, divisions }: RecentActivityPro
         {
             title: `Gameweek ${currentGameweek} Started`,
             description: 'New player stats available',
-            type: 'info'
+            type: 'info',
         },
         {
             title: 'League Updated',
             description: 'Rankings refreshed for all divisions',
-            type: 'success'
+            type: 'success',
         },
-        ...(divisions.length > 0 ? [{
-            title: 'Draft Available',
-            description: `${divisions.length} divisions ready for drafting`,
-            type: 'warning'
-        }] : [])
+        ...(divisions.length > 0
+            ? [
+                  {
+                      title: 'Draft Available',
+                      description: `${divisions.length} divisions ready for drafting`,
+                      type: 'warning',
+                  },
+              ]
+            : []),
     ];
 
     return (
         <div className="card">
             <div className="card-header">
                 <h2 className="card-title">📈 Recent Activity</h2>
-                <p className={styles.subtitle}>
-                    Latest updates and changes
-                </p>
+                <p className={styles.subtitle}>Latest updates and changes</p>
             </div>
 
             <div className={styles.activityList}>
                 {activities.map((activity, index) => (
-                    <div
-                        key={index}
-                        className={`${styles.activityItem} ${styles[activity.type]}`}
-                    >
-                        <div className={styles.activityTitle}>
-                            {activity.title}
-                        </div>
-                        <div className={styles.activityDescription}>
-                            {activity.description}
-                        </div>
+                    <div key={index} className={`${styles.activityItem} ${styles[activity.type]}`}>
+                        <div className={styles.activityTitle}>{activity.title}</div>
+                        <div className={styles.activityDescription}>{activity.description}</div>
                     </div>
                 ))}
             </div>

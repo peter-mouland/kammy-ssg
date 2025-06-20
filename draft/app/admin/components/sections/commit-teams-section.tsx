@@ -1,5 +1,6 @@
 // /admin/components/sections/commit-teams-section.tsx
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useActionData, useRouteLoaderData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { CommitTeamsButton } from '../ui/commit-teams-button';
@@ -15,16 +16,16 @@ interface CommitTeamsSectionProps {
 }
 
 export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
-                                                                          divisions,
-                                                                          draftOrders,
-                                                                          userTeamsByDivision,
-                                                                          draftState
-                                                                      }) => {
+    divisions,
+    draftOrders,
+    userTeamsByDivision,
+    draftState,
+}) => {
     const [selectedDivision, setSelectedDivision] = useState<string>('');
     const actionData = useActionData();
 
     // Get division info for selected division
-    const selectedDivisionData = divisions.find(d => d.id === selectedDivision);
+    const selectedDivisionData = divisions.find((d) => d.id === selectedDivision);
     const selectedTeams = userTeamsByDivision[selectedDivision]?.length || 0;
     const expectedPicks = selectedTeams * 12; // 12 picks per team
 
@@ -41,8 +42,8 @@ export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
             description="After draft completion, commit all drafted teams to Firestore for the live game"
         >
             <AdminMessage type="info">
-                <strong>Important:</strong> Only commit teams after the draft is completely finished.
-                This will create the team structure needed for the live fantasy game.
+                <strong>Important:</strong> Only commit teams after the draft is completely finished. This will create
+                the team structure needed for the live fantasy game.
             </AdminMessage>
 
             <div className={styles.formContainer}>
@@ -79,7 +80,11 @@ export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
                             </div>
                             <div className={styles.statusItem}>
                                 <span className={styles.statusLabel}>Draft Status:</span>
-                                <span className={`${styles.statusValue} ${isComplete ? styles.statusComplete : styles.statusInProgress}`}>
+                                <span
+                                    className={`${styles.statusValue} ${
+                                        isComplete ? styles.statusComplete : styles.statusInProgress
+                                    }`}
+                                >
                                     {isDraftActive ? '⏳ Active' : '✅ Ready to Commit'}
                                 </span>
                             </div>
@@ -96,11 +101,7 @@ export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
 
                 {/* Commit Button */}
                 <div className={styles.buttonContainer}>
-                    <CommitTeamsButton
-                        divisionId={selectedDivision}
-                        disabled={!isReadyToCommit}
-                        variant="primary"
-                    />
+                    <CommitTeamsButton divisionId={selectedDivision} disabled={!isReadyToCommit} variant="primary" />
                 </div>
             </div>
 
@@ -115,11 +116,7 @@ export const CommitTeamsSection: React.FC<CommitTeamsSectionProps> = ({
                     )}
                 </AdminMessage>
             )}
-            {actionData?.error && (
-                <AdminMessage type="error">
-                    {actionData.error}
-                </AdminMessage>
-            )}
+            {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
         </AdminSection>
     );
 };

@@ -7,7 +7,7 @@ import type { DraftOrderData } from '../types/draft-types';
  */
 export function generateDraftSequence(
     draftOrder: DraftOrderData[],
-    picksPerTeam: number
+    picksPerTeam: number,
 ): Array<{
     pickNumber: number;
     round: number;
@@ -23,7 +23,7 @@ export function generateDraftSequence(
 
         for (let posInRound = 1; posInRound <= totalTeams; posInRound++) {
             const actualPosition = isSnakeRound ? totalTeams - posInRound + 1 : posInRound;
-            const user = draftOrder.find(order => order.position === actualPosition);
+            const user = draftOrder.find((order) => order.position === actualPosition);
 
             if (user) {
                 const pickNumber = (round - 1) * totalTeams + posInRound;
@@ -32,7 +32,7 @@ export function generateDraftSequence(
                     round,
                     userId: user.userId,
                     userName: user.userName,
-                    position: actualPosition
+                    position: actualPosition,
                 });
             }
         }

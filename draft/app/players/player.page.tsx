@@ -1,23 +1,16 @@
 /* Location: app/players/player.page.tsx */
 
 // app/routes/players.$playerId.tsx
-import { useLoaderData, Link } from "react-router";
-import { PlayerGameweekTable } from "./components/player-gameweek-table";
-import { PlayerHighlights } from "./components/player-highlights";
+import { useLoaderData, Link } from 'react-router';
+import { PlayerGameweekTable } from './components/player-gameweek-table';
+import { PlayerHighlights } from './components/player-highlights';
 import { PageHeader } from '../_shared/components/page-header';
 import { getPositionColor } from '../scoring/lib';
 import styles from './player.page.module.css';
 import type { PlayerDetailData } from './types/player-types';
 
 export const PlayerPage = () => {
-    const {
-        player,
-        team,
-        position,
-        gameweekStats,
-        seasonTotals,
-        currentGameweek
-    } = useLoaderData<PlayerDetailData>();
+    const { player, team, position, gameweekStats, seasonTotals, currentGameweek } = useLoaderData<PlayerDetailData>();
 
     const playerName = `${player.first_name} ${player.second_name}`;
     const positionColor = getPositionColor(position);
@@ -36,10 +29,7 @@ export const PlayerPage = () => {
                 title={playerName}
                 subTitle={
                     <div className={styles.playerMeta}>
-                        <span
-                            className={styles.position}
-                            style={{ backgroundColor: positionColor }}
-                        >
+                        <span className={styles.position} style={{ backgroundColor: positionColor }}>
                             {position}
                         </span>
                         <span className={styles.team}>{team.name}</span>
@@ -59,9 +49,7 @@ export const PlayerPage = () => {
             <div className={styles.gameweekSection}>
                 <h2 className={styles.sectionTitle}>
                     Gameweek Performance
-                    <span className={styles.gameweekCount}>
-                        {gameweekStats.length} gameweeks played
-                    </span>
+                    <span className={styles.gameweekCount}>{gameweekStats.length} gameweeks played</span>
                 </h2>
 
                 <PlayerGameweekTable
@@ -72,4 +60,4 @@ export const PlayerPage = () => {
             </div>
         </div>
     );
-}
+};

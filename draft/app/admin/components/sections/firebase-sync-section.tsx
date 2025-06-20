@@ -19,11 +19,11 @@ export const FirebaseSyncSection = () => {
         fetcher.submit(
             {
                 actionType: 'syncDraft',
-                divisionId: draftState.currentDivisionId
+                divisionId: draftState.currentDivisionId,
             },
             {
-                method: 'post'  // Submit to current route (draft)
-            }
+                method: 'post', // Submit to current route (draft)
+            },
         );
     };
 
@@ -40,7 +40,7 @@ export const FirebaseSyncSection = () => {
             >
                 {isLoading ? (
                     <>
-                        <span className={styles.spinner}></span>
+                        <span className={styles.spinner} />
                         Syncing...
                     </>
                 ) : hasSuccess ? (
@@ -62,22 +62,12 @@ export const FirebaseSyncSection = () => {
             </button>
 
             {!draftState?.isActive && (
-                <AdminMessage type="warning">
-                    No active draft to sync. Start a draft first.
-                </AdminMessage>
+                <AdminMessage type="warning">No active draft to sync. Start a draft first.</AdminMessage>
             )}
 
-            {hasSuccess && fetcher.data?.message && (
-                <AdminMessage type="success">
-                    {fetcher.data.message}
-                </AdminMessage>
-            )}
+            {hasSuccess && fetcher.data?.message && <AdminMessage type="success">{fetcher.data.message}</AdminMessage>}
 
-            {hasError && (
-                <AdminMessage type="error">
-                    {fetcher.data.error}
-                </AdminMessage>
-            )}
+            {hasError && <AdminMessage type="error">{fetcher.data.error}</AdminMessage>}
         </div>
     );
 };

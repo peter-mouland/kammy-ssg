@@ -25,7 +25,6 @@ export interface SheetWriteOptions {
     responseDateTimeRenderOption?: 'SERIAL_NUMBER' | 'FORMATTED_STRING';
 }
 
-
 // Initialize Google Sheets API client
 export async function createSheetsClient() {
     try {
@@ -46,10 +45,9 @@ export async function createSheetsClient() {
             if (!credentials.client_email || !credentials.private_key || !credentials.project_id) {
                 throw new Error('Invalid service account credentials - missing required fields');
             }
-
         } catch (parseError) {
             console.error('Failed to parse service account credentials:', parseError);
-            throw new Error('Invalid GOOGLE_SERVICE_ACCOUNT_KEY format. Ensure it\'s base64 encoded JSON.');
+            throw new Error("Invalid GOOGLE_SERVICE_ACCOUNT_KEY format. Ensure it's base64 encoded JSON.");
         }
 
         const auth = new google.auth.GoogleAuth({
@@ -62,7 +60,8 @@ export async function createSheetsClient() {
                 client_id: credentials.client_id,
                 auth_uri: credentials.auth_uri || 'https://accounts.google.com/o/oauth2/auth',
                 token_uri: credentials.token_uri || 'https://oauth2.googleapis.com/token',
-                auth_provider_x509_cert_url: credentials.auth_provider_x509_cert_url || 'https://www.googleapis.com/oauth2/v1/certs',
+                auth_provider_x509_cert_url:
+                    credentials.auth_provider_x509_cert_url || 'https://www.googleapis.com/oauth2/v1/certs',
                 client_x509_cert_url: credentials.client_x509_cert_url,
             },
             scopes: SCOPES,
@@ -89,12 +88,12 @@ export async function testConnection(): Promise<{ success: boolean; message: str
 
         return {
             success: true,
-            message: `Connected successfully to spreadsheet: ${response.data.properties?.title || 'Unknown'}`
+            message: `Connected successfully to spreadsheet: ${response.data.properties?.title || 'Unknown'}`,
         };
     } catch (error) {
         return {
             success: false,
-            message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         };
     }
 }
@@ -107,17 +106,14 @@ export function createAppError(code: string, message: string, details?: unknown)
         code,
         message,
         details,
-        timestamp: new Date()
+        timestamp: new Date(),
     };
 }
 
 /**
  * Read data from a Google Sheet range
  */
-export async function readSheetRange(
-    sheetRange: SheetRange,
-    options: SheetReadOptions = {}
-): Promise<any[][]> {
+export async function readSheetRange(sheetRange: SheetRange, options: SheetReadOptions = {}): Promise<any[][]> {
     try {
         const sheetsClient = await createSheetsClient();
         const response = await sheetsClient.spreadsheets.values.get({
@@ -125,16 +121,12 @@ export async function readSheetRange(
             range: sheetRange.range,
             valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
             dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
-            majorDimension: options.majorDimension || 'ROWS'
+            majorDimension: options.majorDimension || 'ROWS',
         });
 
         return response.data.values || [];
     } catch (error) {
-        throw createAppError(
-            'SHEET_READ_ERROR',
-            `Failed to read sheet range: ${sheetRange.range}`,
-            error
-        );
+        throw createAppError('SHEET_READ_ERROR', `Failed to read sheet range: ${sheetRange.range}`, error);
     }
 }
 
@@ -144,7 +136,7 @@ export async function readSheetRange(
 export async function writeSheetRange(
     sheetRange: SheetRange,
     values: any[][],
-    options: SheetWriteOptions = {}
+    options: SheetWriteOptions = {},
 ): Promise<void> {
     try {
         const sheetsClient = await createSheetsClient();
@@ -157,15 +149,11 @@ export async function writeSheetRange(
             responseDateTimeRenderOption: options.responseDateTimeRenderOption || 'FORMATTED_STRING',
             requestBody: {
                 values,
-                majorDimension: 'ROWS'
-            }
+                majorDimension: 'ROWS',
+            },
         });
     } catch (error) {
-        throw createAppError(
-            'SHEET_WRITE_ERROR',
-            `Failed to write to sheet range: ${sheetRange.range}`,
-            error
-        );
+        throw createAppError('SHEET_WRITE_ERROR', `Failed to write to sheet range: ${sheetRange.range}`, error);
     }
 }
 
@@ -175,7 +163,7 @@ export async function writeSheetRange(
 export async function appendToSheet(
     sheetRange: SheetRange,
     values: any[][],
-    options: SheetWriteOptions = {}
+    options: SheetWriteOptions = {},
 ): Promise<void> {
     try {
         const sheetsClient = await createSheetsClient();
@@ -189,15 +177,11 @@ export async function appendToSheet(
             responseDateTimeRenderOption: options.responseDateTimeRenderOption || 'FORMATTED_STRING',
             requestBody: {
                 values,
-                majorDimension: 'ROWS'
-            }
+                majorDimension: 'ROWS',
+            },
         });
     } catch (error) {
-        throw createAppError(
-            'SHEET_APPEND_ERROR',
-            `Failed to append to sheet range: ${sheetRange.range}`,
-            error
-        );
+        throw createAppError('SHEET_APPEND_ERROR', `Failed to append to sheet range: ${sheetRange.range}`, error);
     }
 }
 
@@ -207,7 +191,7 @@ export async function appendToSheet(
 export function parseHeaderBasedData<T>(
     rawData: any[][],
     headerMapping: Record<string, keyof T>,
-    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>
+    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
 ): T[] {
     if (rawData.length === 0) return [];
 
@@ -221,7 +205,7 @@ export function parseHeaderBasedData<T>(
         headerIndexMap.set(normalizedHeader, index);
     });
 
-    return dataRows.map(row => {
+    return dataRows.map((row) => {
         const item = {} as T;
 
         Object.entries(headerMapping).forEach(([headerKey, objectKey]) => {
@@ -253,7 +237,7 @@ export function parseHeaderBasedData<T>(
 export function convertToSheetRows<T>(
     data: T[],
     headerMapping: Record<string, keyof T>,
-    includeHeaders = true
+    includeHeaders = true,
 ): any[][] {
     const headers = Object.keys(headerMapping);
     const rows: any[][] = [];
@@ -262,8 +246,8 @@ export function convertToSheetRows<T>(
         rows.push(headers);
     }
 
-    data.forEach(item => {
-        const row = headers.map(header => {
+    data.forEach((item) => {
+        const row = headers.map((header) => {
             const objectKey = headerMapping[header];
             return item[objectKey] ?? '';
         });
@@ -284,7 +268,6 @@ export function normalizeHeaderName(header: string): string {
         .replace(/_+/g, '_')
         .replace(/^_|_$/g, '');
 }
-
 
 /**
  * Safe date parsing for sheet values
@@ -315,7 +298,7 @@ export function parseSheetDate(value: any): Date | null {
 export function parseSheetNumber(value: any): number {
     if (typeof value === 'number') return value;
     if (typeof value === 'string') {
-        const parsed = parseFloat(value);
+        const parsed = Number.parseFloat(value);
         return isNaN(parsed) ? 0 : parsed;
     }
     return 0;
@@ -336,13 +319,12 @@ export function parseSheetBoolean(value: any): boolean {
     return false;
 }
 
-
 /**
  * Read sheet data and extract headers in one call
  */
 export async function readSheetWithHeaders(
     sheetRange: SheetRange,
-    options: SheetReadOptions = {}
+    options: SheetReadOptions = {},
 ): Promise<{ headers: string[]; data: any[][]; rawData: any[][] }> {
     try {
         const sheetsClient = await createSheetsClient();
@@ -351,7 +333,7 @@ export async function readSheetWithHeaders(
             range: sheetRange.range,
             valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
             dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
-            majorDimension: options.majorDimension || 'ROWS'
+            majorDimension: options.majorDimension || 'ROWS',
         });
 
         const rawData = response.data.values || [];
@@ -363,7 +345,7 @@ export async function readSheetWithHeaders(
         throw createAppError(
             'SHEET_READ_WITH_HEADERS_ERROR',
             `Failed to read sheet with headers: ${sheetRange.range}`,
-            error
+            error,
         );
     }
 }
@@ -373,15 +355,15 @@ export async function readSheetWithHeaders(
  */
 export function createHeaderMappingFromActual<T>(
     actualHeaders: string[],
-    expectedHeaderMapping: Record<string, keyof T>
+    expectedHeaderMapping: Record<string, keyof T>,
 ): { mapping: Map<keyof T, number>; missing: string[]; found: string[] } {
     const mapping = new Map<keyof T, number>();
     const missing: string[] = [];
     const found: string[] = [];
 
     Object.entries(expectedHeaderMapping).forEach(([headerText, objectKey]) => {
-        const columnIndex = actualHeaders.findIndex(header =>
-            normalizeHeaderName(header) === normalizeHeaderName(headerText)
+        const columnIndex = actualHeaders.findIndex(
+            (header) => normalizeHeaderName(header) === normalizeHeaderName(headerText),
         );
 
         if (columnIndex >= 0) {

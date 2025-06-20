@@ -2,12 +2,7 @@
 import https from 'https';
 import dns from 'dns';
 
-const endpoints = [
-    'oauth2.googleapis.com',
-    'sheets.googleapis.com',
-    'www.googleapis.com',
-    'accounts.google.com'
-];
+const endpoints = ['oauth2.googleapis.com', 'sheets.googleapis.com', 'www.googleapis.com', 'accounts.google.com'];
 
 async function testDNS(domain) {
     return new Promise((resolve) => {
@@ -23,19 +18,22 @@ async function testDNS(domain) {
 
 async function testHTTPS(domain) {
     return new Promise((resolve) => {
-        const req = https.request({
-            hostname: domain,
-            path: '/',
-            method: 'HEAD',
-            timeout: 5000
-        }, (res) => {
-            resolve({
-                domain,
-                status: 'HTTPS_OK',
-                statusCode: res.statusCode,
-                headers: Object.keys(res.headers).slice(0, 3)
-            });
-        });
+        const req = https.request(
+            {
+                hostname: domain,
+                path: '/',
+                method: 'HEAD',
+                timeout: 5000,
+            },
+            (res) => {
+                resolve({
+                    domain,
+                    status: 'HTTPS_OK',
+                    statusCode: res.statusCode,
+                    headers: Object.keys(res.headers).slice(0, 3),
+                });
+            },
+        );
 
         req.on('error', (err) => {
             resolve({ domain, status: 'HTTPS_FAIL', error: err.message });

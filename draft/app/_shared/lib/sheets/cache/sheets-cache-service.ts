@@ -20,7 +20,7 @@ export class SheetsCacheService {
     private stats = {
         hits: 0,
         misses: 0,
-        evictions: 0
+        evictions: 0,
     };
 
     private constructor() {
@@ -38,11 +38,7 @@ export class SheetsCacheService {
     /**
      * Get cached data or execute function if cache miss
      */
-    async get<T>(
-        key: string,
-        fetchFunction: () => Promise<T>,
-        options: CacheOptions = {}
-    ): Promise<T> {
+    async get<T>(key: string, fetchFunction: () => Promise<T>, options: CacheOptions = {}): Promise<T> {
         const ttlMs = options.ttlMs || this.defaultTtlMs;
         const cached = this.cache.get(key);
 
@@ -83,7 +79,7 @@ export class SheetsCacheService {
         this.cache.set(key, {
             data,
             timestamp: Date.now(),
-            key
+            key,
         });
 
         console.log(`📋 CACHE SET: ${key} (cache size: ${this.cache.size})`);
@@ -131,15 +127,16 @@ export class SheetsCacheService {
      * Get cache statistics
      */
     getStats() {
-        const hitRate = this.stats.hits + this.stats.misses > 0
-            ? (this.stats.hits / (this.stats.hits + this.stats.misses) * 100).toFixed(1)
-            : '0';
+        const hitRate =
+            this.stats.hits + this.stats.misses > 0
+                ? ((this.stats.hits / (this.stats.hits + this.stats.misses)) * 100).toFixed(1)
+                : '0';
 
         return {
             ...this.stats,
             hitRate: `${hitRate}%`,
             cacheSize: this.cache.size,
-            maxSize: this.maxSize
+            maxSize: this.maxSize,
         };
     }
 

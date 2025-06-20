@@ -1,6 +1,6 @@
 // /admin/server/actions/cache-monitor-actions.ts
-import { getCacheStats, cacheInvalidation } from "../../../_shared/lib/sheets/cache/cached-sheet-functions";
-import type { AdminActionParams, AdminActionResult } from "../../types/admin-types";
+import { getCacheStats, cacheInvalidation } from '../../../_shared/lib/sheets/cache/cached-sheet-functions';
+import type { AdminActionParams, AdminActionResult } from '../../types/admin-types';
 
 export async function handleGetCacheStats(): Promise<AdminActionResult> {
     try {
@@ -11,7 +11,7 @@ export async function handleGetCacheStats(): Promise<AdminActionResult> {
         return {
             success: true,
             message: `Cache stats retrieved - ${stats.hitRate} hit rate`,
-            data: stats
+            data: stats,
         };
     } catch (error) {
         console.error('Get cache stats error:', error);
@@ -31,9 +31,9 @@ export async function handleGetCacheStats(): Promise<AdminActionResult> {
                     draftPicks: [],
                     userTeams: [],
                     draftOrders: [],
-                    divisions: []
-                }
-            }
+                    divisions: [],
+                },
+            },
         };
     }
 }
@@ -46,7 +46,7 @@ export async function handleClearCache(): Promise<AdminActionResult> {
 
         return {
             success: true,
-            message: 'All cache cleared successfully'
+            message: 'All cache cleared successfully',
         };
     } catch (error) {
         console.error('Clear cache error:', error);
@@ -68,10 +68,12 @@ export async function handleInvalidateDraftCache(params: AdminActionParams): Pro
 
         return {
             success: true,
-            message: `Draft cache invalidated${divisionId ? ` for division ${divisionId}` : ' for all divisions'}`
+            message: `Draft cache invalidated${divisionId ? ` for division ${divisionId}` : ' for all divisions'}`,
         };
     } catch (error) {
         console.error('Invalidate draft cache error:', error);
-        throw new Error(`Failed to invalidate draft cache: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to invalidate draft cache: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }

@@ -8,8 +8,8 @@ import styles from './wishlist-item.module.css';
 interface WishlistDetailsProps {
     wishlist: Wishlist;
     onRemovePlayer: (wishlistId: string, playerId: number) => void;
-    playersById: any,
-    teamsByCode: any,
+    playersById: any;
+    teamsByCode: any;
 }
 
 export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePlayer }: WishlistDetailsProps) {
@@ -25,22 +25,17 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
         <div className={styles.details}>
             <div className={styles.detailsHeader}>
                 <div className={styles.detailsTitle}>
-                    <div
-                        className={styles.detailsColorDot}
-                        style={{ backgroundColor: wishlist.color }}
-                    />
+                    <div className={styles.detailsColorDot} style={{ backgroundColor: wishlist.color }} />
                     <h3 className={styles.detailsName}>{wishlist.label}</h3>
                 </div>
-                {wishlist.description && (
-                    <p className={styles.detailsDescription}>{wishlist.description}</p>
-                )}
+                {wishlist.description && <p className={styles.detailsDescription}>{wishlist.description}</p>}
                 <div className={styles.detailsMeta}>
-          <span className={styles.detailsCount}>
-            {wishlist.playerIds.length} player{wishlist.playerIds.length !== 1 ? 's' : ''}
-          </span>
+                    <span className={styles.detailsCount}>
+                        {wishlist.playerIds.length} player{wishlist.playerIds.length !== 1 ? 's' : ''}
+                    </span>
                     <span className={styles.detailsDate}>
-            Last updated: {new Date(wishlist.updatedAt).toLocaleDateString()}
-          </span>
+                        Last updated: {new Date(wishlist.updatedAt).toLocaleDateString()}
+                    </span>
                 </div>
             </div>
 
@@ -61,23 +56,25 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
                     <div className={styles.emptyPlayers}>
                         <div className={styles.emptyPlayersIcon}>
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
                             </svg>
                         </div>
                         <h4 className={styles.emptyPlayersTitle}>No players yet</h4>
                         <p className={styles.emptyPlayersMessage}>
                             Add players to this wishlist from the players page.
                         </p>
-                        <a
-                            href="/players"
-                            className={styles.browseButton}
-                        >
+                        <a href="/players" className={styles.browseButton}>
                             Browse Players
                         </a>
                     </div>
                 ) : (
                     <div className={styles.playersList}>
-                        {wishlist.playerIds.map(playerId => (
+                        {wishlist.playerIds.map((playerId) => (
                             <WishlistPlayerRow
                                 key={playerId}
                                 player={playersById[playerId]}
@@ -99,8 +96,8 @@ interface WishlistPlayerRowProps {
     wishlistId: string;
     searchTerm: string;
     onRemove: () => void;
-    player: any,
-    teamsByCode: any,
+    player: any;
+    teamsByCode: any;
 }
 
 function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: WishlistPlayerRowProps) {
@@ -111,7 +108,8 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
     const playerPosition = player.draft.position;
 
     // Simple search filter
-    const matchesSearch = !searchTerm ||
+    const matchesSearch =
+        !searchTerm ||
         playerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         playerTeam.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -130,17 +128,10 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
             </div>
 
             <div className={styles.playerActions}>
-                <a
-                    href={`/players/${player.id}`}
-                    className={styles.viewLink}
-                >
+                <a href={`/players/${player.id}`} className={styles.viewLink}>
                     View Details
                 </a>
-                <button
-                    onClick={onRemove}
-                    className={styles.removeButton}
-                    title="Remove from wishlist"
-                >
+                <button onClick={onRemove} className={styles.removeButton} title="Remove from wishlist">
                     <svg className={styles.removeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>

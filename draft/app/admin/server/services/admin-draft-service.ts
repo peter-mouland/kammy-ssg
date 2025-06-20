@@ -1,15 +1,11 @@
 /* Location: app/admin/server/services/admin-draft-service.ts */
 
 // /admin/server/services/admin-draft-service.ts
-import { readDivisions } from "../../../_shared/lib/sheets/divisions";
+import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams, getUserTeamsByDivision } from '../../../_shared/lib/sheets/user-teams';
 import { readDraftOrders, getDraftOrderByDivision } from '../../../_shared/lib/sheets/draft-order';
-import { readDraftState } from "../../../_shared/lib/sheets/draft";
-import type {
-    UserTeamsSheetData,
-    DraftOrderData,
-    AdminDashboardData
-} from "../../types";
+import { readDraftState } from '../../../_shared/lib/sheets/draft';
+import type { UserTeamsSheetData, DraftOrderData, AdminDashboardData } from '../../types';
 import type { DivisionId } from '../../../teams/types/team-types';
 
 export class AdminDraftService {
@@ -22,31 +18,30 @@ export class AdminDraftService {
             readDivisions(),
             readDraftState(),
             readUserTeams(),
-            readDraftOrders()
+            readDraftOrders(),
         ]);
 
         // Fetch user teams and draft orders for each division
         const draftOrders: Record<string, DraftOrderData[]> = {};
         const userTeamsByDivision: Record<string, UserTeamsSheetData[]> = {};
 
-        const getDraftOrderByDivision = (divisionId: DivisionId) => draftOrder
-            .filter(order => order.divisionId === divisionId)
-            .sort((a, b) => a.position - b.position);
+        const getDraftOrderByDivision = (divisionId: DivisionId) =>
+            draftOrder.filter((order) => order.divisionId === divisionId).sort((a, b) => a.position - b.position);
 
         const getUserTeamsByDivision = (divisionId: DivisionId) => {
-            return teams.filter(team => team.divisionId === divisionId);
-        }
+            return teams.filter((team) => team.divisionId === divisionId);
+        };
 
         divisions.forEach((division) => {
             userTeamsByDivision[division.id] = getUserTeamsByDivision(division.id);
             draftOrders[division.id] = getDraftOrderByDivision(division.id);
-        })
+        });
 
         return {
             divisions,
             draftOrders,
             userTeamsByDivision,
-            draftState
+            draftState,
         };
     }
 
@@ -57,19 +52,15 @@ export class AdminDraftService {
     static async getDraftAdminDataMinimal(): Promise<AdminDashboardData> {
         try {
             // Only load essential data
-            const [divisions, draftState] = await Promise.all([
-                readDivisions(),
-                readDraftState()
-            ]);
+            const [divisions, draftState] = await Promise.all([readDivisions(), readDraftState()]);
 
             // Return with empty collections - let components load data on-demand
             return {
                 divisions,
                 draftOrders: {},
                 userTeamsByDivision: {},
-                draftState
+                draftState,
             };
-
         } catch (error) {
             console.error('Failed to load minimal admin data:', error);
             throw error;
@@ -84,7 +75,7 @@ export class AdminDraftService {
             const [teams, draftOrder, draftState] = await Promise.all([
                 getUserTeamsByDivision(divisionId),
                 getDraftOrderByDivision(divisionId),
-                readDraftState()
+                readDraftState(),
             ]);
 
             const isActiveDivision = draftState?.currentDivisionId === divisionId;
@@ -96,7 +87,7 @@ export class AdminDraftService {
                 hasOrder,
                 isActive: draftState?.isActive && isActiveDivision,
                 isReady: teamCount > 0 && hasOrder,
-                currentPick: isActiveDivision ? draftState?.currentPick : undefined
+                currentPick: isActiveDivision ? draftState?.currentPick : undefined,
             };
         } catch (error) {
             console.error(`Error getting draft status for ${divisionId}:`, error);
@@ -104,7 +95,7 @@ export class AdminDraftService {
                 teamCount: 0,
                 hasOrder: false,
                 isActive: false,
-                isReady: false
+                isReady: false,
             };
         }
     }
@@ -117,12 +108,12 @@ export class AdminDraftService {
 
         const divisionsWithStatus = await Promise.all(
             divisions.map(async (division) => {
-                const status = await this.getDivisionDraftStatus(division.id);
+                const status = await AdminDraftService.getDivisionDraftStatus(division.id);
                 return {
                     ...division,
-                    status
+                    status,
                 };
-            })
+            }),
         );
 
         return divisionsWithStatus;

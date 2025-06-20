@@ -3,10 +3,27 @@
 import styles from './icon.module.css';
 
 interface IconProps {
-    type: 'trophy' | 'chart' | 'team' | 'settings' | 'target' | 'stats' |
-        'active' | 'inactive' | 'timer' | 'search' | 'draft' | 'refresh' |
-        'delete' | 'generate' | 'start' | 'stop' | 'instructions' | 'check' |
-        'error' | 'warning';
+    type:
+        | 'trophy'
+        | 'chart'
+        | 'team'
+        | 'settings'
+        | 'target'
+        | 'stats'
+        | 'active'
+        | 'inactive'
+        | 'timer'
+        | 'search'
+        | 'draft'
+        | 'refresh'
+        | 'delete'
+        | 'generate'
+        | 'start'
+        | 'stop'
+        | 'instructions'
+        | 'check'
+        | 'error'
+        | 'warning';
     fallback?: string;
     className?: string;
 }
@@ -31,7 +48,7 @@ const iconMap = {
     instructions: { emoji: '📝', text: 'Instructions' },
     check: { emoji: '✅', text: 'Success' },
     error: { emoji: '❌', text: 'Error' },
-    warning: { emoji: '⚠️', text: 'Warning' }
+    warning: { emoji: '⚠️', text: 'Warning' },
 };
 
 export function Icon({ type, fallback, className = '' }: IconProps) {
@@ -39,12 +56,7 @@ export function Icon({ type, fallback, className = '' }: IconProps) {
     const displayText = fallback || icon.text;
 
     return (
-        <span
-            className={`${styles.emoji} ${className}`}
-            role="img"
-            aria-label={displayText}
-            title={displayText}
-        >
+        <span className={`${styles.emoji} ${className}`} role="img" aria-label={displayText} title={displayText}>
             {icon.emoji}
         </span>
     );
@@ -66,7 +78,7 @@ export function TextIcon({ type, children }: TextIconProps) {
         up: '[↑]',
         down: '[↓]',
         left: '[←]',
-        right: '[→]'
+        right: '[→]',
     };
 
     return (

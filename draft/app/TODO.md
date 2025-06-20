@@ -9,18 +9,15 @@ Phase 1: Extract Admin Components (6 steps) ✅ COMPLETE
 Created: ActionCard, StatusCard, NavButton, DataCount, SystemHealthBadge, DraftCard, GameweekPointsButton, GameweekPointsStatus, CacheStatusDisplay, RefreshButton
 All with individual CSS modules and barrel exports
 
-
 ✅ DONE - Extract Admin Sections → /admin/components/sections/
 
 Created: OverviewSection, DraftSection, DataManagementSection, PointsScoringSection, SettingsSection, QuickActionsSection, FirebaseSyncSection
 All with shared layout components (AdminSection, AdminGrid, AdminMessage)
 
-
 ✅ DONE - Extract Layout Components → /admin/components/layout/
 
 Created: AdminSection, AdminGrid, AdminMessage, AdminContainer, TwoColumnLayout (composition), AppShell, NavGroup, ActionBar
 ZERO custom CSS - fully reusable component system
-
 
 ✅ DONE - Create Admin Types → /admin/types/admin-types.ts
 

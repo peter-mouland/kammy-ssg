@@ -1,4 +1,5 @@
 /* Location: app/_shared/lib/firestore-cache/clear-service.ts */
+/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
 // lib/firestore-cache/clear-service.ts
 import { FirestoreClient } from './firestore-client';
@@ -23,16 +24,14 @@ export class FirestoreClearService {
     /**
      * Clear all Firestore data with progress tracking
      */
-    async clearAllData(
-        progressCallback?: (progress: ClearProgress) => void
-    ): Promise<void> {
+    async clearAllData(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
         const collections = [
             { name: this.client.collections.FPL_BOOTSTRAP, description: 'FPL Bootstrap Data' },
             { name: this.client.collections.FPL_ELEMENTS, description: 'FPL Element Summaries' },
-            { name: this.client.collections.CACHE_STATE, description: 'Cache State' }
+            { name: this.client.collections.CACHE_STATE, description: 'Cache State' },
         ];
 
-        let totalStages = collections.length;
+        const totalStages = collections.length;
         let currentStage = 0;
 
         try {
@@ -43,7 +42,7 @@ export class FirestoreClearService {
                     stage: `Clearing ${collection.description}`,
                     progress: currentStage - 1,
                     total: totalStages,
-                    completed: false
+                    completed: false,
                 });
 
                 await this.clearCollection(collection.name, (batchProgress) => {
@@ -51,7 +50,7 @@ export class FirestoreClearService {
                         stage: `Clearing ${collection.description} (${batchProgress.completed}/${batchProgress.total})`,
                         progress: currentStage - 1,
                         total: totalStages,
-                        completed: false
+                        completed: false,
                     });
                 });
 
@@ -63,16 +62,15 @@ export class FirestoreClearService {
                 stage: 'Clear completed successfully',
                 progress: totalStages,
                 total: totalStages,
-                completed: true
+                completed: true,
             });
-
         } catch (error) {
             progressCallback?.({
                 stage: 'Clear failed',
                 progress: currentStage,
                 total: totalStages,
                 completed: false,
-                error: error instanceof Error ? error.message : 'Unknown error'
+                error: error instanceof Error ? error.message : 'Unknown error',
             });
             throw error;
         }
@@ -83,7 +81,7 @@ export class FirestoreClearService {
      */
     async clearCollection(
         collectionName: string,
-        progressCallback?: (progress: { completed: number; total: number }) => void
+        progressCallback?: (progress: { completed: number; total: number }) => void,
     ): Promise<void> {
         console.log(`🗑️ Starting to clear collection: ${collectionName}`);
 
@@ -109,7 +107,7 @@ export class FirestoreClearService {
 
                 progressCallback?.({
                     completed,
-                    total: documentIds.length
+                    total: documentIds.length,
                 });
 
                 // Delay between batches to avoid rate limiting
@@ -119,7 +117,6 @@ export class FirestoreClearService {
             }
 
             console.log(`✅ Successfully cleared ${documentIds.length} documents from ${collectionName}`);
-
         } catch (error) {
             console.error(`❌ Failed to clear collection ${collectionName}:`, error);
             throw error;
@@ -134,7 +131,7 @@ export class FirestoreClearService {
             const db = this.client['db']; // Access private db property
             const snapshot = await db.collection(collectionName).select().get();
 
-            return snapshot.docs.map(doc => doc.id);
+            return snapshot.docs.map((doc) => doc.id);
         } catch (error) {
             console.error(`Failed to get document IDs for ${collectionName}:`, error);
             return [];
@@ -145,10 +142,10 @@ export class FirestoreClearService {
      * Delete a batch of documents
      */
     private async deleteBatch(collectionName: string, documentIds: string[]): Promise<void> {
-        const db = this.client['db']; // Access private db property
+        const db = this.client.db; // Access private db property
         const batch = db.batch();
 
-        documentIds.forEach(docId => {
+        documentIds.forEach((docId) => {
             const docRef = db.collection(collectionName).doc(docId);
             batch.delete(docRef);
         });
@@ -162,7 +159,7 @@ export class FirestoreClearService {
      */
     async clearSpecificCollections(
         collections: string[],
-        progressCallback?: (progress: ClearProgress) => void
+        progressCallback?: (progress: ClearProgress) => void,
     ): Promise<void> {
         let currentStage = 0;
         const totalStages = collections.length;
@@ -175,7 +172,7 @@ export class FirestoreClearService {
                     stage: `Clearing ${collectionName}`,
                     progress: currentStage - 1,
                     total: totalStages,
-                    completed: false
+                    completed: false,
                 });
 
                 await this.clearCollection(collectionName, (batchProgress) => {
@@ -183,7 +180,7 @@ export class FirestoreClearService {
                         stage: `Clearing ${collectionName} (${batchProgress.completed}/${batchProgress.total})`,
                         progress: currentStage - 1,
                         total: totalStages,
-                        completed: false
+                        completed: false,
                     });
                 });
 
@@ -194,16 +191,15 @@ export class FirestoreClearService {
                 stage: 'Selective clear completed',
                 progress: totalStages,
                 total: totalStages,
-                completed: true
+                completed: true,
             });
-
         } catch (error) {
             progressCallback?.({
                 stage: 'Selective clear failed',
                 progress: currentStage,
                 total: totalStages,
                 completed: false,
-                error: error instanceof Error ? error.message : 'Unknown error'
+                error: error instanceof Error ? error.message : 'Unknown error',
             });
             throw error;
         }
@@ -218,7 +214,7 @@ export class FirestoreClearService {
         const collections = [
             this.client.collections.FPL_BOOTSTRAP,
             this.client.collections.FPL_ELEMENTS,
-            this.client.collections.CACHE_STATE
+            this.client.collections.CACHE_STATE,
         ];
 
         await Promise.all(
@@ -230,7 +226,7 @@ export class FirestoreClearService {
                     console.error(`Failed to get stats for ${collectionName}:`, error);
                     stats[collectionName] = 0;
                 }
-            })
+            }),
         );
 
         return stats;
@@ -239,13 +235,8 @@ export class FirestoreClearService {
     /**
      * Clear only FPL cached data (keep other data intact)
      */
-    async clearFplCacheOnly(
-        progressCallback?: (progress: ClearProgress) => void
-    ): Promise<void> {
-        const fplCollections = [
-            this.client.collections.FPL_BOOTSTRAP,
-            this.client.collections.FPL_ELEMENTS
-        ];
+    async clearFplCacheOnly(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
+        const fplCollections = [this.client.collections.FPL_BOOTSTRAP, this.client.collections.FPL_ELEMENTS];
 
         await this.clearSpecificCollections(fplCollections, progressCallback);
     }
@@ -253,13 +244,8 @@ export class FirestoreClearService {
     /**
      * Clear only element summaries (large collection)
      */
-    async clearElementSummariesOnly(
-        progressCallback?: (progress: ClearProgress) => void
-    ): Promise<void> {
-        await this.clearSpecificCollections(
-            [this.client.collections.FPL_ELEMENTS],
-            progressCallback
-        );
+    async clearElementSummariesOnly(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
+        await this.clearSpecificCollections([this.client.collections.FPL_ELEMENTS], progressCallback);
     }
 
     /**
@@ -274,7 +260,7 @@ export class FirestoreClearService {
     }
 
     private delay(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     /**
@@ -295,7 +281,7 @@ export class FirestoreClearService {
         return {
             totalDocuments,
             estimatedTimeSeconds,
-            estimatedBatches
+            estimatedBatches,
         };
     }
 }

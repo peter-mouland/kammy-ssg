@@ -9,10 +9,7 @@ export const GameweekPointsButton = () => {
     const fetcher = useFetcher();
 
     const handleGenerateGameweekPoints = () => {
-        fetcher.submit(
-            { actionType: 'generateGameweekPoints' },
-            { method: 'post', action: '/api/gw-points' }
-        );
+        fetcher.submit({ actionType: 'generateGameweekPoints' }, { method: 'post', action: '/api/gw-points' });
     };
 
     const isLoading = fetcher.state === 'submitting';
@@ -28,7 +25,7 @@ export const GameweekPointsButton = () => {
             >
                 {isLoading ? (
                     <>
-                        <span className={styles.spinner}></span>
+                        <span className={styles.spinner} />
                         Generating...
                     </>
                 ) : isSuccess ? (
@@ -49,17 +46,9 @@ export const GameweekPointsButton = () => {
                 )}
             </button>
 
-            {isSuccess && fetcher.data?.message && (
-                <div className={styles.successMessage}>
-                    {fetcher.data.message}
-                </div>
-            )}
+            {isSuccess && fetcher.data?.message && <div className={styles.successMessage}>{fetcher.data.message}</div>}
 
-            {error && (
-                <div className={styles.errorMessage}>
-                    {error}
-                </div>
-            )}
+            {error && <div className={styles.errorMessage}>{error}</div>}
         </div>
     );
 };

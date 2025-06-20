@@ -6,7 +6,7 @@ import {
     createAppError,
     readSheetWithHeaders,
     parseHeaderBasedData,
-    SPREADSHEET_ID
+    SPREADSHEET_ID,
 } from './common';
 
 export interface ReadDataOptions extends SheetReadOptions {
@@ -62,9 +62,9 @@ function calculateReadRange(sheetName: string, headerOrder: string[]): string {
  * // Returns: PersonData[] with proper typing
  * ```
  */
-async function _readDataFromSheet<T extends Record<string, any>>(
+async function ReadDataFromSheet<T extends Record<string, any>>(
     sheetName: string,
-    options: ReadDataOptions
+    options: ReadDataOptions,
 ): Promise<{
     data: T[];
     headers: string[];
@@ -74,11 +74,7 @@ async function _readDataFromSheet<T extends Record<string, any>>(
 }> {
     try {
         if (!SPREADSHEET_ID) {
-            throw createAppError(
-                'MISSING_SPREADSHEET_ID',
-                'GOOGLE_SHEETS_ID environment variable is not set',
-                {}
-            );
+            throw createAppError('MISSING_SPREADSHEET_ID', 'GOOGLE_SHEETS_ID environment variable is not set', {});
         }
 
         const {
@@ -93,7 +89,7 @@ async function _readDataFromSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_HEADER_ORDER',
                 'headerOrder is required and must contain at least one header',
-                { providedOptions: options }
+                { providedOptions: options },
             );
         }
 
@@ -110,7 +106,7 @@ async function _readDataFromSheet<T extends Record<string, any>>(
                 headers: [],
                 missingHeaders: headerOrder,
                 extraHeaders: [],
-                message: 'Sheet is empty or has no headers'
+                message: 'Sheet is empty or has no headers',
             };
         }
 
@@ -121,24 +117,20 @@ async function _readDataFromSheet<T extends Record<string, any>>(
         }, {} as Record<string, keyof T>);
 
         // Check which headers are missing and which are extra
-        const normalizedActualHeaders = headers.map(h => h.toLowerCase().trim());
-        const normalizedExpectedHeaders = headerOrder.map(h => h.toLowerCase().trim());
+        const normalizedActualHeaders = headers.map((h) => h.toLowerCase().trim());
+        const normalizedExpectedHeaders = headerOrder.map((h) => h.toLowerCase().trim());
 
-        const missingHeaders = headerOrder.filter(expected => {
+        const missingHeaders = headerOrder.filter((expected) => {
             const normalized = expected.toLowerCase().trim();
-            return !normalizedActualHeaders.some(actual =>
-                actual === normalized ||
-                actual.includes(normalized) ||
-                normalized.includes(actual)
+            return !normalizedActualHeaders.some(
+                (actual) => actual === normalized || actual.includes(normalized) || normalized.includes(actual),
             );
         });
 
-        const extraHeaders = headers.filter(actual => {
+        const extraHeaders = headers.filter((actual) => {
             const normalized = actual.toLowerCase().trim();
-            return !normalizedExpectedHeaders.some(expected =>
-                expected === normalized ||
-                expected.includes(normalized) ||
-                normalized.includes(expected)
+            return !normalizedExpectedHeaders.some(
+                (expected) => expected === normalized || expected.includes(normalized) || normalized.includes(expected),
             );
         });
 
@@ -146,7 +138,7 @@ async function _readDataFromSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_REQUIRED_HEADERS',
                 `Required headers not found in sheet: ${missingHeaders.join(', ')}`,
-                { missingHeaders, actualHeaders: headers, expectedHeaders: headerOrder }
+                { missingHeaders, actualHeaders: headers, expectedHeaders: headerOrder },
             );
         }
 
@@ -154,7 +146,7 @@ async function _readDataFromSheet<T extends Record<string, any>>(
         const parsedData = parseHeaderBasedData<T>(
             [headers, ...rawData], // Include headers row for parseHeaderBasedData
             headerMapping,
-            transformFunctions as Partial<Record<keyof T, (value: any) => any>>
+            transformFunctions as Partial<Record<keyof T, (value: any) => any>>,
         );
 
         // Create message
@@ -171,15 +163,10 @@ async function _readDataFromSheet<T extends Record<string, any>>(
             headers,
             missingHeaders,
             extraHeaders,
-            message
+            message,
         };
-
     } catch (error) {
-        throw createAppError(
-            'READ_DATA_ERROR',
-            `Failed to read data from sheet: ${sheetName}`,
-            error
-        );
+        throw createAppError('READ_DATA_ERROR', `Failed to read data from sheet: ${sheetName}`, error);
     }
 }
 
@@ -188,9 +175,9 @@ async function _readDataFromSheet<T extends Record<string, any>>(
  */
 export async function readDataFromSheet<T extends Record<string, any>>(
     sheetName: string,
-    options: ReadDataOptions
+    options: ReadDataOptions,
 ): Promise<T[]> {
-    const result = await _readDataFromSheet<T>(sheetName, options);
+    const result = await ReadDataFromSheet<T>(sheetName, options);
 
     if (options.warnMissingHeaders !== false && result.missingHeaders.length > 0) {
         console.warn(`Sheet '${sheetName}' missing expected headers:`, result.missingHeaders);
@@ -207,7 +194,7 @@ export async function readDataFromSheetWithHeaders<T extends Record<string, any>
     options: Omit<ReadDataOptions, 'headerOrder'> & {
         /** Optional: Expected headers, but will work with whatever is found */
         expectedHeaders?: string[];
-    } = {}
+    } = {},
 ): Promise<{
     data: T[];
     headers: string[];
@@ -215,18 +202,10 @@ export async function readDataFromSheetWithHeaders<T extends Record<string, any>
 }> {
     try {
         if (!SPREADSHEET_ID) {
-            throw createAppError(
-                'MISSING_SPREADSHEET_ID',
-                'GOOGLE_SHEETS_ID environment variable is not set',
-                {}
-            );
+            throw createAppError('MISSING_SPREADSHEET_ID', 'GOOGLE_SHEETS_ID environment variable is not set', {});
         }
 
-        const {
-            expectedHeaders = [],
-            transformFunctions = {},
-            ...readOptions
-        } = options;
+        const { expectedHeaders = [], transformFunctions = {}, ...readOptions } = options;
 
         // Use a wide range to discover all headers
         const range = `'${sheetName}'!A:ZZ`;
@@ -239,7 +218,7 @@ export async function readDataFromSheetWithHeaders<T extends Record<string, any>
             return {
                 data: [],
                 headers: [],
-                message: 'Sheet is empty or has no headers'
+                message: 'Sheet is empty or has no headers',
             };
         }
 
@@ -253,16 +232,14 @@ export async function readDataFromSheetWithHeaders<T extends Record<string, any>
         const parsedData = parseHeaderBasedData<T>(
             [headers, ...rawData], // Include headers row for parseHeaderBasedData
             headerMapping,
-            transformFunctions as Partial<Record<keyof T, (value: any) => any>>
+            transformFunctions as Partial<Record<keyof T, (value: any) => any>>,
         );
 
         let message = `Successfully read ${parsedData.length} rows with ${headers.length} columns from sheet`;
 
         if (expectedHeaders.length > 0) {
-            const foundExpected = expectedHeaders.filter(expected =>
-                headers.some(actual =>
-                    actual.toLowerCase().trim() === expected.toLowerCase().trim()
-                )
+            const foundExpected = expectedHeaders.filter((expected) =>
+                headers.some((actual) => actual.toLowerCase().trim() === expected.toLowerCase().trim()),
             );
             message += `. Found ${foundExpected.length}/${expectedHeaders.length} expected headers`;
         }
@@ -270,14 +247,9 @@ export async function readDataFromSheetWithHeaders<T extends Record<string, any>
         return {
             data: parsedData,
             headers,
-            message
+            message,
         };
-
     } catch (error) {
-        throw createAppError(
-            'READ_DATA_AUTO_ERROR',
-            `Failed to auto-read data from sheet: ${sheetName}`,
-            error
-        );
+        throw createAppError('READ_DATA_AUTO_ERROR', `Failed to auto-read data from sheet: ${sheetName}`, error);
     }
 }

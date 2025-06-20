@@ -3,7 +3,7 @@
 // lib/firebase-realtime.ts - SEPARATE config just for Realtime Database
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
-import { Database } from '@firebase/database';
+import type { Database } from '@firebase/database';
 
 // Realtime Database specific config
 const realtimeConfig = {
@@ -13,7 +13,7 @@ const realtimeConfig = {
     projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Validate config
@@ -30,12 +30,12 @@ let realtimeDB: Database;
 export function getRealtimeDbInstance() {
     if (!realtimeDB) {
         const existingApps = getApps();
-        let realtimeApp = existingApps.find(app =>  app.name === REALTIME_APP_NAME);
+        let realtimeApp = existingApps.find((app) => app.name === REALTIME_APP_NAME);
         if (!realtimeApp) {
             realtimeApp = initializeApp(realtimeConfig, REALTIME_APP_NAME);
             console.log('🔥 Firebase Realtime Database client initialized for project:', realtimeConfig.projectId);
         }
-        realtimeDB = getDatabase(realtimeApp)
+        realtimeDB = getDatabase(realtimeApp);
     }
     return realtimeDB;
 }

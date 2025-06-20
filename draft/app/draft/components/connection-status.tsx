@@ -10,11 +10,7 @@ export interface ConnectionStatusProps {
     onReconnect: () => void;
 }
 
-export function ConnectionStatus({
-                                     connectionState,
-                                     isRevalidating,
-                                     onReconnect
-                                 }: ConnectionStatusProps) {
+export function ConnectionStatus({ connectionState, isRevalidating, onReconnect }: ConnectionStatusProps) {
     if (connectionState === 'connected' && !isRevalidating) {
         return (
             <div className={styles.statusContainer}>
@@ -37,10 +33,7 @@ export function ConnectionStatus({
         return (
             <div className={styles.statusContainer}>
                 <div className={`${styles.indicator} ${styles.error}`} />
-                <button
-                    onClick={onReconnect}
-                    className={styles.reconnectButton}
-                >
+                <button onClick={onReconnect} className={styles.reconnectButton}>
                     Reconnect
                 </button>
             </div>
@@ -74,10 +67,7 @@ export function ConnectionAlert({ isConnected, isDraftActive, onReconnect }: Con
     return (
         <div className={styles.connectionAlert}>
             ⚠️ Connection lost - You may not receive live updates.
-            <button
-                onClick={onReconnect}
-                className={styles.alertReconnectButton}
-            >
+            <button onClick={onReconnect} className={styles.alertReconnectButton}>
                 Reconnect
             </button>
         </div>

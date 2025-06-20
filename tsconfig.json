@@ -17,10 +17,20 @@
     "declaration": true,
     "declarationMap": true,
     "incremental": true,
-    "tsBuildInfoFile": ".tsbuildinfo"
+    "tsBuildInfoFile": ".tsbuildinfo",
+
+    // Strict type checking options
+    "noImplicitAny": true,
+//    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true
   },
   "include": [
-    "app/**/*",
+    "draft/app/**/*",
     "vite.config.ts"
   ],
   "exclude": [

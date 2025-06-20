@@ -8,7 +8,7 @@ import {
     type SheetRange,
     type SheetWriteOptions,
     writeSheetRange,
-    SPREADSHEET_ID
+    SPREADSHEET_ID,
 } from './common';
 
 export interface SaveDataOptions extends SheetWriteOptions {
@@ -54,10 +54,10 @@ function calculateDataRange(sheetName: string, headerOrder: string[]): string {
 function convertDataToRowsWithOrder<T extends Record<string, any>>(
     data: T[],
     headerOrder: string[],
-    transformFunctions: Record<string, (value: any) => any> = {}
+    transformFunctions: Record<string, (value: any) => any> = {},
 ): any[][] {
-    return data.map(item => {
-        return headerOrder.map(header => {
+    return data.map((item) => {
+        return headerOrder.map((header) => {
             let value = item[header] ?? '';
 
             // Apply transformation if provided
@@ -96,11 +96,11 @@ function convertDataToRowsWithOrder<T extends Record<string, any>>(
  * );
  * ```
  */
-async function _saveDataToSheet<T extends Record<string, any>>(
+async function SaveDataToSheet<T extends Record<string, any>>(
     sheetName: string,
     data: T[],
     headerOrder: string[],
-    options: SaveDataOptions
+    options: SaveDataOptions,
 ): Promise<{
     success: boolean;
     rowsWritten: number;
@@ -113,16 +113,12 @@ async function _saveDataToSheet<T extends Record<string, any>>(
                 success: true,
                 rowsWritten: 0,
                 missingHeaders: [],
-                message: 'No data provided to save'
+                message: 'No data provided to save',
             };
         }
 
         if (!SPREADSHEET_ID) {
-            throw createAppError(
-                'MISSING_SPREADSHEET_ID',
-                'GOOGLE_SHEETS_ID environment variable is not set',
-                {}
-            );
+            throw createAppError('MISSING_SPREADSHEET_ID', 'GOOGLE_SHEETS_ID environment variable is not set', {});
         }
 
         const {
@@ -137,7 +133,7 @@ async function _saveDataToSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_HEADER_ORDER',
                 'headerOrder is required and must contain at least one header',
-                { providedOptions: options }
+                { providedOptions: options },
             );
         }
 
@@ -157,7 +153,7 @@ async function _saveDataToSheet<T extends Record<string, any>>(
         try {
             const { headers, data: existingData } = await readSheetWithHeaders({
                 ...sheetRange,
-                range: `'${sheetName}'!1:1000` // Read reasonable range to check if empty
+                range: `'${sheetName}'!1:1000`, // Read reasonable range to check if empty
             });
 
             existingHeaders = headers;
@@ -180,7 +176,7 @@ async function _saveDataToSheet<T extends Record<string, any>>(
                 success: true,
                 rowsWritten: data.length,
                 missingHeaders: [],
-                message: `Created new sheet with ${headerOrder.length} headers and saved ${data.length} rows`
+                message: `Created new sheet with ${headerOrder.length} headers and saved ${data.length} rows`,
             };
         }
 
@@ -188,15 +184,12 @@ async function _saveDataToSheet<T extends Record<string, any>>(
             throw createAppError(
                 'NO_HEADERS_ERROR',
                 'Sheet has no headers and createHeaders is disabled. Cannot determine column mapping.',
-                { headerOrder, sheetRange }
+                { headerOrder, sheetRange },
             );
         }
 
         // Map headers from headerOrder to existing headers
-        const { mapping, missing } = createHeaderMappingFromActual(
-            existingHeaders,
-            headerMapping
-        );
+        const { mapping, missing } = createHeaderMappingFromActual(existingHeaders, headerMapping);
 
         missingHeaders = missing;
 
@@ -204,7 +197,7 @@ async function _saveDataToSheet<T extends Record<string, any>>(
             throw createAppError(
                 'MISSING_HEADERS_ERROR',
                 `Required headers not found in sheet: ${missingHeaders.join(', ')}`,
-                { missingHeaders, existingHeaders, headerOrder }
+                { missingHeaders, existingHeaders, headerOrder },
             );
         }
 
@@ -220,23 +213,19 @@ async function _saveDataToSheet<T extends Record<string, any>>(
             await writeSheetRange(sheetRange, [...headerRow, ...rows], writeOptions);
         }
 
-        const warningMessage = missingHeaders.length > 0
-            ? ` Warning: ${missingHeaders.length} headers had no matching columns and were skipped.`
-            : '';
+        const warningMessage =
+            missingHeaders.length > 0
+                ? ` Warning: ${missingHeaders.length} headers had no matching columns and were skipped.`
+                : '';
 
         return {
             success: true,
             rowsWritten: data.length,
             missingHeaders,
-            message: `Successfully saved ${data.length} rows to sheet.${warningMessage}`
+            message: `Successfully saved ${data.length} rows to sheet.${warningMessage}`,
         };
-
     } catch (error) {
-        throw createAppError(
-            'SAVE_DATA_ERROR',
-            `Failed to save data to sheet: ${sheetName}`,
-            error
-        );
+        throw createAppError('SAVE_DATA_ERROR', `Failed to save data to sheet: ${sheetName}`, error);
     }
 }
 
@@ -250,7 +239,7 @@ export async function saveDataToSheet<T extends Record<string, any>>(
     options: SaveDataOptions & {
         /** Whether to add missing headers as new columns */
         addMissingHeaders?: boolean;
-    } = { }
+    } = {},
 ): Promise<{
     success: boolean;
     rowsWritten: number;
@@ -265,28 +254,24 @@ export async function saveDataToSheet<T extends Record<string, any>>(
                 rowsWritten: 0,
                 headersAdded: [],
                 missingHeaders: [],
-                message: 'No data provided to save'
+                message: 'No data provided to save',
             };
         }
 
-        const {
-            addMissingHeaders = false,
-            transformFunctions = {},
-            ...saveOptions
-        } = options;
+        const { addMissingHeaders = false, transformFunctions = {}, ...saveOptions } = options;
 
         if (!headerOrder || headerOrder.length === 0) {
             throw createAppError(
                 'MISSING_HEADER_ORDER',
                 'headerOrder is required and must contain at least one header',
-                { providedOptions: options }
+                { providedOptions: options },
             );
         }
 
         // Try initial save
-        const initialResult = await _saveDataToSheet(sheetName, data, headerOrder, {
+        const initialResult = await SaveDataToSheet(sheetName, data, headerOrder, {
             ...saveOptions,
-            requireAllHeaders: false
+            requireAllHeaders: false,
         });
 
         // If we have missing headers and should add them
@@ -297,20 +282,18 @@ export async function saveDataToSheet<T extends Record<string, any>>(
             // Read current headers
             const { headers: currentHeaders } = await readSheetWithHeaders({
                 ...sheetRange,
-                range: `'${sheetName}'!1:1`
+                range: `'${sheetName}'!1:1`,
             });
 
             // The missing headers should be added in the order they appear in headerOrder
-            const orderedMissingHeaders = headerOrder.filter(h =>
-                initialResult.missingHeaders.includes(h)
-            );
+            const orderedMissingHeaders = headerOrder.filter((h) => initialResult.missingHeaders.includes(h));
 
             const newHeaders = [...currentHeaders, ...orderedMissingHeaders];
 
             // Update the sheet with new headers (this will require reading all data and rewriting)
             const { data: existingData } = await readSheetWithHeaders({
                 ...sheetRange,
-                range: `'${sheetName}'!A:Z`
+                range: `'${sheetName}'!A:Z`,
             });
 
             // Convert data using headerOrder for consistent structure
@@ -325,7 +308,7 @@ export async function saveDataToSheet<T extends Record<string, any>>(
                 rowsWritten: data.length,
                 headersAdded: orderedMissingHeaders,
                 missingHeaders: [],
-                message: `Added ${orderedMissingHeaders.length} new headers and saved ${data.length} rows`
+                message: `Added ${orderedMissingHeaders.length} new headers and saved ${data.length} rows`,
             };
         }
 
@@ -334,14 +317,9 @@ export async function saveDataToSheet<T extends Record<string, any>>(
             rowsWritten: initialResult.rowsWritten,
             headersAdded: [],
             missingHeaders: initialResult.missingHeaders,
-            message: initialResult.message
+            message: initialResult.message,
         };
-
     } catch (error) {
-        throw createAppError(
-            'SAVE_DATA_SMART_ERROR',
-            `Failed to smart save data to sheet: ${sheetName}`,
-            error
-        );
+        throw createAppError('SAVE_DATA_SMART_ERROR', `Failed to smart save data to sheet: ${sheetName}`, error);
     }
 }

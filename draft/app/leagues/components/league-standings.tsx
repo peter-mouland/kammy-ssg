@@ -1,8 +1,8 @@
 /* Location: app/leagues/components/league-standings.tsx */
 
-import { Icon } from "../../_shared/components/icon";
-import { Table, type TableColumn, RankBadge, TableBadge } from "../../_shared/components/table";
-import type { UserTeamsSheetData } from "../../teams/types/team-types";
+import { Icon } from '../../_shared/components/icon';
+import { Table, type TableColumn, RankBadge, TableBadge } from '../../_shared/components/table';
+import type { UserTeamsSheetData } from '../../teams/types/team-types';
 
 interface LeagueStandingsProps {
     standings: UserTeamsSheetData[];
@@ -16,7 +16,7 @@ export function LeagueStandings({ standings }: LeagueStandingsProps) {
             accessor: 'leagueRank',
             width: 80,
             align: 'center',
-            render: (rank) => <RankBadge rank={rank} isTop={rank <= 3} />
+            render: (rank) => <RankBadge rank={rank} isTop={rank <= 3} />,
         },
         {
             key: 'team',
@@ -31,7 +31,7 @@ export function LeagueStandings({ standings }: LeagueStandingsProps) {
                         <TableBadge variant="gray">Division {team.divisionId}</TableBadge>
                     </div>
                 </div>
-            )
+            ),
         },
         {
             key: 'manager',
@@ -39,7 +39,7 @@ export function LeagueStandings({ standings }: LeagueStandingsProps) {
             accessor: 'userName',
             sortable: true,
             variant: 'muted',
-            hideOnMobile: true
+            hideOnMobile: true,
         },
         {
             key: 'points',
@@ -47,8 +47,8 @@ export function LeagueStandings({ standings }: LeagueStandingsProps) {
             accessor: 'totalPoints',
             sortable: true,
             variant: 'numeric',
-            render: (points) => points?.toLocaleString() || '0'
-        }
+            render: (points) => points?.toLocaleString() || '0',
+        },
     ];
 
     return (
@@ -70,9 +70,9 @@ export function LeagueStandings({ standings }: LeagueStandingsProps) {
                 empty={{
                     icon: '📊',
                     title: 'No standings available',
-                    description: 'Standings will appear once teams are created'
+                    description: 'Standings will appear once teams are created',
                 }}
-                rowClassName={(team) => team.leagueRank <= 3 ? 'highlight-top' : ''}
+                rowClassName={(team) => (team.leagueRank <= 3 ? 'highlight-top' : '')}
             />
         </div>
     );

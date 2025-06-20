@@ -182,7 +182,6 @@
     }
 }
 
-
 /* Handle tooltip positioning near screen edges */
 .tooltip.rightEdge {
     left: auto;

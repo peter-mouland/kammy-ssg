@@ -63,6 +63,6 @@ export function useCacheStatus(): CacheStatusHook {
         data,
         loading,
         error,
-        refetch: fetchCacheStatus
+        refetch: fetchCacheStatus,
     };
 }

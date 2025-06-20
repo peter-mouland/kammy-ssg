@@ -1,19 +1,20 @@
 ## Key Features:
 
-- Modular Architecture: Separate concerns with distinct classes for different cache types
-- Incremental Updates: Only fetches/updates outdated documents based on configurable age thresholds
-- Concurrency Safety: Prevents race conditions with operation locking mechanism
-- Batch Operations: Efficiently handles multiple document requests
-- State Awareness: Tracks active operations and update status
+-   Modular Architecture: Separate concerns with distinct classes for different cache types
+-   Incremental Updates: Only fetches/updates outdated documents based on configurable age thresholds
+-   Concurrency Safety: Prevents race conditions with operation locking mechanism
+-   Batch Operations: Efficiently handles multiple document requests
+-   State Awareness: Tracks active operations and update status
 
 ## Domain Boundaries:
 
-- FplCache: Handles FPL endpoint responses
-- PlayerCache: Manages player season and gameweek data
-- CacheStateManager: Prevents concurrent updates
-- FirestoreClient: Low-level Firestore operations
+-   FplCache: Handles FPL endpoint responses
+-   PlayerCache: Manages player season and gameweek data
+-   CacheStateManager: Prevents concurrent updates
+-   FirestoreClient: Low-level Firestore operations
 
 # Usage Pattern:
+
 ```typescript
 // In your existing data fetching logic
 const cache = new CacheManager();

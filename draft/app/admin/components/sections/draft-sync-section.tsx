@@ -1,7 +1,8 @@
 /* Location: app/admin/components/sections/draft-sync-section.tsx */
 
 // /admin/components/sections/draft-sync-section.tsx
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useActionData, useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { ResetDraftButton } from '../ui/reset-draft-button';
@@ -14,14 +15,11 @@ interface DraftSyncSectionProps {
     draftState: any;
 }
 
-export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({
-                                                                      divisions,
-                                                                      draftState
-                                                                  }) => {
+export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({ divisions, draftState }) => {
     const [selectedDivision, setSelectedDivision] = useState<string>('');
     const actionData = useActionData();
 
-    const selectedDivisionData = divisions.find(d => d.id === selectedDivision);
+    const selectedDivisionData = divisions.find((d) => d.id === selectedDivision);
 
     return (
         <AdminSection
@@ -30,9 +28,10 @@ export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({
             description="Sync draft data between Google Sheets and Firebase. Use Reset when normal sync fails."
         >
             <AdminMessage type="info">
-                <strong>Sync vs Reset:</strong><br />
-                • <strong>Sync</strong>: Updates Firebase with current Google Sheets data (recommended)<br />
-                • <strong>Reset</strong>: Completely clears Firebase and rebuilds from sheets (use when sync fails)
+                <strong>Sync vs Reset:</strong>
+                <br />• <strong>Sync</strong>: Updates Firebase with current Google Sheets data (recommended)
+                <br />• <strong>Reset</strong>: Completely clears Firebase and rebuilds from sheets (use when sync
+                fails)
             </AdminMessage>
 
             <div className={styles.syncControls}>
@@ -48,7 +47,7 @@ export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({
                         className={styles.select}
                     >
                         <option value="">Choose a division...</option>
-                        {divisions.map(division => (
+                        {divisions.map((division) => (
                             <option key={division.id} value={division.id}>
                                 {division.name} ({division.id})
                             </option>
@@ -63,10 +62,16 @@ export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({
                         <div className={styles.infoGrid}>
                             <div className={styles.infoItem}>
                                 <span className={styles.infoLabel}>Status:</span>
-                                <span className={draftState?.isActive && draftState?.currentDivisionId === selectedDivision
-                                    ? styles.statusActive : styles.statusInactive}>
+                                <span
+                                    className={
+                                        draftState?.isActive && draftState?.currentDivisionId === selectedDivision
+                                            ? styles.statusActive
+                                            : styles.statusInactive
+                                    }
+                                >
                                     {draftState?.isActive && draftState?.currentDivisionId === selectedDivision
-                                        ? '🟢 Active' : '⚪ Inactive'}
+                                        ? '🟢 Active'
+                                        : '⚪ Inactive'}
                                 </span>
                             </div>
                             {draftState?.currentDivisionId === selectedDivision && (
@@ -87,25 +92,17 @@ export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({
 
                 {/* Action Buttons */}
                 <div className={styles.actionButtons}>
-                    <SyncDraftButton
-                        divisionId={selectedDivision}
-                        disabled={!selectedDivision}
-                        variant="primary"
-                    />
+                    <SyncDraftButton divisionId={selectedDivision} disabled={!selectedDivision} variant="primary" />
 
-                    <ResetDraftButton
-                        divisionId={selectedDivision}
-                        disabled={!selectedDivision}
-                        variant="danger"
-                    />
+                    <ResetDraftButton divisionId={selectedDivision} disabled={!selectedDivision} variant="danger" />
                 </div>
 
                 {/* Warning for Reset */}
                 {selectedDivision && (
                     <AdminMessage type="warning">
-                        <strong>When to use Reset:</strong> Only use "Reset Draft" if normal sync isn't working,
-                        such as when you've manually edited the Google Sheets and Firebase is out of sync.
-                        Reset will completely clear all Firebase draft data and rebuild it from scratch.
+                        <strong>When to use Reset:</strong> Only use "Reset Draft" if normal sync isn't working, such as
+                        when you've manually edited the Google Sheets and Firebase is out of sync. Reset will completely
+                        clear all Firebase draft data and rebuild it from scratch.
                     </AdminMessage>
                 )}
             </div>
@@ -116,16 +113,13 @@ export const DraftSyncSection: React.FC<DraftSyncSectionProps> = ({
                     {actionData.message}
                     {actionData.data?.resetPerformed && (
                         <div className={styles.resetSuccess}>
-                            <strong>✅ Complete Reset Performed</strong> - All Firebase data cleared and rebuilt from Google Sheets
+                            <strong>✅ Complete Reset Performed</strong> - All Firebase data cleared and rebuilt from
+                            Google Sheets
                         </div>
                     )}
                 </AdminMessage>
             )}
-            {actionData?.error && (
-                <AdminMessage type="error">
-                    {actionData.error}
-                </AdminMessage>
-            )}
+            {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
         </AdminSection>
     );
 };
@@ -137,11 +131,7 @@ interface SyncDraftButtonProps {
     variant?: 'primary' | 'secondary';
 }
 
-const SyncDraftButton: React.FC<SyncDraftButtonProps> = ({
-                                                             divisionId,
-                                                             disabled = false,
-                                                             variant = 'primary'
-                                                         }) => {
+const SyncDraftButton: React.FC<SyncDraftButtonProps> = ({ divisionId, disabled = false, variant = 'primary' }) => {
     const fetcher = useFetcher();
 
     const isLoading = fetcher.state === 'submitting';
@@ -153,9 +143,9 @@ const SyncDraftButton: React.FC<SyncDraftButtonProps> = ({
         fetcher.submit(
             {
                 actionType: 'syncDraft',
-                divisionId
+                divisionId,
             },
-            { method: 'post' }
+            { method: 'post' },
         );
     };
 

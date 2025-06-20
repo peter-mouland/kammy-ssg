@@ -43,4 +43,4 @@ export const ScoringInfo = () => (
             </div>
         </div>
     </div>
-)
+);

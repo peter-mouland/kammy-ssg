@@ -11,9 +11,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
         return data(result);
     } catch (error) {
         console.error('Cache status API error:', error);
-        return data({
-            success: false,
-            error: 'Failed to get cache status'
-        }, { status: 500 });
+        return data(
+            {
+                success: false,
+                error: 'Failed to get cache status',
+            },
+            { status: 500 },
+        );
     }
 }

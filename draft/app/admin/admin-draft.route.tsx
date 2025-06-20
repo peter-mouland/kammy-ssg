@@ -16,46 +16,40 @@ interface ActionData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
-        const { getDraftAdminData } = await import("./server/admin-dashboard.server");
+        const { getDraftAdminData } = await import('./server/admin-dashboard.server');
         const draftAdminData = await getDraftAdminData();
         return data(draftAdminData);
     } catch (error) {
-        console.error("Draft admin loader error:", error);
-        throw new Response("Failed to load draft setup data", { status: 500 });
+        console.error('Draft admin loader error:', error);
+        throw new Response('Failed to load draft setup data', { status: 500 });
     }
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
-        const actionType = formData.get("actionType")?.trim() as AdminActionType;
-        const divisionId = formData.get("divisionId")?.trim() as DivisionId;
+        const actionType = formData.get('actionType')?.trim() as AdminActionType;
+        const divisionId = formData.get('divisionId')?.trim() as DivisionId;
 
         if (!actionType) {
-            return data<ActionData>({ error: "Action type is required" });
+            return data<ActionData>({ error: 'Action type is required' });
         }
 
-        const { handleDraftActions } = await import("./server/draft-actions.server");
+        const { handleDraftActions } = await import('./server/draft-actions.server');
 
         const result = await handleDraftActions({ actionType, divisionId });
 
         return data<ActionData>(result);
-
     } catch (error) {
-        console.error("Draft action error:", error);
+        console.error('Draft action error:', error);
         return data<ActionData>({
-            error: error instanceof Error ? error.message : "Failed to perform draft action"
+            error: error instanceof Error ? error.message : 'Failed to perform draft action',
         });
     }
 }
 
 export default function AdminDraftRoute() {
-    const {
-        divisions,
-        draftOrders,
-        userTeamsByDivision,
-        draftState
-    } = useLoaderData() as AdminDashboardData;
+    const { divisions, draftOrders, userTeamsByDivision, draftState } = useLoaderData() as AdminDashboardData;
 
     return (
         <DraftSection

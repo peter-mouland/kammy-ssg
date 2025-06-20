@@ -66,7 +66,7 @@ export const cacheInvalidation = {
     clearAll() {
         sheetsCache.clear();
         console.log('📋 Cleared all cache');
-    }
+    },
 };
 
 /**
@@ -77,11 +77,11 @@ export function getCacheStats() {
         ...sheetsCache.getStats(),
         keys: sheetsCache.getKeys(),
         keysByPattern: {
-            draftState: sheetsCache.getKeys().filter(k => k.includes('draft-state')),
-            draftPicks: sheetsCache.getKeys().filter(k => k.includes('draft-picks')),
-            userTeams: sheetsCache.getKeys().filter(k => k.includes('user-teams')),
-            draftOrders: sheetsCache.getKeys().filter(k => k.includes('draft-order')),
-            divisions: sheetsCache.getKeys().filter(k => k.includes('divisions'))
-        }
+            draftState: sheetsCache.getKeys().filter((k) => k.includes('draft-state')),
+            draftPicks: sheetsCache.getKeys().filter((k) => k.includes('draft-picks')),
+            userTeams: sheetsCache.getKeys().filter((k) => k.includes('user-teams')),
+            draftOrders: sheetsCache.getKeys().filter((k) => k.includes('draft-order')),
+            divisions: sheetsCache.getKeys().filter((k) => k.includes('divisions')),
+        },
     };
 }

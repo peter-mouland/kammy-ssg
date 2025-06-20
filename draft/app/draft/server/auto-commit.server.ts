@@ -19,14 +19,14 @@ export async function autoCommitTeamsToFirestore(divisionId: string): Promise<Ad
 
         const result = await handleCommitTeamsToFirestore({
             actionType: 'autoCommitTeamsToFirestore',
-            divisionId
+            divisionId,
         });
 
         if (result.success) {
             console.log(`✅ Auto-commit successful: ${result.message}`);
             return {
                 success: true,
-                message: result.message
+                message: result.message,
             };
         } else {
             const errorMsg = `Auto-commit failed: ${result.message}`;
@@ -34,10 +34,9 @@ export async function autoCommitTeamsToFirestore(divisionId: string): Promise<Ad
             return {
                 success: false,
                 message: errorMsg,
-                error: result.message
+                error: result.message,
             };
         }
-
     } catch (error) {
         const errorMsg = `Auto-commit teams failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
         console.error('❌ Auto-commit error:', error);
@@ -45,7 +44,7 @@ export async function autoCommitTeamsToFirestore(divisionId: string): Promise<Ad
         return {
             success: false,
             message: errorMsg,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? error.message : 'Unknown error',
         };
     }
 }

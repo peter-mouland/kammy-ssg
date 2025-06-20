@@ -1,7 +1,8 @@
 /* Location: app/teams/components/gameweek-selector.tsx */
 
 // /teams/components/gameweek-selector.tsx
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import styles from './gameweek-selector.module.css';
 
 interface GameweekSelectorProps {
@@ -12,11 +13,11 @@ interface GameweekSelectorProps {
 }
 
 export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
-                                                                      currentGameweek,
-                                                                      selectedGameweek,
-                                                                      availableGameweeks,
-                                                                      onGameweekChange
-                                                                  }) => {
+    currentGameweek,
+    selectedGameweek,
+    availableGameweeks,
+    onGameweekChange,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const handlePrevious = () => {
@@ -55,10 +56,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
 
                 {/* Current Gameweek Display */}
                 <div className={styles.gameweekDisplay}>
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className={styles.gameweekButton}
-                    >
+                    <button onClick={() => setIsOpen(!isOpen)} className={styles.gameweekButton}>
                         <span className={styles.gameweekNumber}>{selectedGameweek}</span>
                         <span className={styles.dropdownIcon}>▼</span>
                     </button>
@@ -67,7 +65,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                     {isOpen && (
                         <div className={styles.gameweekDropdown}>
                             <div className={styles.dropdownContent}>
-                                {availableGameweeks.map(gw => (
+                                {availableGameweeks.map((gw) => (
                                     <button
                                         key={gw}
                                         onClick={() => {
@@ -81,7 +79,6 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                                         `}
                                     >
                                         <span>GW {gw}</span>
-
                                     </button>
                                 ))}
                             </div>
@@ -106,13 +103,13 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                     <div
                         className={styles.timelineProgress}
                         style={{
-                            width: `${(availableGameweeks.indexOf(selectedGameweek) / 38) * 100}%`
+                            width: `${(availableGameweeks.indexOf(selectedGameweek) / 38) * 100}%`,
                         }}
                     />
                     <div
                         className={styles.timelineThumb}
                         style={{
-                            left: `${(availableGameweeks.indexOf(selectedGameweek) / 38) * 100}%`
+                            left: `${(availableGameweeks.indexOf(selectedGameweek) / 38) * 100}%`,
                         }}
                     />
                 </div>

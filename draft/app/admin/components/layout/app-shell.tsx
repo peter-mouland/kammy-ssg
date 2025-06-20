@@ -1,7 +1,7 @@
 /* Location: app/admin/components/layout/app-shell.tsx */
 
 // /admin/components/layout/app-shell.tsx
-import React from 'react';
+import type React from 'react';
 import styles from './app-shell.module.css';
 
 interface AppShellProps {
@@ -10,9 +10,5 @@ interface AppShellProps {
 }
 
 export const AppShell = ({ children, background = 'gray' }: AppShellProps) => {
-    return (
-        <div className={`${styles.shell} ${styles[`bg_${background}`]}`}>
-            {children}
-        </div>
-    );
+    return <div className={`${styles.shell} ${styles[`bg_${background}`]}`}>{children}</div>;
 };

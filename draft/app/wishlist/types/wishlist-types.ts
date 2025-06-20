@@ -27,6 +27,6 @@ export interface WishlistContextType {
     getWishlistById: (id: string) => Wishlist | undefined;
     getWishlistsForPlayer: (playerId: number) => Wishlist[];
     isPlayerInWishlist: (wishlistId: string, playerId: number) => boolean;
-    availableColors: Wishlist['color'][]
-    allColors: Record<string, Wishlist['color']>
+    availableColors: Wishlist['color'][];
+    allColors: Record<string, Wishlist['color']>;
 }

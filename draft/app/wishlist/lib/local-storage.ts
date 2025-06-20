@@ -13,7 +13,7 @@ export function getWishlistsFromStorage(): Wishlist[] {
         return parsed.map((wishlist: any) => ({
             ...wishlist,
             createdAt: new Date(wishlist.createdAt),
-            updatedAt: new Date(wishlist.updatedAt)
+            updatedAt: new Date(wishlist.updatedAt),
         }));
     } catch (error) {
         console.error('Error loading wishlists from localStorage:', error);

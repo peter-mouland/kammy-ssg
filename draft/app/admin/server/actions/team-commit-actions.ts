@@ -1,21 +1,17 @@
 // app/admin/server/actions/team-commit-actions.ts
-import { createDivisionTeamsDocument } from "../../../_shared/services/division-teams.service";
-import { getDraftPicksByDivision } from "../../../_shared/lib/sheets/draft";
-import { getUserTeamsByDivision } from "../../../_shared/lib/sheets/user-teams";
-import { fplApi } from "../../../_shared/lib/fpl/api";
-import { convertLegacyPlayersToRoster } from "../../../_shared/lib/roster-conversion-utils";
-import type { DraftActionParams, AdminActionResult } from "../../types/admin-types";
-import type {
-    DivisionTeamsDocument,
-    TeamPositionSlot,
-    PositionSlotKey
-} from "../../../teams/types/team-types";
+import { createDivisionTeamsDocument } from '../../../_shared/services/division-teams.service';
+import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
+import { getUserTeamsByDivision } from '../../../_shared/lib/sheets/user-teams';
+import { fplApi } from '../../../_shared/lib/fpl/api';
+import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
+import type { DraftActionParams, AdminActionResult } from '../../types/admin-types';
+import type { DivisionTeamsDocument, TeamPositionSlot, PositionSlotKey } from '../../../teams/types/team-types';
 
 export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<AdminActionResult> {
     const { divisionId } = params;
 
     if (!divisionId) {
-        throw new Error("Division ID is required");
+        throw new Error('Division ID is required');
     }
 
     try {
@@ -25,7 +21,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         const [draftPicks, userTeams, bootstrap] = await Promise.all([
             getDraftPicksByDivision(divisionId),
             getUserTeamsByDivision(divisionId),
-            fplApi.getFplBootstrapData()
+            fplApi.getFplBootstrapData(),
         ]);
 
         if (draftPicks.length === 0) {
@@ -34,7 +30,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         const fplPlayers = bootstrap.elements;
 
         // Create FPL players lookup
-        const fplPlayersMap = new Map(fplPlayers.map(p => [p.id.toString(), p]));
+        const fplPlayersMap = new Map(fplPlayers.map((p) => [p.id.toString(), p]));
 
         // Group picks by user
         const teamsByUser = new Map<string, any[]>();
@@ -53,13 +49,12 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
             console.log(`Processing ${userPicks.length} picks for user ${userId}`);
 
             // Convert legacy format to new roster structure
-            const legacyPlayers = userPicks.map(pick => {
+            const legacyPlayers = userPicks.map((pick) => {
                 const fplPlayer = fplPlayersMap.get(pick.playerId);
                 if (!fplPlayer) {
                     console.warn(`FPL player not found for ID ${pick.playerId}`);
                 } else if (pick.playerId == fplPlayer?.code) {
                     console.warn(`🚨 FPL player ID id CODE ${pick.playerId}`);
-
                 }
 
                 return {
@@ -72,7 +67,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                     isSub: false, // Will be determined by position availability
                     onLoanTo: null,
                     onLoanStart: null,
-                    gameweek: 0 // Draft is gameweek 0
+                    gameweek: 0, // Draft is gameweek 0
                 };
             });
 
@@ -94,8 +89,8 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 createdAt: now,
                 updatedAt: now,
                 pointsLastUpdated: null,
-                pointsLastGameweek: null
-            }
+                pointsLastGameweek: null,
+            },
         };
 
         // Save the document using the service
@@ -115,13 +110,14 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 documentId: `${divisionId}_gw0`,
                 gameweek: 0,
                 timestamp: now,
-                structure: 'new-roster-based'
-            }
+                structure: 'new-roster-based',
+            },
         };
-
     } catch (error) {
         console.error('Commit teams to new structure error:', error);
-        throw new Error(`Failed to commit teams to new structure: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to commit teams to new structure: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }
 
@@ -139,7 +135,7 @@ export async function createNextGameweekDocument(params: {
         console.log(`🔄 Creating GW${nextGameweek} document for division: ${divisionId}`);
 
         // Get current gameweek document
-        const { getDivisionTeamsDocument } = await import("../../../_shared/services/division-teams.service");
+        const { getDivisionTeamsDocument } = await import('../../../_shared/services/division-teams.service');
         const currentDoc: DivisionTeamsDocument | null = await getDivisionTeamsDocument(divisionId, currentGameweek);
 
         if (!currentDoc) {
@@ -150,7 +146,10 @@ export async function createNextGameweekDocument(params: {
         const newTeamsData: Record<string, { roster: Record<PositionSlotKey, TeamPositionSlot> }> = {};
 
         for (const [userId, teamData] of Object.entries(currentDoc.teams)) {
-            const newRoster: Record<PositionSlotKey, TeamPositionSlot> = {} as Record<PositionSlotKey, TeamPositionSlot>;
+            const newRoster: Record<PositionSlotKey, TeamPositionSlot> = {} as Record<
+                PositionSlotKey,
+                TeamPositionSlot
+            >;
 
             for (const [slot, positionSlot] of Object.entries(teamData.roster)) {
                 newRoster[slot as PositionSlotKey] = {
@@ -167,7 +166,7 @@ export async function createNextGameweekDocument(params: {
                             yellowCards: 0,
                             redCards: 0,
                             saves: 0,
-                            bonus: 0
+                            bonus: 0,
                         },
                         points: {
                             appearance: 0,
@@ -180,9 +179,9 @@ export async function createNextGameweekDocument(params: {
                             penaltiesSaved: 0,
                             goalsConceded: 0,
                             bonus: 0,
-                            total: 0
-                        }
-                    }
+                            total: 0,
+                        },
+                    },
                     // Season data remains unchanged
                 };
             }
@@ -201,8 +200,8 @@ export async function createNextGameweekDocument(params: {
                 createdAt: now,
                 updatedAt: now,
                 pointsLastUpdated: null,
-                pointsLastGameweek: null
-            }
+                pointsLastGameweek: null,
+            },
         };
 
         await createDivisionTeamsDocument(newDocument);
@@ -219,12 +218,13 @@ export async function createNextGameweekDocument(params: {
                 gameweek: nextGameweek,
                 documentId: `${divisionId}_gw${nextGameweek}`,
                 teamsCount: Object.keys(newTeamsData).length,
-                timestamp: now
-            }
+                timestamp: now,
+            },
         };
-
     } catch (error) {
         console.error('Create next gameweek document error:', error);
-        throw new Error(`Failed to create GW${nextGameweek} document: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to create GW${nextGameweek} document: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }

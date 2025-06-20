@@ -1,8 +1,8 @@
 /* Location: app/admin/server/actions/data-actions.ts */
 
 // /admin/server/actions/cache-actions.ts
-import { FirestoreClearService } from "../../../_shared/lib/firestore-cache/clear-service";
-import type { AdminActionParams, AdminActionResult } from "../../types/admin-types";
+import { FirestoreClearService } from '../../../_shared/lib/firestore-cache/clear-service';
+import type { AdminActionParams, AdminActionResult } from '../../types/admin-types';
 
 // Helper function from original
 function isValidAdminToken(token: string): boolean {
@@ -32,7 +32,7 @@ export async function handleClearFirestoreData(params: AdminActionParams): Promi
 
         return {
             success: true,
-            message: `Firestore data cleared successfully (${clearVariant})`
+            message: `Firestore data cleared successfully (${clearVariant})`,
         };
     } catch (error) {
         console.error('Clear firestore data error:', error);
@@ -41,18 +41,17 @@ export async function handleClearFirestoreData(params: AdminActionParams): Promi
 }
 
 export async function handleGetFirestoreStats(params: AdminActionParams): Promise<AdminActionResult> {
-
     try {
         const clearService = new FirestoreClearService();
         const [stats, estimate] = await Promise.all([
             clearService.getCollectionStats(),
-            clearService.estimateClearTime()
+            clearService.estimateClearTime(),
         ]);
 
         return {
             success: true,
             message: 'Success',
-            data: { stats, estimate, timestamp: new Date().toISOString() }
+            data: { stats, estimate, timestamp: new Date().toISOString() },
         };
     } catch (error) {
         console.error('Get firestore stats error:', error);
@@ -70,17 +69,19 @@ export async function handlePopulateBootstrapData(): Promise<AdminActionResult> 
             includeBootstrap: true,
             includeEnhancedData: false,
             includeElementSummaries: false,
-            forceRefresh: true
+            forceRefresh: true,
         });
 
         return {
             success: true,
             message: `Bootstrap data populated! ${result.results.bootstrap?.elements?.length || 0} players loaded`,
-            data: result
+            data: result,
         };
     } catch (error) {
         console.error('Populate bootstrap data error:', error);
-        throw new Error(`Failed to populate bootstrap data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to populate bootstrap data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }
 
@@ -96,17 +97,21 @@ export async function handleGenerateEnhancedDataFast(): Promise<AdminActionResul
             includeEnhancedData: true,
             includeElementSummaries: false,
             forceRefresh: true,
-            skipDetailedStats: false
+            skipDetailedStats: false,
         });
 
         return {
             success: true,
-            message: `Enhanced data generated (fast)! ${result.results.enhanced?.length || 0} players with basic draft calculations`,
-            data: result
+            message: `Enhanced data generated (fast)! ${
+                result.results.enhanced?.length || 0
+            } players with basic draft calculations`,
+            data: result,
         };
     } catch (error) {
         console.error('Generate enhanced data (fast) error:', error);
-        throw new Error(`Failed to generate enhanced data (fast): ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to generate enhanced data (fast): ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }
 
@@ -121,16 +126,20 @@ export async function handlePopulateElementSummaries(): Promise<AdminActionResul
             includeBootstrap: false,
             includeEnhancedData: false,
             includeElementSummaries: true,
-            forceRefresh: true
+            forceRefresh: true,
         });
 
         return {
             success: true,
-            message: `Element summaries populated! ${Object.keys(result.results.elementSummaries || {}).length} players with detailed stats`,
-            data: result
+            message: `Element summaries populated! ${
+                Object.keys(result.results.elementSummaries || {}).length
+            } players with detailed stats`,
+            data: result,
         };
     } catch (error) {
         console.error('Populate element summaries error:', error);
-        throw new Error(`Failed to populate element summaries: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(
+            `Failed to populate element summaries: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        );
     }
 }

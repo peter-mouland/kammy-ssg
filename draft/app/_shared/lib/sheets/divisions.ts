@@ -9,7 +9,7 @@ import {
     convertToSheetRows,
     parseSheetNumber,
     createAppError,
-    type SheetRange
+    type SheetRange,
 } from './utils/common';
 import { sheetsCache } from './cache/sheets-cache-service';
 import { CACHE_CONFIG } from './cache-config';
@@ -17,14 +17,14 @@ import { CACHE_CONFIG } from './cache-config';
 // Sheet configuration
 const DIVISIONS_SHEET_NAME = 'Divisions';
 const DIVISIONS_HEADERS = {
-    'ID': 'id' as keyof DivisionSheetData,
-    'Label': 'label' as keyof DivisionSheetData,
-    'Order': 'order' as keyof DivisionSheetData
+    ID: 'id' as keyof DivisionSheetData,
+    Label: 'label' as keyof DivisionSheetData,
+    Order: 'order' as keyof DivisionSheetData,
 };
 
 // Transform functions for parsing
 const DIVISIONS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DivisionSheetData, (value: any) => any>> = {
-    order: parseSheetNumber
+    order: parseSheetNumber,
 };
 
 /**
@@ -36,7 +36,7 @@ export async function originalReadDivisions(): Promise<DivisionSheetData[]> {
     try {
         const sheetRange: SheetRange = {
             spreadsheetId,
-            range: `'${DIVISIONS_SHEET_NAME}'!A:C`
+            range: `'${DIVISIONS_SHEET_NAME}'!A:C`,
         };
 
         const rawData = await readSheetRange(sheetRange);
@@ -45,93 +45,62 @@ export async function originalReadDivisions(): Promise<DivisionSheetData[]> {
             return [];
         }
 
-        return parseHeaderBasedData<DivisionSheetData>(
-            rawData,
-            DIVISIONS_HEADERS,
-            DIVISIONS_TRANSFORM_FUNCTIONS
-        );
+        return parseHeaderBasedData<DivisionSheetData>(rawData, DIVISIONS_HEADERS, DIVISIONS_TRANSFORM_FUNCTIONS);
     } catch (error) {
-        throw createAppError(
-            'DIVISIONS_READ_ERROR',
-            'Failed to read divisions from sheet',
-            error
-        );
+        throw createAppError('DIVISIONS_READ_ERROR', 'Failed to read divisions from sheet', error);
     }
 }
 export async function readDivisions() {
-    return sheetsCache.get(
-        'divisions',
-        () => originalReadDivisions(),
-        { ttlMs: CACHE_CONFIG.divisions }
-    );
+    return sheetsCache.get('divisions', () => originalReadDivisions(), { ttlMs: CACHE_CONFIG.divisions });
 }
-
 
 /**
  * Write divisions to the sheet (overwrites existing data)
  */
-export async function writeDivisions(
-    divisions: DivisionSheetData[]
-): Promise<void> {
+export async function writeDivisions(divisions: DivisionSheetData[]): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRows = convertToSheetRows(divisions, DIVISIONS_HEADERS, true);
 
         const sheetRange: SheetRange = {
             spreadsheetId,
-            range: `'${DIVISIONS_SHEET_NAME}'!A:C`
+            range: `'${DIVISIONS_SHEET_NAME}'!A:C`,
         };
 
         await writeSheetRange(sheetRange, sheetRows);
     } catch (error) {
-        throw createAppError(
-            'DIVISIONS_WRITE_ERROR',
-            'Failed to write divisions to sheet',
-            error
-        );
+        throw createAppError('DIVISIONS_WRITE_ERROR', 'Failed to write divisions to sheet', error);
     }
 }
 
 /**
  * Add a new division to the sheet
  */
-export async function addDivision(
-    division: DivisionSheetData
-): Promise<void> {
+export async function addDivision(division: DivisionSheetData): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRows = convertToSheetRows([division], DIVISIONS_HEADERS, false);
 
         const sheetRange: SheetRange = {
             spreadsheetId,
-            range: `'${DIVISIONS_SHEET_NAME}'!A:C`
+            range: `'${DIVISIONS_SHEET_NAME}'!A:C`,
         };
 
         await appendToSheet(sheetRange, sheetRows);
     } catch (error) {
-        throw createAppError(
-            'DIVISION_ADD_ERROR',
-            'Failed to add division to sheet',
-            error
-        );
+        throw createAppError('DIVISION_ADD_ERROR', 'Failed to add division to sheet', error);
     }
 }
 
 /**
  * Find a division by ID
  */
-export async function findDivisionById(
-    divisionId: string
-): Promise<DivisionSheetData | null> {
+export async function findDivisionById(divisionId: string): Promise<DivisionSheetData | null> {
     try {
         const divisions = await readDivisions();
-        return divisions.find(div => div.id === divisionId) || null;
+        return divisions.find((div) => div.id === divisionId) || null;
     } catch (error) {
-        throw createAppError(
-            'DIVISION_FIND_ERROR',
-            `Failed to find division with ID: ${divisionId}`,
-            error
-        );
+        throw createAppError('DIVISION_FIND_ERROR', `Failed to find division with ID: ${divisionId}`, error);
     }
 }
 
@@ -143,24 +112,17 @@ export async function getDivisionsOrdered(): Promise<DivisionSheetData[]> {
         const divisions = await readDivisions();
         return divisions.sort((a, b) => a.order - b.order);
     } catch (error) {
-        throw createAppError(
-            'DIVISIONS_ORDER_ERROR',
-            'Failed to get ordered divisions',
-            error
-        );
+        throw createAppError('DIVISIONS_ORDER_ERROR', 'Failed to get ordered divisions', error);
     }
 }
 
 /**
  * Update a division by ID
  */
-export async function updateDivision(
-    divisionId: string,
-    updates: Partial<DivisionSheetData>
-): Promise<boolean> {
+export async function updateDivision(divisionId: string, updates: Partial<DivisionSheetData>): Promise<boolean> {
     try {
         const divisions = await readDivisions();
-        const divisionIndex = divisions.findIndex(div => div.id === divisionId);
+        const divisionIndex = divisions.findIndex((div) => div.id === divisionId);
 
         if (divisionIndex === -1) {
             return false;
@@ -171,23 +133,17 @@ export async function updateDivision(
 
         return true;
     } catch (error) {
-        throw createAppError(
-            'DIVISION_UPDATE_ERROR',
-            `Failed to update division with ID: ${divisionId}`,
-            error
-        );
+        throw createAppError('DIVISION_UPDATE_ERROR', `Failed to update division with ID: ${divisionId}`, error);
     }
 }
 
 /**
  * Delete a division by ID
  */
-export async function deleteDivision(
-    divisionId: string
-): Promise<boolean> {
+export async function deleteDivision(divisionId: string): Promise<boolean> {
     try {
         const divisions = await readDivisions();
-        const filteredDivisions = divisions.filter(div => div.id !== divisionId);
+        const filteredDivisions = divisions.filter((div) => div.id !== divisionId);
 
         if (filteredDivisions.length === divisions.length) {
             return false; // Division not found
@@ -196,11 +152,7 @@ export async function deleteDivision(
         await writeDivisions(filteredDivisions);
         return true;
     } catch (error) {
-        throw createAppError(
-            'DIVISION_DELETE_ERROR',
-            `Failed to delete division with ID: ${divisionId}`,
-            error
-        );
+        throw createAppError('DIVISION_DELETE_ERROR', `Failed to delete division with ID: ${divisionId}`, error);
     }
 }
 
@@ -240,17 +192,15 @@ export function generateDivisionId(label: string): string {
 /**
  * Check if division ID is unique
  */
-export async function isDivisionIdUnique(
-    divisionId: string
-): Promise<boolean> {
+export async function isDivisionIdUnique(divisionId: string): Promise<boolean> {
     try {
         const divisions = await readDivisions();
-        return !divisions.some(div => div.id === divisionId);
+        return !divisions.some((div) => div.id === divisionId);
     } catch (error) {
         throw createAppError(
             'DIVISION_UNIQUE_CHECK_ERROR',
             `Failed to check if division ID is unique: ${divisionId}`,
-            error
+            error,
         );
     }
 }

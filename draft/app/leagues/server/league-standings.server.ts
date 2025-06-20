@@ -1,8 +1,8 @@
 /* Location: app/leagues/server/league-standings.server.ts */
 
 // app/routes/server/league-standings.server.ts
-import { readUserTeams, getUserTeamsByDivision } from "../../_shared/lib/sheets/user-teams";
-import { readDivisions } from "../../_shared/lib/sheets/divisions";
+import { readUserTeams, getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
+import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import type { UserTeamsSheetData, DivisionSheetData, DivisionId } from '../../teams/types/team-types';
 
 export interface LeagueStandingsLoaderData {
@@ -12,7 +12,6 @@ export interface LeagueStandingsLoaderData {
 }
 
 export async function getLeagueStandingsData(selectedDivision: DivisionId): Promise<LeagueStandingsLoaderData> {
-
     // Fetch divisions first
     const divisions = await readDivisions();
 
@@ -22,10 +21,10 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
 
         return {
             userTeamsByDivision: {
-                [selectedDivision]: userTeams
+                [selectedDivision]: userTeams,
             },
             divisions,
-            selectedDivision
+            selectedDivision,
         };
     }
 
@@ -34,12 +33,12 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
     const userTeamsByDivision: Record<string, UserTeamsSheetData[]> = {};
 
     // Initialize empty arrays for all divisions
-    divisions.forEach(division => {
+    divisions.forEach((division) => {
         userTeamsByDivision[division.id] = [];
     });
 
     // Group teams by division and sort by total points within each division
-    allUserTeams.forEach(team => {
+    allUserTeams.forEach((team) => {
         if (!userTeamsByDivision[team.divisionId]) {
             userTeamsByDivision[team.divisionId] = [];
         }
@@ -47,23 +46,23 @@ export async function getLeagueStandingsData(selectedDivision: DivisionId): Prom
     });
 
     // Sort teams within each division by total points (descending)
-    Object.keys(userTeamsByDivision).forEach(divisionId => {
-        userTeamsByDivision[divisionId]
+    Object.keys(userTeamsByDivision).forEach((divisionId) => {
+        userTeamsByDivision[divisionId];
     });
 
     return {
         userTeamsByDivision,
         divisions,
-        selectedDivision: undefined
+        selectedDivision: undefined,
     };
 }
 
 export async function handleLeagueStandingsAction(formData: FormData) {
-    const actionType = formData.get("actionType");
-    const divisionId = formData.get("divisionId");
+    const actionType = formData.get('actionType');
+    const divisionId = formData.get('divisionId');
 
     switch (actionType) {
         default:
-            throw new Error("Invalid action type");
+            throw new Error('Invalid action type');
     }
 }

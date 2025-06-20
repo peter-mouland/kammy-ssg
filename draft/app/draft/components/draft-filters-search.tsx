@@ -12,11 +12,11 @@ interface DraftFiltersSearchProps {
 }
 
 export function DraftFiltersSearch({
-                                       searchTerm,
-                                       onSearchChange,
-                                       placeholder = "Search players...",
-                                       className
-                                   }: DraftFiltersSearchProps) {
+    searchTerm,
+    onSearchChange,
+    placeholder = 'Search players...',
+    className,
+}: DraftFiltersSearchProps) {
     return (
         <input
             type="text"

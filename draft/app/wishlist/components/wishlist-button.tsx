@@ -1,11 +1,11 @@
 /* Location: app/wishlist/components/wishlist-button.tsx */
 
 // components/wishlist-button.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
+import type { FplElementType } from '../../_shared/lib/fpl/fpl-types';
 import { useWishlists } from '../lib/use-wishlists';
-import { CreateWishlistForm } from './wishlist-form';
-import type { FplElementType } from '../../_shared/types';
 import styles from './wishlist-button.module.css';
+import { CreateWishlistForm } from './wishlist-form';
 
 interface WishlistButtonProps {
     player: FplElementType;
@@ -33,8 +33,10 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
         styles.wishlistButton,
         styles[size],
         hasWishlists ? styles.active : styles.inactive,
-        showLabel ? styles.withLabel : ''
-    ].filter(Boolean).join(' ');
+        showLabel ? styles.withLabel : '',
+    ]
+        .filter(Boolean)
+        .join(' ');
 
     return (
         <div className={styles.container}>
@@ -57,18 +59,13 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
                     />
                 </svg>
                 {showLabel && (
-                    <span className={styles.label}>
-            {hasWishlists ? `${playerWishlists.length}` : 'Wishlist'}
-          </span>
+                    <span className={styles.label}>{hasWishlists ? `${playerWishlists.length}` : 'Wishlist'}</span>
                 )}
             </button>
 
             {isOpen && (
                 <>
-                    <div
-                        className={styles.backdrop}
-                        onClick={() => setIsOpen(false)}
-                    />
+                    <div className={styles.backdrop} onClick={() => setIsOpen(false)} />
 
                     <div className={styles.dropdown}>
                         <div className={styles.dropdownContent}>
@@ -93,13 +90,10 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
                                 {wishlists.length === 0 ? (
                                     <p className={styles.emptyMessage}>No wishlists yet. Create one above!</p>
                                 ) : (
-                                    wishlists.map(wishlist => {
+                                    wishlists.map((wishlist) => {
                                         const isInList = wishlist.playerIds.includes(player.id);
                                         return (
-                                            <label
-                                                key={wishlist.id}
-                                                className={styles.wishlistItem}
-                                            >
+                                            <label key={wishlist.id} className={styles.wishlistItem}>
                                                 <input
                                                     type="checkbox"
                                                     checked={isInList}
@@ -111,12 +105,10 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
                                                         className={styles.colorDot}
                                                         style={{ backgroundColor: wishlist.color }}
                                                     />
-                                                    <span className={styles.wishlistLabel}>
-                            {wishlist.label}
-                          </span>
+                                                    <span className={styles.wishlistLabel}>{wishlist.label}</span>
                                                     <span className={styles.playerCount}>
-                            ({wishlist.playerIds.length})
-                          </span>
+                                                        ({wishlist.playerIds.length})
+                                                    </span>
                                                 </div>
                                             </label>
                                         );

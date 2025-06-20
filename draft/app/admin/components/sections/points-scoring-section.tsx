@@ -16,16 +16,13 @@ export const PointsScoringSection = () => {
     const executeAction = (actionType: string) => {
         fetcher.submit(
             { actionType },
-            { method: 'post' }  // Submit to current route
+            { method: 'post' }, // Submit to current route
         );
     };
 
     return (
         <AdminContainer>
-            <AdminSection
-                title="Gameweek Points Management"
-                icon={<Icons.ChartIcon />}
-            >
+            <AdminSection title="Gameweek Points Management" icon={<Icons.ChartIcon />}>
                 <GameweekPointsStatus />
 
                 <AdminGrid columns="auto" minWidth="250px" gap="lg">
@@ -51,13 +48,10 @@ export const PointsScoringSection = () => {
                 </AdminGrid>
             </AdminSection>
 
-            <AdminSection
-                title="Gameweek Game Points 👉 GSheets"
-                icon={<Icons.TargetIcon />}
-            >
+            <AdminSection title="Gameweek Game Points 👉 GSheets" icon={<Icons.TargetIcon />}>
                 <AdminMessage type="info">
-                    <strong>Gameweek Game Points:</strong> Generates a sheet with one column per gameweek game,
-                    showing points for each player's performance in each specific game that gameweek.
+                    <strong>Gameweek Game Points:</strong> Generates a sheet with one column per gameweek game, showing
+                    points for each player's performance in each specific game that gameweek.
                 </AdminMessage>
 
                 <GameweekPointsButton />

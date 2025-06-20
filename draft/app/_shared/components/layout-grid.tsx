@@ -2,8 +2,8 @@
 
 import styles from './layout-grid.module.css';
 
-export const LayoutGrid = ({ children }) => (
-    <div className={styles.divisionGrid}>
-        {children}
-    </div>
-)
+interface LayoutGridProps {
+    children: React.ReactNode;
+}
+
+export const LayoutGrid : React.FC<LayoutGridProps> = ({ children }) => <div className={styles.divisionGrid}>{children}</div>;

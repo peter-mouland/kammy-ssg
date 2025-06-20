@@ -113,7 +113,8 @@
     overflow: hidden;
 }
 
-.barSegment, .barFull {
+.barSegment,
+.barFull {
     display: flex;
     align-items: center;
     justify-content: center;

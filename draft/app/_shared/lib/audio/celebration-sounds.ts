@@ -32,17 +32,17 @@ export const playCelebrationSound = () => {
         const now = audioContext.currentTime;
 
         // First chord - C Major
-        playNote(523.25, now, 0.4);        // C5
-        playNote(659.25, now, 0.4);        // E5
-        playNote(783.99, now, 0.4);        // G5
+        playNote(523.25, now, 0.4); // C5
+        playNote(659.25, now, 0.4); // E5
+        playNote(783.99, now, 0.4); // G5
 
         // Second chord - F Major (higher)
-        playNote(698.46, now + 0.3, 0.4);  // F5
-        playNote(880.00, now + 0.3, 0.4);  // A5
-        playNote(1046.5, now + 0.3, 0.4);  // C6
+        playNote(698.46, now + 0.3, 0.4); // F5
+        playNote(880.0, now + 0.3, 0.4); // A5
+        playNote(1046.5, now + 0.3, 0.4); // C6
 
         // Final triumphant note
-        playNote(1318.5, now + 0.6, 0.8, 0.15);  // E6 - louder and longer
+        playNote(1318.5, now + 0.6, 0.8, 0.15); // E6 - louder and longer
 
         console.log('🎵 Celebration sound played!');
         return true;
@@ -80,8 +80,8 @@ export const playPickSuccessSound = () => {
         const now = audioContext.currentTime;
 
         // Simple ascending notes for pick success
-        playNote(523.25, now, 0.2);        // C5
-        playNote(659.25, now + 0.1, 0.2);  // E5
+        playNote(523.25, now, 0.2); // C5
+        playNote(659.25, now + 0.1, 0.2); // E5
 
         return true;
     } catch (error) {
@@ -118,8 +118,8 @@ export const playErrorSound = () => {
         const now = audioContext.currentTime;
 
         // Descending notes for error
-        playNote(523.25, now, 0.3);        // C5
-        playNote(415.30, now + 0.15, 0.3); // G#4
+        playNote(523.25, now, 0.3); // C5
+        playNote(415.3, now + 0.15, 0.3); // G#4
 
         return true;
     } catch (error) {
@@ -133,7 +133,7 @@ export const playErrorSound = () => {
  */
 export const playYourTurnSound = () => {
     try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
         const playNote = (frequency: number, startTime: number, duration: number, volume: number = 0.06) => {
             const oscillator = audioContext.createOscillator();
@@ -156,8 +156,8 @@ export const playYourTurnSound = () => {
         const now = audioContext.currentTime;
 
         // Two-tone notification
-        playNote(659.25, now, 0.2);        // E5
-        playNote(783.99, now + 0.2, 0.3);  // G5
+        playNote(659.25, now, 0.2); // E5
+        playNote(783.99, now + 0.2, 0.3); // G5
 
         return true;
     } catch (error) {

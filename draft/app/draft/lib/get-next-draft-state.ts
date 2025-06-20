@@ -8,7 +8,7 @@ import type { DraftOrderData, DraftStateData } from '../types/draft-types';
 function calculateNextDraftUser(
     currentPick: number,
     draftOrder: DraftOrderData[],
-    picksPerTeam: number
+    picksPerTeam: number,
 ): { userId: string; userName: string; round: number; pickInRound: number } | null {
     const totalTeams = draftOrder.length;
     const totalPicks = totalTeams * picksPerTeam;
@@ -29,7 +29,7 @@ function calculateNextDraftUser(
     const actualPosition = isSnakeRound ? totalTeams - pickInRound + 1 : pickInRound;
 
     // Find user at this position
-    const user = draftOrder.find(order => order.position === actualPosition);
+    const user = draftOrder.find((order) => order.position === actualPosition);
 
     if (!user) {
         throw new Error(`No user found at position ${actualPosition} in draft order`);
@@ -39,18 +39,14 @@ function calculateNextDraftUser(
         userId: user.userId,
         userName: user.userName,
         round,
-        pickInRound: actualPosition
+        pickInRound: actualPosition,
     };
 }
-
 
 /**
  * Update draft state to next picker
  */
-export function getNextDraftState(
-    currentDraftState: DraftStateData,
-    draftOrder: DraftOrderData[]
-): DraftStateData {
+export function getNextDraftState(currentDraftState: DraftStateData, draftOrder: DraftOrderData[]): DraftStateData {
     const nextPick = currentDraftState.currentPick + 1;
     const nextUser = calculateNextDraftUser(nextPick, draftOrder, currentDraftState.picksPerTeam);
 
@@ -60,14 +56,13 @@ export function getNextDraftState(
             ...currentDraftState,
             isActive: false,
             completedAt: new Date(),
-            currentPick: nextPick
+            currentPick: nextPick,
         };
     }
 
     return {
         ...currentDraftState,
         currentPick: nextPick,
-        currentUserId: nextUser.userId
+        currentUserId: nextUser.userId,
     };
 }
-

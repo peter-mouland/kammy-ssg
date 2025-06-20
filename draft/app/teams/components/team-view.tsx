@@ -1,5 +1,5 @@
 // app/teams/components/team-view.tsx
-import React, { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { FootballPitch } from './football-pitch';
 import { GameweekSelector } from './gameweek-selector';
@@ -7,21 +7,17 @@ import { TeamStats } from './team-stats';
 import { PositionSlotCard } from './position-slot-card';
 import { LoanStatus } from './loan-status';
 import type { TeamViewData, TeamGameweekData } from '../types/team-types';
-import {
-    convertRosterToFormation,
-    extractLoanStatus,
-    getSubstitutePlayers
-} from '../../_shared/lib/roster-conversion-utils';
+import { extractLoanStatus, getSubstitutePlayers } from '../../_shared/lib/roster-conversion-utils';
 import styles from './team-view.module.css';
 
 export const TeamView = () => {
     const data = useLoaderData<TeamViewData>();
     const [searchParams, setSearchParams] = useSearchParams();
-    const selectedGameweek = parseInt(searchParams.get('gameweek') || data.currentGameweek.toString());
-// console.log({data})
+    const selectedGameweek = Number.parseInt(searchParams.get('gameweek') || data.currentGameweek.toString());
+    // console.log({data})
     // Get team data for selected gameweek
     const teamData = useMemo((): TeamGameweekData => {
-        const gameweekData = data.gameweekHistory.find(gw => gw.gameweek === selectedGameweek);
+        const gameweekData = data.gameweekHistory.find((gw) => gw.gameweek === selectedGameweek);
         return gameweekData || data.currentTeam;
     }, [data.gameweekHistory, data.currentTeam, selectedGameweek]);
 
@@ -48,9 +44,7 @@ export const TeamView = () => {
                 <div className={styles.teamInfo}>
                     <h1 className={styles.teamName}>{data.currentUser.teamName}</h1>
                     <p className={styles.managerName}>Manager: {data.currentUser.userName}</p>
-                    <div className={styles.divisionBadge}>
-                        {data.division.name}
-                    </div>
+                    <div className={styles.divisionBadge}>{data.division.name}</div>
                 </div>
 
                 <GameweekSelector
@@ -86,7 +80,7 @@ export const TeamView = () => {
                     />
 
                     {/* Substitutes */}
-                    <div style={{ display: 'flex', gap: "2rem"}}>
+                    <div style={{ display: 'flex', gap: '2rem' }}>
                         <div className={styles.substitutesSection}>
                             <h3 className={styles.sectionTitle}>
                                 Substitutes
@@ -102,11 +96,7 @@ export const TeamView = () => {
                                         isSubstitute={true}
                                     />
                                 ))}
-                                {substitutes.length === 0 && (
-                                    <div className={styles.emptyState}>
-                                        No substitutes
-                                    </div>
-                                )}
+                                {substitutes.length === 0 && <div className={styles.emptyState}>No substitutes</div>}
                             </div>
                         </div>
 
@@ -121,11 +111,7 @@ export const TeamView = () => {
 
                 {/* Right Column: Stats & Info */}
                 <div className={styles.infoColumn}>
-                    <TeamStats
-                        teamData={teamData}
-                        gameweek={selectedGameweek}
-                        isCurrentGameweek={isCurrentGameweek}
-                    />
+                    <TeamStats teamData={teamData} gameweek={selectedGameweek} isCurrentGameweek={isCurrentGameweek} />
                 </div>
             </div>
         </div>

@@ -1,15 +1,7 @@
 /* app/teams/components/football-pitch.module.css */
 
 .footballPitch {
-
-    background: linear-gradient(
-        90deg,
-        #2d5a2d 0%,
-        #4a7c4a 25%,
-        #2d5a2d 50%,
-        #4a7c4a 75%,
-        #2d5a2d 100%
-    );
+    background: linear-gradient(90deg, #2d5a2d 0%, #4a7c4a 25%, #2d5a2d 50%, #4a7c4a 75%, #2d5a2d 100%);
 
     /*aspect-ratio: 2/3;*/
     /*background-size: 20px 20px;*/
@@ -29,7 +21,6 @@
     border-radius: var(--radius-md);
     background: rgba(255, 255, 255, 0.1);
 }
-
 
 .centralAttackerLine,
 .wideAttackerLine,
@@ -138,7 +129,6 @@
     margin-left: 4px;
     margin-right: 4px;
 }
-
 
 /* Goal styling */
 .goal {

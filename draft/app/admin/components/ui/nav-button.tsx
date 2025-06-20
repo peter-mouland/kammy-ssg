@@ -1,6 +1,6 @@
 /* Location: app/admin/components/ui/nav-button.tsx */
 
-import React from 'react';
+import type React from 'react';
 import styles from './nav-button.module.css';
 
 interface NavButtonProps {
@@ -12,10 +12,7 @@ interface NavButtonProps {
 
 export const NavButton = ({ active, onClick, icon, label }: NavButtonProps) => {
     return (
-        <button
-            onClick={onClick}
-            className={`${styles.navButton} ${active ? styles.active : ''}`}
-        >
+        <button onClick={onClick} className={`${styles.navButton} ${active ? styles.active : ''}`}>
             <span className={styles.navIcon}>{icon}</span>
             {label}
         </button>

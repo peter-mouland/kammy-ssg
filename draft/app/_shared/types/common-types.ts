@@ -44,5 +44,3 @@ export type ErrorCode =
     | 'SHEETS_API_ERROR'
     | 'FIREBASE_ERROR'
     | 'MISSING_SPREADSHEET_ID';
-
-

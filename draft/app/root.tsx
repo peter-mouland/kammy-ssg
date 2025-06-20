@@ -10,76 +10,75 @@ import {
     useRouteError,
     type MetaFunction,
     type LinksFunction,
-} from "react-router";
+} from 'react-router';
 
-import globalStyles from "./root.css?url";
-import designTokens from "./design-tokens.css?url";
+import globalStyles from './root.css?url';
+import designTokens from './design-tokens.css?url';
 import { WishlistProvider } from './wishlist/lib/use-wishlists';
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "Fantasy Football Draft" },
-        { name: "description", content: "Division-based fantasy football draft application" },
-        { name: "viewport", content: "width=device-width,initial-scale=1" },
+        { title: 'Fantasy Football Draft' },
+        { name: 'description', content: 'Division-based fantasy football draft application' },
+        { name: 'viewport', content: 'width=device-width,initial-scale=1' },
     ];
 };
 
 export const links: LinksFunction = () => [
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
     {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossOrigin: 'anonymous',
     },
     {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
     },
-    { rel: "stylesheet", href: globalStyles },
-    { rel: "stylesheet", href: designTokens },
+    { rel: 'stylesheet', href: globalStyles },
+    { rel: 'stylesheet', href: designTokens },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-        <head>
-            <meta charSet="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <Meta />
-            <Links />
-        </head>
-        <body>
+            <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <Meta />
+                <Links />
+            </head>
+            <body>
+                <WishlistProvider>
+                    <div className="header">
+                        <div className="container">
+                            <nav className="nav">
+                                <a href="/" className="logo">
+                                    Fantasy Draft
+                                </a>
+                                <a href="/">Dashboard</a>
+                                <a href="/leagues">League Standings</a>
+                                <a href="/players">Players</a>
+                                <a href="/wishlists">Wishlists</a>
+                                <a href="/draft">Draft</a>
+                            </nav>
+                        </div>
+                    </div>
 
-        <WishlistProvider>
-            <div className="header">
-                <div className="container">
-                    <nav className="nav">
-                        <a href="/" className="logo">Fantasy Draft</a>
-                        <a href="/">Dashboard</a>
-                        <a href="/leagues">League Standings</a>
-                        <a href="/players">Players</a>
-                        <a href="/wishlists">Wishlists</a>
-                        <a href="/draft">Draft</a>
-                    </nav>
-                </div>
-            </div>
+                    <main className="main">
+                        <div className="container">{children}</div>
+                    </main>
 
-            <main className="main">
-                <div className="container">
-                    {children}
-                </div>
-            </main>
+                    <footer className="footer">
+                        <div className="container">
+                            <p>&copy; 2025 Fantasy Football Draft Application</p>
+                        </div>
+                    </footer>
 
-            <footer className="footer">
-                <div className="container">
-                    <p>&copy; 2025 Fantasy Football Draft Application</p>
-                </div>
-            </footer>
-
-            <ScrollRestoration />
-            <Scripts />
-        </WishlistProvider>
-        </body>
+                    <ScrollRestoration />
+                    <Scripts />
+                </WishlistProvider>
+            </body>
         </html>
     );
 }

@@ -1,4 +1,5 @@
 /* Location: app/_shared/lib/firestore-cache/firestore-client.ts */
+/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
 // src/lib/firestore-cache/firestore-client.ts
 import { getFirestoreInstance } from './firebase.admin'; // Your firebase config
@@ -9,7 +10,7 @@ export class FirestoreClient {
         FPL_ENDPOINTS: 'fpl-endpoints',
         FPL_BOOTSTRAP: 'fpl-bootstrap',
         FPL_ELEMENTS: 'fpl-elements',
-        CACHE_STATE: 'cache-state'
+        CACHE_STATE: 'cache-state',
     } as const;
 
     get db() {
@@ -24,8 +25,8 @@ export class FirestoreClient {
 
     async getDocument<TData = unknown>(
         collectionName: string,
-        docId: string
-    ): Promise<CacheDocument & { data: TData } | null> {
+        docId: string,
+    ): Promise<(CacheDocument & { data: TData }) | null> {
         const docRef = this.db.collection(collectionName).doc(docId);
         const docSnap = await docRef.get();
 
@@ -39,7 +40,7 @@ export class FirestoreClient {
     async setDocument(
         collectionName: string,
         docId: string,
-        data: Omit<CacheDocument, 'id' | 'lastUpdated'> & { data: unknown }
+        data: Omit<CacheDocument, 'id' | 'lastUpdated'> & { data: unknown },
     ): Promise<void> {
         const docRef = this.db.collection(collectionName).doc(docId);
         const documentData: CacheDocument = {
@@ -54,7 +55,7 @@ export class FirestoreClient {
     async updateDocument(
         collectionName: string,
         docId: string,
-        data: Partial<Pick<CacheDocument, 'data'>>
+        data: Partial<Pick<CacheDocument, 'data'>>,
     ): Promise<void> {
         const docRef = this.db.collection(collectionName).doc(docId);
         await docRef.update({
@@ -65,17 +66,17 @@ export class FirestoreClient {
 
     async batchGetDocuments<TData = unknown>(
         collectionName: string,
-        docIds: string[]
-    ): Promise<Array<CacheDocument & { data: TData } | null>> {
+        docIds: string[],
+    ): Promise<Array<(CacheDocument & { data: TData }) | null>> {
         if (docIds.length === 0) return [];
 
         // Admin SDK doesn't have the same batch read limitations as client SDK
         // But we'll still chunk for performance
         const chunks = this.chunkArray(docIds, 10);
-        const results: Array<CacheDocument & { data: TData } | null> = [];
+        const results: Array<(CacheDocument & { data: TData }) | null> = [];
 
         for (const chunk of chunks) {
-            const promises = chunk.map(id => this.getDocument<TData>(collectionName, id));
+            const promises = chunk.map((id) => this.getDocument<TData>(collectionName, id));
             const chunkResults = await Promise.all(promises);
             results.push(...chunkResults);
         }
@@ -83,12 +84,14 @@ export class FirestoreClient {
         return results;
     }
 
-    async batchWrite(operations: Array<{
-        collection: string;
-        docId: string;
-        data: Omit<CacheDocument, 'id' | 'lastUpdated'> & { data: unknown };
-        operation: 'set' | 'update';
-    }>): Promise<void> {
+    async batchWrite(
+        operations: Array<{
+            collection: string;
+            docId: string;
+            data: Omit<CacheDocument, 'id' | 'lastUpdated'> & { data: unknown };
+            operation: 'set' | 'update';
+        }>,
+    ): Promise<void> {
         const batch = this.db.batch();
         const timestamp = new Date().toISOString();
 
@@ -112,7 +115,7 @@ export class FirestoreClient {
 
     async queryDocuments<TData = unknown>(
         collectionName: string,
-        conditions: Array<{ field: string; operator: FirebaseFirestore.WhereFilterOp; value: any }>
+        conditions: Array<{ field: string; operator: FirebaseFirestore.WhereFilterOp; value: unknown }>,
     ): Promise<Array<CacheDocument & { data: TData }>> {
         let query = this.db.collection(collectionName) as FirebaseFirestore.Query;
 
@@ -121,7 +124,7 @@ export class FirestoreClient {
         });
 
         const querySnapshot = await query.get();
-        return querySnapshot.docs.map(doc => doc.data() as CacheDocument & { data: TData });
+        return querySnapshot.docs.map((doc) => doc.data() as CacheDocument & { data: TData });
     }
 
     private chunkArray<T>(array: T[], size: number): T[][] {

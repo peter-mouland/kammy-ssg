@@ -13,17 +13,13 @@ interface SelectDivisionProps {
     handleDivisionChange: (divisionId: string) => void;
 }
 
-export function SelectDivision({
-                                   divisions,
-                                   selectedDivision,
-                                   handleDivisionChange
-                               }: SelectDivisionProps) {
+export function SelectDivision({ divisions, selectedDivision, handleDivisionChange }: SelectDivisionProps) {
     return (
         <label htmlFor="division-select" className={styles.selectContainer}>
             <span className={styles.selectLabel}>Select Division:</span>
             <select
                 id="division-select"
-                value={selectedDivision || "all"}
+                value={selectedDivision || 'all'}
                 onChange={(e) => handleDivisionChange(e.target.value)}
                 className={styles.selectInput}
             >

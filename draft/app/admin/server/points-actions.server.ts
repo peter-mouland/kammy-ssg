@@ -13,19 +13,20 @@ export async function handlePointsActions(params: PointsActionParams): Promise<A
     try {
         switch (actionType) {
             // Points Management Actions
-            case 'ensureDivisionTeamDocuments':
+            case 'ensureDivisionTeamDocuments': {
                 const { handleEnsureDivisionTeamDocuments } = await import('./actions/points-actions');
                 return await handleEnsureDivisionTeamDocuments();
+            }
 
-            case "generateGameWeekPoints": {
+            case 'generateGameWeekPoints': {
                 const { handleGenerateGameweekPoints } = await import('./actions/points-actions');
                 return await handleGenerateGameweekPoints();
             }
-            case "forceRegenerateAllPoints": {
+            case 'forceRegenerateAllPoints': {
                 const { handleForceRegenerateAllPoints } = await import('./actions/points-actions');
                 return await handleForceRegenerateAllPoints();
             }
-            case "getGameweekPointsStatus": {
+            case 'getGameweekPointsStatus': {
                 const { handleGetGameweekPointsStatus } = await import('./actions/points-actions');
                 return await handleGetGameweekPointsStatus();
             }

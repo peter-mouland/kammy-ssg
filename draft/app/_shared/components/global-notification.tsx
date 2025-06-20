@@ -16,40 +16,37 @@ const useNotification = (lastUpdated: string) => {
 
     // Real-time updates using Server-Sent Events
     useEffect(() => {
-        const eventSource = new EventSource("/api/live-scores");
+        const eventSource = new EventSource('/api/live-scores');
 
         eventSource.onopen = () => {
             setIsConnected(true);
-            console.log("Connected to live FPL updates");
+            console.log('Connected to live FPL updates');
         };
 
-        eventSource.onmessage = (event) => {
+        eventSource.onmessage = async (event) => {
             const data = JSON.parse(event.data);
 
-            if (data.type === "score_update") {
+            if (data.type === 'score_update') {
                 // Add notification with timestamp
                 const timestamp = new Date().toLocaleTimeString();
-                setNotifications(prev => [
+                setNotifications((prev) => [
                     `[${timestamp}] ${data.player_name} ${data.action}! (+${data.points} points)`,
-                    ...prev.slice(0, 4) // Keep only 5 most recent
+                    ...prev.slice(0, 4), // Keep only 5 most recent
                 ]);
 
                 // Update last refresh time
                 setLastUpdateTime(new Date().toISOString());
 
                 // Refresh data from server
-                revalidator.revalidate();
-            } else if (data.type === "gameweek_update") {
-                setNotifications(prev => [
-                    `🏆 Gameweek ${data.gameweek} started!`,
-                    ...prev.slice(0, 4)
-                ]);
+                await revalidator.revalidate();
+            } else if (data.type === 'gameweek_update') {
+                setNotifications((prev) => [`🏆 Gameweek ${data.gameweek} started!`, ...prev.slice(0, 4)]);
             }
         };
 
         eventSource.onerror = () => {
             setIsConnected(false);
-            console.log("Disconnected from live updates");
+            console.log('Disconnected from live updates');
         };
 
         return () => {
@@ -66,15 +63,15 @@ export function Notifications({ lastUpdated }: NotificationProps) {
     return (
         <div>
             <header className={styles.header}>
-                <h1 className={styles.mainTitle}>
-                    ⚽ FPL Live Tracker
-                </h1>
+                <h1 className={styles.mainTitle}>⚽ FPL Live Tracker</h1>
                 <div className={styles.statusContainer}>
                     <div className={styles.statusItem}>
                         <div
-                            className={`${styles.statusIndicator} ${isConnected ? styles.connected : styles.disconnected}`}
+                            className={`${styles.statusIndicator} ${
+                                isConnected ? styles.connected : styles.disconnected
+                            }`}
                         />
-                        <span>{isConnected ? "Live Updates" : "Disconnected"}</span>
+                        <span>{isConnected ? 'Live Updates' : 'Disconnected'}</span>
                     </div>
                     <span>Updated: {new Date(lastUpdateTime).toLocaleTimeString()}</span>
                 </div>
@@ -82,11 +79,9 @@ export function Notifications({ lastUpdated }: NotificationProps) {
 
             {notifications.length > 0 && (
                 <div className={styles.notificationsContainer}>
-                    <h3 className={styles.notificationsTitle}>
-                        📢 Live Updates
-                    </h3>
-                    {notifications.map((notification, index) => (
-                        <div key={index} className={styles.notificationItem}>
+                    <h3 className={styles.notificationsTitle}>📢 Live Updates</h3>
+                    {notifications.map((notification) => (
+                        <div key={notification} className={styles.notificationItem}>
                             {notification}
                         </div>
                     ))}

@@ -8,22 +8,19 @@ export const DivisionTeamsDebugCard = () => {
     const fetcher = useFetcher();
 
     const executeAction = (actionType: string) => {
-        fetcher.submit(
-            { actionType },
-            { method: 'post' }
-        );
+        fetcher.submit({ actionType }, { method: 'post' });
     };
 
     return (
         <ActionCard
             title="Ensure Division Documents"
-    description="Manually ensure all division-teams documents exist for current gameweeks"
-    icon={<Icons.DatabaseIcon />}
-    buttonText="Create Missing Docs"
-    actionType="ensureDivisionTeamDocuments"
-    onExecute={executeAction}
-    fetcher={fetcher}
-    variant="secondary"
+            description="Manually ensure all division-teams documents exist for current gameweeks"
+            icon={<Icons.DatabaseIcon />}
+            buttonText="Create Missing Docs"
+            actionType="ensureDivisionTeamDocuments"
+            onExecute={executeAction}
+            fetcher={fetcher}
+            variant="secondary"
         />
-);
+    );
 };

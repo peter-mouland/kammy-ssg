@@ -1,7 +1,7 @@
 /* Location: app/admin/server/actions/system-actions.ts */
 
 // /admin/server/actions/system-actions.ts
-import type { AdminActionResult } from "../../types/admin-types";
+import type { AdminActionResult } from '../../types/admin-types';
 
 // IMPROVED version of "getCacheStatus" to provide better data structure
 export async function handleGetCacheStatus(): Promise<AdminActionResult> {
@@ -15,7 +15,7 @@ export async function handleGetCacheStatus(): Promise<AdminActionResult> {
         return {
             success: true,
             message: `Cache status retrieved - ${cacheHealth.health?.overall || 'unknown'}`,
-            data: cacheHealth
+            data: cacheHealth,
         };
     } catch (error) {
         console.error('Get cache status error:', error);
@@ -38,8 +38,8 @@ export async function handleGetCacheStatus(): Promise<AdminActionResult> {
                     events: true,
                     elements: true,
                     elementSummaries: true,
-                }
-            }
+                },
+            },
         };
     }
 }

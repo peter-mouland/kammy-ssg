@@ -15,20 +15,12 @@ interface DraftSectionProps {
     draftState: any;
 }
 
-export const DraftSection = ({
-                                 divisions,
-                                 draftOrders,
-                                 userTeamsByDivision,
-                                 draftState
-                             }: DraftSectionProps) => {
+export const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draftState }: DraftSectionProps) => {
     const actionData = useActionData();
 
     return (
         <AdminContainer>
-            <AdminSection
-                title="Draft Management"
-                icon={<Icons.UsersIcon />}
-            >
+            <AdminSection title="Draft Management" icon={<Icons.UsersIcon />}>
                 <AdminGrid columns="auto" minWidth="300px">
                     {divisions.map((division) => (
                         <DraftCard
@@ -43,15 +35,9 @@ export const DraftSection = ({
 
                 {/* Action Messages */}
                 {actionData?.success && actionData.message && (
-                    <AdminMessage type="success">
-                        {actionData.message}
-                    </AdminMessage>
+                    <AdminMessage type="success">{actionData.message}</AdminMessage>
                 )}
-                {actionData?.error && (
-                    <AdminMessage type="error">
-                        {actionData.error}
-                    </AdminMessage>
-                )}
+                {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
             </AdminSection>
 
             <CommitTeamsSection
@@ -67,7 +53,8 @@ export const DraftSection = ({
                 description="If the GSheet was manually changed (e.g. a drafted player remove), we will need to sync"
             >
                 <AdminMessage type="info">
-                    <strong>Tip:</strong> Use this after manually editing picks in sheets or if Firebase shows wrong turn/state.
+                    <strong>Tip:</strong> Use this after manually editing picks in sheets or if Firebase shows wrong
+                    turn/state.
                 </AdminMessage>
 
                 <FirebaseSyncSection />

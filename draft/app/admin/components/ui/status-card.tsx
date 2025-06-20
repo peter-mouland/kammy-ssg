@@ -1,7 +1,7 @@
 /* Location: app/admin/components/ui/status-card.tsx */
 
 // /admin/components/ui/status-card.tsx
-import React from 'react';
+import type React from 'react';
 import styles from './status-card.module.css';
 
 export interface StatusCardProps {
@@ -11,23 +11,12 @@ export interface StatusCardProps {
     status: 'healthy' | 'warning' | 'critical';
 }
 
-export const StatusCard: React.FC<StatusCardProps> = ({
-                                                          icon,
-                                                          label,
-                                                          percentage,
-                                                          status
-                                                      }) => {
+export const StatusCard: React.FC<StatusCardProps> = ({ icon, label, percentage, status }) => {
     return (
         <div className={`${styles.statusCard} ${styles[status]}`}>
-            <div className={styles.statusValue}>
-                {icon}
-            </div>
-            <div className={styles.statusLabel}>
-                {label}
-            </div>
-            <div className={styles.statusPercentage}>
-                {percentage}
-            </div>
+            <div className={styles.statusValue}>{icon}</div>
+            <div className={styles.statusLabel}>{label}</div>
+            <div className={styles.statusPercentage}>{percentage}</div>
         </div>
     );
 };

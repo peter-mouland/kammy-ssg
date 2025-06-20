@@ -1,16 +1,16 @@
 /* Location: app/leagues/league-standings.route.tsx */
 
 // app/routes/league-standings.tsx - Fixed to show separate division standings
-import { type LoaderFunctionArgs, type ActionFunctionArgs, type MetaFunction } from "react-router";
-import { data } from "react-router";
+import type { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from 'react-router';
+import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import type { UserTeamsSheetData, DivisionSheetData, DivisionId } from '../teams/types/team-types';
-import { LeagueStandings } from './league-standings'
+import { LeagueStandings } from './league-standings';
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "League Standings - Fantasy Football Draft" },
-        { name: "description", content: "View standings for each division in the fantasy football league" },
+        { title: 'League Standings - Fantasy Football Draft' },
+        { name: 'description', content: 'View standings for each division in the fantasy football league' },
     ];
 };
 
@@ -28,17 +28,16 @@ interface ActionData {
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
-        const selectedDivision : DivisionId = url.searchParams.get("division");
+        const selectedDivision: DivisionId = url.searchParams.get('division');
 
         // Dynamic import to keep server code on server
-        const { getLeagueStandingsData } = await import("../leagues/server/league-standings.server");
+        const { getLeagueStandingsData } = await import('../leagues/server/league-standings.server');
         const loaderData = await getLeagueStandingsData(selectedDivision);
 
         return data<LoaderData>(loaderData);
-
     } catch (error) {
-        console.error("League standings loader error:", error);
-        throw new Response("Failed to load standings data", { status: 500 });
+        console.error('League standings loader error:', error);
+        throw new Response('Failed to load standings data', { status: 500 });
     }
 }
 
@@ -47,17 +46,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const formData = await requestFormData({ request, context });
 
         // Dynamic import to keep server code on server
-        const { handleLeagueStandingsAction } = await import("../leagues/server/league-standings.server");
+        const { handleLeagueStandingsAction } = await import('../leagues/server/league-standings.server');
         const result = await handleLeagueStandingsAction(formData);
 
         return data<ActionData>(result);
-
     } catch (error) {
-        console.error("League standings action error:", error);
+        console.error('League standings action error:', error);
         return data<ActionData>({
-            error: error instanceof Error ? error.message : "Failed to perform action"
+            error: error instanceof Error ? error.message : 'Failed to perform action',
         });
     }
 }
 
-export default LeagueStandings
+export default LeagueStandings;

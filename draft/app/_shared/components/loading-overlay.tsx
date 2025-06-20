@@ -29,11 +29,7 @@ export function LoadingSpinner({ size = 'medium', message }: LoadingSpinnerProps
     return (
         <div className={styles.container}>
             <div className={`${styles.spinner} ${styles[size]}`} />
-            {message && (
-                <div className={styles.message}>
-                    {message}
-                </div>
-            )}
+            {message && <div className={styles.message}>{message}</div>}
         </div>
     );
 }
@@ -49,9 +45,7 @@ export function TurnAlert({ isUserTurn, isSubmitting }: TurnAlertProps) {
 
     return (
         <div className={styles.turnAlert}>
-            <h3 className={styles.turnTitle}>
-                🎯 It's Your Turn!
-            </h3>
+            <h3 className={styles.turnTitle}>🎯 It's Your Turn!</h3>
 
             {isSubmitting && (
                 <div className={styles.submittingIndicator}>

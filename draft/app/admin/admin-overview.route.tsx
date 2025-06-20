@@ -16,26 +16,25 @@ interface ActionData {
 export async function action({ request, context }: ActionFunctionArgs) {
     try {
         const formData = await requestFormData({ request, context });
-        const actionType = formData.get("actionType")?.trim() as AdminActionType;
-        const variant = formData.get("variant")?.trim() as ClearVariant;
+        const actionType = formData.get('actionType')?.trim() as AdminActionType;
+        const variant = formData.get('variant')?.trim() as ClearVariant;
 
         if (!actionType) {
-            return data<ActionData>({ error: "Action type is required" });
+            return data<ActionData>({ error: 'Action type is required' });
         }
 
-        const { handleOverviewActions } = await import("./server/overview-actions.server");
+        const { handleOverviewActions } = await import('./server/overview-actions.server');
 
         const result = await handleOverviewActions({
             actionType: actionType,
-            variant: variant
+            variant: variant,
         });
 
         return data<ActionData>(result);
-
     } catch (error) {
-        console.error("Overview action error:", error);
+        console.error('Overview action error:', error);
         return data<ActionData>({
-            error: error instanceof Error ? error.message : "Failed to perform overview action"
+            error: error instanceof Error ? error.message : 'Failed to perform overview action',
         });
     }
 }
@@ -53,10 +52,5 @@ export default function AdminOverviewRoute() {
         setExpandedSections(newExpanded);
     };
 
-    return (
-        <OverviewSection
-            expandedSections={expandedSections}
-            toggleSection={toggleSection}
-        />
-    );
+    return <OverviewSection expandedSections={expandedSections} toggleSection={toggleSection} />;
 }

@@ -32,9 +32,7 @@ export const GameweekPointsStatus = () => {
 
     return (
         <div className={styles.statusContainer}>
-            <h4 className={styles.statusTitle}>
-                🎯 Gameweek Points Status
-            </h4>
+            <h4 className={styles.statusTitle}>🎯 Gameweek Points Status</h4>
             <div className={styles.statusGrid}>
                 <div className={styles.statusItem}>
                     <div className={styles.statusLabel}>Current Gameweek:</div>
