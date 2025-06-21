@@ -191,12 +191,10 @@ function DivisionStandingsTable({
     division,
     teams,
     selectedGameweek,
-    currentGameweek,
 }: {
     division: { id: string; label: string };
     teams: LeagueStandingsTeamData[];
     selectedGameweek: number;
-    currentGameweek: number;
 }) {
     if (teams.length === 0) {
         return (
@@ -213,29 +211,21 @@ function DivisionStandingsTable({
         );
     }
 
-    const isHistoricalGameweek = selectedGameweek !== currentGameweek;
-
     return (
         <div className="card" style={{ marginBottom: '2rem' }}>
-            {/* Season Points Table (Always shown) */}
-            <div style={{ padding: '0 1rem' }}>
-                <PositionPointsTable
-                    teams={teams}
-                    pointsSource="seasonPoints"
-                    title="🏆 Season Standings"
-                    subtitle={`Total points accumulated until gameweek ${selectedGameweek}`}
-                />
+            <PositionPointsTable
+                teams={teams}
+                pointsSource="seasonPoints"
+                title="🏆 Season Standings"
+                subtitle={`Total points accumulated until gameweek ${selectedGameweek}`}
+            />
 
-                {/* Gameweek Points Table (Only shown for historical gameweeks) */}
-                {isHistoricalGameweek && (
-                    <PositionPointsTable
-                        teams={teams}
-                        pointsSource="gameweekPoints"
-                        title={`⚡ Gameweek ${selectedGameweek}`}
-                        subtitle={`Points scored during gameweek ${selectedGameweek} only`}
-                    />
-                )}
-            </div>
+            <PositionPointsTable
+                teams={teams}
+                pointsSource="gameweekPoints"
+                title={`⚡ Gameweek ${selectedGameweek}`}
+                subtitle={`Points scored during gameweek ${selectedGameweek} only`}
+            />
         </div>
     );
 }
@@ -273,7 +263,6 @@ export const LeagueStandings = () => {
         <div>
             <PageHeader
                 title={`${selectedDivision} Standings`}
-                // subTitle={`${divisions.length} divisions • ${totalTeams} total teams • ${avgPoints.toLocaleString()} avg points`}
                 actions={
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
                         <GameweekSelector
@@ -315,12 +304,7 @@ export const LeagueStandings = () => {
                     }
 
                     return (
-                        <DivisionStandingsTable
-                            division={division}
-                            teams={teams}
-                            selectedGameweek={selectedGameweek}
-                            currentGameweek={currentGameweek}
-                        />
+                        <DivisionStandingsTable division={division} teams={teams} selectedGameweek={selectedGameweek} />
                     );
                 })()
             ) : (
@@ -341,15 +325,12 @@ export const LeagueStandings = () => {
                         divisions
                             .sort((a, b) => a.order - b.order)
                             .map((division) => {
-                                const teams = standingsData[division.id] || [];
-
                                 return (
                                     <DivisionStandingsTable
                                         key={division.id}
                                         division={division}
-                                        teams={teams}
+                                        teams={standingsData[division.id] || []}
                                         selectedGameweek={selectedGameweek}
-                                        currentGameweek={currentGameweek}
                                     />
                                 );
                             })

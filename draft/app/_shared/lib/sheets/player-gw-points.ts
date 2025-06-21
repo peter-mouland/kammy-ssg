@@ -137,7 +137,7 @@ export async function readPlayerGameweekPointsFromSheet(): Promise<PlayerGamewee
         // Parse data into objects
         return dataRows.map((row) => {
             const rowData: PlayerGameweekPointsRow = {
-                playerCode: '',
+                playerCode: 0,
                 webName: '',
                 teamName: '',
                 position: '',
@@ -147,7 +147,7 @@ export async function readPlayerGameweekPointsFromSheet(): Promise<PlayerGamewee
                 const value = row[index] || '';
 
                 if (header === 'playerCode') {
-                    rowData.playerCode = value.toString();
+                    rowData.playerCode = value;
                 } else if (header === 'webName') {
                     rowData.webName = value.toString();
                 } else if (header === 'teamName') {
