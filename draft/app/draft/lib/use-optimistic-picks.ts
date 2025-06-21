@@ -70,7 +70,7 @@ export function useOptimisticPicks(initialPicks: DraftPickData[]) {
         const validOptimisticPicks = optimisticPicks.filter(
             (pick) =>
                 !realPicks.some(
-                    (realPick) => realPick.playerId === pick.playerId && realPick.divisionId === pick.divisionId,
+                    (realPick) => realPick.playerCode === pick.playerCode && realPick.divisionId === pick.divisionId,
                 ),
         );
 

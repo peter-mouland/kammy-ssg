@@ -111,10 +111,10 @@ export class FplApiCache {
     /**
      * Get FPL player by ID
      */
-    async getFplPlayer(playerId: number): Promise<EnhancedPlayerData | null> {
-        return this.withPromiseDeduplication(`player-${playerId}`, async () => {
-            console.log(`🔄 getFplPlayer(${playerId})`);
-            const players = await this.fplFirestore.getPlayersByIds([playerId]);
+    async getFplPlayer(playerCode: number): Promise<EnhancedPlayerData | null> {
+        return this.withPromiseDeduplication(`player-${playerCode}`, async () => {
+            console.log(`🔄 getFplPlayer(${playerCode})`);
+            const players = await this.fplFirestore.getPlayersByCodes([playerCode]);
             const result = players.length > 0 ? players[0] : null;
             return result;
         });

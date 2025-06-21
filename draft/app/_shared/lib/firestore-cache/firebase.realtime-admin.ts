@@ -1,7 +1,6 @@
 /* Location: app/_shared/lib/firestore-cache/firebase.realtime-admin.ts */
 
-import { getApps } from 'firebase/app';
-import { cert, initializeApp } from 'firebase-admin/app';
+import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import type { Database } from 'firebase-admin/database';
 import { getDatabase } from 'firebase-admin/database';
 
@@ -14,10 +13,12 @@ const serviceAccount = JSON.parse(serviceAccountJson);
 let realtimeDB: Database;
 
 export function getRealtimeAdminDbInstance() {
+    console.log(realtimeDB);
     if (!realtimeDB) {
         const existingApps = getApps();
 
         let realtimeApp = existingApps.find((app) => app.name === REALTIME_ADMIN_APP_NAME);
+        console.log(existingApps);
         if (!realtimeApp) {
             realtimeApp = initializeApp(
                 {

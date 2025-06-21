@@ -9,7 +9,7 @@ import { DraftFilters } from './draft-filters';
 import styles from './draft-players.module.css';
 
 interface DraftPlayersProps {
-    onSelectPlayer: (playerId: string) => void;
+    onSelectPlayer: (playerCode: string) => void;
     availablePlayers: any[];
     isUserTurn: boolean;
     currentUserPicks: any[];
@@ -66,14 +66,14 @@ export function DraftPlayers({
             setSelectedTeams(availableTeamCodes);
             setFiltersInitialized(true);
         }
-    }, [eligiblePlayersWithValidation, allTeams, filtersInitialized]);
+    }, [eligiblePlayersWithValidation, allTeams, currentUserPicks.length, filtersInitialized]);
 
     // Reset filters when currentUserPicks changes
     useEffect(() => {
         if (filtersInitialized) {
             setFiltersInitialized(false);
         }
-    }, [filtersInitialized]);
+    }, [currentUserPicks.length]);
 
     // Team lookup for display names
     const teamLookup = useMemo(() => {
@@ -190,9 +190,9 @@ export function DraftPlayers({
 
                             return (
                                 <div
-                                    key={player.id}
+                                    key={player.code}
                                     className={itemClass}
-                                    onClick={() => isUserTurn && onSelectPlayer(player.id.toString())}
+                                    onClick={() => isUserTurn && onSelectPlayer(player.code)}
                                 >
                                     <div className={styles.playerContent}>
                                         <div className={styles.playerInfo}>

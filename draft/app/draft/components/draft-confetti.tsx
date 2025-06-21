@@ -98,7 +98,7 @@ export function DraftConfetti({ show, onComplete, duration = 3000, playSound = t
             clearInterval(addInterval);
             clearTimeout(stopTimeout);
         };
-    }, [show, duration, onComplete, playSound, createConfettiPiece]);
+    }, [show, duration, onComplete, playSound]);
 
     useEffect(() => {
         if (!isActive || confetti.length === 0) return;

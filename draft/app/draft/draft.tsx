@@ -194,12 +194,12 @@ export const Draft = () => {
     );
 
     const handleMakePick = useCallback(
-        (playerId: string) => {
+        (playerCode: string) => {
             if (!loaderData.currentUser || !loaderData.selectedDivision || isSubmitting) {
                 return;
             }
 
-            const selectedPlayer = loaderData.availablePlayers.find((p) => p.id.toString() === playerId);
+            const selectedPlayer = loaderData.availablePlayers.find((p) => p.code === playerCode);
             if (!selectedPlayer) {
                 showToast({
                     message: 'Player not found',
@@ -214,7 +214,8 @@ export const Draft = () => {
                 pickNumber: optimisticPicks.length + 1,
                 round: Math.ceil((optimisticPicks.length + 1) / loaderData.draftOrder.length),
                 userId: loaderData.currentUser,
-                playerId,
+                playerId: selectedPlayer.id,
+                playerCode: selectedPlayer.code,
                 playerName: selectedPlayer.web_name || `${selectedPlayer.first_name} ${selectedPlayer.second_name}`,
                 teamCode: selectedPlayer.team_code,
                 teamName: teamName || 'Unknown',
@@ -228,7 +229,7 @@ export const Draft = () => {
             fetcher.submit(
                 {
                     actionType: 'makePick',
-                    playerId,
+                    playerCode,
                     userId: loaderData.currentUser,
                     divisionId: loaderData.selectedDivision,
                 },
@@ -251,8 +252,8 @@ export const Draft = () => {
 
     // Memoized filtered players
     const availablePlayersFiltered = useMemo(() => {
-        const pickedPlayerIds = new Set(optimisticPicks.map((pick) => pick.playerId));
-        return loaderData.availablePlayers?.filter((player) => !pickedPlayerIds.has(player.id.toString()));
+        const pickedPlayerCodes = new Set(optimisticPicks.map((pick) => pick.playerCode));
+        return loaderData.availablePlayers?.filter((player) => !pickedPlayerCodes.has(player.code));
     }, [loaderData.availablePlayers, optimisticPicks]);
 
     // Show initial loading state

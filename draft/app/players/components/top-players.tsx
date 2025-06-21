@@ -78,7 +78,7 @@ export function TopPlayers({ players }: TopPlayersProps) {
                 }}
                 onRowClick={(player) => {
                     // Navigate to player detail page
-                    window.location.href = `/players/${player.id}`;
+                    window.location.href = `/players/${player.code}`;
                 }}
             />
 

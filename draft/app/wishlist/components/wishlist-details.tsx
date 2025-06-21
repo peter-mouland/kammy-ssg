@@ -127,7 +127,7 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
             </div>
 
             <div className={styles.playerActions}>
-                <a href={`/players/${player.id}`} className={styles.viewLink}>
+                <a href={`/players/${player.code}`} className={styles.viewLink}>
                     View Details
                 </a>
                 <button onClick={onRemove} className={styles.removeButton} title="Remove from wishlist">

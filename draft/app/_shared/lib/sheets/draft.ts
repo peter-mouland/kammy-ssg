@@ -23,6 +23,7 @@ const DRAFT_PICKS_HEADERS: Record<string, keyof DraftPickData> = {
     Round: 'round',
     'User ID': 'userId',
     'Player ID': 'playerId',
+    Code: 'playerCode',
     'Player Name': 'playerName',
     'Team Code': 'teamCode',
     'Team Name': 'teamName',

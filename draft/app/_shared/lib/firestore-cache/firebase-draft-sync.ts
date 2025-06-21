@@ -1,4 +1,5 @@
 /* Location: app/_shared/lib/firestore-cache/firebase-draft-sync.ts */
+/** biome-ignore-all lint/complexity/noStaticOnlyClass: <explanation> */
 
 // /_shared/lib/firestore-cache/firebase-draft-sync.ts - ENHANCED WITH RESET CAPABILITY
 import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
@@ -226,6 +227,7 @@ export class FirebaseDraftSync {
                 round: pick.round,
                 userId: pick.userId,
                 playerId: pick.playerId,
+                playerCode: pick.playerCode,
                 playerName: pick.playerName,
                 teamCode: pick.teamCode,
                 teamName: pick.teamName,
@@ -413,6 +415,7 @@ export class FirebaseDraftSync {
                     round: pick.round,
                     userId: pick.userId,
                     playerId: pick.playerId,
+                    playerCode: pick.playerCode,
                     playerName: pick.playerName,
                     teamCode: pick.teamCode,
                     teamName: pick.teamName,

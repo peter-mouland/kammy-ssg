@@ -4,22 +4,22 @@
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 import type { CustomPosition, PlayerDetailData } from '../types/player-types';
 
-export async function getPlayerDetailData(playerId: number): Promise<PlayerDetailData> {
+export async function getPlayerDetailData(playerCode: number): Promise<PlayerDetailData> {
     try {
-        console.log(`🔄 Loading player detail data for player: ${playerId}`);
+        console.log(`🔄 Loading player detail data for player: ${playerCode}`);
 
         // Import required services
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get basic player data - all from cache
         const [fplPlayer, fplTeams, currentGameweek] = await Promise.all([
-            fplApiCache.getFplPlayer(playerId),
+            fplApiCache.getFplPlayer(playerCode),
             fplApiCache.getFplTeams(),
             fplApiCache.getCurrentGameweek(),
         ]);
 
         if (!fplPlayer) {
-            throw new Error(`Player ${playerId} not found in FPL data`);
+            throw new Error(`Player ${playerCode} not found in FPL data`);
         }
 
         // Get team data and create team lookup for opponents

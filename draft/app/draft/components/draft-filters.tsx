@@ -1,9 +1,10 @@
 /* Location: app/draft/components/draft-filters.tsx */
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
-import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';
-import type { SquadComposition } from '../types/draft-types';
+import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES } from '../lib/draft-rules';
+import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 import styles from './draft-filters.module.css';
 import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters-multi-select';
 import { DraftFiltersSearch } from './draft-filters-search';

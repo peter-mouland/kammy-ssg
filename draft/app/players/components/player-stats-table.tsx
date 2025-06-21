@@ -106,7 +106,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
                         </div>
                         <div className={styles.playerDetails}>
                             <div className={styles.playerName}>
-                                <Link to={`/players/${player.id}`} className={styles.playerNameLink}>
+                                <Link to={`/players/${player.code}`} className={styles.playerNameLink}>
                                     {formatPlayerName(player, 'full')}
                                 </Link>
                             </div>
@@ -160,7 +160,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             render: (_, player) => (
                 <div className={styles.actions}>
                     <WishlistButton player={player} size="small" showLabel={false} />
-                    <Link to={`/players/${player.id}`} className={styles.viewLink}>
+                    <Link to={`/players/${player.code}`} className={styles.viewLink}>
                         View
                     </Link>
                 </div>

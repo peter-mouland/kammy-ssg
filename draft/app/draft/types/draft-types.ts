@@ -1,4 +1,5 @@
 // app/draft/types/draft-types.ts
+/** biome-ignore-all lint/style/useNamingConvention: <fpl init> */
 
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
@@ -42,7 +43,8 @@ export interface DraftPickData {
     pickNumber: number;
     round: number;
     userId: string;
-    playerId: string;
+    playerId: number;
+    playerCode: number;
     playerName: string;
     teamCode: number;
     teamName: string;

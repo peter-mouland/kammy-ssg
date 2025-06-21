@@ -15,15 +15,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export async function loader({ params }: LoaderFunctionArgs) {
-    const playerId = params.playerId;
+    const playerCode = params.playerCode;
 
-    if (!playerId || Number.isNaN(Number(playerId))) {
-        throw new Response('Invalid player ID', { status: 400 });
+    if (!playerCode || Number.isNaN(Number(playerCode))) {
+        throw new Response('Invalid player Code', { status: 400 });
     }
 
     try {
         const { getPlayerDetailData } = await import('../players/server/player.server');
-        const playerDetailData = await getPlayerDetailData(Number(playerId));
+        const playerDetailData = await getPlayerDetailData(Number(playerCode));
 
         if (!playerDetailData.player) {
             throw new Response('Player not found', { status: 404 });

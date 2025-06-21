@@ -15,20 +15,8 @@ interface ToastManagerProps {
     maxToasts?: number;
 }
 
-// biome-ignore lint/correctness/noUnusedVariables: <is used>
-let showToast: ((toast: Omit<Toast, 'id'>) => void) | null = null;
-let dismissAllToasts: (() => void) | null = null;
-
 export function ToastManager({ maxToasts = 3 }: ToastManagerProps) {
     const [toasts, setToasts] = useState<Toast[]>([]);
-
-    const dismissToast = useCallback((id: string) => {
-        setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    }, []);
-
-    const dismissAll = useCallback(() => {
-        setToasts([]);
-    }, []);
 
     const addToast = useCallback(
         (toast: Omit<Toast, 'id'>) => {
@@ -50,17 +38,25 @@ export function ToastManager({ maxToasts = 3 }: ToastManagerProps) {
                 dismissToast(id);
             }, newToast.duration);
         },
-        [maxToasts, dismissToast],
+        [maxToasts],
     );
+
+    const dismissToast = useCallback((id: string) => {
+        setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    }, []);
+
+    const dismissAll = useCallback(() => {
+        setToasts([]);
+    }, []);
 
     // Expose methods via global function for easy access
     useEffect(() => {
-        showToast = addToast;
-        dismissAllToasts = dismissAll;
+        (window as any).showToast = addToast;
+        (window as any).dismissAllToasts = dismissAll;
 
         return () => {
-            showToast = null;
-            dismissAllToasts = null;
+            delete (window as any).showToast;
+            delete (window as any).dismissAllToasts;
         };
     }, [addToast, dismissAll]);
 
@@ -96,9 +92,9 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
 
     return (
         <div
-            className={`${styles.toast} ${styles[toast.type]} ${isVisible ? styles.visible : ''} ${
-                isLeaving ? styles.leaving : ''
-            }`}
+            className={`${styles.toast} ${styles[toast.type]} ${
+                isVisible ? styles.visible : ''
+            } ${isLeaving ? styles.leaving : ''}`}
             style={
                 {
                     '--toast-index': index,
@@ -108,12 +104,7 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
         >
             <div className={styles.toastContent}>
                 <span className={styles.toastMessage}>{toast.message}</span>
-                <button
-                    onClick={handleDismiss}
-                    type={'button'}
-                    className={styles.dismissButton}
-                    aria-label="Dismiss notification"
-                >
+                <button onClick={handleDismiss} className={styles.dismissButton} aria-label="Dismiss notification">
                     ×
                 </button>
             </div>
@@ -124,14 +115,14 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
 // Hook for easy toast usage
 export function useToast() {
     const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
-        if (showToast) {
-            showToast(toast);
+        if ((window as any).showToast) {
+            (window as any).showToast(toast);
         }
     }, []);
 
     const dismissAll = useCallback(() => {
-        if (dismissAllToasts) {
-            dismissAllToasts();
+        if ((window as any).dismissAllToasts) {
+            (window as any).dismissAllToasts();
         }
     }, []);
 

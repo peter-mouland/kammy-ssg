@@ -49,21 +49,21 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     }
 
     // Filter available players
-    const draftedPlayerIds = new Set(draftPicks.map((pick) => pick.playerId));
-    let availablePlayers = allPlayers.filter((player) => !draftedPlayerIds.has(player.id.toString()));
+    const draftedPlayerCodes = new Set(draftPicks.map((pick) => pick.playerCode));
+    let availablePlayers = allPlayers.filter((player) => !draftedPlayerCodes.has(player.code));
 
     // Apply filters
     if (search) {
         const searchResults = await fplApiCache.searchPlayersByName(search);
-        const searchIds = new Set(searchResults.map((p) => p.id));
-        availablePlayers = availablePlayers.filter((p) => searchIds.has(p.id));
+        const searchCodes = new Set(searchResults.map((p) => p.code));
+        availablePlayers = availablePlayers.filter((p) => searchCodes.has(p.code));
     }
 
     if (position) {
         availablePlayers = availablePlayers.filter((p) => p.draft.position === position);
     }
 
-    availablePlayers.sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
+    // availablePlayers.sort((a, b) => b.draft.pointsTotal - a.draft?.pointsTotal);
 
     const currentUser = selectedUser || userTeams.find((team) => team.divisionId === divisionId)?.userId || '';
     const isUserTurn = !!(
@@ -97,10 +97,10 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
     console.log('🎯 Making draft pick...');
 
     const divisionId = formData.get('divisionId')?.toString() as DivisionId;
-    const playerId = formData.get('playerId')?.toString();
+    const playerCode = Number.parseInt((formData.get('playerCode') as string) || '0', 10);
     const userId = formData.get('userId')?.toString();
 
-    if (!playerId || !userId || !divisionId) {
+    if (!playerCode || !userId || !divisionId) {
         throw new Error('Missing required fields for draft pick');
     }
 
@@ -122,7 +122,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
 
         // Check if player is already drafted
         const existingPicks = await getDraftPicksByDivision(divisionId);
-        const isPlayerDrafted = existingPicks.some((pick) => pick.playerId === playerId);
+        const isPlayerDrafted = existingPicks.some((pick) => pick.playerCode === playerCode);
         if (isPlayerDrafted) {
             throw new Error('Player has already been drafted');
         }
@@ -130,7 +130,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         // Get player and team data for the pick
         const [allPlayers, teams] = await Promise.all([fplApiCache.getFplPlayers(), fplApiCache.getFplTeams()]);
 
-        const player = allPlayers.find((p) => p.id.toString() === playerId);
+        const player = allPlayers.find((p) => p.code === playerCode);
         if (!player) {
             throw new Error('Player not found');
         }
@@ -145,7 +145,8 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
             pickNumber: draftState.currentPick,
             round: Math.ceil(draftState.currentPick / 10), // Assuming 10 teams per round
             userId,
-            playerId,
+            playerId: player.id,
+            playerCode: player.code,
             playerName: player.web_name,
             teamCode: player.team_code,
             teamName: team.name,

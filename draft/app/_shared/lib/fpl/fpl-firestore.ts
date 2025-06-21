@@ -257,15 +257,14 @@ export class FplFirestore {
     /**
      * Get specific players by IDs (from cached elements)
      */
-    async getPlayersByIds(playerIds: number[]): Promise<EnhancedPlayerData[]> {
+    async getPlayersByCodes(playerCodes: number[]): Promise<EnhancedPlayerData[]> {
         const elements = await this.getElements();
         if (!elements) return [];
 
-        const playerMap = new Map(elements.map((player) => [player.id, player]));
-        return playerIds
-            .map((id) => playerMap.get(id))
-            .filter((player): player is EnhancedPlayerData => player !== undefined)
-            .sort((a, b) => a.id - b.id);
+        const playerMap = new Map(elements.map((player) => [player.code, player]));
+        return playerCodes
+            .map((code) => playerMap.get(code))
+            .filter((player): player is EnhancedPlayerData => player !== undefined);
     }
 
     /**

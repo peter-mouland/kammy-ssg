@@ -9,7 +9,7 @@ export default [
     route('teams/:managerId?', 'teams/team.route.tsx'),
     route('leagues', 'leagues/league-standings.route.tsx'),
     route('draft', 'draft/draft.route.tsx'),
-    route('players/:playerId', 'players/player.route.tsx'),
+    route('players/:playerCode', 'players/player.route.tsx'),
     route('players', 'players/players.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),
 

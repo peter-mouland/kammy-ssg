@@ -12,7 +12,7 @@ import { saveDataToSheet } from './utils/write-data-to-sheets';
 const PLAYER_GW_POINTS_SHEET_NAME = 'player-gw-points';
 
 interface PlayerGameweekPointsRow {
-    playerCode: string;
+    playerCode: number;
     webName: string;
     position: string;
     teamName: string;
@@ -70,7 +70,7 @@ async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekP
             });
 
             dataRows.push({
-                playerCode: fplPlayer.code.toString(),
+                playerCode: fplPlayer.code,
                 webName: fplPlayer.web_name,
                 teamName: fplPlayer.team_name, // todo map to name
                 position,
