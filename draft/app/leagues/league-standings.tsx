@@ -1,38 +1,209 @@
 /* Location: app/leagues/league-standings.tsx */
 
-import { Form, useActionData, useLoaderData, useSearchParams } from 'react-router';
+import { useActionData, useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
-import type { DivisionSheetData, UserTeamsSheetData } from '../teams/types/team-types';
+import { GameweekSelector } from '../teams/components/gameweek-selector';
+import styles from './components/league-standings.module.css';
+import type {
+    EnhancedLeagueStandingsLoaderData,
+    LeagueStandingsTeamData,
+    PositionColumnConfig,
+} from './types/league-standings-types';
 
-const getPositionIcon = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `#${rank}`;
-};
+export const POSITION_COLUMNS: PositionColumnConfig[] = [
+    {
+        key: 'gk',
+        label: 'GK / Sub',
+        slots: ['gk_0', 'sub_0'],
+        color: 'var(--color-position-gk)',
+    },
+    {
+        key: 'cb',
+        label: 'CB',
+        slots: ['cb_0', 'cb_1'],
+        color: 'var(--color-position-def)',
+    },
+    {
+        key: 'fb',
+        label: 'FB',
+        slots: ['fb_0', 'fb_1'],
+        color: 'var(--color-position-def)',
+    },
+    {
+        key: 'mid',
+        label: 'MID',
+        slots: ['mid_0', 'mid_1'],
+        color: 'var(--color-position-mid)',
+    },
+    {
+        key: 'wa',
+        label: 'WA',
+        slots: ['wa_0', 'wa_1'],
+        color: 'var(--color-warning)',
+    },
+    {
+        key: 'ca',
+        label: 'CA',
+        slots: ['ca_0', 'ca_1'],
+        color: 'var(--color-position-att)',
+    },
+];
 
-const getPositionStyle = (rank: number) => ({
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '2.5rem',
-    height: '2.5rem',
-    borderRadius: '50%',
-    backgroundColor: rank <= 3 ? '#fbbf24' : rank <= 10 ? '#10b981' : '#6b7280',
-    color: 'white',
-    fontSize: '0.875rem',
-    fontWeight: '600',
-});
+function PositionPointsTable({
+    teams,
+    pointsSource,
+    title,
+    subtitle,
+}: {
+    teams: LeagueStandingsTeamData[];
+    pointsSource: 'gameweekPoints' | 'seasonPoints';
+    title: string;
+    subtitle: string;
+}) {
+    // Sort teams by the selected points source
+    const sortedTeams = [...teams].sort((a, b) => b[pointsSource].total - a[pointsSource].total);
+
+    return (
+        <div style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '1rem' }}>
+                <h3
+                    style={{
+                        margin: '0 0 0.25rem 0',
+                        fontSize: 'var(--font-lg)',
+                        fontWeight: 'var(--font-weight-semibold)',
+                    }}
+                >
+                    {title}
+                </h3>
+                <p className={styles.subtitle}>{subtitle}</p>
+            </div>
+
+            <div className={styles.tableContainer}>
+                <table className="table table-compact">
+                    <thead>
+                        <tr>
+                            <th style={{ width: '50px' }}>Rank</th>
+                            <th style={{ minWidth: '180px' }}>Manager</th>
+                            {POSITION_COLUMNS.map((col) => (
+                                <th
+                                    key={col.key}
+                                    style={{
+                                        textAlign: 'center',
+                                        color: col.color,
+                                        fontWeight: 'var(--font-weight-semibold)',
+                                        width: '80px',
+                                    }}
+                                >
+                                    {col.label}
+                                </th>
+                            ))}
+                            <th style={{ textAlign: 'center', fontWeight: 'var(--font-weight-bold)', width: '100px' }}>
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedTeams.map((team, index) => {
+                            const points = team[pointsSource];
+                            return (
+                                <tr
+                                    key={team.userId}
+                                    style={{
+                                        backgroundColor: index < 3 ? '#f0fdf4' : undefined,
+                                    }}
+                                >
+                                    <td>
+                                        <span
+                                            className={`${styles.rankBadge} ${index < 3 ? styles.topRank : styles.regularRank}`}
+                                        >
+                                            {index + 1}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div className={styles.managerName}>{team.userName}</div>
+                                        </div>
+                                    </td>
+                                    {POSITION_COLUMNS.map((col) => (
+                                        <td key={col.key} style={{ textAlign: 'center' }}>
+                                            <span
+                                                className={styles.points}
+                                                style={{
+                                                    color: points[col.key] > 0 ? col.color : 'var(--color-gray-400)',
+                                                }}
+                                            >
+                                                {points[col.key] || '-'}
+                                            </span>
+                                        </td>
+                                    ))}
+                                    <td style={{ textAlign: 'center' }}>
+                                        <span
+                                            className={styles.points}
+                                            style={{
+                                                fontWeight: 'var(--font-weight-bold)',
+                                                color: 'var(--color-primary)',
+                                            }}
+                                        >
+                                            {points.total || 0}
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Table Summary */}
+            {sortedTeams.length > 0 && (
+                <div
+                    style={{
+                        padding: '1rem',
+                        backgroundColor: '#f8fafc',
+                        borderTop: '1px solid #e2e8f0',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                        gap: '1rem',
+                    }}
+                >
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>
+                            {sortedTeams[0][pointsSource].total}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Leader</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>
+                            {Math.round(
+                                sortedTeams.reduce((sum, team) => sum + team[pointsSource].total, 0) /
+                                    sortedTeams.length,
+                            )}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Average</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#8b5cf6' }}>
+                            {Math.max(...sortedTeams.map((team) => team[pointsSource].total))}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Top Score</div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 function DivisionStandingsTable({
     division,
     teams,
-    showDivisionColumn = false,
+    selectedGameweek,
+    currentGameweek,
 }: {
-    division: DivisionSheetData;
-    teams: UserTeamsSheetData[];
-    showDivisionColumn?: boolean;
+    division: { id: string; label: string };
+    teams: LeagueStandingsTeamData[];
+    selectedGameweek: number;
+    currentGameweek: number;
 }) {
     if (teams.length === 0) {
         return (
@@ -49,247 +220,88 @@ function DivisionStandingsTable({
         );
     }
 
-    // Calculate division stats
-    const avgPoints = Math.round(teams.reduce((sum, team) => sum + team.totalPoints, 0) / teams.length);
-    const topScore = teams[0]?.totalPoints || 0;
-    const avgGwPoints = Math.round(teams.reduce((sum, team) => sum + team.currentGwPoints, 0) / teams.length);
+    const isHistoricalGameweek = selectedGameweek !== currentGameweek;
 
     return (
         <div className="card" style={{ marginBottom: '2rem' }}>
-            <div
-                className="card-header"
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-            >
-                <div>
-                    <h2 className="card-title">📊 {division.label} Division</h2>
-                    <p style={{ color: '#6b7280', margin: '0.5rem 0 0 0' }}>
-                        {teams.length} teams • Last updated: {new Date().toLocaleDateString()}
-                    </p>
-                </div>
-                <Form method="post" style={{ float: 'right' }}>
-                    <input type="hidden" name="actionType" value="refreshRankings" />
-                    <input type="hidden" name="divisionId" value={division.id} />
-                    <button type="submit" className="btn btn-secondary">
-                        🔄 Refresh
-                    </button>
-                </Form>
+            {/* Season Points Table (Always shown) */}
+            <div style={{ padding: '0 1rem' }}>
+                <PositionPointsTable
+                    teams={teams}
+                    pointsSource="seasonPoints"
+                    title="🏆 Season Standings"
+                    subtitle={`Total points accumulated until gameweek ${selectedGameweek}`}
+                />
+
+                {/* Gameweek Points Table (Only shown for historical gameweeks) */}
+                {isHistoricalGameweek && (
+                    <PositionPointsTable
+                        teams={teams}
+                        pointsSource="gameweekPoints"
+                        title={`⚡ Gameweek ${selectedGameweek}`}
+                        subtitle={`Points scored during gameweek ${selectedGameweek} only`}
+                    />
+                )}
             </div>
-
-            {/* Division Summary Stats */}
-            <div
-                style={{
-                    padding: '1rem',
-                    backgroundColor: '#f8fafc',
-                    borderBottom: '1px solid #e2e8f0',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                    gap: '1rem',
-                }}
-            >
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>{teams.length}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Teams</div>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>
-                        {avgPoints.toLocaleString()}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Avg Points</div>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#8b5cf6' }}>
-                        {topScore.toLocaleString()}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Top Score</div>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#f59e0b' }}>{avgGwPoints}</div>
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Avg GW</div>
-                </div>
-            </div>
-
-            {/* Division Standings Table */}
-            <div style={{ overflowX: 'auto' }}>
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Team</th>
-                            <th>Manager</th>
-                            {showDivisionColumn && <th>Division</th>}
-                            <th>Total Points</th>
-                            <th>GW Points</th>
-                            <th>Overall Rank</th>
-                            <th>Last Updated</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {teams.map((team, index) => (
-                            <tr
-                                key={team.userId}
-                                style={{
-                                    backgroundColor: index < 3 ? '#f0fdf4' : undefined,
-                                }}
-                            >
-                                <td>
-                                    <span style={getPositionStyle(index + 1)}>
-                                        {index + 1 <= 3 ? getPositionIcon(index + 1) : index + 1}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div>
-                                        <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
-                                            {team.teamName}
-                                        </div>
-                                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                            FPL ID: {team.fplId}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style={{ fontWeight: '500' }}>{team.userName}</td>
-                                {showDivisionColumn && (
-                                    <td>
-                                        <span
-                                            style={{
-                                                padding: '0.25rem 0.5rem',
-                                                backgroundColor: '#dbeafe',
-                                                color: '#1d4ed8',
-                                                borderRadius: '0.375rem',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '500',
-                                            }}
-                                        >
-                                            {division.label}
-                                        </span>
-                                    </td>
-                                )}
-                                <td style={{ fontWeight: '600', fontSize: '1.125rem' }}>
-                                    {team.totalPoints?.toLocaleString()}
-                                </td>
-                                <td
-                                    style={{
-                                        color:
-                                            team.currentGwPoints > 50
-                                                ? '#059669'
-                                                : team.currentGwPoints > 30
-                                                  ? '#0891b2'
-                                                  : '#6b7280',
-                                        fontWeight: '500',
-                                    }}
-                                >
-                                    {team.currentGwPoints}
-                                </td>
-                                <td style={{ color: '#6b7280' }}>#{team.overallRank?.toLocaleString()}</td>
-                                <td style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                    {new Date(team.lastUpdated).toLocaleDateString()}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Division Leaders */}
-            {teams.length > 0 && (
-                <div
-                    style={{
-                        padding: '1rem',
-                        backgroundColor: '#f8fafc',
-                        borderTop: '1px solid #e2e8f0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '1rem',
-                    }}
-                >
-                    {/* Division Leader */}
-                    <div>
-                        <h4
-                            style={{
-                                margin: '0 0 0.5rem 0',
-                                fontWeight: '600',
-                                color: '#10b981',
-                                fontSize: '0.875rem',
-                            }}
-                        >
-                            🏆 Division Leader
-                        </h4>
-                        <div style={{ fontWeight: '600', fontSize: '0.875rem' }}>{teams[0].teamName}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                            {teams[0].userName} • {teams[0].totalPoints?.toLocaleString()} pts
-                        </div>
-                    </div>
-
-                    {/* Best GW Performance */}
-                    <div>
-                        <h4
-                            style={{
-                                margin: '0 0 0.5rem 0',
-                                fontWeight: '600',
-                                color: '#3b82f6',
-                                fontSize: '0.875rem',
-                            }}
-                        >
-                            ⚡ Best GW Score
-                        </h4>
-                        {(() => {
-                            const bestGwTeam = teams.reduce((best, team) =>
-                                team.currentGwPoints > best.currentGwPoints ? team : best,
-                            );
-                            return (
-                                <div>
-                                    <div style={{ fontWeight: '600', fontSize: '0.875rem' }}>{bestGwTeam.teamName}</div>
-                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                        {bestGwTeam.userName} • {bestGwTeam.currentGwPoints} pts
-                                    </div>
-                                </div>
-                            );
-                        })()}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
 
 export const LeagueStandings = () => {
-    const { userTeamsByDivision, divisions, selectedDivision } = useLoaderData<typeof loader>();
+    const { divisions, selectedDivision, selectedGameweek, currentGameweek, availableGameweeks, standingsData } =
+        useLoaderData<EnhancedLeagueStandingsLoaderData>();
+
     const actionData = useActionData<typeof action>();
     const [_searchParams, setSearchParams] = useSearchParams();
 
     const handleDivisionChange = (divisionId: string) => {
-        if (divisionId === 'all') {
-            setSearchParams({});
-        } else {
-            setSearchParams({ division: divisionId });
+        const newParams = new URLSearchParams();
+        if (divisionId !== 'all') {
+            newParams.set('division', divisionId);
         }
+        if (selectedGameweek !== currentGameweek) {
+            newParams.set('gameweek', selectedGameweek.toString());
+        }
+        setSearchParams(newParams);
     };
 
-    // Calculate overall stats
-    const allTeams = Object.values(userTeamsByDivision).flat();
-    const totalTeams = allTeams.length;
-    const avgPoints =
-        totalTeams > 0 ? Math.round(allTeams.reduce((sum, team) => sum + team.totalPoints, 0) / totalTeams) : 0;
+    const handleGameweekChange = (gameweek: number) => {
+        const newParams = new URLSearchParams();
+        if (selectedDivision) {
+            newParams.set('division', selectedDivision);
+        }
+        if (gameweek !== currentGameweek) {
+            newParams.set('gameweek', gameweek.toString());
+        }
+        setSearchParams(newParams);
+    };
 
     return (
         <div>
             <PageHeader
-                title="League Standings"
-                subTitle={`${
-                    divisions.length
-                } divisions • ${totalTeams} total teams • ${avgPoints.toLocaleString()} avg points`}
+                title={`${selectedDivision} Standings`}
+                // subTitle={`${divisions.length} divisions • ${totalTeams} total teams • ${avgPoints.toLocaleString()} avg points`}
                 actions={
-                    <SelectDivision
-                        divisions={divisions}
-                        selectedDivision={selectedDivision}
-                        handleDivisionChange={handleDivisionChange}
-                    />
+                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
+                        <GameweekSelector
+                            currentGameweek={currentGameweek}
+                            selectedGameweek={selectedGameweek}
+                            availableGameweeks={availableGameweeks}
+                            onGameweekChange={handleGameweekChange}
+                        />
+                        <SelectDivision
+                            divisions={divisions}
+                            selectedDivision={selectedDivision}
+                            handleDivisionChange={handleDivisionChange}
+                        />
+                    </div>
                 }
             />
 
             {/* Action Messages */}
             {actionData?.success && (
                 <div className="success" style={{ marginBottom: '1rem' }}>
-                    ✅ Rankings refreshed successfully!
+                    ✅ Standings updated successfully!
                 </div>
             )}
 
@@ -303,17 +315,19 @@ export const LeagueStandings = () => {
             {selectedDivision ? (
                 (() => {
                     const division = divisions.find((d) => d.id === selectedDivision);
-                    const teams = userTeamsByDivision[selectedDivision] || [];
+                    const teams = standingsData[selectedDivision] || [];
 
                     if (!division) {
                         return <div className="error">Division not found: {selectedDivision}</div>;
                     }
 
-                    // Sort teams by total points for this division
-                    const sortedTeams = [...teams].sort((a, b) => b.totalPoints - a.totalPoints);
-
                     return (
-                        <DivisionStandingsTable division={division} teams={sortedTeams} showDivisionColumn={false} />
+                        <DivisionStandingsTable
+                            division={division}
+                            teams={teams}
+                            selectedGameweek={selectedGameweek}
+                            currentGameweek={currentGameweek}
+                        />
                     );
                 })()
             ) : (
@@ -334,16 +348,15 @@ export const LeagueStandings = () => {
                         divisions
                             .sort((a, b) => a.order - b.order)
                             .map((division) => {
-                                const teams = userTeamsByDivision[division.id] || [];
-                                // Sort teams by total points for this division
-                                const sortedTeams = [...teams].sort((a, b) => b.totalPoints - a.totalPoints);
+                                const teams = standingsData[division.id] || [];
 
                                 return (
                                     <DivisionStandingsTable
                                         key={division.id}
                                         division={division}
-                                        teams={sortedTeams}
-                                        showDivisionColumn={false}
+                                        teams={teams}
+                                        selectedGameweek={selectedGameweek}
+                                        currentGameweek={currentGameweek}
                                     />
                                 );
                             })
@@ -351,82 +364,43 @@ export const LeagueStandings = () => {
                 </div>
             )}
 
-            {/* Overall League Summary */}
-            {!selectedDivision && totalTeams > 0 && (
-                <div className="card">
-                    <div className="card-header">
-                        <h2 className="card-title">🌟 Overall League Summary</h2>
-                    </div>
+            {/* Instructions */}
+            <div className="card" style={{ marginTop: '2rem' }}>
+                <div className="card-header">
+                    <h3 className="card-title">📋 How to Read the Standings</h3>
+                </div>
+                <div style={{ padding: '1rem' }}>
+                    <p style={{ marginBottom: '1rem', color: 'var(--color-gray-600)' }}>
+                        The standings table shows points breakdown by position. Each column represents the combined
+                        points from players in those roster slots:
+                    </p>
                     <div
                         style={{
-                            padding: '1.5rem',
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                            gap: '1.5rem',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                            gap: '0.5rem',
+                            fontSize: 'var(--font-sm)',
                         }}
                     >
-                        <div style={{ textAlign: 'center' }}>
-                            <div
-                                style={{
-                                    fontSize: '2rem',
-                                    fontWeight: 'bold',
-                                    color: '#10b981',
-                                    marginBottom: '0.5rem',
-                                }}
-                            >
-                                {divisions.length}
+                        {POSITION_COLUMNS.map((col) => (
+                            <div key={col.key} style={{ textAlign: 'center', padding: '0.5rem' }}>
+                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: col.color }}>
+                                    {col.label}
+                                </div>
+                                <div style={{ fontSize: 'var(--font-xs)', color: 'var(--color-gray-500)' }}>
+                                    {col.key === 'gk' && '1 player'}
+                                    {col.key === 'cb' && '2 players'}
+                                    {col.key === 'fb' && '2 players'}
+                                    {col.key === 'mid' && '2 players'}
+                                    {col.key === 'wa' && '2 players'}
+                                    {col.key === 'ca' && '2 players'}
+                                    {col.key === 'sub' && '1 player'}
+                                </div>
                             </div>
-                            <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Divisions</div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Competing leagues</div>
-                        </div>
-
-                        <div style={{ textAlign: 'center' }}>
-                            <div
-                                style={{
-                                    fontSize: '2rem',
-                                    fontWeight: 'bold',
-                                    color: '#3b82f6',
-                                    marginBottom: '0.5rem',
-                                }}
-                            >
-                                {totalTeams}
-                            </div>
-                            <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Total Teams</div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Across all divisions</div>
-                        </div>
-
-                        <div style={{ textAlign: 'center' }}>
-                            <div
-                                style={{
-                                    fontSize: '2rem',
-                                    fontWeight: 'bold',
-                                    color: '#8b5cf6',
-                                    marginBottom: '0.5rem',
-                                }}
-                            >
-                                {avgPoints.toLocaleString()}
-                            </div>
-                            <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Average Score</div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>League-wide average</div>
-                        </div>
-
-                        <div style={{ textAlign: 'center' }}>
-                            <div
-                                style={{
-                                    fontSize: '2rem',
-                                    fontWeight: 'bold',
-                                    color: '#f59e0b',
-                                    marginBottom: '0.5rem',
-                                }}
-                            >
-                                {totalTeams > 0 ? Math.max(...allTeams.map((t) => t.totalPoints)).toLocaleString() : 0}
-                            </div>
-                            <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Top Score</div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Best performing team</div>
-                        </div>
+                        ))}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

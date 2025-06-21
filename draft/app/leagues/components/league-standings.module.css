@@ -49,6 +49,7 @@
 .points {
     font-weight: var(--font-weight-semibold);
     color: var(--color-gray-900);
+    font-size: var(--font-sm);
 }
 
 .actionContainer {
