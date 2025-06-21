@@ -3,7 +3,7 @@
 import { fplApi } from '../../../_shared/lib/fpl/api';
 import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
-import { createDivisionTeamsDocument } from '../../../_shared/services/division-teams.service';
+import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
 import type { DivisionTeamsDocument, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
 
@@ -29,7 +29,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         const fplPlayers = bootstrap.elements;
 
         // Create FPL players lookup
-        const fplPlayersMap = new Map(fplPlayers.map((p) => [p.id.toString(), p]));
+        const fplPlayersMap = new Map(fplPlayers.map((p) => [p.id, p]));
 
         // Group picks by user
         const teamsByUser = new Map<string, any[]>();
@@ -134,7 +134,7 @@ export async function createNextGameweekDocument(params: {
         console.log(`🔄 Creating GW${nextGameweek} document for division: ${divisionId}`);
 
         // Get current gameweek document
-        const { getDivisionTeamsDocument } = await import('../../../_shared/services/division-teams.service');
+        const { getDivisionTeamsDocument } = await import('../../../scoring/server/services/division-teams.service');
         const currentDoc: DivisionTeamsDocument | null = await getDivisionTeamsDocument(divisionId, currentGameweek);
 
         if (!currentDoc) {

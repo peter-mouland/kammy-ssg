@@ -502,12 +502,12 @@ export async function debugSheetStructure(): Promise<{
 
         Object.keys(DRAFT_PICKS_HEADERS).forEach((header) => {
             const index = draftPicksHeaders?.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
-            draftPicksMapping[header] = index;
+            draftPicksMapping[header] = index!;
         });
 
         Object.keys(DRAFT_STATE_HEADERS).forEach((header) => {
             const index = draftStateHeaders?.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
-            draftStateMapping[header] = index;
+            draftStateMapping[header] = index!;
         });
 
         return {

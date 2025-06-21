@@ -4,10 +4,7 @@ import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import type { PlayerStatsData } from '../types/player-types';
 
 export async function getPlayerStatsData(): Promise<PlayerStatsData> {
-    const [enhancedPlayers, fplTeams] = await Promise.all([
-        fplApiCache.getEnhancedPlayerData(),
-        fplApiCache.getFplTeams(),
-    ]);
+    const [enhancedPlayers, fplTeams] = await Promise.all([fplApiCache.getFplPlayers(), fplApiCache.getFplTeams()]);
 
     const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
         acc[team.code] = team.name;

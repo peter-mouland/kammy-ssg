@@ -48,6 +48,7 @@ export type AdminActionType =
     | 'generateEnhancedDataFast'
     | 'populateElementSummaries'
     | 'generateGameWeekPoints'
+    | 'forceRerunTransfers'
     | 'forceRegenerateAllPoints'
     | 'ensureDivisionDocument'
     | 'resetDraft'

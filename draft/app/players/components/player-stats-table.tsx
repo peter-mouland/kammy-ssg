@@ -17,7 +17,6 @@ import styles from './player-stats-table.module.css';
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];
     teams: Record<number, string>;
-    positions: Record<string, string>;
 }
 
 export function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 'web' = 'full'): string {
@@ -33,7 +32,7 @@ export function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'sh
     }
 }
 
-export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTableProps) {
+export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
     // URL-synced filters for persistence - this handles ALL filter state
     const { filters, setFilter, resetFilters, isUpdating } = useTableFilters({
         defaultFilters: {
@@ -147,23 +146,9 @@ export function PlayerStatsTable({ players, teams, positions }: PlayerStatsTable
             sortable: true,
             variant: 'numeric',
             render: (_, player) => (
-                <PointsBreakdownTooltip player={player}>{player.draft.pointsTotal}</PointsBreakdownTooltip>
+                <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
             ),
         },
-        // {
-        //     key: 'form',
-        //     header: 'Form',
-        //     accessor: (player) => parseFloat(player.form || '0'),
-        //     sortable: true,
-        //     render: (_, player) => {
-        //         const playerForm = parseFloat(player.form || '0');
-        //         return (
-        //             <span className={`${styles.formBadge} ${getFormColor(playerForm)}`}>
-        //                 {playerForm.toFixed(1)}
-        //             </span>
-        //         );
-        //     }
-        // },
         {
             key: 'wishlists',
             header: 'Wishlists',

@@ -1,6 +1,7 @@
 // app/scoring/server/services/gameweek-points.service.ts
 import { FirestoreClient } from '../../../_shared/lib/firestore-cache/firestore-client';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
+import { populatePointsIntoDivisionDocuments } from './division-teams-points-population.service';
 
 export interface GameweekPointsMetadata {
     lastGeneratedGameweek: number;
@@ -80,7 +81,7 @@ export class GameweekPointsService {
             // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
             const { populatePointsIntoDivisionDocuments } = await import(
-                '../../../_shared/services/division-teams-points-population.service'
+                '../../../scoring/server/services/division-teams-points-population.service'
             );
 
             const pointsPopulationResult = await populatePointsIntoDivisionDocuments(updateNeeded.gameweeksToGenerate);
@@ -147,7 +148,7 @@ export class GameweekPointsService {
             // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
             const { populatePointsIntoDivisionDocuments } = await import(
-                '../../../_shared/services/division-teams-points-population.service'
+                '../../../scoring/server/services/division-teams-points-population.service'
             );
 
             const pointsPopulationResult = await populatePointsIntoDivisionDocuments(availableGameweeks);
@@ -178,6 +179,48 @@ export class GameweekPointsService {
                 reason: 'Full regeneration of all gameweeks requested',
                 gameweeksGenerated: availableGameweeks,
                 playerCount: result.playerCount,
+                currentGameweek,
+                pointsPopulationResult, // Include points population result
+            };
+        } catch (error) {
+            console.error('❌ GameweekPointsService - Force regeneration failed:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Force regeneration of all points (for manual refresh)
+     */
+    async forceRerunTransfers(): Promise<GameweekUpdateResult> {
+        console.log('🔄 GameweekPointsService - forceRerunTransfers...');
+
+        try {
+            const currentGameweek = await fplApiCache.getCurrentGameweek();
+            if (!currentGameweek) {
+                throw new Error('Could not determine current gameweek');
+            }
+
+            const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
+
+            console.log('🔄 Populating points into division-teams documents...');
+            const { populatePointsIntoDivisionDocuments } = await import(
+                '../../../scoring/server/services/division-teams-points-population.service'
+            );
+
+            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(availableGameweeks, {
+                forceTransfers: true,
+            });
+
+            if (pointsPopulationResult.errors.length > 0) {
+                console.warn('⚠️ Some points population errors:', pointsPopulationResult.errors);
+            }
+
+            console.log(`✅ Points population complete: ${pointsPopulationResult.playersUpdated} players updated`);
+
+            return {
+                updated: true,
+                reason: 'Full regeneration of all transfers requested',
+                gameweeksGenerated: availableGameweeks,
                 currentGameweek,
                 pointsPopulationResult, // Include points population result
             };
@@ -278,7 +321,7 @@ export class GameweekPointsService {
         );
 
         // Update element summaries with gameweek points data using existing function
-        await fplApiCache.fplCache.updateElementSummariesWithDraft(gameweekPointsData);
+        await fplApiCache.fplFirestore.updateElementSummariesWithDraft(gameweekPointsData);
 
         console.log(`✅ Generated points for ${Object.keys(gameweekPointsData).length} players`);
         return { playerCount: Object.keys(gameweekPointsData).length };

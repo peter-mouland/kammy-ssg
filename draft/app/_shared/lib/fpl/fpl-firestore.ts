@@ -3,26 +3,19 @@
 import type { CustomPosition } from '../../../players/types/player-types';
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
 import { processBatchedReads } from '../batch-processor';
+import { FirestoreClearService } from '../firestore-cache/clear-service';
+import { FirestoreClient } from '../firestore-cache/firestore-client';
+import { fplApi } from './api';
 import type {
-    FplBootstrapData,
-    FplGameweek,
+    EventData,
+    FilteredFplPlayerData,
     FplPlayerData,
     FplPlayerGameweekData,
     FplPlayerSeasonData,
     FplTeam,
-} from '../fpl/fpl-types';
-import { FirestoreClearService } from './clear-service';
-import { FirestoreClient } from './firestore-client';
-
-// Filtered FPL Player Data Type (absolute essentials only)
-export interface FilteredFplPlayerData {
-    id: number;
-    first_name: string;
-    second_name: string;
-    web_name: string;
-    team_code: number;
-    // Remove all season stats - these should come from element summary instead
-}
+    GameWeekData,
+} from './fpl-types';
+import { getGameweekData } from './gameweeks';
 
 export const convertFplElementToCache = (element: FplPlayerData) => ({
     id: element.id,
@@ -55,7 +48,7 @@ export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) 
     team_h_score: element.team_h_score,
 });
 
-export class FplCache {
+export class FplFirestore {
     private client: FirestoreClient;
     public clearService: FirestoreClearService;
 
@@ -78,34 +71,22 @@ export class FplCache {
     /**
      * Get events from cache
      */
-    async getEvents(): Promise<FplGameweek[]> {
-        const doc = await this.client.getDocument<FplGameweek[]>(this.client.collections.FPL_BOOTSTRAP, 'events');
+    async getEvents(): Promise<GameWeekData[]> {
+        const doc = await this.client.getDocument<GameWeekData[]>(this.client.collections.FPL_BOOTSTRAP, 'events');
 
-        return doc ? doc.data : [];
+        return doc ? doc.data.map((gw) => ({ ...gw, start: gw.start.toDate(), end: gw.end.toDate() })) : [];
     }
 
     /**
      * Get elements from cache
      */
     async getElements(): Promise<EnhancedPlayerData[]> {
-        try {
-            console.log('🔄 getElements() - Reading from Firestore...');
-            const doc = await this.client.getDocument<EnhancedPlayerData[]>(
-                this.client.collections.FPL_BOOTSTRAP,
-                'elements',
-            );
-
-            if (doc) {
-                console.log(`✅ getElements() - Found ${doc.data.length} elements`);
-                return doc.data;
-            } else {
-                console.log('ℹ️ getElements() - No cached elements found');
-                return [];
-            }
-        } catch (error) {
-            console.error('❌ getElements() - Error reading from cache:', error);
-            throw error;
-        }
+        console.log('🔄 getElements() - Reading from Firestore...');
+        const doc = await this.client.getDocument<EnhancedPlayerData[]>(
+            this.client.collections.FPL_BOOTSTRAP,
+            'elements',
+        );
+        return doc ? doc.data : [];
     }
 
     /**
@@ -115,14 +96,14 @@ export class FplCache {
         const events = await this.getEvents();
         if (!events) return null;
 
-        const currentEvent = events.find((event: any) => event.is_current);
-        return currentEvent?.id || null;
+        const currentEvent = events.find((event) => event.fplEvent.is_current);
+        return currentEvent?.fplEvent.id || null;
     }
 
     /**
      * Get element summary data (individual player gameweek breakdown)
      */
-    async getElementGameweek(playerId: number): Promise<FplPlayerSeasonData | null> {
+    async getElementGameweeks(playerId: number): Promise<FplPlayerSeasonData | null> {
         const doc = await this.client.getDocument<FplPlayerSeasonData>(
             this.client.collections.FPL_ELEMENTS,
             `element-${playerId}`,
@@ -135,7 +116,7 @@ export class FplCache {
      * Batch get element summaries
      */
 
-    async batchGetElementSummaries(playerIds: number[]): Promise<Record<number, any>> {
+    async batchGetElementSummaries(playerIds: number[]) {
         const batchReader = async (playerIdBatch: number[]) => {
             const docIds = playerIdBatch.map((id) => `element-${id}`);
             const docs = await this.client.batchGetDocuments(this.client.collections.FPL_ELEMENTS, docIds);
@@ -195,15 +176,17 @@ export class FplCache {
     /**
      * Update individual element summaries with draft data
      */
+    // todo: is this needed, tis v slow!!! <- used on 'force regenerate all'
     async updateElementSummariesWithDraft(draftDataById: Record<number, any>): Promise<void> {
         const entries = Object.entries(draftDataById);
         console.log(`📝 Updating ${entries.length} element summaries with draft data`);
 
         for (const [playerIdStr, draftData] of entries) {
             const playerId = Number.parseInt(playerIdStr);
+            console.log(`📝 ....Updating player ${playerId}`);
 
             // Get existing element summary
-            const existingSummary = await this.getElementGameweek(playerId);
+            const existingSummary = await this.getElementGameweeks(playerId);
             if (existingSummary) {
                 // Add draft data to existing summary
                 const updatedSummary = {
@@ -312,43 +295,51 @@ export class FplCache {
     /**
      * Populate teams document with fresh data
      */
-    async populateTeams(teamsData: any[]): Promise<void> {
+    async populateTeams(teamsData: any[]) {
+        console.log('🎉 Populating FPL_BOOTSTRAP teams document with fresh data...');
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'teams', {
             source: 'fpl',
             data: teamsData,
         });
+        return teamsData;
     }
 
     /**
      * Populate events document with fresh data
      */
-    async populateEvents(eventsData: any[]): Promise<void> {
+    async populateEvents(eventsData: EventData[]) {
+        console.log('🎉 Populating FPL_BOOTSTRAP events document with fresh data...');
+        const gameweekData = getGameweekData(eventsData);
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'events', {
             source: 'fpl',
-            data: eventsData,
+            data: gameweekData,
         });
+        return gameweekData;
     }
 
     /**
      * Populate elements document with fresh data (minimal fields only)
      */
-    async populateElements(elementsData: FplPlayerData[]): Promise<void> {
-        // Filter to only absolute essentials - just identity and team info
+    async populateElements(elementsData: FplPlayerData[]) {
+        console.log('🎉 Populating FPL_BOOTSTRAP elements document with fresh data...');
         const filteredElements: FilteredFplPlayerData[] = elementsData.map(convertFplElementToCache);
 
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
             source: 'fpl',
             data: filteredElements,
         });
+        return filteredElements;
     }
 
     /**
      * Populate all bootstrap documents with fresh data (chunked for large payloads)
      */
-    async populateBootstrap(bootstrapData: FplBootstrapData): Promise<void> {
-        await this.populateTeams(bootstrapData.teams);
-        await this.populateEvents(bootstrapData.events);
-        await this.populateElements(bootstrapData.elements);
+    async populateBootstrap() {
+        const bootstrapData = await fplApi.getFplBootstrapData();
+        const teams = await this.populateTeams(bootstrapData.teams);
+        const events = await this.populateEvents(bootstrapData.events);
+        const elements = await this.populateElements(bootstrapData.elements);
+        return { teams, events, elements };
     }
 
     /**
@@ -367,11 +358,13 @@ export class FplCache {
      * Populate multiple element summary documents with fresh data
      */
     // todo : batch to reduce cost
+    // todo : restrict to id in sheeets
     async populateElementSummaries(summariesData: Record<number, any>): Promise<void> {
         const entries = Object.entries(summariesData);
         console.log(`📝 Writing ${entries.length} element summaries individually to avoid payload limits`);
 
         for (const [playerIdStr, data] of entries) {
+            console.log(`📝 ... ${playerIdStr}`);
             await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerIdStr}`, {
                 source: 'fpl' as const,
                 data,
@@ -439,12 +432,10 @@ export class FplCache {
      * Clear bootstrap data
      */
     async clearBootstrapData(): Promise<void> {
+        console.log('⚪️ Clearing bootstap document with fresh data...');
         try {
-            await Promise.all([
-                this.clearService.clearCollection('teams'),
-                this.clearService.clearCollection('events'),
-                this.clearService.clearCollection('elements'),
-            ]);
+            await this.clearService.clearCollection(this.client.collections.FPL_BOOTSTRAP);
+            // todo: clear cache
             console.log('✅ Bootstrap data cleared');
         } catch (error) {
             console.error('❌ Error clearing bootstrap data:', error);
@@ -462,30 +453,6 @@ export class FplCache {
         } catch (error) {
             console.error('❌ Error clearing element summaries:', error);
             throw error;
-        }
-    }
-
-    // Add this temporary method to your FplCache class
-    async debugElementsSize(): Promise<void> {
-        try {
-            console.log('🔍 Checking elements document...');
-            const doc = await this.client.getDocument<EnhancedPlayerData[]>(
-                this.client.collections.FPL_BOOTSTRAP,
-                'elements',
-            );
-
-            if (doc) {
-                const jsonString = JSON.stringify(doc.data);
-                const sizeInBytes = new Blob([jsonString]).size;
-                console.log(
-                    `📊 Elements document size: ${sizeInBytes} bytes (${(sizeInBytes / 1024 / 1024).toFixed(2)} MB)`,
-                );
-                console.log(`📊 Elements count: ${doc.data.length}`);
-            } else {
-                console.log('ℹ️ No elements document found');
-            }
-        } catch (error) {
-            console.error('❌ Error checking elements size:', error);
         }
     }
 }

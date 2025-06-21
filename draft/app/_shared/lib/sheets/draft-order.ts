@@ -1,6 +1,7 @@
 /* Location: app/_shared/lib/sheets/draft-order.ts */
 
 import type { DraftOrderData } from '../../../draft/types/draft-types';
+import type { DivisionId } from '../../../teams/types/team-types';
 import { sheetsCache } from './cache/sheets-cache-service';
 import { CACHE_CONFIG } from './cache-config';
 import {
@@ -109,7 +110,7 @@ export async function getDraftOrderByDivision(divisionId: string) {
  * Generate random draft order for a division
  */
 export async function generateRandomDraftOrder(
-    divisionId: string,
+    divisionId: DivisionId,
     userTeams: Array<{ userId: string; userName: string }>,
 ): Promise<DraftOrderData[]> {
     try {

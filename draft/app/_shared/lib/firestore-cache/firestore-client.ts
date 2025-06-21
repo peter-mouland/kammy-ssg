@@ -1,5 +1,5 @@
 /* Location: app/_shared/lib/firestore-cache/firestore-client.ts */
-/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
+/** biome-ignore-all lint/style/useNamingConvention: <i likey> */
 
 // src/lib/firestore-cache/firestore-client.ts
 import { getFirestoreInstance } from './firebase.admin'; // Your firebase config
@@ -7,9 +7,9 @@ import type { CacheDocument } from './types';
 
 export class FirestoreClient {
     private readonly COLLECTIONS = {
-        FPL_ENDPOINTS: 'fpl-endpoints',
         FPL_BOOTSTRAP: 'fpl-bootstrap',
         FPL_ELEMENTS: 'fpl-elements',
+        DIVISION_TEAMS: 'division-teams',
         CACHE_STATE: 'cache-state',
     } as const;
 

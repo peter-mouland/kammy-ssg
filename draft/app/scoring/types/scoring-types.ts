@@ -150,6 +150,8 @@ export interface EnhancedPlayerData {
     };
 }
 
+export type PlayersByCode = Record<EnhancedPlayerData['code'], EnhancedPlayerData>;
+
 // ================================
 // DATA GENERATION TYPES
 // ================================

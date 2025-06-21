@@ -116,7 +116,7 @@ export interface TeamGameweekData {
  * MOVED: From shared types to teams domain where it belongs
  */
 export interface DivisionTeamsDocument {
-    divisionId: string;
+    divisionId: DivisionId;
     gameweek: number; // Current gameweek being tracked
     lastUpdated: string; // ISO timestamp
 

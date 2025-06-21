@@ -22,10 +22,17 @@ export async function handlePointsActions(params: PointsActionParams): Promise<A
                 const { handleGenerateGameweekPoints } = await import('./actions/points-actions');
                 return await handleGenerateGameweekPoints();
             }
+
             case 'forceRegenerateAllPoints': {
                 const { handleForceRegenerateAllPoints } = await import('./actions/points-actions');
                 return await handleForceRegenerateAllPoints();
             }
+
+            case 'forceRerunTransfers': {
+                const { handleForceRerunTransfers } = await import('./actions/points-actions');
+                return await handleForceRerunTransfers();
+            }
+
             case 'getGameweekPointsStatus': {
                 const { handleGetGameweekPointsStatus } = await import('./actions/points-actions');
                 return await handleGetGameweekPointsStatus();

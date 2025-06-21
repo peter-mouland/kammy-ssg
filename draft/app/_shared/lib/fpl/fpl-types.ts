@@ -1,4 +1,5 @@
 // ================================
+/** biome-ignore-all lint/style/useNamingConvention: <fpl in it> */
 // FPL DATA INTEGRATION TYPES
 // ================================
 
@@ -199,4 +200,33 @@ export interface FplChipPlay {
 export interface FplTopElementInfo {
     id: number;
     points: number;
+}
+
+// Filtered FPL Player Data Type (absolute essentials only)
+export interface FilteredFplPlayerData {
+    id: number;
+    first_name: string;
+    second_name: string;
+    web_name: string;
+    team_code: number;
+    // Remove all season stats - these should come from element summary instead
+}
+
+export interface EventData {
+    deadline_time: string | Date; // Assuming it's either a string or Date object
+    finished: boolean;
+    id: number;
+    is_current: boolean;
+    is_next: boolean;
+    name: string;
+}
+
+export interface GameWeekData {
+    fplEvent: EventData; // You'll need to define Event interface separately
+    gameWeekIndex: number;
+    start: Date | string; // Assuming it's a Date or date string
+    end: Date | string; // Assuming it's a Date or date string
+    isCurrent: boolean;
+    isNext: boolean;
+    hasPassed: boolean;
 }

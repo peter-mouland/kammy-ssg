@@ -15,7 +15,7 @@ export async function handleClearFirestoreData(params: AdminActionParams): Promi
                 await clearService.clearAllData();
                 break;
             case 'fpl-only':
-                await clearService.clearFplCacheOnly();
+                await clearService.clearFplFirestoreOnly();
                 break;
             case 'elements-only':
                 await clearService.clearElementSummariesOnly();
@@ -91,7 +91,6 @@ export async function handleGenerateEnhancedDataFast(): Promise<AdminActionResul
             includeEnhancedData: true,
             includeElementSummaries: false,
             forceRefresh: true,
-            skipDetailedStats: false,
         });
 
         return {

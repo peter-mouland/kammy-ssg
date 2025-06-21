@@ -6,7 +6,7 @@ import {
     getAvailableGameweeks as getAvailableGameweeksFromService,
     getUserTeamForGameweek,
     getUserTeamHistory,
-} from '../../_shared/services/division-teams.service';
+} from '../../scoring/server/services/division-teams.service';
 import type { CurrentUser, TeamGameweekData, TeamViewData } from '../types/team-types';
 
 export async function loadTeamData(url: URL, _params: any): Promise<TeamViewData> {
@@ -38,6 +38,7 @@ export async function loadTeamData(url: URL, _params: any): Promise<TeamViewData
         const currentTeam = await getUserTeamForGameweek(userTeam.divisionId, currentUser.id, currentGameweek);
 
         if (!currentTeam) {
+            console.warn(`cGW:${currentGameweek} user divisionId: ${userTeam.divisionId} user: ${currentUser.id} `);
             throw new Error('Current team data not found - division may not be set up yet');
         }
 
@@ -98,9 +99,9 @@ async function getCurrentUser(_url: URL): Promise<CurrentUser | null> {
     // todo: Implementation needed - get user from session/auth
     // This is a placeholder that needs proper authentication logic
     return {
-        teamName: 'Naked Juans',
-        userName: 'Pete',
-        id: 'naked',
+        teamName: 'Paul',
+        userName: 'Paul',
+        id: 'Paul',
         divisionId: 'leagueOne',
     };
 }

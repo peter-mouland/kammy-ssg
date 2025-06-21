@@ -43,6 +43,7 @@ export const ActionCard = ({
                 className={`${styles.actionButton} ${recommended ? styles.primary : styles.secondary}`}
                 onClick={() => onExecute(actionType)}
                 disabled={disabled || isLoading}
+                type={'button'}
             >
                 {isLoading ? (
                     <>

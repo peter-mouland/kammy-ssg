@@ -8,7 +8,7 @@ import { PlayerStatsTable } from './components/player-stats-table';
 import type { PlayerStatsData } from './types/player-types';
 
 export const PlayersPage = () => {
-    const { players, teams, positions } = useLoaderData<PlayerStatsData>();
+    const { players, teams } = useLoaderData<PlayerStatsData>();
 
     return (
         <div>
@@ -19,7 +19,7 @@ export const PlayersPage = () => {
 
             <ScoringInfo />
 
-            <PlayerStatsTable players={players} teams={teams} positions={positions} />
+            <PlayerStatsTable players={players} teams={teams} />
         </div>
     );
 };

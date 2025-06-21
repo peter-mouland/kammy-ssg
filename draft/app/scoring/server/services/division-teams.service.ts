@@ -1,7 +1,7 @@
-// app/_shared/services/division-teams.service.ts
+// app/scoring/server/services/division-teams.service.ts
 
-import type { DivisionTeamsDocument, TeamGameweekData, UserTeamRoster } from '../../teams/types/team-types';
-import { getFirestoreInstance } from '../lib/firestore-cache/firebase.admin';
+import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
+import type { DivisionTeamsDocument, TeamGameweekData, UserTeamRoster } from '../../../teams/types/team-types';
 
 /**
  * Get division teams document for specific gameweek
@@ -69,7 +69,7 @@ export async function getUserTeamHistory(
     endGameweek?: number,
 ): Promise<TeamGameweekData[]> {
     try {
-        const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
+        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
 
         // If no end gameweek specified, get current gameweek
         const finalGameweek = endGameweek ?? (await fplApiCache.getCurrentGameweek());

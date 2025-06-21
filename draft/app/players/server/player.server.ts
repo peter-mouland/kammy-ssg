@@ -12,21 +12,14 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get basic player data - all from cache
-        const [fplPlayer, fplTeams, enhancedPlayers, currentGameweek] = await Promise.all([
+        const [fplPlayer, fplTeams, currentGameweek] = await Promise.all([
             fplApiCache.getFplPlayer(playerId),
             fplApiCache.getFplTeams(),
-            fplApiCache.getEnhancedPlayerData(),
             fplApiCache.getCurrentGameweek(),
         ]);
 
         if (!fplPlayer) {
             throw new Error(`Player ${playerId} not found in FPL data`);
-        }
-
-        // Find enhanced player data (contains sheets position data)
-        const enhancedPlayer = enhancedPlayers.find((p) => p.id === playerId);
-        if (!enhancedPlayer) {
-            throw new Error(`Player ${playerId} not found in enhanced data - run "Generate Enhanced Data" first`);
         }
 
         // Get team data and create team lookup for opponents
@@ -58,7 +51,7 @@ export async function getPlayerDetailData(playerId: number): Promise<PlayerDetai
         return {
             player: fplPlayer,
             team,
-            position: enhancedPlayer.draft.position.toLowerCase() as CustomPosition,
+            position: fplPlayer.draft?.position.toLowerCase() as CustomPosition, // TODO ONLY PROCESS PLAYERS IN SHEETS
             gameweekStats,
             seasonTotals,
             currentGameweek: currentGameweek || 1,
@@ -77,7 +70,7 @@ async function _getPlayerGameweekPoints(playerId: number) {
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get element summary which contains gameweek points
-        const _elementSummary = await fplApiCache.fplCache.getElementGameweek(playerId);
+        const _elementSummary = await fplApiCache.fplFirestore.getElementGameweeks(playerId);
 
         // todo: we don't have this
 

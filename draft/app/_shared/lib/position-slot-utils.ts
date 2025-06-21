@@ -1,4 +1,6 @@
 // app/_shared/lib/position-slot-utils.ts
+
+import type { CustomPosition } from '../../players/types/player-types';
 import type { PositionSlotKey, TeamPositionSlot } from '../../teams/types/team-types';
 
 /**
@@ -58,11 +60,11 @@ export const SUBSTITUTE_SLOTS: PositionSlotKey[] = ['sub_0'];
  * Parse position slot into its components
  */
 export function parsePositionSlot(slot: PositionSlotKey): {
-    position: string;
+    position: CustomPosition & 'sub';
     index: number;
     isSub: boolean;
 } {
-    const [position, indexStr] = slot.split('_');
+    const [position, indexStr] = slot.split('_') as [CustomPosition & 'sub', string];
     return {
         position,
         index: Number.parseInt(indexStr),

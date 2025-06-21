@@ -87,6 +87,36 @@ export async function handleForceRegenerateAllPoints(): Promise<AdminActionResul
     }
 }
 
+export async function handleForceRerunTransfers(): Promise<AdminActionResult> {
+    try {
+        console.log('🔄 Force regenerating all team rosters (transfers)...');
+
+        const gameweekService = new GameweekPointsService();
+        const result = await gameweekService.forceRerunTransfers();
+
+        // Enhanced success message with points population
+        let message = `🔄 All transfers reran! ${result.playerCount} players updated for gameweek ${result.currentGameweek}`;
+
+        if (result.pointsPopulationResult) {
+            const { playersUpdated, documentsUpdated, errors } = result.pointsPopulationResult;
+            message += `\n📊 Division Teams: ${playersUpdated} players updated in ${documentsUpdated} documents.`;
+
+            if (errors.length > 0) {
+                message += `\n⚠️ Some errors occurred: ${errors.length} (see logs)`;
+            }
+        }
+
+        return {
+            success: true,
+            message,
+            data: result,
+        };
+    } catch (error) {
+        console.error('Force regenerate all points error:', error);
+        throw new Error(`Failed to regenerate all points: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
 // Unchanged status action
 export async function handleGetGameweekPointsStatus(): Promise<AdminActionResult> {
     try {

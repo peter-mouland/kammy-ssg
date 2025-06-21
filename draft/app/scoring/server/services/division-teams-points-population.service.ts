@@ -1,15 +1,20 @@
 // app/_shared/services/division-teams-points-population.service.ts
 
-import type { PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { PointsBreakdown } from '../../scoring/types/scoring-types';
-import type { PositionSlotKey, TeamPositionSlot } from '../../teams/types/team-types';
-import { readDivisions } from '../lib/sheets/divisions';
+import { readDivisions } from '../../../_shared/lib/sheets/divisions';
+import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
+import type { PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
+import { readTransferDataForDivision } from '../../../transfers/lib/transfer-reader.service';
+import type { Points } from '../../types/scoring-types';
 import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './division-teams.service';
 
 /**
  * Populate points data from scoring system into division-teams documents
  */
-export async function populatePointsIntoDivisionDocuments(targetGameweeks: number[]): Promise<{
+export async function populatePointsIntoDivisionDocuments(
+    targetGameweeks: number[],
+    options,
+): Promise<{
     divisionsProcessed: number;
     documentsUpdated: number;
     playersUpdated: number;
@@ -25,16 +30,6 @@ export async function populatePointsIntoDivisionDocuments(targetGameweeks: numbe
     };
 
     try {
-        // Get calculated points data from FPL cache (after points generation)
-        const { fplApiCache } = await import('../lib/fpl/api-cache');
-        const enhancedPlayersData = await fplApiCache.getFplPlayers(); // Regular function
-
-        if (!enhancedPlayersData || enhancedPlayersData.length === 0) {
-            throw new Error('No enhanced player data found - points may not have been generated yet');
-        }
-
-        console.log(`📊 Found enhanced data for ${enhancedPlayersData.length} players`);
-
         // Get all divisions and process each one
         const divisions = await readDivisions();
 
@@ -44,13 +39,17 @@ export async function populatePointsIntoDivisionDocuments(targetGameweeks: numbe
                     results.divisionsProcessed++;
                     console.log(`🔄 Processing division: ${division.id}`);
 
-                    for (const gameweek of targetGameweeks) {
-                        const playersUpdated = await populatePointsForDivisionGameweek(division.id, gameweek);
+                    for (const gameweekId of targetGameweeks) {
+                        const playersUpdated = await populatePointsForDivisionGameweek(
+                            division.id,
+                            gameweekId,
+                            options,
+                        );
 
                         if (playersUpdated > 0) {
                             results.documentsUpdated++;
                             results.playersUpdated += playersUpdated;
-                            console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweek}`);
+                            console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
                         }
                     }
                 } catch (error) {
@@ -81,13 +80,13 @@ export async function populatePointsIntoDivisionDocuments(targetGameweeks: numbe
  * Populate points for a specific division and gameweek
  * AUTO-CREATES missing documents if needed
  */
-async function populatePointsForDivisionGameweek(divisionId: string, gameweek: number): Promise<number> {
+async function populatePointsForDivisionGameweek(divisionId: string, gameweek: number, options): Promise<number> {
     try {
-        const { fplApiCache } = await import('../lib/fpl/api-cache');
+        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
         // Get the division document - if it doesn't exist, create it
         let divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
 
-        if (!divisionDoc) {
+        if (!divisionDoc || options.forceTransfers) {
             console.log(`📄 Document ${divisionId}_gw${gameweek} doesn't exist - creating it...`);
 
             // Create the missing document by copying from previous gameweek
@@ -125,13 +124,12 @@ async function populatePointsForDivisionGameweek(divisionId: string, gameweek: n
                 const slot = slotKey as PositionSlotKey;
                 const playerCode = positionSlot.player.playerCode;
                 const playerId = positionSlot.player.playerId;
-                const player = await fplApiCache.fplCache.getElementGameweek(playerId);
+                const player = await fplApiCache.fplFirestore.getElementGameweeks(playerId);
 
                 // Get points data for this player
                 const playerGameweekPoints = player?.draft.gameweekPoints;
                 if (!playerGameweekPoints?.[gameweek]) {
                     console.log(`⚠️ No points data for player ${playerCode} (${typeof playerCode}) GW${gameweek}`);
-                    continue;
                 }
 
                 const gameweekData = playerGameweekPoints[gameweek];
@@ -222,44 +220,49 @@ async function createMissingGameweekDocument(divisionId: string, targetGameweek:
 
 /**
  * Create a new gameweek document by copying from source document
- * This works with EITHER old or new document structure
  */
 async function createGameweekDocumentFromSource(sourceDocument: any, targetGameweek: number): Promise<void> {
     const now = new Date().toISOString();
 
-    console.log(`🔄 Creating ${sourceDocument.divisionId}_gw${targetGameweek} from GW${sourceDocument.gameweek}`);
+    console.log(
+        `🔄 Creating ${sourceDocument.divisionId}_gw${targetGameweek} from GW${sourceDocument.gameweek} with transfer integration`,
+    );
 
     // Import the createDivisionTeamsDocument function
     const { createDivisionTeamsDocument } = await import('./division-teams.service');
+    const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
 
-    // Check if source document uses old structure (teams as arrays) or new structure (teams with rosters)
-    const isOldStructure = Array.isArray(Object.values(sourceDocument.teams)[0]);
+    const gameweekData = await fplApiCache.getFplEvents();
+    const fplPlayersByCode = await fplApiCache.getPlayersByCode();
+    // Read transfer data for this division
+    const transferResult = await readTransferDataForDivision(sourceDocument.divisionId, fplPlayersByCode);
+    if (transferResult.errors.length > 0) {
+        console.warn(`⚠️ Transfer reading errors for ${sourceDocument.divisionId}:`, transferResult.errors);
+    }
+    const approvedTransfers = transferResult.approvedTransfers;
 
-    if (isOldStructure) {
-        // OLD STRUCTURE: Copy as-is but update gameweek
-        const newDocument = {
-            ...sourceDocument,
-            gameweek: targetGameweek,
-            lastUpdated: now,
-            metadata: {
-                ...sourceDocument.metadata,
-                updatedAt: now,
-            },
-        };
-
-        // Update gameweek field for all players
-        for (const [userId, players] of Object.entries(newDocument.teams)) {
-            newDocument.teams[userId] = (players as any[]).map((player: any) => ({
-                ...player,
-                gameweek: targetGameweek,
-            }));
-        }
-
+    // Filter for approved transfers only
+    // NEW STRUCTURE: Apply transfers between source and target gameweeks
+    try {
+        const newDocument = await applyTransfersToGameweekDocument(
+            sourceDocument,
+            targetGameweek,
+            gameweekData,
+            approvedTransfers,
+        );
         await createDivisionTeamsDocument(newDocument);
-        console.log(`✅ Created document with OLD structure: ${sourceDocument.divisionId}_gw${targetGameweek}`);
-    } else {
-        // NEW STRUCTURE: Copy roster structure but reset gameweek data
-        const newDocument = {
+
+        console.log(`✅ Created document with transfer integration: ${sourceDocument.divisionId}_gw${targetGameweek}`);
+        console.log('📊 Transfer summary:', {
+            transfersApplied: newDocument.metadata?.transfersApplied || 0,
+            transferErrors: newDocument.metadata?.transferErrors || 0,
+            copiedFrom: newDocument.metadata?.copiedFrom || sourceDocument.gameweek,
+        });
+    } catch (transferError) {
+        console.warn('⚠️ Transfer integration failed, falling back to basic copy:', transferError);
+
+        // FALLBACK: Create document without transfers (existing logic)
+        const fallbackDocument = {
             divisionId: sourceDocument.divisionId,
             gameweek: targetGameweek,
             lastUpdated: now,
@@ -269,18 +272,20 @@ async function createGameweekDocumentFromSource(sourceDocument: any, targetGamew
                 updatedAt: now,
                 pointsLastUpdated: null,
                 pointsLastGameweek: null,
+                transferIntegrationFailed: true,
+                transferError: transferError instanceof Error ? transferError.message : 'Unknown transfer error',
             },
         };
 
-        // Copy team rosters with reset gameweek data
+        // Copy team rosters with reset gameweek data (existing logic)
         for (const [userId, teamData] of Object.entries(sourceDocument.teams)) {
-            newDocument.teams[userId] = {
+            fallbackDocument.teams[userId] = {
                 roster: {},
             };
 
             // Copy each position slot but reset gameweek stats/points
             for (const [slot, positionSlot] of Object.entries((teamData as any).roster)) {
-                newDocument.teams[userId].roster[slot] = {
+                fallbackDocument.teams[userId].roster[slot] = {
                     // Keep player info unchanged
                     player: { ...positionSlot.player },
 
@@ -296,8 +301,10 @@ async function createGameweekDocumentFromSource(sourceDocument: any, targetGamew
             }
         }
 
-        await createDivisionTeamsDocument(newDocument);
-        console.log(`✅ Created document with NEW structure: ${sourceDocument.divisionId}_gw${targetGameweek}`);
+        await createDivisionTeamsDocument(fallbackDocument);
+        console.log(
+            `✅ Created document with fallback (no transfers): ${sourceDocument.divisionId}_gw${targetGameweek}`,
+        );
     }
 }
 
@@ -308,7 +315,7 @@ function updatePositionSlotPoints(
     positionSlot: TeamPositionSlot,
     _gameweek: number,
     gameweekStats: PlayerGameweekStatsData,
-    gameweekPoints: PointsBreakdown,
+    gameweekPoints: Points,
 ): TeamPositionSlot {
     // Create updated position slot
     const updated: TeamPositionSlot = {
@@ -351,7 +358,7 @@ function addStatsToSeason(
 /**
  * Add gameweek points to season totals
  */
-function addPointsToSeason(seasonPoints: PointsBreakdown, gameweekPoints: PointsBreakdown): PointsBreakdown {
+function addPointsToSeason(seasonPoints: Points, gameweekPoints: Points): Points {
     const updated = {
         appearance: seasonPoints.appearance + gameweekPoints.appearance,
         goals: seasonPoints.goals + gameweekPoints.goals,
@@ -395,7 +402,7 @@ function createEmptyStats(): PlayerGameweekStatsData {
 /**
  * Create empty points structure
  */
-function createEmptyPoints(): PointsBreakdown {
+function createEmptyPoints(): Points {
     return {
         appearance: 0,
         goals: 0,

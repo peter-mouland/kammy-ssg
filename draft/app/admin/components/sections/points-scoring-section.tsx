@@ -43,6 +43,15 @@ export const PointsScoringSection = () => {
                         onExecute={executeAction}
                         fetcher={fetcher}
                     />
+                    <ActionCard
+                        title="Rerun Transfers - All Gameweeks"
+                        description="Calculate each team roster from draft day using gsheet transfers"
+                        icon={<Icons.RefreshIcon />}
+                        buttonText="Rerun Transfers - All Gameweeks"
+                        actionType="forceRerunTransfers"
+                        onExecute={executeAction}
+                        fetcher={fetcher}
+                    />
                 </AdminGrid>
             </AdminSection>
 

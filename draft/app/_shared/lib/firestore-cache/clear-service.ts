@@ -14,7 +14,7 @@ interface ClearProgress {
 
 export class FirestoreClearService {
     private client: FirestoreClient;
-    private readonly BATCH_SIZE = 50; // Documents per batch
+    private readonly BATCH_SIZE = 10; // Documents per batch
     private readonly DELAY_BETWEEN_BATCHES = 100; // ms
 
     constructor() {
@@ -26,6 +26,7 @@ export class FirestoreClearService {
      */
     async clearAllData(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
         const collections = [
+            { name: this.client.collections.DIVISION_TEAMS, description: 'Team GW Data' },
             { name: this.client.collections.FPL_BOOTSTRAP, description: 'FPL Bootstrap Data' },
             { name: this.client.collections.FPL_ELEMENTS, description: 'FPL Element Summaries' },
             { name: this.client.collections.CACHE_STATE, description: 'Cache State' },
@@ -101,6 +102,7 @@ export class FirestoreClearService {
             const batches = this.chunkArray(documentIds, this.BATCH_SIZE);
             let completed = 0;
 
+            console.log(`🗑️ Deleting ${batches.length} batches of ${this.BATCH_SIZE} documents`);
             for (const batch of batches) {
                 await this.deleteBatch(collectionName, batch);
                 completed += batch.length;
@@ -235,7 +237,7 @@ export class FirestoreClearService {
     /**
      * Clear only FPL cached data (keep other data intact)
      */
-    async clearFplCacheOnly(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
+    async clearFplFirestoreOnly(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
         const fplCollections = [this.client.collections.FPL_BOOTSTRAP, this.client.collections.FPL_ELEMENTS];
 
         await this.clearSpecificCollections(fplCollections, progressCallback);
