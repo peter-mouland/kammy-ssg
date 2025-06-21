@@ -1,9 +1,9 @@
 /* Location: app/leagues/league-standings.tsx */
 
-import { useActionData, useLoaderData, useSearchParams } from 'react-router';
+import { Link, useActionData, useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
-import { RankBadge, Table, TableBadge, type TableColumn } from '../_shared/components/table';
+import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import styles from './components/league-standings.module.css';
 import type {
@@ -77,7 +77,11 @@ function PositionPointsTable({
             accessor: 'userName',
             width: 180,
             sortable: true,
-            render: (userName) => <div className={styles.managerName}>{userName}</div>,
+            render: (userName) => (
+                <Link to={`/teams/${userName}`} className={styles.managerName}>
+                    {userName}
+                </Link>
+            ),
         },
         ...POSITION_COLUMNS.map(
             (col): TableColumn<LeagueStandingsTeamData> => ({

@@ -5,7 +5,8 @@ import { index, type RouteConfig, route } from '@react-router/dev/routes';
 export default [
     // Main pages
     index('homepage/homepage.route.tsx'),
-    route('team', 'teams/team.route.tsx'),
+    // route('teams', 'teams/team.route.tsx'),
+    route('teams/:managerId?', 'teams/team.route.tsx'),
     route('leagues', 'leagues/league-standings.route.tsx'),
     route('draft', 'draft/draft.route.tsx'),
     route('players/:playerId', 'players/player.route.tsx'),

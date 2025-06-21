@@ -1,32 +1,26 @@
 // app/teams/server/team.server.ts
 
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
-import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
+import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import {
     getAvailableGameweeks as getAvailableGameweeksFromService,
     getUserTeamForGameweek,
     getUserTeamHistory,
 } from '../../scoring/server/services/division-teams.service';
-import type { CurrentUser, TeamGameweekData, TeamViewData } from '../types/team-types';
+import type { CurrentUser, TeamGameweekData, TeamViewData, UserTeamsSheetData } from '../types/team-types';
 
-export async function loadTeamData(url: URL, _params: any): Promise<TeamViewData> {
+export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
     try {
-        // Get current user from session/auth (you'll need to implement this)
-        const currentUser = await getCurrentUser(url);
+        const userTeams = await readUserTeams();
+        console.log(params, userTeams);
+        const currentUser = await getCurrentUser(params.managerId, userTeams);
         if (!currentUser) {
             throw new Error('User not authenticated');
         }
 
         // Get user's division
         const divisions = await readDivisions();
-        const userTeams = await getUserTeamsByDivision(currentUser.divisionId);
-        const userTeam = userTeams.find((team) => team.userId === currentUser.id);
-
-        if (!userTeam) {
-            throw new Error('User team not found');
-        }
-
-        const division = divisions.find((d) => d.id === userTeam.divisionId);
+        const division = divisions.find((d) => d.id === currentUser.divisionId);
         if (!division) {
             throw new Error('Division not found');
         }
@@ -35,31 +29,26 @@ export async function loadTeamData(url: URL, _params: any): Promise<TeamViewData
         const currentGameweek = await getCurrentGameweek();
 
         // Get current team data from new division-teams structure
-        const currentTeam = await getUserTeamForGameweek(userTeam.divisionId, currentUser.id, currentGameweek);
+        const currentTeam = await getUserTeamForGameweek(currentUser.divisionId, currentUser.id, currentGameweek);
 
         if (!currentTeam) {
-            console.warn(`cGW:${currentGameweek} user divisionId: ${userTeam.divisionId} user: ${currentUser.id} `);
+            console.warn(`cGW:${currentGameweek} user divisionId: ${currentUser.divisionId} user: ${currentUser.id} `);
             throw new Error('Current team data not found - division may not be set up yet');
         }
 
         // Get historical team data
         const gameweekHistory = await getUserTeamHistory(
-            userTeam.divisionId,
+            currentUser.divisionId,
             currentUser.id,
             0, // Start from draft (gameweek 0)
             currentGameweek,
         );
 
         // Get available gameweeks from service
-        const availableGameweeks = await getAvailableGameweeksFromService(userTeam.divisionId);
+        const availableGameweeks = await getAvailableGameweeksFromService(currentUser.divisionId);
 
         return {
-            currentUser: {
-                id: currentUser.id,
-                userName: userTeam.userName,
-                teamName: userTeam.teamName,
-                divisionId: userTeam.divisionId,
-            },
+            currentUser,
             division: {
                 id: division.id,
                 name: division.label,
@@ -95,14 +84,16 @@ export async function getUserTeamFromDivision(
 /**
  * Placeholder functions - implement these based on your auth and game state logic
  */
-async function getCurrentUser(_url: URL): Promise<CurrentUser | null> {
-    // todo: Implementation needed - get user from session/auth
-    // This is a placeholder that needs proper authentication logic
+async function getCurrentUser(managerId: string, userTeams: UserTeamsSheetData[]): Promise<CurrentUser | null> {
+    const teamData = userTeams.find((t) => t.userId === managerId);
+    if (!teamData) {
+        return null;
+    }
     return {
-        teamName: 'Paul',
-        userName: 'Paul',
-        id: 'Paul',
-        divisionId: 'leagueOne',
+        teamName: teamData?.teamName,
+        userName: teamData?.userName,
+        id: teamData?.userId,
+        divisionId: teamData?.divisionId,
     };
 }
 
