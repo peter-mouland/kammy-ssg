@@ -3,6 +3,7 @@
 import { useActionData, useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
+import { RankBadge, Table, TableBadge, type TableColumn } from '../_shared/components/table';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import styles from './components/league-standings.module.css';
 import type {
@@ -61,8 +62,63 @@ function PositionPointsTable({
     title: string;
     subtitle: string;
 }) {
-    // Sort teams by the selected points source
-    const sortedTeams = [...teams].sort((a, b) => b[pointsSource].total - a[pointsSource].total);
+    // Define table columns for sortable table
+    const columns: TableColumn<LeagueStandingsTeamData>[] = [
+        {
+            key: 'rank',
+            header: 'Rank',
+            width: 60,
+            sortable: false,
+            render: (_, team, index) => <RankBadge rank={index + 1} />,
+        },
+        {
+            key: 'manager',
+            header: 'Manager',
+            accessor: 'userName',
+            width: 180,
+            sortable: true,
+            render: (userName) => <div className={styles.managerName}>{userName}</div>,
+        },
+        ...POSITION_COLUMNS.map(
+            (col): TableColumn<LeagueStandingsTeamData> => ({
+                key: col.key,
+                header: col.label,
+                width: 80,
+                align: 'center',
+                sortable: true,
+                accessor: (team) => team[pointsSource][col.key],
+                render: (points, team) => (
+                    <span
+                        className={styles.points}
+                        style={{
+                            color: points > 0 ? col.color : 'var(--color-gray-400)',
+                        }}
+                    >
+                        {points || '-'}
+                    </span>
+                ),
+            }),
+        ),
+        {
+            key: 'total',
+            header: 'Total',
+            width: 100,
+            align: 'center',
+            sortable: true,
+            accessor: (team) => team[pointsSource].total,
+            render: (total) => (
+                <span
+                    className={styles.points}
+                    style={{
+                        fontWeight: 'var(--font-weight-bold)',
+                        color: 'var(--color-primary)',
+                    }}
+                >
+                    {total || 0}
+                </span>
+            ),
+        },
+    ];
 
     return (
         <div style={{ marginBottom: '2rem' }}>
@@ -79,84 +135,20 @@ function PositionPointsTable({
                 <p className={styles.subtitle}>{subtitle}</p>
             </div>
 
-            <div className={styles.tableContainer}>
-                <table className="table table-compact">
-                    <thead>
-                        <tr>
-                            <th style={{ width: '50px' }}>Rank</th>
-                            <th style={{ minWidth: '180px' }}>Manager</th>
-                            {POSITION_COLUMNS.map((col) => (
-                                <th
-                                    key={col.key}
-                                    style={{
-                                        textAlign: 'center',
-                                        color: col.color,
-                                        fontWeight: 'var(--font-weight-semibold)',
-                                        width: '80px',
-                                    }}
-                                >
-                                    {col.label}
-                                </th>
-                            ))}
-                            <th style={{ textAlign: 'center', fontWeight: 'var(--font-weight-bold)', width: '100px' }}>
-                                Total
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedTeams.map((team, index) => {
-                            const points = team[pointsSource];
-                            return (
-                                <tr
-                                    key={team.userId}
-                                    style={{
-                                        backgroundColor: index < 3 ? '#f0fdf4' : undefined,
-                                    }}
-                                >
-                                    <td>
-                                        <span
-                                            className={`${styles.rankBadge} ${index < 3 ? styles.topRank : styles.regularRank}`}
-                                        >
-                                            {index + 1}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <div className={styles.managerName}>{team.userName}</div>
-                                        </div>
-                                    </td>
-                                    {POSITION_COLUMNS.map((col) => (
-                                        <td key={col.key} style={{ textAlign: 'center' }}>
-                                            <span
-                                                className={styles.points}
-                                                style={{
-                                                    color: points[col.key] > 0 ? col.color : 'var(--color-gray-400)',
-                                                }}
-                                            >
-                                                {points[col.key] || '-'}
-                                            </span>
-                                        </td>
-                                    ))}
-                                    <td style={{ textAlign: 'center' }}>
-                                        <span
-                                            className={styles.points}
-                                            style={{
-                                                fontWeight: 'var(--font-weight-bold)',
-                                                color: 'var(--color-primary)',
-                                            }}
-                                        >
-                                            {points.total || 0}
-                                        </span>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
+            <Table
+                data={teams}
+                columns={columns}
+                defaultSort={{ key: 'total', direction: 'desc' }}
+                className="table-compact"
+                getRowProps={(team, index) => ({
+                    style: {
+                        backgroundColor: index < 3 ? '#f0fdf4' : undefined,
+                    },
+                })}
+            />
 
             {/* Table Summary */}
-            {sortedTeams.length > 0 && (
+            {teams.length > 0 && (
                 <div
                     style={{
                         padding: '1rem',
@@ -169,22 +161,19 @@ function PositionPointsTable({
                 >
                     <div style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>
-                            {sortedTeams[0][pointsSource].total}
+                            {Math.max(...teams.map((team) => team[pointsSource].total))}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Leader</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                            {Math.round(
-                                sortedTeams.reduce((sum, team) => sum + team[pointsSource].total, 0) /
-                                    sortedTeams.length,
-                            )}
+                            {Math.round(teams.reduce((sum, team) => sum + team[pointsSource].total, 0) / teams.length)}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Average</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#8b5cf6' }}>
-                            {Math.max(...sortedTeams.map((team) => team[pointsSource].total))}
+                            {Math.max(...teams.map((team) => team[pointsSource].total))}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Top Score</div>
                     </div>
@@ -388,13 +377,12 @@ export const LeagueStandings = () => {
                                     {col.label}
                                 </div>
                                 <div style={{ fontSize: 'var(--font-xs)', color: 'var(--color-gray-500)' }}>
-                                    {col.key === 'gk' && '1 player'}
+                                    {col.key === 'gk' && '2 players'}
                                     {col.key === 'cb' && '2 players'}
                                     {col.key === 'fb' && '2 players'}
                                     {col.key === 'mid' && '2 players'}
                                     {col.key === 'wa' && '2 players'}
                                     {col.key === 'ca' && '2 players'}
-                                    {col.key === 'sub' && '1 player'}
                                 </div>
                             </div>
                         ))}
