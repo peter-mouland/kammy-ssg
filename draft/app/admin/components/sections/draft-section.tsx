@@ -1,6 +1,8 @@
 import { useActionData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
-import { AdminContainer, AdminGrid, AdminSection } from '../layout';
+import { AdminContainer } from '../layout/admin-container';
+import { AdminGrid } from '../layout/admin-grid';
+import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
 import { DraftCard } from '../ui/draft-card';
 import { CommitTeamsSection } from './commit-teams-section';

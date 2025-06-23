@@ -32,6 +32,12 @@ const navigationItems: AdminNavItem[] = [
         path: '/admin/draft',
     },
     {
+        key: 'transfers',
+        label: 'Transfer Management',
+        icon: <Icons.SyncIcon />,
+        path: '/admin/transfers',
+    },
+    {
         key: 'points',
         label: 'Points & Scoring',
         icon: <Icons.ChartIcon />,
@@ -59,6 +65,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
         const path = location.pathname;
         if (path === '/admin') return 'overview';
         if (path.startsWith('/admin/draft')) return 'draft';
+        if (path.startsWith('/admin/transfers')) return 'transfers';
         if (path.startsWith('/admin/points')) return 'points';
         if (path.startsWith('/admin/settings')) return 'settings';
         return 'overview';

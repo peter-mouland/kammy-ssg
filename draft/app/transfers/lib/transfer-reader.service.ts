@@ -1,5 +1,6 @@
 /* Location: app/transfers/lib/transfer-reader.service.ts */
 
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readDataFromSheet } from '../../_shared/lib/sheets/utils/read-data-from-sheets';
 import type { EnhancedPlayerData, PlayersByCode } from '../../scoring/types/scoring-types';
 import type { DivisionId } from '../../teams/types/team-types';
@@ -95,6 +96,7 @@ const TRANSFER_TRANSFORM_FUNCTIONS = {
 export async function readTransferDataForDivision(
     divisionId: DivisionId,
     fplPlayersByCode: PlayersByCode,
+    gameweekData: GameWeekData[],
 ): Promise<TransferProcessingResult> {
     try {
         console.log(`📖 Reading transfer data for division: ${divisionId}`);
@@ -125,9 +127,10 @@ export async function readTransferDataForDivision(
             console.log(`ℹ️ No transfer data found for division ${divisionId}`);
             return {
                 processedCount: 0,
-                approvedTransfers: [],
-                rejectedTransfers: [],
-                pendingTransfers: [],
+                pendingCount: 0,
+                approvedCount: 0,
+                rejectedCount: 0,
+                transfers: [],
                 errors: [],
             };
         }
@@ -135,12 +138,12 @@ export async function readTransferDataForDivision(
         console.log(`📊 Found ${normedResult.length} transfer records for ${divisionId}`);
 
         // Process the raw sheet data
-        const processingResult = processTransferSheetData(normedResult, divisionId, fplPlayersByCode);
+        const processingResult = processTransferSheetData(normedResult, divisionId, fplPlayersByCode, gameweekData);
 
         console.log(`✅ Processed transfers for ${divisionId}:`, {
-            approved: processingResult.approvedTransfers.length,
-            rejected: processingResult.rejectedTransfers.length,
-            pending: processingResult.pendingTransfers.length,
+            approved: processingResult.approvedCount,
+            rejected: processingResult.rejectedCount,
+            pending: processingResult.pendingCount,
             errors: processingResult.errors.length,
         });
 
@@ -160,47 +163,43 @@ function processTransferSheetData(
     rawData: ProcessedTransferSheetData[],
     divisionId: DivisionId,
     fplPlayersByCode: PlayersByCode,
+    gameweekData: GameWeekData[],
 ): TransferProcessingResult {
     const result: TransferProcessingResult = {
         processedCount: 0,
-        approvedTransfers: [],
-        rejectedTransfers: [],
-        pendingTransfers: [],
+        approvedCount: 0,
+        rejectedCount: 0,
+        pendingCount: 0,
+        transfers: [],
         errors: [],
     };
 
-    for (let index = 0; index < rawData.length; index++) {
-        const rawTransfer = rawData[index];
-        try {
-            const processed = processIndividualTransfer(rawTransfer, index, divisionId, fplPlayersByCode);
-
-            if (processed) {
-                result.processedCount++;
-
-                switch (processed.status) {
-                    case 'APPROVED':
-                        result.approvedTransfers.push(processed);
-                        break;
-                    case 'REJECTED':
-                        result.rejectedTransfers.push(processed);
-                        break;
-                    case 'PENDING':
-                        result.pendingTransfers.push(processed);
-                        break;
-                }
+    result.transfers = rawData
+        .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+        .map((rawTransfer, index) => {
+            result.processedCount++;
+            try {
+                const transfer = processIndividualTransfer(
+                    rawTransfer,
+                    index,
+                    divisionId,
+                    fplPlayersByCode,
+                    gameweekData,
+                );
+                if (transfer?.status === 'PENDING') result.pendingCount++;
+                if (transfer?.status === 'APPROVED') result.approvedCount++;
+                if (transfer?.status === 'REJECTED') result.rejectedCount++;
+                return transfer;
+            } catch (error) {
+                result.errors.push({
+                    rowIndex: index,
+                    transfer: rawTransfer,
+                    error: error instanceof Error ? error.message : 'Unknown processing error',
+                    severity: 'error',
+                });
             }
-        } catch (error) {
-            result.errors.push({
-                rowIndex: index,
-                transfer: rawTransfer,
-                error: error instanceof Error ? error.message : 'Unknown processing error',
-                severity: 'error',
-            });
-        }
-    }
-
-    // Sort approved transfers by timestamp for processing
-    result.approvedTransfers.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        })
+        .filter((transfer) => transfer !== null) as ProcessedTransfer[];
 
     return result;
 }
@@ -213,19 +212,17 @@ function processIndividualTransfer(
     rowIndex: number,
     divisionId: DivisionId,
     fplPlayersByCode: Record<EnhancedPlayerData['code'], EnhancedPlayerData>,
+    gameweekData: GameWeekData[],
 ): ProcessedTransfer | null {
-    // Parse status
     const status = parseTransferStatus(rawTransfer.status);
-
-    // Parse transfer type
     const transferType = parseTransferType(rawTransfer.transferType);
-
-    // Generate unique ID for transfer
     const transferId = generateTransferId(divisionId, rawTransfer.timestamp, rowIndex);
+    const gameweek = getGameweekFromTimestamp(rawTransfer.timestamp, gameweekData);
 
     return {
         id: transferId,
         status,
+        gameweekData: gameweek,
         timestamp: rawTransfer.timestamp,
         managerId: rawTransfer.manager,
         transferType,
@@ -290,4 +287,17 @@ function parseTransferType(transferType: string): TransferType {
 function generateTransferId(divisionId: DivisionId, timestamp: Date, rowIndex: number): string {
     const timestampStr = timestamp.toISOString().replace(/[:.]/g, '');
     return `${divisionId}_${timestampStr}_${rowIndex}`;
+}
+
+function getGameweekFromTimestamp(timestamp: Date, gameweeks: GameWeekData[]): GameWeekData {
+    // Find the gameweek that contains this timestamp
+    for (const gameweek of gameweeks) {
+        const gwStart = new Date(gameweek.start);
+        const gwEnd = new Date(gameweek.end);
+
+        if (timestamp >= gwStart && timestamp <= gwEnd) {
+            return gameweek;
+        }
+    }
+    return gameweeks[0];
 }

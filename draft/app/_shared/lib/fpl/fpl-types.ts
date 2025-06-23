@@ -224,8 +224,8 @@ export interface EventData {
 export interface GameWeekData {
     fplEvent: EventData; // You'll need to define Event interface separately
     gameWeekIndex: number;
-    start: Date | string; // Assuming it's a Date or date string
-    end: Date | string; // Assuming it's a Date or date string
+    start: Date;
+    end: Date;
     isCurrent: boolean;
     isNext: boolean;
     hasPassed: boolean;

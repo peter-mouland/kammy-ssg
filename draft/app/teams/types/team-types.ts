@@ -3,6 +3,8 @@
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points, PointsBreakdown } from '../../scoring/types/scoring-types';
 
+export type ManagerId = string;
+
 /**
  * Core team and division data structures
  */
@@ -13,7 +15,7 @@ export interface DivisionSheetData {
 }
 
 export interface UserTeamsSheetData {
-    userId: string;
+    userId: ManagerId;
     userName: string;
     teamName: string;
     divisionId: DivisionId;
@@ -21,7 +23,7 @@ export interface UserTeamsSheetData {
 }
 
 export interface WeeklyPointsData {
-    userId: string;
+    userId: ManagerId;
     gameweek: number;
     points: number;
     transfers: number;
@@ -55,7 +57,7 @@ export type PositionSlotKey =
 
 // Team component types
 export interface FirestoreTeamMember {
-    userId: string;
+    userId: ManagerId;
     teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
     playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
     player: string; // web_name from FPL
@@ -111,6 +113,12 @@ export interface TeamGameweekData {
     lastUpdated: string;
 }
 
+export type RosterByManagerId = {
+    [userId: ManagerId]: {
+        roster: TeamRoster;
+    };
+};
+
 /**
  * Division teams document structure
  * MOVED: From shared types to teams domain where it belongs
@@ -121,11 +129,7 @@ export interface DivisionTeamsDocument {
     lastUpdated: string; // ISO timestamp
 
     // All teams in the division
-    teams: {
-        [userId: string]: {
-            roster: TeamRoster;
-        };
-    };
+    teams: RosterByManagerId;
 
     metadata: {
         createdAt: string;
@@ -261,7 +265,7 @@ export interface DivisionTeamsUpdateParams {
 }
 
 export interface UserTeamRoster {
-    userId: string;
+    userId: ManagerId;
     roster: TeamRoster;
 }
 
@@ -279,7 +283,7 @@ export interface PlayerAssignmentData {
 }
 
 export interface LoanUpdateOperation {
-    userId: string;
+    userId: ManagerId;
     positionSlot: PositionSlotKey;
     onLoanTo: string | null;
     onLoanStart: string | null;
@@ -305,7 +309,7 @@ export interface LegacyPlayerData {
     onLoanTo: string | null;
     onLoanStart: string | null;
     gameweek: number;
-    userId: string;
+    userId: ManagerId;
 }
 
 /**

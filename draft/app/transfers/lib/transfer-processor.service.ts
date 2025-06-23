@@ -2,7 +2,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
-import type { PositionSlotKey, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
+import type { PositionSlotKey, RosterByManagerId, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferApplicationResult } from '../types/transfer-types';
 
 // Filter transfers for this gameweek period and sort by timestamp
@@ -20,18 +20,18 @@ export const getReleventTransfers = (transfers: ProcessedTransfer[], gameweekDat
  * Apply transfers to a division's team rosters for a specific gameweek period
  */
 export async function applyTransfersToRosters(
-    divisionRosters: Record<string, TeamRoster>,
+    divisionRosters: RosterByManagerId,
     transfers: ProcessedTransfer[],
     gameweekData: GameWeekData,
 ): Promise<{
-    updatedRosters: Record<string, TeamRoster>;
+    updatedRosters: RosterByManagerId;
     appliedTransfers: TransferApplicationResult[];
     errors: string[];
 }> {
     const relevantTransfers = getReleventTransfers(transfers, gameweekData);
     console.log(`🔄 Applying ${relevantTransfers.length} transfers for gameweek ${gameweekData.fplEvent.id}`);
 
-    const updatedRosters = JSON.parse(JSON.stringify(divisionRosters));
+    const updatedRosters = JSON.parse(JSON.stringify(divisionRosters.teams)) as RosterByManagerId;
     const appliedTransfers: TransferApplicationResult[] = [];
     const errors: string[] = [];
 
@@ -40,9 +40,11 @@ export async function applyTransfersToRosters(
     for (const transfer of relevantTransfers) {
         try {
             const result = await applyIndividualTransfer(updatedRosters, transfer);
-            updatedRosters[transfer.managerId] = result?.updatedRoster;
 
             if (result) {
+                if (result.updatedRoster) {
+                    updatedRosters[transfer.managerId].roster = result.updatedRoster;
+                }
                 appliedTransfers.push(result);
             }
         } catch (error) {
@@ -68,11 +70,11 @@ export async function applyTransfersToRosters(
  * Apply a single transfer to the rosters
  */
 async function applyIndividualTransfer(
-    rosters: Record<string, TeamRoster>,
+    rosters: RosterByManagerId,
     transfer: ProcessedTransfer,
 ): Promise<TransferApplicationResult | null> {
     const { managerId, transferType } = transfer;
-    const managerRoster = rosters[managerId];
+    const managerRoster = rosters[managerId].roster;
     // Ensure manager exists in rosters
     if (!rosters[managerId]) {
         throw new Error(`Manager ${managerId} not found in rosters`);
@@ -90,8 +92,6 @@ async function applyIndividualTransfer(
             return applyLoanFinish(managerRoster, transfer);
         case 'TRADE':
             return applyTrade(managerRoster, transfer);
-        default:
-            throw new Error(`Unknown transfer type: ${transferType}`);
     }
 }
 

@@ -1,13 +1,19 @@
 // app/scoring/server/services/division-teams.service.ts
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
-import type { DivisionTeamsDocument, TeamGameweekData, UserTeamRoster } from '../../../teams/types/team-types';
+import type {
+    DivisionId,
+    DivisionTeamsDocument,
+    ManagerId,
+    TeamGameweekData,
+    UserTeamRoster,
+} from '../../../teams/types/team-types';
 
 /**
  * Get division teams document for specific gameweek
  */
 export async function getDivisionTeamsDocument(
-    divisionId: string,
+    divisionId: DivisionId,
     gameweek: number,
 ): Promise<DivisionTeamsDocument | null> {
     try {
@@ -34,8 +40,8 @@ export async function getDivisionTeamsDocument(
  * Get user's team data for specific gameweek
  */
 export async function getUserTeamForGameweek(
-    divisionId: string,
-    userId: string,
+    divisionId: DivisionId,
+    userId: ManagerId,
     gameweek: number,
 ): Promise<TeamGameweekData | null> {
     try {
@@ -63,8 +69,8 @@ export async function getUserTeamForGameweek(
  * Get user's team history across multiple gameweeks
  */
 export async function getUserTeamHistory(
-    divisionId: string,
-    userId: string,
+    divisionId: DivisionId,
+    userId: ManagerId,
     startGameweek: number = 0,
     endGameweek?: number,
 ): Promise<TeamGameweekData[]> {
@@ -99,7 +105,7 @@ export async function getUserTeamHistory(
 /**
  * Get all teams in division for specific gameweek
  */
-export async function getAllTeamsInDivision(divisionId: string, gameweek: number): Promise<UserTeamRoster[]> {
+export async function getAllTeamsInDivision(divisionId: DivisionId, gameweek: number): Promise<UserTeamRoster[]> {
     try {
         const divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
         if (!divisionDoc) {
@@ -123,7 +129,7 @@ export async function getAllTeamsInDivision(divisionId: string, gameweek: number
 /**
  * Check if division teams document exists for gameweek
  */
-export async function divisionDocumentExists(divisionId: string, gameweek: number): Promise<boolean> {
+export async function divisionDocumentExists(divisionId: DivisionId, gameweek: number): Promise<boolean> {
     try {
         const db = getFirestoreInstance();
         const docId = `${divisionId}_gw${gameweek}`;
@@ -140,7 +146,7 @@ export async function divisionDocumentExists(divisionId: string, gameweek: numbe
 /**
  * Get available gameweeks for division
  */
-export async function getAvailableGameweeks(divisionId: string): Promise<number[]> {
+export async function getAvailableGameweeks(divisionId: DivisionId): Promise<number[]> {
     try {
         const db = getFirestoreInstance();
         const collectionRef = db.collection('division-teams');
@@ -191,7 +197,7 @@ export async function createDivisionTeamsDocument(document: DivisionTeamsDocumen
  * Update division teams document
  */
 export async function updateDivisionTeamsDocument(
-    divisionId: string,
+    divisionId: DivisionId,
     gameweek: number,
     updates: Partial<DivisionTeamsDocument>,
 ): Promise<void> {
@@ -219,7 +225,7 @@ export async function updateDivisionTeamsDocument(
 /**
  * Delete division teams document
  */
-export async function deleteDivisionTeamsDocument(divisionId: string, gameweek: number): Promise<void> {
+export async function deleteDivisionTeamsDocument(divisionId: DivisionId, gameweek: number): Promise<void> {
     try {
         const db = getFirestoreInstance();
         const docId = `${divisionId}_gw${gameweek}`;

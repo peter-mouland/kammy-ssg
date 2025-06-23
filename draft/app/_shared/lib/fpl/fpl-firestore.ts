@@ -99,6 +99,14 @@ export class FplFirestore {
         const currentEvent = events.find((event) => event.fplEvent.is_current);
         return currentEvent?.fplEvent.id || null;
     }
+    /**
+     * Get current gameweek from cached events
+     */
+    async getCurrentGameweekData(): Promise<GameWeekData> {
+        const events = await this.getEvents();
+
+        return events.find((event) => event.fplEvent.is_current) || events[0];
+    }
 
     /**
      * Get element summary data (individual player gameweek breakdown)

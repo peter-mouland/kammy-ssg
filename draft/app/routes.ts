@@ -21,6 +21,7 @@ export default [
         route('draft', 'admin/admin-draft.route.tsx'),
         route('points', 'admin/admin-points.route.tsx'),
         route('settings', 'admin/admin-settings.route.tsx'),
+        route('transfers', 'admin/admin-transfers.route.tsx'),
     ]),
     route('admin/api/cache-status', 'admin/api/api.cache-status.ts'),
 

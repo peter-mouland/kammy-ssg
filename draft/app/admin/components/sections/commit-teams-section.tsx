@@ -3,7 +3,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { useActionData } from 'react-router';
 import * as Icons from '../icons/admin-icons';
-import { AdminSection } from '../layout';
+import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
 import { CommitTeamsButton } from '../ui/commit-teams-button';
 import styles from './commit-teams-section.module.css';

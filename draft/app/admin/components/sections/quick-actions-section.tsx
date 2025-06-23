@@ -2,7 +2,8 @@
 
 import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
-import { AdminGrid, AdminSection } from '../layout';
+import { AdminGrid } from '../layout/admin-grid';
+import { AdminSection } from '../layout/admin-section';
 import { ActionCard } from '../ui/action-card';
 
 interface QuickActionsSectionProps {

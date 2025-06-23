@@ -1,4 +1,4 @@
-// app/admin/types/admin-types.ts
+/* Location: app/admin/types/admin-types.ts */
 
 import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
 // Import types from their proper domains
@@ -19,7 +19,7 @@ export interface AdminDashboardData {
 // ADMIN NAVIGATION TYPES
 // ==========================================
 
-export type AdminSectionKey = 'overview' | 'draft' | 'points' | 'settings';
+export type AdminSectionKey = 'overview' | 'draft' | 'transfers' | 'points' | 'settings';
 
 export interface AdminNavItem {
     key: AdminSectionKey;
@@ -53,7 +53,16 @@ export type AdminActionType =
     | 'ensureDivisionDocument'
     | 'resetDraft'
     | 'autoCommitTeamsToFirestore'
-    | 'getGameweekPointsStatus';
+    | 'getGameweekPointsStatus'
+    // Transfer-specific actions
+    | 'refreshTransfers'
+    | 'validateAllTransfers'
+    | 'approveTransfer'
+    | 'rejectTransfer'
+    | 'updateTransferRules'
+    | 'ensureRecommendationColumns'
+    | 'clearTransferRecommendations'
+    | 'getTransferHistory';
 
 export type ClearVariant = 'all' | 'fpl-only' | 'elements-only';
 
@@ -62,13 +71,17 @@ export interface AdminActionParams {
     divisionId?: DivisionId;
     authToken?: string;
     variant?: ClearVariant;
+    // Transfer-specific parameters
+    transferId?: string;
+    recommendation?: 'APPROVE' | 'REJECT' | 'REVIEW';
+    rules?: unknown[];
 }
 
 export interface AdminActionResult {
     success: boolean;
     error?: string;
     message: string;
-    data?: unknown; // FIXED: was 'any'
+    data?: unknown;
 }
 
 // ==========================================

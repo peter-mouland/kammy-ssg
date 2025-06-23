@@ -5,7 +5,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { useActionData, useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
-import { AdminSection } from '../layout';
+import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
 import { ResetDraftButton } from '../ui/reset-draft-button';
 import styles from './draft-sync-section.module.css';

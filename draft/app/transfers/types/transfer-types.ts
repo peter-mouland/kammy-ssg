@@ -1,8 +1,9 @@
 /* Location: app/transfers/types/transfer-types.ts */
-/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
+/** biome-ignore-all lint/style/useNamingConvention: <init> */
 
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { TeamRoster } from '../../teams/types/team-types';
+import type { DivisionId, ManagerId, TeamRoster } from '../../teams/types/team-types';
 
 /**
  * Raw transfer data from Google Sheets
@@ -37,11 +38,12 @@ export interface ProcessedTransfer {
     id: string; // Generated ID for tracking
     status: TransferStatus;
     timestamp: Date;
-    managerId: string;
+    managerId: ManagerId;
     transferType: TransferType;
     playerOut: EnhancedPlayerData;
     playerIn: EnhancedPlayerData;
     comment: string;
+    gameweekData: GameWeekData;
 }
 
 /**
@@ -59,9 +61,10 @@ export type TransferType = 'TRANSFER' | 'SWAP' | 'LOAN_START' | 'LOAN_FINISH' | 
  */
 export interface TransferProcessingResult {
     processedCount: number;
-    approvedTransfers: ProcessedTransfer[];
-    rejectedTransfers: ProcessedTransfer[];
-    pendingTransfers: ProcessedTransfer[];
+    pendingCount: number;
+    approvedCount: number;
+    rejectedCount: number;
+    transfers: ProcessedTransfer[];
     errors: TransferProcessingError[];
 }
 
@@ -79,7 +82,7 @@ export interface TransferProcessingError {
  * Division transfer history
  */
 export interface DivisionTransferHistory {
-    divisionId: string;
+    divisionId: DivisionId;
     transfers: ProcessedTransfer[];
     lastUpdated: Date;
     gameweekRange: {
@@ -106,9 +109,9 @@ export interface TransferApplicationResult {
  */
 export interface GameweekTransferSummary {
     gameweek: number;
-    divisionId: string;
+    divisionId: DivisionId;
     transferCount: number;
-    affectedManagers: string[];
+    affectedManagers: ManagerId[];
     transfersByType: Record<TransferType, number>;
     earliestTransfer: Date;
     latestTransfer: Date;

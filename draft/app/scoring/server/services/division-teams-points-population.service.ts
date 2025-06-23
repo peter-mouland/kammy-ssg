@@ -2,7 +2,7 @@
 
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
-import type { PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import type { DivisionId, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { readTransferDataForDivision } from '../../../transfers/lib/transfer-reader.service';
 import type { Points } from '../../types/scoring-types';
@@ -80,7 +80,7 @@ export async function populatePointsIntoDivisionDocuments(
  * Populate points for a specific division and gameweek
  * AUTO-CREATES missing documents if needed
  */
-async function populatePointsForDivisionGameweek(divisionId: string, gameweek: number, options): Promise<number> {
+async function populatePointsForDivisionGameweek(divisionId: DivisionId, gameweek: number, options): Promise<number> {
     try {
         const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
         // Get the division document - if it doesn't exist, create it
@@ -174,7 +174,7 @@ async function populatePointsForDivisionGameweek(divisionId: string, gameweek: n
 /**
  * Create missing gameweek document by copying from previous gameweek (recursive)
  */
-async function createMissingGameweekDocument(divisionId: string, targetGameweek: number): Promise<boolean> {
+async function createMissingGameweekDocument(divisionId: DivisionId, targetGameweek: number): Promise<boolean> {
     try {
         console.log(`🔄 Creating missing document: ${divisionId}_gw${targetGameweek}`);
 
@@ -235,11 +235,11 @@ async function createGameweekDocumentFromSource(sourceDocument: any, targetGamew
     const gameweekData = await fplApiCache.getFplEvents();
     const fplPlayersByCode = await fplApiCache.getPlayersByCode();
     // Read transfer data for this division
-    const transferResult = await readTransferDataForDivision(sourceDocument.divisionId, fplPlayersByCode);
+    const transferResult = await readTransferDataForDivision(sourceDocument.divisionId, fplPlayersByCode, gameweekData);
     if (transferResult.errors.length > 0) {
         console.warn(`⚠️ Transfer reading errors for ${sourceDocument.divisionId}:`, transferResult.errors);
     }
-    const approvedTransfers = transferResult.approvedTransfers;
+    const approvedTransfers = transferResult.transfers.filter((transfer) => transfer.status === 'APPROVED');
 
     // Filter for approved transfers only
     // NEW STRUCTURE: Apply transfers between source and target gameweeks

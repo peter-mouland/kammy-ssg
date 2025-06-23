@@ -105,6 +105,15 @@ export class FplApiCache {
             return cached;
         });
     }
+    /**
+     * Get current gameweek
+     */
+    async getCurrentGameweekData() {
+        return this.withPromiseDeduplication('current-gameweek-data', async () => {
+            console.log('🔄 getCurrentGameweek() ');
+            return await this.fplFirestore.getCurrentGameweekData();
+        });
+    }
 
     // === PLAYER DATA ORCHESTRATION ===
 
