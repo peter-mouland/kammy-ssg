@@ -6,7 +6,7 @@ import type { ProcessedTransfer, TransferApplicationResult } from '../types/tran
 import { findPlayerInRoster } from './find-player-in-roster';
 
 // Filter transfers for this gameweek period and sort by timestamp
-export const getReleventTransfers = (transfers: ProcessedTransfer[], gameweekData: GameWeekData) =>
+export const getGameweekTransfers = (transfers: ProcessedTransfer[], gameweekData: GameWeekData) =>
     transfers
         .filter((transfer) => {
             return (
@@ -28,7 +28,7 @@ export async function applyTransfersToRosters(
     appliedTransfers: TransferApplicationResult[];
     errors: string[];
 }> {
-    const relevantTransfers = getReleventTransfers(transfers, gameweekData);
+    const relevantTransfers = getGameweekTransfers(transfers, gameweekData);
     console.log(`🔄 Applying ${relevantTransfers.length} transfers for gameweek ${gameweekData.fplEvent.id}`);
 
     const updatedRosters = JSON.parse(JSON.stringify(divisionRosters)) as RosterByManagerId;
@@ -40,7 +40,6 @@ export async function applyTransfersToRosters(
     for (const transfer of relevantTransfers) {
         try {
             const result = await applyIndividualTransfer(updatedRosters, transfer);
-
             if (result) {
                 if (result.updatedRoster) {
                     updatedRosters[transfer.managerId].roster = result.updatedRoster;

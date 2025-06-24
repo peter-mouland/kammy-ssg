@@ -20,7 +20,6 @@ const positionLimits = {
  */
 export function validatePositionLimits(
     context: TransferRuleContext,
-    parameters: Record<string, unknown>,
 ): RuleValidationResult {
     const { transfer, divisionRosters } = context;
     const managerId = transfer.managerId;

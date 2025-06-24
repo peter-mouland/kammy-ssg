@@ -2,7 +2,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId, RosterByManagerId } from '../../teams/types/team-types';
+import type { DivisionId, ManagerId, RosterByManagerId } from '../../teams/types/team-types';
 import type {
     RuleValidationFunctions,
     RuleValidationResult,
@@ -17,6 +17,32 @@ import { validateMinimumGap } from './validators/min-time-between-validator';
 import { validatePlayerAvailability } from './validators/player-availability-validator';
 import { validatePositionCompatibility } from './validators/position-compatibility-validator';
 import { validatePositionLimits } from './validators/position-limits-validator';
+
+export interface EnhancedTransferValidationResult extends TransferValidationResult {
+    virtualStateConflict?: {
+        playerCode: number;
+        playerName: string;
+        conflictingWith: ManagerId;
+        conflictingTransferId: string;
+    };
+}
+
+/**
+ * Sequential validation result for a batch of transfers
+ */
+export interface SequentialValidationResult {
+    transferValidations: Array<{
+        transfer: ProcessedTransfer;
+        validation: EnhancedTransferValidationResult;
+        recommendation: TransferRecommendation;
+    }>;
+    summary: {
+        totalTransfers: number;
+        approved: number;
+        rejected: number;
+        needsReview: number;
+    };
+}
 
 /**
  * Validate a transfer against configured rules
@@ -51,14 +77,14 @@ export async function validateTransfer(
     const applicableRules = rules.filter((rule) => rule.isActive && rule.transferTypes.includes(transfer.transferType));
 
     console.log(`📋 Found ${applicableRules.length} applicable rules for ${transfer.transferType}`);
-    console.log('context.divisionRosters');
-    Object.keys(context.divisionRosters).forEach((managerId) => {
-        console.log(managerId);
-        Object.keys(context.divisionRosters[managerId].roster).forEach((pos) => {
-            const player = context.divisionRosters[managerId].roster[pos].player;
-            console.log(player.playerPosition, player.playerName);
-        });
-    });
+    // console.log('context.divisionRosters');
+    // Object.keys(context.divisionRosters).forEach((managerId) => {
+    //     console.log(managerId);
+    //     Object.keys(context.divisionRosters[managerId].roster).forEach((pos) => {
+    //         const player = context.divisionRosters[managerId].roster[pos].player;
+    //         console.log(player.playerPosition, player.playerName);
+    //     });
+    // });
     // Validate each applicable rule
     for (const rule of applicableRules) {
         try {
@@ -76,7 +102,7 @@ export async function validateTransfer(
                 continue;
             }
 
-            const result = validationFunction(validationContext, rule.parameters);
+            const result = validationFunction(validationContext);
             result.severity = rule.severity; // Ensure severity matches rule config
             ruleResults.push(result);
         } catch (error) {
@@ -125,6 +151,61 @@ export async function validateTransfer(
         blockingFailures,
         warnings,
         advisories,
+        summary,
+    };
+}
+
+export async function validateTransfers(
+    transfers: ProcessedTransfer[],
+    rules: TransferRule[],
+    context: {
+        allGameweekTransfers: ProcessedTransfer[];
+        divisionRosters: RosterByManagerId;
+        gameweekData: GameWeekData;
+        fplPlayersByCode: PlayersByCode;
+        divisionId: DivisionId;
+        currentGameweek: number;
+    },
+): Promise<SequentialValidationResult> {
+    console.log(`🔄 Starting sequential validation of ${transfers.length} transfers`);
+
+    const transferValidations: SequentialValidationResult['transferValidations'] = [];
+    const summary = {
+        totalTransfers: transfers.length,
+        approved: 0,
+        rejected: 0,
+        needsReview: 0,
+    };
+
+    // Process each transfer in sequence
+    for (const transfer of transfers) {
+        console.log(`📋 Validating transfer ${transfer.playerOut.web_name} → ${transfer.playerIn.web_name}`);
+
+        // Run validation
+        const validation = await validateTransfer(transfer, rules, context);
+
+        // Update summary counts
+        switch (validation.recommendation) {
+            case 'APPROVE':
+                summary.approved++;
+                break;
+            case 'REJECT':
+                summary.rejected++;
+                break;
+            case 'REVIEW':
+                summary.needsReview++;
+                break;
+        }
+
+        transferValidations.push({
+            transfer,
+            validation: validation,
+            recommendation: validation.recommendation,
+        });
+    }
+
+    return {
+        transferValidations,
         summary,
     };
 }

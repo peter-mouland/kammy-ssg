@@ -1,11 +1,9 @@
 /* Location: app/transfers/lib/transfer-integration.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId, DivisionTeamsDocument, TeamRoster } from '../../teams/types/team-types';
+import type { DivisionTeamsDocument, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
-import { applyTransfersToRosters, getReleventTransfers } from './transfer-processor.service';
-import { readTransferDataForDivision } from './transfer-reader.service';
+import { applyTransfersToRosters, getGameweekTransfers } from './transfer-processor.service';
 
 /**
  * Apply transfers when creating a new gameweek document from a previous gameweek
@@ -16,14 +14,15 @@ export async function applyTransfersToGameweekDocument(
     gameweeks: GameWeekData[],
     approvedTransfers: ProcessedTransfer[],
 ): Promise<DivisionTeamsDocument> {
-    console.log(
-        `🔄 Applying transfers from GW${sourceDocument.gameweek} to GW${targetGameweekId} for ${sourceDocument.divisionId}`,
-    );
+    console.log(`🔄 Applying transfers for GW${targetGameweekId} for ${sourceDocument.divisionId}`);
 
     try {
-        const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === sourceDocument.gameweek);
+        const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === targetGameweekId);
+        const relevantTransfers = getGameweekTransfers(approvedTransfers, gameweekData);
 
-        console.log(`📋 Found ${approvedTransfers.length} approved transfers for ${sourceDocument.divisionId}`);
+        console.log(
+            `📋 Found ${relevantTransfers.length} approved GW transfers for ${sourceDocument.divisionId} GW${targetGameweekId}`,
+        );
 
         if (approvedTransfers.length === 0) {
             console.log(`ℹ️ No transfers to apply between GW${sourceDocument.gameweek} and GW${targetGameweekId}`);
@@ -31,7 +30,7 @@ export async function applyTransfersToGameweekDocument(
         }
 
         // Apply transfers to the rosters
-        const rosterUpdate = await applyTransfersToRosters(sourceDocument.teams, approvedTransfers, gameweekData);
+        const rosterUpdate = await applyTransfersToRosters(sourceDocument.teams, relevantTransfers, gameweekData);
 
         if (rosterUpdate.errors.length > 0) {
             console.warn('⚠️ Transfer application errors:', rosterUpdate.errors);
@@ -50,7 +49,7 @@ export async function applyTransfersToGameweekDocument(
         newDocument.metadata = {
             ...newDocument.metadata,
             transfersApplied: rosterUpdate.appliedTransfers.length,
-            transfersFrom: sourceDocument.gameweek,
+            transfersFrom: targetGameweekId,
             transferErrors: rosterUpdate.errors.length,
         };
 
@@ -148,67 +147,4 @@ function createEmptyPoints() {
         bonus: 0,
         total: 0,
     };
-}
-
-/**
- * Check if transfers need to be processed for a gameweek transition
- */
-export async function needsTransferProcessing(
-    divisionId: DivisionId,
-    gameweekData: GameWeekData,
-    fplPlayersByCode: PlayersByCode,
-): Promise<boolean> {
-    try {
-        const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, [gameweekData]);
-        const relevantTransfers = getReleventTransfers(
-            transferResult.transfers.filter((t) => t.status === 'APPROVED'),
-            gameweekData,
-        );
-        return relevantTransfers.length > 0;
-    } catch (error) {
-        console.error('❌ Error checking transfer processing needs:', error);
-        return false; // Assume no transfers needed if check fails
-    }
-}
-
-/**
- * Get transfer summary for a gameweek transition
- */
-export async function getTransferSummary(
-    divisionId: DivisionId,
-    gameweekData: GameWeekData,
-    fplPlayersByCode: PlayersByCode,
-): Promise<{
-    transferCount: number;
-    affectedManagers: string[];
-    transfersByType: Record<string, number>;
-}> {
-    try {
-        const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, [gameweekData]);
-
-        const relevantTransfers = getReleventTransfers(
-            transferResult.transfers.filter((t) => t.status === 'APPROVED'),
-            gameweekData,
-        );
-
-        const affectedManagers = [...new Set(relevantTransfers.map((t) => t.managerId))];
-
-        const transfersByType: Record<string, number> = {};
-        relevantTransfers.forEach((transfer) => {
-            transfersByType[transfer.transferType] = (transfersByType[transfer.transferType] || 0) + 1;
-        });
-
-        return {
-            transferCount: relevantTransfers.length,
-            affectedManagers,
-            transfersByType,
-        };
-    } catch (error) {
-        console.error('❌ Error getting transfer summary:', error);
-        return {
-            transferCount: 0,
-            affectedManagers: [],
-            transfersByType: {},
-        };
-    }
 }

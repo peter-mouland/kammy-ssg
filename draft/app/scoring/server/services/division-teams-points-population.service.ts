@@ -192,18 +192,15 @@ async function createMissingGameweekDocument(divisionId: DivisionId, targetGamew
         console.log(`🔄 Creating missing document: ${divisionId}_gw${targetGameweek}`);
 
         // Find source document to copy from
-        let sourceGameweek: number;
-        let sourceDoc: DivisionTeamsDocument | null = null;
+        const sourceGameweek = targetGameweek - 1;
 
-        if (targetGameweek === 1) {
+        if (targetGameweek === 0) {
             // For GW0 (draft), we can't create it automatically - needs draft data
-            console.warn(`⚠️ Cannot auto-create GW1 document for ${divisionId} - requires draft completion`);
+            console.warn(`⚠️ Cannot auto-create GW0 document for ${divisionId} - requires draft completion`);
             return false;
         }
 
-        // Try previous gameweek first
-        sourceGameweek = targetGameweek - 1;
-        sourceDoc = await getDivisionTeamsDocument(divisionId, sourceGameweek);
+        let sourceDoc = await getDivisionTeamsDocument(divisionId, sourceGameweek);
 
         if (!sourceDoc) {
             // Previous gameweek doesn't exist either - recursively create it first

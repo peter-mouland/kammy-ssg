@@ -89,17 +89,3 @@ export function getDefaultRuleConfiguration(divisionId: string): TransferRule[] 
         validationFunction: ruleDef.validationFunction,
     }));
 }
-
-/**
- * Get rule definition by ID
- */
-export function getRuleDefinition(ruleId: string): BuiltInRuleDefinition | null {
-    return BUILT_IN_TRANSFER_RULES.find((rule) => rule.id === ruleId) || null;
-}
-
-/**
- * Get rules applicable to a specific transfer type
- */
-export function getRulesForTransferType(transferType: TransferType): BuiltInRuleDefinition[] {
-    return BUILT_IN_TRANSFER_RULES.filter((rule) => rule.applicableTransferTypes.includes(transferType));
-}

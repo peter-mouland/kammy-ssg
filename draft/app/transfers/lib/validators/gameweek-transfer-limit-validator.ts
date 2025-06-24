@@ -9,7 +9,6 @@ import type { ProcessedTransfer, TransferType } from '../../types/transfer-types
  */
 export function validateGameweekTransferLimit(
     context: TransferRuleContext,
-    parameters: Record<string, unknown>,
 ): RuleValidationResult {
     // Get parameters with defaults
     const maxTransfersPerGameweek = 2;

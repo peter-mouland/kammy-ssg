@@ -2,8 +2,8 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData, RosterByManagerId } from '../../teams/types/team-types';
-import { EnhancedTransferValidationService } from '../../transfers/lib/enhanced-transfer-validation.service';
 import { getDefaultRuleConfiguration } from '../../transfers/lib/transfer-rule-definitions';
+import { validateTransfers } from '../../transfers/lib/transfer-validation.service';
 import type {
     TransferAdminOverviewData,
     TransferRecommendation,
@@ -103,22 +103,18 @@ async function getTransfersDataForDivision(
         );
 
         // Use enhanced validation service for sequential validation
-        const gameweekTransfers = transferResult.transfers.filter(
-            (t) => t.gameweekData.fplEvent.id === gameweek.fplEvent.id,
-        );
+        const gameweekTransfers = transferResult.transfers
+            .filter((t) => t.gameweekData.fplEvent.id === gameweek.fplEvent.id)
+            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
-        const sequentialResult = await EnhancedTransferValidationService.validateTransfersSequentially(
-            gameweekTransfers,
-            rules,
-            {
-                allGameweekTransfers: gameweekTransfers,
-                divisionRosters,
-                gameweekData: currentGameweek,
-                fplPlayersByCode,
-                divisionId,
-                currentGameweek: currentGameweek?.fplEvent.id,
-            },
-        );
+        const sequentialResult = await validateTransfers(gameweekTransfers, rules, {
+            allGameweekTransfers: gameweekTransfers,
+            divisionRosters,
+            gameweekData: currentGameweek,
+            fplPlayersByCode,
+            divisionId,
+            currentGameweek: currentGameweek?.fplEvent.id,
+        });
 
         // Convert sequential results to the expected format
         const transfers = sequentialResult.transferValidations.map((item) => ({

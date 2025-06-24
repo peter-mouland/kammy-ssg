@@ -5,7 +5,6 @@ import type { RuleValidationResult, TransferRuleContext } from '../../types/tran
  */
 export function validateMinimumGap(
     context: TransferRuleContext,
-    parameters: Record<string, unknown>,
 ): RuleValidationResult {
     // This would need access to previous transfers for the manager
     // For now, return a placeholder implementation

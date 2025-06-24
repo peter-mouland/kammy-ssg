@@ -98,10 +98,7 @@ export interface TransferRuleContext {
 /**
  * Rule validation function signature
  */
-export type RuleValidationFunction = (
-    context: TransferRuleContext,
-    parameters: Record<string, unknown>,
-) => RuleValidationResult;
+export type RuleValidationFunction = (context: TransferRuleContext) => RuleValidationResult;
 
 /**
  * Available rule validation functions

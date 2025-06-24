@@ -32,16 +32,16 @@ const navigationItems: AdminNavItem[] = [
         path: '/admin/draft',
     },
     {
-        key: 'transfers',
-        label: 'Transfer Management',
-        icon: <Icons.SyncIcon />,
-        path: '/admin/transfers',
-    },
-    {
         key: 'points',
         label: 'Points & Scoring',
         icon: <Icons.ChartIcon />,
         path: '/admin/points',
+    },
+    {
+        key: 'transfers',
+        label: 'Transfer Management',
+        icon: <Icons.SyncIcon />,
+        path: '/admin/transfers',
     },
     {
         key: 'settings',

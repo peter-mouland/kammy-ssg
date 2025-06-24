@@ -73,7 +73,7 @@ async function ensureSingleDivisionGameweekDocument(divisionId: DivisionId, targ
 
         console.log(`🔄 Creating missing document: ${divisionId}_gw${targetGameweek}`);
 
-        if (targetGameweek === 1) {
+        if (targetGameweek === 0) {
             // For draft (GW 1), use the existing commit teams logic
             return await createDraftDocument(divisionId);
         } else {

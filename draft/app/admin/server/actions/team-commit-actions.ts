@@ -71,7 +71,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                     isSub: false, // Will be determined by position availability
                     onLoanTo: null,
                     onLoanStart: null,
-                    gameweek: 1, // Draft is gameweek 0
+                    gameweek: 0, // Draft is gameweek 0
                 };
             });
 
@@ -86,7 +86,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         const now = new Date().toISOString();
         const divisionDocument: DivisionTeamsDocument = {
             divisionId,
-            gameweek: 1, // Draft is gameweek 0
+            gameweek: 0, // Draft is gameweek 0
             lastUpdated: now,
             teams: teamsData,
             metadata: {
@@ -112,7 +112,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 teamsCount: teamsByUser.size,
                 positionSlotsCount: totalPlayersProcessed,
                 documentId: `${divisionId}_gw1`,
-                gameweek: 1,
+                gameweek: 0,
                 timestamp: now,
                 structure: 'new-roster-based',
             },
