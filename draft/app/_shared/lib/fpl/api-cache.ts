@@ -156,33 +156,33 @@ export class FplApiCache {
         ); // 10 minutes timeout for large batches
     }
 
-    async populatePlayerDetailedStats(playerIds: number[]): Promise<Record<number, FplPlayerSeasonData>> {
-        console.log(`🔄 populatePlayerDetailedStats([${playerIds.length} players]) - Start`);
+    async populatePlayerDetailedStats(playerCodes: number[]): Promise<Record<number, FplPlayerSeasonData>> {
+        console.log(`🔄 populatePlayerDetailedStats([${playerCodes.length} players]) - Start`);
 
         // Fetch missing players from API in manageable chunks
         const freshData: Record<number, FplPlayerSeasonData> = {};
 
-        if (playerIds.length > 0) {
-            const fetchPlayer = async (playerId: number) => {
+        if (playerCodes.length > 0) {
+            const fetchPlayer = async (playerCode: number) => {
                 try {
-                    const playerData = await fplApi.getPlayerDetailedStats(playerId);
-                    return { playerId, playerData };
+                    const playerData = await fplApi.getPlayerDetailedStats(playerCode);
+                    return { playerCode, playerData };
                 } catch (error) {
-                    console.error(`Failed to fetch player ${playerId}:`, error);
-                    return { playerId, playerData: null };
+                    console.error(`Failed to fetch player ${playerCode}:`, error);
+                    return { playerCode, playerData: null };
                 }
             };
 
-            const results = await processBatched(playerIds, fetchPlayer, {
+            const results = await processBatched(playerCodes, fetchPlayer, {
                 batchSize: 50,
                 maxConcurrent: 10,
                 logProgress: true,
             });
 
             // Convert results to freshData object
-            results.forEach(({ playerId, playerData }) => {
+            results.forEach(({ playerCode, playerData }) => {
                 if (playerData) {
-                    freshData[playerId] = playerData;
+                    freshData[playerCode] = playerData;
                 }
             });
             await this.fplFirestore.populateElementSummaries(freshData);

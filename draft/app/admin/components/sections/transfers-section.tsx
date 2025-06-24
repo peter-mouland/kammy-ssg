@@ -18,6 +18,7 @@ import styles from './transfers-section.module.css';
 
 interface TransfersSectionProps {
     divisions: DivisionSheetData[];
+    gameweek: GameWeekData;
     transfersData?: Record<DivisionId, TransferAdminOverviewData>;
 }
 
@@ -70,7 +71,7 @@ function RecommendationTooltip({ validation, children }: RecommendationTooltipPr
                             <strong>Warnings:</strong>
                             <ul>
                                 {validation.warnings.map((warning, idx) => (
-                                    <li key={idx}>{warning.message}</li>
+                                    <li key={warning.message}>{warning.message}</li>
                                 ))}
                             </ul>
                         </div>
@@ -82,18 +83,18 @@ function RecommendationTooltip({ validation, children }: RecommendationTooltipPr
 }
 
 function GameweekTransfersSection({
+    transfersData,
     gameweekInfo,
     onApprove,
     onReject,
-    isPending,
 }: {
     gameweekInfo: GameweekTransfersData;
     onApprove: (transferId: string) => void;
     onReject: (transferId: string) => void;
-    isPending: boolean;
 }) {
     const [isExpanded, setIsExpanded] = useState(false);
-
+    console.log(transfersData);
+    console.log(gameweekInfo);
     const columns: TableColumn<{ transfer: ProcessedTransfer; validation: TransferValidationResult }>[] = [
         {
             key: 'timestamp',
@@ -183,7 +184,7 @@ function GameweekTransfersSection({
                     <button
                         type="button"
                         onClick={() => onApprove(item.transfer.id)}
-                        disabled={isPending}
+                        disabled={item.transfer.status !== 'PENDING'}
                         className={`${styles.action_btn} ${styles.approve_btn}`}
                         title="Approve Transfer"
                     >
@@ -192,7 +193,7 @@ function GameweekTransfersSection({
                     <button
                         type="button"
                         onClick={() => onReject(item.transfer.id)}
-                        disabled={isPending}
+                        disabled={item.transfer.status !== 'PENDING'}
                         className={`${styles.action_btn} ${styles.reject_btn}`}
                         title="Reject Transfer"
                     >
@@ -210,8 +211,8 @@ function GameweekTransfersSection({
                     <div className={styles.gameweek_title}>
                         <span className={styles.gameweek_label}>Gameweek {gameweekInfo.gameweekData.fplEvent.id}</span>
                         <span className={styles.gameweek_dates}>
-                            {gameweekInfo.gameweekData.start.toLocaleDateString()} -{' '}
-                            {gameweekInfo.gameweekData.end.toLocaleDateString()}
+                            {gameweekInfo.gameweekData.start.toLocaleString('en-gb')} -{' '}
+                            {gameweekInfo.gameweekData.end.toLocaleString('en-gb')}
                         </span>
                     </div>
                     <div className={styles.gameweek_stats}>
@@ -262,7 +263,6 @@ function DivisionTransfersPanel({
     transfersData?: TransferAdminOverviewData;
 }) {
     const fetcher = useFetcher();
-    const isPending = fetcher.state !== 'idle';
 
     const handleApprove = (transferId: string) => {
         const formData = new FormData();
@@ -300,10 +300,10 @@ function DivisionTransfersPanel({
                     {transfersByGameweek.map((gameweekInfo) => (
                         <GameweekTransfersSection
                             key={gameweekInfo.gameweekData.fplEvent.id}
+                            transfersData={transfersData}
                             gameweekInfo={gameweekInfo}
                             onApprove={handleApprove}
                             onReject={handleReject}
-                            isPending={isPending}
                         />
                     ))}
                 </div>
@@ -352,7 +352,7 @@ function groupTransfersByGameweek(
     return Array.from(gameweekMap.values()).sort((a, b) => (b.gameweekData.start > a.gameweekData.start ? 1 : -1));
 }
 
-export function TransfersSection({ divisions, transfersData }: TransfersSectionProps) {
+export function TransfersSection({ divisions, gameweek, transfersData }: TransfersSectionProps) {
     const [selectedDivision, setSelectedDivision] = useState<DivisionId>(
         divisions.length > 0 ? divisions[0].id : 'premierLeague',
     );
@@ -399,6 +399,7 @@ export function TransfersSection({ divisions, transfersData }: TransfersSectionP
                             </option>
                         ))}
                     </select>
+                    GW: {gameweek?.fplEvent.id}
                 </div>
 
                 {/* Quick Actions */}

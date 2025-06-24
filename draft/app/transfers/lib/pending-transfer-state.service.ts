@@ -1,7 +1,8 @@
 /* Location: app/transfers/lib/pending-transfer-state.service.ts */
-/** biome-ignore-all lint/complexity/noStaticOnlyClass: <explanation> */
+/** biome-ignore-all lint/complexity/noStaticOnlyClass: <?> */
 
-import type { ManagerId, TeamRoster } from '../../teams/types/team-types';
+import type { FplPlayerData } from '../../_shared/lib/fpl/fpl-types';
+import type { ManagerId, RosterByManagerId } from '../../teams/types/team-types';
 import type { TransferRecommendation } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 
@@ -9,7 +10,7 @@ import type { ProcessedTransfer } from '../types/transfer-types';
  * Enhanced roster state that includes pending approved transfers
  */
 export interface EnhancedRosterState {
-    baseRosters: Record<ManagerId, TeamRoster>;
+    baseRosters: RosterByManagerId;
     pendingApprovedTransfers: ProcessedTransfer[];
     virtualPlayerOwnership: Map<number, ManagerId>; // playerCode -> managerId
 }
@@ -20,12 +21,12 @@ export interface EnhancedRosterState {
 export interface VirtualTransferResult {
     success: boolean;
     conflict?: {
-        playerCode: number;
+        playerCode: FplPlayerData['code'];
         playerName: string;
         currentOwner: ManagerId;
         conflictingTransfer: ProcessedTransfer;
     };
-    updatedOwnership: Map<number, ManagerId>;
+    updatedOwnership: Map<FplPlayerData['code'], ManagerId>;
 }
 
 /**
@@ -36,7 +37,7 @@ export class PendingTransferStateService {
      * Create enhanced roster state that includes virtual ownership from pending approved transfers
      */
     static createEnhancedRosterState(
-        baseRosters: Record<ManagerId, TeamRoster>,
+        baseRosters: RosterByManagerId,
         allPendingTransfers: ProcessedTransfer[],
         existingRecommendations: Map<string, TransferRecommendation>,
     ): EnhancedRosterState {
@@ -51,10 +52,10 @@ export class PendingTransferStateService {
         console.log(`✅ Found ${pendingApprovedTransfers.length} pending transfers recommended for approval`);
 
         // Build initial virtual ownership from base rosters
-        const virtualPlayerOwnership = new Map<number, ManagerId>();
+        const virtualPlayerOwnership = new Map<FplPlayerData['code'], ManagerId>();
 
         for (const [managerId, roster] of Object.entries(baseRosters)) {
-            for (const positionSlot of Object.values(roster)) {
+            for (const positionSlot of Object.values(roster.roster)) {
                 if (positionSlot.player.playerCode) {
                     virtualPlayerOwnership.set(positionSlot.player.playerCode, managerId);
                 }
@@ -107,17 +108,17 @@ export class PendingTransferStateService {
         switch (transfer.transferType) {
             case 'TRANSFER':
             case 'NEW_PLAYER':
-            case 'TRADE':
+            case 'TRADE': {
                 // Remove old player if this is a transfer (not new player)
-                if (transfer.transferType === 'TRANSFER' || transfer.transferType === 'TRADE') {
-                    const playerOutCode = transfer.playerOut.code;
-                    newOwnership.delete(playerOutCode);
-                }
+                // if (transfer.transferType === 'TRANSFER' || transfer.transferType === 'TRADE') {
+                const playerOutCode = transfer.playerOut.code;
+                newOwnership.delete(playerOutCode);
+                // }
 
                 // Add new player
                 newOwnership.set(playerInCode, transfer.managerId);
                 break;
-
+            }
             case 'SWAP':
                 // For swaps, both players should already be owned by the same manager
                 // This is an internal position change, no ownership change needed
@@ -134,21 +135,6 @@ export class PendingTransferStateService {
             success: true,
             updatedOwnership: newOwnership,
         };
-    }
-
-    /**
-     * Build enhanced rosters for validation that include pending approved transfers
-     */
-    static buildEnhancedRostersForValidation(
-        baseRosters: Record<ManagerId, TeamRoster>,
-        virtualOwnership: Map<number, ManagerId>,
-    ): Record<ManagerId, TeamRoster> {
-        console.log(`🔧 Building enhanced rosters with ${virtualOwnership.size} virtual ownerships`);
-
-        // For now, return base rosters since the main validation we care about
-        // is player availability, which we handle through virtualOwnership
-        // In the future, this could build actual modified rosters if needed
-        return baseRosters;
     }
 
     /**

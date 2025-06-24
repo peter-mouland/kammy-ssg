@@ -2,7 +2,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId, TeamRoster } from '../../teams/types/team-types';
+import type { DivisionId, RosterByManagerId } from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
 
 /**
@@ -17,7 +17,6 @@ export interface TransferRule {
     isActive: boolean;
     transferTypes: TransferType[];
     validationFunction: string; // Function name to call for validation
-    parameters: Record<string, unknown>;
 }
 
 /**
@@ -71,16 +70,6 @@ export interface TransferValidationResult {
 export type TransferRecommendation = 'APPROVE' | 'REJECT' | 'REVIEW';
 
 /**
- * Rule configuration for a division
- */
-export interface DivisionRuleConfiguration {
-    divisionId: DivisionId;
-    rules: TransferRule[];
-    lastUpdated: Date;
-    version: number;
-}
-
-/**
  * Built-in rule definitions
  */
 export interface BuiltInRuleDefinition {
@@ -91,30 +80,15 @@ export interface BuiltInRuleDefinition {
     defaultSeverity: RuleSeverity;
     applicableTransferTypes: TransferType[];
     validationFunction: string;
-    defaultParameters: Record<string, unknown>;
-    parameterSchema: Record<string, RuleParameterDefinition>;
-}
-
-/**
- * Rule parameter definition for configuration UI
- */
-export interface RuleParameterDefinition {
-    type: 'string' | 'number' | 'boolean' | 'date' | 'select';
-    label: string;
-    description: string;
-    required: boolean;
-    defaultValue: unknown;
-    options?: Array<{ value: unknown; label: string }>; // For select type
-    min?: number; // For number type
-    max?: number; // For number type
 }
 
 /**
  * Transfer rule validation context
  */
 export interface TransferRuleContext {
+    allGameweekTransfers: ProcessedTransfer[];
     transfer: ProcessedTransfer;
-    divisionRosters: Record<DivisionId, TeamRoster>;
+    divisionRosters: RosterByManagerId;
     gameweekData: GameWeekData;
     fplPlayersByCode: PlayersByCode;
     divisionId: DivisionId;
@@ -134,17 +108,6 @@ export type RuleValidationFunction = (
  */
 export interface RuleValidationFunctions {
     [functionName: string]: RuleValidationFunction;
-}
-
-/**
- * Rule configuration UI props
- */
-export interface RuleConfigurationProps {
-    divisionId: DivisionId;
-    currentRules: TransferRule[];
-    availableRules: BuiltInRuleDefinition[];
-    onSaveRules: (rules: TransferRule[]) => Promise<void>;
-    onTestRules: (rules: TransferRule[]) => Promise<TransferValidationResult[]>;
 }
 
 /**
@@ -175,16 +138,4 @@ export interface TransferAdminOverviewData {
         autoRejected: number;
         needsReview: number;
     };
-}
-
-/**
- * Spreadsheet update operation for recommendations
- */
-export interface TransferRecommendationUpdate {
-    transferId: string;
-    recommendation: TransferRecommendation;
-    validationSummary: string;
-    ruleViolations: string[];
-    updatedBy: string;
-    updatedAt: Date;
 }

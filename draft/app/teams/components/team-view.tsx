@@ -14,7 +14,7 @@ export const TeamView = () => {
     const data = useLoaderData<TeamViewData>();
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedGameweek = Number.parseInt(searchParams.get('gameweek') || data.currentGameweek.toString());
-    // console.log({data})
+
     // Get team data for selected gameweek
     const teamData = useMemo((): TeamGameweekData => {
         const gameweekData = data.gameweekHistory.find((gw) => gw.gameweek === selectedGameweek);

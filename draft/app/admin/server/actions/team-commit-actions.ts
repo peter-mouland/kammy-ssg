@@ -4,7 +4,12 @@ import { fplApi } from '../../../_shared/lib/fpl/api';
 import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
 import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
-import type { DivisionTeamsDocument, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import type {
+    DivisionId,
+    DivisionTeamsDocument,
+    PositionSlotKey,
+    TeamPositionSlot,
+} from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
 
 export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<AdminActionResult> {
@@ -66,7 +71,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                     isSub: false, // Will be determined by position availability
                     onLoanTo: null,
                     onLoanStart: null,
-                    gameweek: 0, // Draft is gameweek 0
+                    gameweek: 1, // Draft is gameweek 0
                 };
             });
 
@@ -81,7 +86,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
         const now = new Date().toISOString();
         const divisionDocument: DivisionTeamsDocument = {
             divisionId,
-            gameweek: 0, // Draft is gameweek 0
+            gameweek: 1, // Draft is gameweek 0
             lastUpdated: now,
             teams: teamsData,
             metadata: {
@@ -106,8 +111,8 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
                 divisionId,
                 teamsCount: teamsByUser.size,
                 positionSlotsCount: totalPlayersProcessed,
-                documentId: `${divisionId}_gw0`,
-                gameweek: 0,
+                documentId: `${divisionId}_gw1`,
+                gameweek: 1,
                 timestamp: now,
                 structure: 'new-roster-based',
             },
@@ -124,7 +129,7 @@ export async function handleCommitTeamsToFirestore(params: DraftActionParams): P
  * Create next gameweek document from current gameweek
  */
 export async function createNextGameweekDocument(params: {
-    divisionId: string;
+    divisionId: DivisionId;
     currentGameweek: number;
 }): Promise<AdminActionResult> {
     const { divisionId, currentGameweek } = params;

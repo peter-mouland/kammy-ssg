@@ -158,9 +158,8 @@ export async function handleEnsureDivisionTeamDocuments(): Promise<AdminActionRe
         }
 
         // Ensure documents exist for current gameweek and previous gameweek
-        const targetGameweeks = currentGameweek > 1 ? [currentGameweek - 1, currentGameweek] : [currentGameweek];
-
-        const result = await ensureDivisionGameweekDocuments(targetGameweeks, currentGameweek);
+        // const targetGameweeks = currentGameweek > 1 ? [currentGameweek, currentGameweek + 1] : [currentGameweek];
+        const result = await ensureDivisionGameweekDocuments([currentGameweek]);
 
         let message = `🏟️ Division team documents check complete! ${result.documentsCreated} documents created across ${result.divisionsProcessed} divisions.`;
 
@@ -173,7 +172,7 @@ export async function handleEnsureDivisionTeamDocuments(): Promise<AdminActionRe
             message,
             data: {
                 currentGameweek,
-                targetGameweeks,
+                // targetGameweeks,
                 ...result,
             },
         };

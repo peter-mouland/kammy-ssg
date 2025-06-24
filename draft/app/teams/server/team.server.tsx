@@ -12,7 +12,7 @@ import type { CurrentUser, TeamGameweekData, TeamViewData, UserTeamsSheetData } 
 export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
     try {
         const userTeams = await readUserTeams();
-        console.log(params, userTeams);
+
         const currentUser = await getCurrentUser(params.managerId, userTeams);
         if (!currentUser) {
             throw new Error('User not authenticated');

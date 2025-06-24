@@ -2,7 +2,12 @@
 
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
-import type { DivisionId, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import type {
+    DivisionId,
+    DivisionTeamsDocument,
+    PositionSlotKey,
+    TeamPositionSlot,
+} from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { readTransferDataForDivision } from '../../../transfers/lib/transfer-reader.service';
 import type { Points } from '../../types/scoring-types';
@@ -13,7 +18,7 @@ import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './divisio
  */
 export async function populatePointsIntoDivisionDocuments(
     targetGameweeks: number[],
-    options,
+    options = {},
 ): Promise<{
     divisionsProcessed: number;
     documentsUpdated: number;
@@ -80,7 +85,14 @@ export async function populatePointsIntoDivisionDocuments(
  * Populate points for a specific division and gameweek
  * AUTO-CREATES missing documents if needed
  */
-async function populatePointsForDivisionGameweek(divisionId: DivisionId, gameweek: number, options): Promise<number> {
+type Options = {
+    forceTransfers?: boolean;
+};
+async function populatePointsForDivisionGameweek(
+    divisionId: DivisionId,
+    gameweek: number,
+    options: Options = {},
+): Promise<number> {
     try {
         const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
         // Get the division document - if it doesn't exist, create it
@@ -128,18 +140,19 @@ async function populatePointsForDivisionGameweek(divisionId: DivisionId, gamewee
 
                 // Get points data for this player
                 const playerGameweekPoints = player?.draft.gameweekPoints;
-                if (!playerGameweekPoints?.[gameweek]) {
-                    console.log(`⚠️ No points data for player ${playerCode} (${typeof playerCode}) GW${gameweek}`);
+                const gameweekData = playerGameweekPoints?.[gameweek];
+                if (!gameweekData) {
+                    console.log(
+                        `⚠️ No points data for player ${positionSlot.player.playerName} (${playerCode}) GW${gameweek}`,
+                    );
                 }
-
-                const gameweekData = playerGameweekPoints[gameweek];
 
                 // Update gameweek points and stats
                 const updatedPositionSlot = updatePositionSlotPoints(
                     positionSlot,
                     gameweek,
-                    gameweekData.stats || createEmptyStats(),
-                    gameweekData.points || createEmptyPoints(),
+                    gameweekData?.stats || createEmptyStats(),
+                    gameweekData?.points || createEmptyPoints(),
                 );
 
                 // Update the roster
@@ -148,7 +161,7 @@ async function populatePointsForDivisionGameweek(divisionId: DivisionId, gamewee
                 hasUpdates = true;
 
                 console.log(
-                    `✓ Updated ${positionSlot.player.playerName} (${slot}) - ${gameweekData.points?.total || 0} points`,
+                    `✓ Updated ${positionSlot.player.playerName} (${slot}) - ${gameweekData?.points?.total || 0} points`,
                 );
             }
         }
@@ -180,11 +193,11 @@ async function createMissingGameweekDocument(divisionId: DivisionId, targetGamew
 
         // Find source document to copy from
         let sourceGameweek: number;
-        let sourceDoc: any = null;
+        let sourceDoc: DivisionTeamsDocument | null = null;
 
-        if (targetGameweek === 0) {
+        if (targetGameweek === 1) {
             // For GW0 (draft), we can't create it automatically - needs draft data
-            console.warn(`⚠️ Cannot auto-create GW0 document for ${divisionId} - requires draft completion`);
+            console.warn(`⚠️ Cannot auto-create GW1 document for ${divisionId} - requires draft completion`);
             return false;
         }
 

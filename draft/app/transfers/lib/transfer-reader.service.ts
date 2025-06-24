@@ -175,7 +175,7 @@ function processTransferSheetData(
     };
 
     result.transfers = rawData
-        .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+        .sort((a, b) => (a.timestamp.getTime() < b.timestamp.getTime() ? 1 : 0))
         .map((rawTransfer, index) => {
             result.processedCount++;
             try {
@@ -199,7 +199,7 @@ function processTransferSheetData(
                 });
             }
         })
-        .filter((transfer) => transfer !== null) as ProcessedTransfer[];
+        .filter((transfer) => !!transfer) as ProcessedTransfer[];
 
     return result;
 }

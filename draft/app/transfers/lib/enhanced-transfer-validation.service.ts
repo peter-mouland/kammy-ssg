@@ -3,12 +3,11 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId, ManagerId, TeamRoster } from '../../teams/types/team-types';
+import type { DivisionId, ManagerId, RosterByManagerId } from '../../teams/types/team-types';
 import type {
     RuleValidationResult,
     TransferRecommendation,
     TransferRule,
-    TransferRuleContext,
     TransferValidationResult,
 } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
@@ -58,7 +57,8 @@ export class EnhancedTransferValidationService {
         transfers: ProcessedTransfer[],
         rules: TransferRule[],
         context: {
-            divisionRosters: Record<ManagerId, TeamRoster>;
+            allGameweekTransfers: ProcessedTransfer[];
+            divisionRosters: RosterByManagerId;
             gameweekData: GameWeekData;
             fplPlayersByCode: PlayersByCode;
             divisionId: DivisionId;
@@ -88,9 +88,7 @@ export class EnhancedTransferValidationService {
 
         // Process each transfer in sequence
         for (const transfer of sortedTransfers) {
-            console.log(
-                `📋 Validating transfer ${transfer.id}: ${transfer.playerOut.web_name} → ${transfer.playerIn.web_name}`,
-            );
+            console.log(`📋 Validating transfer ${transfer.playerOut.web_name} → ${transfer.playerIn.web_name}`);
 
             // Run standard validation first
             const standardValidation = await validateTransfer(transfer, rules, context);
@@ -170,14 +168,6 @@ export class EnhancedTransferValidationService {
             });
         }
 
-        console.log('✅ Sequential validation complete:', summary);
-
-        // Log virtual state summary for debugging
-        const virtualSummary = PendingTransferStateService.getVirtualOwnershipSummary(
-            enhancedState.virtualPlayerOwnership,
-        );
-        console.log('📊 Final virtual state:', virtualSummary);
-
         return {
             transferValidations,
             finalVirtualState: enhancedState,
@@ -192,7 +182,8 @@ export class EnhancedTransferValidationService {
         transfer: ProcessedTransfer,
         rules: TransferRule[],
         context: {
-            divisionRosters: Record<ManagerId, TeamRoster>;
+            allGameweekTransfers: ProcessedTransfer[];
+            divisionRosters: RosterByManagerId;
             gameweekData: GameWeekData;
             fplPlayersByCode: PlayersByCode;
             divisionId: DivisionId;

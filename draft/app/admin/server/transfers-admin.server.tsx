@@ -1,6 +1,7 @@
 /* Location: app/admin/server/transfers-admin.server.ts */
 
-import type { DivisionId, DivisionSheetData, ManagerId, TeamRoster } from '../../teams/types/team-types';
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { DivisionId, DivisionSheetData, RosterByManagerId } from '../../teams/types/team-types';
 import { EnhancedTransferValidationService } from '../../transfers/lib/enhanced-transfer-validation.service';
 import { getDefaultRuleConfiguration } from '../../transfers/lib/transfer-rule-definitions';
 import type {
@@ -12,12 +13,7 @@ import type {
 /**
  * Action types for transfers admin
  */
-type TransfersActionType =
-    | 'refreshTransfers'
-    | 'validateAllTransfers'
-    | 'approveTransfer'
-    | 'rejectTransfer'
-    | 'updateRules';
+type TransfersActionType = 'refreshTransfers' | 'approveTransfer' | 'rejectTransfer';
 
 interface TransfersActionParams {
     actionType: TransfersActionType;
@@ -39,14 +35,15 @@ interface TransfersActionResult {
  */
 export async function getTransfersAdminData(
     divisions: DivisionSheetData[],
-): Promise<Record<string, TransferAdminOverviewData>> {
+    gameweek: GameWeekData,
+): Promise<Record<DivisionId, TransferAdminOverviewData>> {
     console.log(`📊 Loading transfers admin data for ${divisions.length} divisions`);
 
     const transfersData: Record<string, TransferAdminOverviewData> = {};
 
     for (const division of divisions) {
         try {
-            transfersData[division.id] = await getTransfersDataForDivision(division.id);
+            transfersData[division.id] = await getTransfersDataForDivision(division.id, gameweek);
         } catch (error) {
             console.error(`❌ Failed to load transfers data for division ${division.id}:`, error);
 
@@ -83,7 +80,10 @@ export async function getTransfersAdminData(
 /**
  * Get transfers data for a specific division using enhanced validation
  */
-async function getTransfersDataForDivision(divisionId: DivisionId): Promise<TransferAdminOverviewData> {
+async function getTransfersDataForDivision(
+    divisionId: DivisionId,
+    gameweek: GameWeekData,
+): Promise<TransferAdminOverviewData> {
     try {
         const [{ readTransferDataForDivision }, { fplApiCache }] = await Promise.all([
             import('../../transfers/lib/transfer-reader.service'),
@@ -95,16 +95,23 @@ async function getTransfersDataForDivision(divisionId: DivisionId): Promise<Tran
         const fplPlayersByCode = await fplApiCache.getPlayersByCode();
         const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, gameweekData);
         const currentGameweek = await fplApiCache.getCurrentGameweekData();
-        const divisionRosters = await getDivisionRosters(divisionId, currentGameweek?.fplEvent.id || 0);
+        const divisionRosters = await getDivisionRosters(divisionId, gameweek.fplEvent.id);
         const rules = getDefaultRuleConfiguration(divisionId);
 
-        console.log(`🔄 Running enhanced sequential validation for ${transferResult.transfers.length} transfers`);
+        console.log(
+            `🔄 Running enhanced sequential validation for ${transferResult.transfers.length} transfers: ${divisionId}: gw${currentGameweek?.fplEvent.id}`,
+        );
 
         // Use enhanced validation service for sequential validation
+        const gameweekTransfers = transferResult.transfers.filter(
+            (t) => t.gameweekData.fplEvent.id === gameweek.fplEvent.id,
+        );
+
         const sequentialResult = await EnhancedTransferValidationService.validateTransfersSequentially(
-            transferResult.transfers,
+            gameweekTransfers,
             rules,
             {
+                allGameweekTransfers: gameweekTransfers,
                 divisionRosters,
                 gameweekData: currentGameweek,
                 fplPlayersByCode,
@@ -136,15 +143,10 @@ async function getTransfersDataForDivision(divisionId: DivisionId): Promise<Tran
             warningRules: rules.filter((r) => r.isActive && r.severity === 'warning').length,
         };
 
-        console.log('✅ Enhanced validation complete:', {
-            transfers: transfers.length,
-            virtualConflicts: sequentialResult.summary.virtualStateConflicts,
-            ...validationStats,
-        });
-
         return {
             divisionId,
             transfers,
+            divisionRosters,
             statusStats: {
                 pendingCount: transferResult.pendingCount,
                 rejectedCount: transferResult.rejectedCount,
@@ -173,9 +175,6 @@ export async function handleTransfersActions(params: TransfersActionParams): Pro
             case 'refreshTransfers':
                 return await handleRefreshTransfers(divisionId);
 
-            case 'validateAllTransfers':
-                return await handleValidateAllTransfers(divisionId);
-
             case 'approveTransfer':
                 if (!transferId) {
                     return {
@@ -195,9 +194,6 @@ export async function handleTransfersActions(params: TransfersActionParams): Pro
                     };
                 }
                 return await handleRejectTransfer(divisionId, transferId, 'REJECT');
-
-            case 'updateRules':
-                return await handleUpdateRules(divisionId, params.rules || []);
 
             default:
                 return {
@@ -239,54 +235,6 @@ async function handleRefreshTransfers(divisionId: DivisionId): Promise<Transfers
 }
 
 /**
- * Validate all pending transfers using enhanced validation
- */
-async function handleValidateAllTransfers(divisionId: DivisionId): Promise<TransfersActionResult> {
-    try {
-        console.log(`✅ Running enhanced validation for all transfers in division: ${divisionId}`);
-
-        const [{ readTransferDataForDivision }, { fplApiCache }] = await Promise.all([
-            import('../../transfers/lib/transfer-reader.service'),
-            import('../../_shared/lib/fpl/api-cache'),
-        ]);
-
-        // Get current data
-        const gameweekData = await fplApiCache.getFplEvents();
-        const fplPlayersByCode = await fplApiCache.getPlayersByCode();
-        const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, gameweekData);
-        const currentGameweek = await fplApiCache.getCurrentGameweekData();
-        const divisionRosters = await getDivisionRosters(divisionId, currentGameweek?.fplEvent.id || 0);
-        const rules = getDefaultRuleConfiguration(divisionId);
-
-        // Run enhanced validation
-        const sequentialResult = await EnhancedTransferValidationService.validateTransfersSequentially(
-            transferResult.transfers,
-            rules,
-            {
-                divisionRosters,
-                gameweekData: currentGameweek,
-                fplPlayersByCode,
-                divisionId,
-                currentGameweek: currentGameweek?.fplEvent.id,
-            },
-        );
-
-        const summary = sequentialResult.summary;
-
-        return {
-            success: true,
-            message: `Enhanced validation complete for division ${divisionId}: ${summary.approved} approved, ${summary.rejected} rejected, ${summary.needsReview} need review, ${summary.virtualStateConflicts} virtual conflicts detected`,
-            data: {
-                divisionId,
-                validatedAt: new Date().toISOString(),
-                ...summary,
-            },
-        };
-    } catch (error) {
-        throw new Error(`Failed to validate transfers: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-}
-
 /**
  * Approve a transfer
  */
@@ -374,33 +322,10 @@ async function handleRejectTransfer(
 }
 
 /**
- * Update rules configuration
- */
-async function handleUpdateRules(divisionId: DivisionId, rules: any[]): Promise<TransfersActionResult> {
-    try {
-        console.log(`⚙️ Updating rules for division: ${divisionId} (${rules.length} rules)`);
-
-        // This would save rules configuration
-        // For now, just return success
-        return {
-            success: true,
-            message: `Rules updated for division ${divisionId}. All pending transfers should be re-validated with new rules.`,
-            data: {
-                divisionId,
-                rulesCount: rules.length,
-                updatedAt: new Date().toISOString(),
-                requiresRevalidation: true, // Rule changes require re-validation
-            },
-        };
-    } catch (error) {
-        throw new Error(`Failed to update rules: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-}
-
 /**
  * Get division rosters for transfer validation
  */
-async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Promise<Record<ManagerId, TeamRoster>> {
+async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Promise<RosterByManagerId> {
     try {
         console.log(`📋 Getting division rosters for ${divisionId} GW${gameweek}`);
 
@@ -419,7 +344,7 @@ async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Pro
                 const previousDocument = await getDivisionTeamsDocument(divisionId, previousGameweek);
                 if (previousDocument) {
                     console.log(`✅ Using previous gameweek data: GW${previousGameweek}`);
-                    return extractRostersFromDocument(previousDocument);
+                    return previousDocument.teams;
                 }
             }
 
@@ -429,25 +354,10 @@ async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Pro
         }
 
         console.log(`✅ Found division document for ${divisionId} GW${gameweek}`);
-        return extractRostersFromDocument(divisionDocument);
+        return divisionDocument.teams;
     } catch (error) {
         console.error(`❌ Failed to get division rosters for ${divisionId}:`, error);
         // Return empty rosters on error to prevent validation from failing
         return {};
     }
-}
-
-/**
- * Extract rosters from division teams document
- * (This function exists in transfer-integration.service.ts but we need it here)
- */
-function extractRostersFromDocument(document: any): Record<ManagerId, TeamRoster> {
-    const rosters: Record<ManagerId, TeamRoster> = {};
-
-    for (const [userId, teamData] of Object.entries(document.teams)) {
-        rosters[userId] = { ...(teamData as any).roster };
-    }
-
-    console.log(`📊 Extracted rosters for ${Object.keys(rosters).length} managers`);
-    return rosters;
 }

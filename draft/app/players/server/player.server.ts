@@ -38,7 +38,7 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
         );
 
         // Get detailed player stats and gameweek points (all from cache)
-        const [playerDetailedStats] = await Promise.all([fplApiCache.getPlayerDetailedStats(playerId)]);
+        const [playerDetailedStats] = await Promise.all([fplApiCache.getPlayerDetailedStats(fplPlayer.id)]);
 
         // Process gameweek data
         const gameweekStats = processGameweekData(playerDetailedStats.history || [], teamLookup);
@@ -57,7 +57,7 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
             currentGameweek: currentGameweek || 1,
         };
     } catch (error) {
-        console.error(`❌ Failed to load player detail data for player ${playerId}:`, error);
+        console.error(`❌ Failed to load player detail data for player ${playerCode}:`, error);
         throw error;
     }
 }

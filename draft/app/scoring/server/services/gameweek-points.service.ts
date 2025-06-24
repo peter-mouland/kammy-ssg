@@ -1,7 +1,6 @@
 // app/scoring/server/services/gameweek-points.service.ts
 import { FirestoreClient } from '../../../_shared/lib/firestore-cache/firestore-client';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
-import { populatePointsIntoDivisionDocuments } from './division-teams-points-population.service';
 
 export interface GameweekPointsMetadata {
     lastGeneratedGameweek: number;

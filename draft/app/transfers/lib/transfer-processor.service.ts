@@ -1,9 +1,9 @@
 /* Location: app/transfers/lib/transfer-processor.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
-import type { PositionSlotKey, RosterByManagerId, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
+import type { RosterByManagerId, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferApplicationResult } from '../types/transfer-types';
+import { findPlayerInRoster } from './find-player-in-roster';
 
 // Filter transfers for this gameweek period and sort by timestamp
 export const getReleventTransfers = (transfers: ProcessedTransfer[], gameweekData: GameWeekData) =>
@@ -31,7 +31,7 @@ export async function applyTransfersToRosters(
     const relevantTransfers = getReleventTransfers(transfers, gameweekData);
     console.log(`🔄 Applying ${relevantTransfers.length} transfers for gameweek ${gameweekData.fplEvent.id}`);
 
-    const updatedRosters = JSON.parse(JSON.stringify(divisionRosters.teams)) as RosterByManagerId;
+    const updatedRosters = JSON.parse(JSON.stringify(divisionRosters)) as RosterByManagerId;
     const appliedTransfers: TransferApplicationResult[] = [];
     const errors: string[] = [];
 
@@ -108,9 +108,6 @@ function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTra
         throw new Error(`🚨 Player ${playerOut.web_name} (${playerOut.code}) not found in ${managerId}'s roster`);
     }
 
-    // Get the position info for the incoming player
-    const slotInfo = parsePositionSlot(outgoingSlot.slotKey);
-
     // Create new position slot for incoming player
     const newPositionSlot: TeamPositionSlot = {
         player: {
@@ -118,9 +115,9 @@ function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTra
             playerCode: playerIn.code,
             playerName: playerIn.web_name,
             playerPosition: playerIn.draft.position,
-            teamPosition: slotInfo.position,
-            teamSlotIndex: slotInfo.index,
-            isSub: slotInfo.isSub,
+            teamPosition: outgoingSlot.slot.player.teamPosition,
+            teamSlotIndex: outgoingSlot.slot.player.teamSlotIndex,
+            isSub: outgoingSlot.slot.player.isSub,
             onLoanTo: null,
             onLoanStart: null,
             assignedAt: transfer.timestamp.toISOString(),
@@ -249,25 +246,6 @@ function applyTrade(managerRoster: TeamRoster, transfer: ProcessedTransfer): Tra
     // For now, treat trades like external transfers
     // Could be enhanced later to handle two-way trades
     return applyExternalTransfer(managerRoster, transfer);
-}
-
-/**
- * Find a player in a roster by player code
- */
-function findPlayerInRoster(
-    roster: TeamRoster,
-    playerCode: number,
-): { slotKey: PositionSlotKey; player: TeamPositionSlot } | null {
-    for (const [slotKey, positionSlot] of Object.entries(roster)) {
-        if (positionSlot.player.playerCode === playerCode) {
-            return {
-                slotKey: slotKey as PositionSlotKey,
-                player: positionSlot,
-            };
-        }
-    }
-
-    return null;
 }
 
 /**

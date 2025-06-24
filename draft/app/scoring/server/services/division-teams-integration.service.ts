@@ -73,8 +73,8 @@ async function ensureSingleDivisionGameweekDocument(divisionId: DivisionId, targ
 
         console.log(`🔄 Creating missing document: ${divisionId}_gw${targetGameweek}`);
 
-        if (targetGameweek === 0) {
-            // For draft (GW 0), use the existing commit teams logic
+        if (targetGameweek === 1) {
+            // For draft (GW 1), use the existing commit teams logic
             return await createDraftDocument(divisionId);
         } else {
             // For other gameweeks, copy from previous gameweek
@@ -117,7 +117,7 @@ async function createDraftDocument(divisionId: DivisionId): Promise<boolean> {
 /**
  * Create next gameweek document by copying from previous gameweek
  */
-async function createNextGameweekDocument(divisionId: string, targetGameweek: number): Promise<boolean> {
+async function createNextGameweekDocument(divisionId: DivisionId, targetGameweek: number): Promise<boolean> {
     try {
         console.log(`🔄 Creating GW${targetGameweek} document for division: ${divisionId}`);
 

@@ -1,6 +1,6 @@
 // app/teams/types/team-types.ts
 
-import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points, PointsBreakdown } from '../../scoring/types/scoring-types';
 
 export type ManagerId = string;
@@ -55,11 +55,13 @@ export type PositionSlotKey =
     | 'ca_1'
     | 'sub_0';
 
+export type RosterPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
+
 // Team component types
 export interface FirestoreTeamMember {
     userId: ManagerId;
-    teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
-    playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
+    teamPosition: RosterPosition;
+    playerPosition: CustomPosition;
     player: string; // web_name from FPL
     playerId: number; // FPL player code
     playerCode: number; // FPL player code
@@ -77,8 +79,8 @@ export interface TeamPositionSlot {
         playerId: number; // FPL player ID
         playerCode: number; // FPL player code at time of assignment
         playerName: string; // web_name at time of assignment
-        playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca'; // sheets position
-        teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub'; // actual team slot
+        playerPosition: CustomPosition; // sheets position
+        teamPosition: RosterPosition; // actual team slot
         teamSlotIndex: number; // 0-based index within position
         isSub: boolean;
         onLoanTo: string | null; // userId
@@ -273,8 +275,8 @@ export interface PlayerAssignmentData {
     playerId: number;
     playerCode: number;
     playerName: string;
-    playerPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
-    teamPosition: 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
+    playerPosition: CustomPosition;
+    teamPosition: RosterPosition;
     teamSlotIndex: number;
     isSub: boolean;
     onLoanTo: string | null;

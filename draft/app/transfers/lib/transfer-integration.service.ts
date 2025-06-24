@@ -21,7 +21,7 @@ export async function applyTransfersToGameweekDocument(
     );
 
     try {
-        const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === sourceDocument.gameweek + 1);
+        const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === sourceDocument.gameweek);
 
         console.log(`📋 Found ${approvedTransfers.length} approved transfers for ${sourceDocument.divisionId}`);
 
@@ -38,6 +38,9 @@ export async function applyTransfersToGameweekDocument(
         }
 
         console.log(`✅ Applied ${rosterUpdate.appliedTransfers.length} transfers successfully`);
+        rosterUpdate.appliedTransfers.forEach((t) => {
+            console.log(`   ... applied ${t.playerBefore?.web_name} -> ${t.playerAfter.web_name}`);
+        });
 
         // Create new document with updated rosters
         const newDocument = createNewGameweekDocument(sourceDocument, targetGameweekId);
