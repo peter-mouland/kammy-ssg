@@ -56,3 +56,16 @@
     margin-top: var(--spacing-4);
     text-align: center;
 }
+
+.positionCell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.positionRank {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-medium);
+}

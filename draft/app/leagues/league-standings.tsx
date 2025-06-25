@@ -1,11 +1,13 @@
 /* Location: app/leagues/league-standings.tsx */
 
+import { useMemo } from 'react';
 import { Link, useActionData, useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import styles from './components/league-standings.module.css';
+import { calculatePositionRankings } from './lib/simple-position-rankings';
 import type {
     EnhancedLeagueStandingsLoaderData,
     LeagueStandingsTeamData,
@@ -62,6 +64,7 @@ function PositionPointsTable({
     title: string;
     subtitle: string;
 }) {
+    const positionRankings = useMemo(() => calculatePositionRankings(teams, pointsSource), [teams, pointsSource]);
     // Define table columns for sortable table
     const columns: TableColumn<LeagueStandingsTeamData>[] = [
         {
@@ -91,16 +94,36 @@ function PositionPointsTable({
                 align: 'center',
                 sortable: true,
                 accessor: (team) => team[pointsSource][col.key],
-                render: (points, team) => (
-                    <span
-                        className={styles.points}
-                        style={{
-                            color: points > 0 ? col.color : 'var(--color-gray-400)',
-                        }}
-                    >
-                        {points || '-'}
-                    </span>
-                ),
+                render: (points, team) => {
+                    const rank = positionRankings[team.userId]?.[col.key];
+                    return (
+                        <div>
+                            <span>
+                                {rank && (
+                                    <span
+                                        className={styles.positionRank}
+                                        style={{
+                                            color: points > 0 ? col.color : 'var(--color-gray-400)',
+                                            fontSize: '1rem',
+                                        }}
+                                    >
+                                        {rank}
+                                    </span>
+                                )}
+                            </span>
+                            <span
+                                className={styles.points}
+                                style={{
+                                    fontSize: '0.8rem',
+                                    color: 'var(--color-gray-400)',
+                                    marginLeft: '1rem',
+                                }}
+                            >
+                                {points}
+                            </span>
+                        </div>
+                    );
+                },
             }),
         ),
         {
@@ -109,18 +132,35 @@ function PositionPointsTable({
             width: 100,
             align: 'center',
             sortable: true,
-            accessor: (team) => team[pointsSource].total,
-            render: (total) => (
-                <span
-                    className={styles.points}
-                    style={{
-                        fontWeight: 'var(--font-weight-bold)',
-                        color: 'var(--color-primary)',
-                    }}
-                >
-                    {total || 0}
-                </span>
-            ),
+            accessor: (team) => positionRankings[team.userId]?.total,
+            render: (total, team) => {
+                const rank = positionRankings[team.userId]?.total;
+                return (
+                    <div>
+                        {rank && (
+                            <span
+                                className={styles.positionRank}
+                                style={{
+                                    fontSize: '1rem',
+                                    color: 'var(--color-primary)',
+                                }}
+                            >
+                                {rank}
+                            </span>
+                        )}
+                        <span
+                            className={styles.points}
+                            style={{
+                                fontWeight: 'var(--font-weight-bold)',
+                                color: 'var(--color-gray-400)',
+                                marginLeft: '1rem',
+                            }}
+                        >
+                            {team[pointsSource].total || 0}
+                        </span>
+                    </div>
+                );
+            },
         },
     ];
 
