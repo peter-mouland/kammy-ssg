@@ -5,7 +5,12 @@ import type { FormationDisplayProps } from '../types/team-types';
 import styles from './football-pitch.module.css';
 import { PositionSlotCard } from './position-slot-card';
 
-export const FootballPitch: React.FC<FormationDisplayProps> = ({ roster, gameweek, isHistorical }) => {
+export const FootballPitch: React.FC<FormationDisplayProps> = ({
+    roster,
+    gameweek,
+    isHistorical,
+    viewMode = 'season',
+}) => {
     const formationSlots = getFormationSlots();
 
     // Helper to render position group
@@ -33,6 +38,7 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({ roster, gamewee
                             gameweek={gameweek}
                             isHistorical={isHistorical}
                             showPoints={true}
+                            viewMode={viewMode}
                         />
                     </div>
                 );
@@ -82,7 +88,9 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({ roster, gamewee
             {/* Formation Info */}
             <div className={styles.formationInfo}>
                 <div className={styles.gameweekInfo}>
-                    Gameweek {gameweek} {isHistorical && '(Historical)'}
+                    {isHistorical
+                        ? `Gameweek ${gameweek} (Historical)`
+                        : `${viewMode === 'gameweek' ? `Gameweek ${gameweek}` : 'Season Totals'}`}
                 </div>
             </div>
         </div>

@@ -14,22 +14,27 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
     isSubstitute = false,
     showPoints = true,
     isHistorical = false,
+    viewMode = 'season',
 }) => {
-    const { player, gameweek: gameweekData, season } = positionSlot;
+    const { player } = positionSlot;
 
-    // Use gameweek points for current/selected gameweek, season for totals
-    const displayPoints = showPoints ? (isHistorical ? gameweekData.points : season.points) : null;
-    const displayStats = isHistorical ? gameweekData.stats : season.stats;
+    // Use view mode to determine which data to display
+    // Priority: isHistorical overrides everything, then viewMode
+    const displayPoints = showPoints ? positionSlot[viewMode].points : null;
+    const displayStats = positionSlot[viewMode].stats;
 
     // Get main stats to display
     const mainStats = [
         { label: 'Goals', value: displayStats.goals },
         { label: 'Assists', value: displayStats.assists },
-        { label: 'Apps', value: displayStats.appearance > 0 ? 1 : 0 }, // Show as appearance count
+        { label: 'Apps', value: displayStats.appearance > 0 ? 1 : 0 },
     ].filter((stat) => stat.value > 0);
 
     return (
-        <div className={`${styles.positionSlotCard} ${isSubstitute ? styles.substitute : ''}`}>
+        <div
+            className={`${styles.positionSlotCard} ${isSubstitute ? styles.substitute : ''}`}
+            data-view-mode={viewMode}
+        >
             {/* Player Info */}
             <div className={styles.playerInfo}>
                 <div className={styles.playerName}>{player.playerName}</div>
@@ -60,8 +65,8 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
             {/* Loan Indicator */}
             {player.onLoanTo && <div className={styles.loanIndicator}>On Loan</div>}
 
-            {/* Historical Indicator */}
-            {isHistorical && <div className={styles.historicalIndicator}>GW{gameweek}</div>}
+            {/* View Mode Indicator - Always show when not historical */}
+            <div className={styles.viewModeIndicator}>{viewMode === 'gameweek' ? `GW${gameweek}` : 'Season'}</div>
         </div>
     );
 };

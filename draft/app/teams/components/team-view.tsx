@@ -1,12 +1,13 @@
 // app/teams/components/team-view.tsx
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { extractLoanStatus, getSubstitutePlayers } from '../../_shared/lib/roster-conversion-utils';
-import type { TeamGameweekData, TeamViewData } from '../types/team-types';
+import type { StatsViewMode, TeamGameweekData, TeamViewData } from '../types/team-types';
 import { FootballPitch } from './football-pitch';
 import { GameweekSelector } from './gameweek-selector';
 import { LoanStatus } from './loan-status';
 import { PositionSlotCard } from './position-slot-card';
+import { StatsViewToggle } from './stats-view-toggle';
 import { TeamStats } from './team-stats';
 import styles from './team-view.module.css';
 
@@ -14,6 +15,9 @@ export const TeamView = () => {
     const data = useLoaderData<TeamViewData>();
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedGameweek = Number.parseInt(searchParams.get('gameweek') || data.currentGameweek.toString());
+
+    // Global view mode state - controls both pitch and stats
+    const [viewMode, setViewMode] = useState<StatsViewMode>('season');
 
     // Get team data for selected gameweek
     const teamData = useMemo((): TeamGameweekData => {
@@ -35,6 +39,10 @@ export const TeamView = () => {
         setSearchParams({ gameweek: gameweek.toString() });
     };
 
+    const handleViewModeChange = (newMode: StatsViewMode) => {
+        setViewMode(newMode);
+    };
+
     const isCurrentGameweek = selectedGameweek === data.currentGameweek;
 
     return (
@@ -47,12 +55,15 @@ export const TeamView = () => {
                     <div className={styles.divisionBadge}>{data.division.name}</div>
                 </div>
 
-                <GameweekSelector
-                    currentGameweek={data.currentGameweek}
-                    selectedGameweek={selectedGameweek}
-                    availableGameweeks={data.availableGameweeks}
-                    onGameweekChange={handleGameweekChange}
-                />
+                <div className={styles.headerControls}>
+                    <StatsViewToggle viewMode={viewMode} onToggle={handleViewModeChange} />
+                    <GameweekSelector
+                        currentGameweek={data.currentGameweek}
+                        selectedGameweek={selectedGameweek}
+                        availableGameweeks={data.availableGameweeks}
+                        onGameweekChange={handleGameweekChange}
+                    />
+                </div>
             </div>
 
             {/* Time Travel Indicator */}
@@ -77,6 +88,7 @@ export const TeamView = () => {
                         roster={teamData.roster}
                         gameweek={selectedGameweek}
                         isHistorical={!isCurrentGameweek}
+                        viewMode={viewMode}
                     />
 
                     {/* Substitutes */}
@@ -94,6 +106,7 @@ export const TeamView = () => {
                                         positionSlot={positionSlot}
                                         gameweek={selectedGameweek}
                                         isSubstitute={true}
+                                        viewMode={viewMode}
                                     />
                                 ))}
                                 {substitutes.length === 0 && <div className={styles.emptyState}>No substitutes</div>}
@@ -111,7 +124,14 @@ export const TeamView = () => {
 
                 {/* Right Column: Stats & Info */}
                 <div className={styles.infoColumn}>
-                    <TeamStats teamData={teamData} gameweek={selectedGameweek} isCurrentGameweek={isCurrentGameweek} />
+                    <TeamStats
+                        teamData={teamData}
+                        gameweek={selectedGameweek}
+                        isCurrentGameweek={isCurrentGameweek}
+                        viewMode={viewMode}
+                        onViewModeChange={handleViewModeChange}
+                        hideToggle={false}
+                    />
                 </div>
             </div>
         </div>

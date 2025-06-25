@@ -12,13 +12,20 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Section Header with Toggle */
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--color-primary);
+}
+
 .sectionTitle {
     font-size: 18px;
     font-weight: 700;
     color: #111827;
     margin: 0;
-    padding-bottom: 12px;
-    border-bottom: 2px solid var(--color-primary);
 }
 
 .subsectionTitle {
@@ -197,6 +204,10 @@
     font-size: var(--font-xs);
     text-align: center;
     margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 /* Responsive adjustments */
@@ -204,6 +215,16 @@
     .teamStats {
         padding: 16px;
         gap: 16px;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .sectionTitle {
+        text-align: center;
     }
 
     .mainStatsGrid {

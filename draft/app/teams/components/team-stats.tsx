@@ -1,6 +1,6 @@
 // app/teams/components/team-stats.tsx
 import type React from 'react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
 import {
     calculateRosterTotalPoints,
@@ -8,10 +8,23 @@ import {
     getStartingXIPlayers,
     getSubstitutePlayers,
 } from '../../_shared/lib/roster-conversion-utils';
-import type { TeamStatsData, TeamStatsProps } from '../types/team-types';
+import { calculateContributingStats } from '../lib/team-stats-utils';
+import type { StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
+import { ContributingStats } from './contributing-stats';
+import { StatsViewToggle } from './stats-view-toggle';
 import styles from './team-stats.module.css';
 
-export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurrentGameweek }) => {
+export const TeamStats: React.FC<TeamStatsProps> = ({
+    teamData,
+    gameweek,
+    isCurrentGameweek,
+    viewMode,
+    onViewModeChange,
+    hideToggle = false,
+}) => {
+    // State for contributing stats expansion
+    const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+
     // Calculate team statistics from roster
     const teamStats = useMemo((): TeamStatsData => {
         const { roster } = teamData;
@@ -20,8 +33,8 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
         const startingXI = getStartingXIPlayers(roster);
         const substitutes = getSubstitutePlayers(roster);
 
-        // Calculate total points (season vs gameweek)
-        const useSeasonPoints = isCurrentGameweek;
+        // Use the toggle state instead of isCurrentGameweek
+        const useSeasonPoints = viewMode === 'season';
         const totalPoints = calculateRosterTotalPoints(roster, useSeasonPoints);
 
         // Calculate starting XI vs bench points
@@ -35,7 +48,7 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
             return sum + points;
         }, 0);
 
-        // Calculate current gameweek points specifically
+        // Always calculate current gameweek points for comparison
         const gameweekPoints = calculateRosterTotalPoints(roster, false);
 
         // Calculate average points (season total / gameweeks played)
@@ -64,6 +77,9 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
             breakdown.averagePoints = breakdown.players > 0 ? breakdown.points / breakdown.players : 0;
         });
 
+        // Calculate contributing stats breakdown
+        const contributingStats = calculateContributingStats(roster, useSeasonPoints);
+
         return {
             gameweek,
             totalPoints,
@@ -73,8 +89,9 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
             benchPoints,
             topScorer,
             positionBreakdown,
+            contributingStats,
         };
-    }, [teamData.roster, gameweek, isCurrentGameweek, teamData]);
+    }, [teamData.roster, gameweek, viewMode]);
 
     // Format points display
     const formatPoints = (points: number) => {
@@ -94,22 +111,34 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
         return names[position] || position.toUpperCase();
     };
 
+    // Handle view mode toggle
+    const handleViewModeToggle = (newMode: StatsViewMode) => {
+        onViewModeChange(newMode);
+    };
+
     return (
         <div className={styles.teamStats}>
-            <h3 className={styles.sectionTitle}>Team Statistics</h3>
+            {hideToggle ? (
+                <h3 className={styles.sectionTitle}>Team Statistics</h3>
+            ) : (
+                <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>Team Statistics</h3>
+                    <StatsViewToggle viewMode={viewMode} onToggle={handleViewModeToggle} />
+                </div>
+            )}
 
             {/* Main Stats Grid */}
             <div className={styles.mainStatsGrid}>
                 <div className={styles.statCard}>
                     <div className={styles.statValue}>{teamStats.totalPoints}</div>
                     <div className={styles.statLabel}>
-                        {isCurrentGameweek ? 'Season Total' : `Total (GW${gameweek})`}
+                        {viewMode === 'season' ? 'Season Total' : `Gameweek ${gameweek}`}
                     </div>
                 </div>
 
                 <div className={styles.statCard}>
                     <div className={styles.statValue}>{formatPoints(teamStats.gameweekPoints)}</div>
-                    <div className={styles.statLabel}>This Gameweek</div>
+                    <div className={styles.statLabel}>Latest Gameweek</div>
                 </div>
 
                 <div className={styles.statCard}>
@@ -118,20 +147,13 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
                 </div>
             </div>
 
-            {/* Starting XI vs Bench */}
-            <div className={styles.teamBreakdown}>
-                <h4 className={styles.subsectionTitle}>Team Breakdown</h4>
-                <div className={styles.breakdownGrid}>
-                    <div className={styles.breakdownCard}>
-                        <div className={styles.breakdownValue}>{teamStats.startingXIPoints}</div>
-                        <div className={styles.breakdownLabel}>Starting XI</div>
-                    </div>
-                    <div className={styles.breakdownCard}>
-                        <div className={styles.breakdownValue}>{teamStats.benchPoints}</div>
-                        <div className={styles.breakdownLabel}>Bench</div>
-                    </div>
-                </div>
-            </div>
+            {/* Contributing Stats */}
+            <ContributingStats
+                statsBreakdown={teamStats.contributingStats}
+                viewMode={viewMode}
+                isExpanded={isStatsExpanded}
+                onToggleExpanded={() => setIsStatsExpanded(!isStatsExpanded)}
+            />
 
             {/* Top Scorer */}
             {teamStats.topScorer && (
@@ -165,10 +187,10 @@ export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, isCurr
 
             {/* Time Period Indicator */}
             <div className={styles.timePeriodIndicator}>
-                {isCurrentGameweek ? (
-                    <span>Showing season totals through GW{gameweek}</span>
+                {viewMode === 'season' ? (
+                    <span>📊 Showing season totals through GW{gameweek}</span>
                 ) : (
-                    <span>Showing historical data for GW{gameweek}</span>
+                    <span>📅 Showing gameweek {gameweek} data</span>
                 )}
             </div>
         </div>

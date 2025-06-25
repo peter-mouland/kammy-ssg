@@ -70,6 +70,36 @@ export interface FirestoreTeamMember {
     isSub: boolean; // true if on bench
     gameweek: number; // current gameweek (draft = 0)
 }
+
+/**
+ * Stats view mode for toggle functionality
+ */
+export type StatsViewMode = 'gameweek' | 'season';
+
+/**
+ * Contributing stats breakdown for detailed analysis
+ */
+export interface ContributingStatsItem {
+    label: string;
+    statValue: number;
+    pointsValue: number;
+    isRelevant: boolean;
+    description?: string;
+}
+
+export interface ContributingStatsBreakdown {
+    appearance: ContributingStatsItem;
+    goals: ContributingStatsItem;
+    assists: ContributingStatsItem;
+    cleanSheets: ContributingStatsItem;
+    yellowCards: ContributingStatsItem;
+    redCards: ContributingStatsItem;
+    saves: ContributingStatsItem;
+    penaltiesSaved: ContributingStatsItem;
+    goalsConceded: ContributingStatsItem;
+    bonus: ContributingStatsItem;
+}
+
 /**
  * Team position slot with player data and points
  */
@@ -216,6 +246,7 @@ export interface TeamStatsData {
             averagePoints: number;
         };
     };
+    contributingStats: ContributingStatsBreakdown;
 }
 
 /**
@@ -227,6 +258,7 @@ export interface FormationDisplayProps {
     roster: TeamRoster;
     gameweek: number;
     isHistorical: boolean;
+    viewMode?: StatsViewMode;
 }
 
 export interface PositionSlotCardProps {
@@ -236,12 +268,27 @@ export interface PositionSlotCardProps {
     isSubstitute?: boolean;
     showPoints?: boolean;
     isHistorical?: boolean;
+    viewMode?: StatsViewMode;
 }
 
 export interface TeamStatsProps {
     teamData: TeamGameweekData;
     gameweek: number;
     isCurrentGameweek: boolean;
+    viewMode: StatsViewMode;
+    onViewModeChange: (mode: StatsViewMode) => void;
+}
+
+export interface StatsViewToggleProps {
+    viewMode: StatsViewMode;
+    onToggle: (mode: StatsViewMode) => void;
+}
+
+export interface ContributingStatsProps {
+    statsBreakdown: ContributingStatsBreakdown;
+    viewMode: StatsViewMode;
+    isExpanded: boolean;
+    onToggleExpanded: () => void;
 }
 
 export interface GameweekSelectorProps {
