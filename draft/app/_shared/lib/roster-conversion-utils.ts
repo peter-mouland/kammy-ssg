@@ -35,7 +35,7 @@ export function convertLegacyPlayersToRoster(legacyPlayers: any[]): Record<Posit
                 playerId: Number.parseInt(player.playerId, 10),
                 playerCode: player.playerCode,
                 playerName: player.player,
-                playerPosition: player.playerPosition,
+                playerPosition: player.playerPosition.toLowerCase(),
                 teamPosition: position === 'sub' ? 'sub' : (position as any),
                 teamSlotIndex: index,
                 isSub: player.isSub || position === 'sub',

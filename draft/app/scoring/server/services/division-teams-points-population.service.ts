@@ -1,15 +1,12 @@
 // app/_shared/services/division-teams-points-population.service.ts
 
+import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
-import type {
-    DivisionId,
-    DivisionTeamsDocument,
-    PositionSlotKey,
-    TeamPositionSlot,
-} from '../../../teams/types/team-types';
+import type { DivisionId, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { readTransferDataForDivision } from '../../../transfers/lib/transfer-reader.service';
+import { generateGameweekData } from '../../lib/generators';
 import type { Points } from '../../types/scoring-types';
 import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './division-teams.service';
 
@@ -94,7 +91,20 @@ async function populatePointsForDivisionGameweek(
     options: Options = {},
 ): Promise<number> {
     try {
-        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
+        const { readPlayers } = await import('../../../_shared/lib/sheets/players');
+
+        // Get required players
+        const [sheetsPlayers, fplPlayers] = await Promise.all([readPlayers(), fplApiCache.getFplPlayers()]);
+        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
+            acc[player.id] = player;
+            return acc;
+        }, {});
+        const filteredFplPlayers = fplPlayers.filter((player) => sheetsPlayersById[player.id]);
+        const playerIds = filteredFplPlayers.map((p) => p.id);
+        if (playerIds.length === 0) {
+            throw new Error('No players found that exist in both FPL data and sheets');
+        }
+
         // Get the division document - if it doesn't exist, create it
         let divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
 
@@ -130,29 +140,20 @@ async function populatePointsForDivisionGameweek(
                 console.warn(`⚠️ No roster found for user ${userId} in ${divisionId}_gw${gameweek}`);
                 continue;
             }
+            const rosteredPlayers = Object.values(teamData.roster).map(({ player }) => player);
+            const playerGameweekPoints = await calculatePointsForGameweeks([gameweek], rosteredPlayers);
 
             // Update each position slot
             for (const [slotKey, positionSlot] of Object.entries<TeamPositionSlot>(teamData.roster)) {
                 const slot = slotKey as PositionSlotKey;
-                const playerCode = positionSlot.player.playerCode;
-                const playerId = positionSlot.player.playerId;
-                const player = await fplApiCache.fplFirestore.getElementGameweeks(playerId);
-
-                // Get points data for this player
-                const playerGameweekPoints = player?.draft.gameweekPoints;
-                const gameweekData = playerGameweekPoints?.[gameweek];
-                if (!gameweekData) {
-                    console.log(
-                        `⚠️ No points data for player ${positionSlot.player.playerName} (${playerCode}) GW${gameweek}`,
-                    );
-                }
 
                 // Update gameweek points and stats
+                const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
                 const updatedPositionSlot = updatePositionSlotPoints(
                     positionSlot,
                     gameweek,
-                    gameweekData?.stats || createEmptyStats(),
-                    gameweekData?.points || createEmptyPoints(),
+                    playerGameweek.stats || createEmptyStats(),
+                    playerGameweek.points || createEmptyPoints(),
                 );
 
                 // Update the roster
@@ -161,7 +162,7 @@ async function populatePointsForDivisionGameweek(
                 hasUpdates = true;
 
                 console.log(
-                    `✓ Updated ${positionSlot.player.playerName} (${slot}) - ${gameweekData?.points?.total || 0} points`,
+                    `✓ Updated ${positionSlot.player.playerName} (${slot}) - ${playerGameweek.points.total || 0} points`,
                 );
             }
         }
@@ -182,6 +183,21 @@ async function populatePointsForDivisionGameweek(
         console.error(`❌ Failed to populate points for ${divisionId} GW${gameweek}:`, error);
         throw error;
     }
+}
+
+/**
+ * Generate points for specific gameweeks
+ */
+async function calculatePointsForGameweeks(targetGameweeks: number[], fplPlayers: TeamPositionSlot['player'][]) {
+    console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
+
+    // Get detailed stats for filtered players
+    const playerIds = fplPlayers.map(({ playerId }) => playerId);
+    const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
+    const gameweekPointsData = generateGameweekData(fplPlayers, fplPlayerGameweeksById, targetGameweeks);
+
+    console.log(`✅ Generated points for ${Object.keys(gameweekPointsData).length} players`);
+    return gameweekPointsData;
 }
 
 /**

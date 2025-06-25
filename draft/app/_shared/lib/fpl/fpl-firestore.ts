@@ -182,37 +182,6 @@ export class FplFirestore {
     }
 
     /**
-     * Update individual element summaries with draft data
-     */
-    // todo: is this needed, tis v slow!!! <- used on 'force regenerate all'
-    async updateElementSummariesWithDraft(draftDataById: Record<number, any>): Promise<void> {
-        const entries = Object.entries(draftDataById);
-        console.log(`📝 Updating ${entries.length} element summaries with draft data`);
-
-        for (const [playerIdStr, draftData] of entries) {
-            const playerId = Number.parseInt(playerIdStr);
-            console.log(`📝 ....Updating player ${playerId}`);
-
-            // Get existing element summary
-            const existingSummary = await this.getElementGameweeks(playerId);
-            if (existingSummary) {
-                // Add draft data to existing summary
-                const updatedSummary = {
-                    ...existingSummary,
-                    draft: draftData.draft,
-                };
-
-                await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerIdStr}`, {
-                    source: 'fpl-with-draft',
-                    data: updatedSummary,
-                });
-            }
-        }
-
-        console.log(`✅ Successfully updated ${entries.length} element summaries with draft data`);
-    }
-
-    /**
      * Check if elements have draft data
      */
     async hasDraftData(): Promise<boolean> {

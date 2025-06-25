@@ -74,9 +74,6 @@ export class GameweekPointsService {
             console.log(`🔄 Update needed: ${updateNeeded.reason}`);
             console.log(`📝 Will generate gameweeks: ${updateNeeded.gameweeksToGenerate.join(', ')}`);
 
-            // Perform selective points generation
-            const generationResult = await this.generatePointsForGameweeks(updateNeeded.gameweeksToGenerate);
-
             // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
             const { populatePointsIntoDivisionDocuments } = await import(
@@ -101,7 +98,6 @@ export class GameweekPointsService {
                     {
                         gameweek: currentGameweek,
                         generatedAt: new Date().toISOString(),
-                        playerCount: generationResult.playerCount,
                         type: 'selective',
                     },
                 ],
@@ -112,7 +108,6 @@ export class GameweekPointsService {
                 updated: true,
                 reason: updateNeeded.reason,
                 gameweeksGenerated: updateNeeded.gameweeksToGenerate,
-                playerCount: generationResult.playerCount,
                 currentGameweek,
                 previousGameweek: lastGeneratedGameweek,
                 pointsPopulationResult, // Include points population result
@@ -135,16 +130,8 @@ export class GameweekPointsService {
                 throw new Error('Could not determine current gameweek');
             }
 
-            // Get sample player data to determine available gameweeks
-            const fplPlayers = await fplApiCache.getFplPlayers();
-            const playerIds = fplPlayers.map((p) => p.id);
-            const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
-            const availableGameweeks = this.getAvailableGameweeks(fplPlayerGameweeksById);
+            const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
 
-            // Regenerate ALL available gameweeks
-            const result = await this.generatePointsForGameweeks(availableGameweeks);
-
-            // **NEW: Populate points into division-teams documents (auto-creates missing docs)**
             console.log('🔄 Populating points into division-teams documents...');
             const { populatePointsIntoDivisionDocuments } = await import(
                 '../../../scoring/server/services/division-teams-points-population.service'
@@ -167,7 +154,6 @@ export class GameweekPointsService {
                     {
                         gameweek: currentGameweek,
                         generatedAt: new Date().toISOString(),
-                        playerCount: result.playerCount,
                         type: 'full',
                     },
                 ],
@@ -177,7 +163,6 @@ export class GameweekPointsService {
                 updated: true,
                 reason: 'Full regeneration of all gameweeks requested',
                 gameweeksGenerated: availableGameweeks,
-                playerCount: result.playerCount,
                 currentGameweek,
                 pointsPopulationResult, // Include points population result
             };
@@ -279,51 +264,6 @@ export class GameweekPointsService {
             reason: `Current gameweek (${currentGameweek}) is less than last generated (${lastGeneratedGameweek})`,
             gameweeksToGenerate: [],
         };
-    }
-
-    /**
-     * Generate points for specific gameweeks
-     */
-    private async generatePointsForGameweeks(targetGameweeks: number[]): Promise<{ playerCount: number }> {
-        console.log(`🔄 Generating points for gameweeks: ${targetGameweeks.join(', ')}`);
-
-        // Import the gameweek points generation function
-        const { generateGameweekData } = await import('../../lib/generators');
-        const { readPlayers } = await import('../../../_shared/lib/sheets/players');
-
-        // Get required data
-        const [sheetsPlayers, fplPlayers] = await Promise.all([readPlayers(), fplApiCache.getFplPlayers()]);
-
-        // Create sheets players lookup
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
-            acc[player.id] = player;
-            return acc;
-        }, {});
-
-        // Filter FPL players to only include those in sheets
-        const filteredFplPlayers = fplPlayers.filter((player) => sheetsPlayersById[player.id]);
-
-        if (filteredFplPlayers.length === 0) {
-            throw new Error('No players found that exist in both FPL data and sheets');
-        }
-
-        // Get detailed stats for filtered players
-        const playerIds = filteredFplPlayers.map((p) => p.id);
-        const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
-
-        // Generate gameweek points data
-        const gameweekPointsData = generateGameweekData(
-            filteredFplPlayers,
-            fplPlayerGameweeksById,
-            sheetsPlayersById,
-            targetGameweeks,
-        );
-
-        // Update element summaries with gameweek points data using existing function
-        await fplApiCache.fplFirestore.updateElementSummariesWithDraft(gameweekPointsData);
-
-        console.log(`✅ Generated points for ${Object.keys(gameweekPointsData).length} players`);
-        return { playerCount: Object.keys(gameweekPointsData).length };
     }
 
     /**

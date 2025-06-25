@@ -1,8 +1,9 @@
 /* Location: app/scoring/lib/generators.ts */
 
-import type { FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
-import type { CustomPosition, PlayerSheetsData } from '../../players/types/player-types';
-import type { EnhancedPlayerData } from '../types/scoring-types';
+import type { FplPlayerData, FplPlayerSeasonData, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { TeamPositionSlot } from '../../teams/types/team-types';
+import type { EnhancedPlayerData, Points } from '../types/scoring-types';
 import { calculateGameweekPoints, calculateSeasonPoints, getFullBreakdown } from './calculations';
 import { convertToPlayerGameweekStats, convertToPlayerGameweeksStats } from './data-conversion';
 
@@ -56,57 +57,58 @@ export function generateSeasonData(
         });
 }
 
+export type GamweekPointsAndStats = {
+    points: Points;
+    stats: PlayerGameweekStatsData;
+    metadata: unknown;
+};
+
 /**
  * Generate gameweek-level data for smart updates
  * Used by: gameweek-points-service.ts for selective updates
  */
 export function generateGameweekData(
-    fplPlayers: EnhancedPlayerData[],
-    fplPlayerGameweeksById: Record<number, FplPlayerSeasonData>,
-    sheetsPlayersById: Record<number, PlayerSheetsData>,
+    fplPlayers: TeamPositionSlot['player'][],
+    fplPlayerGameweeksById: Record<number, FplPlayerSeasonData>, // playerId, data
     targetGameweeks: number[],
 ) {
     console.log(
         `🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweeks: ${targetGameweeks.join(', ')}`,
     );
 
-    const result: Record<number, { draft: { gameweekPoints: Record<number, any> } }> = {};
+    const result: Record<FplPlayerData['id'], Record<GameWeekData['fplEvent']['id'], GamweekPointsAndStats>> = {};
 
-    fplPlayers
-        .filter((fplPlayer) => sheetsPlayersById[fplPlayer.id])
-        .forEach((fplPlayer) => {
-            const playerSheet = sheetsPlayersById[fplPlayer.id];
-            const position = playerSheet.position.toLowerCase() as CustomPosition;
+    fplPlayers.forEach((fplPlayer) => {
+        const position = fplPlayer.playerPosition.toLowerCase() as CustomPosition;
+        const allGameweekData = fplPlayerGameweeksById[fplPlayer.playerId]?.history || [];
+        const gameweekPoints: Record<GameWeekData['fplEvent']['id'], GamweekPointsAndStats> = {};
 
-            const allGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
-            const gameweekPoints: Record<number, any> = {};
+        targetGameweeks.forEach((gameweek) => {
+            const gameweekData = allGameweekData.find((gw) => gw.round === gameweek); // step 1: find gw
+            const gameweekStats = gameweekData ? convertToPlayerGameweekStats(gameweekData) : null; // step 2: remove gw from stats
 
-            targetGameweeks.forEach((gameweek) => {
-                const gameweekData = allGameweekData.find((gw) => gw.round === gameweek); // step 1: find gw
-                const gameweekStats = gameweekData ? convertToPlayerGameweekStats(gameweekData) : null; // step 2: remove gw from stats
+            if (!gameweekStats) {
+                console.error(`🚨 no stats for gw${gameweek}`);
+                console.log(` - max history : ${allGameweekData.length}`);
+                console.log(` - player : ${fplPlayer.playerId} ${fplPlayer.playerName} ${position}`);
+            }
 
-                if (!gameweekStats) {
-                    console.error(`🚨 no stats for gw${gameweek}`);
-                    console.log(` - max history : ${allGameweekData.length}`);
-                    console.log(` - player : ${fplPlayer.id} ${fplPlayer.web_name} ${position}`);
-                }
+            const points = calculateGameweekPoints(gameweekStats || baselineStats, position);
+            gameweekPoints[gameweek] = {
+                points: points || null, // not all players have been playing since gw 1
+                stats: gameweekStats || null, // not all players have been playing since gw 1
+                metadata: {
+                    generatedAt: new Date().toISOString(),
+                    position: position,
+                    noData: !gameweekStats,
+                },
+            };
 
-                const pointsBreakdown = calculateGameweekPoints(gameweekStats || baselineStats, position);
-                gameweekPoints[gameweek] = {
-                    points: pointsBreakdown || null, // not all players have been playing since gw 1
-                    stats: gameweekStats || null, // not all players have been playing since gw 1
-                    metadata: {
-                        generatedAt: new Date().toISOString(),
-                        position: position,
-                        noData: !gameweekStats,
-                    },
-                };
-
-                console.log(`✅ Player ${fplPlayer.id} GW${gameweek}: ${pointsBreakdown.total} points`);
-            });
-
-            result[fplPlayer.id] = { draft: { gameweekPoints } };
+            console.log(`✅ Player ${fplPlayer.playerId} GW${gameweek}: ${points.total} points`);
         });
+
+        result[fplPlayer.playerId] = gameweekPoints;
+    });
 
     console.log(`✅ generateGameweekData - Generated points for ${Object.keys(result).length} players`);
     return result;

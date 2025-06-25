@@ -1,6 +1,7 @@
 /* Location: app/transfers/lib/transfer-processor.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../players/types/player-types';
 import type { RosterByManagerId, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferApplicationResult } from '../types/transfer-types';
 import { findPlayerInRoster } from './find-player-in-roster';
@@ -110,10 +111,10 @@ function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTra
     // Create new position slot for incoming player
     const newPositionSlot: TeamPositionSlot = {
         player: {
-            playerId: playerIn.code, // Using code as playerId for now
+            playerId: playerIn.id,
             playerCode: playerIn.code,
             playerName: playerIn.web_name,
-            playerPosition: playerIn.draft.position,
+            playerPosition: playerIn.draft.position.toLowerCase() as CustomPosition,
             teamPosition: outgoingSlot.slot.player.teamPosition,
             teamSlotIndex: outgoingSlot.slot.player.teamSlotIndex,
             isSub: outgoingSlot.slot.player.isSub,

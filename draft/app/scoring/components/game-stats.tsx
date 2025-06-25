@@ -11,7 +11,7 @@ interface GameStatsProps {
     currentGameweek: number;
 }
 
-export function GameStats({ divisions, leagueStandings, topPlayers, currentGameweek }: GameStatsProps) {
+export function GameStats({ divisions, leagueStandings, currentGameweek }: GameStatsProps) {
     const stats = [
         {
             value: `${leagueStandings.length}+`,
@@ -27,11 +27,6 @@ export function GameStats({ divisions, leagueStandings, topPlayers, currentGamew
             value: currentGameweek.toString(),
             label: 'Current Gameweek',
             color: '#8b5cf6',
-        },
-        {
-            value: `${topPlayers.length}+`,
-            label: 'Players Available',
-            color: '#f59e0b',
         },
     ];
 

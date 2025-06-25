@@ -13,7 +13,7 @@ import { GameStats } from '../scoring/components/game-stats'; // scoring
 import type { DashboardData } from './types/homepage-types';
 
 export const HomePage = () => {
-    const { topPlayers, leagueStandings, divisions, currentGameweek } = useLoaderData<DashboardData>();
+    const { leagueStandings, divisions, currentGameweek } = useLoaderData<DashboardData>();
 
     return (
         <div>
@@ -23,8 +23,6 @@ export const HomePage = () => {
             />
 
             <LayoutGrid>
-                <TopPlayers players={topPlayers} />
-
                 <LeagueStandings standings={leagueStandings} />
 
                 <DivisionOverview divisions={divisions} leagueStandings={leagueStandings} />
@@ -33,12 +31,7 @@ export const HomePage = () => {
 
                 <SystemStatus />
 
-                <GameStats
-                    divisions={divisions}
-                    leagueStandings={leagueStandings}
-                    topPlayers={topPlayers}
-                    currentGameweek={currentGameweek}
-                />
+                <GameStats divisions={divisions} leagueStandings={leagueStandings} currentGameweek={currentGameweek} />
             </LayoutGrid>
         </div>
     );
