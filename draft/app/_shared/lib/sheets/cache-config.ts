@@ -6,6 +6,7 @@ export const CACHE_CONFIG = {
     draftOrders: 120000, // 2 minutes
 
     // Dynamic data - cache shorter
+    transfers: 15000, // 15 seconds
     draftState: 15000, // 15 seconds
     draftPicks: 30000, // 30 seconds
 

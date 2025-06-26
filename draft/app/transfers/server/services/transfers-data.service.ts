@@ -36,7 +36,7 @@ export async function getTransfersForDivision(divisionId: DivisionId, gameweek: 
 export async function getTransfersDataForDivision(divisionId: DivisionId, gameweek: GameWeekData) {
     try {
         const [{ readTransferDataForDivision }, { fplApiCache }] = await Promise.all([
-            import('../../lib/transfer-reader.service'),
+            import('../../../_shared/lib/sheets/transfers'),
             import('../../../_shared/lib/fpl/api-cache'),
         ]);
 

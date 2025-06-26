@@ -1,7 +1,8 @@
 /* Location: app/transfers/server/actions/submit-transfer.action.ts */
 
+import { addTransfer } from '../../../_shared/lib/sheets/transfers';
 import type { TransferFormData } from '../../types/transfer-form-types';
-import type { TransferSheetData } from '../../types/transfer-types';
+import type { ProcessedTransferSheetData, TransferSheetData } from '../../types/transfer-types';
 
 interface SubmitTransferParams {
     actionType: string;
@@ -89,32 +90,21 @@ async function submitTransfer(formData: URLSearchParams): Promise<SubmitTransfer
             };
         }
 
-        // Validate transfer rules
-        const { validateTransfer } = await import('../../lib/transfer-validation');
-        const validationResult = await validateTransfer(transferData, playerOut, playerIn);
-
-        if (!validationResult.isValid) {
-            return {
-                error: `Transfer validation failed: ${validationResult.blockingIssues.join(', ')}`,
-            };
-        }
-
         // Prepare sheet data
-        const sheetData: TransferSheetData = {
-            Status: null, // Pending approval
-            Timestamp: new Date(),
-            Manager: transferData.managerId,
-            'Transfer Out': playerOut.web_name,
-            'Code Out': playerOut.code,
-            'Transfer In': playerIn.web_name,
-            'Code In': playerIn.code,
-            'Transfer Type': mapTransferTypeToSheet(transferData.transferType),
-            Comment: transferData.comment,
+        const sheetData: ProcessedTransferSheetData = {
+            status: null, // Pending approval
+            timestamp: new Date(),
+            manager: transferData.managerId,
+            transferOut: playerOut.web_name,
+            codeOut: playerOut.code,
+            transferIn: playerIn.web_name,
+            codeIn: playerIn.code,
+            transferType: mapTransferTypeToSheet(transferData.transferType),
+            comment: transferData.comment,
         };
 
         // Submit to Google Sheets
-        const { submitTransferToSheet } = await import('./transfer-sheet.service');
-        await submitTransferToSheet(transferData.divisionId, sheetData);
+        await addTransfer(transferData.divisionId, sheetData);
 
         console.log(`✅ Transfer submitted successfully for ${transferData.managerId}`);
 

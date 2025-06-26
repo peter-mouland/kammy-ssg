@@ -15,8 +15,8 @@ import type { PlayerSelectionState, TransferValidationResult } from '../types/tr
 import type { TransferType } from '../types/transfer-types';
 import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
-import { TransferTypeSelector } from './tramsfer-type-selector';
 import styles from './transfer-form.module.css';
+import { TransferTypeSelector } from './transfer-type-selector';
 
 interface TransferFormProps {
     divisions: DivisionSheetData[];
@@ -108,7 +108,6 @@ export function TransferForm({
         formData.append('playerOutCode', playerSelection.playerOut?.playerCode.toString() || '');
         formData.append('playerInCode', playerSelection.playerIn?.code.toString() || '');
         formData.append('comment', comment);
-
         fetcher.submit(formData, { method: 'POST' });
     };
 
@@ -142,36 +141,34 @@ export function TransferForm({
     return (
         <form onSubmit={handleSubmit} className={styles.transferForm}>
             <div className={styles.selectionRow}>
-                <div className={styles.fieldGroup}>
-                    <label htmlFor="manager-select" className={styles.fieldLabel}>
-                        Manager
-                    </label>
-                    <select
-                        id="manager-select"
-                        value={selectedManager}
-                        onChange={(e) => handleManagerChange(e.target.value as ManagerId)}
-                        className={styles.selectInput}
-                        disabled={!selectedDivision}
-                    >
-                        <option value="">Select Manager</option>
-                        {divisionsManagers.map((manager) => (
-                            <option key={manager.userId} value={manager.userId}>
-                                {manager.userId}
-                            </option>
-                        ))}
-                    </select>
+                <div className={styles.transferTypeSection}>
+                    <div className={styles.fieldGroup}>
+                        <label htmlFor="manager-select" className={styles.fieldLabel}>
+                            Manager
+                        </label>
+                        <select
+                            id="manager-select"
+                            value={selectedManager}
+                            onChange={(e) => handleManagerChange(e.target.value as ManagerId)}
+                            className={styles.selectInput}
+                            disabled={!selectedDivision}
+                        >
+                            <option value="">Select Manager</option>
+                            {divisionsManagers.map((manager) => (
+                                <option key={manager.userId} value={manager.userId}>
+                                    {manager.userId}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-            </div>
-
-            {/* Transfer Type Selection */}
-            {selectedManager && (
                 <div className={styles.transferTypeSection}>
                     <TransferTypeSelector
                         selectedType={playerSelection.transferType}
                         onTypeChange={handleTransferTypeChange}
                     />
                 </div>
-            )}
+            </div>
 
             {/* Player Selection */}
             {selectedManager && managerRoster && (
@@ -245,7 +242,7 @@ export function TransferForm({
             <div className={styles.submitSection}>
                 <button
                     type="submit"
-                    disabled={!canSubmit || fetcher.state === 'submitting'}
+                    // disabled={!canSubmit || fetcher.state === 'submitting'}
                     className={styles.submitButton}
                 >
                     {fetcher.state === 'submitting' ? 'Submitting...' : 'Submit Transfer'}

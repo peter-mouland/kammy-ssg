@@ -9,8 +9,8 @@ export async function getPlayerDetails(playerCode: number): Promise<EnhancedPlay
     try {
         console.log(`🔍 Looking up player with code: ${playerCode}`);
 
-        const { getEnhancedPlayersData } = await import('../../../players/server/enhanced-players.service');
-        const enhancedPlayers = await getEnhancedPlayersData();
+        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
+        const enhancedPlayers = await fplApiCache.getFplPlayers();
 
         const player = enhancedPlayers.find((p) => p.code === playerCode);
 
@@ -18,8 +18,6 @@ export async function getPlayerDetails(playerCode: number): Promise<EnhancedPlay
             console.warn(`⚠️ Player not found with code: ${playerCode}`);
             return null;
         }
-
-        console.log(`✅ Found player: ${player.web_name} (${player.code})`);
         return player;
     } catch (error) {
         console.error(`❌ Failed to lookup player ${playerCode}:`, error);

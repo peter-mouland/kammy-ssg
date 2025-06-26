@@ -2,6 +2,13 @@
 
 import type { DraftPickData, DraftStateData } from '../../../draft/types/draft-types';
 import { sheetsCache } from './cache/sheets-cache-service';
+import {
+    convertToRowsWithHeaders,
+    getCachedHeaders,
+    parseDataWithHeaderMapping,
+    readSheetWithHeaders,
+    setCachedHeaders,
+} from './cache/utils';
 import { CACHE_CONFIG } from './cache-config';
 // Enhanced draft.ts with smart header mapping - OPTIMIZED FOR API CALLS
 import {
@@ -68,128 +75,6 @@ const DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftStateData
     startedAt: (value: Date | null) => parseSheetDate(value),
     completedAt: (value: Date | null) => parseSheetDate(value),
 };
-
-// Header cache to avoid repeated API calls
-const headerCache = new Map<string, { headers: string[]; timestamp: number }>();
-const CACHE_TTL = 60000; // 1 minute cache
-
-function getCachedHeaders(cacheKey: string): string[] | null {
-    const cached = headerCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-        return cached.headers;
-    }
-    return null;
-}
-
-function setCachedHeaders(cacheKey: string, headers: string[]): void {
-    headerCache.set(cacheKey, { headers, timestamp: Date.now() });
-}
-
-/**
- * Read headers and data in single API call
- */
-async function readSheetWithHeaders(sheetRange: SheetRange): Promise<{ headers: string[]; data: any[][] }> {
-    const rawData = await readSheetRange(sheetRange);
-    const headers = rawData.length > 0 ? rawData[0] : [];
-    const data = rawData.slice(1);
-    return { headers, data };
-}
-
-/**
- * Create header mapping and parse data efficiently
- */
-function parseDataWithHeaderMapping<T>(
-    headers: string[],
-    dataRows: any[][],
-    headerMapping: Record<string, keyof T>,
-    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
-): { data: T[]; missing: string[] } {
-    // Create header to column index mapping
-    const columnMapping = new Map<keyof T, number>();
-    const missing: string[] = [];
-
-    Object.entries(headerMapping).forEach(([headerText, objectKey]) => {
-        const columnIndex = headers.findIndex(
-            (header) => header.toLowerCase().trim() === headerText.toLowerCase().trim(),
-        );
-
-        if (columnIndex >= 0) {
-            columnMapping.set(objectKey, columnIndex);
-        } else {
-            missing.push(headerText);
-        }
-    });
-
-    // Parse data rows
-    const data = dataRows.map((row) => {
-        const item = {} as T;
-
-        columnMapping.forEach((columnIndex, objectKey) => {
-            if (columnIndex < row.length) {
-                let value = row[columnIndex];
-
-                // Apply transformation function if provided
-                if (transformFunctions && objectKey in transformFunctions) {
-                    const transformFn = transformFunctions[objectKey];
-                    if (transformFn) {
-                        value = transformFn(value);
-                    }
-                }
-
-                item[objectKey] = value;
-            }
-        });
-
-        return item;
-    });
-
-    return { data, missing };
-}
-
-/**
- * Convert objects to sheet rows using header mapping
- */
-function convertToRowsWithHeaders<T>(
-    data: T[],
-    headers: string[],
-    headerMapping: Record<string, keyof T>,
-    transformFunctions?: Partial<Record<keyof T, (value: any) => any>>,
-): any[][] {
-    // Create header to column index mapping
-    const columnMapping = new Map<keyof T, number>();
-
-    Object.entries(headerMapping).forEach(([headerText, objectKey]) => {
-        const columnIndex = headers.findIndex(
-            (header) => header.toLowerCase().trim() === headerText.toLowerCase().trim(),
-        );
-
-        if (columnIndex >= 0) {
-            columnMapping.set(objectKey, columnIndex);
-        }
-    });
-
-    return data.map((item) => {
-        // Create array with same length as headers, filled with empty strings
-        const row = new Array(headers.length).fill('');
-
-        // Fill in values at correct positions
-        columnMapping.forEach((columnIndex, objectKey) => {
-            let value = item[objectKey] ?? '';
-
-            // Apply transformation if provided
-            if (transformFunctions && objectKey in transformFunctions) {
-                const transformFn = transformFunctions[objectKey];
-                if (transformFn) {
-                    value = transformFn(value);
-                }
-            }
-
-            row[columnIndex] = value;
-        });
-
-        return row;
-    });
-}
 
 /**
  * Read all draft picks from the sheet - SINGLE API CALL
@@ -414,113 +299,5 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
     } catch (error) {
         console.error('❌ Failed to update draft state:', error);
         throw createAppError('DRAFT_STATE_UPDATE_ERROR', 'Failed to update draft state', error);
-    }
-}
-
-/**
- * Batch read both draft state and picks efficiently - 2 API CALLS TOTAL
- */
-export async function batchReadDraftData(divisionId: string): Promise<{
-    draftState: DraftStateData | null;
-    draftPicks: DraftPickData[];
-    apiCallCount: number;
-}> {
-    try {
-        // Read both sheets in parallel - 2 API calls total
-        const [draftState, allPicks] = await Promise.all([readDraftState(), readDraftPicks()]);
-
-        const draftPicks = allPicks
-            .filter((pick) => pick.divisionId === divisionId)
-            .sort((a, b) => a.pickNumber - b.pickNumber);
-
-        return {
-            draftState,
-            draftPicks,
-            apiCallCount: 2,
-        };
-    } catch (error) {
-        throw createAppError('BATCH_READ_DRAFT_DATA_ERROR', 'Failed to batch read draft data', error);
-    }
-}
-
-/**
- * Debug function to check sheet structure
- */
-export async function debugSheetStructure(): Promise<{
-    draftPicksHeaders: string[];
-    draftStateHeaders: string[];
-    headerMappings: {
-        draftPicks: Record<string, number>;
-        draftState: Record<string, number>;
-    };
-    apiCallsUsed: number;
-}> {
-    try {
-        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
-
-        // Try to get from cache first
-        const picksCache = `${spreadsheetId}:${DRAFT_PICKS_SHEET_NAME}`;
-        const stateCache = `${spreadsheetId}:${DRAFT_STATE_SHEET_NAME}`;
-
-        let draftPicksHeaders = getCachedHeaders(picksCache);
-        let draftStateHeaders = getCachedHeaders(stateCache);
-        let apiCallsUsed = 0;
-
-        // Only make API calls if not cached
-        const promises: Promise<any>[] = [];
-
-        if (!draftPicksHeaders) {
-            promises.push(
-                readSheetRange({
-                    spreadsheetId,
-                    range: `'${DRAFT_PICKS_SHEET_NAME}'!1:1`,
-                }).then((data) => {
-                    draftPicksHeaders = data.length > 0 ? data[0] : [];
-                    setCachedHeaders(picksCache, draftPicksHeaders!);
-                }),
-            );
-            apiCallsUsed++;
-        }
-
-        if (!draftStateHeaders) {
-            promises.push(
-                readSheetRange({
-                    spreadsheetId,
-                    range: `'${DRAFT_STATE_SHEET_NAME}'!1:1`,
-                }).then((data) => {
-                    draftStateHeaders = data.length > 0 ? data[0] : [];
-                    setCachedHeaders(stateCache, draftStateHeaders!);
-                }),
-            );
-            apiCallsUsed++;
-        }
-
-        await Promise.all(promises);
-
-        // Create mapping debug info
-        const draftPicksMapping: Record<string, number> = {};
-        const draftStateMapping: Record<string, number> = {};
-
-        Object.keys(DRAFT_PICKS_HEADERS).forEach((header) => {
-            const index = draftPicksHeaders?.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
-            draftPicksMapping[header] = index!;
-        });
-
-        Object.keys(DRAFT_STATE_HEADERS).forEach((header) => {
-            const index = draftStateHeaders?.findIndex((h) => h.toLowerCase().trim() === header.toLowerCase().trim());
-            draftStateMapping[header] = index!;
-        });
-
-        return {
-            draftPicksHeaders: draftPicksHeaders!,
-            draftStateHeaders: draftStateHeaders!,
-            headerMappings: {
-                draftPicks: draftPicksMapping,
-                draftState: draftStateMapping,
-            },
-            apiCallsUsed,
-        };
-    } catch (error) {
-        throw createAppError('DEBUG_SHEET_STRUCTURE_ERROR', 'Failed to debug sheet structure', error);
     }
 }

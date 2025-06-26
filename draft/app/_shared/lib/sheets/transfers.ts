@@ -1,9 +1,7 @@
-/* Location: app/transfers/lib/transfer-reader.service.ts */
+/* Location: app/_shared/lib/sheets/draft-order.ts */
 
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import { readDataFromSheet } from '../../_shared/lib/sheets/utils/read-data-from-sheets';
-import type { EnhancedPlayerData, PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId } from '../../teams/types/team-types';
+import type { EnhancedPlayerData, PlayersByCode } from '../../../scoring/types/scoring-types';
+import type { DivisionId } from '../../../teams/types/team-types';
 import type {
     ProcessedTransfer,
     ProcessedTransferSheetData,
@@ -11,11 +9,35 @@ import type {
     TransferSheetData,
     TransferStatus,
     TransferType,
-} from '../types/transfer-types';
+} from '../../../transfers/types/transfer-types';
+import type { GameWeekData } from '../fpl/fpl-types';
+import { sheetsCache } from './cache/sheets-cache-service';
+import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
+import { CACHE_CONFIG } from './cache-config';
+import {
+    appendToSheet,
+    convertToSheetRows,
+    createAppError,
+    readSheetRange,
+    type SheetRange,
+    writeSheetRange,
+} from './utils/common';
+import { readDataFromSheet } from './utils/read-data-from-sheets';
 
-/**
- * Header order for transfer sheets - must match Google Sheets column order
- */
+// Sheet configuration
+const TRANSFERS_SHEET_NAME = (divisionId: DivisionId) => `${divisionId}-transfers`;
+const TRANSFERS_HEADERS: Record<keyof TransferSheetData, keyof ProcessedTransferSheetData> = {
+    Status: 'status',
+    Timestamp: 'timestamp',
+    Manager: 'manager',
+    'Transfer Out': 'transferOut',
+    'Code Out': 'codeOut',
+    'Transfer In': 'transferIn',
+    'Code In': 'codeIn',
+    'Transfer Type': 'transferType',
+    Comment: 'comment',
+};
+
 const TRANSFER_SHEET_HEADERS = [
     'Status',
     'Timestamp',
@@ -27,10 +49,10 @@ const TRANSFER_SHEET_HEADERS = [
     'Transfer Type',
     'Comment',
 ] as const;
-
 /**
  * Transform functions for parsing sheet data
  */
+
 const TRANSFER_TRANSFORM_FUNCTIONS = {
     Status: (value: any): string => {
         if (!value || value === '') return '';
@@ -68,7 +90,7 @@ const TRANSFER_TRANSFORM_FUNCTIONS = {
     'Code Out': (value: any): number => {
         if (!value) throw new Error('Code Out is required');
         const parsed = Number.parseInt(String(value), 10);
-        if (isNaN(parsed)) throw new Error(`Invalid Code Out: ${value}`);
+        if (Number.isNaN(parsed)) throw new Error(`Invalid Code Out: ${value}`);
         return parsed;
     },
     'Transfer In': (value: any): string => {
@@ -78,7 +100,7 @@ const TRANSFER_TRANSFORM_FUNCTIONS = {
     'Code In': (value: any): number => {
         if (!value) throw new Error('Code In is required');
         const parsed = Number.parseInt(String(value), 10);
-        if (isNaN(parsed)) throw new Error(`Invalid Code In: ${value}`);
+        if (Number.isNaN(parsed)) throw new Error(`Invalid Code In: ${value}`);
         return parsed;
     },
     'Transfer Type': (value: any): string => {
@@ -91,16 +113,10 @@ const TRANSFER_TRANSFORM_FUNCTIONS = {
 };
 
 /**
- * Read transfer data from Google Sheets for a specific division
+ * Read all draft orders from the sheet
  */
-export async function readTransferDataForDivision(
-    divisionId: DivisionId,
-    fplPlayersByCode: PlayersByCode,
-    gameweekData: GameWeekData[],
-): Promise<TransferProcessingResult> {
+async function originalReadTransfers(divisionId: DivisionId): Promise<ProcessedTransferSheetData[]> {
     try {
-        console.log(`📖 Reading transfer data for division: ${divisionId}`);
-
         // Each division has its own sheet named after the division ID
         const sheetName = `${divisionId}-transfers`;
 
@@ -122,6 +138,93 @@ export async function readTransferDataForDivision(
             transferType: row['Transfer Type'],
             comment: row['Comment'],
         }));
+        return normedResult;
+    } catch (error) {
+        throw createAppError('TRANSFERS_READ_ERROR', 'Failed to read transfer from sheet', error);
+    }
+}
+export async function readTransfers(divisionId: DivisionId) {
+    return sheetsCache.get(`transfers-${divisionId}`, () => originalReadTransfers(divisionId), {
+        ttlMs: CACHE_CONFIG.transfers,
+    });
+}
+/**
+ * Write draft orders to the sheet (overwrites existing data)
+ */
+export async function writeTransfers(divisionId: DivisionId, transfer: any): Promise<void> {
+    const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+    try {
+        // Transform dates to ISO strings for sheet storage
+        const transformedTransfers = {
+            ...transfer,
+            timestamp: Date.now(),
+        };
+
+        const sheetRows = convertToSheetRows(transformedTransfers, TRANSFERS_HEADERS, true);
+
+        const sheetRange: SheetRange = {
+            spreadsheetId,
+            range: `'${TRANSFERS_SHEET_NAME(divisionId)}'!A:I`,
+        };
+
+        await writeSheetRange(sheetRange, sheetRows);
+    } catch (error) {
+        throw createAppError('DRAFT_ORDERS_WRITE_ERROR', 'Failed to write draft orders to sheet', error);
+    }
+}
+
+export async function addTransfer(divisionId: DivisionId, transfer: ProcessedTransferSheetData): Promise<void> {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+        const sheetName = `${divisionId}-transfers`;
+        const cacheKey = `${spreadsheetId}:${sheetName}`;
+
+        // Try to get headers from cache first
+        let headers = getCachedHeaders(cacheKey);
+
+        if (!headers) {
+            // If not cached, read headers
+            const headerRange: SheetRange = {
+                spreadsheetId,
+                range: `'${sheetName}'!1:1`,
+            };
+            const headerData = await readSheetRange(headerRange);
+            headers = headerData.length > 0 ? headerData[0] : [];
+            setCachedHeaders(cacheKey, headers);
+        }
+
+        if (headers.length === 0) {
+            throw new Error('No headers found in draft picks sheet');
+        }
+
+        // Convert data to correct column order
+        const rows = convertToRowsWithHeaders([transfer], headers, TRANSFERS_HEADERS);
+
+        // Append the data
+        const sheetRange: SheetRange = {
+            spreadsheetId,
+            range: `'${sheetName}'!A:${String.fromCharCode(64 + headers.length)}`,
+        };
+
+        await appendToSheet(sheetRange, rows);
+
+        console.log(`✅ Successfully added transfer: ${transfer.transferOut} -> ${transfer.transferIn}`);
+    } catch (error) {
+        console.error('❌ Failed to add transfer:', error);
+        throw createAppError('TRANSFER_ADD_ERROR', 'Failed to add transfer to sheet', error);
+    }
+}
+
+/**
+ * Read transfer data from Google Sheets for a specific division
+ */
+export async function readTransferDataForDivision(
+    divisionId: DivisionId,
+    fplPlayersByCode: PlayersByCode,
+    gameweekData: GameWeekData[],
+): Promise<TransferProcessingResult> {
+    try {
+        const normedResult = await readTransfers(divisionId);
 
         if (normedResult.length === 0) {
             console.log(`ℹ️ No transfer data found for division ${divisionId}`);

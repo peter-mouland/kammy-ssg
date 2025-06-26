@@ -2,10 +2,10 @@
 
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
+import { readTransferDataForDivision } from '../../../_shared/lib/sheets/transfers';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
 import type { DivisionId, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
-import { readTransferDataForDivision } from '../../../transfers/lib/transfer-reader.service';
 import { generateGameweekData } from '../../lib/generators';
 import type { Points } from '../../types/scoring-types';
 import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './division-teams.service';
