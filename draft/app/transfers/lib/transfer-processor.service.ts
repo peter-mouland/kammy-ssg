@@ -126,10 +126,7 @@ function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTra
             stats: createEmptyStats(),
             points: createEmptyPoints(),
         },
-        season: {
-            stats: createEmptyStats(),
-            points: createEmptyPoints(),
-        },
+        season: managerRoster[outgoingSlot.slotKey].season, // keep slot season
     };
 
     // Update the roster

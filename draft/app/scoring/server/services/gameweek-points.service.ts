@@ -120,6 +120,7 @@ export class GameweekPointsService {
 
     /**
      * Force regeneration of all points (for manual refresh)
+     * UPDATED: Now truly rebuilds everything from scratch
      */
     async forceFullRegeneration(): Promise<GameweekUpdateResult> {
         console.log('🔄 GameweekPointsService - Force full regeneration...');
@@ -131,19 +132,24 @@ export class GameweekPointsService {
             }
 
             const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
+            // const availableGameweeks = [1, 2, 3];
 
-            console.log('🔄 Populating points into division-teams documents...');
+            console.log(
+                `🔄 FULL REGENERATION: Rebuilding all season totals from scratch... ${availableGameweeks.join(',')}`,
+            );
             const { populatePointsIntoDivisionDocuments } = await import(
                 '../../../scoring/server/services/division-teams-points-population.service'
             );
 
-            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(availableGameweeks);
+            const pointsPopulationResult = await populatePointsIntoDivisionDocuments(availableGameweeks, {
+                forceFullRegeneration: true,
+            });
 
             if (pointsPopulationResult.errors.length > 0) {
                 console.warn('⚠️ Some points population errors:', pointsPopulationResult.errors);
             }
 
-            console.log(`✅ Points population complete: ${pointsPopulationResult.playersUpdated} players updated`);
+            console.log(`✅ Full regeneration complete: ${pointsPopulationResult.playersUpdated} players updated`);
 
             // Update metadata
             await this.updatePointsMetadata({
@@ -161,7 +167,7 @@ export class GameweekPointsService {
 
             return {
                 updated: true,
-                reason: 'Full regeneration of all gameweeks requested',
+                reason: 'Full regeneration of all gameweeks from scratch',
                 gameweeksGenerated: availableGameweeks,
                 currentGameweek,
                 pointsPopulationResult, // Include points population result
@@ -203,7 +209,6 @@ export class GameweekPointsService {
 
             return {
                 updated: true,
-                reason: 'Full regeneration of all transfers requested',
                 gameweeksGenerated: availableGameweeks,
                 currentGameweek,
                 pointsPopulationResult, // Include points population result

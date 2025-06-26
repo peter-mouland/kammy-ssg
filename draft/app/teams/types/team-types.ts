@@ -130,6 +130,8 @@ export interface TeamPositionSlot {
     season: {
         stats: PlayerGameweekStatsData; // cumulative stats
         points: Points; // cumulative points
+        seasonUpToGameweek: number; // highest gameweek included in season totals (0 = no gameweeks included)
+        seasonGeneratedOn: string; // ISO date when season totals were last updated
     };
 }
 
