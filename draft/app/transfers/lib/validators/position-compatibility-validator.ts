@@ -32,7 +32,6 @@ export function validatePositionCompatibility(context: TransferRuleContext): Rul
 
     // Get manager's current roster
     if (!managerTeam) {
-        console.log(Object.keys(divisionRosters));
         return {
             ruleId: 'position-compatibility',
             ruleName: 'Position Compatibility',

@@ -93,8 +93,7 @@ function GameweekTransfersSection({
     onReject: (transferId: string) => void;
 }) {
     const [isExpanded, setIsExpanded] = useState(false);
-    console.log(transfersData);
-    console.log(gameweekInfo);
+
     const columns: TableColumn<{ transfer: ProcessedTransfer; validation: TransferValidationResult }>[] = [
         {
             key: 'timestamp',

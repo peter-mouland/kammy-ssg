@@ -11,6 +11,7 @@ export default [
     route('draft', 'draft/draft.route.tsx'),
     route('players/:playerCode', 'players/player.route.tsx'),
     route('players', 'players/players.route.tsx'),
+    route('transfers', 'transfers/transfers.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),
 
     route('scoring/api/gw-points', 'scoring/api/api.gw-points.ts'),

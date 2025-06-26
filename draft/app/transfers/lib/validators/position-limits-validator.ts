@@ -18,16 +18,13 @@ const positionLimits = {
 /**
  * Position limits validation for transfer rules
  */
-export function validatePositionLimits(
-    context: TransferRuleContext,
-): RuleValidationResult {
+export function validatePositionLimits(context: TransferRuleContext): RuleValidationResult {
     const { transfer, divisionRosters } = context;
     const managerId = transfer.managerId;
 
     // Get manager's current roster
     const managerTeam = divisionRosters[managerId];
     if (!managerTeam) {
-        console.log(Object.keys(divisionRosters));
         return {
             ruleId: 'position-limits',
             ruleName: 'Position Limits',

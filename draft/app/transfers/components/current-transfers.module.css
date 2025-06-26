@@ -1,0 +1,311 @@
+/* Location: app/transfers/components/current-transfers.module.css */
+
+.currentTransfers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.transfersHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+@media (max-width: 768px) {
+    .transfersHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.headerInfo {
+    flex: 1;
+}
+
+.headerTitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-1);
+}
+
+.headerDescription {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+}
+
+.gameweekControl {
+    flex-shrink: 0;
+}
+
+.transfersList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    text-align: center;
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--color-gray-300);
+}
+
+.emptyIcon {
+    font-size: var(--font-3xl);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.6;
+}
+
+.emptyTitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-2);
+}
+
+.emptyMessage {
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    max-width: 300px;
+}
+
+.transferItem {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-4);
+    transition: var(--transition-normal);
+}
+
+.transferItem:hover {
+    border-color: var(--color-gray-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.transferHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-3);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.transferStatus {
+    display: flex;
+    align-items: center;
+}
+
+.statusApproved {
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.statusRejected {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.statusPending {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.statusUnknown {
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.transferMeta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+}
+
+.transferType {
+    font-weight: var(--font-weight-medium);
+}
+
+.transferDate {
+    color: var(--color-gray-500);
+}
+
+.transferDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.managerInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-sm);
+}
+
+.managerLabel {
+    color: var(--color-gray-600);
+    font-weight: var(--font-weight-medium);
+}
+
+.managerName {
+    color: var(--color-gray-900);
+    font-weight: var(--font-weight-semibold);
+}
+
+.playerTransfer {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--spacing-4);
+    align-items: center;
+    padding: var(--spacing-3);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-sm);
+}
+
+@media (max-width: 640px) {
+    .playerTransfer {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-2);
+        text-align: center;
+    }
+
+    .transferArrow {
+        order: 2;
+        transform: rotate(90deg);
+    }
+}
+
+.playerOut,
+.playerIn {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.playerLabel {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.playerName {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.playerPosition {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    background: var(--color-gray-100);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    align-self: flex-start;
+}
+
+@media (max-width: 640px) {
+    .playerPosition {
+        align-self: center;
+    }
+}
+
+.transferArrow {
+    font-size: var(--font-lg);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.transferComment {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3);
+    background: var(--color-blue-50);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-primary);
+}
+
+.commentLabel {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.commentText {
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
+    line-height: 1.4;
+}
+
+.transfersSummary {
+    padding: var(--spacing-4);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.summaryStats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-6);
+}
+
+@media (max-width: 640px) {
+    .summaryStats {
+        gap: var(--spacing-4);
+    }
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.statValue {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
+}
+
+.statLabel {
+    font-size: var(--font-xs);
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: var(--font-weight-medium);
+}

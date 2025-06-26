@@ -1,0 +1,223 @@
+/* Location: app/transfers/components/transfer-form.module.css */
+
+.transferForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+}
+
+.selectionRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--spacing-4);
+    align-items: end;
+}
+
+@media (max-width: 768px) {
+    .selectionRow {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-3);
+    }
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.fieldLabel {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+}
+
+.selectInput {
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    color: var(--color-gray-900);
+    font-size: var(--font-sm);
+    transition: var(--transition-normal);
+}
+
+.selectInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.selectInput:disabled {
+    background: var(--color-gray-100);
+    color: var(--color-gray-500);
+    cursor: not-allowed;
+}
+
+.transferTypeSection {
+    padding: var(--spacing-4);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-gray-200);
+}
+
+.playerSelectionSection {
+    padding: var(--spacing-6);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-200);
+}
+
+.playerSelectors {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--spacing-4);
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .playerSelectors {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-6);
+    }
+
+    .transferArrow {
+        order: 2;
+        justify-self: center;
+    }
+
+    .playerInSection {
+        order: 3;
+    }
+}
+
+.playerOutSection,
+.playerInSection {
+    background: var(--color-white);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-gray-200);
+    overflow: hidden;
+}
+
+.transferArrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4);
+}
+
+.arrowIcon {
+    font-size: var(--font-2xl);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.commentSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.commentInput {
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    color: var(--color-gray-900);
+    font-size: var(--font-sm);
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: var(--transition-normal);
+}
+
+.commentInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.commentInput::placeholder {
+    color: var(--color-gray-500);
+}
+
+.validationWarnings,
+.validationErrors {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.warningMessage {
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.errorMessage {
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+    border: 1px solid var(--color-danger);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.submitSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.submitButton {
+    padding: var(--spacing-4) var(--spacing-6);
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    min-height: 48px;
+}
+
+.submitButton:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+}
+
+.submitButton:disabled {
+    background: var(--color-gray-400);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.deadlineMessage {
+    font-size: var(--font-sm);
+    color: var(--color-danger);
+    text-align: center;
+    font-style: italic;
+}
+
+.successMessage {
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}

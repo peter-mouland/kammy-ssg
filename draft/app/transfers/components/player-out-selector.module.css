@@ -1,0 +1,203 @@
+/* Location: app/transfers/components/player-out-selector.module.css */
+
+.playerOutSelector {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    height: 100%;
+}
+
+.selectorHeader {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.selectorTitle {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-1);
+}
+
+.selectorDescription {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+}
+
+.filterControls {
+    display: flex;
+    gap: var(--spacing-3);
+    padding: 0 var(--spacing-4);
+}
+
+.searchGroup {
+    flex: 2;
+}
+
+.positionGroup {
+    flex: 1;
+}
+
+.searchInput,
+.positionSelect {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    background: var(--color-white);
+    font-size: var(--font-sm);
+    transition: var(--transition-normal);
+}
+
+.searchInput:focus,
+.positionSelect:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.playersList {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-8);
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: var(--font-3xl);
+    margin-bottom: var(--spacing-4);
+    opacity: 0.5;
+}
+
+.emptyMessage {
+    color: var(--color-gray-500);
+    font-size: var(--font-sm);
+}
+
+.playerItem {
+    padding: var(--spacing-3) var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    position: relative;
+}
+
+.playerItem:hover {
+    background: var(--color-gray-50);
+}
+
+.playerItem.selected {
+    background: var(--color-primary-bg);
+    border-left: 3px solid var(--color-primary);
+}
+
+.playerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playerInfo {
+    flex: 1;
+}
+
+.playerName {
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-1);
+}
+
+.playerDetails {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.positionBadge,
+.slotBadge,
+.subBadge {
+    font-size: var(--font-xs);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.positionBadge {
+    background: var(--color-blue-100);
+    color: var(--color-blue-800);
+}
+
+.slotBadge {
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+}
+
+.subBadge {
+    background: var(--color-orange-100);
+    color: var(--color-orange-800);
+}
+
+.playerStats {
+    text-align: right;
+}
+
+.statValue {
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.statLabel {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+.selectedIndicator {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    background: var(--color-primary);
+    color: var(--color-white);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-bold);
+}
+
+.selectedSummary {
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-primary-bg);
+    border-top: 1px solid var(--color-primary);
+}
+
+.summaryHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.summaryLabel {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+}
+
+.summaryPlayer {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}

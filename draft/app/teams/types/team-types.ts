@@ -100,23 +100,25 @@ export interface ContributingStatsBreakdown {
     bonus: ContributingStatsItem;
 }
 
+export type RosterPlayer = {
+    playerId: number; // FPL player ID
+    playerCode: number; // FPL player code at time of assignment
+    playerName: string; // web_name at time of assignment
+    playerPosition: CustomPosition; // sheets position
+    teamPosition: RosterPosition; // actual team slot
+    teamSlotIndex: number; // 0-based index within position
+    isSub: boolean;
+    onLoanTo: string | null; // userId
+    onLoanStart: string | null; // ISO date string
+    assignedAt: string; // ISO date when assigned to this slot
+};
+
 /**
  * Team position slot with player data and points
  */
 export interface TeamPositionSlot {
     // Player info (from draft/transfers)
-    player: {
-        playerId: number; // FPL player ID
-        playerCode: number; // FPL player code at time of assignment
-        playerName: string; // web_name at time of assignment
-        playerPosition: CustomPosition; // sheets position
-        teamPosition: RosterPosition; // actual team slot
-        teamSlotIndex: number; // 0-based index within position
-        isSub: boolean;
-        onLoanTo: string | null; // userId
-        onLoanStart: string | null; // ISO date string
-        assignedAt: string; // ISO date when assigned to this slot
-    };
+    player: RosterPlayer;
 
     // Points data per gameweek
     gameweek: {

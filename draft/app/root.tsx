@@ -58,6 +58,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                 <a href="/">Dashboard</a>
                                 <a href="/leagues">League Standings</a>
                                 <a href="/players">Players</a>
+                                <a href="/transfers">Transfers</a>
                                 <a href="/wishlists">Wishlists</a>
                                 <a href="/draft">Draft</a>
                             </nav>
