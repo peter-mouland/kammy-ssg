@@ -114,27 +114,46 @@ export function calculateGoalsConcededPenalty(goalsConceded: number, position: C
 /**
  * Calculate total custom points for a player's gameweek performance
  */
-export function calculateGameweekPoints(stats: PlayerGameweekStatsData, position: CustomPosition): Points {
-    const breakdown: Points = {
-        appearance: calculateAppearancePoints(stats.appearance, position),
-        goals: calculateGoalPoints(stats.goals, position),
-        assists: calculateAssistPoints(stats.assists, position),
-        cleanSheets: calculateCleanSheetPoints(stats.cleanSheets, position),
-        yellowCards: calculateYellowCardPenalty(stats.yellowCards, position),
-        redCards: calculateRedCardPenalty(stats.redCards, position),
-        saves: calculateSavesBonus(stats.saves, position),
-        penaltiesSaved: calculatePenaltiesSaved(stats.penaltiesSaved, position),
-        goalsConceded: calculateGoalsConcededPenalty(stats.goalsConceded, position),
-        bonus: calculateBonus(stats.bonus, position),
-        total: 0,
-    };
+export function calculateGameweekPoints(gws: PlayerGameweekStatsData[], position: CustomPosition): Points {
+    const points = gws.reduce(
+        (acc, stats) => {
+            const breakdown: Points = {
+                appearance: acc.appearance + calculateAppearancePoints(stats.appearance, position),
+                goals: acc.goals + calculateGoalPoints(stats.goals, position),
+                assists: acc.assists + calculateAssistPoints(stats.assists, position),
+                cleanSheets: acc.cleanSheets + calculateCleanSheetPoints(stats.cleanSheets, position),
+                yellowCards: acc.yellowCards + calculateYellowCardPenalty(stats.yellowCards, position),
+                redCards: acc.redCards + calculateRedCardPenalty(stats.redCards, position),
+                saves: acc.saves + calculateSavesBonus(stats.saves, position),
+                penaltiesSaved: acc.penaltiesSaved + calculatePenaltiesSaved(stats.penaltiesSaved, position),
+                goalsConceded: acc.goalsConceded + calculateGoalsConcededPenalty(stats.goalsConceded, position),
+                bonus: acc.bonus + calculateBonus(stats.bonus, position),
+                total: 0,
+            };
+
+            return breakdown;
+        },
+        {
+            appearance: 0,
+            goals: 0,
+            assists: 0,
+            cleanSheets: 0,
+            yellowCards: 0,
+            redCards: 0,
+            saves: 0,
+            penaltiesSaved: 0,
+            goalsConceded: 0,
+            bonus: 0,
+            total: 0,
+        },
+    );
 
     // Calculate total points
-    breakdown.total = Object.entries(breakdown)
+    points.total = Object.entries(points)
         .filter(([key]) => key !== 'total')
         .reduce((sum, [, value]) => sum + value, 0);
 
-    return breakdown;
+    return points;
 }
 
 /**

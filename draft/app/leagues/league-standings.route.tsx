@@ -22,8 +22,10 @@ interface ActionData {
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
+        const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
+        const currentGameweek = await fplApiCache.getCurrentGameweek();
         const selectedDivision: DivisionId = (url.searchParams.get('division') || 'leagueOne') as DivisionId;
-        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || '0', 10);
+        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
 
         // Dynamic import to keep server code on server
         const { getEnhancedLeagueStandingsData } = await import('./server/league-standings.server');

@@ -1,14 +1,21 @@
 /* Location: app/players/components/player-gameweek-table.tsx */
 
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
-import { formatPointsDisplay, isStatRelevant } from '../../scoring/lib';
+import {
+    calculateGameweekPoints,
+    convertToPlayerGameweekStats,
+    formatPointsDisplay,
+    isStatRelevant,
+} from '../../scoring/lib';
+import { convertToGameweekStats } from '../../scoring/lib/data-conversion';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
+import type { CustomPosition } from '../types/player-types';
 
 // import { PointsBreakdownTooltip } from './points-breakdown-tooltip'
 
 interface PlayerGameweekTableProps {
     gameweekStats: GameweekStatWithPoints[];
-    position: string;
+    position: CustomPosition;
     currentGameweek: number;
 }
 
@@ -178,16 +185,12 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
     columns.push(
         {
             key: 'customPoints',
-            header: 'Custom Pts',
+            header: 'Points',
             align: 'center',
             width: 90,
             variant: 'bold',
             render: (_, gw) => {
-                if (!gw.customPoints) {
-                    return <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>-</span>;
-                }
-
-                const total = gw.customPoints;
+                const { total } = calculateGameweekPoints([convertToGameweekStats(gw)], position);
                 const color =
                     total > 0 ? 'var(--color-success)' : total < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
 
@@ -202,36 +205,6 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
                         }}
                     >
                         {formatPointsDisplay(total)}
-                    </span>
-                );
-            },
-        },
-        {
-            key: 'fplPoints',
-            header: 'FPL Pts',
-            accessor: 'fplPoints',
-            align: 'center',
-            width: 80,
-            variant: 'bold',
-            render: (fplPoints) => {
-                const color =
-                    fplPoints > 0
-                        ? 'var(--color-success)'
-                        : fplPoints < 0
-                          ? 'var(--color-error)'
-                          : 'var(--color-gray-500)';
-
-                return (
-                    <span
-                        style={{
-                            color,
-                            fontWeight: 'var(--font-weight-semibold)',
-                            backgroundColor: 'var(--color-gray-50)',
-                            padding: 'var(--spacing-1) var(--spacing-2)',
-                            borderRadius: 'var(--radius-sm)',
-                        }}
-                    >
-                        {fplPoints}
                     </span>
                 );
             },

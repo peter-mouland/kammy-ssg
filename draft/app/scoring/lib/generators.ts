@@ -5,7 +5,11 @@ import type { CustomPosition, PlayerGameweekStatsData } from '../../players/type
 import type { TeamPositionSlot } from '../../teams/types/team-types';
 import type { EnhancedPlayerData, Points } from '../types/scoring-types';
 import { calculateGameweekPoints, calculateSeasonPoints, getFullBreakdown } from './calculations';
-import { convertToPlayerGameweekStats, convertToPlayerGameweeksStats } from './data-conversion';
+import {
+    convertToPlayerGameweekStats,
+    convertToPlayerGameweeksStats,
+    convertToSingleGameweeksStats,
+} from './data-conversion';
 
 const baselineStats = {
     appearance: 0,
@@ -84,8 +88,8 @@ export function generateGameweekData(
         const gameweekPoints: Record<GameWeekData['fplEvent']['id'], GamweekPointsAndStats> = {};
 
         targetGameweeks.forEach((gameweek) => {
-            const gameweekData = allGameweekData.find((gw) => gw.round === gameweek); // step 1: find gw
-            const gameweekStats = gameweekData ? convertToPlayerGameweekStats(gameweekData) : null; // step 2: remove gw from stats
+            const gameweekData = allGameweekData.filter((gw) => gw.round === gameweek); // step 1: find gw's (account for double gw's)
+            const gameweekStats = convertToPlayerGameweeksStats(gameweekData); // step 2: remove gw from stats
 
             if (!gameweekStats) {
                 console.error(`🚨 no stats for gw${gameweek}`);
@@ -93,10 +97,10 @@ export function generateGameweekData(
                 console.log(` - player : ${fplPlayer.playerId} ${fplPlayer.playerName} ${position}`);
             }
 
-            const points = calculateGameweekPoints(gameweekStats || baselineStats, position);
+            const points = calculateGameweekPoints(gameweekStats || [baselineStats], position);
             gameweekPoints[gameweek] = {
                 points: points || null, // not all players have been playing since gw 1
-                stats: gameweekStats || null, // not all players have been playing since gw 1
+                stats: convertToSingleGameweeksStats(gameweekStats) || null, // not all players have been playing since gw 1
                 metadata: {
                     generatedAt: new Date().toISOString(),
                     position: position,
