@@ -109,28 +109,7 @@ function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTra
     }
 
     // Create new position slot for incoming player
-    const newPositionSlot: TeamPositionSlot = {
-        player: {
-            playerId: playerIn.id,
-            playerCode: playerIn.code,
-            playerName: playerIn.web_name,
-            playerPosition: playerIn.draft.position.toLowerCase() as CustomPosition,
-            teamPosition: outgoingSlot.slot.player.teamPosition,
-            teamSlotIndex: outgoingSlot.slot.player.teamSlotIndex,
-            isSub: outgoingSlot.slot.player.isSub,
-            onLoanTo: null,
-            onLoanStart: null,
-            assignedAt: transfer.timestamp.toISOString(),
-        },
-        gameweek: {
-            stats: createEmptyStats(),
-            points: createEmptyPoints(),
-        },
-        season: managerRoster[outgoingSlot.slotKey].season, // keep slot season
-    };
-
-    // Update the roster
-    managerRoster[outgoingSlot.slotKey] = newPositionSlot;
+    managerRoster[outgoingSlot.slotKey] = movePlayer({ player: playerIn, slot: outgoingSlot.slot });
 
     return {
         rosterId: managerId,
@@ -163,13 +142,8 @@ function applyInternalSwap(managerRoster: TeamRoster, transfer: ProcessedTransfe
     }
 
     // Swap the players between positions
-    const tempPlayer = { ...managerRoster[outgoingSlot.slotKey] };
-    managerRoster[outgoingSlot.slotKey] = { ...managerRoster[incomingSlot.slotKey] };
-    managerRoster[incomingSlot.slotKey] = tempPlayer;
-
-    // Update assignment timestamps
-    managerRoster[outgoingSlot.slotKey].player.assignedAt = transfer.timestamp.toISOString();
-    managerRoster[incomingSlot.slotKey].player.assignedAt = transfer.timestamp.toISOString();
+    managerRoster[incomingSlot.slotKey] = movePlayer({ player: playerOut, slot: incomingSlot.slot });
+    managerRoster[outgoingSlot.slotKey] = movePlayer({ player: playerIn, slot: outgoingSlot.slot });
 
     return {
         rosterId: managerId,
@@ -281,3 +255,25 @@ function createEmptyPoints() {
         total: 0,
     };
 }
+
+const movePlayer = ({ player, slot }) => {
+    return {
+        player: {
+            playerId: player.id,
+            playerCode: player.code,
+            playerName: player.web_name,
+            playerPosition: player.draft.position.toLowerCase() as CustomPosition,
+            teamPosition: slot.player.teamPosition,
+            teamSlotIndex: slot.player.teamSlotIndex,
+            isSub: slot.player.isSub,
+            onLoanTo: null,
+            onLoanStart: null,
+            assignedAt: new Date().toISOString(),
+        },
+        gameweek: {
+            stats: createEmptyStats(),
+            points: createEmptyPoints(),
+        },
+        season: slot.season, // keep slot season
+    };
+};
