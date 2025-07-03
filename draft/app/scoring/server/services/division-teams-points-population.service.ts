@@ -31,69 +31,39 @@ export async function populatePointsIntoDivisionDocuments(
         errors: [] as string[],
     };
 
-    try {
-        // Get all divisions and process each one
-        const divisions = await readDivisions();
+    // Get all divisions and process each one
+    const divisions = await readDivisions();
+    const sortedGameweeks = [...targetGameweeks].sort((a, b) => a - b);
 
-        for (const division of divisions) {
-            if (division.id === 'leagueOne') {
-                try {
-                    results.divisionsProcessed++;
-                    console.log(`🔄 Processing division: ${division.id}`);
+    for (const division of divisions) {
+        try {
+            results.divisionsProcessed++;
+            console.log(`🔄 Processing division: ${division.id}`);
 
-                    if (options.forceFullRegeneration) {
-                        // For full regeneration, process gameweeks in chronological order
-                        const sortedGameweeks = [...targetGameweeks].sort((a, b) => a - b);
+            for (const gameweekId of sortedGameweeks) {
+                const playersUpdated = await populatePointsForDivisionGameweek(division.id, gameweekId, {
+                    ...options,
+                    isFirstGameweekInRegeneration: gameweekId === sortedGameweeks[0],
+                });
 
-                        for (const gameweekId of sortedGameweeks) {
-                            const playersUpdated = await populatePointsForDivisionGameweek(division.id, gameweekId, {
-                                ...options,
-                                isFirstGameweekInRegeneration: gameweekId === sortedGameweeks[0],
-                            });
-
-                            if (playersUpdated > 0) {
-                                results.documentsUpdated++;
-                                results.playersUpdated += playersUpdated;
-                                console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
-                            }
-                        }
-                    } else {
-                        // For selective updates, process in given order
-                        for (const gameweekId of targetGameweeks) {
-                            const playersUpdated = await populatePointsForDivisionGameweek(
-                                division.id,
-                                gameweekId,
-                                options,
-                            );
-
-                            if (playersUpdated > 0) {
-                                results.documentsUpdated++;
-                                results.playersUpdated += playersUpdated;
-                                console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
-                            }
-                        }
-                    }
-                } catch (error) {
-                    const errorMsg = `Failed to process division ${division.id}: ${
-                        error instanceof Error ? error.message : 'Unknown error'
-                    }`;
-                    console.error(`❌ ${errorMsg}`);
-                    results.errors.push(errorMsg);
+                if (playersUpdated > 0) {
+                    results.documentsUpdated++;
+                    results.playersUpdated += playersUpdated;
+                    console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
                 }
             }
+        } catch (error) {
+            const errorMsg = `Failed to process division ${division.id}, probably an error in populatePointsForDivisionGameweek: ${
+                error instanceof Error ? error.message : 'Unknown error'
+            }`;
+            console.error(`❌ ${errorMsg}`);
+            results.errors.push(errorMsg);
         }
-
-        console.log(
-            `✅ Points population complete: ${results.documentsUpdated} documents updated, ${results.playersUpdated} players updated`,
-        );
-    } catch (error) {
-        const errorMsg = `Failed to populate points into division documents: ${
-            error instanceof Error ? error.message : 'Unknown error'
-        }`;
-        console.error(`❌ ${errorMsg}`);
-        results.errors.push(errorMsg);
     }
 
+    console.log(
+        `✅ Points population complete: ${results.documentsUpdated} documents updated, ${results.playersUpdated} players updated`,
+    );
     return results;
 }
 
@@ -170,6 +140,9 @@ async function populatePointsForDivisionGameweek(
 
                 // Update gameweek points and stats
                 const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
+                if (!playerGameweek) {
+                    console.error(`🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`)
+                }
                 const updatedPositionSlot = updatePositionSlotPoints(
                     positionSlot,
                     gameweek,

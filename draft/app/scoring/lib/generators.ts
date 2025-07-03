@@ -84,31 +84,53 @@ export function generateGameweekData(
 
     fplPlayers.forEach((fplPlayer) => {
         const position = fplPlayer.playerPosition.toLowerCase() as CustomPosition;
+        // @ts-ignore
+        if (position === 'sub') {
+            throw new Error('position should never be SUB here, please check draft data and re-submit')
+        }
         const allGameweekData = fplPlayerGameweeksById[fplPlayer.playerId]?.history || [];
         const gameweekPoints: Record<GameWeekData['fplEvent']['id'], GamweekPointsAndStats> = {};
 
         targetGameweeks.forEach((gameweek) => {
             const gameweekData = allGameweekData.filter((gw) => gw.round === gameweek); // step 1: find gw's (account for double gw's)
-            const gameweekStats = convertToPlayerGameweeksStats(gameweekData); // step 2: remove gw from stats
-
-            if (!gameweekStats) {
+            let points
+            let stats
+            let gameweekStats
+            try {
+                gameweekStats = convertToPlayerGameweeksStats(gameweekData); // step 2: remove gw from stats
+            } catch (e) {
+                console.error(`🚨 error in convertToPlayerGameweeksStats` )
+                throw new Error(e.message)
+            }
+            if (!gameweekStats.length) {
                 console.error(`🚨 no stats for gw${gameweek}`);
                 console.log(` - max history : ${allGameweekData.length}`);
                 console.log(` - player : ${fplPlayer.playerId} ${fplPlayer.playerName} ${position}`);
             }
 
-            const points = calculateGameweekPoints(gameweekStats || [baselineStats], position);
+            try {
+                points = calculateGameweekPoints(gameweekStats || [baselineStats], position);
+            } catch (e) {
+                console.error('issue in calculateGameweekPoints')
+                throw new Error(e.message)
+            }
+            try {
+                stats = convertToSingleGameweeksStats(gameweekStats);
+            } catch (e) {
+                console.error('issue in convertToSingleGameweeksStats')
+                throw new Error(e.message)
+            }
             gameweekPoints[gameweek] = {
                 points: points || null, // not all players have been playing since gw 1
-                stats: convertToSingleGameweeksStats(gameweekStats) || null, // not all players have been playing since gw 1
+                stats: stats || null, // not all players have been playing since gw 1
                 metadata: {
                     generatedAt: new Date().toISOString(),
                     position: position,
-                    noData: !gameweekStats,
+                    noData: !gameweekStats.length,
                 },
             };
 
-            console.log(`✅ Player ${fplPlayer.playerId} GW${gameweek}: ${points.total} points`);
+            console.log(`✅ ${fplPlayer.playerName} (${fplPlayer.playerId}): GW${gameweek} w/ ${points.total}pts (has Stats:${!!stats})`);
         });
 
         result[fplPlayer.playerId] = gameweekPoints;
