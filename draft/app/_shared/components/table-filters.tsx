@@ -94,7 +94,7 @@ export function TableFilters({
                         >
                             <option value="">All Statuses</option>
                             {statusOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
+                                <option key={option.label} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
@@ -115,7 +115,7 @@ export function TableFilters({
                         >
                             <option value="">All Categories</option>
                             {categoryOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
+                                <option key={option.label} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}

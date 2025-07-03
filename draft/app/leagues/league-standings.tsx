@@ -1,10 +1,11 @@
 /* Location: app/leagues/league-standings.tsx */
 
 import { useMemo } from 'react';
-import { Link, useActionData, useLoaderData, useSearchParams } from 'react-router';
+import { Link, useActionData, useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
+import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import styles from './components/league-standings.module.css';
 import { PositionRankChange } from './components/position-rank-change';
@@ -55,19 +56,21 @@ export const POSITION_COLUMNS: PositionColumnConfig[] = [
 ];
 
 function PositionPointsTable({
-                                 teams,
-                                 pointsSource,
-                                 title,
-                                 subtitle,
-                                 showRankChange = false,
-                                 isFirstGameweek = false,
-                             }: {
+    teams,
+    pointsSource,
+    title,
+    subtitle,
+    showRankChange = false,
+    isFirstGameweek = false,
+    selectedGameweek,
+}: {
     teams: LeagueStandingsTeamData[];
     pointsSource: 'gameweekPoints' | 'seasonPoints';
     title: string;
     subtitle: string;
     showRankChange?: boolean;
     isFirstGameweek?: boolean;
+    selectedGameweek?: number;
 }) {
     const positionRankings = useMemo(() => calculatePositionRankings(teams, pointsSource), [teams, pointsSource]);
 
@@ -87,7 +90,7 @@ function PositionPointsTable({
             width: 180,
             sortable: true,
             render: (userName) => (
-                <Link to={`/teams/${userName}`} className={styles.managerName}>
+                <Link to={`/teams/${userName}?gameweek=${selectedGameweek}`} className={styles.managerName}>
                     {userName}
                 </Link>
             ),
@@ -153,8 +156,16 @@ function PositionPointsTable({
             accessor: (team) => positionRankings[team.userId]?.total,
             render: (points, team) => {
                 const rank = positionRankings[team.userId]?.total;
-                if (!showRankChange) {
-
+                if (showRankChange) {
+                    // For gameweek table, show points with rank change
+                    return (
+                        <PositionRankChange
+                            points={points}
+                            rankChange={team.positionRankChanges?.total ?? null}
+                            isFirstGameweek={isFirstGameweek}
+                        />
+                    );
+                } else {
                     return (
                         <div>
                             {rank && (
@@ -179,16 +190,6 @@ function PositionPointsTable({
                                 {team[pointsSource].total || 0}
                             </span>
                         </div>
-                    );
-                } else {
-
-                    // For gameweek table, show points with rank change
-                    return (
-                        <PositionRankChange
-                            points={points}
-                            rankChange={team.positionRankChanges?.total ?? null}
-                            isFirstGameweek={isFirstGameweek}
-                        />
                     );
                 }
             },
@@ -216,9 +217,16 @@ function PositionPointsTable({
                 defaultSort={{ key: 'total', direction: 'desc' }}
                 className="table-compact"
                 getCellProps={(team, index, column) => ({
-                    style: !showRankChange ? {
-                        borderBottom: index === 2 ? '1px dashed var(--color-green-500)' :  teams.length-4 === index ? '1px dashed var(--color-red-500)' : undefined,
-                    } : {},
+                    style: showRankChange
+                        ? {}
+                        : {
+                              borderBottom:
+                                  index === 2
+                                      ? '1px dashed var(--color-green-500)'
+                                      : teams.length - 4 === index
+                                        ? '1px dashed var(--color-red-500)'
+                                        : undefined,
+                          },
                 })}
             />
 
@@ -257,13 +265,15 @@ function PositionPointsTable({
 
             {/* Rank Change Legend for Gameweek Table */}
             {showRankChange && !isFirstGameweek && (
-                <div style={{
-                    padding: '1rem',
-                    backgroundColor: '#f8fafc',
-                    borderTop: '1px solid #e2e8f0',
-                    fontSize: '0.75rem',
-                    color: '#6b7280'
-                }}>
+                <div
+                    style={{
+                        padding: '1rem',
+                        backgroundColor: '#f8fafc',
+                        borderTop: '1px solid #e2e8f0',
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                    }}
+                >
                     <strong>Rank Changes:</strong>
                     <span style={{ color: '#10b981', marginLeft: '0.5rem' }}>+2 = moved up 2 positions</span>
                     <span style={{ color: '#ef4444', marginLeft: '1rem' }}>-1 = moved down 1 position</span>
@@ -275,10 +285,10 @@ function PositionPointsTable({
 }
 
 function DivisionStandingsTable({
-                                    division,
-                                    teams,
-                                    selectedGameweek,
-                                }: {
+    division,
+    teams,
+    selectedGameweek,
+}: {
     division: { id: string; label: string };
     teams: LeagueStandingsTeamData[];
     selectedGameweek: number;
@@ -308,15 +318,17 @@ function DivisionStandingsTable({
                 title="🏆 Season Standings"
                 subtitle={`Total points accumulated until gameweek ${selectedGameweek}`}
                 showRankChange={false}
+                selectedGameweek={selectedGameweek}
             />
 
             <PositionPointsTable
                 teams={teams}
                 pointsSource="gameweekPoints"
                 title={`⚡ Gameweek ${selectedGameweek}`}
-                subtitle={`Points scored during gameweek ${selectedGameweek}${!isFirstGameweek ? ' with position rank changes' : ''}`}
+                subtitle={`Points scored during gameweek ${selectedGameweek}${isFirstGameweek ? '' : ' with position rank changes'}`}
                 showRankChange={true}
                 isFirstGameweek={isFirstGameweek}
+                selectedGameweek={selectedGameweek}
             />
         </div>
     );
@@ -325,19 +337,17 @@ function DivisionStandingsTable({
 export const LeagueStandings = () => {
     const { divisions, selectedDivision, selectedGameweek, currentGameweek, availableGameweeks, standingsData } =
         useLoaderData<EnhancedLeagueStandingsLoaderData>();
-
+    const navigate = useNavigate();
     const actionData = useActionData<typeof action>();
-    const [_searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);
 
     const handleDivisionChange = (divisionId: string) => {
-        const newParams = new URLSearchParams();
         if (divisionId !== 'all') {
-            newParams.set('division', divisionId);
+            navigate(`/leagues/${divisionId}?gameweek=${selectedGameweek}`);
+        } else {
+            navigate(`/leagues?gameweek=${selectedGameweek}`);
         }
-        if (selectedGameweek !== currentGameweek) {
-            newParams.set('gameweek', selectedGameweek.toString());
-        }
-        setSearchParams(newParams);
     };
 
     const handleGameweekChange = (gameweek: number) => {
@@ -371,6 +381,8 @@ export const LeagueStandings = () => {
                     </div>
                 }
             />
+
+            {!isCurrentGameweek && <TimeTravelBanner currentGameweek={currentGameweek} />}
 
             {/* Action Messages */}
             {actionData?.success && (
@@ -464,13 +476,20 @@ export const LeagueStandings = () => {
                             </div>
                         ))}
                     </div>
-                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f1f5f9', borderRadius: '0.375rem' }}>
+                    <div
+                        style={{
+                            marginTop: '1rem',
+                            padding: '1rem',
+                            backgroundColor: '#f1f5f9',
+                            borderRadius: '0.375rem',
+                        }}
+                    >
                         <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'var(--font-weight-semibold)' }}>
                             📈 Gameweek Rank Changes
                         </p>
                         <p style={{ margin: 0, fontSize: 'var(--font-sm)', color: 'var(--color-gray-600)' }}>
-                            In the gameweek table, each position shows points scored and rank movement. For example:
-                            "7 +2" means 7 points scored and moved up 2 positions in that category since last gameweek.
+                            In the gameweek table, each position shows points scored and rank movement. For example: "7
+                            +2" means 7 points scored and moved up 2 positions in that category since last gameweek.
                         </p>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 // app/teams/components/team-view.tsx
 import { useMemo, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
+import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
 import { extractLoanStatus, getSubstitutePlayers } from '../../_shared/lib/roster-conversion-utils';
 import type { StatsViewMode, TeamGameweekData, TeamViewData } from '../types/team-types';
 import { FootballPitch } from './football-pitch';
@@ -67,18 +68,7 @@ export const TeamView = () => {
             </div>
 
             {/* Time Travel Indicator */}
-            {!isCurrentGameweek && (
-                <div className={styles.timeTravelBanner}>
-                    <span className={styles.timeTravelIcon}>⏰</span>
-                    Viewing team from Gameweek {selectedGameweek}
-                    <button
-                        onClick={() => handleGameweekChange(data.currentGameweek)}
-                        className={styles.backToCurrentButton}
-                    >
-                        Back to Current
-                    </button>
-                </div>
-            )}
+            {!isCurrentGameweek && <TimeTravelBanner currentGameweek={data.currentGameweek} />}
 
             {/* Main Content */}
             <div className={styles.mainContent}>

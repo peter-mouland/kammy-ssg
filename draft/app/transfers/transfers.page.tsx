@@ -1,8 +1,9 @@
 /* Location: app/transfers/transfers.page.tsx */
 
-import { useLoaderData, useSearchParams } from 'react-router';
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
+import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { CurrentTransfers } from './components/current-transfers';
 import { TransferForm } from './components/transfer-form';
@@ -11,17 +12,17 @@ import type { TransfersPageData } from './types/transfer-form-types';
 
 export function TransfersPage() {
     const data = useLoaderData<TransfersPageData>();
-    const [_searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const isCurrentGameweek =
+        !searchParams.get('gameweek') || searchParams.get('gameweek') === String(data.currentGameweek);
 
     const handleDivisionChange = (divisionId: string) => {
-        const newParams = new URLSearchParams();
         if (divisionId !== 'all') {
-            newParams.set('division', divisionId);
+            navigate(`/transfers/${divisionId}?gameweek=${data.selectedGameweek}`);
+        } else {
+            navigate(`/transfers?gameweek=${data.selectedGameweek}`);
         }
-        if (data.selectedGameweek !== data.currentGameweek) {
-            newParams.set('gameweek', data.selectedGameweek.toString());
-        }
-        setSearchParams(newParams);
     };
 
     const handleGameweekChange = (gameweek: number) => {
@@ -54,6 +55,8 @@ export function TransfersPage() {
                     </div>
                 }
             />
+
+            {!isCurrentGameweek && <TimeTravelBanner currentGameweek={data.currentGameweek} />}
 
             {/* Current Transfers Section */}
             <div className={styles.transfersSection}>

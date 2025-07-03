@@ -20,10 +20,10 @@ interface ActionData {
     data?: any;
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
-        const selectedDivision = url.searchParams.get('division') || 'premierLeague';
+        const selectedDivision = params.divisionId || 'premierLeague';
         const selectedManager = url.searchParams.get('manager') || '';
         const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || '0', 10);
 

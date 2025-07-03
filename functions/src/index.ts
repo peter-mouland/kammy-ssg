@@ -46,7 +46,18 @@ export const ssr = onRequest(
         timeoutSeconds: 60,
         cors: true
     },
-    app
+    (req, res) => {
+        // Set response headers at the very beginning
+        if (req.accepts('html') && !req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf)$/)) {
+            res.set({
+                'Cache-Control': 'public, max-age=3600, s-maxage=21600',
+                'Vary': 'Accept-Encoding'
+            });
+        }
+
+        // Then pass to express app
+        app(req, res);
+    }
 );
 
 export const api = onRequest({ cors: true }, async (req, res) => {

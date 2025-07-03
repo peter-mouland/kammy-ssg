@@ -11,7 +11,6 @@ interface PointsBreakdownTooltipProps {
 
 const BreakdownItem = (item: PointsBreakdownItem) => (
     <div
-        key={item.label}
         className={`${styles.breakdownItem} ${item.isRelevant ? '' : styles.notRelevant} ${
             item.points > 0 ? styles.positive : item.points < 0 ? styles.negative : styles.neutral
         }`}

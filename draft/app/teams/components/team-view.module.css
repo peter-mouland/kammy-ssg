@@ -54,42 +54,6 @@
     align-items: flex-end;
 }
 
-/* Time travel banner */
-.timeTravelBanner {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #ffffff;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
-}
-
-.timeTravelIcon {
-    font-size: 18px;
-}
-
-.backToCurrentButton {
-    background: #ffffff;
-    color: #111827;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-left: auto;
-}
-
-.backToCurrentButton:hover {
-    background: #f3f4f6;
-    transform: translateY(-1px);
-}
-
 /* Main content */
 .mainContent {
     display: grid;

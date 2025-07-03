@@ -9,7 +9,7 @@
     },
     "scripts": {
         "dev": "yarn workspace draft dev",
-        "build": "yarn workspace draft build && yarn copy-build && yarn workspace functions build",
+        "build": "yarn clean && yarn workspace draft build && yarn copy-build && yarn workspace functions build",
         "copy-build": "cp -r draft/build functions/",
         "clean": "rm -rf functions/build draft/build functions/lib",
         "preview": "yarn workspace draft preview",
