@@ -1,6 +1,6 @@
 /* Location: app/leagues/types/league-standings-types.ts */
 
-import type { DivisionSheetData, DivisionId, PositionSlotKey } from '../../teams/types/team-types';
+import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../teams/types/team-types';
 
 export interface PositionPointsBreakdown {
     gk: number; // gk_0 + sub_0 total
@@ -19,7 +19,7 @@ export interface PositionRankChange {
     mid: number | null;
     wa: number | null;
     ca: number | null;
-    total: number | null;  // Add this line
+    total: number | null; // Add this line
 }
 
 export interface LeagueStandingsTeamData {
@@ -33,7 +33,7 @@ export interface LeagueStandingsTeamData {
 
 export interface EnhancedLeagueStandingsLoaderData {
     divisions: DivisionSheetData[];
-    selectedDivision: DivisionId;
+    selectedDivision: DivisionSheetData;
     selectedGameweek: number;
     currentGameweek: number;
     availableGameweeks: number[];

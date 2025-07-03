@@ -353,7 +353,7 @@ export const LeagueStandings = () => {
     const handleGameweekChange = (gameweek: number) => {
         const newParams = new URLSearchParams();
         if (selectedDivision) {
-            newParams.set('division', selectedDivision);
+            newParams.set('division', selectedDivision.id);
         }
         if (gameweek !== currentGameweek) {
             newParams.set('gameweek', gameweek.toString());
@@ -364,7 +364,7 @@ export const LeagueStandings = () => {
     return (
         <div>
             <PageHeader
-                title={`${selectedDivision} Standings`}
+                title={`${selectedDivision.label} Standings`}
                 actions={
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
                         <GameweekSelector
@@ -375,7 +375,7 @@ export const LeagueStandings = () => {
                         />
                         <SelectDivision
                             divisions={divisions}
-                            selectedDivision={selectedDivision}
+                            selectedDivision={selectedDivision.id}
                             handleDivisionChange={handleDivisionChange}
                         />
                     </div>
@@ -399,18 +399,11 @@ export const LeagueStandings = () => {
 
             {/* Show specific division if selected */}
             {selectedDivision ? (
-                (() => {
-                    const division = divisions.find((d) => d.id === selectedDivision);
-                    const teams = standingsData[selectedDivision] || [];
-
-                    if (!division) {
-                        return <div className="error">Division not found: {selectedDivision}</div>;
-                    }
-
-                    return (
-                        <DivisionStandingsTable division={division} teams={teams} selectedGameweek={selectedGameweek} />
-                    );
-                })()
+                <DivisionStandingsTable
+                    division={selectedDivision}
+                    teams={standingsData[selectedDivision.id] || []}
+                    selectedGameweek={selectedGameweek}
+                />
             ) : (
                 /* Show all divisions */
                 <div>

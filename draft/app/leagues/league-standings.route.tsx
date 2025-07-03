@@ -29,7 +29,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
         // Dynamic import to keep server code on server
         const { getEnhancedLeagueStandingsData } = await import('./server/league-standings.server');
-        const loaderData = await getEnhancedLeagueStandingsData(selectedDivision, selectedGameweek);
+        const loaderData = await getEnhancedLeagueStandingsData({ selectedDivision, selectedGameweek });
 
         return data<EnhancedLeagueStandingsLoaderData>(loaderData);
     } catch (error) {

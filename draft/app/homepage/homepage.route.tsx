@@ -3,7 +3,7 @@
 // app/routes/dashboard.tsx
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
-import { HomePage } from './home.page';
+import { LeagueStandings } from './home.page';
 
 export const meta: MetaFunction = () => {
     return [
@@ -15,8 +15,10 @@ export const meta: MetaFunction = () => {
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
         // Dynamic import to keep server code on server
-        const { getDashboardData } = await import('../homepage/server/dashboard.server');
-        const dashboardData = await getDashboardData();
+        const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
+        const { getAllLeagueStandingsData } = await import('../leagues/server/league-standings.server');
+        const selectedGameweek = await fplApiCache.getCurrentGameweek();
+        const dashboardData = await getAllLeagueStandingsData({ selectedGameweek });
         return data(dashboardData);
     } catch (error) {
         console.error('Dashboard loader error:', error);
@@ -24,4 +26,4 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 }
 
-export default HomePage;
+export default LeagueStandings;
