@@ -1,6 +1,6 @@
-// app/leagues/types/league-standings-types.ts
+/* Location: app/leagues/types/league-standings-types.ts */
 
-import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../teams/types/team-types';
+import type { DivisionSheetData, DivisionId, PositionSlotKey } from '../../teams/types/team-types';
 
 export interface PositionPointsBreakdown {
     gk: number; // gk_0 + sub_0 total
@@ -12,12 +12,23 @@ export interface PositionPointsBreakdown {
     total: number; // sum of all positions
 }
 
+export interface PositionRankChange {
+    gk: number | null;
+    cb: number | null;
+    fb: number | null;
+    mid: number | null;
+    wa: number | null;
+    ca: number | null;
+    total: number | null;  // Add this line
+}
+
 export interface LeagueStandingsTeamData {
     userId: string;
     userName: string;
     teamName: string;
     gameweekPoints: PositionPointsBreakdown;
     seasonPoints: PositionPointsBreakdown;
+    positionRankChanges?: PositionRankChange;
 }
 
 export interface EnhancedLeagueStandingsLoaderData {
@@ -26,7 +37,7 @@ export interface EnhancedLeagueStandingsLoaderData {
     selectedGameweek: number;
     currentGameweek: number;
     availableGameweeks: number[];
-    standingsData: Record<string, LeagueStandingsTeamData[]>; // by divisionId
+    standingsData: Record<string, LeagueStandingsTeamData[]>;
 }
 
 export interface PositionColumnConfig {

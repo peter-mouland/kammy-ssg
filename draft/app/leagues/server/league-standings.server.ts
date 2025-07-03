@@ -7,14 +7,16 @@ import type {
     EnhancedLeagueStandingsLoaderData,
     LeagueStandingsTeamData,
     PositionPointsBreakdown,
+    PositionRankChange,
 } from '../types/league-standings-types';
+import { getDivisionTeamsDocument } from '../../scoring/server/services/division-teams.service';
+import { calculatePositionRankings } from '../lib/simple-position-rankings';
 
 export async function getEnhancedLeagueStandingsData(
     selectedDivision: DivisionId,
     selectedGameweek?: number,
 ): Promise<EnhancedLeagueStandingsLoaderData> {
     // Import services dynamically to keep server code on server
-    const { getDivisionTeamsDocument } = await import('../../scoring/server/services/division-teams.service');
     const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
     const divisions = await readDivisions();
@@ -25,11 +27,10 @@ export async function getEnhancedLeagueStandingsData(
 
     const standingsData: Record<string, LeagueStandingsTeamData[]> = {};
 
-    // Get data for specific division
-    const divisionStandings = await getDivisionStandingsData(
+    // Get data for specific division with position rank changes
+    const divisionStandings = await getDivisionStandingsWithPositionRankChanges(
         selectedDivision,
         targetGameweek,
-        getDivisionTeamsDocument,
     );
     standingsData[selectedDivision] = divisionStandings;
 
@@ -43,10 +44,25 @@ export async function getEnhancedLeagueStandingsData(
     };
 }
 
-async function getDivisionStandingsData(
-    divisionId: string,
+async function getDivisionStandingsWithPositionRankChanges(
+    divisionId: DivisionId,
     gameweek: number,
-    getDivisionTeamsDocument: any,
+): Promise<LeagueStandingsTeamData[]> {
+    const previousGameweek = gameweek === 0 ? 0 : gameweek - 1;
+    try {
+        const currentStandings = await getDivisionStandingsData(divisionId, gameweek);
+        const previousStandings = await getDivisionStandingsData(divisionId, previousGameweek)
+        // Calculate position rank changes
+        return calculatePositionRankChanges(currentStandings, previousStandings);
+    } catch (error) {
+        console.error(`Failed to get division standings with position rank changes for ${divisionId} GW${gameweek}:`, error);
+        return [];
+    }
+}
+
+async function getDivisionStandingsData(
+    divisionId: DivisionId,
+    gameweek: number,
 ): Promise<LeagueStandingsTeamData[]> {
     try {
         // Get division teams document for the gameweek
@@ -136,11 +152,92 @@ function calculatePositionPoints(
     return breakdown;
 }
 
-export async function handleLeagueStandingsAction(formData: FormData) {
-    const actionType = formData.get('actionType');
-
-    switch (actionType) {
-        default:
-            throw new Error('Invalid action type');
+function calculatePositionRankChanges(
+    currentStandings: LeagueStandingsTeamData[],
+    previousStandings: LeagueStandingsTeamData[] | null,
+): LeagueStandingsTeamData[] {
+    if (!previousStandings) {
+        // First gameweek - no rank changes to calculate
+        return currentStandings;
     }
+
+    // Use your existing ranking logic to calculate rankings for both gameweeks
+    const currentRankings = calculatePositionRankings(currentStandings, 'seasonPoints');
+    const previousRankings = calculatePositionRankings(previousStandings, 'seasonPoints');
+    // Calculate rank changes for each team
+    return currentStandings.map(team => {
+        const positionRankChanges: PositionRankChange = {
+            gk: null,
+            cb: null,
+            fb: null,
+            mid: null,
+            wa: null,
+            ca: null,
+            total: null,
+        };
+
+        const positionKeys: (keyof PositionRankChange)[] = ['gk', 'cb', 'fb', 'mid', 'wa', 'ca', 'total'];
+
+        positionKeys.forEach(position => {
+            const currentRankScore = currentRankings[team.userId]?.[position];
+            const previousRankScore = previousRankings[team.userId]?.[position];
+
+            if (currentRankScore !== undefined && previousRankScore !== undefined) {
+                // Convert rank scores back to ranks for display
+                // Higher rank score = better rank (lower number)
+                const currentRank = convertRankScoreToRank(currentRankScore, currentStandings.length);
+                const previousRank = convertRankScoreToRank(previousRankScore, previousStandings.length);
+
+                // Calculate rank change: previousRank - currentRank
+                // Positive = moved up, Negative = moved down
+                positionRankChanges[position] = previousRank - currentRank;
+            }
+        });
+
+        return {
+            ...team,
+            positionRankChanges,
+        };
+    });
+}
+
+function calculatePositionRanks(
+    standings: LeagueStandingsTeamData[],
+    positionKeys: (keyof PositionPointsBreakdown)[],
+): Record<keyof PositionPointsBreakdown, Map<string, number>> {
+    const positionRanks: Record<keyof PositionPointsBreakdown, Map<string, number>> = {
+        gk: new Map(),
+        cb: new Map(),
+        fb: new Map(),
+        mid: new Map(),
+        wa: new Map(),
+        ca: new Map(),
+        total: new Map(),
+    };
+
+    positionKeys.forEach(position => {
+        // Sort teams by position points (descending)
+        const sortedByPosition = [...standings].sort((a, b) =>
+            b.gameweekPoints[position] - a.gameweekPoints[position]
+        );
+
+        // Assign ranks (1-based)
+        sortedByPosition.forEach((team, index) => {
+            positionRanks[position].set(team.userId, index + 1);
+        });
+    });
+
+    return positionRanks;
+}
+
+export async function handleLeagueStandingsAction(formData: FormData | URLSearchParams) {
+    // Handle any actions needed for league standings
+    // This can be extended for future functionality
+    return { success: true };
+}
+
+function convertRankScoreToRank(rankScore: number, numTeams: number): number {
+    // Convert rank score back to 1-based rank
+    // Rank score 0 = worst rank (numTeams), rank score (numTeams-1) = best rank (1)
+    return numTeams - rankScore;
 }

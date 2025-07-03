@@ -66,6 +66,8 @@ export interface TableProps<T = any> {
         onPageChange: (page: number) => void;
         onPageSizeChange?: (pageSize: number) => void;
     };
+    getRowProps?: (item: T, row: number) => React.HTMLAttributes<HTMLTableRowElement>;
+    getCellProps?: (item: T, row: number, column: number) => React.HTMLAttributes<HTMLTableRowElement>;
     className?: string;
     containerClassName?: string;
 }
@@ -100,6 +102,8 @@ export function Table<T = any>({
     rowClassName,
     actions,
     pagination,
+   getRowProps,
+   getCellProps,
     className = '',
     containerClassName = '',
 }: TableProps<T>) {
@@ -290,17 +294,20 @@ export function Table<T = any>({
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedData.map((item, index) => {
-                            const rowClasses = [rowClassName?.(item, index)].filter(Boolean).join(' ');
+                        {sortedData.map((item, rowIndex) => {
+                            const rowProps = getRowProps?.(item, rowIndex) || {};
+                            const rowClasses = [rowClassName?.(item, rowIndex)].filter(Boolean).join(' ');
 
                             return (
                                 <tr
-                                    key={index}
+                                    key={rowIndex}
+                                    {...rowProps}
                                     className={rowClasses}
-                                    onClick={onRowClick ? () => onRowClick(item, index) : undefined}
-                                    style={{ cursor: onRowClick ? 'pointer' : undefined }}
+                                    onClick={onRowClick ? () => onRowClick(item, rowIndex) : undefined}
+                                    style={{ ...rowProps?.style, cursor: onRowClick ? 'pointer' : undefined }}
                                 >
-                                    {columns.map((column) => {
+                                    {columns.map((column, columnIndex) => {
+                                        const cellProps = getCellProps?.(item, rowIndex, columnIndex) || {};
                                         const cellClasses = [
                                             column.align &&
                                                 styles[
@@ -318,8 +325,10 @@ export function Table<T = any>({
                                             .join(' ');
 
                                         return (
-                                            <td key={column.key} className={cellClasses}>
-                                                {renderCell(item, column, index)}
+                                            <td key={column.key}
+                                                {...cellProps}
+                                                className={cellClasses}>
+                                                {renderCell(item, column, rowIndex)}
                                             </td>
                                         );
                                     })}
@@ -346,7 +355,7 @@ export function Table<T = any>({
                                                             className={buttonClasses}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                action.onClick(item, index);
+                                                                action.onClick(item, rowIndex);
                                                             }}
                                                             disabled={isDisabled}
                                                             title={action.label}

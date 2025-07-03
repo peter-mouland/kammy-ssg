@@ -1,0 +1,39 @@
+/* Location: app/leagues/components/position-rank-change.module.css */
+
+.positionRankChange {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+}
+
+.points {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-xs);
+    color: var(--color-gray-400);
+}
+
+.rankChange {
+    font-size: var(--font-base);
+    padding: 1px var(--spacing-1);
+    border-radius: var(--radius-sm);
+    line-height: 1;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.improvement {
+    color: var(--color-success);
+    /*background-color: var(--color-success-light);*/
+}
+
+.decline {
+    color: var(--color-error);
+    /*background-color: var(--color-error-light);*/
+}
+
+.noChange {
+    color: var(--color-gray-500);
+    /*background-color: var(--color-gray-200);*/
+}

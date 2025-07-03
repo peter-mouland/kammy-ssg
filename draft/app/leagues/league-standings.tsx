@@ -7,6 +7,7 @@ import { SelectDivision } from '../_shared/components/select-division';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import styles from './components/league-standings.module.css';
+import { PositionRankChange } from './components/position-rank-change';
 import { calculatePositionRankings } from './lib/simple-position-rankings';
 import type {
     EnhancedLeagueStandingsLoaderData,
@@ -54,17 +55,22 @@ export const POSITION_COLUMNS: PositionColumnConfig[] = [
 ];
 
 function PositionPointsTable({
-    teams,
-    pointsSource,
-    title,
-    subtitle,
-}: {
+                                 teams,
+                                 pointsSource,
+                                 title,
+                                 subtitle,
+                                 showRankChange = false,
+                                 isFirstGameweek = false,
+                             }: {
     teams: LeagueStandingsTeamData[];
     pointsSource: 'gameweekPoints' | 'seasonPoints';
     title: string;
     subtitle: string;
+    showRankChange?: boolean;
+    isFirstGameweek?: boolean;
 }) {
     const positionRankings = useMemo(() => calculatePositionRankings(teams, pointsSource), [teams, pointsSource]);
+
     // Define table columns for sortable table
     const columns: TableColumn<LeagueStandingsTeamData>[] = [
         {
@@ -95,33 +101,45 @@ function PositionPointsTable({
                 sortable: true,
                 accessor: (team) => team[pointsSource][col.key],
                 render: (points, team) => {
-                    const rank = positionRankings[team.userId]?.[col.key];
+                    // For season table, show rank and points as before
+                    if (!showRankChange) {
+                        const rank = positionRankings[team.userId]?.[col.key];
+                        return (
+                            <div>
+                                <span>
+                                    {rank && (
+                                        <span
+                                            className={styles.positionRank}
+                                            style={{
+                                                color: points > 0 ? col.color : 'var(--color-gray-400)',
+                                                fontSize: '1rem',
+                                            }}
+                                        >
+                                            {rank}
+                                        </span>
+                                    )}
+                                </span>
+                                <span
+                                    className={styles.points}
+                                    style={{
+                                        fontSize: '0.8rem',
+                                        color: 'var(--color-gray-400)',
+                                        marginLeft: '1rem',
+                                    }}
+                                >
+                                    {points}
+                                </span>
+                            </div>
+                        );
+                    }
+
+                    // For gameweek table, show points with rank change
                     return (
-                        <div>
-                            <span>
-                                {rank && (
-                                    <span
-                                        className={styles.positionRank}
-                                        style={{
-                                            color: points > 0 ? col.color : 'var(--color-gray-400)',
-                                            fontSize: '1rem',
-                                        }}
-                                    >
-                                        {rank}
-                                    </span>
-                                )}
-                            </span>
-                            <span
-                                className={styles.points}
-                                style={{
-                                    fontSize: '0.8rem',
-                                    color: 'var(--color-gray-400)',
-                                    marginLeft: '1rem',
-                                }}
-                            >
-                                {points}
-                            </span>
-                        </div>
+                        <PositionRankChange
+                            points={points}
+                            rankChange={team.positionRankChanges?.[col.key] ?? null}
+                            isFirstGameweek={isFirstGameweek}
+                        />
                     );
                 },
             }),
@@ -133,33 +151,46 @@ function PositionPointsTable({
             align: 'center',
             sortable: true,
             accessor: (team) => positionRankings[team.userId]?.total,
-            render: (total, team) => {
+            render: (points, team) => {
                 const rank = positionRankings[team.userId]?.total;
-                return (
-                    <div>
-                        {rank && (
+                if (!showRankChange) {
+
+                    return (
+                        <div>
+                            {rank && (
+                                <span
+                                    className={styles.positionRank}
+                                    style={{
+                                        fontSize: '1rem',
+                                        color: 'var(--color-primary)',
+                                    }}
+                                >
+                                    {rank}
+                                </span>
+                            )}
                             <span
-                                className={styles.positionRank}
+                                className={styles.points}
                                 style={{
-                                    fontSize: '1rem',
-                                    color: 'var(--color-primary)',
+                                    fontWeight: 'var(--font-weight-bold)',
+                                    color: 'var(--color-gray-400)',
+                                    marginLeft: '1rem',
                                 }}
                             >
-                                {rank}
+                                {team[pointsSource].total || 0}
                             </span>
-                        )}
-                        <span
-                            className={styles.points}
-                            style={{
-                                fontWeight: 'var(--font-weight-bold)',
-                                color: 'var(--color-gray-400)',
-                                marginLeft: '1rem',
-                            }}
-                        >
-                            {team[pointsSource].total || 0}
-                        </span>
-                    </div>
-                );
+                        </div>
+                    );
+                } else {
+
+                    // For gameweek table, show points with rank change
+                    return (
+                        <PositionRankChange
+                            points={points}
+                            rankChange={team.positionRankChanges?.total ?? null}
+                            isFirstGameweek={isFirstGameweek}
+                        />
+                    );
+                }
             },
         },
     ];
@@ -184,10 +215,10 @@ function PositionPointsTable({
                 columns={columns}
                 defaultSort={{ key: 'total', direction: 'desc' }}
                 className="table-compact"
-                getRowProps={(team, index) => ({
-                    style: {
-                        backgroundColor: index < 3 ? '#f0fdf4' : undefined,
-                    },
+                getCellProps={(team, index, column) => ({
+                    style: !showRankChange ? {
+                        borderBottom: index === 2 ? '1px dashed var(--color-green-500)' :  teams.length-4 === index ? '1px dashed var(--color-red-500)' : undefined,
+                    } : {},
                 })}
             />
 
@@ -223,19 +254,37 @@ function PositionPointsTable({
                     </div>
                 </div>
             )}
+
+            {/* Rank Change Legend for Gameweek Table */}
+            {showRankChange && !isFirstGameweek && (
+                <div style={{
+                    padding: '1rem',
+                    backgroundColor: '#f8fafc',
+                    borderTop: '1px solid #e2e8f0',
+                    fontSize: '0.75rem',
+                    color: '#6b7280'
+                }}>
+                    <strong>Rank Changes:</strong>
+                    <span style={{ color: '#10b981', marginLeft: '0.5rem' }}>+2 = moved up 2 positions</span>
+                    <span style={{ color: '#ef4444', marginLeft: '1rem' }}>-1 = moved down 1 position</span>
+                    <span style={{ marginLeft: '1rem' }}>- = no change</span>
+                </div>
+            )}
         </div>
     );
 }
 
 function DivisionStandingsTable({
-    division,
-    teams,
-    selectedGameweek,
-}: {
+                                    division,
+                                    teams,
+                                    selectedGameweek,
+                                }: {
     division: { id: string; label: string };
     teams: LeagueStandingsTeamData[];
     selectedGameweek: number;
 }) {
+    const isFirstGameweek = selectedGameweek === 0;
+
     if (teams.length === 0) {
         return (
             <div className="card" style={{ marginBottom: '2rem' }}>
@@ -258,13 +307,16 @@ function DivisionStandingsTable({
                 pointsSource="seasonPoints"
                 title="🏆 Season Standings"
                 subtitle={`Total points accumulated until gameweek ${selectedGameweek}`}
+                showRankChange={false}
             />
 
             <PositionPointsTable
                 teams={teams}
                 pointsSource="gameweekPoints"
                 title={`⚡ Gameweek ${selectedGameweek}`}
-                subtitle={`Points scored during gameweek ${selectedGameweek} only`}
+                subtitle={`Points scored during gameweek ${selectedGameweek}${!isFirstGameweek ? ' with position rank changes' : ''}`}
+                showRankChange={true}
+                isFirstGameweek={isFirstGameweek}
             />
         </div>
     );
@@ -411,6 +463,15 @@ export const LeagueStandings = () => {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f1f5f9', borderRadius: '0.375rem' }}>
+                        <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'var(--font-weight-semibold)' }}>
+                            📈 Gameweek Rank Changes
+                        </p>
+                        <p style={{ margin: 0, fontSize: 'var(--font-sm)', color: 'var(--color-gray-600)' }}>
+                            In the gameweek table, each position shows points scored and rank movement. For example:
+                            "7 +2" means 7 points scored and moved up 2 positions in that category since last gameweek.
+                        </p>
                     </div>
                 </div>
             </div>
