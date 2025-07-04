@@ -86,6 +86,8 @@ export function TransferForm({
     const [comment, setComment] = useState('');
     const [validation, setValidation] = useState<TransferValidationResult>(INITIAL_VALIDATION);
 
+    console.log({ loanSelection });
+
     // Get managers for selected division
     const divisionsManagers = managers.filter((m) => m.divisionId === selectedDivision);
     const currentManager = divisionsManagers.find((m) => m.userId === selectedManager);
@@ -167,14 +169,14 @@ export function TransferForm({
             if (ownership.ownerId && ownership.ownerId !== selectedManager) {
                 setLoanSelection({
                     loanPlayer: playerIn,
-                    loanToManager: selectedManager,
+                    loanToManager: null, // loan to is to be only used for playerOut
                     loanFromManager: ownership.ownerId,
                 });
             } else if (!ownership.ownerId) {
                 setLoanSelection({
                     loanPlayer: playerSelection.playerOut,
-                    loanToManager: null,
-                    loanFromManager: selectedManager,
+                    loanToManager: null, // loan to is to be only used for playerOut
+                    loanFromManager: null,
                 });
             }
         }
@@ -301,7 +303,7 @@ export function TransferForm({
                         managers={divisionsManagers}
                         managerSelector={
                             <SelectUser
-                                selectedUser={selectedManager}
+                                selectedUser={loanSelection.loanToManager}
                                 users={divisionsManagers.filter((m) => m.userId !== selectedManager)}
                                 handleUserChange={handleBorrowingManagerChange}
                             />

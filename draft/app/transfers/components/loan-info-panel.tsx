@@ -31,17 +31,12 @@ export function LoanInfoPanel({
         return manager ? `${manager.userName} (${manager.teamName})` : userId;
     };
 
-    const borrowingManager =
-        loanSelection.loanFromManager && !loanSelection.loanToManager
-            ? managerSelector
-            : getManagerName(loanSelection.loanToManager);
-
     if (transferType === 'LOAN_START') {
         const playerOnLoanName =
             loanSelection.loanPlayer && 'playerName' in loanSelection.loanPlayer
                 ? loanSelection.loanPlayer?.playerName
                 : loanSelection.loanPlayer?.web_name;
-        const loanDirection = currentManager?.userId === loanSelection.loanToManager ? 'from' : 'to';
+        const loanIn = !!loanSelection.loanFromManager;
         return (
             <div className={styles.loanPanel}>
                 <div className={styles.loanHeader}>
@@ -51,28 +46,50 @@ export function LoanInfoPanel({
 
                 <div className={styles.loanExplanation}>
                     <p className={styles.explanationText}>
-                        You are requesting to{' '}
-                        <strong>
-                            loan a player <em>{loanDirection}</em> another manager
-                        </strong>
-                        . Both managers must submit matching loan requests for the transfer to be approved.
+                        Would you like to <strong>loan your player to another manager</strong>?
                     </p>
                 </div>
 
                 <div className={styles.loanDetails}>
                     <div className={styles.loanRow}>
-                        <span className={styles.loanLabel}>Player on Loan:</span>
+                        <span className={styles.loanLabel}>Player:</span>
                         <span className={styles.loanValue}>{playerOnLoanName}</span>
                     </div>
                     <div className={styles.loanRow}>
                         <span className={styles.loanLabel}>Lending Manager:</span>
-                        <span className={styles.loanValue}>{getManagerName(loanSelection.loanFromManager)}</span>
+                        <span className={styles.loanValue}>{getManagerName(currentManager.userId)}</span>
                     </div>
                     <div className={styles.loanRow}>
                         <span className={styles.loanLabel}>Borrowing Manager:</span>
-                        <span className={styles.loanValue}>{borrowingManager}</span>
+                        <span className={styles.loanValue}>{managerSelector}</span>
                     </div>
                 </div>
+                {loanIn && (
+                    <>
+                        <div className={styles.loanExplanation}>
+                            <p className={styles.explanationText}>
+                                You are requesting to <strong>loan a player from another manager</strong>.
+                            </p>
+                        </div>
+
+                        <div className={styles.loanDetails}>
+                            <div className={styles.loanRow}>
+                                <span className={styles.loanLabel}>Player on Loan:</span>
+                                <span className={styles.loanValue}>{playerOnLoanName}</span>
+                            </div>
+                            <div className={styles.loanRow}>
+                                <span className={styles.loanLabel}>Lending Manager:</span>
+                                <span className={styles.loanValue}>
+                                    {getManagerName(loanSelection.loanFromManager)}
+                                </span>
+                            </div>
+                            <div className={styles.loanRow}>
+                                <span className={styles.loanLabel}>Borrowing Manager:</span>
+                                <span className={styles.loanValue}>{getManagerName(currentManager.userId)}</span>
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {loanSelection.loanToManager && loanSelection.loanFromManager && (
                     <div className={styles.loanInstructions}>

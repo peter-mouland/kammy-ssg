@@ -71,12 +71,11 @@ export function extractLoanStatus(
     const loanedIn: RosterPlayer[] = [];
 
     for (const positionSlot of Object.values(roster)) {
-        if (positionSlot.player.onLoanTo) {
-            if (positionSlot.player.onLoanTo === currentUserId) {
-                loanedIn.push(positionSlot.player);
-            } else {
-                loanedOut.push(positionSlot.player);
-            }
+        if (positionSlot.player.onLoanTo === currentUserId) {
+            loanedIn.push(positionSlot.player);
+        }
+        if (positionSlot.player.onLoanFrom === currentUserId) {
+            loanedOut.push(positionSlot.player);
         }
     }
 

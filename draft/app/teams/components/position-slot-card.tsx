@@ -44,8 +44,8 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
                 </div>
             )}
 
-            {/* Loan Indicator */}
-            {player.onLoanTo && <div className={styles.loanIndicator}>On Loan</div>}
+            {player.onLoanTo && <div className={styles.loanIndicator}>On Loan to {player.onLoanTo}</div>}
+            {player.onLoanFrom && <div className={styles.loanIndicator}>On Loan from {player.onLoanFrom}</div>}
         </div>
     );
 };

@@ -12,6 +12,7 @@ interface LoanStatusProps {
     gameweek: number;
 }
 
+// todo: correctly calculate loanTo and From at source - nick + sav scenarios
 export const LoanStatus: React.FC<LoanStatusProps> = ({ loanedOut, loanedIn, gameweek }) => {
     return (
         <div className={styles.loanStatus}>
