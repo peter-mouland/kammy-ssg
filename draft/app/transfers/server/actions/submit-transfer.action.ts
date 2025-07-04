@@ -56,6 +56,9 @@ async function submitTransfer(formData: URLSearchParams): Promise<SubmitTransfer
             playerOutCode: Number(formData.get('playerOutCode')),
             playerInCode: Number(formData.get('playerInCode')),
             comment: formData.get('comment') || '',
+            // Extract loan fields from form
+            onLoanTo: formData.get('onLoanTo') || '',
+            onLoanFrom: formData.get('onLoanFrom') || '',
         };
 
         // Validate required fields
@@ -101,6 +104,8 @@ async function submitTransfer(formData: URLSearchParams): Promise<SubmitTransfer
             codeIn: playerIn.code,
             transferType: mapTransferTypeToSheet(transferData.transferType),
             comment: transferData.comment,
+            loanTo: transferData.onLoanTo || '',
+            loanFrom: transferData.onLoanFrom || '',
         };
 
         // Submit to Google Sheets

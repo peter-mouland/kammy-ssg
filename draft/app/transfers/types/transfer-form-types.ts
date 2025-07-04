@@ -1,17 +1,74 @@
-/* Location: app/transfers/types/transfer-form-types.ts */
+// app/transfers/types/transfer-form-types.ts
 
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
     DivisionId,
     DivisionSheetData,
     ManagerId,
+    PositionSlotKey,
+    RosterByManagerId,
     RosterPlayer,
+    TeamPositionSlot,
     TeamRoster,
     UserTeamsSheetData,
 } from '../../teams/types/team-types';
 import type { TransferRecommendation } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
+
+export type OwnedPlayersByCode = Record<
+    RosterPlayer['playerCode'],
+    {
+        managerId: ManagerId;
+        slotKey: PositionSlotKey;
+        slot: TeamPositionSlot;
+    }
+>;
+
+/**
+ * Transfer form submission data - UPDATED with loan fields
+ */
+export interface TransferFormData {
+    divisionId: DivisionId;
+    managerId: ManagerId;
+    transferType: TransferType;
+    playerOutCode: number;
+    playerInCode: number;
+    comment: string;
+    // Loan-specific fields (NEW)
+    onLoanTo?: string; // User ID of manager receiving the loan
+    onLoanFrom?: string; // User ID of manager lending the player
+}
+
+/**
+ * Player selection state for form - ENHANCED with loan context
+ */
+export interface PlayerSelectionState {
+    playerOut: RosterPlayer | null;
+    playerIn: EnhancedPlayerData | null;
+    // Loan-specific state (NEW)
+    loanContext?: {
+        isLoanRequest: boolean;
+        targetManagerId?: string;
+        targetManagerName?: string;
+        requiresBilateralAgreement: boolean;
+    };
+}
+
+/**
+ * Player eligibility for transfer in - ENHANCED for loans
+ */
+export interface PlayerEligibility {
+    isEligible: boolean;
+    reason?: string;
+    icon?: string;
+    // Loan-specific eligibility (NEW)
+    loanInfo?: {
+        currentOwner?: string;
+        canLoan: boolean;
+        loanRestictions?: string[];
+    };
+}
 
 /**
  * Data structure for the transfers page
@@ -34,15 +91,37 @@ export interface TransfersPageData {
     availablePlayers: EnhancedPlayerData[];
     transferDeadline: string;
     isBeforeDeadline: boolean;
+    // Enhanced with loan tracking (NEW)
+    pendingLoans?: PendingLoanRequest[];
+    activeLoanAgreements?: ActiveLoanAgreement[];
+    divisionRosters: RosterByManagerId;
+    teamsByCode: Record<FplTeam['code'], FplTeam>;
 }
 
 /**
- * Division information for dropdowns
+ * Pending loan request tracking (NEW)
  */
-export interface Division {
-    id: DivisionId;
-    name: string;
-    isActive: boolean;
+export interface PendingLoanRequest {
+    id: string;
+    requestingManager: ManagerId;
+    targetManager: ManagerId;
+    playerOut: EnhancedPlayerData;
+    playerIn: EnhancedPlayerData;
+    timestamp: Date;
+    needsMatchingRequest: boolean;
+}
+
+/**
+ * Active loan agreement tracking (NEW)
+ */
+export interface ActiveLoanAgreement {
+    id: string;
+    lendingManager: ManagerId;
+    borrowingManager: ManagerId;
+    loanedPlayer: EnhancedPlayerData;
+    exchangedPlayer?: EnhancedPlayerData;
+    startDate: Date;
+    status: 'ACTIVE' | 'ENDING';
 }
 
 /**
@@ -65,24 +144,6 @@ export interface TransferFormData {
     playerOutCode: number;
     playerInCode: number;
     comment: string;
-}
-
-/**
- * Player selection state for form
- */
-export interface PlayerSelectionState {
-    playerOut: RosterPlayer | null;
-    playerIn: EnhancedPlayerData | null;
-    transferType: TransferType;
-}
-
-/**
- * Player eligibility for transfer in
- */
-export interface PlayerEligibility {
-    isEligible: boolean;
-    reason?: string;
-    icon?: string;
 }
 
 /**

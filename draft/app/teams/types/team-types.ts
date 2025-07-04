@@ -53,52 +53,10 @@ export type PositionSlotKey =
     | 'wa_1'
     | 'ca_0'
     | 'ca_1'
-    | 'sub_0';
+    | 'sub_0'
+    | 'on_loan_0';
 
-export type RosterPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub';
-
-// Team component types
-export interface FirestoreTeamMember {
-    userId: ManagerId;
-    teamPosition: RosterPosition;
-    playerPosition: CustomPosition;
-    player: string; // web_name from FPL
-    playerId: number; // FPL player code
-    playerCode: number; // FPL player code
-    onLoanTo: string | null; // userId of team receiving loan
-    onLoanStart: string | null; // ISO date string when loan started
-    isSub: boolean; // true if on bench
-    gameweek: number; // current gameweek (draft = 0)
-}
-
-/**
- * Stats view mode for toggle functionality
- */
-export type StatsViewMode = 'gameweek' | 'season';
-
-/**
- * Contributing stats breakdown for detailed analysis
- */
-export interface ContributingStatsItem {
-    label: string;
-    statValue: number;
-    pointsValue: number;
-    isRelevant: boolean;
-    description?: string;
-}
-
-export interface ContributingStatsBreakdown {
-    appearance: ContributingStatsItem;
-    goals: ContributingStatsItem;
-    assists: ContributingStatsItem;
-    cleanSheets: ContributingStatsItem;
-    yellowCards: ContributingStatsItem;
-    redCards: ContributingStatsItem;
-    saves: ContributingStatsItem;
-    penaltiesSaved: ContributingStatsItem;
-    goalsConceded: ContributingStatsItem;
-    bonus: ContributingStatsItem;
-}
+export type RosterPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub' | 'on_loan';
 
 export type RosterPlayer = {
     playerId: number; // FPL player ID
@@ -109,6 +67,7 @@ export type RosterPlayer = {
     teamSlotIndex: number; // 0-based index within position
     isSub: boolean;
     onLoanTo: string | null; // userId
+    onLoanFrom: string | null; // userId of team lending player (NEW)
     onLoanStart: string | null; // ISO date string
     assignedAt: string; // ISO date when assigned to this slot
 };

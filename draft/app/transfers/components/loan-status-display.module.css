@@ -1,0 +1,204 @@
+/* app/transfers/components/loan-status-display.module.css */
+
+.loanStatusContainer {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-6);
+    margin: var(--spacing-4) 0;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin: 0 0 var(--spacing-6) 0;
+    color: var(--color-gray-900);
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.loanIcon {
+    font-size: var(--font-xl);
+}
+
+.loanSection {
+    margin-bottom: var(--spacing-6);
+}
+
+.loanSection:last-child {
+    margin-bottom: 0;
+}
+
+.subsectionTitle {
+    margin: 0 0 var(--spacing-4) 0;
+    color: var(--color-gray-700);
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.loanCard {
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+}
+
+.loanCard:last-child {
+    margin-bottom: 0;
+}
+
+.loanHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.loanPlayers {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-weight: var(--font-weight-semibold);
+}
+
+.playerOut {
+    color: var(--color-gray-900);
+}
+
+.arrow {
+    color: var(--color-primary);
+    font-size: var(--font-lg);
+}
+
+.playerIn {
+    color: var(--color-gray-900);
+}
+
+.loanStatus {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.statusPending {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+}
+
+.statusReady {
+    background: var(--color-info-light);
+    color: var(--color-info);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+}
+
+.statusActive {
+    background: var(--color-success-light);
+    color: var(--color-success);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+}
+
+.loanDetails {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: var(--spacing-4);
+}
+
+.loanParties {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+}
+
+.party {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.partyLabel {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+    min-width: 80px;
+}
+
+.partyName {
+    color: var(--color-gray-900);
+}
+
+.youLabel {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.loanTimestamp {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-4);
+}
+
+.actionRequired {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--color-warning-light);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-warning-border);
+}
+
+.actionIcon {
+    font-size: var(--font-lg);
+}
+
+.actionText {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-warning);
+}
+
+.loanActions {
+    background: var(--color-info-light);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-info-border);
+}
+
+.actionInfo {
+    font-size: var(--font-sm);
+    color: var(--color-info);
+}
+
+/* Responsive adjustments */
+@media (max-width: var(--breakpoint-md)) {
+    .loanStatusContainer {
+        padding: var(--spacing-4);
+    }
+
+    .loanHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+    }
+
+    .loanPlayers {
+        flex-wrap: wrap;
+    }
+
+    .loanParties {
+        gap: var(--spacing-1);
+    }
+
+    .party {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .partyLabel {
+        min-width: auto;
+        font-size: var(--font-sm);
+    }
+}

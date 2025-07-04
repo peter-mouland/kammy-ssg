@@ -1,18 +1,24 @@
-/* Location: app/transfers/components/transfer-form.tsx */
+// app/transfers/components/transfer-form.tsx
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFetcher, useSearchParams } from 'react-router';
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import { SelectUser } from '../../_shared/components/select-user';
+import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
     DivisionId,
     DivisionSheetData,
     ManagerId,
+    PositionSlotKey,
+    RosterByManagerId,
+    RosterPlayer,
     TeamRoster,
     UserTeamsSheetData,
 } from '../../teams/types/team-types';
-import type { PlayerSelectionState, TransferValidationResult } from '../types/transfer-form-types';
+import { getPlayerOwnership } from '../lib/get-player-ownership';
+import type { OwnedPlayersByCode, PlayerSelectionState, TransferValidationResult } from '../types/transfer-form-types';
 import type { TransferType } from '../types/transfer-types';
+import { LoanInfoPanel } from './loan-info-panel';
 import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
 import styles from './transfer-form.module.css';
@@ -29,6 +35,14 @@ interface TransferFormProps {
     managerRoster?: TeamRoster;
     availablePlayers: EnhancedPlayerData[];
     isBeforeDeadline: boolean;
+    divisionRosters: RosterByManagerId;
+    teamsByCode: Record<FplTeam['code'], FplTeam>;
+}
+
+interface LoanSelectionState {
+    loanPlayer: RosterPlayer | EnhancedPlayerData | null;
+    loanToManager: ManagerId | null;
+    loanFromManager: ManagerId | null;
 }
 
 export function TransferForm({
@@ -38,19 +52,27 @@ export function TransferForm({
     managerRoster,
     availablePlayers,
     isBeforeDeadline,
+    divisionRosters,
+    teamsByCode,
 }: TransferFormProps) {
     const [searchParams, setSearchParams] = useSearchParams();
     const fetcher = useFetcher();
+    const TransferType: TransferType = (searchParams.get('transferType') as TransferType) || 'TRANSFER';
 
     const [playerSelection, setPlayerSelection] = useState<PlayerSelectionState>({
         playerOut: null,
         playerIn: null,
-        transferType: 'TRANSFER',
+    });
+
+    const [loanSelection, setLoanSelection] = useState<LoanSelectionState>({
+        loanPlayer: null,
+        loanToManager: null,
+        loanFromManager: null,
     });
 
     const [comment, setComment] = useState('');
     const [validation, setValidation] = useState<TransferValidationResult>({
-        isValid: false,
+        isValid: true,
         warnings: [],
         errors: [],
         blockingIssues: [],
@@ -58,6 +80,15 @@ export function TransferForm({
 
     // Get managers for selected division
     const divisionsManagers = managers.filter((m) => m.divisionId === selectedDivision);
+    const currentManager = divisionsManagers.find((m) => m.userId === selectedManager);
+    const ownedPlayersByCode = Object.entries(divisionRosters).reduce((acc: OwnedPlayersByCode, [managerId, team]) => {
+        (Object.keys(team.roster) as PositionSlotKey[]).forEach((slotKey) => {
+            const slot = team.roster[slotKey];
+            acc[slot.player.playerCode] = { managerId, slotKey, slot };
+        });
+
+        return acc;
+    }, {});
 
     const handleManagerChange = (managerId: ManagerId) => {
         const newParams = new URLSearchParams(searchParams);
@@ -68,29 +99,67 @@ export function TransferForm({
         setPlayerSelection({
             playerOut: null,
             playerIn: null,
-            transferType: playerSelection.transferType,
+        });
+
+        setLoanSelection({
+            loanPlayer: null,
+            loanToManager: null,
+            loanFromManager: null,
         });
     };
 
-    const handlePlayerOutChange = (player: EnhancedPlayerData | null) => {
-        setPlayerSelection((prev) => ({
-            ...prev,
-            playerOut: player,
+    const handleBorrowingManagerChange = (managerId: ManagerId) => {
+        setLoanSelection((curr) => ({
+            ...curr,
+            loanToManager: managerId,
         }));
     };
 
-    const handlePlayerInChange = (player: EnhancedPlayerData | null) => {
+    const handlePlayerOutChange = (playerOut: RosterPlayer | null) => {
         setPlayerSelection((prev) => ({
             ...prev,
-            playerIn: player,
+            playerOut,
         }));
+    };
+
+    const handlePlayerInChange = (playerIn: EnhancedPlayerData | null) => {
+        setPlayerSelection((prev) => ({
+            ...prev,
+            playerIn,
+        }));
+
+        // Auto-determine loan relationships for owned players
+        if (playerIn && TransferType === 'LOAN_START') {
+            const ownership = getPlayerOwnership(playerIn, ownedPlayersByCode);
+            if (ownership.ownerId && ownership.ownerId !== selectedManager) {
+                setLoanSelection({
+                    loanPlayer: playerIn,
+                    loanToManager: selectedManager,
+                    loanFromManager: ownership.ownerId,
+                });
+            } else if (!ownership.ownerId) {
+                setLoanSelection({
+                    loanPlayer: playerSelection.playerOut,
+                    loanToManager: null,
+                    loanFromManager: selectedManager,
+                });
+            }
+        }
     };
 
     const handleTransferTypeChange = (transferType: TransferType) => {
-        setPlayerSelection((prev) => ({
-            ...prev,
-            transferType,
-        }));
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('transferType', transferType);
+        setSearchParams(newParams);
+
+        // Reset loan selection when changing transfer type
+        if (transferType !== 'LOAN_START' && transferType !== 'LOAN_FINISH') {
+            setLoanSelection({
+                loanPlayer: null,
+                loanToManager: null,
+                loanFromManager: null,
+            });
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -104,163 +173,124 @@ export function TransferForm({
         formData.append('actionType', 'submitTransfer');
         formData.append('divisionId', selectedDivision);
         formData.append('managerId', selectedManager);
-        formData.append('transferType', playerSelection.transferType);
+        formData.append('transferType', TransferType || 'Transfer');
         formData.append('playerOutCode', playerSelection.playerOut?.playerCode.toString() || '');
         formData.append('playerInCode', playerSelection.playerIn?.code.toString() || '');
         formData.append('comment', comment);
-        fetcher.submit(formData, { method: 'POST' });
+
+        // Add loan fields for loan transfers
+        if (TransferType === 'LOAN_START') {
+            formData.append('onLoanTo', loanSelection.loanToManager || '');
+            formData.append('onLoanFrom', loanSelection.loanFromManager || '');
+        }
+
+        fetcher.submit(formData, { method: 'post' });
     };
 
-    // Validate transfer when selection changes
-    useEffect(() => {
-        if (playerSelection.playerOut && playerSelection.playerIn) {
-            // TODO: Integrate with existing validation rules
-            setValidation({
-                isValid: true,
-                warnings: [],
-                errors: [],
-                blockingIssues: [],
-            });
-        } else {
-            setValidation({
-                isValid: false,
-                warnings: [],
-                errors: [],
-                blockingIssues: ['Please select both players'],
-            });
-        }
-    }, [playerSelection]);
-
+    // Determine if this is a loan transfer type
+    const isLoanTransfer = TransferType === 'LOAN_START' || TransferType === 'LOAN_FINISH';
     const canSubmit =
-        isBeforeDeadline &&
-        selectedDivision &&
-        selectedManager &&
-        validation.isValid &&
-        validation.blockingIssues.length === 0;
-
+        !validation.isValid ||
+        validation.blockingIssues.length > 0 ||
+        !isBeforeDeadline ||
+        fetcher.state === 'submitting';
     return (
-        <form onSubmit={handleSubmit} className={styles.transferForm}>
-            <div className={styles.selectionRow}>
-                <div className={styles.transferTypeSection}>
-                    <div className={styles.fieldGroup}>
-                        <label htmlFor="manager-select" className={styles.fieldLabel}>
-                            Manager
-                        </label>
-                        <select
-                            id="manager-select"
-                            value={selectedManager}
-                            onChange={(e) => handleManagerChange(e.target.value as ManagerId)}
-                            className={styles.selectInput}
-                            disabled={!selectedDivision}
-                        >
-                            <option value="">Select Manager</option>
-                            {divisionsManagers.map((manager) => (
-                                <option key={manager.userId} value={manager.userId}>
-                                    {manager.userId}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                <div className={styles.transferTypeSection}>
-                    <TransferTypeSelector
-                        selectedType={playerSelection.transferType}
-                        onTypeChange={handleTransferTypeChange}
+        <div className={styles.transferForm}>
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.section}>
+                    <SelectUser
+                        selectedUser={selectedManager}
+                        users={divisionsManagers}
+                        handleUserChange={handleManagerChange}
                     />
                 </div>
-            </div>
 
-            {/* Player Selection */}
-            {selectedManager && managerRoster && (
-                <div className={styles.playerSelectionSection}>
-                    <div className={styles.playerSelectors}>
-                        <div className={styles.playerOutSection}>
+                <div className={styles.section}>
+                    <TransferTypeSelector selectedType={TransferType} onTypeChange={handleTransferTypeChange} />
+                </div>
+
+                {/* Player Selection */}
+                {selectedManager && managerRoster && (
+                    <>
+                        <div className={styles.section}>
                             <PlayerOutSelector
                                 roster={managerRoster}
                                 selectedPlayer={playerSelection.playerOut}
                                 onPlayerChange={handlePlayerOutChange}
-                                transferType={playerSelection.transferType}
+                                transferType={TransferType}
                             />
                         </div>
 
-                        <div className={styles.transferArrow}>
-                            <span className={styles.arrowIcon}>→</span>
-                        </div>
-
-                        <div className={styles.playerInSection}>
+                        <div className={styles.section}>
                             <PlayerInSelector
                                 availablePlayers={availablePlayers}
                                 selectedPlayer={playerSelection.playerIn}
                                 onPlayerChange={handlePlayerInChange}
-                                transferType={playerSelection.transferType}
+                                transferType={TransferType}
                                 playerOut={playerSelection.playerOut}
+                                ownedPlayersByCode={ownedPlayersByCode}
+                                teamsByCode={teamsByCode}
                             />
                         </div>
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
 
-            {/* Comment Section */}
-            {selectedManager && (
-                <div className={styles.commentSection}>
-                    <label htmlFor="comment" className={styles.fieldLabel}>
-                        Comment (Optional)
+                {/* Comment */}
+                <div className={styles.section}>
+                    <label className={styles.label} htmlFor={'comment'}>
+                        Comment
                     </label>
                     <textarea
-                        id="comment"
+                        id={'comment'}
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
-                        className={styles.commentInput}
-                        placeholder="Add any additional notes about this transfer..."
+                        className={styles.textarea}
+                        placeholder="Optional comment about this transfer..."
                         rows={3}
                     />
                 </div>
-            )}
 
-            {/* Validation Messages */}
-            {validation.warnings.length > 0 && (
-                <div className={styles.validationWarnings}>
-                    {validation.warnings.map((warning, index) => (
-                        <div key={index} className={styles.warningMessage}>
-                            ⚠️ {warning}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {validation.blockingIssues.length > 0 && (
-                <div className={styles.validationErrors}>
-                    {validation.blockingIssues.map((error, index) => (
-                        <div key={index} className={styles.errorMessage}>
-                            ❌ {error}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Submit Button */}
-            <div className={styles.submitSection}>
-                <button
-                    type="submit"
-                    // disabled={!canSubmit || fetcher.state === 'submitting'}
-                    className={styles.submitButton}
-                >
-                    {fetcher.state === 'submitting' ? 'Submitting...' : 'Submit Transfer'}
-                </button>
-
-                {!isBeforeDeadline && (
-                    <p className={styles.deadlineMessage}>Transfer deadline has passed for this gameweek</p>
+                {/* Loan Information Panel */}
+                {isLoanTransfer && (
+                    <LoanInfoPanel
+                        transferType={TransferType}
+                        currentManager={currentManager}
+                        loanSelection={loanSelection}
+                        managers={divisionsManagers}
+                        managerSelector={
+                            <SelectUser
+                                selectedUser={selectedManager}
+                                users={divisionsManagers.filter((m) => m.userId !== selectedManager)}
+                                handleUserChange={handleBorrowingManagerChange}
+                            />
+                        }
+                    />
                 )}
-            </div>
 
-            {/* Action Results */}
-            {fetcher.data?.success && (
-                <div className={styles.successMessage}>
-                    ✅ {fetcher.data.message || 'Transfer submitted successfully!'}
+                {/* Validation Messages */}
+                {(validation.errors.length > 0 || validation.blockingIssues.length > 0 || !isBeforeDeadline) && (
+                    <div className={styles.validationErrors}>
+                        {!isBeforeDeadline && <div className={styles.blockingIssue}>🚫 Missed the Deadline</div>}
+                        {validation.blockingIssues.map((issue, index) => (
+                            <div key={index} className={styles.blockingIssue}>
+                                🚫 {issue}
+                            </div>
+                        ))}
+                        {validation.errors.map((error, index) => (
+                            <div key={index} className={styles.error}>
+                                ❌ {error}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Submit Button */}
+                <div className={styles.section}>
+                    <button type="submit" disabled={canSubmit} className={styles.submitButton}>
+                        {fetcher.state === 'submitting' ? 'Submitting...' : 'Submit Transfer'}
+                    </button>
                 </div>
-            )}
-
-            {fetcher.data?.error && <div className={styles.errorMessage}>❌ {fetcher.data.error}</div>}
-        </form>
+            </form>
+        </div>
     );
 }

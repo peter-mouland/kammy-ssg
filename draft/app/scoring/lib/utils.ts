@@ -2,6 +2,7 @@
 
 import { DRAFT_RULES } from '../../draft/lib/draft-rules';
 import type { CustomPosition } from '../../players/types/player-types';
+import type { PositionSlotKey, RosterPosition } from '../../teams/types/team-types';
 
 /**
  * Get the latest gameweek points for a player
@@ -133,4 +134,31 @@ export function getPositionColor(position: CustomPosition): string {
 export function formatPointsDisplay(points: number): string {
     if (points > 0) return `+${points}`;
     return points.toString();
+}
+
+/**
+ * Check if a position slot should be included in scoring calculations
+ * Excludes the on_loan_0 slot as loaned out players don't contribute to owning team's score
+ */
+export function isSlotScoringActive(slotKey: PositionSlotKey): boolean {
+    return slotKey !== 'on_loan_0';
+}
+
+/**
+ * Check if a roster position participates in scoring
+ */
+export function isPositionScoringActive(position: RosterPosition): boolean {
+    return position !== 'on_loan';
+}
+
+/**
+ * Get active scoring slots from a roster
+ * Filters out on_loan_0 slot and any empty slots
+ */
+export function getActiveScoringSlots<T extends { player: { playerCode: number } }>(
+    roster: Record<PositionSlotKey, T>,
+): T[] {
+    return Object.entries(roster)
+        .filter(([slotKey, slot]) => isSlotScoringActive(slotKey as PositionSlotKey) && slot.player.playerCode > 0)
+        .map(([, slot]) => slot);
 }

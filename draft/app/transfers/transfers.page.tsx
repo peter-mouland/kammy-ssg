@@ -94,7 +94,9 @@ export function TransfersPage() {
                         selectedManager={data.selectedManager}
                         managerRoster={data.managerRoster}
                         availablePlayers={data.availablePlayers}
-                        isBeforeDeadline={data.isBeforeDeadline}
+                        isBeforeDeadline={true /* data.isBeforeDeadline */}
+                        divisionRosters={data.divisionRosters}
+                        teamsByCode={data.teamsByCode}
                     />
                 </div>
             </div>

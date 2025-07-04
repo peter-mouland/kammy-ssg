@@ -18,6 +18,8 @@ export interface TransferSheetData {
     'Code In': number; // player.code
     'Transfer Type': 'Transfer' | 'swap' | 'loan start' | 'loan finish' | 'trade';
     Comment: string;
+    'Loan To': string; // userId of manager receiving the loan (NEW)
+    'Loan From': string; // userId of manager lending the player (NEW)
 }
 export interface ProcessedTransferSheetData {
     status: 'Y' | 'N' | null | string; // Y = approved, N = rejected, null/empty = pending
@@ -29,6 +31,8 @@ export interface ProcessedTransferSheetData {
     codeIn: number; // player.code
     transferType: 'Transfer' | 'swap' | 'loan start' | 'loan finish' | 'trade';
     comment: string;
+    loanTo: string; // userId of manager receiving the loan (NEW)
+    loanFrom: string; // userId of manager lending the player (NEW)
 }
 
 /**
@@ -44,6 +48,10 @@ export interface ProcessedTransfer {
     playerIn: EnhancedPlayerData;
     comment: string;
     gameweekData: GameWeekData;
+
+    // Loan-specific fields (user IDs)
+    onLoanTo?: string; // User ID of manager receiving the loan
+    onLoanFrom?: string; // User ID of manager lending the player
 }
 
 /**

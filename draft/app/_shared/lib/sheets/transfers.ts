@@ -36,6 +36,8 @@ const TRANSFERS_HEADERS: Record<keyof TransferSheetData, keyof ProcessedTransfer
     'Code In': 'codeIn',
     'Transfer Type': 'transferType',
     Comment: 'comment',
+    'Loan To': 'loanTo', // NEW
+    'Loan From': 'loanFrom', // NEW
 };
 
 const TRANSFER_SHEET_HEADERS = [
@@ -48,6 +50,8 @@ const TRANSFER_SHEET_HEADERS = [
     'Code In',
     'Transfer Type',
     'Comment',
+    'Loan To', // NEW
+    'Loan From', // NEW
 ] as const;
 /**
  * Transform functions for parsing sheet data
@@ -110,6 +114,12 @@ const TRANSFER_TRANSFORM_FUNCTIONS = {
     Comment: (value: any): string => {
         return value ? String(value).trim() : '';
     },
+    'Loan To': (value: any): string => {
+        return value ? String(value).trim() : '';
+    },
+    'Loan From': (value: any): string => {
+        return value ? String(value).trim() : '';
+    },
 };
 
 /**
@@ -137,6 +147,8 @@ async function originalReadTransfers(divisionId: DivisionId): Promise<ProcessedT
             codeIn: row['Code In'],
             transferType: row['Transfer Type'],
             comment: row['Comment'],
+            loanTo: row['Loan To'],
+            loanFrom: row['Loan From'],
         }));
         return normedResult;
     } catch (error) {
@@ -332,6 +344,9 @@ function processIndividualTransfer(
         playerOut: fplPlayersByCode[rawTransfer.codeOut],
         playerIn: fplPlayersByCode[rawTransfer.codeIn],
         comment: rawTransfer.comment,
+        // Populate loan fields from sheet data
+        onLoanTo: rawTransfer.loanTo || undefined,
+        onLoanFrom: rawTransfer.loanFrom || undefined,
     };
 }
 

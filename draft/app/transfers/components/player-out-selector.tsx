@@ -1,7 +1,6 @@
 /* Location: app/transfers/components/player-out-selector.tsx */
 
 import { useState } from 'react';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { RosterPlayer, TeamRoster } from '../../teams/types/team-types';
 import type { TransferType } from '../types/transfer-types';
 import styles from './player-out-selector.module.css';
@@ -122,7 +121,7 @@ export function PlayerOutSelector({ roster, selectedPlayer, onPlayerChange, tran
                                     </div>
 
                                     <div className={styles.playerStats}>
-                                        <div className={styles.statValue}>{player.pointsTotal || 0} pts</div>
+                                        <div className={styles.statValue}>0 pts</div>
                                         <div className={styles.statLabel}>Season</div>
                                     </div>
                                 </div>

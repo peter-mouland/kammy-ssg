@@ -1,8 +1,15 @@
 /* Location: app/transfers/lib/transfer-processor.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { CustomPosition } from '../../players/types/player-types';
-import type { RosterByManagerId, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
+import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { Points } from '../../scoring/types/scoring-types';
+import type {
+    PositionSlotKey,
+    RosterByManagerId,
+    RosterPosition,
+    TeamPositionSlot,
+    TeamRoster,
+} from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferApplicationResult } from '../types/transfer-types';
 import { findPlayerInRoster } from './find-player-in-roster';
 
@@ -157,56 +164,96 @@ function applyInternalSwap(managerRoster: TeamRoster, transfer: ProcessedTransfe
 }
 
 /**
- * Apply loan start
+ * Apply loan start - moves player to on_loan_0 slot and adds incoming player to original slot
  */
 function applyLoanStart(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
-    const { managerId, playerOut } = transfer;
+    const { managerId, playerOut, playerIn } = transfer;
+    const lendingRoster = managerRoster;
 
-    // Find the player being loaned out
-    const playerSlot = findPlayerInRoster(managerRoster, playerOut.code);
+    // Find the player being loaned out in lending team
+    const playerSlot = findPlayerInRoster(lendingRoster, playerOut.code);
     if (!playerSlot) {
         throw new Error(`Player ${playerOut.web_name} (${playerOut.code}) not found in ${managerId}'s roster`);
     }
 
-    // Update loan status
-    managerRoster[playerSlot.slotKey].player.onLoanTo = transfer.playerIn.web_name; // Using webName as loan destination
-    managerRoster[playerSlot.slotKey].player.onLoanStart = transfer.timestamp.toISOString();
+    // Check if on_loan_0 slot is already occupied
+    if (lendingRoster.on_loan_0.player.playerCode !== 0) {
+        throw new Error(`Manager ${managerId} already has a player on loan`);
+    }
+
+    // Move player to on_loan_0 slot, preserving their existing data
+    lendingRoster.on_loan_0 = {
+        player: {
+            ...playerSlot.slot.player,
+            teamPosition: 'on_loan',
+            onLoanTo: transfer.onLoanTo || null, // Use user ID from transfer
+            onLoanStart: transfer.timestamp.toISOString(),
+        },
+    };
+
+    // Replace original slot with incoming player (no empty slots)
+    lendingRoster[playerSlot.slotKey] = movePlayer(
+        { player: playerIn, slot: playerSlot.slot },
+        {
+            onLoanFrom: transfer.onLoanFrom,
+            onLoanStart: transfer.timestamp.toISOString(),
+        },
+    );
 
     return {
         rosterId: managerId,
         positionSlot: playerSlot.slotKey,
         playerBefore: playerOut,
-        playerAfter: transfer.playerIn,
+        playerAfter: playerIn,
         transferId: transfer.id,
         appliedAt: new Date(),
-        updatedRoster: managerRoster,
+        updatedRoster: lendingRoster,
     };
 }
 
 /**
- * Apply loan finish
+ * Apply loan finish - returns player from on_loan_0 to active roster
  */
 function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
     const { managerId, playerIn } = transfer;
+    const owningRoster = managerRoster;
 
-    // Find the player being returned from loan
-    const playerSlot = findPlayerInRoster(managerRoster, playerIn.code);
-    if (!playerSlot) {
-        throw new Error(`Player ${playerIn.web_name} (${playerIn.code}) not found in ${managerId}'s roster`);
+    // Find the player in on_loan_0 slot
+    const loanedPlayer = owningRoster.on_loan_0.player;
+    if (loanedPlayer.playerCode !== playerIn.code) {
+        throw new Error(`Player ${playerIn.web_name} (${playerIn.code}) not found in ${managerId}'s loan slot`);
     }
 
-    // Clear loan status
-    managerRoster[playerSlot.slotKey].player.onLoanTo = null;
-    managerRoster[playerSlot.slotKey].player.onLoanStart = null;
+    const playerSlot = findPlayerInRoster(owningRoster, loanedPlayer.playerCode);
+    const targetSlot = playerSlot?.slotKey;
+
+    // If no loaned-in player found, use sub slot as fallback
+    if (!targetSlot) {
+        throw new Error('no loaned-in player found');
+    }
+
+    // Return loaned player to active roster
+    owningRoster[targetSlot] = {
+        ...owningRoster[targetSlot],
+        player: {
+            ...loanedPlayer,
+            teamPosition: owningRoster[targetSlot].player.teamPosition,
+            onLoanTo: null,
+            onLoanFrom: null,
+            onLoanStart: null,
+        },
+    };
+
+    owningRoster.on_loan_0 = null;
 
     return {
         rosterId: managerId,
-        positionSlot: playerSlot.slotKey,
+        positionSlot: targetSlot,
         playerBefore: transfer.playerOut,
         playerAfter: playerIn,
         transferId: transfer.id,
         appliedAt: new Date(),
-        updatedRoster: managerRoster,
+        updatedRoster: owningRoster,
     };
 }
 
@@ -222,7 +269,7 @@ function applyTrade(managerRoster: TeamRoster, transfer: ProcessedTransfer): Tra
 /**
  * Create empty stats structure
  */
-function createEmptyStats() {
+function createEmptyStats(): PlayerGameweekStatsData {
     return {
         appearance: 0,
         goals: 0,
@@ -237,10 +284,7 @@ function createEmptyStats() {
     };
 }
 
-/**
- * Create empty points structure
- */
-function createEmptyPoints() {
+function createEmptyPoints(): Points {
     return {
         appearance: 0,
         goals: 0,
@@ -256,7 +300,7 @@ function createEmptyPoints() {
     };
 }
 
-const movePlayer = ({ player, slot }) => {
+const movePlayer = ({ player, slot }, loanInfo = {}) => {
     return {
         player: {
             playerId: player.id,
@@ -266,8 +310,9 @@ const movePlayer = ({ player, slot }) => {
             teamPosition: slot.player.teamPosition,
             teamSlotIndex: slot.player.teamSlotIndex,
             isSub: slot.player.isSub,
-            onLoanTo: null,
-            onLoanStart: null,
+            onLoanTo: loanInfo.onLoanTo || null,
+            onLoanStart: loanInfo.onLoanStart || null,
+            onLoanFrom: loanInfo.onLoanFrom || null,
             assignedAt: new Date().toISOString(),
         },
         gameweek: {

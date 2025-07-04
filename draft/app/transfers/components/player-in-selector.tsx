@@ -1,9 +1,17 @@
-/* Location: app/transfers/components/player-in-selector.tsx */
+// app/transfers/components/player-in-selector.tsx
 
 import { useMemo, useState } from 'react';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { RosterPlayer } from '../../teams/types/team-types';
-import type { PlayerEligibility } from '../types/transfer-form-types';
+import type {
+    ManagerId,
+    PositionSlotKey,
+    RosterByManagerId,
+    RosterPlayer,
+    TeamPositionSlot,
+} from '../../teams/types/team-types';
+import { getPlayerOwnership } from '../lib/get-player-ownership';
+import type { OwnedPlayersByCode, PlayerEligibility } from '../types/transfer-form-types';
 import type { TransferType } from '../types/transfer-types';
 import styles from './player-in-selector.module.css';
 
@@ -13,6 +21,8 @@ interface PlayerInSelectorProps {
     onPlayerChange: (player: EnhancedPlayerData | null) => void;
     transferType: TransferType;
     playerOut: RosterPlayer | null;
+    ownedPlayersByCode: OwnedPlayersByCode;
+    teamsByCode: Record<FplTeam['code'], FplTeam>;
 }
 
 export function PlayerInSelector({
@@ -21,6 +31,8 @@ export function PlayerInSelector({
     onPlayerChange,
     transferType,
     playerOut,
+    ownedPlayersByCode,
+    teamsByCode,
 }: PlayerInSelectorProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedPosition, setSelectedPosition] = useState<string>('all');
@@ -29,6 +41,44 @@ export function PlayerInSelector({
 
     // Calculate player eligibility
     const getPlayerEligibility = (player: EnhancedPlayerData): PlayerEligibility => {
+        const ownership = getPlayerOwnership(player, ownedPlayersByCode);
+
+        // For loan transfers, show different eligibility rules
+        if (transferType === 'LOAN_START') {
+            if (ownership.isOwned) {
+                return {
+                    isEligible: true,
+                    reason: `Owned by ${ownership.ownerName} - loan request`,
+                    icon: '🔄',
+                };
+            } else {
+                return {
+                    isEligible: true,
+                    reason: 'Unowned player - direct acquisition',
+                    icon: '✅',
+                };
+            }
+        }
+
+        // For loan finish, only show players currently on loan from this manager
+        if (transferType === 'LOAN_FINISH') {
+            // Would need to check if this player is currently on loan from the selected manager
+            return {
+                isEligible: false,
+                reason: 'Only players currently on loan can be returned',
+                icon: '⚠️',
+            };
+        }
+
+        // Standard transfer eligibility
+        if (ownership.isOwned) {
+            return {
+                isEligible: false,
+                reason: `Already owned by ${ownership.ownerName}`,
+                icon: '🚫',
+            };
+        }
+
         // Position compatibility check
         if (playerOut && transferType === 'TRANSFER') {
             const playerOutPosition = playerOut.playerPosition.toLowerCase();
@@ -43,224 +93,170 @@ export function PlayerInSelector({
             }
         }
 
-        // TODO: Add more validation rules from existing transfer validation system
-        // - Team player limits
-        // - Transfer windows
-        // - Loan restrictions
-        // - etc.
-
         return {
             isEligible: true,
+            reason: 'Available for transfer',
+            icon: '✅',
         };
     };
 
     // Filter and sort players
     const filteredPlayers = useMemo(() => {
-        const filtered = availablePlayers.filter((player) => {
-            const eligibility = getPlayerEligibility(player);
+        let filtered = availablePlayers;
 
-            // Search filter
-            const matchesSearch =
-                !searchTerm ||
-                player.web_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                player.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                player.second_name.toLowerCase().includes(searchTerm.toLowerCase());
-
-            // Position filter
-            const matchesPosition = selectedPosition === 'all' || player.draft?.position === selectedPosition;
-
-            // Team filter
-            const matchesTeam = selectedTeam === 'all' || player.team_code.toString() === selectedTeam;
-
-            // Eligibility filter
-            const matchesEligibility = !showOnlyEligible || eligibility.isEligible;
-
-            return matchesSearch && matchesPosition && matchesTeam && matchesEligibility;
-        });
-
-        // Sort by eligibility first, then by points
-        return filtered.sort((a, b) => {
-            const aEligible = getPlayerEligibility(a).isEligible;
-            const bEligible = getPlayerEligibility(b).isEligible;
-
-            if (aEligible !== bEligible) {
-                return bEligible ? 1 : -1; // Eligible players first
-            }
-
-            // Then sort by total points (descending)
-            return (b.draft?.pointsTotal || 0) - (a.draft?.pointsTotal || 0);
-        });
-    }, [availablePlayers, searchTerm, selectedPosition, selectedTeam, showOnlyEligible, playerOut, transferType]);
-
-    // Get unique positions and teams for filters
-    const positions = Array.from(new Set(availablePlayers.map((p) => p.draft?.position).filter(Boolean))).sort();
-    const teamCodes = Array.from(new Set(availablePlayers.map((p) => p.team_code)));
-
-    const handlePlayerClick = (player: EnhancedPlayerData) => {
-        const eligibility = getPlayerEligibility(player);
-
-        if (!eligibility.isEligible) {
-            return; // Don't allow selection of ineligible players
+        // Search filter
+        if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+            filtered = filtered.filter(
+                (player) =>
+                    player.web_name.toLowerCase().includes(searchLower) ||
+                    player.first_name.toLowerCase().includes(searchLower) ||
+                    player.second_name.toLowerCase().includes(searchLower),
+            );
         }
 
-        if (selectedPlayer?.code === player.code) {
-            onPlayerChange(null);
-        } else {
-            onPlayerChange(player);
+        // Position filter
+        if (selectedPosition !== 'all') {
+            filtered = filtered.filter(
+                (player) => player.draft?.position.toLowerCase() === selectedPosition.toLowerCase(),
+            );
         }
-    };
 
-    const eligibleCount = filteredPlayers.filter((p) => getPlayerEligibility(p).isEligible).length;
-    const totalCount = filteredPlayers.length;
+        // Team filter
+        if (selectedTeam !== 'all') {
+            filtered = filtered.filter((player) => player.team_code === Number.parseInt(selectedTeam));
+        }
 
-    // Get team name helper
-    const getTeamName = (teamCode: number) => {
-        const team = teamCodes.find((code) => code === teamCode);
-        return team?.name || `Team ${teamCode}`;
-    };
+        // Eligibility filter
+        if (showOnlyEligible) {
+            filtered = filtered.filter((player) => getPlayerEligibility(player).isEligible);
+        }
+
+        // Add eligibility info to each player
+        return filtered.map((player) => ({
+            ...player,
+            eligibility: getPlayerEligibility(player),
+            ownership: getPlayerOwnership(player, ownedPlayersByCode),
+        }));
+    }, [availablePlayers, searchTerm, selectedPosition, selectedTeam, showOnlyEligible, transferType, playerOut]);
+
+    const positions = useMemo(() => {
+        const positionSet = new Set(availablePlayers.map((p) => p.draft?.position).filter(Boolean));
+        return Array.from(positionSet).sort();
+    }, [availablePlayers]);
+
+    const teams = Object.keys(teamsByCode)
+        .map((code: number) => teamsByCode[code])
+        .sort((a, b) => (a.name < b.name ? -1 : 1));
 
     return (
-        <div className={styles.playerInSelector}>
-            <div className={styles.selectorHeader}>
-                <h3 className={styles.selectorTitle}>Transfer In</h3>
-                <p className={styles.selectorDescription}>Select an available player to bring into your squad</p>
-                <div className={styles.statsInfo}>
-                    <span className={styles.eligibleCount}>{eligibleCount} eligible</span>
-                    <span className={styles.totalCount}>of {totalCount} players</span>
-                </div>
-            </div>
+        <div className={styles.playerSelector}>
+            <label className={styles.label}>Player In</label>
 
-            {/* Search and Filter Controls */}
-            <div className={styles.filterControls}>
-                <div className={styles.searchGroup}>
+            {/* Transfer Type Context */}
+            {transferType === 'LOAN_START' && (
+                <div className={styles.transferContext}>
+                    <span className={styles.contextIcon}>🔄</span>
+                    <span className={styles.contextText}>
+                        Select a player to acquire (owned players will create loan requests)
+                    </span>
+                </div>
+            )}
+
+            {transferType === 'LOAN_FINISH' && (
+                <div className={styles.transferContext}>
+                    <span className={styles.contextIcon}>🔚</span>
+                    <span className={styles.contextText}>Select the player to return from loan</span>
+                </div>
+            )}
+
+            {/* Filters */}
+            <div className={styles.filters}>
+                <input
+                    type="text"
+                    placeholder="Search players..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={styles.searchInput}
+                />
+
+                <select
+                    value={selectedPosition}
+                    onChange={(e) => setSelectedPosition(e.target.value)}
+                    className={styles.filterSelect}
+                >
+                    <option value="all">All Positions</option>
+                    {positions.map((position) => (
+                        <option key={position} value={position}>
+                            {position}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    value={selectedTeam}
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    className={styles.filterSelect}
+                >
+                    <option value="all">All Teams</option>
+                    {teams.map((team) => (
+                        <option key={team.code} value={team.code}>
+                            {team.name}
+                        </option>
+                    ))}
+                </select>
+
+                <label className={styles.checkboxLabel}>
                     <input
-                        type="text"
-                        placeholder="Search players..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={styles.searchInput}
+                        type="checkbox"
+                        checked={showOnlyEligible}
+                        onChange={(e) => setShowOnlyEligible(e.target.checked)}
+                        className={styles.checkbox}
                     />
-                </div>
-
-                <div className={styles.filterRow}>
-                    <select
-                        value={selectedPosition}
-                        onChange={(e) => setSelectedPosition(e.target.value)}
-                        className={styles.filterSelect}
-                    >
-                        <option value="all">All Positions</option>
-                        {positions.map((position) => (
-                            <option key={position} value={position}>
-                                {position}
-                            </option>
-                        ))}
-                    </select>
-
-                    <select
-                        value={selectedTeam}
-                        onChange={(e) => setSelectedTeam(e.target.value)}
-                        className={styles.filterSelect}
-                    >
-                        <option value="all">All Teams</option>
-                        {teamCodes.sort().map((code) => (
-                            <option key={code} value={code.toString()}>
-                                {code}
-                            </option>
-                        ))}
-                    </select>
-
-                    <label className={styles.eligibilityToggle}>
-                        <input
-                            type="checkbox"
-                            checked={showOnlyEligible}
-                            onChange={(e) => setShowOnlyEligible(e.target.checked)}
-                            className={styles.eligibilityCheckbox}
-                        />
-                        <span className={styles.eligibilityLabel}>Eligible only</span>
-                    </label>
-                </div>
+                    Show only eligible
+                </label>
             </div>
 
             {/* Player List */}
-            <div className={styles.playersList}>
-                {filteredPlayers.length === 0 ? (
-                    <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>🔍</div>
-                        <p className={styles.emptyMessage}>No players match your current filters</p>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSearchTerm('');
-                                setSelectedPosition('all');
-                                setSelectedTeam('all');
-                                setShowOnlyEligible(false);
-                            }}
-                            className={styles.clearFiltersButton}
-                        >
-                            Clear Filters
-                        </button>
-                    </div>
-                ) : (
-                    filteredPlayers.map((player) => {
-                        const eligibility = getPlayerEligibility(player);
-                        const isSelected = selectedPlayer?.code === player.code;
-                        const isEligible = eligibility.isEligible;
-
-                        return (
-                            <div
-                                key={player.code}
-                                onClick={() => handlePlayerClick(player)}
-                                className={`
-                                    ${styles.playerItem}
-                                    ${isSelected ? styles.selected : ''}
-                                    ${isEligible ? '' : styles.ineligible}
-                                `}
-                                title={eligibility.reason}
-                            >
-                                <div className={styles.playerContent}>
-                                    <div className={styles.playerInfo}>
-                                        <div className={styles.playerName}>
-                                            {player.first_name} {player.second_name}
-                                            {!isEligible && (
-                                                <span className={styles.ineligibleIcon}>{eligibility.icon}</span>
-                                            )}
-                                        </div>
-                                        <div className={styles.playerDetails}>
-                                            <span className={styles.positionBadge}>
-                                                {player.draft?.position || 'Unknown'}
-                                            </span>
-                                            <span className={styles.teamBadge}>{getTeamName(player.team_code)}</span>
-                                        </div>
-                                        {!isEligible && (
-                                            <div className={styles.ineligibleReason}>{eligibility.reason}</div>
-                                        )}
-                                    </div>
-
-                                    <div className={styles.playerStats}>
-                                        <div className={styles.statValue}>{player.draft?.pointsTotal || 0} pts</div>
-                                        <div className={styles.statLabel}>Season</div>
-                                    </div>
-                                </div>
-
-                                {isSelected && <div className={styles.selectedIndicator}>✓</div>}
+            <div className={styles.playerList}>
+                {filteredPlayers.map((player) => (
+                    <div
+                        key={player.id}
+                        className={`${styles.playerCard} ${selectedPlayer?.id === player.id ? styles.selected : ''} ${
+                            player.eligibility.isEligible ? '' : styles.ineligible
+                        }`}
+                        onClick={() => onPlayerChange(player)}
+                    >
+                        <div className={styles.playerInfo}>
+                            <div className={styles.playerName}>{player.web_name}</div>
+                            <div className={styles.playerDetails}>
+                                {player.draft?.position} • {player.team_code}
                             </div>
-                        );
-                    })
-                )}
+                        </div>
+
+                        <div className={styles.playerStatus}>
+                            <span className={styles.eligibilityIcon}>{player.eligibility.icon}</span>
+                            <div className={styles.statusText}>
+                                {player.ownership.isOwned && (
+                                    <div className={styles.ownershipInfo}>Owned by {player.ownership.ownerName}</div>
+                                )}
+                                <div className={styles.eligibilityReason}>{player.eligibility.reason}</div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {filteredPlayers.length === 0 && <div className={styles.noPlayers}>No players match your criteria</div>}
             </div>
 
-            {/* Selected Player Summary */}
+            {/* Selected Player Display */}
             {selectedPlayer && (
-                <div className={styles.selectedSummary}>
-                    <div className={styles.summaryHeader}>
-                        <span className={styles.summaryLabel}>Selected:</span>
-                        <span className={styles.summaryPlayer}>
-                            {selectedPlayer.first_name} {selectedPlayer.second_name}
-                        </span>
-                    </div>
-                    <div className={styles.summaryDetails}>
-                        <span className={styles.summaryDetail}>
-                            {selectedPlayer.draft?.position} • {getTeamName(selectedPlayer.team_code)}
+                <div className={styles.selectedPlayer}>
+                    <div className={styles.selectedLabel}>Selected:</div>
+                    <div className={styles.selectedInfo}>
+                        <strong>{selectedPlayer.web_name}</strong>
+                        <span className={styles.selectedDetails}>
+                            {selectedPlayer.draft?.position} • {selectedPlayer.team_code}
                         </span>
                     </div>
                 </div>
