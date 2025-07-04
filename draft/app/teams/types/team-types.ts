@@ -151,8 +151,8 @@ export interface TeamFormation {
  * Loan status for team management
  */
 export interface LoanStatus {
-    loanedOut: TeamPositionSlot[];
-    loanedIn: TeamPositionSlot[];
+    loanedOut: RosterPlayer[];
+    loanedIn: RosterPlayer[];
 }
 
 export type DivisionId = 'leagueOne' | 'championship' | 'premierLeague';
@@ -215,7 +215,7 @@ export interface TeamStatsData {
 /**
  * Component props interfaces
  */
-export type TeamViewProps = {};
+export type StatsViewMode = 'season' | 'gameweek';
 
 export interface FormationDisplayProps {
     roster: TeamRoster;
@@ -238,6 +238,7 @@ export interface TeamStatsProps {
     teamData: TeamGameweekData;
     gameweek: number;
     isCurrentGameweek: boolean;
+    hideToggle?: boolean;
     viewMode: StatsViewMode;
     onViewModeChange: (mode: StatsViewMode) => void;
 }

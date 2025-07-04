@@ -2,11 +2,11 @@
 
 // /teams/components/player-card.tsx
 import type React from 'react';
-import type { FirestoreTeamMember } from '../types/team-types';
+import type { RosterPlayer } from '../types/team-types';
 import styles from './player-card.module.css';
 
 interface PlayerCardProps {
-    player: FirestoreTeamMember;
+    player: RosterPlayer;
     isSubstitute: boolean;
     gameweek: number;
     isOnPitch?: boolean;
@@ -21,14 +21,15 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
     positionLabel,
 }) => {
     const isOnLoan = Boolean(player.onLoanTo);
-    const isLoanedIn = player.onLoanTo && player.onLoanTo !== player.userId;
+    const isLoanedIn = Boolean(player.onLoanFrom);
 
     // Get display name (truncate if too long for pitch)
     const displayName = isOnPitch
-        ? player.player.length > 12
-            ? player.player.split(' ')[0]
-            : player.player
-        : player.player;
+        ? player.playerName.length > 12
+            ? player.playerName.split(' ')[0]
+            : player.playerName
+        : player.playerName;
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode}.png`}`;
 
     return (
         <div
@@ -45,19 +46,25 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
             {/* Player Jersey/Avatar */}
             <div className={styles.playerJersey}>
-                <div className={styles.jerseyNumber}>{player.playerCode.toString().slice(-2)}</div>
-                {isOnLoan && <div className={styles.loanIndicator}>{isLoanedIn ? '⬅️' : '➡️'}</div>}
+                <div className={styles.jerseyNumber}>
+                    <img src={img} loading="lazy" alt="" width={35} />
+                </div>
+                {isOnLoan && (
+                    <div className={styles.loanIndicator} title={'on loan'}>
+                        {isLoanedIn ? '⬅️' : '➡️'}
+                    </div>
+                )}
             </div>
 
             {/* Player Info */}
             <div className={styles.playerInfo}>
-                <div className={styles.playerName} title={player.player}>
+                <div className={styles.playerName} title={player.playerName}>
                     {displayName}
                 </div>
 
                 {!isOnPitch && (
                     <div className={styles.playerDetails}>
-                        <span className={styles.position}>{player.playerPosition.toUpperCase()}</span>
+                        <span className={styles.position}>{player.playerPosition?.toUpperCase()}</span>
                         {isSubstitute && <span className={styles.subBadge}>SUB</span>}
                     </div>
                 )}
@@ -88,7 +95,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
             {/* Interactive hover effects */}
             <div className={styles.playerHover}>
                 <div className={styles.hoverInfo}>
-                    <div className={styles.fullName}>{player.player}</div>
+                    <div className={styles.fullName}>{player.playerName}</div>
                     <div className={styles.playerCode}>#{player.playerCode}</div>
                     {player.onLoanStart && (
                         <div className={styles.loanDetails}>

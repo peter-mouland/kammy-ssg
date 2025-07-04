@@ -17,7 +17,6 @@ import styles from './team-stats.module.css';
 export const TeamStats: React.FC<TeamStatsProps> = ({
     teamData,
     gameweek,
-    isCurrentGameweek,
     viewMode,
     onViewModeChange,
     hideToggle = false,

@@ -2,7 +2,7 @@
 
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../../scoring/types/scoring-types';
-import type { LoanStatus, PositionSlotKey, TeamPositionSlot } from '../../teams/types/team-types';
+import type { LoanStatus, PositionSlotKey, RosterPlayer, TeamPositionSlot } from '../../teams/types/team-types';
 import { getNextAvailableSlot, parsePositionSlot, STARTING_XI_SLOTS } from './position-slot-utils';
 
 /**
@@ -39,6 +39,7 @@ export function convertLegacyPlayersToRoster(legacyPlayers: any[]): Record<Posit
                 teamPosition: position === 'sub' ? 'sub' : (position as any),
                 teamSlotIndex: index,
                 isSub: player.isSub || position === 'sub',
+                onLoanFrom: player.onLoanFrom,
                 onLoanTo: player.onLoanTo,
                 onLoanStart: player.onLoanStart,
                 assignedAt: new Date().toISOString(), // Use current time as fallback
@@ -48,6 +49,8 @@ export function convertLegacyPlayersToRoster(legacyPlayers: any[]): Record<Posit
                 points: createEmptyPoints(),
             },
             season: {
+                seasonGeneratedOn: '',
+                seasonUpToGameweek: 0,
                 stats: createEmptyStats(),
                 points: createEmptyPoints(),
             },
@@ -64,15 +67,15 @@ export function extractLoanStatus(
     roster: Record<PositionSlotKey, TeamPositionSlot>,
     currentUserId: string,
 ): LoanStatus {
-    const loanedOut: TeamPositionSlot[] = [];
-    const loanedIn: TeamPositionSlot[] = [];
+    const loanedOut: RosterPlayer[] = [];
+    const loanedIn: RosterPlayer[] = [];
 
     for (const positionSlot of Object.values(roster)) {
         if (positionSlot.player.onLoanTo) {
             if (positionSlot.player.onLoanTo === currentUserId) {
-                loanedIn.push(positionSlot);
+                loanedIn.push(positionSlot.player);
             } else {
-                loanedOut.push(positionSlot);
+                loanedOut.push(positionSlot.player);
             }
         }
     }

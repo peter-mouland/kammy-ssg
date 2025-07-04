@@ -33,37 +33,14 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    margin-bottom: 35px;
+    min-height: 60px;
 }
 
 /* Specific positioning for each line */
-.centralAttackerLine {
-    margin-top: 8px;
-    min-height: 60px;
-}
-
-.wideAttackerLine {
-    margin-top: 4px;
-    min-height: 60px;
-}
 
 .midfielderLine {
     flex: 1;
-    min-height: 60px;
-}
-
-.fullbackLine {
-    margin-bottom: 4px;
-    min-height: 60px;
-}
-
-.centrebackLine {
-    margin-bottom: 4px;
-    min-height: 60px;
-}
-
-.goalkeeperLine {
-    margin-bottom: 8px;
-    min-height: 60px;
 }
 
 /* Player positioning */

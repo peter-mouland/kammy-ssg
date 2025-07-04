@@ -2,13 +2,13 @@
 
 // /teams/components/loan-status.tsx
 import type React from 'react';
-import type { FirestoreTeamMember } from '../types/team-types';
+import type { RosterPlayer } from '../types/team-types';
 import styles from './loan-status.module.css';
 import { PlayerCard } from './player-card';
 
 interface LoanStatusProps {
-    loanedOut: FirestoreTeamMember[];
-    loanedIn: FirestoreTeamMember[];
+    loanedOut: RosterPlayer[];
+    loanedIn: RosterPlayer[];
     gameweek: number;
 }
 
@@ -35,7 +35,7 @@ export const LoanStatus: React.FC<LoanStatusProps> = ({ loanedOut, loanedIn, gam
                     <div className={styles.playersList}>
                         {loanedOut.map((player) => (
                             <div key={`${player.playerCode}-${gameweek}`} className={styles.loanedPlayer}>
-                                <PlayerCard player={player} isSubstitute={true} gameweek={gameweek} />
+                                <PlayerCard player={player} isSubstitute={player.isSub} gameweek={gameweek} />
                                 <div className={styles.loanDetails}>
                                     <div className={styles.loanTo}>
                                         <span className={styles.loanLabel}>To:</span>
@@ -74,11 +74,11 @@ export const LoanStatus: React.FC<LoanStatusProps> = ({ loanedOut, loanedIn, gam
                     <div className={styles.playersList}>
                         {loanedIn.map((player) => (
                             <div key={`${player.playerCode}-${gameweek}`} className={styles.loanedPlayer}>
-                                <PlayerCard player={player} isSubstitute={true} gameweek={gameweek} />
+                                <PlayerCard player={player} isSubstitute={player.isSub} gameweek={gameweek} />
                                 <div className={styles.loanDetails}>
                                     <div className={styles.loanFrom}>
                                         <span className={styles.loanLabel}>From:</span>
-                                        <span className={styles.loanTeam}>{player.userId}</span>
+                                        <span className={styles.loanTeam}>{player.onLoanFrom}</span>
                                     </div>
                                     {player.onLoanStart && (
                                         <div className={styles.loanDate}>
