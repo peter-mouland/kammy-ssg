@@ -50,8 +50,8 @@ export async function getTransfersPageData({
         const managerRoster = divisionRosters[selectedManager]?.roster;
 
         // Calculate transfer deadline
-        const transferDeadline = gameweekData.fplEvent.deadline_time;
-        const isBeforeDeadline = new Date() < new Date(transferDeadline);
+        const transferDeadline = new Date(gameweekData!.fplEvent.deadline_time);
+        const isBeforeDeadline = new Date() < transferDeadline;
 
         // Generate available gameweeks (for historical viewing)
         const availableGameweeks = Array.from({ length: currentGameweek || 1 }, (_, i) => i + 1);
@@ -68,7 +68,10 @@ export async function getTransfersPageData({
             currentTransfers,
             managerRoster,
             availablePlayers: players,
-            transferDeadline,
+            transferDeadline:
+                transferDeadline.toLocaleDateString('en-gb') +
+                ' ' +
+                transferDeadline.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' }),
             teamsByCode,
             isBeforeDeadline,
             divisionRosters,

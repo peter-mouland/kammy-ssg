@@ -31,10 +31,10 @@ export function CurrentTransfers({
             width: '120px',
             render: (_, item) => (
                 <div className={styles.timestamp_cell}>
-                    {item.transfer.timestamp.toLocaleDateString()}
+                    {item.transfer.timestamp.toLocaleDateString('en-gb')}
                     <br />
                     <span className={styles.time_small}>
-                        {item.transfer.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {item.transfer.timestamp.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                 </div>
             ),
