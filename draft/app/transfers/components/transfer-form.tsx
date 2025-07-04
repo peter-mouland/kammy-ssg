@@ -1,8 +1,11 @@
 // app/transfers/components/transfer-form.tsx
 
-import { useState } from 'react';
+import type * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useFetcher, useSearchParams } from 'react-router';
 import { SelectUser } from '../../_shared/components/select-user';
+import { ToastManager, useToast } from '../../_shared/components/toast-manager';
+import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
@@ -45,6 +48,24 @@ interface LoanSelectionState {
     loanFromManager: ManagerId | null;
 }
 
+const INITIAL_PLAYER_SELECTION: PlayerSelectionState = {
+    playerOut: null,
+    playerIn: null,
+};
+
+const INITIAL_LOAN_SELECTION: LoanSelectionState = {
+    loanPlayer: null,
+    loanToManager: null,
+    loanFromManager: null,
+};
+
+const INITIAL_VALIDATION: TransferValidationResult = {
+    isValid: true,
+    warnings: [],
+    errors: [],
+    blockingIssues: [],
+};
+
 export function TransferForm({
     managers,
     selectedDivision,
@@ -57,26 +78,13 @@ export function TransferForm({
 }: TransferFormProps) {
     const [searchParams, setSearchParams] = useSearchParams();
     const fetcher = useFetcher();
+    const { showToast } = useToast();
     const TransferType: TransferType = (searchParams.get('transferType') as TransferType) || 'TRANSFER';
 
-    const [playerSelection, setPlayerSelection] = useState<PlayerSelectionState>({
-        playerOut: null,
-        playerIn: null,
-    });
-
-    const [loanSelection, setLoanSelection] = useState<LoanSelectionState>({
-        loanPlayer: null,
-        loanToManager: null,
-        loanFromManager: null,
-    });
-
+    const [playerSelection, setPlayerSelection] = useState<PlayerSelectionState>(INITIAL_PLAYER_SELECTION);
+    const [loanSelection, setLoanSelection] = useState<LoanSelectionState>(INITIAL_LOAN_SELECTION);
     const [comment, setComment] = useState('');
-    const [validation, setValidation] = useState<TransferValidationResult>({
-        isValid: true,
-        warnings: [],
-        errors: [],
-        blockingIssues: [],
-    });
+    const [validation, setValidation] = useState<TransferValidationResult>(INITIAL_VALIDATION);
 
     // Get managers for selected division
     const divisionsManagers = managers.filter((m) => m.divisionId === selectedDivision);
@@ -90,22 +98,47 @@ export function TransferForm({
         return acc;
     }, {});
 
+    // Clear form after successful submission
+    const clearForm = () => {
+        setPlayerSelection(INITIAL_PLAYER_SELECTION);
+        setLoanSelection(INITIAL_LOAN_SELECTION);
+        setComment('');
+        setValidation(INITIAL_VALIDATION);
+    };
+
+    // Handle form submission response
+    useEffect(() => {
+        if (fetcher.state === 'idle' && fetcher.data) {
+            const result = fetcher.data;
+
+            if (result.success) {
+                // Success: Clear form, show toast with sound
+                clearForm();
+                playCelebrationSound();
+                showToast({
+                    type: 'success',
+                    message: result.message || 'Transfer submitted successfully!',
+                    duration: 5000,
+                });
+            } else if (result.error) {
+                // Error: Show error toast
+                showToast({
+                    type: 'error',
+                    message: result.error,
+                    duration: 7000,
+                });
+            }
+        }
+    }, [fetcher.state, fetcher.data, showToast]);
+
     const handleManagerChange = (managerId: ManagerId) => {
         const newParams = new URLSearchParams(searchParams);
         newParams.set('manager', managerId);
         setSearchParams(newParams);
 
         // Reset player selection when manager changes
-        setPlayerSelection({
-            playerOut: null,
-            playerIn: null,
-        });
-
-        setLoanSelection({
-            loanPlayer: null,
-            loanToManager: null,
-            loanFromManager: null,
-        });
+        setPlayerSelection(INITIAL_PLAYER_SELECTION);
+        setLoanSelection(INITIAL_LOAN_SELECTION);
     };
 
     const handleBorrowingManagerChange = (managerId: ManagerId) => {
@@ -154,11 +187,7 @@ export function TransferForm({
 
         // Reset loan selection when changing transfer type
         if (transferType !== 'LOAN_START' && transferType !== 'LOAN_FINISH') {
-            setLoanSelection({
-                loanPlayer: null,
-                loanToManager: null,
-                loanFromManager: null,
-            });
+            setLoanSelection(INITIAL_LOAN_SELECTION);
         }
     };
 
@@ -184,6 +213,15 @@ export function TransferForm({
             formData.append('onLoanFrom', loanSelection.loanFromManager || '');
         }
 
+        // Optimistic update: immediately add to transfer list
+        if (playerSelection.playerOut && playerSelection.playerIn) {
+            showToast({
+                type: 'info',
+                message: 'Submitting transfer...',
+                duration: 2000,
+            });
+        }
+
         fetcher.submit(formData, { method: 'post' });
     };
 
@@ -193,9 +231,13 @@ export function TransferForm({
         !validation.isValid ||
         validation.blockingIssues.length > 0 ||
         !isBeforeDeadline ||
-        fetcher.state === 'submitting';
+        fetcher.state === 'submitting' ||
+        !playerSelection.playerOut ||
+        !playerSelection.playerIn;
+
     return (
         <div className={styles.transferForm}>
+            <ToastManager maxToasts={3} />
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.section}>
                     <SelectUser
@@ -286,7 +328,11 @@ export function TransferForm({
 
                 {/* Submit Button */}
                 <div className={styles.section}>
-                    <button type="submit" disabled={canSubmit} className={styles.submitButton}>
+                    <button
+                        type="submit"
+                        disabled={canSubmit}
+                        className={`${styles.submitButton} ${fetcher.state === 'submitting' ? styles.loading : ''}`}
+                    >
                         {fetcher.state === 'submitting' ? 'Submitting...' : 'Submit Transfer'}
                     </button>
                 </div>
