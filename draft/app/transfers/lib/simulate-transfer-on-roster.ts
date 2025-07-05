@@ -36,7 +36,7 @@ export function simulateTransferOnRoster(currentRoster: TeamRoster, transfer: Pr
             break;
 
         case 'LOAN_START':
-        case 'LOAN_FINISH':
+        case 'LOAN_END':
             // Loans don't change position counts, just loan status
             break;
     }

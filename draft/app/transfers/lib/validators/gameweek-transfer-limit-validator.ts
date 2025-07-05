@@ -116,7 +116,7 @@ function countTransfersByType(
         TRANSFER: 0,
         SWAP: 0,
         LOAN_START: 0,
-        LOAN_FINISH: 0,
+        LOAN_END: 0,
         TRADE: 0,
         NEW_PLAYER: 0,
     };
@@ -189,7 +189,7 @@ function checkTransferLimit(
             break;
 
         case 'LOAN_START':
-        case 'LOAN_FINISH':
+        case 'LOAN_END':
             // Loans typically don't have gameweek limits, but could be added if needed
             break;
     }

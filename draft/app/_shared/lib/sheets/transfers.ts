@@ -388,8 +388,8 @@ function parseTransferType(transferType: string): TransferType {
             return 'SWAP';
         case 'loan start':
             return 'LOAN_START';
-        case 'loan finish':
-            return 'LOAN_FINISH';
+        case 'loan end':
+            return 'LOAN_END';
         case 'trade':
             return 'TRADE';
         case 'new player':

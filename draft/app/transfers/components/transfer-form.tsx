@@ -188,7 +188,7 @@ export function TransferForm({
         setSearchParams(newParams);
 
         // Reset loan selection when changing transfer type
-        if (transferType !== 'LOAN_START' && transferType !== 'LOAN_FINISH') {
+        if (transferType !== 'LOAN_START' && transferType !== 'LOAN_END') {
             setLoanSelection(INITIAL_LOAN_SELECTION);
         }
     };
@@ -228,7 +228,7 @@ export function TransferForm({
     };
 
     // Determine if this is a loan transfer type
-    const isLoanTransfer = TransferType === 'LOAN_START' || TransferType === 'LOAN_FINISH';
+    const isLoanTransfer = TransferType === 'LOAN_START' || TransferType === 'LOAN_END';
     const canSubmit =
         !validation.isValid ||
         validation.blockingIssues.length > 0 ||

@@ -4,7 +4,14 @@ import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readTransferDataForDivision } from '../../../_shared/lib/sheets/transfers';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
-import type { DivisionId, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import type {
+    DivisionId,
+    DivisionTeamsDocument,
+    ManagerId,
+    PositionSlotKey,
+    RosterByManagerId,
+    TeamPositionSlot,
+} from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { generateGameweekData } from '../../lib/generators';
 import type { Points } from '../../types/scoring-types';
@@ -34,8 +41,10 @@ export async function populatePointsIntoDivisionDocuments(
     // Get all divisions and process each one
     const divisions = await readDivisions();
     const sortedGameweeks = [...targetGameweeks].sort((a, b) => a - b);
+    // const sortedGameweeks = [32, 33, 34, 35, 36, 37, 38].sort((a, b) => a - b);
 
     for (const division of divisions) {
+        // if (division.id === 'premierLeague') {
         try {
             results.divisionsProcessed++;
             console.log(`🔄 Processing division: ${division.id}`);
@@ -59,6 +68,7 @@ export async function populatePointsIntoDivisionDocuments(
             console.error(`❌ ${errorMsg}`);
             results.errors.push(errorMsg);
         }
+        // }
     }
 
     console.log(
@@ -141,7 +151,9 @@ async function populatePointsForDivisionGameweek(
                 // Update gameweek points and stats
                 const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
                 if (!playerGameweek) {
-                    console.error(`🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`)
+                    console.error(
+                        `🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`,
+                    );
                 }
                 const updatedPositionSlot = updatePositionSlotPoints(
                     positionSlot,
@@ -242,7 +254,10 @@ async function createMissingGameweekDocument(divisionId: DivisionId, targetGamew
 /**
  * Create a new gameweek document by copying from source document
  */
-async function createGameweekDocumentFromSource(sourceDocument: any, targetGameweek: number): Promise<void> {
+async function createGameweekDocumentFromSource(
+    sourceDocument: DivisionTeamsDocument,
+    targetGameweek: number,
+): Promise<void> {
     const now = new Date().toISOString();
 
     console.log(
@@ -263,7 +278,6 @@ async function createGameweekDocumentFromSource(sourceDocument: any, targetGamew
     const approvedTransfers = transferResult.transfers.filter((transfer) => transfer.status === 'APPROVED');
 
     // Filter for approved transfers only
-    // NEW STRUCTURE: Apply transfers between source and target gameweeks
     try {
         const newDocument = await applyTransfersToGameweekDocument(
             sourceDocument,
@@ -305,24 +319,30 @@ async function createGameweekDocumentFromSource(sourceDocument: any, targetGamew
             };
 
             // Copy each position slot but reset gameweek stats/points
-            for (const [slot, positionSlot] of Object.entries((teamData as any).roster)) {
-                fallbackDocument.teams[userId].roster[slot] = {
-                    // Keep player info unchanged
-                    player: { ...positionSlot.player },
+            for (const [slot, positionSlot] of Object.entries(teamData.roster)) {
+                if (slot === 'on_loan_0' && positionSlot) {
+                    fallbackDocument.teams[userId].roster[slot] = {
+                        player: { ...positionSlot.player },
+                    };
+                } else if (slot !== 'on_loan_0' && positionSlot) {
+                    fallbackDocument.teams[userId].roster[slot] = {
+                        // Keep player info unchanged
+                        player: { ...positionSlot.player },
 
-                    // Reset gameweek data to zero
-                    gameweek: {
-                        stats: createEmptyStats(),
-                        points: createEmptyPoints(),
-                    },
+                        // Reset gameweek data to zero
+                        gameweek: {
+                            stats: createEmptyStats(),
+                            points: createEmptyPoints(),
+                        },
 
-                    // Keep season data unchanged from source, but ensure tracking fields exist
-                    season: {
-                        ...positionSlot.season,
-                        seasonUpToGameweek: positionSlot.season.seasonUpToGameweek || 0,
-                        seasonGeneratedOn: positionSlot.season.seasonGeneratedOn || now,
-                    },
-                };
+                        // Keep season data unchanged from source, but ensure tracking fields exist
+                        season: {
+                            ...positionSlot.season,
+                            seasonUpToGameweek: positionSlot.season.seasonUpToGameweek || 0,
+                            seasonGeneratedOn: positionSlot.season.seasonGeneratedOn || now,
+                        },
+                    };
+                }
             }
         }
 

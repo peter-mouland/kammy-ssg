@@ -3,7 +3,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { DivisionId, ManagerId, TeamRoster } from '../../teams/types/team-types';
+import type { ManagerId, TeamRoster } from '../../teams/types/team-types';
 
 /**
  * Raw transfer data from Google Sheets
@@ -16,7 +16,7 @@ export interface TransferSheetData {
     'Code Out': number; // player.code
     'Transfer In': string; // player.web_name
     'Code In': number; // player.code
-    'Transfer Type': 'Transfer' | 'swap' | 'loan start' | 'loan finish' | 'trade';
+    'Transfer Type': 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade';
     Comment: string;
     'Loan To': string; // userId of manager receiving the loan (NEW)
     'Loan From': string; // userId of manager lending the player (NEW)
@@ -29,7 +29,7 @@ export interface ProcessedTransferSheetData {
     codeOut: number; // player.code
     transferIn: string; // player.web_name
     codeIn: number; // player.code
-    transferType: 'Transfer' | 'swap' | 'loan start' | 'loan finish' | 'trade';
+    transferType: 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade';
     comment: string;
     loanTo: string; // userId of manager receiving the loan (NEW)
     loanFrom: string; // userId of manager lending the player (NEW)
@@ -62,7 +62,7 @@ export type TransferStatus = 'APPROVED' | 'REJECTED' | 'PENDING';
 /**
  * Transfer type
  */
-export type TransferType = 'TRANSFER' | 'SWAP' | 'LOAN_START' | 'LOAN_FINISH' | 'TRADE' | 'NEW_PLAYER';
+export type TransferType = 'TRANSFER' | 'SWAP' | 'LOAN_START' | 'LOAN_END' | 'TRADE' | 'NEW_PLAYER';
 
 /**
  * Transfer processing result
@@ -87,19 +87,6 @@ export interface TransferProcessingError {
 }
 
 /**
- * Division transfer history
- */
-export interface DivisionTransferHistory {
-    divisionId: DivisionId;
-    transfers: ProcessedTransfer[];
-    lastUpdated: Date;
-    gameweekRange: {
-        from: number;
-        to: number;
-    };
-}
-
-/**
  * Transfer application result for roster updates
  */
 export interface TransferApplicationResult {
@@ -110,17 +97,4 @@ export interface TransferApplicationResult {
     transferId: string;
     appliedAt: Date;
     updatedRoster: TeamRoster;
-}
-
-/**
- * Gameweek transfer summary
- */
-export interface GameweekTransferSummary {
-    gameweek: number;
-    divisionId: DivisionId;
-    transferCount: number;
-    affectedManagers: ManagerId[];
-    transfersByType: Record<TransferType, number>;
-    earliestTransfer: Date;
-    latestTransfer: Date;
 }

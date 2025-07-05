@@ -30,7 +30,7 @@ const TRANSFER_TYPES: Array<{
         description: 'Loan a player from another manager',
     },
     {
-        value: 'LOAN_FINISH',
+        value: 'LOAN_END',
         label: 'Loan End',
         description: 'Return a loaned player',
     },

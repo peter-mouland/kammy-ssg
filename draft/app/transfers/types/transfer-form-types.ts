@@ -155,13 +155,3 @@ export interface TransferValidationResult {
     errors: string[];
     blockingIssues: string[];
 }
-
-/**
- * Form submission state
- */
-export interface TransferSubmissionState {
-    isSubmitting: boolean;
-    hasSubmitted: boolean;
-    error?: string;
-    success?: boolean;
-}

@@ -33,14 +33,17 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
 
     // Sum up stats and points from all players
     Object.values(roster).forEach((positionSlot) => {
-        const stats = useSeasonPoints ? positionSlot.season.stats : positionSlot.gameweek.stats;
-        const points = useSeasonPoints ? positionSlot.season.points : positionSlot.gameweek.points;
+        if (positionSlot?.season) {
+            // ignore on_loan_0
+            const stats = useSeasonPoints ? positionSlot.season.stats : positionSlot.gameweek.stats;
+            const points = useSeasonPoints ? positionSlot.season.points : positionSlot.gameweek.points;
 
-        Object.keys(allStats).forEach((statKey) => {
-            const key = statKey as keyof typeof allStats;
-            allStats[key] += stats[key] || 0;
-            allPoints[key] += points[key] || 0;
-        });
+            Object.keys(allStats).forEach((statKey) => {
+                const key = statKey as keyof typeof allStats;
+                allStats[key] += stats[key] || 0;
+                allPoints[key] += points[key] || 0;
+            });
+        }
     });
 
     // Build breakdown with relevance and descriptions

@@ -1,7 +1,8 @@
 // app/teams/types/team-types.ts
+/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { Points, PointsBreakdown } from '../../scoring/types/scoring-types';
+import type { Points } from '../../scoring/types/scoring-types';
 
 export type ManagerId = string;
 
@@ -20,21 +21,6 @@ export interface UserTeamsSheetData {
     teamName: string;
     divisionId: DivisionId;
     lastUpdated: Date;
-}
-
-export interface WeeklyPointsData {
-    userId: ManagerId;
-    gameweek: number;
-    points: number;
-    transfers: number;
-    hits: number;
-    captain: string;
-    viceCaptain: string;
-    benchBoost: boolean;
-    tripleCaptain: boolean;
-    wildcard: boolean;
-    freeHit: boolean;
-    dateRecorded: Date;
 }
 
 /**
@@ -93,11 +79,33 @@ export interface TeamPositionSlot {
         seasonGeneratedOn: string; // ISO date when season totals were last updated
     };
 }
+/**
+ * Team position slot with player data and points
+ */
+export interface TeamLoanSlot {
+    player: RosterPlayer;
+    gameweek: null;
+    season: null;
+}
 
 /**
  * Team roster structure
  */
-export type TeamRoster = Record<PositionSlotKey, TeamPositionSlot>;
+export type TeamRoster = {
+    ca_0: TeamPositionSlot;
+    ca_1: TeamPositionSlot;
+    cb_0: TeamPositionSlot;
+    cb_1: TeamPositionSlot;
+    fb_0: TeamPositionSlot;
+    fb_1: TeamPositionSlot;
+    gk_0: TeamPositionSlot;
+    mid_0: TeamPositionSlot;
+    mid_1: TeamPositionSlot;
+    on_loan_0: TeamLoanSlot | null;
+    sub_0: TeamPositionSlot;
+    wa_0: TeamPositionSlot;
+    wa_1: TeamPositionSlot;
+};
 
 /**
  * Team gameweek data structure
@@ -132,19 +140,6 @@ export interface DivisionTeamsDocument {
         pointsLastUpdated: string | null;
         pointsLastGameweek: number | null;
     };
-}
-
-/**
- * Team formation for display components
- */
-export interface TeamFormation {
-    goalkeeper: TeamPositionSlot[];
-    centrebacks: TeamPositionSlot[];
-    fullbacks: TeamPositionSlot[];
-    midfielders: TeamPositionSlot[];
-    wideattackers: TeamPositionSlot[];
-    centralattackers: TeamPositionSlot[];
-    substitutes: TeamPositionSlot[];
 }
 
 /**
@@ -255,108 +250,11 @@ export interface ContributingStatsProps {
     onToggleExpanded: () => void;
 }
 
-export interface GameweekSelectorProps {
-    currentGameweek: number;
-    selectedGameweek: number;
-    availableGameweeks: number[];
-    onGameweekChange: (gameweek: number) => void;
-}
-
-export interface LoanStatusProps {
-    loanedOut: TeamPositionSlot[];
-    loanedIn: TeamPositionSlot[];
-    gameweek: number;
-}
-
 /**
  * Service/API interfaces
  */
-export interface DivisionTeamsUpdateParams {
-    divisionId: DivisionId;
-    gameweek: number;
-    userId?: string; // Optional: update specific user only
-}
 
 export interface UserTeamRoster {
     userId: ManagerId;
     roster: TeamRoster;
-}
-
-export interface PlayerAssignmentData {
-    playerId: number;
-    playerCode: number;
-    playerName: string;
-    playerPosition: CustomPosition;
-    teamPosition: RosterPosition;
-    teamSlotIndex: number;
-    isSub: boolean;
-    onLoanTo: string | null;
-    onLoanStart: string | null;
-    assignedAt: string;
-}
-
-export interface LoanUpdateOperation {
-    userId: ManagerId;
-    positionSlot: PositionSlotKey;
-    onLoanTo: string | null;
-    onLoanStart: string | null;
-}
-
-export interface PositionPointsUpdate {
-    positionSlot: PositionSlotKey;
-    gameweekStats: PlayerGameweekStatsData;
-    gameweekPoints: PointsBreakdown;
-    seasonStats: PlayerGameweekStatsData;
-    seasonPoints: PointsBreakdown;
-}
-
-/**
- * Legacy types for migration support
- */
-export interface LegacyPlayerData {
-    playerCode: number;
-    player: string;
-    teamPosition: string;
-    playerPosition: string;
-    isSub: boolean;
-    onLoanTo: string | null;
-    onLoanStart: string | null;
-    gameweek: number;
-    userId: ManagerId;
-}
-
-/**
- * Type guards and utility functions
- */
-export function isValidPositionSlot(slot: string): slot is PositionSlotKey {
-    const validSlots: PositionSlotKey[] = [
-        'gk_0',
-        'cb_0',
-        'cb_1',
-        'fb_0',
-        'fb_1',
-        'mid_0',
-        'mid_1',
-        'wa_0',
-        'wa_1',
-        'ca_0',
-        'ca_1',
-        'sub_0',
-    ];
-    return validSlots.includes(slot as PositionSlotKey);
-}
-
-export function isSubstituteSlot(slot: PositionSlotKey): boolean {
-    return slot.startsWith('sub');
-}
-
-export function getPositionFromSlot(slot: PositionSlotKey): string {
-    if (slot.startsWith('gk')) return 'gk';
-    if (slot.startsWith('cb')) return 'cb';
-    if (slot.startsWith('fb')) return 'fb';
-    if (slot.startsWith('mid')) return 'mid';
-    if (slot.startsWith('wa')) return 'wa';
-    if (slot.startsWith('ca')) return 'ca';
-    if (slot.startsWith('sub')) return 'sub';
-    return 'unknown';
 }

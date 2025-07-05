@@ -149,9 +149,7 @@ export function LoanStatusDisplay({ pendingLoans, activeLoans, managers, current
                                 </div>
 
                                 <div className={styles.loanActions}>
-                                    <span className={styles.actionInfo}>
-                                        💡 Use "Loan Finish" to end this agreement
-                                    </span>
+                                    <span className={styles.actionInfo}>💡 Use "Loan End" to end this agreement</span>
                                 </div>
                             </div>
                         </div>

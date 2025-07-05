@@ -141,8 +141,8 @@ function mapTransferTypeToSheet(transferType: string): TransferSheetData['Transf
             return 'swap';
         case 'LOAN_START':
             return 'loan start';
-        case 'LOAN_FINISH':
-            return 'loan finish';
+        case 'LOAN_END':
+            return 'loan end';
         case 'TRADE':
             return 'trade';
         case 'NEW_PLAYER':

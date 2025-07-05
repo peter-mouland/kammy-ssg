@@ -68,29 +68,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
                         {isSubstitute && <span className={styles.subBadge}>SUB</span>}
                     </div>
                 )}
-
-                {/* Loan Status */}
-                {isOnLoan && !isOnPitch && (
-                    <div className={styles.loanStatus}>
-                        {isLoanedIn ? (
-                            <span className={styles.loanIn}>On loan from</span>
-                        ) : (
-                            <span className={styles.loanOut}>On loan to {player.onLoanTo}</span>
-                        )}
-                    </div>
-                )}
             </div>
-
-            {/* Points/Stats (if available) */}
-            {gameweek > 0 && (
-                <div className={styles.playerStats}>
-                    <div className={styles.points}>
-                        {/* This would come from scoring data */}
-                        <span className={styles.pointsValue}>0</span>
-                        <span className={styles.pointsLabel}>pts</span>
-                    </div>
-                </div>
-            )}
 
             {/* Interactive hover effects */}
             <div className={styles.playerHover}>

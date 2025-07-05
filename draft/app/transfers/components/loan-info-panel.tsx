@@ -107,14 +107,14 @@ export function LoanInfoPanel({
                     <ul className={styles.rulesList}>
                         <li>A manager can only loan one player at a time</li>
                         <li>Loaned players score points for the borrowing team</li>
-                        <li>Loans will be ended when both managers submit a "Loan Finish" transfer</li>
+                        <li>Loans will be ended when both managers submit a "Loan End" transfer</li>
                     </ul>
                 </div>
             </div>
         );
     }
 
-    if (transferType === 'LOAN_FINISH') {
+    if (transferType === 'LOAN_END') {
         return (
             <div className={styles.loanPanel}>
                 <div className={styles.loanHeader}>

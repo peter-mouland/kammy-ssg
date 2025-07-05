@@ -38,7 +38,7 @@ export async function applyTransfersToGameweekDocument(
 
         console.log(`✅ Applied ${rosterUpdate.appliedTransfers.length} transfers successfully`);
         rosterUpdate.appliedTransfers.forEach((t) => {
-            console.log(`   ... applied ${t.playerBefore?.web_name} -> ${t.playerAfter.web_name}`);
+            console.log(`   ... applied ${t.positionSlot} ${t.playerBefore?.web_name} -> ${t.playerAfter.web_name}`);
         });
 
         // Create new document with updated rosters
@@ -79,18 +79,26 @@ function createNewGameweekDocument(
         const newRoster: TeamRoster = {} as TeamRoster;
 
         for (const [slotKey, positionSlot] of Object.entries(teamData.roster)) {
-            newRoster[slotKey as keyof TeamRoster] = {
-                player: { ...positionSlot.player },
+            if (slotKey === 'on_loan_0' && positionSlot) {
+                newRoster[slotKey] = {
+                    player: { ...positionSlot.player },
+                    gameweek: null,
+                    season: null,
+                };
+            } else if (positionSlot) {
+                newRoster[slotKey as Exclude<keyof TeamRoster, 'on_loan_0'>] = {
+                    player: { ...positionSlot.player },
 
-                // Reset gameweek data to zero
-                gameweek: {
-                    stats: createEmptyStats(),
-                    points: createEmptyPoints(),
-                },
+                    // Reset gameweek data to zero
+                    gameweek: {
+                        stats: createEmptyStats(),
+                        points: createEmptyPoints(),
+                    },
 
-                // Keep season data unchanged
-                season: { ...positionSlot.season },
-            };
+                    // Keep season data unchanged
+                    season: { ...positionSlot.season },
+                };
+            }
         }
 
         newTeams[userId] = { roster: newRoster };

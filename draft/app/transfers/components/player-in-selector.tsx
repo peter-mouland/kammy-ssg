@@ -61,7 +61,7 @@ export function PlayerInSelector({
         }
 
         // For loan finish, only show players currently on loan from this manager
-        if (transferType === 'LOAN_FINISH') {
+        if (transferType === 'LOAN_END') {
             // Would need to check if this player is currently on loan from the selected manager
             return {
                 isEligible: false,
@@ -163,7 +163,7 @@ export function PlayerInSelector({
                 </div>
             )}
 
-            {transferType === 'LOAN_FINISH' && (
+            {transferType === 'LOAN_END' && (
                 <div className={styles.transferContext}>
                     <span className={styles.contextIcon}>🔚</span>
                     <span className={styles.contextText}>Select the player to return from loan</span>

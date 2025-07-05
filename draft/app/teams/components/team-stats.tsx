@@ -9,7 +9,7 @@ import {
     getSubstitutePlayers,
 } from '../../_shared/lib/roster-conversion-utils';
 import { calculateContributingStats } from '../lib/team-stats-utils';
-import type { StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
+import type { PositionSlotKey, StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
 import { ContributingStats } from './contributing-stats';
 import { StatsViewToggle } from './stats-view-toggle';
 import styles from './team-stats.module.css';
@@ -60,7 +60,8 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
         const positionBreakdown: Record<string, { points: number; players: number; averagePoints: number }> = {};
 
         Object.entries(roster).forEach(([slot, positionSlot]) => {
-            const { position } = parsePositionSlot(slot as any);
+            if (slot === 'on_loan_0') return;
+            const { position } = parsePositionSlot(slot as PositionSlotKey);
             const points = useSeasonPoints ? positionSlot.season.points.total : positionSlot.gameweek.points.total;
 
             if (!positionBreakdown[position]) {
