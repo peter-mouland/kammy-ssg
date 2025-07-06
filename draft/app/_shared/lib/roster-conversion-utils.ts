@@ -9,7 +9,7 @@ import type {
     TeamPositionSlot,
     TeamRoster,
 } from '../../teams/types/team-types';
-import { getNextAvailableSlot, parsePositionSlot, STARTING_XI_SLOTS } from './position-slot-utils';
+import { getNextAvailableSlot, parsePositionSlot } from './position-slot-utils';
 
 /**
  * Convert legacy FirestoreTeamMember array to new roster structure
@@ -35,51 +35,31 @@ export function convertLegacyPlayersToRoster(legacyPlayers: any[]): TeamRoster {
         }
 
         const { position, index } = parsePositionSlot(slot);
-        if (slot === 'on_loan_0') {
-            roster[slot] = {
-                player: {
-                    playerId: Number.parseInt(player.playerId, 10),
-                    playerCode: player.playerCode,
-                    playerName: player.player,
-                    playerPosition: player.playerPosition.toLowerCase(),
-                    teamPosition: position === 'sub' ? 'sub' : (position as any),
-                    teamSlotIndex: index,
-                    isSub: player.isSub || position === 'sub',
-                    onLoanFrom: player.onLoanFrom,
-                    onLoanTo: player.onLoanTo,
-                    onLoanStart: player.onLoanStart,
-                    assignedAt: new Date().toISOString(), // Use current time as fallback
-                },
-                gameweek: null,
-                season: null,
-            };
-        } else {
-            roster[slot] = {
-                player: {
-                    playerId: Number.parseInt(player.playerId, 10),
-                    playerCode: player.playerCode,
-                    playerName: player.player,
-                    playerPosition: player.playerPosition.toLowerCase(),
-                    teamPosition: position === 'sub' ? 'sub' : (position as any),
-                    teamSlotIndex: index,
-                    isSub: player.isSub || position === 'sub',
-                    onLoanFrom: player.onLoanFrom,
-                    onLoanTo: player.onLoanTo,
-                    onLoanStart: player.onLoanStart,
-                    assignedAt: new Date().toISOString(), // Use current time as fallback
-                },
-                gameweek: {
-                    stats: createEmptyStats(),
-                    points: createEmptyPoints(),
-                },
-                season: {
-                    seasonGeneratedOn: '',
-                    seasonUpToGameweek: 0,
-                    stats: createEmptyStats(),
-                    points: createEmptyPoints(),
-                },
-            };
-        }
+        roster[slot] = {
+            player: {
+                playerId: Number.parseInt(player.playerId, 10),
+                playerCode: player.playerCode,
+                playerName: player.player,
+                playerPosition: player.playerPosition.toLowerCase(),
+                teamPosition: position === 'sub' ? 'sub' : (position as any),
+                teamSlotIndex: index,
+                isSub: player.isSub || position === 'sub',
+                onLoanFrom: player.onLoanFrom,
+                onLoanTo: player.onLoanTo,
+                onLoanStart: player.onLoanStart,
+                assignedAt: new Date().toISOString(), // Use current time as fallback
+            },
+            gameweek: {
+                stats: createEmptyStats(),
+                points: createEmptyPoints(),
+            },
+            season: {
+                seasonGeneratedOn: '',
+                seasonUpToGameweek: 0,
+                stats: createEmptyStats(),
+                points: createEmptyPoints(),
+            },
+        };
     }
 
     return roster;
@@ -102,39 +82,6 @@ export function extractLoanStatus(roster: TeamRoster, currentUserId: string): Lo
     }
 
     return { loanedOut, loanedIn };
-}
-
-/**
- * Get substitute players from roster
- */
-export function getSubstitutePlayers(roster: TeamRoster): TeamPositionSlot[] {
-    const substitutes: TeamPositionSlot[] = [];
-
-    for (const [slot, positionSlot] of Object.entries(roster)) {
-        if (slot !== 'on_loan_0') {
-            const { isSub } = parsePositionSlot(slot as PositionSlotKey);
-            if (isSub) {
-                substitutes.push(positionSlot as TeamPositionSlot);
-            }
-        }
-    }
-
-    return substitutes;
-}
-
-/**
- * Get starting XI players from roster
- */
-export function getStartingXIPlayers(roster: TeamRoster): TeamPositionSlot[] {
-    const startingXI: TeamPositionSlot[] = [];
-
-    for (const slot of STARTING_XI_SLOTS) {
-        if (roster[slot]) {
-            startingXI.push(roster[slot] as TeamPositionSlot);
-        }
-    }
-
-    return startingXI;
 }
 
 /**
@@ -162,13 +109,15 @@ export function getRosterTopScorer(
 ): { slot: PositionSlotKey; player: TeamPositionSlot; points: number } | null {
     let topScorer: { slot: PositionSlotKey; player: TeamPositionSlot; points: number } | null = null;
 
-    for (const [slot, positionSlot] of Object.entries(roster)) {
-        if (slot === 'on_loan_0') continue;
+    for (const [sotKey, positionSlot] of Object.entries(roster)) {
+        if (!positionSlot.season) {
+            console.log('🚨 no points for ' + sotKey);
+        }
         const points = useSeasonPoints ? positionSlot.season.points.total : positionSlot.gameweek.points.total;
 
         if (!topScorer || points > topScorer.points) {
             topScorer = {
-                slot: slot as PositionSlotKey,
+                slot: sotKey as PositionSlotKey,
                 player: positionSlot,
                 points,
             };
@@ -181,7 +130,7 @@ export function getRosterTopScorer(
 /**
  * Create empty stats structure
  */
-function createEmptyStats(): PlayerGameweekStatsData {
+export function createEmptyStats(): PlayerGameweekStatsData {
     return {
         appearance: 0,
         goals: 0,
@@ -199,7 +148,7 @@ function createEmptyStats(): PlayerGameweekStatsData {
 /**
  * Create empty points structure
  */
-function createEmptyPoints(): Points {
+export function createEmptyPoints(): Points {
     return {
         appearance: 0,
         goals: 0,

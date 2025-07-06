@@ -87,6 +87,7 @@ async function applyIndividualTransfer(
     switch (transferType) {
         case 'NEW_PLAYER':
         case 'TRANSFER':
+        case 'TRADE':
             return applyExternalTransfer(managerRoster, transfer);
         case 'SWAP':
             return applyInternalSwap(managerRoster, transfer);
@@ -94,8 +95,6 @@ async function applyIndividualTransfer(
             return applyLoanStart(managerRoster, transfer);
         case 'LOAN_END':
             return applyLoanFinish(managerRoster, transfer);
-        case 'TRADE':
-            return applyTrade(managerRoster, transfer);
     }
 }
 
@@ -194,8 +193,14 @@ function applyLoanStart(managerRoster: TeamRoster, transfer: ProcessedTransfer):
                 onLoanFrom: null,
                 assignedAt: new Date().toISOString(),
             },
-            gameweek: null,
-            season: null,
+            gameweek: {
+                stats: createEmptyStats(),
+                points: createEmptyPoints(),
+            },
+            season: {
+                stats: createEmptyStats(),
+                points: createEmptyPoints(),
+            },
         };
     }
     const loanFromDetails = transfer.onLoanFrom
@@ -253,15 +258,6 @@ function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer)
         appliedAt: new Date(),
         updatedRoster: managerRoster,
     };
-}
-
-/**
- * Apply trade (between different teams)
- */
-function applyTrade(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
-    // For now, treat trades like external transfers
-    // Could be enhanced later to handle two-way trades
-    return applyExternalTransfer(managerRoster, transfer);
 }
 
 /**

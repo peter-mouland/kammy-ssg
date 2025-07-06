@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
-import { extractLoanStatus, getSubstitutePlayers } from '../../_shared/lib/roster-conversion-utils';
+import { extractLoanStatus } from '../../_shared/lib/roster-conversion-utils';
 import type { StatsViewMode, TeamGameweekData, TeamViewData } from '../types/team-types';
 import { FootballPitch } from './football-pitch';
 import { GameweekSelector } from './gameweek-selector';
@@ -26,10 +26,7 @@ export const TeamView = () => {
         return gameweekData || data.currentTeam;
     }, [data.gameweekHistory, data.currentTeam, selectedGameweek]);
 
-    // Get substitutes from roster
-    const substitutes = useMemo(() => {
-        return getSubstitutePlayers(teamData.roster);
-    }, [teamData.roster]);
+    const substitute = teamData.roster.sub_0;
 
     // Extract loan status
     const loanStatus = useMemo(() => {
@@ -86,20 +83,17 @@ export const TeamView = () => {
                         <div className={styles.substitutesSection}>
                             <h3 className={styles.sectionTitle}>
                                 Substitutes
-                                <span className={styles.playerCount}>({substitutes.length})</span>
+                                <span className={styles.playerCount}>(1)</span>
                             </h3>
                             <div className={styles.substitutesList}>
-                                {substitutes.map((positionSlot, index) => (
-                                    <PositionSlotCard
-                                        key={`sub_${index}`}
-                                        slot={`sub_${index}` as any}
-                                        positionSlot={positionSlot}
-                                        gameweek={selectedGameweek}
-                                        isSubstitute={true}
-                                        viewMode={viewMode}
-                                    />
-                                ))}
-                                {substitutes.length === 0 && <div className={styles.emptyState}>No substitutes</div>}
+                                <PositionSlotCard
+                                    key={'sub_0'}
+                                    slot={'sub_0'}
+                                    positionSlot={substitute}
+                                    gameweek={selectedGameweek}
+                                    isSubstitute={true}
+                                    viewMode={viewMode}
+                                />
                             </div>
                         </div>
 

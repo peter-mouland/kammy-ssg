@@ -79,14 +79,6 @@ export interface TeamPositionSlot {
         seasonGeneratedOn: string; // ISO date when season totals were last updated
     };
 }
-/**
- * Team position slot with player data and points
- */
-export interface TeamLoanSlot {
-    player: RosterPlayer;
-    gameweek: null;
-    season: null;
-}
 
 /**
  * Team roster structure
@@ -101,7 +93,7 @@ export type TeamRoster = {
     gk_0: TeamPositionSlot;
     mid_0: TeamPositionSlot;
     mid_1: TeamPositionSlot;
-    on_loan_0: TeamLoanSlot | null;
+    on_loan_0: TeamPositionSlot;
     sub_0: TeamPositionSlot;
     wa_0: TeamPositionSlot;
     wa_1: TeamPositionSlot;
@@ -190,8 +182,6 @@ export interface TeamStatsData {
     totalPoints: number;
     gameweekPoints: number;
     averagePoints: number;
-    startingXIPoints: number;
-    benchPoints: number;
     topScorer: {
         slot: PositionSlotKey;
         player: TeamPositionSlot;

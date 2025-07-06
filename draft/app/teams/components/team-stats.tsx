@@ -1,18 +1,26 @@
 // app/teams/components/team-stats.tsx
 import type React from 'react';
 import { useMemo, useState } from 'react';
-import { parsePositionSlot } from '../../_shared/lib/position-slot-utils';
-import {
-    calculateRosterTotalPoints,
-    getRosterTopScorer,
-    getStartingXIPlayers,
-    getSubstitutePlayers,
-} from '../../_shared/lib/roster-conversion-utils';
+import { getScoringSlots } from '../../_shared/lib/position-slot-utils';
+import { calculateRosterTotalPoints, getRosterTopScorer } from '../../_shared/lib/roster-conversion-utils';
 import { calculateContributingStats } from '../lib/team-stats-utils';
-import type { PositionSlotKey, StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
+import type { StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
 import { ContributingStats } from './contributing-stats';
 import { StatsViewToggle } from './stats-view-toggle';
 import styles from './team-stats.module.css';
+
+// Get position display name
+const getPositionDisplayName = (position: string) => {
+    const names: Record<string, string> = {
+        gk: 'Goalkeeper',
+        cb: 'Centre Backs',
+        fb: 'Full Backs',
+        wa: 'Wide Attackers',
+        ca: 'Centre Attackers',
+        sub: 'Substitutes',
+    };
+    return names[position] || position.toUpperCase();
+};
 
 export const TeamStats: React.FC<TeamStatsProps> = ({
     teamData,
@@ -28,24 +36,9 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
     const teamStats = useMemo((): TeamStatsData => {
         const { roster } = teamData;
 
-        // Get starting XI and substitutes
-        const startingXI = getStartingXIPlayers(roster);
-        const substitutes = getSubstitutePlayers(roster);
-
         // Use the toggle state instead of isCurrentGameweek
         const useSeasonPoints = viewMode === 'season';
         const totalPoints = calculateRosterTotalPoints(roster, useSeasonPoints);
-
-        // Calculate starting XI vs bench points
-        const startingXIPoints = startingXI.reduce((sum, player) => {
-            const points = useSeasonPoints ? player.season.points.total : player.gameweek.points.total;
-            return sum + points;
-        }, 0);
-
-        const benchPoints = substitutes.reduce((sum, player) => {
-            const points = useSeasonPoints ? player.season.points.total : player.gameweek.points.total;
-            return sum + points;
-        }, 0);
 
         // Always calculate current gameweek points for comparison
         const gameweekPoints = calculateRosterTotalPoints(roster, false);
@@ -59,9 +52,8 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
         // Calculate position breakdown
         const positionBreakdown: Record<string, { points: number; players: number; averagePoints: number }> = {};
 
-        Object.entries(roster).forEach(([slot, positionSlot]) => {
-            if (slot === 'on_loan_0') return;
-            const { position } = parsePositionSlot(slot as PositionSlotKey);
+        getScoringSlots(roster).forEach((positionSlot) => {
+            const position = positionSlot.player.teamPosition;
             const points = useSeasonPoints ? positionSlot.season.points.total : positionSlot.gameweek.points.total;
 
             if (!positionBreakdown[position]) {
@@ -85,8 +77,6 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
             totalPoints,
             gameweekPoints,
             averagePoints,
-            startingXIPoints,
-            benchPoints,
             topScorer,
             positionBreakdown,
             contributingStats,
@@ -96,19 +86,6 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
     // Format points display
     const formatPoints = (points: number) => {
         return points > 0 ? `+${points}` : points.toString();
-    };
-
-    // Get position display name
-    const getPositionDisplayName = (position: string) => {
-        const names: Record<string, string> = {
-            gk: 'Goalkeeper',
-            cb: 'Centre Backs',
-            fb: 'Full Backs',
-            wa: 'Wide Attackers',
-            ca: 'Centre Attackers',
-            sub: 'Substitutes',
-        };
-        return names[position] || position.toUpperCase();
     };
 
     // Handle view mode toggle

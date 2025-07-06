@@ -320,29 +320,23 @@ async function createGameweekDocumentFromSource(
 
             // Copy each position slot but reset gameweek stats/points
             for (const [slot, positionSlot] of Object.entries(teamData.roster)) {
-                if (slot === 'on_loan_0' && positionSlot) {
-                    fallbackDocument.teams[userId].roster[slot] = {
-                        player: { ...positionSlot.player },
-                    };
-                } else if (slot !== 'on_loan_0' && positionSlot) {
-                    fallbackDocument.teams[userId].roster[slot] = {
-                        // Keep player info unchanged
-                        player: { ...positionSlot.player },
+                fallbackDocument.teams[userId].roster[slot] = {
+                    // Keep player info unchanged
+                    player: { ...positionSlot.player },
 
-                        // Reset gameweek data to zero
-                        gameweek: {
-                            stats: createEmptyStats(),
-                            points: createEmptyPoints(),
-                        },
+                    // Reset gameweek data to zero
+                    gameweek: {
+                        stats: createEmptyStats(),
+                        points: createEmptyPoints(),
+                    },
 
-                        // Keep season data unchanged from source, but ensure tracking fields exist
-                        season: {
-                            ...positionSlot.season,
-                            seasonUpToGameweek: positionSlot.season.seasonUpToGameweek || 0,
-                            seasonGeneratedOn: positionSlot.season.seasonGeneratedOn || now,
-                        },
-                    };
-                }
+                    // Keep season data unchanged from source, but ensure tracking fields exist
+                    season: {
+                        ...positionSlot.season,
+                        seasonUpToGameweek: positionSlot.season.seasonUpToGameweek || 0,
+                        seasonGeneratedOn: positionSlot.season.seasonGeneratedOn || now,
+                    },
+                };
             }
         }
 

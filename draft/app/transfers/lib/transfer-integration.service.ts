@@ -1,7 +1,9 @@
 /* Location: app/transfers/lib/transfer-integration.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { DivisionTeamsDocument, TeamRoster } from '../../teams/types/team-types';
+import { isSlotScoringActive } from '../../_shared/lib/position-slot-utils';
+import { createEmptyPoints, createEmptyStats } from '../../_shared/lib/roster-conversion-utils';
+import type { DivisionTeamsDocument, PositionSlotKey, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import { applyTransfersToRosters, getGameweekTransfers } from './transfer-processor.service';
 
@@ -79,26 +81,22 @@ function createNewGameweekDocument(
         const newRoster: TeamRoster = {} as TeamRoster;
 
         for (const [slotKey, positionSlot] of Object.entries(teamData.roster)) {
-            if (slotKey === 'on_loan_0' && positionSlot) {
-                newRoster[slotKey] = {
-                    player: { ...positionSlot.player },
-                    gameweek: null,
-                    season: null,
-                };
-            } else if (positionSlot) {
-                newRoster[slotKey as Exclude<keyof TeamRoster, 'on_loan_0'>] = {
-                    player: { ...positionSlot.player },
-
-                    // Reset gameweek data to zero
-                    gameweek: {
-                        stats: createEmptyStats(),
-                        points: createEmptyPoints(),
-                    },
-
-                    // Keep season data unchanged
-                    season: { ...positionSlot.season },
-                };
-            }
+            const season = isSlotScoringActive(slotKey as PositionSlotKey)
+                ? positionSlot.season
+                : {
+                      stats: createEmptyStats(),
+                      points: createEmptyPoints(),
+                      seasonUpToGameweek: 0,
+                      seasonGeneratedOn: '',
+                  };
+            newRoster[slotKey as keyof TeamRoster] = {
+                player: { ...positionSlot.player },
+                gameweek: {
+                    stats: createEmptyStats(),
+                    points: createEmptyPoints(),
+                },
+                season, // Keep season data unchanged
+            };
         }
 
         newTeams[userId] = { roster: newRoster };
@@ -117,42 +115,5 @@ function createNewGameweekDocument(
             copiedFrom: sourceDocument.gameweek,
             copiedAt: now,
         },
-    };
-}
-
-/**
- * Create empty stats structure
- */
-function createEmptyStats() {
-    return {
-        appearance: 0,
-        goals: 0,
-        assists: 0,
-        cleanSheets: 0,
-        goalsConceded: 0,
-        penaltiesSaved: 0,
-        yellowCards: 0,
-        redCards: 0,
-        saves: 0,
-        bonus: 0,
-    };
-}
-
-/**
- * Create empty points structure
- */
-function createEmptyPoints() {
-    return {
-        appearance: 0,
-        goals: 0,
-        assists: 0,
-        cleanSheets: 0,
-        yellowCards: 0,
-        redCards: 0,
-        saves: 0,
-        penaltiesSaved: 0,
-        goalsConceded: 0,
-        bonus: 0,
-        total: 0,
     };
 }
