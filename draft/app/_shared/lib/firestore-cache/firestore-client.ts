@@ -40,7 +40,7 @@ export class FirestoreClient {
     async setDocument(
         collectionName: string,
         docId: string,
-        data: Omit<CacheDocument, 'id' | 'lastUpdated'> & { data: unknown },
+        data: Omit<CacheDocument, 'id'> & { data: unknown },
     ): Promise<void> {
         const docRef = this.db.collection(collectionName).doc(docId);
         const documentData: CacheDocument = {

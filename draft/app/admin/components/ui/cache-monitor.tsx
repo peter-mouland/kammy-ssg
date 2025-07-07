@@ -143,36 +143,36 @@ export const CacheMonitor: React.FC<CacheMonitorProps> = ({ autoRefresh = false,
                     </div>
 
                     {/* Cache Breakdown */}
-                    <div className={styles.statCard}>
-                        <h4 className={styles.statTitle}>Cache Breakdown</h4>
-                        <div className={styles.statRow}>
-                            <span className={styles.statLabel}>Draft State:</span>
-                            <span className={styles.statValue}>{stats.keysByPattern.draftState.length}</span>
-                        </div>
-                        <div className={styles.statRow}>
-                            <span className={styles.statLabel}>Draft Picks:</span>
-                            <span className={styles.statValue}>{stats.keysByPattern.draftPicks.length}</span>
-                        </div>
-                        <div className={styles.statRow}>
-                            <span className={styles.statLabel}>User Teams:</span>
-                            <span className={styles.statValue}>{stats.keysByPattern.userTeams.length}</span>
-                        </div>
-                        <div className={styles.statRow}>
-                            <span className={styles.statLabel}>Draft Orders:</span>
-                            <span className={styles.statValue}>{stats.keysByPattern.draftOrders.length}</span>
-                        </div>
-                        <div className={styles.statRow}>
-                            <span className={styles.statLabel}>Divisions:</span>
-                            <span className={styles.statValue}>{stats.keysByPattern.divisions.length}</span>
-                        </div>
-                    </div>
+                    {/*<div className={styles.statCard}>*/}
+                    {/*    <h4 className={styles.statTitle}>Cache Breakdown</h4>*/}
+                    {/*    <div className={styles.statRow}>*/}
+                    {/*        <span className={styles.statLabel}>Draft State:</span>*/}
+                    {/*        <span className={styles.statValue}>{stats.keysByPattern.draftState.length}</span>*/}
+                    {/*    </div>*/}
+                    {/*    <div className={styles.statRow}>*/}
+                    {/*        <span className={styles.statLabel}>Draft Picks:</span>*/}
+                    {/*        <span className={styles.statValue}>{stats.keysByPattern.draftPicks.length}</span>*/}
+                    {/*    </div>*/}
+                    {/*    <div className={styles.statRow}>*/}
+                    {/*        <span className={styles.statLabel}>User Teams:</span>*/}
+                    {/*        <span className={styles.statValue}>{stats.keysByPattern.userTeams.length}</span>*/}
+                    {/*    </div>*/}
+                    {/*    <div className={styles.statRow}>*/}
+                    {/*        <span className={styles.statLabel}>Draft Orders:</span>*/}
+                    {/*        <span className={styles.statValue}>{stats.keysByPattern.draftOrders.length}</span>*/}
+                    {/*    </div>*/}
+                    {/*    <div className={styles.statRow}>*/}
+                    {/*        <span className={styles.statLabel}>Divisions:</span>*/}
+                    {/*        <span className={styles.statValue}>{stats.keysByPattern.divisions.length}</span>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
 
                     {/* Cache Keys (collapsible) */}
                     <div className={styles.statCard}>
                         <details className={styles.details}>
-                            <summary className={styles.statTitle}>All Cache Keys ({stats.keys.length})</summary>
+                            <summary className={styles.statTitle}>All Cache Keys ({stats.keys?.length})</summary>
                             <div className={styles.keyList}>
-                                {stats.keys.map((key, index) => (
+                                {stats.keys?.map((key, index) => (
                                     <div key={index} className={styles.keyItem}>
                                         {key}
                                     </div>

@@ -34,6 +34,7 @@ export async function getTransfersPageData({
         const managers = await readUserTeams();
 
         const gameweekToLoad = selectedGameweek || currentGameweek || 1;
+
         const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad);
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
         const { transfers: currentTransfers, divisionRosters } = await getTransfersForDivision(

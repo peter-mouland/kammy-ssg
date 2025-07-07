@@ -1,10 +1,17 @@
 /* Location: app/_shared/lib/firestore-cache/fpl-cache.ts */
+/* Responsibility: */
+/* - store fantasy.premierleague.com data into firestore */
+/* - give access to fantasy.premierleague.com data from firestore */
+/* Notes: */
+/* - 90% of use-case should use api-cache*/
 
-import type { CustomPosition } from '../../../players/types/player-types';
+import { generateSeasonData } from '../../../scoring/lib';
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
-import { processBatchedReads } from '../batch-processor';
+import type { PlayersSheetData } from '../../types/sheets-types';
+import { processBatched, processBatchedReads } from '../batch-processor';
 import { FirestoreClearService } from '../firestore-cache/clear-service';
 import { FirestoreClient } from '../firestore-cache/firestore-client';
+import { readPlayers } from '../sheets/players';
 import { fplApi } from './api';
 import type {
     EventData,
@@ -51,6 +58,12 @@ export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) 
 export class FplFirestore {
     private client: FirestoreClient;
     public clearService: FirestoreClearService;
+    public lastUpdated = {
+        teams: '',
+        elements: '',
+        elementDetailedStats: '',
+        events: '',
+    };
 
     constructor() {
         this.client = new FirestoreClient();
@@ -64,7 +77,7 @@ export class FplFirestore {
      */
     async getTeams(): Promise<FplTeam[]> {
         const doc = await this.client.getDocument<FplTeam[]>(this.client.collections.FPL_BOOTSTRAP, 'teams');
-
+        this.lastUpdated.teams = doc?.lastUpdated || '';
         return doc ? doc.data : [];
     }
 
@@ -73,6 +86,7 @@ export class FplFirestore {
      */
     async getEvents(): Promise<GameWeekData[]> {
         const doc = await this.client.getDocument<GameWeekData[]>(this.client.collections.FPL_BOOTSTRAP, 'events');
+        this.lastUpdated.events = doc?.lastUpdated || '';
 
         return doc ? doc.data.map((gw) => ({ ...gw, start: gw.start.toDate(), end: gw.end.toDate() })) : [];
     }
@@ -86,45 +100,16 @@ export class FplFirestore {
             this.client.collections.FPL_BOOTSTRAP,
             'elements',
         );
+        this.lastUpdated.elements = doc?.lastUpdated || '';
         return doc ? doc.data : [];
-    }
-
-    /**
-     * Get current gameweek from cached events
-     */
-    async getCurrentGameweek(): Promise<number | null> {
-        const events = await this.getEvents();
-        if (!events) return null;
-
-        const currentEvent = events.find((event) => event.fplEvent.is_current);
-        return currentEvent?.fplEvent.id || null;
-    }
-    /**
-     * Get current gameweek from cached events
-     */
-    async getCurrentGameweekData(): Promise<GameWeekData> {
-        const events = await this.getEvents();
-
-        return events.find((event) => event.fplEvent.is_current) || events[0];
-    }
-
-    /**
-     * Get element summary data (individual player gameweek breakdown)
-     */
-    async getElementGameweeks(playerId: number): Promise<FplPlayerSeasonData | null> {
-        const doc = await this.client.getDocument<FplPlayerSeasonData>(
-            this.client.collections.FPL_ELEMENTS,
-            `element-${playerId}`,
-        );
-
-        return doc ? doc.data : null;
     }
 
     /**
      * Batch get element summaries
      */
 
-    async batchGetElementSummaries(playerIds: number[]) {
+    async getPlayerDetailedStats(playerId: number[] | number) {
+        const playerIds = Array.isArray(playerId) ? playerId : [playerId];
         const batchReader = async (playerIdBatch: number[]) => {
             const docIds = playerIdBatch.map((id) => `element-${id}`);
             const docs = await this.client.batchGetDocuments(this.client.collections.FPL_ELEMENTS, docIds);
@@ -152,6 +137,18 @@ export class FplFirestore {
         return results;
     }
 
+    /**
+     * Get element summary data (individual player gameweek breakdown)
+     */
+    async getElementDetailedStats(playerId: number): Promise<FplPlayerSeasonData | null> {
+        const doc = await this.client.getDocument<FplPlayerSeasonData>(
+            this.client.collections.FPL_ELEMENTS,
+            `element-${playerId}`,
+        );
+        this.lastUpdated.elementDetailedStats = doc?.lastUpdated || '';
+        return doc ? doc.data : null;
+    }
+
     // === HELPER METHODS ===
 
     /**
@@ -176,17 +173,10 @@ export class FplFirestore {
         });
 
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
+            lastUpdated: new Date().toISOString(),
             source: 'fpl-with-draft',
             data: updatedElements,
         });
-    }
-
-    /**
-     * Check if elements have draft data
-     */
-    async hasDraftData(): Promise<boolean> {
-        const elements = await this.getElements();
-        return elements ? elements.some((element) => 'draft' in element) : false;
     }
 
     /**
@@ -202,78 +192,132 @@ export class FplFirestore {
         });
 
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
+            lastUpdated: new Date().toISOString(),
             source: 'fpl',
             data: clearedElements,
         });
     }
 
-    /**
-     * Get players by team (from cached elements)
-     */
-    async getPlayersByTeam(teamCode: number): Promise<EnhancedPlayerData[]> {
-        const elements = await this.getElements();
-        if (!elements) return [];
-
-        return elements
-            .filter((player) => player.team_code === teamCode)
-            .sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
-    }
-
-    /**
-     * Get players by position (from cached elements)
-     */
-    async getPlayersByPosition(position: CustomPosition): Promise<EnhancedPlayerData[]> {
-        const elements = await this.getElements();
-        if (!elements) return [];
-
-        return elements
-            .filter((player) => player.draft.position === position)
-            .sort((a, b) => b.draft.pointsTotal - a.draft.pointsTotal);
-    }
-
-    /**
-     * Get specific players by IDs (from cached elements)
-     */
-    async getPlayersByCodes(playerCodes: number[]): Promise<EnhancedPlayerData[]> {
-        const elements = await this.getElements();
-        if (!elements) return [];
-
-        const playerMap = new Map(elements.map((player) => [player.code, player]));
-        return playerCodes
-            .map((code) => playerMap.get(code))
-            .filter((player): player is EnhancedPlayerData => player !== undefined);
-    }
-
-    /**
-     * Search players by name (from cached elements)
-     */
-    async searchPlayersByName(searchTerm: string): Promise<EnhancedPlayerData[]> {
-        const elements = await this.getElements();
-        if (!elements) return [];
-
-        const normalizedSearch = searchTerm.toLowerCase().trim();
-
-        return elements.filter((player) => {
-            const firstName = player.first_name.toLowerCase();
-            const secondName = player.second_name.toLowerCase();
-            const webName = player.web_name.toLowerCase();
-
-            return (
-                firstName.includes(normalizedSearch) ||
-                secondName.includes(normalizedSearch) ||
-                webName.includes(normalizedSearch)
-            );
-        });
-    }
-
     // === WRITE METHODS ===
+    /**
+     * Generate and cache enhanced data
+     */
+    private async generateAndCacheEnhancedData(): Promise<EnhancedPlayerData[]> {
+        console.log('🔄 generateAndCacheEnhancedData() - Starting fresh generation...');
 
+        // Get base FPL data
+        const players = await this.getElements();
+        const sheetsPlayers = await readPlayers();
+
+        // Filter to only players that exist in sheets
+        const playerIds: number[] = [];
+        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+            acc[player.id] = player;
+            playerIds.push(player.id);
+            return acc;
+        }, {});
+        const fplPlayerGameweeksById = await this.getPlayerDetailedStats(playerIds);
+
+        const filteredPlayers = players.filter((player) => sheetsPlayersById[player.id]);
+
+        if (filteredPlayers.length === 0) {
+            throw new Error('No players found that exist in both FPL data and sheets');
+        }
+
+        console.log(`🔄 Generating enhanced data for ${filteredPlayers.length} players...`);
+
+        const enhancedPlayers = generateSeasonData(filteredPlayers, fplPlayerGameweeksById, sheetsPlayersById);
+        await this.updateElementsWithDraft(enhancedPlayers);
+
+        console.log(`✅ Enhanced data generated and cached for ${enhancedPlayers.length} players`);
+        return enhancedPlayers;
+    }
+
+    /**
+     * Preload common data based on what's missing
+     */
+    async preloadCommonData(
+        options: {
+            includeBootstrap?: boolean;
+            includeEnhancedData?: boolean;
+            includeElementDetailedStats?: boolean;
+            forceRefresh?: boolean;
+            skipDetailedStats?: boolean;
+        } = {},
+    ) {
+        const startTime = performance.now();
+        console.log('🔄 preloadCommonData() - Start', options);
+
+        const {
+            includeBootstrap = true,
+            includeEnhancedData = false,
+            includeElementDetailedStats = false,
+            forceRefresh = false,
+        } = options;
+
+        const results: any = {};
+
+        try {
+            // If force refresh, clear existing data first
+            if (forceRefresh) {
+                console.log('🔄 preloadCommonData() - Force refresh, clearing existing data');
+                if (includeBootstrap) {
+                    await this.clearBootstrapData();
+                }
+                if (includeEnhancedData) {
+                    await this.clearDraftData();
+                }
+                if (includeElementDetailedStats) {
+                    await this.clearElementDetailedStats();
+                }
+            }
+
+            // Load bootstrap data
+            if (includeBootstrap) {
+                console.log('🔄 preloadCommonData() - Loading bootstrap data');
+                const fresh = await this.populateBootstrap();
+                results.bootstrap = fresh;
+                console.log(`✅ preloadCommonData() - Bootstrap loaded: ${results.bootstrap.elements.length} players`);
+            }
+
+            // Load enhanced data
+            if (includeEnhancedData) {
+                console.log('🔄 preloadCommonData() - Loading enhanced data (with detailed stats - slower)');
+                const fresh = await this.generateAndCacheEnhancedData();
+                results.enhanced = fresh;
+                console.log(`✅ preloadCommonData() - Enhanced data loaded: ${results.enhanced.length} players`);
+            }
+
+            // Load element summaries
+            if (includeElementDetailedStats) {
+                console.log('🔄 preloadCommonData() - Loading element summaries');
+                const sheetsPlayers = await readPlayers();
+                const playerIds = sheetsPlayers.map((p: any) => p.id);
+                const playerDetailedStats = await this.populatePlayerDetailedStats(playerIds);
+                results.elementDetailedStats = playerDetailedStats;
+                console.log(
+                    `✅ preloadCommonData() - Element summaries loaded: ${Object.keys(results.elementDetailedStats).length} players`,
+                );
+            }
+
+            console.log(`✅ preloadCommonData() - Complete in ${(performance.now() - startTime).toFixed(2)}ms`);
+            return {
+                success: true,
+                results,
+                duration: performance.now() - startTime,
+            };
+        } catch (error) {
+            console.error('❌ preloadCommonData() - Error:', error);
+            throw error;
+        }
+    }
     /**
      * Populate teams document with fresh data
      */
     async populateTeams(teamsData: any[]) {
         console.log('🎉 Populating FPL_BOOTSTRAP teams document with fresh data...');
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'teams', {
+            lastUpdated: new Date().toISOString(),
             source: 'fpl',
             data: teamsData,
         });
@@ -287,6 +331,7 @@ export class FplFirestore {
         console.log('🎉 Populating FPL_BOOTSTRAP events document with fresh data...');
         const gameweekData = getGameweekData(eventsData);
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'events', {
+            lastUpdated: new Date().toISOString(),
             source: 'fpl',
             data: gameweekData,
         });
@@ -301,6 +346,7 @@ export class FplFirestore {
         const filteredElements: FilteredFplPlayerData[] = elementsData.map(convertFplElementToCache);
 
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
+            lastUpdated: new Date().toISOString(),
             source: 'fpl',
             data: filteredElements,
         });
@@ -319,29 +365,53 @@ export class FplFirestore {
     }
 
     /**
-     * Populate element summary document with fresh data
-     */
-    async populateElementSummary(playerId: number, summaryData: any): Promise<void> {
-        const history: FilteredFplPlayerData[] = summaryData.history.map(convertFplElementHistoryToCache);
-
-        await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerId}`, {
-            source: 'fpl',
-            data: { fixtures: summaryData.fixtures, history },
-        });
-    }
-
-    /**
      * Populate multiple element summary documents with fresh data
      */
+    async populatePlayerDetailedStats(playerIds: number[]): Promise<Record<number, FplPlayerSeasonData>> {
+        console.log(`🔄 populatePlayerDetailedStats([${playerIds.length} players]) - Start`);
+
+        // Fetch missing players from API in manageable chunks
+        const freshData: Record<number, FplPlayerSeasonData> = {};
+
+        if (playerIds.length > 0) {
+            const fetchPlayer = async (playerId: number) => {
+                try {
+                    const playerData = await fplApi.getPlayerDetailedStats(playerId);
+                    return { playerId, playerData };
+                } catch (error) {
+                    console.error(`Failed to fetch player ${playerId}:`, error);
+                    return { playerId, playerData: null };
+                }
+            };
+
+            const results = await processBatched(playerIds, fetchPlayer, {
+                batchSize: 50,
+                maxConcurrent: 10,
+                logProgress: true,
+            });
+
+            // Convert results to freshData object
+            results.forEach(({ playerId, playerData }) => {
+                if (playerData) {
+                    freshData[playerId] = playerData;
+                }
+            });
+            await this.populateElementDetailedStats(freshData);
+            return freshData;
+        }
+        return {};
+    }
+
     // todo : batch to reduce cost
     // todo : restrict to id in sheeets
-    async populateElementSummaries(summariesData: Record<number, any>): Promise<void> {
+    async populateElementDetailedStats(summariesData: Record<number, any>): Promise<void> {
         const entries = Object.entries(summariesData);
         console.log(`📝 Writing ${entries.length} element summaries individually to avoid payload limits`);
 
         for (const [playerIdStr, data] of entries) {
             console.log(`📝 ... ${playerIdStr}`);
             await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerIdStr}`, {
+                lastUpdated: new Date().toISOString(),
                 source: 'fpl' as const,
                 data,
             });
@@ -392,7 +462,7 @@ export class FplFirestore {
     /**
      * Get count of element summaries in cache
      */
-    async getElementSummariesCount(): Promise<number> {
+    async getElementDetailedStatsCount(): Promise<number> {
         try {
             // This depends on your Firestore structure
             // You might need to query the collection directly
@@ -422,7 +492,7 @@ export class FplFirestore {
     /**
      * Clear element summaries
      */
-    async clearElementSummaries(): Promise<void> {
+    async clearElementDetailedStats(): Promise<void> {
         try {
             await this.clearService.clearCollection(this.client.collections.FPL_ELEMENTS);
             console.log('✅ Element summaries cleared');

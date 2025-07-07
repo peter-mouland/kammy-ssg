@@ -246,7 +246,7 @@ export class FirestoreClearService {
     /**
      * Clear only element summaries (large collection)
      */
-    async clearElementSummariesOnly(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
+    async clearElementDetailedStatsOnly(progressCallback?: (progress: ClearProgress) => void): Promise<void> {
         await this.clearSpecificCollections([this.client.collections.FPL_ELEMENTS], progressCallback);
     }
 

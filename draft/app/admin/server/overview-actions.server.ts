@@ -28,12 +28,12 @@ export async function handleOverviewActions(params: OverviewActionParams): Promi
                 return await handlePopulateBootstrapData();
             }
             case 'generateEnhancedDataFast': {
-                const { handleGenerateEnhancedDataFast } = await import('./actions/data-actions');
-                return await handleGenerateEnhancedDataFast();
+                const { handleGenerateEnhancedData } = await import('./actions/data-actions');
+                return await handleGenerateEnhancedData();
             }
-            case 'populateElementSummaries': {
-                const { handlePopulateElementSummaries } = await import('./actions/data-actions');
-                return await handlePopulateElementSummaries();
+            case 'populateElementDetailedStats': {
+                const { handlePopulateElementDetailedStats } = await import('./actions/data-actions');
+                return await handlePopulateElementDetailedStats();
             }
             // System Actions for Overview
             case 'getCacheStatus': {

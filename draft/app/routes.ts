@@ -5,7 +5,6 @@ import { index, type RouteConfig, route } from '@react-router/dev/routes';
 export default [
     // Main pages
     index('homepage/homepage.route.tsx'),
-    // route('teams', 'teams/team.route.tsx'),
     route('teams/:managerId?', 'teams/team.route.tsx'),
     route('leagues/:divisionId?', 'leagues/league-standings.route.tsx'),
     route('draft', 'draft/draft.route.tsx'),
@@ -16,7 +15,10 @@ export default [
 
     route('scoring/api/gw-points', 'scoring/api/api.gw-points.ts'),
 
-    // Admin routes with nested sections
+    // NEW: Unified Cache Management API
+    route('api/cache', 'api/cache/api.cache.ts'),
+
+    // Admin routes with nested sections (legacy - for backward compatibility)
     route('admin', 'admin/admin.route.tsx', [
         index('admin/admin-overview.route.tsx'),
         route('draft', 'admin/admin-draft.route.tsx'),
@@ -24,7 +26,9 @@ export default [
         route('settings', 'admin/admin-settings.route.tsx'),
         route('transfers', 'admin/admin-transfers.route.tsx'),
     ]),
-    route('admin/api/cache-status', 'admin/api/api.cache-status.ts'),
+
+    // NEW: AdminV2 route with unified caching system
+    route('adminv2', 'admin/adminv2.route.tsx'),
 
     // Debug route
     route('debug', 'admin/debug.route.tsx'),

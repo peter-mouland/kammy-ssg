@@ -1,4 +1,5 @@
 import { useActionData } from 'react-router';
+import type { AdminDashboardData } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
@@ -9,10 +10,10 @@ import { CommitTeamsSection } from './commit-teams-section';
 import { FirebaseSyncSection } from './firebase-sync-section';
 
 interface DraftSectionProps {
-    divisions: any[];
-    draftOrders: Record<string, any[]>;
-    userTeamsByDivision: Record<string, any[]>;
-    draftState: any;
+    divisions: AdminDashboardData['divisions'];
+    draftOrders: AdminDashboardData['draftOrders'];
+    userTeamsByDivision: AdminDashboardData['userTeamsByDivision'];
+    draftState: AdminDashboardData['draftState'];
 }
 
 export const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draftState }: DraftSectionProps) => {

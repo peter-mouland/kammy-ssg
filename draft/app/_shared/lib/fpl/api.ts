@@ -1,7 +1,9 @@
 /* Location: app/_shared/lib/fpl/api.ts */
+/* Responsibility: our fantasy.premierleague.com data fetching interface */
+/* Notes: */
+/* - 100% of use-cases should use api-firestore or api-cache */
 
 import { createAppError } from '../sheets/utils/common';
-// src/lib/fpl/api.ts
 import type { FplBootstrapData, FplPlayerSeasonData } from './fpl-types';
 
 // FPL API endpoints

@@ -1,7 +1,8 @@
 /* Location: app/_shared/lib/sheets/draft.ts */
 
 import type { DraftPickData, DraftStateData } from '../../../draft/types/draft-types';
-import { sheetsCache } from './cache/sheets-cache-service';
+import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { dataCache } from '../cache/data-cache.service';
 import {
     convertToRowsWithHeaders,
     getCachedHeaders,
@@ -9,7 +10,6 @@ import {
     readSheetWithHeaders,
     setCachedHeaders,
 } from './cache/utils';
-import { CACHE_CONFIG } from './cache-config';
 // Enhanced draft.ts with smart header mapping - OPTIMIZED FOR API CALLS
 import {
     appendToSheet,
@@ -116,7 +116,9 @@ async function originalReadDraftPicks(): Promise<DraftPickData[]> {
     }
 }
 export async function readDraftPicks() {
-    return sheetsCache.get('draft-picks-all', () => originalReadDraftPicks(), { ttlMs: CACHE_CONFIG.draftPicks });
+    return await dataCache.get(CACHE_KEYS.SHEETS.DRAFT, originalReadDraftPicks, {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.DRAFT),
+    });
 }
 
 /**
@@ -171,7 +173,7 @@ export async function addDraftPick(draftPick: DraftPickData): Promise<void> {
 /**
  * Get draft picks by division ID - reuse cached data
  */
-async function originalGetDraftPicksByDivision(divisionId: string): Promise<DraftPickData[]> {
+export async function getDraftPicksByDivision(divisionId: string): Promise<DraftPickData[]> {
     try {
         const allPicks = await readDraftPicks(); // Single API call (or uses cache)
         return allPicks.filter((pick) => pick.divisionId === divisionId).sort((a, b) => a.pickNumber - b.pickNumber);
@@ -183,16 +185,11 @@ async function originalGetDraftPicksByDivision(divisionId: string): Promise<Draf
         );
     }
 }
-export async function getDraftPicksByDivision(divisionId: string) {
-    return sheetsCache.get(`draft-picks-division-${divisionId}`, () => originalGetDraftPicksByDivision(divisionId), {
-        ttlMs: CACHE_CONFIG.divisionDraftPicks,
-    });
-}
 
 /**
  * Read current draft state - SINGLE API CALL
  */
-async function originalReadDraftState(): Promise<DraftStateData | null> {
+async function originalReadDraftState(): Promise<DraftStateData> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
@@ -204,7 +201,15 @@ async function originalReadDraftState(): Promise<DraftStateData | null> {
         const { headers, data } = await readSheetWithHeaders(sheetRange);
 
         if (headers.length === 0 || data.length === 0) {
-            return null;
+            return {
+                isActive: false,
+                currentPick: 0,
+                currentUserId: '',
+                currentDivisionId: '',
+                picksPerTeam: 12,
+                startedAt: null,
+                completedAt: null,
+            };
         }
 
         // Cache headers for future use
@@ -223,13 +228,15 @@ async function originalReadDraftState(): Promise<DraftStateData | null> {
             console.warn(`Draft state sheet missing headers: ${missing.join(', ')}`);
         }
 
-        return parsedData[0] || null;
+        return parsedData[0];
     } catch (error) {
         throw createAppError('DRAFT_STATE_READ_ERROR', 'Failed to read draft state from sheet', error);
     }
 }
 export async function readDraftState() {
-    return sheetsCache.get('draft-state', () => originalReadDraftState(), { ttlMs: CACHE_CONFIG.draftState });
+    return await dataCache.get(CACHE_KEYS.SHEETS.DRAFT_STATE, originalReadDraftState, {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.DRAFT_STATE),
+    });
 }
 
 /**

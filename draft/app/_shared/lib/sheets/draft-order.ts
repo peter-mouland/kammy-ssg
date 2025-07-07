@@ -1,9 +1,9 @@
 /* Location: app/_shared/lib/sheets/draft-order.ts */
 
 import type { DraftOrderData } from '../../../draft/types/draft-types';
-import type { DivisionId } from '../../../teams/types/team-types';
-import { sheetsCache } from './cache/sheets-cache-service';
-import { CACHE_CONFIG } from './cache-config';
+import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
+import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { dataCache } from '../cache/data-cache.service';
 import {
     convertToSheetRows,
     createAppError,
@@ -34,8 +34,9 @@ const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderData, (val
 /**
  * Read all draft orders from the sheet
  */
-async function originalReadDraftOrders(): Promise<DraftOrderData[]> {
+async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderData[]>> {
     try {
+        const draftOrders: Record<DivisionId, DraftOrderData[]> = { 'premierLeague': [], championship: [], leagueOne: []};
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
             spreadsheetId,
@@ -45,16 +46,27 @@ async function originalReadDraftOrders(): Promise<DraftOrderData[]> {
         const rawData = await readSheetRange(sheetRange);
 
         if (rawData.length === 0) {
-            return [];
+            return draftOrders;
         }
 
-        return parseHeaderBasedData<DraftOrderData>(rawData, DRAFT_ORDER_HEADERS, DRAFT_ORDER_TRANSFORM_FUNCTIONS);
+        const draftOrder = parseHeaderBasedData<DraftOrderData>(
+            rawData,
+            DRAFT_ORDER_HEADERS,
+            DRAFT_ORDER_TRANSFORM_FUNCTIONS,
+        );
+        // Fetch user teams and draft orders for each division
+        draftOrder.forEach((order) => {
+            draftOrders[order.divisionId].push(order)
+        });
+        return draftOrders
     } catch (error) {
         throw createAppError('DRAFT_ORDERS_READ_ERROR', 'Failed to read draft orders from sheet', error);
     }
 }
 export async function readDraftOrders() {
-    return sheetsCache.get('draft-orders-all', () => originalReadDraftOrders(), { ttlMs: CACHE_CONFIG.draftOrders });
+    return await dataCache.get(CACHE_KEYS.SHEETS.DRAFT_ORDERS, originalReadDraftOrders, {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.DRAFT_ORDERS),
+    });
 }
 /**
  * Write draft orders to the sheet (overwrites existing data)
@@ -84,7 +96,7 @@ export async function writeDraftOrders(draftOrders: DraftOrderData[]): Promise<v
 /**
  * Get draft order for a specific division
  */
-export async function originalGetDraftOrderByDivision(divisionId: string): Promise<DraftOrderData[]> {
+export async function getDraftOrderByDivision(divisionId: string): Promise<DraftOrderData[]> {
     try {
         const allOrders = await readDraftOrders();
         const divOrder = allOrders
@@ -99,11 +111,6 @@ export async function originalGetDraftOrderByDivision(divisionId: string): Promi
             error,
         );
     }
-}
-export async function getDraftOrderByDivision(divisionId: string) {
-    return sheetsCache.get(`draft-order-division-${divisionId}`, () => originalGetDraftOrderByDivision(divisionId), {
-        ttlMs: CACHE_CONFIG.divisionDraftOrder,
-    });
 }
 
 /**

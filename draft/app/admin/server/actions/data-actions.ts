@@ -18,7 +18,7 @@ export async function handleClearFirestoreData(params: AdminActionParams): Promi
                 await clearService.clearFplFirestoreOnly();
                 break;
             case 'elements-only':
-                await clearService.clearElementSummariesOnly();
+                await clearService.clearElementDetailedStatsOnly();
                 break;
             default:
                 throw new Error(`Invalid clear variant: ${clearVariant}`);
@@ -57,12 +57,12 @@ export async function handlePopulateBootstrapData(): Promise<AdminActionResult> 
     try {
         console.log('🔄 Populating bootstrap data...');
 
-        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-
-        const result = await fplApiCache.preloadCommonData({
+        const { FplFirestore } = await import('../../../_shared/lib/fpl/fpl-firestore');
+        const firestore = new FplFirestore();
+        const result = await firestore.preloadCommonData({
             includeBootstrap: true,
             includeEnhancedData: false,
-            includeElementSummaries: false,
+            includeElementDetailedStats: false,
             forceRefresh: true,
         });
 
@@ -80,16 +80,16 @@ export async function handlePopulateBootstrapData(): Promise<AdminActionResult> 
 }
 
 // EXACT COPY from "generateEnhancedDataFast" case
-export async function handleGenerateEnhancedDataFast(): Promise<AdminActionResult> {
+export async function handleGenerateEnhancedData(): Promise<AdminActionResult> {
     try {
         console.log('🔄 Generating enhanced data (fast mode)...');
 
-        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-
-        const result = await fplApiCache.preloadCommonData({
+        const { FplFirestore } = await import('../../../_shared/lib/fpl/fpl-firestore');
+        const firestore = new FplFirestore();
+        const result = await firestore.preloadCommonData({
             includeBootstrap: false,
             includeEnhancedData: true,
-            includeElementSummaries: false,
+            includeElementDetailedStats: false,
             forceRefresh: true,
         });
 
@@ -108,24 +108,24 @@ export async function handleGenerateEnhancedDataFast(): Promise<AdminActionResul
     }
 }
 
-// EXACT COPY from "populateElementSummaries" case
-export async function handlePopulateElementSummaries(): Promise<AdminActionResult> {
+// EXACT COPY from "populateElementDetailedStats" case
+export async function handlePopulateElementDetailedStats(): Promise<AdminActionResult> {
     try {
         console.log('🔄 Populating element summaries...');
 
-        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-
-        const result = await fplApiCache.preloadCommonData({
+        const { FplFirestore } = await import('../../../_shared/lib/fpl/fpl-firestore');
+        const firestore = new FplFirestore();
+        const result = await firestore.preloadCommonData({
             includeBootstrap: false,
             includeEnhancedData: false,
-            includeElementSummaries: true,
+            includeElementDetailedStats: true,
             forceRefresh: true,
         });
 
         return {
             success: true,
             message: `Element summaries populated! ${
-                Object.keys(result.results.elementSummaries || {}).length
+                Object.keys(result.results.elementDetailedStats || {}).length
             } players with detailed stats`,
             data: result,
         };

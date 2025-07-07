@@ -86,8 +86,6 @@ export function TransferForm({
     const [comment, setComment] = useState('');
     const [validation, setValidation] = useState<TransferValidationResult>(INITIAL_VALIDATION);
 
-    console.log({ loanSelection });
-
     // Get managers for selected division
     const divisionsManagers = managers.filter((m) => m.divisionId === selectedDivision);
     const currentManager = divisionsManagers.find((m) => m.userId === selectedManager);

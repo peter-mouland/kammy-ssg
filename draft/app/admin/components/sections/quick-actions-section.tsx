@@ -26,7 +26,7 @@ export const QuickActionsSection = ({ cacheData }: QuickActionsSectionProps) => 
     const getRecommendedAction = () => {
         if (!cacheData) return null;
         if (cacheData.missing?.elements || cacheData.missing?.teams) return 'populateBootstrapData';
-        if (cacheData.missing?.elementSummaries) return 'populateElementSummaries';
+        if (cacheData.missing?.elementDetailedStats) return 'populateElementDetailedStats';
         if (cacheData.missing?.draftData) return 'generateEnhancedDataFast';
         return 'generateGameWeekPoints';
     };
@@ -51,10 +51,10 @@ export const QuickActionsSection = ({ cacheData }: QuickActionsSectionProps) => 
                     description="Fetch statistics for all players + weeks"
                     icon={<Icons.ChartIcon />}
                     buttonText="Populate Stats"
-                    actionType="populateElementSummaries"
+                    actionType="populateElementDetailedStats"
                     onExecute={executeAction}
                     fetcher={fetcher}
-                    recommended={recommendedAction === 'populateElementSummaries'}
+                    recommended={recommendedAction === 'populateElementDetailedStats'}
                 />
                 <ActionCard
                     title="3. Generate Draft Data"

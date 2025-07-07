@@ -11,27 +11,24 @@ import type {
     TeamPositionSlot,
 } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
+import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 
 export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<AdminActionResult> {
+    if (!params.divisionId) throw new Error('Division ID is required');
     const { divisionId } = params;
-
-    if (!divisionId) {
-        throw new Error('Division ID is required');
-    }
 
     try {
         console.log(`🔄 Committing teams to new structure for division: ${divisionId}`);
 
         // Get draft picks and user teams for the division
-        const [draftPicks, bootstrap] = await Promise.all([
+        const [draftPicks, fplPlayers] = await Promise.all([
             getDraftPicksByDivision(divisionId),
-            fplApi.getFplBootstrapData(),
+            fplApiCache.getFplPlayers(),
         ]);
 
         if (draftPicks.length === 0) {
             throw new Error(`No draft picks found for division ${divisionId}`);
         }
-        const fplPlayers = bootstrap.elements;
 
         // Create FPL players lookup
         const fplPlayersMap = new Map(fplPlayers.map((p) => [p.id, p]));

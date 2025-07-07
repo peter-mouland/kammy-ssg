@@ -46,7 +46,7 @@ export type AdminActionType =
     | 'getCacheStatus'
     | 'populateBootstrapData'
     | 'generateEnhancedDataFast'
-    | 'populateElementSummaries'
+    | 'populateElementDetailedStats'
     | 'generateGameWeekPoints'
     | 'forceRerunTransfers'
     | 'forceRegenerateAllPoints'
@@ -90,3 +90,58 @@ export interface AdminActionResult {
 
 // Keep these for backward compatibility with existing code
 export type DraftActionParams = AdminActionParams;
+
+export interface SystemHealthStatus {
+    status: 'healthy' | 'warning' | 'critical';
+    message: string;
+}
+
+export interface SystemStatusSummary {
+    currentGameweek: number;
+    systemHealth: {
+        fplCache: SystemHealthStatus;
+        firebase: SystemHealthStatus;
+        googleSheets: SystemHealthStatus;
+        overall: SystemHealthStatus;
+    };
+    transfers: {
+        pending: number;
+        approved: number;
+        rejected: number;
+        total: number;
+        byDivision: Record<
+            string,
+            {
+                pending: number;
+                approved: number;
+                rejected: number;
+                total: number;
+            }
+        >;
+    };
+    draft: {
+        isActive: boolean;
+        currentDivisionId: string | null;
+        currentUserId: string | null;
+        currentPick: number | null;
+        byDivision: Record<
+            string,
+            {
+                hasOrder: boolean;
+                isActive: boolean;
+                isCurrentDivision: boolean;
+                orderExists: boolean;
+            }
+        >;
+    };
+    gameweekProcessing: {
+        currentGameweek: number;
+        lastProcessedGameweek: number | null;
+        totalGameweeks: number;
+        processedGameweeks: number[];
+        pendingGameweeks: number[];
+        isUpToDate: boolean;
+        completionPercentage: number;
+    };
+    recommendations: string[];
+}

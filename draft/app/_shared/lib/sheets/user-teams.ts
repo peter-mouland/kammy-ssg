@@ -1,9 +1,10 @@
 /* Location: app/_shared/lib/sheets/user-teams.ts */
 
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
-import { sheetsCache } from './cache/sheets-cache-service';
-import { CACHE_CONFIG } from './cache-config';
+import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
+import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { dataCache } from '../cache/data-cache.service';
 import { createAppError, parseHeaderBasedData, parseSheetDate, readSheetRange, type SheetRange } from './utils/common';
+import type { DraftOrderData } from '../../../draft/types/draft-types';
 
 // Sheet configuration
 const USER_TEAMS_SHEET_NAME = 'UserTeams';
@@ -43,13 +44,15 @@ async function originalReadUserTeams(): Promise<UserTeamsSheetData[]> {
     }
 }
 export async function readUserTeams() {
-    return sheetsCache.get('user-teams-all', () => originalReadUserTeams(), { ttlMs: CACHE_CONFIG.userTeams });
+    return await dataCache.get(CACHE_KEYS.SHEETS.USER_TEAMS, originalReadUserTeams, {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.USER_TEAMS),
+    });
 }
 
 /**
  * Get user teams by division ID
  */
-async function originalGetUserTeamsByDivision(divisionId: string): Promise<UserTeamsSheetData[]> {
+export async function getDivisionUserTeams(divisionId: string): Promise<UserTeamsSheetData[]> {
     try {
         const userTeams = await readUserTeams();
         return userTeams.filter((team) => team.divisionId === divisionId);
@@ -61,8 +64,20 @@ async function originalGetUserTeamsByDivision(divisionId: string): Promise<UserT
         );
     }
 }
-export async function getUserTeamsByDivision(divisionId: string) {
-    return sheetsCache.get(`user-teams-division-${divisionId}`, () => originalGetUserTeamsByDivision(divisionId), {
-        ttlMs: CACHE_CONFIG.divisionUserTeams,
-    });
+/**
+ * Get user teams by division ID
+ */
+export async function getUserTeamsByDivision(): Promise<Record<DivisionId, UserTeamsSheetData[]>> {
+    try {
+        const userTeamsByDivision: Record<DivisionId, UserTeamsSheetData[]> = { 'premierLeague': [], championship: [], leagueOne: []};
+        const userTeams = await readUserTeams();
+        userTeams.forEach((team) => userTeamsByDivision[team.divisionId].push(team));
+        return userTeamsByDivision
+    } catch (error) {
+        throw createAppError(
+            'USER_TEAMS_DIVISION_ERROR',
+            'Failed to get user teams',
+            error,
+        );
+    }
 }

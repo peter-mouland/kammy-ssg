@@ -2,7 +2,6 @@
 
 import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
-import { cacheInvalidation } from '../../_shared/lib/sheets/cache/cached-sheet-functions';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import {
     addDraftPick,
@@ -165,7 +164,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         await updateDraftState(nextState);
 
         // IMPORTANT: Invalidate cache after making changes
-        cacheInvalidation.invalidateDraftData(divisionId);
+        // cacheInvalidation.invalidateDraftData(divisionId); // todo: cache
 
         // Auto-commit teams to Firestore if draft just completed
         if (draftState.isActive && !nextState.isActive && nextState.completedAt) {
@@ -258,7 +257,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         console.error('❌ Draft pick failed:', error);
 
         // Invalidate cache on error too, in case of partial updates
-        cacheInvalidation.invalidateDraftData(divisionId);
+        // cacheInvalidation.invalidateDraftData(divisionId); // todo: cache
 
         throw error;
     }

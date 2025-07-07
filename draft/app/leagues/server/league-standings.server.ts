@@ -1,7 +1,7 @@
 /* Location: app/leagues/server/league-standings.server.ts */
 
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
-import { getUserTeamsByDivision } from '../../_shared/lib/sheets/user-teams';
+import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { getDivisionTeamsDocument } from '../../scoring/server/services/division-teams.service';
 import type { DivisionId, PositionSlotKey } from '../../teams/types/team-types';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
@@ -101,7 +101,7 @@ async function getDivisionStandingsData(divisionId: DivisionId, gameweek: number
         }
 
         // Get user team sheet data for names
-        const userTeams = await getUserTeamsByDivision(divisionId);
+        const userTeams = await getDivisionUserTeams(divisionId);
         const userTeamMap = new Map(userTeams.map((team) => [team.userId, team]));
 
         const standings: LeagueStandingsTeamData[] = [];

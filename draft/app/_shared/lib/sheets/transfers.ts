@@ -10,10 +10,10 @@ import type {
     TransferStatus,
     TransferType,
 } from '../../../transfers/types/transfer-types';
+import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { dataCache } from '../cache/data-cache.service';
 import type { GameWeekData } from '../fpl/fpl-types';
-import { sheetsCache } from './cache/sheets-cache-service';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
-import { CACHE_CONFIG } from './cache-config';
 import {
     appendToSheet,
     convertToSheetRows,
@@ -156,8 +156,8 @@ async function originalReadTransfers(divisionId: DivisionId): Promise<ProcessedT
     }
 }
 export async function readTransfers(divisionId: DivisionId) {
-    return sheetsCache.get(`transfers-${divisionId}`, () => originalReadTransfers(divisionId), {
-        ttlMs: CACHE_CONFIG.transfers,
+    return await dataCache.get(CACHE_KEYS.SHEETS.TRANSFERS(divisionId), () => originalReadTransfers(divisionId), {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.TRANSFERS(divisionId)),
     });
 }
 /**

@@ -113,7 +113,7 @@ export function getRosterTopScorer(
         if (!positionSlot.season) {
             console.log('🚨 no points for ' + sotKey);
         }
-        const points = useSeasonPoints ? positionSlot.season.points.total : positionSlot.gameweek.points.total;
+        const points = useSeasonPoints ? positionSlot.season?.points.total : positionSlot.gameweek?.points.total;
 
         if (!topScorer || points > topScorer.points) {
             topScorer = {

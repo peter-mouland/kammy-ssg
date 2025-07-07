@@ -2,8 +2,10 @@
 
 import { type ActionFunctionArgs, data, type LoaderFunctionArgs, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
+import { getUserTeamsByDivision } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../teams/types/team-types';
 import { DraftSection } from './components/sections/draft-section';
+import { AdminOrchestrator } from './server/services/admin-orchestrator.service';
 import type { AdminActionType, AdminDashboardData } from './types/admin-types';
 
 interface ActionData {
@@ -13,9 +15,22 @@ interface ActionData {
     data?: any;
 }
 
+export async function getDraftAdminData(): Promise<AdminDashboardData> {
+    const orchestrator = new AdminOrchestrator();
+    const { sheetData } = await orchestrator.getSharedContext();
+    const { divisions, draftState, draftOrder } = sheetData;
+    const userTeamsByDivision = await getUserTeamsByDivision();
+
+    return {
+        divisions,
+        draftOrders: draftOrder,
+        userTeamsByDivision,
+        draftState,
+    };
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
-        const { getDraftAdminData } = await import('./server/admin-dashboard.server');
         const draftAdminData = await getDraftAdminData();
         return data(draftAdminData);
     } catch (error) {

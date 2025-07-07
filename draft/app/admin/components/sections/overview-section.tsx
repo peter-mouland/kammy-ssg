@@ -58,7 +58,7 @@ export const OverviewSection = ({ expandedSections, toggleSection }: SectionProp
     const getPlayerStatsStatus = () => {
         if (!cacheData) return { status: 'warning', value: '...' };
 
-        const hasStats = cacheData.counts.elementSummaries > 0;
+        const hasStats = cacheData.counts.elementDetaileedStats > 0;
         return {
             status: hasStats ? 'healthy' : 'warning',
             value: hasStats ? '✓' : 'Missing',

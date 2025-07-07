@@ -1,11 +1,13 @@
 /* Location: app/_shared/lib/sheets/players.ts */
 
 import type { PlayersSheetData } from '../../types/sheets-types';
+import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { dataCache } from '../cache/data-cache.service';
 import { readSheetRange, type SheetRange } from './utils/common';
 
 const PLAYERS_SHEET_NAME = 'Players';
 
-export async function readPlayers(): Promise<PlayersSheetData[]> {
+export async function originalReadPlayers(): Promise<PlayersSheetData[]> {
     try {
         console.log('Reading Sheet Players ...');
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
@@ -80,4 +82,10 @@ export async function readPlayers(): Promise<PlayersSheetData[]> {
         console.error('Error reading players from spreadsheet:', error);
         throw new Error('Failed to read players data');
     }
+}
+
+export async function readPlayers(): Promise<PlayersSheetData[]> {
+    return await dataCache.get(CACHE_KEYS.SHEETS.PLAYERS, originalReadPlayers, {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.PLAYERS),
+    });
 }

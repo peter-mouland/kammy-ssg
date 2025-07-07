@@ -11,16 +11,7 @@ interface ActionData {
     data?: any;
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
-    try {
-        const { getDraftAdminData } = await import('./server/admin-dashboard.server');
-        const draftAdminData = await getDraftAdminData();
-        return data(draftAdminData);
-    } catch (error) {
-        console.error('Points admin loader error:', error);
-        throw new Response('Failed to load admin data', { status: 500 });
-    }
-}
+export async function loader({ request }: LoaderFunctionArgs) {}
 
 export async function action({ request, context }: ActionFunctionArgs) {
     try {

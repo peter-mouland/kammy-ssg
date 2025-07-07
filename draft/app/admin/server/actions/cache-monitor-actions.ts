@@ -1,12 +1,11 @@
 // /admin/server/actions/cache-monitor-actions.ts
-import { cacheInvalidation, getCacheStats } from '../../../_shared/lib/sheets/cache/cached-sheet-functions';
 import type { AdminActionParams, AdminActionResult } from '../../types/admin-types';
 
 export async function handleGetCacheStats(): Promise<AdminActionResult> {
     try {
         console.log('🔄 Getting cache statistics...');
 
-        const stats = getCacheStats();
+        const stats = {}; //getCacheStats();
 
         return {
             success: true,
@@ -42,8 +41,8 @@ export async function handleClearCache(): Promise<AdminActionResult> {
     try {
         console.log('🔄 Clearing all cache...');
 
-        cacheInvalidation.clearAll();
-
+        // cacheInvalidation.clearAll();
+        //
         return {
             success: true,
             message: 'All cache cleared successfully',
@@ -61,9 +60,9 @@ export async function handleInvalidateDraftCache(params: AdminActionParams): Pro
         console.log(`🔄 Invalidating draft cache for division: ${divisionId || 'all'}...`);
 
         if (divisionId) {
-            cacheInvalidation.invalidateDraftData(divisionId);
+            // cacheInvalidation.invalidateDraftData(divisionId);
         } else {
-            cacheInvalidation.invalidateDraftData();
+            // cacheInvalidation.invalidateDraftData();
         }
 
         return {

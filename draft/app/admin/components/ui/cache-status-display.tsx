@@ -17,13 +17,13 @@ interface CacheHealthData {
         teams?: number;
         events?: number;
         elements?: number;
-        elementSummaries?: number;
+        elementDetailedStats?: number;
     };
     missing?: {
         teams?: boolean;
         events?: boolean;
         elements?: boolean;
-        elementSummaries?: boolean;
+        elementDetailedStats?: boolean;
     };
 }
 
@@ -120,8 +120,8 @@ export const CacheStatusDisplay = () => {
                 />
                 <DataCount
                     label="Player Stats"
-                    count={cacheData.counts?.elementSummaries || 0}
-                    missing={cacheData.missing?.elementSummaries}
+                    count={cacheData.counts?.elementDetailedStats || 0}
+                    missing={cacheData.missing?.elementDetailedStats}
                     expected={cacheData.counts?.elements || 600}
                 />
             </div>

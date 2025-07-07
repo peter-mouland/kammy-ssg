@@ -1,44 +1,45 @@
-/* Location: app/admin/components/ui/admin-message.module.css */
+/* app/admin/components/ui/admin-message.module.css */
 
 .message {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    border: 1px solid;
-    font-size: 0.875rem;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    line-height: 1.4;
+}
+
+.message.success {
+    background-color: var(--color-success-light);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success-text);
+}
+
+.message.error {
+    background-color: var(--color-error-light);
+    border: 1px solid var(--color-error-border);
+    color: var(--color-error-text);
+}
+
+.message.warning {
+    background-color: var(--color-warning-light);
+    border: 1px solid var(--color-warning-border);
+    color: var(--color-warning);
+}
+
+.message.info {
+    background-color: var(--color-info-light);
+    border: 1px solid var(--color-info-border);
+    color: var(--color-info);
 }
 
 .icon {
     flex-shrink: 0;
-    line-height: 1;
+    font-size: var(--font-base);
+    margin-top: 1px;
 }
 
 .content {
     flex: 1;
-}
-
-.success {
-    background: #d1fae5;
-    border-color: #10b981;
-    color: #065f46;
-}
-
-.error {
-    background: #fee2e2;
-    border-color: #ef4444;
-    color: #991b1b;
-}
-
-.warning {
-    background: #fef3c7;
-    border-color: #f59e0b;
-    color: #92400e;
-}
-
-.info {
-    background: #dbeafe;
-    border-color: #3b82f6;
-    color: #1e40af;
 }
