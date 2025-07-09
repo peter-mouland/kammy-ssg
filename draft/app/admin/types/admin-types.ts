@@ -96,6 +96,9 @@ export interface SystemHealthStatus {
     message: string;
 }
 
+export type DraftDivisionStatus = { pickCount: number; picksRemaining: number; isCommitted: boolean };
+export type DraftStatusByDivisionId = Record<DivisionId, DraftDivisionStatus>;
+
 export interface SystemStatusSummary {
     currentGameweek: number;
     systemHealth: {
@@ -120,19 +123,15 @@ export interface SystemStatusSummary {
         >;
     };
     draft: {
+        isComplete: boolean;
         isActive: boolean;
         currentDivisionId: string | null;
         currentUserId: string | null;
         currentPick: number | null;
-        byDivision: Record<
-            string,
-            {
-                hasOrder: boolean;
-                isActive: boolean;
-                isCurrentDivision: boolean;
-                orderExists: boolean;
-            }
-        >;
+        picksPerTeam: number | null;
+        byDivision: DraftStatusByDivisionId;
+        startedAt: Date | null;
+        completedAt: Date | null;
     };
     gameweekProcessing: {
         currentGameweek: number;

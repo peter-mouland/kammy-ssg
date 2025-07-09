@@ -2,14 +2,7 @@
 
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { getPositionDisplayName } from '../../scoring/lib';
-
-interface DraftPickData {
-    pickNumber: number;
-    userId: string;
-    playerName: string;
-    position: string;
-    teamName: string;
-}
+import type { DraftPickData } from '../types/draft-types';
 
 interface DraftBoardProps {
     draftPicks: DraftPickData[];

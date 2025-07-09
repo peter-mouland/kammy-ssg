@@ -1,26 +1,12 @@
 /* Location: app/admin/components/ui/draft-card.tsx */
 
 import { useFetcher } from 'react-router';
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { DraftOrderData, DraftStateData } from '../../../draft/types/draft-types';
+import type { DivisionSheetData, UserTeamsSheetData } from '../../../teams/types/team-types';
 import styles from './draft-card.module.css';
 
-interface DivisionData {
-    id: string;
-    label: string;
-}
-
-interface DraftOrderData {
-    position: number;
-    userId: string;
-}
-
-interface DraftStateData {
-    isActive: boolean;
-    currentDivisionId?: string;
-}
-
 interface DraftCardProps {
-    division: DivisionData;
+    division: DivisionSheetData;
     teams: UserTeamsSheetData[];
     orders: DraftOrderData[];
     draftState: DraftStateData | null;
@@ -101,6 +87,7 @@ export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProp
                     </div>
                 </div>
                 <button
+                    type={'button'}
                     onClick={() => divisionStatus.action && handleAction(divisionStatus.action)}
                     className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}
                     disabled={divisionStatus.disabled || isLoading}

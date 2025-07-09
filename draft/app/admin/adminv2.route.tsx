@@ -321,7 +321,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
 export default function AdminV2Route() {
     const { systemStatus, cacheInfo } = useLoaderData() as AdminLoaderData;
-    console.log({ cacheInfo });
+
     return (
         <div
             style={{

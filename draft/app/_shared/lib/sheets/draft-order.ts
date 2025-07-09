@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/draft-order.ts */
 
 import type { DraftOrderData } from '../../../draft/types/draft-types';
-import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { DivisionId } from '../../../teams/types/team-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import {
@@ -36,7 +36,11 @@ const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderData, (val
  */
 async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderData[]>> {
     try {
-        const draftOrders: Record<DivisionId, DraftOrderData[]> = { 'premierLeague': [], championship: [], leagueOne: []};
+        const draftOrders: Record<DivisionId, DraftOrderData[]> = {
+            premierLeague: [],
+            championship: [],
+            leagueOne: [],
+        };
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
             spreadsheetId,
@@ -56,9 +60,9 @@ async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderD
         );
         // Fetch user teams and draft orders for each division
         draftOrder.forEach((order) => {
-            draftOrders[order.divisionId].push(order)
+            draftOrders[order.divisionId].push(order);
         });
-        return draftOrders
+        return draftOrders;
     } catch (error) {
         throw createAppError('DRAFT_ORDERS_READ_ERROR', 'Failed to read draft orders from sheet', error);
     }
@@ -96,14 +100,10 @@ export async function writeDraftOrders(draftOrders: DraftOrderData[]): Promise<v
 /**
  * Get draft order for a specific division
  */
-export async function getDraftOrderByDivision(divisionId: string): Promise<DraftOrderData[]> {
+export async function getDraftOrderByDivision(divisionId: DivisionId): Promise<DraftOrderData[]> {
     try {
         const allOrders = await readDraftOrders();
-        const divOrder = allOrders
-            .filter((order) => order.divisionId === divisionId)
-            .sort((a, b) => a.position - b.position);
-
-        return divOrder;
+        return allOrders[divisionId].sort((a, b) => a.position - b.position);
     } catch (error) {
         throw createAppError(
             'DRAFT_ORDER_DIVISION_ERROR',
@@ -139,7 +139,9 @@ export async function generateRandomDraftOrder(
 
         // Remove existing order for this division and add new one
         const allOrders = await readDraftOrders();
-        const otherDivisionOrders = allOrders.filter((order) => order.divisionId !== divisionId);
+        const otherDivisionOrders = (Object.keys(allOrders) as DivisionId[])
+            .filter((div) => div !== divisionId)
+            .flatMap((div) => allOrders[div]);
         const newAllOrders = [...otherDivisionOrders, ...draftOrder];
 
         await writeDraftOrders(newAllOrders);
@@ -160,7 +162,9 @@ export async function generateRandomDraftOrder(
 export async function clearDraftOrder(divisionId: string): Promise<void> {
     try {
         const allOrders = await readDraftOrders();
-        const filteredOrders = allOrders.filter((order) => order.divisionId !== divisionId);
+        const filteredOrders = (Object.keys(allOrders) as DivisionId[])
+            .filter((div) => div !== divisionId)
+            .flatMap((div) => allOrders[div]);
 
         await writeDraftOrders(filteredOrders);
     } catch (error) {
@@ -175,7 +179,7 @@ export async function clearDraftOrder(divisionId: string): Promise<void> {
 /**
  * Check if draft order exists for division
  */
-export async function draftOrderExists(divisionId: string): Promise<boolean> {
+export async function draftOrderExists(divisionId: DivisionId): Promise<boolean> {
     try {
         const draftOrder = await getDraftOrderByDivision(divisionId);
         return draftOrder.length > 0;

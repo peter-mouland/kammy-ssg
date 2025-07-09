@@ -51,6 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
                         {
                             success: false,
                             error: 'key parameter is required for info action',
+                            message: 'key parameter is required for info action',
                         },
                         { status: 400 },
                     );
@@ -90,6 +91,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
                 return data<CacheApiResponse>(
                     {
                         success: false,
+                        message: `Unknown action: ${action}. Valid actions: status, info, keys`,
                         error: `Unknown action: ${action}. Valid actions: status, info, keys`,
                     },
                     { status: 400 },
@@ -100,7 +102,8 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
         return data<CacheApiResponse>(
             {
                 success: false,
-                error: error instanceof Error ? error.message : 'Failed to get cache info',
+                message: error instanceof Error ? error.message : 'Failed to get cache info',
+                error: 'Failed to get cache info',
             },
             { status: 500 },
         );
@@ -120,6 +123,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                 {
                     success: false,
                     error: 'action parameter is required',
+                    message: 'action parameter is required',
                 },
                 { status: 400 },
             );
@@ -165,6 +169,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                     return data<CacheApiResponse>(
                         {
                             success: false,
+                            message: 'Either key or pattern parameter is required for invalidate action',
                             error: 'Either key or pattern parameter is required for invalidate action',
                         },
                         { status: 400 },
@@ -180,6 +185,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                     return data<CacheApiResponse>(
                         {
                             success: false,
+                            message: 'keys parameter is required (comma-separated list)',
                             error: 'keys parameter is required (comma-separated list)',
                         },
                         { status: 400 },
@@ -214,6 +220,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                     return data<CacheApiResponse>(
                         {
                             success: false,
+                            message: 'actionName parameter is required',
                             error: 'actionName parameter is required',
                         },
                         { status: 400 },
@@ -254,6 +261,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                     return data<CacheApiResponse>(
                         {
                             success: false,
+                            message: `Invalid params JSON or unknown action: ${actionName}`,
                             error: `Invalid params JSON or unknown action: ${actionName}`,
                         },
                         { status: 400 },
@@ -286,6 +294,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                         {
                             success: false,
                             error: 'keys parameter is required for warmup (comma-separated list)',
+                            message: 'keys parameter is required for warmup (comma-separated list)',
                         },
                         { status: 400 },
                     );
@@ -311,6 +320,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
                     {
                         success: false,
                         error: `Unknown action: ${actionType}. Valid actions: invalidate, invalidate-multiple, invalidate-by-action, clear, warmup`,
+                        message: `Unknown action: ${actionType}. Valid actions: invalidate, invalidate-multiple, invalidate-by-action, clear, warmup`,
                     },
                     { status: 400 },
                 );
@@ -320,7 +330,8 @@ export async function action({ request }: ActionFunctionArgs): Promise<Response>
         return data<CacheApiResponse>(
             {
                 success: false,
-                error: error instanceof Error ? error.message : 'Failed to perform cache action',
+                error: 'Failed to perform cache action',
+                message: error instanceof Error ? error.message : 'Failed to perform cache action',
             },
             { status: 500 },
         );

@@ -2,6 +2,7 @@
 
 import type { DivisionId } from '../../teams/types/team-types';
 import type { AdminActionResult, ClearVariant } from '../types/admin-types';
+import { getSystemStatus } from './services/system-status.service';
 
 interface OverviewActionParams {
     actionType: string;
@@ -37,21 +38,23 @@ export async function handleOverviewActions(params: OverviewActionParams): Promi
             }
             // System Actions for Overview
             case 'getCacheStatus': {
-                const { handleGetCacheStatus } = await import('./actions/system-actions');
-                return await handleGetCacheStatus();
+                const systemStatus = await getSystemStatus();
+                return systemStatus;
             }
             // Cache Monitoring Actions
             case 'getCacheStats': {
-                const { handleGetCacheStats } = await import('./actions/cache-monitor-actions');
-                return await handleGetCacheStats();
+                const { dataCache } = await import('../../_shared/lib/cache/data-cache.service');
+                return dataCache.getStats();
             }
             case 'clearCache': {
-                const { handleClearCache } = await import('./actions/cache-monitor-actions');
-                return await handleClearCache();
+                const { dataCache } = await import('../../_shared/lib/cache/data-cache.service');
+                return dataCache.clear();
             }
             case 'invalidateDraftCache': {
-                const { handleInvalidateDraftCache } = await import('./actions/cache-monitor-actions');
-                return await handleInvalidateDraftCache({ actionType, divisionId });
+                const { dataCache } = await import('../../_shared/lib/cache/data-cache.service');
+                const { getInvalidationKeys } = await import('../../_shared/lib/cache/cache-config');
+                const keysToInvalidate = getInvalidationKeys('DRAFT_ACTION', divisionId);
+                return dataCache.invalidateMultiple(keysToInvalidate);
             }
             // Points Actions accessible from Overview
             case 'generateGameWeekPoints': {

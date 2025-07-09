@@ -4,7 +4,8 @@ import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/fireb
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
-import type { SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
+import { divisionDocumentExists } from '../../../scoring/server/services/division-teams.service';
+import type { DraftStatusByDivisionId, SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
 
 /**
  * Get comprehensive system status with all real data
@@ -51,13 +52,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
                 overall: overallHealth,
             },
             transfers: transferStatus.overall,
-            draft: {
-                isActive: draftStatus.isActive,
-                currentDivisionId: draftStatus.currentDivisionId,
-                currentUserId: draftStatus.currentUserId,
-                currentPick: draftStatus.currentPick,
-                byDivision: draftStatus.byDivision,
-            },
+            draft: draftStatus,
             gameweekProcessing: gameweekProcessingStatus,
             recommendations,
         };
@@ -230,19 +225,64 @@ async function getTransferStatusReal() {
 /**
  * Get real draft status using existing sheet functions
  */
-async function getDraftStatusReal() {
+async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
     try {
         console.log('🔄 Loading real draft status...');
 
-        const { readDraftState } = await import('../../../_shared/lib/sheets/draft');
+        const { readDivisions } = await import('../../../_shared/lib/sheets/divisions');
+        const { readDraftState, readDraftPicks } = await import('../../../_shared/lib/sheets/draft');
+        const { draftOrderExists } = await import('../../../_shared/lib/sheets/draft-order');
+        const userTeams = await readUserTeams();
+        const divisionSheetData = await readDivisions();
         const draftState = await readDraftState();
+        const draftPicks = await readDraftPicks();
+
+        const byDivisionId: DraftStatusByDivisionId = {};
+        const totalPicks = userTeams.length * draftState.picksPerTeam;
+        let hasOutstandingCommits = false;
+        let hasOutstandingOrders = false;
+        const promises = divisionSheetData.map(async (division) => {
+            const divPicks = draftPicks.filter((pick) => pick.divisionId === division.id);
+            const committed = await divisionDocumentExists(division.id, 0);
+            const doesDraftOrderExists = await draftOrderExists(division.id);
+
+            hasOutstandingCommits = hasOutstandingCommits && !committed;
+            hasOutstandingOrders = hasOutstandingOrders && !doesDraftOrderExists;
+            byDivisionId[division.id] = {
+                doesDraftOrderExists,
+                pickCount: divPicks.length,
+                picksRemaining: 12 - divPicks.length,
+                isCommitted: committed,
+            };
+        });
+
+        await Promise.all(promises);
+
+        const isRunning = draftState?.isActive && draftState.currentPick < totalPicks;
 
         return {
+            // daft order | start draft | draft running | stop draft | commit drafts | draft complete
+            stage: hasOutstandingOrders
+                ? 'order'
+                : draftState?.startedAt
+                  ? isRunning
+                      ? 'running'
+                      : draftState?.completedAt
+                        ? hasOutstandingCommits
+                            ? 'commit'
+                            : 'complete'
+                        : 'stop'
+                  : 'start',
+            isComplete: !hasOutstandingCommits,
             isActive: draftState?.isActive || false,
             currentDivisionId: draftState?.currentDivisionId || null,
             currentUserId: draftState?.currentUserId || null,
             currentPick: draftState?.currentPick || null,
-            byDivision: {}, // TODO: Add division-specific draft status if needed
+            totalPicks,
+            startedAt: draftState?.startedAt || null,
+            completedAt: draftState?.completedAt || null,
+            picksPerTeam: draftState?.picksPerTeam || null,
+            byDivision: byDivisionId,
         };
     } catch (error) {
         console.error('Failed to load draft status:', error);

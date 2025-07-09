@@ -1,10 +1,15 @@
 // app/admin/components/tabs/admin-dashboard-tabs.tsx
 
+import type React from 'react';
 import { useState } from 'react';
 import { useFetcher } from 'react-router';
 import type { SystemStatusSummary } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
+import { AdminContainer } from '../layout/admin-container';
+import { AdminGrid } from '../layout/admin-grid';
+import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
+import { StatusCard } from '../ui/status-card';
 import styles from './admin-dashboard-tabs.module.css';
 
 interface AdminDashboardTabsProps {
@@ -28,12 +33,6 @@ const TABS: Tab[] = [
         description: 'Quick health check and most common actions',
     },
     {
-        id: 'data',
-        label: 'Data Management',
-        icon: <Icons.CloudIcon />,
-        description: 'Core data management and emergency operations',
-    },
-    {
         id: 'draft',
         label: 'Draft Management',
         icon: <Icons.UsersIcon />,
@@ -54,7 +53,7 @@ const TABS: Tab[] = [
     {
         id: 'debug',
         label: 'Cache & Debug',
-        icon: <Icons.SettingsIcon />,
+        icon: <Icons.CloudIcon />,
         description: 'Cache management and troubleshooting tools',
     },
 ];
@@ -106,13 +105,6 @@ export const AdminDashboardTabs: React.FC<AdminDashboardTabsProps> = ({ systemSt
                 {activeTab === 'dashboard' && (
                     <DashboardTab systemStatus={systemStatus} onExecuteAction={executeAction} isLoading={isLoading} />
                 )}
-                {activeTab === 'data' && (
-                    <DataManagementTab
-                        systemStatus={systemStatus}
-                        onExecuteAction={executeAction}
-                        isLoading={isLoading}
-                    />
-                )}
                 {activeTab === 'draft' && (
                     <DraftManagementTab
                         systemStatus={systemStatus}
@@ -157,193 +149,72 @@ interface TabProps {
 // ================================
 
 const DashboardTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLoading }) => {
-    const getRecommendedAction = () => {
-        if (systemStatus.recommendations?.length > 0) {
-            return {
-                action: 'smartUpdate',
-                label: 'Smart Update',
-                description: systemStatus.recommendations[0],
-            };
-        }
-        return null;
-    };
-
-    const recommendedAction = getRecommendedAction();
-
     return (
         <div className={styles.tabPanel}>
+            <AdminContainer>
+                <AdminSection
+                    title="System Health"
+                    icon={<Icons.BarChartIcon />}
+                    description="Monitor system status and data availability"
+                >
+                    <AdminGrid columns="auto" minWidth="200px">
+                        <StatusCard
+                            icon={
+                                systemStatus.systemHealth.overall.status === 'healthy'
+                                    ? '✅'
+                                    : systemStatus.systemHealth.overall.status === 'warning'
+                                      ? '⚠️'
+                                      : '❌'
+                            }
+                            label={`Status: ${systemStatus.systemHealth.overall.status}`}
+                            percentage={systemStatus.systemHealth.overall.message}
+                            status={systemStatus.systemHealth.overall.status}
+                        />
+                        <StatusCard
+                            icon="🎯"
+                            label="1. Draft Management"
+                            percentage={`${systemStatus.draft.stage}`}
+                            status={'healthy' as 'healthy' | 'warning' | 'critical'}
+                        />
+                        <StatusCard
+                            icon="⚽"
+                            label="2. Transfers"
+                            percentage={`${systemStatus.transfers.pending} pending`}
+                            status={'healthy' as 'healthy' | 'warning' | 'critical'}
+                        />
+                        <StatusCard
+                            icon="📊"
+                            label="3. GameWeek Processing"
+                            percentage={`GameWeek ${systemStatus.currentGameweek} changed (was ${systemStatus.gameweekProcessing.lastProcessedGameweek}) | `}
+                            status={'healthy' as 'healthy' | 'warning' | 'critical'}
+                        />
+                    </AdminGrid>
+                </AdminSection>
+            </AdminContainer>
+
             <div className={styles.overview}>
                 <h3 className={styles.sectionTitle}>System Overview</h3>
-
-                {/* System Health Indicator */}
-                <div className={styles.healthCard}>
-                    <div className={`${styles.healthIndicator} ${styles[systemStatus.systemHealth.overall.status]}`}>
-                        <span className={styles.healthIcon}>
-                            {systemStatus.systemHealth.overall.status === 'healthy'
-                                ? '✅'
-                                : systemStatus.systemHealth.overall.status === 'warning'
-                                  ? '⚠️'
-                                  : '❌'}
-                        </span>
-                        <span className={styles.healthText}>{systemStatus.systemHealth.overall.status}</span>
-                        <span className={styles.healthText}>{systemStatus.systemHealth.overall.message}</span>
-                    </div>
-                    <div className={styles.healthDetails}>
-                        <p>FPL API: {systemStatus.systemHealth.fplCache.status}</p>
-                        <p>DB Status: {systemStatus.systemHealth.firebase.status}</p>
-                        <p>gSheets Status: {systemStatus.systemHealth.googleSheets.status}</p>
-                        <p>Gameweek: {systemStatus.currentGameweek}</p>
-                        <p>lastProcessedGameweek: {systemStatus.gameweekProcessing.lastProcessedGameweek}</p>
-                    </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className={styles.quickStats}>
-                    <div className={styles.statCard}>
-                        <span className={styles.statValue}>{systemStatus.currentGameweek}</span>
-                        <span className={styles.statLabel}>Current GW</span>
-                    </div>
-                    <div className={styles.statCard}>
-                        <span className={styles.statValue}>{systemStatus.transfers.pending}</span>
-                        <span className={styles.statLabel}>Pending Transfers</span>
-                    </div>
-                    <div className={styles.statCard}>
-                        <span className={styles.statValue}>{systemStatus.draft.isActive ? 'Active' : 'Inactive'}</span>
-                        <span className={styles.statLabel}>Draft Status</span>
-                    </div>
-                </div>
 
                 {/* Recommendations */}
                 <div className={styles.recommendations}>
                     <h4>Recommendations</h4>
+
+                    <button
+                        type="button"
+                        className={`${styles.actionButton} ${styles.secondary}`}
+                        onClick={() => onExecuteAction('smartUpdate')}
+                        disabled={isLoading}
+                    >
+                        <Icons.SyncIcon />
+                        Smart Update
+                    </button>
+
                     <ul className={styles.recommendationsList}>
                         {systemStatus.recommendations?.map((rec, index) => (
                             <li key={index}>{rec}</li>
                         ))}
                     </ul>
                 </div>
-            </div>
-
-            {/* Actions */}
-            <div className={styles.actions}>
-                <h3 className={styles.sectionTitle}>Quick Actions</h3>
-
-                {recommendedAction && (
-                    <div className={styles.recommendedAction}>
-                        <button
-                            type="button"
-                            className={`${styles.actionButton} ${styles.primary} ${styles.recommended}`}
-                            onClick={() => onExecuteAction(recommendedAction.action)}
-                            disabled={isLoading}
-                        >
-                            <Icons.TrendingUpIcon />
-                            {recommendedAction.label}
-                        </button>
-                        <p className={styles.actionDescription}>{recommendedAction.description}</p>
-                    </div>
-                )}
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('smartUpdate')}
-                    disabled={isLoading}
-                >
-                    <Icons.SyncIcon />
-                    Smart Update
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('systemHealthCheck')}
-                    disabled={isLoading}
-                >
-                    <Icons.CheckIcon />
-                    System Health Check
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('testAction')}
-                    disabled={isLoading}
-                >
-                    <Icons.TargetIcon />
-                    Test Action (New Cache System)
-                </button>
-            </div>
-        </div>
-    );
-};
-
-// ================================
-// TAB 2: DATA MANAGEMENT
-// ================================
-
-const DataManagementTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLoading }) => {
-    return (
-        <div className={styles.tabPanel}>
-            <div className={styles.overview}>
-                <h3 className={styles.sectionTitle}>Data Management</h3>
-
-                <div className={styles.statusGrid}>
-                    <div className={styles.statusCard}>
-                        <h4>FPL API Status</h4>
-                        <div
-                            className={`${styles.statusIndicator} ${styles[systemStatus.systemHealth.fplCache.status] || styles.unknown}`}
-                        >
-                            {systemStatus.systemHealth.fplCache.status}
-                        </div>
-                        <p>Last synced: {systemStatus.systemHealth.fplCache.message}</p>
-                    </div>
-
-                    <div className={styles.statusCard}>
-                        <h4>Draft </h4>
-                        <div className={`${styles.statusIndicator} || styles.unknown}`}>systemStatus.draftStatus</div>
-                        <p>DataCacheService active</p>
-                    </div>
-
-                    <div className={styles.statusCard}>
-                        <h4>Google Sheets</h4>
-                        <div className={`${styles.statusIndicator} ${styles.healthy}`}>CONNECTED</div>
-                        <p>All sheets accessible</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className={styles.actions}>
-                <h3 className={styles.sectionTitle}>Data Actions</h3>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('refreshFplData')}
-                    disabled={isLoading}
-                >
-                    <Icons.RefreshIcon />
-                    Refresh FPL Data
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('validateDataIntegrity')}
-                    disabled={isLoading}
-                >
-                    <Icons.CheckIcon />
-                    Validate Data Integrity
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.warning}`}
-                    onClick={() => onExecuteAction('clearFirestore')}
-                    disabled={isLoading}
-                >
-                    <Icons.AlertIcon />
-                    Clear Firestore Cache
-                </button>
             </div>
         </div>
     );

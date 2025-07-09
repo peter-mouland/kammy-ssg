@@ -121,7 +121,7 @@ export class FplApiCache {
      */
     async getCurrentGameweekData(): Promise<GameWeekData> {
         const events = await this.getFplEvents();
-        return events.find((event) => event.fplEvent.is_current);
+        return events.find((event) => event.fplEvent.is_current) || events[events.length - 1];
     }
 
     /**
