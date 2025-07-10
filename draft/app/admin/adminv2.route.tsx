@@ -3,13 +3,16 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { data, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
+import type { DraftAction } from '../draft/types/draft-types';
 import type { DivisionId } from '../teams/types/team-types';
+import { loader as transfersLoader } from './admin-transfers.route';
 import { AdminDashboardTabs } from './components/tabs/admin-dashboard-tabs';
+import type { AdminDataContext } from './types/admin-orchestrator-types';
 import type { SystemStatusSummary } from './types/admin-types';
 
 interface AdminLoaderData {
     systemStatus: SystemStatusSummary;
-    cacheInfo: any;
+    sharedContext: AdminDataContext;
 }
 
 interface AdminActionData {
@@ -30,17 +33,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
         const orchestrator = new AdminOrchestrator();
         const systemStatus = await orchestrator.getSystemStatus();
+        const sharedContext = await orchestrator.getSharedContext();
 
-        // Get cache info directly from DataCacheService
-        const { dataCache } = await import('../_shared/lib/cache/data-cache.service');
-        const { CACHE_KEYS } = await import('../_shared/lib/cache/cache-config');
-        const cacheInfo = dataCache.getCacheInfo(CACHE_KEYS.FPL.EVENTS);
+        // to do move to transfers.admin.sevrerer
+        const transferData = await transfersLoader({ request });
 
         console.log('✅ AdminV2 Loader - System status loaded using unified system-status service');
 
         return {
+            sharedContext,
             systemStatus,
-            cacheInfo,
+            transferData,
         };
     } catch (error) {
         console.error('❌ AdminV2 Loader error:', error);
@@ -74,7 +77,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     try {
         const formData = await requestFormData({ request, context });
         const actionType = formData.get('actionType')?.trim();
-
+        console.log({ actionType });
         if (!actionType) {
             return data<AdminActionData>({
                 success: false,
@@ -174,7 +177,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 
             case 'processDraft': {
                 const divisionId = formData.get('divisionId')?.trim() as DivisionId;
-                const draftActionType = formData.get('draftAction')?.trim() as 'start' | 'sync' | 'commit' | 'reset';
+                const draftActionType = formData.get('draftAction')?.trim() as DraftAction;
 
                 if (!divisionId || !draftActionType) {
                     result = {
@@ -291,19 +294,6 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 break;
             }
 
-            case 'testAction': {
-                result = {
-                    success: true,
-                    message: 'Test action completed successfully - unified system-status service is working!',
-                    data: {
-                        timestamp: new Date().toISOString(),
-                        systemStatusService: 'Unified system-status.service.ts',
-                        version: '2.0',
-                    },
-                };
-                break;
-            }
-
             default:
                 // Fall back to mock for unimplemented actions
                 result = getMockActionResult(actionType);
@@ -320,7 +310,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 }
 
 export default function AdminV2Route() {
-    const { systemStatus, cacheInfo } = useLoaderData() as AdminLoaderData;
+    const { systemStatus, sharedContext, transferData } = useLoaderData() as AdminLoaderData;
 
     return (
         <div
@@ -341,38 +331,15 @@ export default function AdminV2Route() {
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
             >
-                <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#333' }}>
-                    Admin Dashboard V2 (Unified System Status)
-                </h1>
-                <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: '14px' }}>
-                    Using unified system-status.service.ts - no more duplicate health determination logic
-                </p>
-
-                {/* Cache Info Display */}
-                {cacheInfo && (
-                    <div
-                        style={{
-                            marginTop: '8px',
-                            fontSize: '12px',
-                            color: '#888',
-                            display: 'flex',
-                            gap: '16px',
-                        }}
-                    >
-                        <span>Cache: {cacheInfo.exists ? '✅ Active' : '❌ Empty'}</span>
-                        {cacheInfo.exists && (
-                            <>
-                                <span>Age: {Math.round((cacheInfo.age || 0) / 1000)}s</span>
-                                <span>TTL: {Math.round((cacheInfo.ttl || 0) / 1000)}s</span>
-                                <span>Expired: {cacheInfo.expired ? '⚠️ Yes' : '✅ No'}</span>
-                            </>
-                        )}
-                    </div>
-                )}
+                <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#333' }}>Admin Dashboard V2</h1>
             </div>
 
             <div style={{ flex: 1, overflow: 'hidden' }}>
-                <AdminDashboardTabs systemStatus={systemStatus} />
+                <AdminDashboardTabs
+                    systemStatus={systemStatus}
+                    sharedContext={sharedContext}
+                    transferData={transferData}
+                />
             </div>
         </div>
     );

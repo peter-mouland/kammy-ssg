@@ -2,13 +2,11 @@
 
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
+import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
+import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
+import type { DraftAction } from '../../../draft/types/draft-types';
 import type { DivisionId } from '../../../teams/types/team-types';
-import type {
-    AdminDataContext,
-    GameweekStatusSummary,
-    TransferStatusSummary,
-} from '../../types/admin-orchestrator-types';
-// Import the unified system status service
+import type { AdminDataContext, GameweekStatusSummary } from '../../types/admin-orchestrator-types';
 import { getSystemStatus } from './system-status.service';
 
 interface SmartUpdateResult {
@@ -47,36 +45,24 @@ export class AdminOrchestrator {
      * Uses DataCacheService for caching
      */
     async getSharedContext(): Promise<AdminDataContext> {
-        return await dataCache.get(
-            CACHE_KEYS.ADMIN.CONTEXT,
-            async () => {
-                console.log('🔄 AdminOrchestrator.getSharedContext() - Loading fresh context');
+        console.log('🔄 AdminOrchestrator.getSharedContext() - Loading fresh context');
+        const [fplData, sheetData, cacheStatus, gameweekStatus] = await Promise.all([
+            this.loadFplData(),
+            this.loadSheetData(),
+            this.loadCacheStatus(),
+            this.loadGameweekStatus(),
+        ]);
 
-                const [fplData, sheetData, cacheStatus, draftStatus, transferStatus, gameweekStatus] =
-                    await Promise.all([
-                        this.loadFplData(),
-                        this.loadSheetData(),
-                        this.loadCacheStatus(),
-                        this.loadDraftStatus(),
-                        this.loadTransferStatus(),
-                        this.loadGameweekStatus(),
-                    ]);
+        const context: AdminDataContext = {
+            fplData,
+            sheetData,
+            cacheStatus,
+            gameweekStatus,
+            loadedAt: new Date().toISOString(),
+        };
 
-                const context: AdminDataContext = {
-                    fplData,
-                    sheetData,
-                    cacheStatus,
-                    draftStatus,
-                    transferStatus,
-                    gameweekStatus,
-                    loadedAt: new Date().toISOString(),
-                };
-
-                console.log('✅ AdminOrchestrator.getSharedContext() - Context loaded');
-                return context;
-            },
-            { ttlMs: 300000 }, // 5 minute cache
-        );
+        console.log('✅ AdminOrchestrator.getSharedContext() - Context loaded');
+        return context;
     }
 
     /**
@@ -151,12 +137,13 @@ export class AdminOrchestrator {
 
             const { GameweekProcessingService } = await import('./gameweek-processing.service');
             const processingService = new GameweekProcessingService();
+            const systemStatus = await getSystemStatus();
 
             const result = await processingService.processGameweekAtomically({
                 gameweek: params.gameweek,
                 fplData: params.fplData,
                 sheetData: params.sheetData,
-                transferStatus: (await this.getSharedContext()).transferStatus,
+                transferStatus: systemStatus.transfers,
             });
 
             // Invalidate caches after gameweek processing
@@ -185,25 +172,29 @@ export class AdminOrchestrator {
     /**
      * Process draft operations
      */
-    async processDraft(params: {
-        type: 'start' | 'sync' | 'commit' | 'reset';
-        divisionId: DivisionId;
-    }): Promise<DraftResult> {
+    async processDraft(params: { type: DraftAction; divisionId: DivisionId }): Promise<DraftResult> {
         try {
             console.log(`🔄 AdminOrchestrator.processDraft(${params.type}, ${params.divisionId})`);
 
+            const managers = await getDivisionUserTeams(params.divisionId);
             const { DraftService } = await import('./draft.service');
             const draftService = new DraftService();
 
             let result: DraftResult;
             switch (params.type) {
-                case 'start':
+                case 'generateOrder':
+                    result = await draftService.generateOrder(params.divisionId, managers);
+                    break;
+                case 'startDraft':
                     result = await draftService.startDraft(params.divisionId);
+                    break;
+                case 'stopDraft':
+                    result = await draftService.stopDraft();
                     break;
                 case 'sync':
                     result = await draftService.syncDraft(params.divisionId);
                     break;
-                case 'commit':
+                case 'commitTeamsToFirestore':
                     result = await draftService.commitDraft(params.divisionId);
                     break;
                 case 'reset':
@@ -309,19 +300,13 @@ export class AdminOrchestrator {
         switch (action) {
             case 'populateBootstrapData':
             case 'generateEnhancedData': {
-                cacheKeysToInvalidate.push(
-                    CACHE_KEYS.FPL.PLAYERS,
-                    CACHE_KEYS.FPL.TEAMS,
-                    CACHE_KEYS.FPL.EVENTS,
-                    CACHE_KEYS.ADMIN.CONTEXT,
-                );
+                cacheKeysToInvalidate.push(CACHE_KEYS.FPL.PLAYERS, CACHE_KEYS.FPL.TEAMS, CACHE_KEYS.FPL.EVENTS);
                 break;
             }
 
             case 'processTransfers':
             case 'processDraft': {
                 cacheKeysToInvalidate.push(
-                    CACHE_KEYS.ADMIN.CONTEXT,
                     'transfers:*', // Pattern to invalidate all transfer caches
                     'draft:*', // Pattern to invalidate all draft caches
                 );
@@ -331,7 +316,6 @@ export class AdminOrchestrator {
             case 'updateGameweekPoints':
             case 'processGameweek': {
                 cacheKeysToInvalidate.push(
-                    CACHE_KEYS.ADMIN.CONTEXT,
                     'gameweek:*', // Pattern to invalidate all gameweek caches
                     'scoring:*', // Pattern to invalidate all scoring caches
                 );
@@ -340,7 +324,7 @@ export class AdminOrchestrator {
 
             default: {
                 // Invalidate admin context for any action
-                cacheKeysToInvalidate.push(CACHE_KEYS.ADMIN.CONTEXT);
+                // cacheKeysToInvalidate.push(CACHE_KEYS.ADMIN.CONTEXT);
                 break;
             }
         }
@@ -391,12 +375,24 @@ export class AdminOrchestrator {
         const { readUserTeams } = await import('../../../_shared/lib/sheets/user-teams');
         const { readDraftState } = await import('../../../_shared/lib/sheets/draft');
         const { readDraftOrders } = await import('../../../_shared/lib/sheets/draft-order');
+        const { readTransfers } = await import('../../../_shared/lib/sheets/transfers');
 
-        const [divisions, managers, draftState, draftOrder] = await Promise.all([
+        const [
+            divisions,
+            managers,
+            draftState,
+            draftOrder,
+            premierLeagueTransfers,
+            championshipTransfers,
+            leagueOneTransfers,
+        ] = await Promise.all([
             readDivisions(),
             readUserTeams(),
             readDraftState(),
             readDraftOrders(),
+            readTransfers('premierLeague'),
+            readTransfers('championship'),
+            readTransfers('leagueOne'),
         ]);
 
         return {
@@ -404,6 +400,11 @@ export class AdminOrchestrator {
             managers,
             draftState,
             draftOrder,
+            transfers: {
+                premierLeague: premierLeagueTransfers,
+                championship: championshipTransfers,
+                leagueOne: leagueOneTransfers,
+            },
         };
     }
 
@@ -444,42 +445,6 @@ export class AdminOrchestrator {
     }
 
     /**
-     * Load transfer status
-     */
-    private async loadTransferStatus() {
-        try {
-            const { getTransferStatus } = await import('./transfer-status.service');
-            return await getTransferStatus();
-        } catch (error) {
-            console.error('Failed to load transfer status:', error);
-            return {
-                byDivision: {},
-                overall: {
-                    pending: 0,
-                    approved: 0,
-                    rejected: 0,
-                    total: 0,
-                },
-            } as TransferStatusSummary;
-        }
-    }
-    /**
-     * Load transfer status
-     */
-    private async loadDraftStatus() {
-        try {
-            const { getDraftStatus } = await import('./draft-status.service');
-            return await getDraftStatus();
-        } catch (error) {
-            console.error('Failed to load draft status:', error);
-            return {
-                isActive: false,
-                currentDivisionId: null,
-            };
-        }
-    }
-
-    /**
      * Load gameweek status
      */
     private async loadGameweekStatus(): Promise<GameweekStatusSummary> {
@@ -487,9 +452,10 @@ export class AdminOrchestrator {
             const { GameweekPointsService } = await import('../../../scoring/server/services/gameweek-points.service');
             const pointsService = new GameweekPointsService();
             const pointsStatus = await pointsService.getPointsStatus();
+            const currentGameweek = await fplApiCache.getCurrentGameweekData();
 
             return {
-                currentGameweek: pointsStatus.currentGameweek,
+                currentGameweek: currentGameweek,
                 lastProcessedGameweek: pointsStatus.lastGameweek,
                 needsProcessing: pointsStatus.currentGameweek > pointsStatus.lastGameweek,
                 pendingGameweeks:
@@ -505,7 +471,7 @@ export class AdminOrchestrator {
         } catch (error) {
             console.error('Failed to load gameweek status:', error);
             return {
-                currentGameweek: 1,
+                currentGameweek: null,
                 lastProcessedGameweek: null,
                 needsProcessing: false,
                 pendingGameweeks: [],

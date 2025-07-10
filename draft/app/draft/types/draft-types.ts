@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/style/useNamingConvention: <fpl init> */
 
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { DraftStatusByDivisionId } from '../../admin/types/admin-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
@@ -61,6 +62,22 @@ export interface DraftStateData {
     picksPerTeam: number;
     startedAt: Date | null;
     completedAt: Date | null;
+}
+
+export type DraftAction = 'generateOrder' | 'startDraft' | 'stopDraft' | 'sync' | 'commitTeamsToFirestore' | 'reset';
+
+export interface DraftStatusData {
+    stage: 'order' | 'running' | 'commit' | 'complete' | 'stop' | 'start';
+    isComplete: boolean;
+    isActive: boolean;
+    totalPicks: number;
+    currentPick: number | null;
+    currentUserId: string | null;
+    currentDivisionId: DivisionId | null;
+    picksPerTeam: number;
+    startedAt: Date | null;
+    completedAt: Date | null;
+    byDivision: DraftStatusByDivisionId;
 }
 
 export interface DraftOrderData {

@@ -1,8 +1,10 @@
 // app/admin/types/admin-orchestrator-types.ts
 
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { ProcessedTransferSheetData } from '../../transfers/types/transfer-types';
 import type { SystemStatusSummary } from './admin-types';
 
 // ================================
@@ -27,7 +29,7 @@ export interface TransferStatusSummary {
 }
 
 export interface GameweekStatusSummary {
-    currentGameweek: number;
+    currentGameweek: GameWeekData;
     lastProcessedGameweek: number | null;
     needsProcessing: boolean;
     pendingGameweeks: number[];
@@ -97,13 +99,11 @@ export interface DraftResult {
 // ================================
 // SHARED DATA CONTEXT TYPES
 // ================================
-
+export type TransferByDivisionId = Record<DivisionId, ProcessedTransferSheetData[]>;
 export interface AdminDataContext {
     fplData: FplDataContext;
     sheetData: SheetDataContext;
     cacheStatus: CacheStatusContext;
-    transferStatus: TransferStatusSummary;
-    draftStatus: unknown;
     gameweekStatus: GameweekStatusSummary;
     loadedAt: string;
 }
@@ -120,6 +120,7 @@ export interface SheetDataContext {
     managers: UserTeamsSheetData[];
     draftState: DraftStateData;
     draftOrder: Record<DivisionId, DraftOrderData[]>;
+    transfers: TransferByDivisionId;
 }
 
 export interface CacheStatusContext {

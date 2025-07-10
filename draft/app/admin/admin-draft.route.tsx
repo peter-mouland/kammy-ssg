@@ -2,10 +2,8 @@
 
 import { type ActionFunctionArgs, data, type LoaderFunctionArgs, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
-import { getUserTeamsByDivision } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../teams/types/team-types';
 import { DraftSection } from './components/sections/draft-section';
-import { AdminOrchestrator } from './server/services/admin-orchestrator.service';
 import type { AdminActionType, AdminDashboardData } from './types/admin-types';
 
 interface ActionData {
@@ -16,16 +14,18 @@ interface ActionData {
 }
 
 export async function getDraftAdminData(): Promise<AdminDashboardData> {
+    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
     const orchestrator = new AdminOrchestrator();
     const { sheetData } = await orchestrator.getSharedContext();
-    const { divisions, draftState, draftOrder } = sheetData;
-    const userTeamsByDivision = await getUserTeamsByDivision();
+    const statusSummary = await orchestrator.getSystemStatus();
+    const { divisions, draftState, draftOrder, managers } = sheetData;
 
     return {
         divisions,
         draftOrders: draftOrder,
-        userTeamsByDivision,
+        managers,
         draftState,
+        draftStatus: statusSummary.draft,
     };
 }
 
@@ -48,12 +48,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
         if (!actionType) {
             return data<ActionData>({ error: 'Action type is required' });
         }
-
-        const { handleDraftActions } = await import('./server/draft-actions.server');
-
-        const result = await handleDraftActions({ actionType, divisionId });
-
-        return data<ActionData>(result);
     } catch (error) {
         console.error('Draft action error:', error);
         return data<ActionData>({
@@ -63,14 +57,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function AdminDraftRoute() {
-    const { divisions, draftOrders, userTeamsByDivision, draftState } = useLoaderData() as AdminDashboardData;
+    const { divisions, draftOrders, managers, draftState, draftStatus } = useLoaderData() as AdminDashboardData;
 
     return (
         <DraftSection
             divisions={divisions}
             draftOrders={draftOrders}
-            userTeamsByDivision={userTeamsByDivision}
+            managers={managers}
             draftState={draftState}
+            draftStatus={draftStatus}
         />
     );
 }

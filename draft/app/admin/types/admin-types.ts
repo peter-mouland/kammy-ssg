@@ -1,6 +1,6 @@
 /* Location: app/admin/types/admin-types.ts */
 
-import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
+import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../draft/types/draft-types';
 // Import types from their proper domains
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
@@ -11,8 +11,9 @@ import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../te
 export interface AdminDashboardData {
     divisions: DivisionSheetData[];
     draftOrders: Record<string, DraftOrderData[]>;
-    userTeamsByDivision: Record<string, UserTeamsSheetData[]>;
+    managers: UserTeamsSheetData[];
     draftState: DraftStateData | null;
+    draftStatus: DraftStatusData | null;
 }
 
 // ==========================================
@@ -96,7 +97,13 @@ export interface SystemHealthStatus {
     message: string;
 }
 
-export type DraftDivisionStatus = { pickCount: number; picksRemaining: number; isCommitted: boolean };
+export type DraftDivisionStatus = {
+    doesDraftOrderExists: boolean;
+    pickCount: number;
+    picksRemaining: number;
+    isCommitted: boolean;
+};
+
 export type DraftStatusByDivisionId = Record<DivisionId, DraftDivisionStatus>;
 
 export interface SystemStatusSummary {
@@ -122,17 +129,7 @@ export interface SystemStatusSummary {
             }
         >;
     };
-    draft: {
-        isComplete: boolean;
-        isActive: boolean;
-        currentDivisionId: string | null;
-        currentUserId: string | null;
-        currentPick: number | null;
-        picksPerTeam: number | null;
-        byDivision: DraftStatusByDivisionId;
-        startedAt: Date | null;
-        completedAt: Date | null;
-    };
+    draft: DraftStatusData;
     gameweekProcessing: {
         currentGameweek: number;
         lastProcessedGameweek: number | null;

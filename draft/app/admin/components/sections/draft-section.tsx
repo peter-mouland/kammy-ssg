@@ -1,4 +1,5 @@
 import { useActionData } from 'react-router';
+import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import type { AdminDashboardData } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminContainer } from '../layout/admin-container';
@@ -6,17 +7,18 @@ import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
 import { DraftCard } from '../ui/draft-card';
-import { CommitTeamsSection } from './commit-teams-section';
 import { FirebaseSyncSection } from './firebase-sync-section';
 
 interface DraftSectionProps {
     divisions: AdminDashboardData['divisions'];
     draftOrders: AdminDashboardData['draftOrders'];
-    userTeamsByDivision: AdminDashboardData['userTeamsByDivision'];
+    managers: AdminDashboardData['managers'];
     draftState: AdminDashboardData['draftState'];
+    draftStatus: AdminDashboardData['draftStatus'];
 }
 
-export const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draftState }: DraftSectionProps) => {
+export const DraftSection = ({ divisions, draftOrders, managers, draftState, draftStatus }: DraftSectionProps) => {
+    const userTeamsByDivision = groupByDivision(divisions, managers);
     const actionData = useActionData();
 
     return (
@@ -30,6 +32,7 @@ export const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draf
                             teams={userTeamsByDivision[division.id] || []}
                             orders={draftOrders[division.id] || []}
                             draftState={draftState}
+                            draftStatus={draftStatus}
                         />
                     ))}
                 </AdminGrid>
@@ -41,23 +44,11 @@ export const DraftSection = ({ divisions, draftOrders, userTeamsByDivision, draf
                 {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
             </AdminSection>
 
-            <CommitTeamsSection
-                divisions={divisions}
-                draftOrders={draftOrders}
-                userTeamsByDivision={userTeamsByDivision}
-                draftState={draftState}
-            />
-
             <AdminSection
                 title="Firebase + GSheets Sync"
                 icon={<Icons.SyncIcon />}
                 description="If the GSheet was manually changed (e.g. a drafted player remove), we will need to sync"
             >
-                <AdminMessage type="info">
-                    <strong>Tip:</strong> Use this after manually editing picks in sheets or if Firebase shows wrong
-                    turn/state.
-                </AdminMessage>
-
                 <FirebaseSyncSection />
             </AdminSection>
         </AdminContainer>

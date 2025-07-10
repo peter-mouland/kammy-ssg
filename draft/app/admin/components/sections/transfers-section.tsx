@@ -7,6 +7,7 @@ import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData } from '../../../teams/types/team-types';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';
 import type { ProcessedTransfer } from '../../../transfers/types/transfer-types';
+import type { TransferByDivisionId } from '../../types/admin-orchestrator-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
@@ -19,7 +20,7 @@ import styles from './transfers-section.module.css';
 interface TransfersSectionProps {
     divisions: DivisionSheetData[];
     gameweek: GameWeekData;
-    transfersData?: Record<DivisionId, TransferAdminOverviewData>;
+    transfersData?: TransferByDivisionId;
 }
 
 interface GameweekTransfersData {
@@ -357,7 +358,7 @@ export function TransfersSection({ divisions, gameweek, transfersData }: Transfe
     );
     const [showRuleConfig, setShowRuleConfig] = useState(false);
     const fetcher = useFetcher();
-
+    console.log({ transfersData });
     const selectedDivisionData = transfersData?.[selectedDivision];
 
     const handleRefreshTransfers = (actionType: string) => {

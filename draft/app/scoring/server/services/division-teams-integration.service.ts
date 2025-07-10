@@ -96,10 +96,7 @@ async function createDraftDocument(divisionId: DivisionId): Promise<boolean> {
         // Use the existing team commit logic
         const { handleCommitTeamsToFirestore } = await import('../../../admin/server/actions/team-commit-actions');
 
-        const result = await handleCommitTeamsToFirestore({
-            actionType: 'ensureDivisionDocument',
-            divisionId,
-        });
+        const result = await handleCommitTeamsToFirestore(divisionId);
 
         if (result.success) {
             console.log(`✅ Created draft document: ${divisionId}_gw0`);

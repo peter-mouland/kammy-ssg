@@ -2,6 +2,7 @@
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
+import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import { divisionDocumentExists } from '../../../scoring/server/services/division-teams.service';
@@ -241,8 +242,8 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
         const totalPicks = userTeams.length * draftState.picksPerTeam;
         let hasOutstandingCommits = false;
         let hasOutstandingOrders = false;
+        const divisionPicks = groupByDivision(divisionSheetData, draftPicks);
         const promises = divisionSheetData.map(async (division) => {
-            const divPicks = draftPicks.filter((pick) => pick.divisionId === division.id);
             const committed = await divisionDocumentExists(division.id, 0);
             const doesDraftOrderExists = await draftOrderExists(division.id);
 
@@ -250,8 +251,8 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
             hasOutstandingOrders = hasOutstandingOrders && !doesDraftOrderExists;
             byDivisionId[division.id] = {
                 doesDraftOrderExists,
-                pickCount: divPicks.length,
-                picksRemaining: 12 - divPicks.length,
+                pickCount: divisionPicks[division.id].length,
+                picksRemaining: totalPicks - divisionPicks[division.id].length,
                 isCommitted: committed,
             };
         });
@@ -281,7 +282,7 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
             totalPicks,
             startedAt: draftState?.startedAt || null,
             completedAt: draftState?.completedAt || null,
-            picksPerTeam: draftState?.picksPerTeam || null,
+            picksPerTeam: draftState?.picksPerTeam || 12,
             byDivision: byDivisionId,
         };
     } catch (error) {

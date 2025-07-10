@@ -1,6 +1,6 @@
 // app/admin/server/actions/team-commit-actions.ts
 
-import { fplApi } from '../../../_shared/lib/fpl/api';
+import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
 import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
@@ -11,11 +11,11 @@ import type {
     TeamPositionSlot,
 } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
-import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 
-export async function handleCommitTeamsToFirestore(params: DraftActionParams): Promise<AdminActionResult> {
-    if (!params.divisionId) throw new Error('Division ID is required');
-    const { divisionId } = params;
+export async function handleCommitTeamsToFirestore(
+    divisionId: DraftActionParams['divisionId'],
+): Promise<AdminActionResult> {
+    if (!divisionId) throw new Error('Division ID is required');
 
     try {
         console.log(`🔄 Committing teams to new structure for division: ${divisionId}`);

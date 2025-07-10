@@ -1,6 +1,7 @@
 /* Location: app/admin/components/sections/points-scoring-section.tsx */
 
 import { useFetcher } from 'react-router';
+import type { SystemStatusSummary } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
@@ -10,7 +11,7 @@ import { AdminMessage } from '../ui/admin-message';
 import { GameweekPointsButton } from '../ui/gameweek-points-button';
 import { GameweekPointsStatus } from '../ui/gameweek-points-status';
 
-export const PointsScoringSection = () => {
+export const PointsScoringSection = ({ systemStatus }: { systemStatus: SystemStatusSummary }) => {
     const fetcher = useFetcher();
 
     const executeAction = (actionType: string) => {
@@ -23,7 +24,7 @@ export const PointsScoringSection = () => {
     return (
         <AdminContainer>
             <AdminSection title="Gameweek Points Management" icon={<Icons.ChartIcon />}>
-                <GameweekPointsStatus />
+                <GameweekPointsStatus systemStatus={systemStatus} />
 
                 <AdminGrid columns="auto" minWidth="250px" gap="lg">
                     <ActionCard

@@ -6,7 +6,7 @@ import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { DivisionId, ManagerId } from '../../teams/types/team-types';
 import type { TransfersPageData } from '../types/transfer-form-types';
-import { getTransfersForDivision } from './services/transfers-data.service';
+import { getTransfersDataForDivision } from './services/transfers-data.service';
 
 interface GetTransfersPageDataParams {
     selectedDivision: DivisionId;
@@ -37,9 +37,9 @@ export async function getTransfersPageData({
 
         const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad);
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
-        const { transfers: currentTransfers, divisionRosters } = await getTransfersForDivision(
+        const { transfers: currentTransfers, divisionRosters } = await getTransfersDataForDivision(
             selectedDivision,
-            gameweekToLoad,
+            gameweekData,
         );
 
         const teamsByCode = fplTeams.reduce((acc: Record<number, FplTeam>, team) => {

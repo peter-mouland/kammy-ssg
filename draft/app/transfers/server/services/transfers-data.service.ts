@@ -5,21 +5,6 @@ import type { DivisionId, RosterByManagerId } from '../../../teams/types/team-ty
 import { getDefaultRuleConfiguration } from '../../lib/transfer-rule-definitions';
 import { validateTransfers } from '../../lib/transfer-validation.service';
 import type { TransferValidationResult } from '../../types/transfer-rule-types';
-/**
- * Get transfers for a specific division and gameweek
- */
-export async function getTransfersForDivision(divisionId: DivisionId, gameweek: number) {
-    console.log(`📋 Loading transfers for ${divisionId} GW${gameweek}`);
-
-    // Get gameweek data for filtering
-    const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-    const gameweeks = await fplApiCache.getFplEvents();
-    const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweek);
-    const gameweekTransfers = await getTransfersDataForDivision(divisionId, gameweekData);
-
-    console.log(`✅ Found ${gameweekTransfers.transfers.length} transfers for ${divisionId} GW${gameweek}`);
-    return gameweekTransfers;
-}
 
 /**
  * Get transfers data for a specific division using enhanced validation

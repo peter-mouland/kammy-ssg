@@ -1,5 +1,7 @@
 /* Location: app/draft/server/draft.server.ts */
 
+import { getInvalidationKeys } from '../../_shared/lib/cache/cache-config';
+import { dataCache } from '../../_shared/lib/cache/data-cache.service';
 import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
@@ -104,6 +106,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
     }
 
     const draftState = await readDraftState();
+    const keysToInvalidate = getInvalidationKeys('DRAFT_ACTION', divisionId);
 
     try {
         // Get current draft state
@@ -164,68 +167,39 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         await updateDraftState(nextState);
 
         // IMPORTANT: Invalidate cache after making changes
-        // cacheInvalidation.invalidateDraftData(divisionId); // todo: cache
+        dataCache.invalidateMultiple(keysToInvalidate);
 
         // Auto-commit teams to Firestore if draft just completed
         if (draftState.isActive && !nextState.isActive && nextState.completedAt) {
             console.log(`🎉 Draft completed! Auto-committing teams for division: ${divisionId}`);
 
             // Import and run auto-commit (don't await to avoid blocking the pick response)
-            import('./auto-commit.server')
-                .then(async ({ autoCommitTeamsToFirestore }) => {
-                    const commitResult = await autoCommitTeamsToFirestore(divisionId);
-
-                    if (commitResult.success) {
-                        // Broadcast successful auto-commit event
-                        try {
-                            await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
-                                type: 'draft-ended',
-                                data: {
-                                    message: 'Draft completed! Teams have been automatically committed to Firestore.',
-                                    completedAt: nextState.completedAt,
-                                    totalPicks: existingPicks.length + 1,
-                                    autoCommitted: true,
-                                    commitResult: commitResult.message,
-                                },
-                            });
-                        } catch (broadcastError) {
-                            console.warn('Failed to broadcast auto-commit success:', broadcastError);
-                        }
-                    } else {
-                        // Broadcast auto-commit failure (teams can still be committed manually)
-                        try {
-                            await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
-                                type: 'draft-ended',
-                                data: {
-                                    message:
-                                        'Draft completed! Auto-commit failed - please commit teams manually from the admin panel.',
-                                    completedAt: nextState.completedAt,
-                                    totalPicks: existingPicks.length + 1,
-                                    autoCommitted: false,
-                                    commitError: commitResult.error,
-                                },
-                            });
-                        } catch (broadcastError) {
-                            console.warn('Failed to broadcast auto-commit failure:', broadcastError);
-                        }
-                    }
-                })
-                .catch((autoCommitError) => {
-                    console.error('❌ Auto-commit import failed:', autoCommitError);
-
-                    // Still try to broadcast that draft ended, even if auto-commit failed
-                    FirebaseDraftSync.broadcastDraftEvent(divisionId, {
-                        type: 'draft-ended',
-                        data: {
-                            message:
-                                'Draft completed! Auto-commit system error - please commit teams manually from the admin panel.',
-                            completedAt: nextState.completedAt,
-                            totalPicks: existingPicks.length + 1,
-                            autoCommitted: false,
-                            commitError: 'Auto-commit system error',
-                        },
-                    }).catch((err) => console.warn('Failed to broadcast draft completion:', err));
+            const { handleCommitTeamsToFirestore } = await import('../../admin/server/actions/team-commit-actions');
+            const commitResult = await handleCommitTeamsToFirestore(divisionId);
+            if (commitResult.success) {
+                await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
+                    type: 'draft-ended',
+                    data: {
+                        message: 'Draft completed! Teams have been automatically committed to Firestore.',
+                        completedAt: nextState.completedAt,
+                        totalPicks: existingPicks.length + 1,
+                        autoCommitted: true,
+                        commitResult: commitResult.message,
+                    },
                 });
+            } else {
+                await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
+                    type: 'draft-ended',
+                    data: {
+                        message:
+                            'Draft completed! Auto-commit failed - please commit teams manually from the admin panel.',
+                        completedAt: nextState.completedAt,
+                        totalPicks: existingPicks.length + 1,
+                        autoCommitted: false,
+                        commitError: commitResult.error,
+                    },
+                });
+            }
         }
 
         // Sync to Firebase AND broadcast to SSE connections
@@ -257,7 +231,7 @@ export async function makeDraftPick(formData: FormData | URLSearchParams) {
         console.error('❌ Draft pick failed:', error);
 
         // Invalidate cache on error too, in case of partial updates
-        // cacheInvalidation.invalidateDraftData(divisionId); // todo: cache
+        dataCache.invalidateMultiple(keysToInvalidate);
 
         throw error;
     }

@@ -3,17 +3,22 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useFetcher } from 'react-router';
+import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import type { SystemStatusSummary } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
+import { DraftSection } from '../sections/draft-section';
+import { PointsScoringSection } from '../sections/points-scoring-section';
+import { TransfersSection } from '../sections/transfers-section';
 import { AdminMessage } from '../ui/admin-message';
 import { StatusCard } from '../ui/status-card';
 import styles from './admin-dashboard-tabs.module.css';
 
 interface AdminDashboardTabsProps {
     systemStatus: SystemStatusSummary;
+    sharedContext: AdminDataContext;
 }
 
 type TabId = 'dashboard' | 'data' | 'draft' | 'transfers' | 'gameweek' | 'debug';
@@ -58,7 +63,11 @@ const TABS: Tab[] = [
     },
 ];
 
-export const AdminDashboardTabs: React.FC<AdminDashboardTabsProps> = ({ systemStatus }) => {
+export const AdminDashboardTabs: React.FC<AdminDashboardTabsProps> = ({
+    systemStatus,
+    sharedContext,
+    transferData,
+}) => {
     const [activeTab, setActiveTab] = useState<TabId>('dashboard');
     const fetcher = useFetcher();
 
@@ -103,10 +112,16 @@ export const AdminDashboardTabs: React.FC<AdminDashboardTabsProps> = ({ systemSt
             {/* Tab Content */}
             <div className={styles.tabContent}>
                 {activeTab === 'dashboard' && (
-                    <DashboardTab systemStatus={systemStatus} onExecuteAction={executeAction} isLoading={isLoading} />
+                    <DashboardTab
+                        sharedContext={sharedContext}
+                        systemStatus={systemStatus}
+                        onExecuteAction={executeAction}
+                        isLoading={isLoading}
+                    />
                 )}
                 {activeTab === 'draft' && (
                     <DraftManagementTab
+                        sharedContext={sharedContext}
                         systemStatus={systemStatus}
                         onExecuteAction={executeAction}
                         isLoading={isLoading}
@@ -114,20 +129,28 @@ export const AdminDashboardTabs: React.FC<AdminDashboardTabsProps> = ({ systemSt
                 )}
                 {activeTab === 'transfers' && (
                     <TransfersManagementTab
+                        sharedContext={sharedContext}
                         systemStatus={systemStatus}
+                        transferData={transferData}
                         onExecuteAction={executeAction}
                         isLoading={isLoading}
                     />
                 )}
                 {activeTab === 'gameweek' && (
                     <GameweekProcessingTab
+                        sharedContext={sharedContext}
                         systemStatus={systemStatus}
                         onExecuteAction={executeAction}
                         isLoading={isLoading}
                     />
                 )}
                 {activeTab === 'debug' && (
-                    <CacheDebugTab systemStatus={systemStatus} onExecuteAction={executeAction} isLoading={isLoading} />
+                    <CacheDebugTab
+                        sharedContext={sharedContext}
+                        systemStatus={systemStatus}
+                        onExecuteAction={executeAction}
+                        isLoading={isLoading}
+                    />
                 )}
             </div>
         </div>
@@ -140,6 +163,7 @@ export const AdminDashboardTabs: React.FC<AdminDashboardTabsProps> = ({ systemSt
 
 interface TabProps {
     systemStatus: SystemStatusSummary;
+    sharedContext: AdminDataContext;
     onExecuteAction: (actionType: string, params?: Record<string, any>) => Promise<void>;
     isLoading: boolean;
 }
@@ -224,68 +248,16 @@ const DashboardTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLoa
 // TAB 3: DRAFT MANAGEMENT
 // ================================
 
-const DraftManagementTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLoading }) => {
+const DraftManagementTab: React.FC<TabProps> = ({ sharedContext, systemStatus }) => {
     return (
         <div className={styles.tabPanel}>
-            <div className={styles.overview}>
-                <h3 className={styles.sectionTitle}>Draft Management</h3>
-
-                <div className={styles.draftStatus}>
-                    <div className={styles.statusCard}>
-                        <h4>Draft Status</h4>
-                        <div
-                            className={`${styles.statusIndicator} ${systemStatus.draft.isActive ? styles.healthy : styles.warning}`}
-                        >
-                            {systemStatus.draft.isActive ? 'ACTIVE' : 'INACTIVE'}
-                        </div>
-                        <p>Current GW: {systemStatus.currentGameweek}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className={styles.actions}>
-                <h3 className={styles.sectionTitle}>Draft Actions</h3>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.primary}`}
-                    onClick={() => onExecuteAction('processDraft', { divisionId: 'leagueOne', draftAction: 'start' })}
-                    disabled={isLoading || systemStatus.draft.isActive}
-                >
-                    <Icons.PlayIcon />
-                    Start Draft
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('processDraft', { divisionId: 'leagueOne', draftAction: 'sync' })}
-                    disabled={isLoading || !systemStatus.draft.isActive}
-                >
-                    <Icons.SyncIcon />
-                    Sync Draft to Firebase
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('processDraft', { divisionId: 'leagueOne', draftAction: 'commit' })}
-                    disabled={isLoading || !systemStatus.draft.isActive}
-                >
-                    <Icons.CheckIcon />
-                    Commit Draft
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.warning}`}
-                    onClick={() => onExecuteAction('processDraft', { divisionId: 'leagueOne', draftAction: 'reset' })}
-                    disabled={isLoading}
-                >
-                    <Icons.RefreshIcon />
-                    Reset Draft
-                </button>
-            </div>
+            <DraftSection
+                divisions={sharedContext.sheetData.divisions}
+                draftOrders={sharedContext.sheetData.draftOrder}
+                managers={sharedContext.sheetData.managers}
+                draftState={sharedContext.sheetData.draftState}
+                draftStatus={systemStatus.draft}
+            />
         </div>
     );
 };
@@ -294,47 +266,14 @@ const DraftManagementTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction,
 // TAB 4: TRANSFERS MANAGEMENT
 // ================================
 
-const TransfersManagementTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLoading }) => {
-    const totalPending = systemStatus.transfers.pending;
-
+const TransfersManagementTab: React.FC<TabProps> = ({ transferData }) => {
     return (
         <div className={styles.tabPanel}>
-            <div className={styles.overview}>
-                <h3 className={styles.sectionTitle}>Transfer Management</h3>
-
-                <div className={styles.transfersGrid}>
-                    <div className={styles.divisionCard}>
-                        <h4>All Divisions</h4>
-                        <div className={styles.transferStats}>
-                            <span className={styles.pending}>Total Pending: {totalPending}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className={styles.actions}>
-                <h3 className={styles.sectionTitle}>Transfer Actions</h3>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.primary}`}
-                    onClick={() => onExecuteAction('processPendingTransfers')}
-                    disabled={isLoading || totalPending === 0}
-                >
-                    <Icons.SyncIcon />
-                    Process Pending Transfers ({totalPending})
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('validateTransferRules')}
-                    disabled={isLoading}
-                >
-                    <Icons.CheckIcon />
-                    Validate Transfer Rules
-                </button>
-            </div>
+            <TransfersSection
+                divisions={transferData.divisions || []}
+                gameweek={transferData.currentGameweek}
+                transfersData={transferData.transfersData || {}}
+            />
         </div>
     );
 };
@@ -343,66 +282,10 @@ const TransfersManagementTab: React.FC<TabProps> = ({ systemStatus, onExecuteAct
 // TAB 5: GAMEWEEK PROCESSING
 // ================================
 
-const GameweekProcessingTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLoading }) => {
+const GameweekProcessingTab: React.FC<TabProps> = ({ systemStatus }) => {
     return (
         <div className={styles.tabPanel}>
-            <div className={styles.overview}>
-                <h3 className={styles.sectionTitle}>Gameweek Processing</h3>
-
-                <div className={styles.gameweekStatus}>
-                    <div className={styles.statusCard}>
-                        <h4>Current Status</h4>
-                        <div className={styles.gameweekInfo}>
-                            <p>Current Gameweek: {systemStatus.currentGameweek}</p>
-                            <p>Is Up to date: {systemStatus.gameweekProcessing.isUpToDate}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className={styles.actions}>
-                <h3 className={styles.sectionTitle}>Gameweek Actions</h3>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.primary}`}
-                    onClick={() => onExecuteAction('processGameweek', { gameweek: systemStatus.currentGameweek })}
-                    disabled={isLoading}
-                >
-                    <Icons.SyncIcon />
-                    Process Current Gameweek
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('calculateGameweekPoints')}
-                    disabled={isLoading}
-                >
-                    <Icons.ChartIcon />
-                    Calculate Gameweek Points
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('updateLeagueStandings')}
-                    disabled={isLoading}
-                >
-                    <Icons.TrendingUpIcon />
-                    Update League Standings
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('finalizeGameweek')}
-                    disabled={isLoading}
-                >
-                    <Icons.CheckIcon />
-                    Finalize Gameweek
-                </button>
-            </div>
+            <PointsScoringSection systemStatus={systemStatus} />
         </div>
     );
 };
@@ -421,7 +304,10 @@ const CacheDebugTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLo
         'fpl:events',
         'sheets:divisions',
         'sheets:managers',
-        'admin:context',
+        'sheets:draft-state',
+        'sheets:draft-orders',
+        'sheets:draft-picks',
+        'sheets:players',
         'firebase:cache-status',
     ];
 
@@ -429,27 +315,6 @@ const CacheDebugTab: React.FC<TabProps> = ({ systemStatus, onExecuteAction, isLo
         <div className={styles.tabPanel}>
             <div className={styles.overview}>
                 <h3 className={styles.sectionTitle}>Cache Management & Debug</h3>
-
-                <div className={styles.debugInfo}>
-                    <div className={styles.statusCard}>
-                        <h4>Cache System</h4>
-                        <div className={styles.debugDetails}>
-                            <p>System: DataCacheService</p>
-                            <p>Independent TTLs: ✅ Enabled</p>
-                            <p>Promise Deduplication: ✅ Active</p>
-                        </div>
-                    </div>
-
-                    <div className={styles.statusCard}>
-                        <h4>Cache Statistics</h4>
-                        <div className={styles.debugDetails}>
-                            <p>Hit Rate: Available via /api/cache</p>
-                            <p>Cache Size: Monitored</p>
-                            <p>TTL Management: Per-endpoint</p>
-                            <p>Invalidation: Action-based</p>
-                        </div>
-                    </div>
-                </div>
 
                 {/* Cache Key Selection */}
                 <div className={styles.cacheKeySelector}>

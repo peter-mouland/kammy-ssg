@@ -1,7 +1,7 @@
 /* Location: app/admin/components/ui/draft-card.tsx */
 
 import { useFetcher } from 'react-router';
-import type { DraftOrderData, DraftStateData } from '../../../draft/types/draft-types';
+import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../../draft/types/draft-types';
 import type { DivisionSheetData, UserTeamsSheetData } from '../../../teams/types/team-types';
 import styles from './draft-card.module.css';
 
@@ -10,6 +10,7 @@ interface DraftCardProps {
     teams: UserTeamsSheetData[];
     orders: DraftOrderData[];
     draftState: DraftStateData | null;
+    draftStatus: DraftStatusData | null;
 }
 
 type DraftVariant = 'generate' | 'start' | 'stop' | 'disabled';
@@ -22,12 +23,15 @@ interface DivisionStatus {
     variant: DraftVariant;
 }
 
-export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProps) => {
+export const DraftCard = ({ division, teams, orders, draftState, draftStatus }: DraftCardProps) => {
     const fetcher = useFetcher();
     const isLoading = fetcher.state === 'submitting';
-
-    const handleAction = (actionType: string) => {
-        fetcher.submit({ actionType, divisionId: division.id }, { method: 'post' });
+    console.log({ draftState, draftStatus });
+    const handleAction = (action: string) => {
+        fetcher.submit(
+            { actionType: 'processDraft', draftAction: action, divisionId: division.id },
+            { method: 'post' },
+        );
     };
 
     const isActive = !!(draftState?.isActive && draftState.currentDivisionId === division.id);
@@ -35,8 +39,7 @@ export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProp
     const getDivisionStatus = (): DivisionStatus => {
         if (teams.length === 0) {
             return { status: 'No Teams', color: '#6b7280', disabled: true, variant: 'disabled' };
-        }
-        if (orders.length === 0) {
+        } else if (orders.length === 0) {
             return {
                 status: '🎲 Generate Order',
                 color: '#f59e0b',
@@ -44,8 +47,7 @@ export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProp
                 action: 'generateOrder',
                 variant: 'generate',
             };
-        }
-        if (isActive) {
+        } else if (isActive) {
             return {
                 status: '🛑 Stop Draft',
                 color: '#ef4444',
@@ -53,8 +55,7 @@ export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProp
                 action: 'stopDraft',
                 variant: 'stop',
             };
-        }
-        if (draftState?.isActive) {
+        } else if (draftState?.isActive) {
             return {
                 status: '⚪️ Start Draft',
                 color: '#6b7280',
@@ -62,13 +63,28 @@ export const DraftCard = ({ division, teams, orders, draftState }: DraftCardProp
                 action: 'startDraft',
                 variant: 'disabled',
             };
+        } else if (!draftState?.completedAt) {
+            return {
+                status: '⚪️ Start Draft',
+                color: '#6b7280',
+                disabled: true,
+                action: 'startDraft',
+                variant: 'disabled',
+            };
+        } else if (!draftStatus?.byDivision?.[division.id].isCommitted) {
+            return {
+                status: '🟠️ Commit Draft',
+                color: '#6b7280',
+                disabled: true,
+                action: 'commitTeamsToFirestore',
+                variant: 'generate',
+            };
         }
         return {
-            status: '🟢 Start Draft',
+            status: 'Draft Complete',
             color: '#10b981',
-            disabled: false,
-            action: 'startDraft',
-            variant: 'start',
+            variant: 'disabled',
+            disabled: true,
         };
     };
 

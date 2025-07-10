@@ -60,10 +60,6 @@ export const FirebaseSyncSection = () => {
                 )}
             </button>
 
-            {!draftState?.isActive && (
-                <AdminMessage type="warning">No active draft to sync. Start a draft first.</AdminMessage>
-            )}
-
             {hasSuccess && fetcher.data?.message && <AdminMessage type="success">{fetcher.data.message}</AdminMessage>}
 
             {hasError && <AdminMessage type="error">{fetcher.data.error}</AdminMessage>}

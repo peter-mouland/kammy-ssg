@@ -155,6 +155,7 @@ async function originalReadTransfers(divisionId: DivisionId): Promise<ProcessedT
         throw createAppError('TRANSFERS_READ_ERROR', 'Failed to read transfer from sheet', error);
     }
 }
+
 export async function readTransfers(divisionId: DivisionId) {
     return await dataCache.get(CACHE_KEYS.SHEETS.TRANSFERS(divisionId), () => originalReadTransfers(divisionId), {
         ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.TRANSFERS(divisionId)),

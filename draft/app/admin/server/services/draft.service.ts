@@ -1,20 +1,20 @@
 // app/admin/server/services/draft.service.ts
 
+import { getInvalidationKeys } from '../../../_shared/lib/cache/cache-config';
+import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { FirebaseDraftSync } from '../../../_shared/lib/firestore-cache/firebase-draft-sync';
-import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
-import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
-import { getDraftPicksByDivision, readDraftState, updateDraftState } from '../../../_shared/lib/sheets/draft';
-import { clearDraftOrder, draftOrderExists, getDraftOrderByDivision } from '../../../_shared/lib/sheets/draft-order';
-import type { DraftPickData, DraftStateData } from '../../../draft/types/draft-types';
-import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
-import type {
-    DivisionId,
-    DivisionTeamsDocument,
-    PositionSlotKey,
-    TeamPositionSlot,
-} from '../../../teams/types/team-types';
+import { readDraftState, updateDraftState } from '../../../_shared/lib/sheets/draft';
+import {
+    clearDraftOrder,
+    draftOrderExists,
+    generateRandomDraftOrder,
+    getDraftOrderByDivision,
+} from '../../../_shared/lib/sheets/draft-order';
+import type { DraftStateData } from '../../../draft/types/draft-types';
+import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
 import type { DraftResult } from '../../types/admin-orchestrator-types';
 import type { AdminActionResult } from '../../types/admin-types';
+import { handleCommitTeamsToFirestore } from '../actions/team-commit-actions';
 
 /**
  * Draft service for managing draft operations
@@ -108,38 +108,27 @@ export class DraftService {
      * Commit completed draft (finalize and lock in results)
      */
     async commitDraft(divisionId: DivisionId): Promise<DraftResult> {
+        return handleCommitTeamsToFirestore(divisionId);
+    }
+
+    async generateOrder(divisionId: DivisionId, managers: UserTeamsSheetData[]) {
         try {
-            // Get all draft picks for validation
-            const draftPicks = await getDraftPicksByDivision(divisionId);
-
-            // Validate draft is complete
-            const expectedPicks = 1; // this.calculateExpectedPicks(divisionId);
-            if (draftPicks.length < expectedPicks) {
-                return {
-                    success: false,
-                    message: `Draft incomplete: ${draftPicks.length}/${expectedPicks} picks made`,
-                };
-            }
-
-            // Commit draft results to user teams
-            await this.commitDraftResultsToTeams(divisionId, draftPicks);
-
-            // Mark draft as completed
-            await updateDraftState({
-                isActive: false,
-                isCompleted: true,
-                completedAt: new Date().toLocaleString(),
-            });
+            const teamData = managers.map((team) => ({
+                userId: team.userId,
+                userName: team.userName,
+            }));
+            await generateRandomDraftOrder(divisionId, teamData);
+            const keysToInvalidate = getInvalidationKeys('DRAFT_ACTION', divisionId);
+            dataCache.invalidateMultiple(keysToInvalidate);
 
             return {
                 success: true,
-                message: `Draft committed for division ${divisionId} - ${draftPicks.length} picks finalized`,
-                data: { divisionId, picksCommitted: draftPicks.length },
+                message: 'Draft order generated',
             };
         } catch (error) {
             return {
                 success: false,
-                message: error instanceof Error ? error.message : 'Failed to commit draft',
+                message: error instanceof Error ? error.message : 'Failed to generateOrder',
             };
         }
     }
@@ -177,101 +166,6 @@ export class DraftService {
                 message: error instanceof Error ? error.message : 'Failed to reset draft',
             };
         }
-    }
-
-    /**
-     * Commit draft results to user teams sheets
-     */
-    private async commitDraftResultsToTeams(divisionId: DivisionId, draftPicks: DraftPickData[]) {
-        // Get all draft picks for validation
-        const fplPlayers = await fplApiCache.getFplPlayers();
-
-        // Validate draft is complete
-        if (draftPicks.length === 0) {
-            // < expectedPicks
-            throw new Error(`No draft picks found for division ${divisionId}`);
-        }
-        const fplPlayersMap = new Map(fplPlayers.map((p) => [p.id, p]));
-        // Group picks by user
-        const teamsByUser = new Map<string, any[]>();
-        for (const pick of draftPicks) {
-            if (!teamsByUser.has(pick.userId)) {
-                teamsByUser.set(pick.userId, []);
-            }
-            teamsByUser.get(pick.userId)?.push(pick);
-        }
-        // Convert each user's picks to new roster structure
-        const teamsData: Record<string, { roster: Record<PositionSlotKey, TeamPositionSlot> }> = {};
-        let totalPlayersProcessed = 0;
-
-        for (const [userId, userPicks] of teamsByUser) {
-            console.log(`Processing ${userPicks.length} picks for user ${userId}`);
-
-            // Convert legacy format to new roster structure
-            const legacyPlayers = userPicks.map((pick) => {
-                const fplPlayer = fplPlayersMap.get(pick.playerId);
-                if (!fplPlayer) {
-                    console.warn(`FPL player not found for ID ${pick.playerId}`);
-                } else if (pick.playerId === fplPlayer?.code) {
-                    console.warn(`🚨 FPL player ID id CODE ${pick.playerId}`);
-                }
-
-                return {
-                    userId,
-                    playerId: pick.playerId,
-                    playerCode: fplPlayer?.code,
-                    player: fplPlayer?.web_name || 'Unknown Player',
-                    playerPosition: pick.position, // Draft position from sheets
-                    teamPosition: pick.position, // Will be recalculated in conversion
-                    isSub: false, // Will be determined by position availability
-                    onLoanTo: null,
-                    onLoanStart: null,
-                    gameweek: 0, // Draft is gameweek 0
-                };
-            });
-
-            // Convert to new roster structure
-            const roster = convertLegacyPlayersToRoster(legacyPlayers);
-
-            teamsData[userId] = { roster };
-            totalPlayersProcessed += Object.keys(roster).length;
-        }
-
-        // Create the new division document structure
-        const now = new Date().toISOString();
-        const divisionDocument: DivisionTeamsDocument = {
-            divisionId,
-            gameweek: 0, // Draft is gameweek 0
-            lastUpdated: now,
-            teams: teamsData,
-            metadata: {
-                createdAt: now,
-                updatedAt: now,
-                pointsLastUpdated: null,
-                pointsLastGameweek: null,
-            },
-        };
-
-        // Save the document using the service
-        await createDivisionTeamsDocument(divisionDocument);
-
-        const message = `Teams committed to new structure! ${totalPlayersProcessed} position slots across ${teamsByUser.size} teams in division ${divisionId}`;
-
-        console.log(`✅ ${message}`);
-
-        return {
-            success: true,
-            message,
-            data: {
-                divisionId,
-                teamsCount: teamsByUser.size,
-                positionSlotsCount: totalPlayersProcessed,
-                documentId: `${divisionId}_gw1`,
-                gameweek: 0,
-                timestamp: now,
-                structure: 'new-roster-based',
-            },
-        };
     }
 }
 
