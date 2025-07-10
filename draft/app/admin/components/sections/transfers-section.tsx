@@ -1,14 +1,18 @@
 /* Location: app/admin/components/sections/transfers-section.tsx */
 
 import { useState } from 'react';
-import { useFetcher } from 'react-router';
+import { useFetcher, useNavigate, useSearchParams } from 'react-router';
+import { SelectDivision } from '../../../_shared/components/select-division';
 import { Table, type TableColumn } from '../../../_shared/components/table';
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
-import type { DivisionId, DivisionSheetData } from '../../../teams/types/team-types';
+import { GameweekSelector } from '../../../teams/components/gameweek-selector';
+import type { DivisionSheetData } from '../../../teams/types/team-types';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';
 import type { ProcessedTransfer } from '../../../transfers/types/transfer-types';
-import type { TransferByDivisionId } from '../../types/admin-orchestrator-types';
+import type { AdminDataContext } from '../../types/admin-orchestrator-types';
+import type { SystemStatusSummary } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
+import { ActionBar } from '../layout/action-bar';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
@@ -19,8 +23,11 @@ import styles from './transfers-section.module.css';
 
 interface TransfersSectionProps {
     divisions: DivisionSheetData[];
-    gameweek: GameWeekData;
-    transfersData?: TransferByDivisionId;
+    transfersData?: Record<string, TransferAdminOverviewData>;
+    systemStatus: SystemStatusSummary;
+    sharedContext: AdminDataContext;
+    selectedDivision: DivisionSheetData;
+    selectedGameweek: GameWeekData;
 }
 
 interface GameweekTransfersData {
@@ -84,11 +91,12 @@ function RecommendationTooltip({ validation, children }: RecommendationTooltipPr
 }
 
 function GameweekTransfersSection({
-    transfersData,
+    selectedDivision,
     gameweekInfo,
     onApprove,
     onReject,
 }: {
+    selectedDivision: DivisionSheetData;
     gameweekInfo: GameweekTransfersData;
     onApprove: (transferId: string) => void;
     onReject: (transferId: string) => void;
@@ -209,11 +217,13 @@ function GameweekTransfersSection({
             <button type={'button'} className={styles.gameweek_header} onClick={() => setIsExpanded(!isExpanded)}>
                 <div className={styles.gameweek_info}>
                     <div className={styles.gameweek_title}>
-                        <span className={styles.gameweek_label}>Gameweek {gameweekInfo.gameweekData.fplEvent.id}</span>
-                        <span className={styles.gameweek_dates}>
+                        <div className={styles.gameweek_label}>
+                            {selectedDivision.label} Gameweek {gameweekInfo.gameweekData.fplEvent.id}
+                        </div>
+                        <div className={styles.gameweek_dates}>
                             {gameweekInfo.gameweekData.start.toLocaleString('en-gb')} -{' '}
                             {gameweekInfo.gameweekData.end.toLocaleString('en-gb')}
-                        </span>
+                        </div>
                     </div>
                     <div className={styles.gameweek_stats}>
                         <span className={`${styles.stat_badge} ${styles.approved}`}>
@@ -256,10 +266,10 @@ function GameweekTransfersSection({
 }
 
 function DivisionTransfersPanel({
-    divisionId,
+    selectedDivision,
     transfersData,
 }: {
-    divisionId: string;
+    selectedDivision: DivisionSheetData;
     transfersData?: TransferAdminOverviewData;
 }) {
     const fetcher = useFetcher();
@@ -267,7 +277,7 @@ function DivisionTransfersPanel({
     const handleApprove = (transferId: string) => {
         const formData = new FormData();
         formData.append('actionType', 'approveTransfer');
-        formData.append('divisionId', divisionId);
+        formData.append('divisionId', selectedDivision.id);
         formData.append('transferId', transferId);
         formData.append('recommendation', 'APPROVE');
 
@@ -277,7 +287,7 @@ function DivisionTransfersPanel({
     const handleReject = (transferId: string) => {
         const formData = new FormData();
         formData.append('actionType', 'rejectTransfer');
-        formData.append('divisionId', divisionId);
+        formData.append('divisionId', selectedDivision.id);
         formData.append('transferId', transferId);
         formData.append('recommendation', 'REJECT');
 
@@ -300,10 +310,10 @@ function DivisionTransfersPanel({
                     {transfersByGameweek.map((gameweekInfo) => (
                         <GameweekTransfersSection
                             key={gameweekInfo.gameweekData.fplEvent.id}
-                            transfersData={transfersData}
                             gameweekInfo={gameweekInfo}
                             onApprove={handleApprove}
                             onReject={handleReject}
+                            selectedDivision={selectedDivision}
                         />
                     ))}
                 </div>
@@ -352,27 +362,43 @@ function groupTransfersByGameweek(
     return Array.from(gameweekMap.values()).sort((a, b) => (b.gameweekData.start > a.gameweekData.start ? 1 : -1));
 }
 
-export function TransfersSection({ divisions, gameweek, transfersData }: TransfersSectionProps) {
-    const [selectedDivision, setSelectedDivision] = useState<DivisionId>(
-        divisions.length > 0 ? divisions[0].id : 'premierLeague',
-    );
-    const [showRuleConfig, setShowRuleConfig] = useState(false);
+export function TransfersSection({
+    divisions,
+    selectedDivision,
+    selectedGameweek,
+    transfersData,
+    sharedContext,
+}: TransfersSectionProps) {
+    const navigate = useNavigate();
     const fetcher = useFetcher();
-    console.log({ transfersData });
-    const selectedDivisionData = transfersData?.[selectedDivision];
+    const [searchParams, setSearchParams] = useSearchParams();
+    const availableGameweeks = Array.from(
+        { length: sharedContext.gameweekStatus.currentGameweek.fplEvent.id },
+        (_, i) => i + 1,
+    );
+    const selectedDivisionData = transfersData?.[selectedDivision.id];
+    const handleDivisionChange = (divisionId: string) => {
+        if (divisionId !== 'all') {
+            navigate(`/admin/transfers/?division=${divisionId}&gameweek=${selectedGameweek.fplEvent.id}`);
+        } else {
+            navigate(`/admin/transfers?gameweek=${selectedGameweek.fplEvent.id}`);
+        }
+    };
 
+    const handleGameweekChange = (gameweek: number) => {
+        const newParams = new URLSearchParams();
+        if (selectedDivision) {
+            newParams.set('division', selectedDivision.id);
+        }
+        if (gameweek !== sharedContext.gameweekStatus.currentGameweek.fplEvent.id) {
+            newParams.set('gameweek', gameweek.toString());
+        }
+        setSearchParams(newParams);
+    };
     const handleRefreshTransfers = (actionType: string) => {
         const formData = new FormData();
         formData.append('actionType', actionType);
-        formData.append('divisionId', selectedDivision);
-
-        fetcher.submit(formData, { method: 'POST' });
-    };
-
-    const handleValidateAllTransfers = (actionType: string) => {
-        const formData = new FormData();
-        formData.append('actionType', actionType);
-        formData.append('divisionId', selectedDivision);
+        formData.append('divisionId', selectedDivision.id);
 
         fetcher.submit(formData, { method: 'POST' });
     };
@@ -383,57 +409,34 @@ export function TransfersSection({ divisions, gameweek, transfersData }: Transfe
                 title="Transfer Management"
                 icon={<Icons.SyncIcon />}
                 description="Review and approve/reject transfers by gameweek"
+                actions={
+                    <ActionBar align={'right'} gap={'md'}>
+                        <GameweekSelector
+                            currentGameweek={sharedContext.gameweekStatus.currentGameweek.fplEvent.id}
+                            selectedGameweek={selectedGameweek.fplEvent.id}
+                            availableGameweeks={availableGameweeks}
+                            onGameweekChange={handleGameweekChange}
+                        />
+                        <SelectDivision
+                            divisions={divisions}
+                            selectedDivision={selectedDivision.id}
+                            handleDivisionChange={handleDivisionChange}
+                        />
+                    </ActionBar>
+                }
             >
-                {/* Division Selection */}
-                <div className={styles.division_selector}>
-                    <label htmlFor="division-select">Division:</label>
-                    <select
-                        id="division-select"
-                        value={selectedDivision}
-                        onChange={(e) => setSelectedDivision(e.target.value as DivisionId)}
-                        className={styles.division_select}
-                    >
-                        {divisions.map((division) => (
-                            <option key={division.id} value={division.id}>
-                                {division.label} ({division.id})
-                            </option>
-                        ))}
-                    </select>
-                    GW: {gameweek?.fplEvent.id}
-                </div>
-
-                {/* Quick Actions */}
-                <AdminGrid columns={'3'} gap="md">
-                    <ActionCard
-                        title="Refresh Transfers"
-                        description="Reload transfer data from Google Sheets"
-                        icon={<Icons.RefreshIcon />}
-                        buttonText="Refresh Data"
-                        actionType="refreshTransfers"
-                        onExecute={handleRefreshTransfers}
-                        fetcher={fetcher}
-                    />
-
-                    <ActionCard
-                        title="Validate All"
-                        description="Re-run validation rules on all pending transfers"
-                        icon={<Icons.TargetIcon />}
-                        buttonText="Validate All"
-                        actionType="validateAllTransfers"
-                        onExecute={handleValidateAllTransfers}
-                        fetcher={fetcher}
-                    />
-
-                    <ActionCard
-                        title="Configure Rules"
-                        description="Manage transfer validation rules for this division"
-                        icon={<Icons.SettingsIcon />}
-                        buttonText="Configure Rules"
-                        actionType="configureRules"
-                        onExecute={() => setShowRuleConfig(true)}
-                        fetcher={fetcher}
-                    />
-                </AdminGrid>
+                <DivisionTransfersPanel selectedDivision={selectedDivision} transfersData={selectedDivisionData} />
+                <br />
+                <br />
+                <ActionCard
+                    title="Refresh Transfers"
+                    description="Reload transfer data from Google Sheets"
+                    icon={<Icons.RefreshIcon />}
+                    buttonText="Refresh Data"
+                    actionType="refreshTransfers"
+                    onExecute={handleRefreshTransfers}
+                    fetcher={fetcher}
+                />
 
                 {/* Error/Success Display */}
                 {fetcher.data?.error && (
@@ -443,58 +446,7 @@ export function TransfersSection({ divisions, gameweek, transfersData }: Transfe
                 {fetcher.data?.success && (
                     <AdminMessage type="success">{fetcher.data.message || 'Action completed'}</AdminMessage>
                 )}
-
-                {/* Division Overview Stats */}
-                {selectedDivisionData && (
-                    <AdminGrid columns={'4'} gap="md">
-                        <StatusCard
-                            icon={selectedDivisionData.ruleStats.totalRules.toString()}
-                            label="Total Rules"
-                            percentage={`${selectedDivisionData.ruleStats.totalRules} rules`}
-                            status="healthy"
-                        />
-                        <StatusCard
-                            icon={selectedDivisionData.ruleStats.activeRules.toString()}
-                            label="Active Rules"
-                            percentage={`${selectedDivisionData.ruleStats.activeRules} active`}
-                            status={selectedDivisionData.ruleStats.activeRules > 0 ? 'healthy' : 'warning'}
-                        />
-                        <StatusCard
-                            icon={selectedDivisionData.statusStats.pendingCount.toString()}
-                            label="Pending Transfers"
-                            percentage={`${selectedDivisionData.statusStats.pendingCount} pending`}
-                            status={selectedDivisionData.statusStats.pendingCount === 0 ? 'healthy' : 'warning'}
-                        />
-                        <StatusCard
-                            icon={selectedDivisionData.validationStats.needsReview.toString()}
-                            label="Need Review"
-                            percentage={`${selectedDivisionData.validationStats.needsReview} for review`}
-                            status={selectedDivisionData.validationStats.needsReview === 0 ? 'healthy' : 'warning'}
-                        />
-                    </AdminGrid>
-                )}
             </AdminSection>
-
-            {/* Transfers Panel */}
-            {selectedDivision && (
-                <AdminSection title={`Transfers for ${selectedDivision}`} collapsible expanded>
-                    <DivisionTransfersPanel divisionId={selectedDivision} transfersData={selectedDivisionData} />
-                </AdminSection>
-            )}
-
-            {/* Rule Configuration Modal/Panel */}
-            {showRuleConfig && (
-                <AdminSection
-                    title="Transfer Rule Configuration"
-                    collapsible
-                    expanded={showRuleConfig}
-                    onToggle={() => setShowRuleConfig(!showRuleConfig)}
-                >
-                    <AdminMessage type="info">
-                        Rule configuration UI will be implemented in the next phase.
-                    </AdminMessage>
-                </AdminSection>
-            )}
         </AdminContainer>
     );
 }

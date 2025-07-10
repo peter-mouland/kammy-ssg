@@ -27,9 +27,6 @@ export default [
         route('transfers', 'admin/admin-transfers.route.tsx'),
     ]),
 
-    // NEW: AdminV2 route with unified caching system
-    route('adminv2', 'admin/adminv2.route.tsx'),
-
     // Debug route
     route('debug', 'admin/debug.route.tsx'),
 ] satisfies RouteConfig;

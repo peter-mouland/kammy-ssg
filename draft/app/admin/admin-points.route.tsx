@@ -1,6 +1,6 @@
 /* Location: app/admin/admin-points.route.tsx */
 
-import { type ActionFunctionArgs, data, type LoaderFunctionArgs } from 'react-router';
+import { type ActionFunctionArgs, data, type LoaderFunctionArgs, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { PointsScoringSection } from './components/sections/points-scoring-section';
 
@@ -11,7 +11,14 @@ interface ActionData {
     data?: any;
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {}
+export async function loader({ request }: LoaderFunctionArgs) {
+    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
+    const orchestrator = new AdminOrchestrator();
+    const systemStatus = await orchestrator.getSystemStatus();
+    const sharedContext = await orchestrator.getSharedContext();
+
+    return { systemStatus, sharedContext };
+}
 
 export async function action({ request, context }: ActionFunctionArgs) {
     try {
@@ -38,5 +45,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function AdminPointsRoute() {
-    return <PointsScoringSection />;
+    const { sharedContext, systemStatus } = useLoaderData();
+    return <PointsScoringSection systemStatus={systemStatus} />;
 }

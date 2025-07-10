@@ -3,7 +3,6 @@
 import { type ActionFunctionArgs, data, type LoaderFunctionArgs, type MetaFunction, useLoaderData } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import type { GameWeekData } from '../_shared/lib/fpl/fpl-types';
-import { readDivisions } from '../_shared/lib/sheets/divisions';
 import type { DivisionId, DivisionSheetData } from '../teams/types/team-types';
 import type { TransferAdminOverviewData } from '../transfers/types/transfer-rule-types';
 import { TransfersSection } from './components/sections/transfers-section';
@@ -29,29 +28,29 @@ interface TransfersActionData {
 }
 
 export async function loader({ request }: LoaderFunctionArgs): Promise<TransfersLoaderData> {
-    try {
-        const url = new URL(request.url);
-        const selectedDivision: DivisionId = (url.searchParams.get('division') || 'leagueOne') as DivisionId;
-        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || '1', 10);
-        // Import server functions dynamically to prevent client bundle inclusion
-        const [{ getTransfersAdminData }, { fplApiCache }] = await Promise.all([
-            import('./server/transfers-admin.server'),
-            import('../_shared/lib/fpl/api-cache'),
-        ]);
-        const divisions = await readDivisions();
-        const gameweekData = await fplApiCache.getFplEvents();
-        const gameweek = gameweekData.find((gw) => gw.fplEvent.id === selectedGameweek);
-        const transfersData = await getTransfersAdminData(divisions, gameweek);
+    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
+    const orchestrator = new AdminOrchestrator();
+    const systemStatus = await orchestrator.getSystemStatus();
+    const sharedContext = await orchestrator.getSharedContext();
 
-        return {
-            divisions,
-            gameweek,
-            transfersData,
-        };
-    } catch (error) {
-        console.error('Transfers admin loader error:', error);
-        throw new Response('Failed to load transfers data', { status: 500 });
-    }
+    const url = new URL(request.url);
+    const selectedDivisionId: DivisionId = (url.searchParams.get('division') || 'premierLeague') as DivisionId;
+    const selectedGameweekId = Number.parseInt(url.searchParams.get('gameweek') || '38', 10);
+
+    const { getTransfersAdminData } = await import('./server/transfers-admin.server');
+    const divisions = sharedContext.sheetData.divisions;
+    const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
+    const transfersData = await getTransfersAdminData(divisions, gameweek);
+
+    return {
+        divisions,
+        gameweek,
+        transfersData,
+        systemStatus,
+        sharedContext,
+        selectedDivision: divisions.find((d) => d.id === selectedDivisionId),
+        selectedGameweek: gameweek,
+    };
 }
 
 export async function action({ request }: ActionFunctionArgs): Promise<TransfersActionData> {
@@ -86,7 +85,7 @@ export async function action({ request }: ActionFunctionArgs): Promise<Transfers
 }
 
 export default function AdminTransfersRoute() {
-    const { divisions, transfersData, gameweek } = useLoaderData<TransfersLoaderData>();
+    const data = useLoaderData<TransfersLoaderData>();
 
-    return <TransfersSection divisions={divisions || []} gameweek={gameweek} transfersData={transfersData || {}} />;
+    return <TransfersSection {...data} />;
 }

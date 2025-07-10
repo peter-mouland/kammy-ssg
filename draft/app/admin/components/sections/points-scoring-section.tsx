@@ -38,20 +38,11 @@ export const PointsScoringSection = ({ systemStatus }: { systemStatus: SystemSta
                         recommended={true}
                     />
                     <ActionCard
-                        title="Force Regenerate All"
-                        description="Regenerate all points from scratch (slower)"
+                        title="Force Regenerate All Points"
+                        description="Rerun from Gameweek 0"
                         icon={<Icons.RefreshIcon />}
                         buttonText="Force Regenerate"
                         actionType="forceRegenerateAllPoints"
-                        onExecute={executeAction}
-                        fetcher={fetcher}
-                    />
-                    <ActionCard
-                        title="Rerun Transfers - All Gameweeks"
-                        description="Calculate each team roster from draft day using gsheet transfers"
-                        icon={<Icons.RefreshIcon />}
-                        buttonText="Rerun Transfers - All Gameweeks"
-                        actionType="forceRerunTransfers"
                         onExecute={executeAction}
                         fetcher={fetcher}
                     />

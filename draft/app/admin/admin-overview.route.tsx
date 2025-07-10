@@ -1,45 +1,29 @@
 /* Location: app/admin/admin-overview.route.tsx */
 
 import { useState } from 'react';
-import { type ActionFunctionArgs, data } from 'react-router';
-import { requestFormData } from '../_shared/lib/form-data';
+import { type ActionFunctionArgs, type LoaderFunctionArgs, useLoaderData } from 'react-router';
 import { OverviewSection } from './components/sections/overview-section';
-import type { AdminActionType, ClearVariant } from './types/admin-types';
 
-interface ActionData {
-    success?: boolean;
-    error?: string;
-    message?: string;
-    data?: any;
+/**
+ * Load admin system status using the unified AdminOrchestrator
+ */
+export async function loader({ request }: LoaderFunctionArgs) {
+    // Use the updated AdminOrchestrator which now delegates to system-status.service.ts
+    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
+    const orchestrator = new AdminOrchestrator();
+    const systemStatus = await orchestrator.getSystemStatus();
+    const sharedContext = await orchestrator.getSharedContext();
+
+    return {
+        sharedContext,
+        systemStatus,
+    };
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-    try {
-        const formData = await requestFormData({ request, context });
-        const actionType = formData.get('actionType')?.trim() as AdminActionType;
-        const variant = formData.get('variant')?.trim() as ClearVariant;
-
-        if (!actionType) {
-            return data<ActionData>({ error: 'Action type is required' });
-        }
-
-        const { handleOverviewActions } = await import('./server/overview-actions.server');
-
-        const result = await handleOverviewActions({
-            actionType: actionType,
-            variant: variant,
-        });
-
-        return data<ActionData>(result);
-    } catch (error) {
-        console.error('Overview action error:', error);
-        return data<ActionData>({
-            error: error instanceof Error ? error.message : 'Failed to perform overview action',
-        });
-    }
-}
+export async function action({ request, context }: ActionFunctionArgs) {}
 
 export default function AdminOverviewRoute() {
+    const { systemStatus, sharedContext } = useLoaderData();
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
     const toggleSection = (section: string): void => {
@@ -52,5 +36,12 @@ export default function AdminOverviewRoute() {
         setExpandedSections(newExpanded);
     };
 
-    return <OverviewSection expandedSections={expandedSections} toggleSection={toggleSection} />;
+    return (
+        <OverviewSection
+            systemStatus={systemStatus}
+            sharedContext={sharedContext}
+            expandedSections={expandedSections}
+            toggleSection={toggleSection}
+        />
+    );
 }

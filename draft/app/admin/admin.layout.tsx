@@ -2,7 +2,7 @@
 
 // /admin/admin-dashboard-layout.tsx
 import type React from 'react';
-import { useLocation, useNavigate, useRevalidator } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import * as Icons from './components/icons/admin-icons';
 import { ActionBar } from './components/layout/action-bar';
 import { AdminSection } from './components/layout/admin-section';
@@ -10,8 +10,6 @@ import { AppShell } from './components/layout/app-shell';
 import { TwoColumnLayout } from './components/layout/two-column-layout';
 import { NavButton } from './components/ui/nav-button';
 import { NavGroup } from './components/ui/nav-group';
-import { RefreshButton } from './components/ui/refresh-button';
-import { SystemHealthBadge } from './components/ui/system-health-badge';
 import type { AdminNavItem } from './types/admin-types';
 
 interface AdminDashboardLayoutProps {
@@ -32,34 +30,28 @@ const navigationItems: AdminNavItem[] = [
         path: '/admin/draft',
     },
     {
-        key: 'points',
-        label: 'Points & Scoring',
-        icon: <Icons.ChartIcon />,
-        path: '/admin/points',
-    },
-    {
         key: 'transfers',
         label: 'Transfer Management',
         icon: <Icons.SyncIcon />,
         path: '/admin/transfers',
     },
     {
+        key: 'points',
+        label: 'GameWeek Processing',
+        icon: <Icons.ChartIcon />,
+        path: '/admin/points',
+    },
+    {
         key: 'settings',
-        label: 'Settings',
-        icon: <Icons.SettingsIcon />,
+        label: 'Cache + Data',
+        icon: <Icons.CloudIcon />,
         path: '/admin/settings',
     },
 ];
 
 export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) => {
-    const revalidator = useRevalidator();
     const location = useLocation();
     const navigate = useNavigate();
-
-    const handleRefreshAll = () => {
-        // Revalidate the route data (refetch from loader)
-        revalidator.revalidate();
-    };
 
     const getActiveSection = () => {
         const path = location.pathname;
@@ -80,12 +72,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
                     <AdminSection
                         title="Admin Dashboard"
                         description="Manage your fantasy football draft system"
-                        actions={
-                            <ActionBar align="right">
-                                <SystemHealthBadge />
-                                <RefreshButton onClick={handleRefreshAll} loading={revalidator.state === 'loading'} />
-                            </ActionBar>
-                        }
+                        actions={<ActionBar align="right" />}
                     />
                 </TwoColumnLayout.Header>
 

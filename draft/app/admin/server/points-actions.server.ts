@@ -13,11 +13,6 @@ export async function handlePointsActions(params: PointsActionParams): Promise<A
     try {
         switch (actionType) {
             // Points Management Actions
-            case 'ensureDivisionTeamDocuments': {
-                const { handleEnsureDivisionTeamDocuments } = await import('./actions/points-actions');
-                return await handleEnsureDivisionTeamDocuments();
-            }
-
             case 'generateGameWeekPoints': {
                 const { handleGenerateGameweekPoints } = await import('./actions/points-actions');
                 return await handleGenerateGameweekPoints();
@@ -28,15 +23,6 @@ export async function handlePointsActions(params: PointsActionParams): Promise<A
                 return await handleForceRegenerateAllPoints();
             }
 
-            case 'forceRerunTransfers': {
-                const { handleForceRerunTransfers } = await import('./actions/points-actions');
-                return await handleForceRerunTransfers();
-            }
-
-            case 'getGameweekPointsStatus': {
-                const { handleGetGameweekPointsStatus } = await import('./actions/points-actions');
-                return await handleGetGameweekPointsStatus();
-            }
             default:
                 throw new Error(`Invalid points action type: ${actionType}`);
         }

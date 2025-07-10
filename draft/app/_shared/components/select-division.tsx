@@ -1,16 +1,12 @@
 /* Location: app/_shared/components/select-division.tsx */
 
+import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types';
 import styles from './select-division.module.css';
 
-interface Division {
-    id: string;
-    label: string;
-}
-
 interface SelectDivisionProps {
-    divisions: Division[];
-    selectedDivision: string | null;
-    handleDivisionChange: (divisionId: string) => void;
+    divisions: DivisionSheetData[];
+    selectedDivision: DivisionId | null;
+    handleDivisionChange: (divisionId: DivisionId) => void;
 }
 
 export function SelectDivision({ divisions, selectedDivision, handleDivisionChange }: SelectDivisionProps) {
@@ -20,7 +16,7 @@ export function SelectDivision({ divisions, selectedDivision, handleDivisionChan
             <select
                 id="division-select"
                 value={selectedDivision || 'all'}
-                onChange={(e) => handleDivisionChange(e.target.value)}
+                onChange={(e) => handleDivisionChange(e.target.value as DivisionId)}
                 className={styles.selectInput}
             >
                 <option value="all">All Divisions</option>

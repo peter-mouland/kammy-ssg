@@ -4,7 +4,7 @@ import { type ActionFunctionArgs, data, type LoaderFunctionArgs, useLoaderData }
 import { requestFormData } from '../_shared/lib/form-data';
 import type { DivisionId } from '../teams/types/team-types';
 import { DraftSection } from './components/sections/draft-section';
-import type { AdminActionType, AdminDashboardData } from './types/admin-types';
+import type { AdminActionType } from './types/admin-types';
 
 interface ActionData {
     success?: boolean;
@@ -13,30 +13,13 @@ interface ActionData {
     data?: any;
 }
 
-export async function getDraftAdminData(): Promise<AdminDashboardData> {
+export async function loader({ request }: LoaderFunctionArgs) {
     const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
     const orchestrator = new AdminOrchestrator();
-    const { sheetData } = await orchestrator.getSharedContext();
-    const statusSummary = await orchestrator.getSystemStatus();
-    const { divisions, draftState, draftOrder, managers } = sheetData;
+    const systemStatus = await orchestrator.getSystemStatus();
+    const sharedContext = await orchestrator.getSharedContext();
 
-    return {
-        divisions,
-        draftOrders: draftOrder,
-        managers,
-        draftState,
-        draftStatus: statusSummary.draft,
-    };
-}
-
-export async function loader({ request }: LoaderFunctionArgs) {
-    try {
-        const draftAdminData = await getDraftAdminData();
-        return data(draftAdminData);
-    } catch (error) {
-        console.error('Draft admin loader error:', error);
-        throw new Response('Failed to load draft setup data', { status: 500 });
-    }
+    return { systemStatus, sharedContext };
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -57,15 +40,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function AdminDraftRoute() {
-    const { divisions, draftOrders, managers, draftState, draftStatus } = useLoaderData() as AdminDashboardData;
+    const { sharedContext, systemStatus } = useLoaderData();
 
     return (
         <DraftSection
-            divisions={divisions}
-            draftOrders={draftOrders}
-            managers={managers}
-            draftState={draftState}
-            draftStatus={draftStatus}
+            divisions={sharedContext.sheetData.divisions}
+            draftOrders={sharedContext.sheetData.draftOrder}
+            managers={sharedContext.sheetData.managers}
+            draftState={sharedContext.sheetData.draftState}
+            draftStatus={systemStatus.draft}
         />
     );
 }
