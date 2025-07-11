@@ -49,7 +49,6 @@ export type AdminActionType =
     | 'generateEnhancedDataFast'
     | 'populateElementDetailedStats'
     | 'generateGameWeekPoints'
-    | 'forceRerunTransfers'
     | 'forceRegenerateAllPoints'
     | 'ensureDivisionDocument'
     | 'resetDraft'
@@ -132,7 +131,7 @@ export interface SystemStatusSummary {
     draft: DraftStatusData;
     gameweekProcessing: {
         currentGameweek: number;
-        lastProcessedGameweek: number | null;
+        lastProcessedGameweek: number;
         totalGameweeks: number;
         processedGameweeks: number[];
         pendingGameweeks: number[];

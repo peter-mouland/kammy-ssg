@@ -4,25 +4,20 @@ import { useFetcher, useLoaderData } from 'react-router';
 import type { AdminDashboardData } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { AdminMessage } from '../ui/admin-message';
-import styles from './firebase-sync-section.module.css';
+import styles from './draft-sync-section.module.css';
 
-export const FirebaseSyncSection = () => {
-    const data = useLoaderData() as AdminDashboardData | null;
+export const DraftSyncSection = ({ draftState }) => {
     const fetcher = useFetcher();
-    const draftState = data?.draftState;
 
     const handleSync = () => {
-        if (!draftState?.currentDivisionId) return;
-
-        fetcher.submit(
-            {
-                actionType: 'syncDraft',
-                divisionId: draftState.currentDivisionId,
-            },
-            {
-                method: 'post', // Submit to current route (draft)
-            },
-        );
+        const formData = new FormData();
+        formData.append('actionType', 'processDraft');
+        formData.append('draftAction', 'syncDraft');
+        formData.append('divisionId', draftState.currentDivisionId);
+        fetcher.submit(formData, {
+            method: 'POST',
+            action: '/admin', // This ensures we hit the parent route's action
+        });
     };
 
     const isLoading = fetcher.state === 'submitting';
@@ -31,12 +26,7 @@ export const FirebaseSyncSection = () => {
 
     return (
         <div className={styles.sync_container}>
-            <button
-                type="button"
-                onClick={handleSync}
-                disabled={!draftState?.currentDivisionId || !draftState?.isActive || isLoading}
-                className={`${styles.action_button} ${styles.primary}`}
-            >
+            <button type="button" onClick={handleSync} className={`${styles.action_button} ${styles.primary}`}>
                 {isLoading ? (
                     <>
                         <span className={styles.spinner} />

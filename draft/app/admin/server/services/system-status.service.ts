@@ -5,6 +5,7 @@ import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
+import type { DraftStatusData } from '../../../draft/types/draft-types';
 import { divisionDocumentExists } from '../../../scoring/server/services/division-teams.service';
 import type { DraftStatusByDivisionId, SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
 
@@ -16,14 +17,14 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         console.log('🔄 getSystemStatus() - Loading comprehensive system status');
 
         // Load all status data in parallel for better performance
-        const [currentGameweek, fplCacheHealth, transferStatus, draftStatus, gameweekProcessingStatus] =
-            await Promise.all([
-                fplApiCache.getCurrentGameweek(),
-                checkFplCacheHealth(),
-                getTransferStatusReal(),
-                getDraftStatusReal(),
-                getGameweekProcessingStatusReal(),
-            ]);
+        const [currentGameweek, transferStatus, draftStatus, gameweekProcessingStatus] = await Promise.all([
+            fplApiCache.getCurrentGameweek(),
+            getTransferStatusReal(),
+            getDraftStatusReal(),
+            getGameweekProcessingStatusReal(),
+        ]);
+
+        const fplHealth = await fplApiCache.getCacheHealth();
 
         // Check Firebase health
         const firebaseHealth = await checkFirebaseHealth();
@@ -32,11 +33,11 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         const googleSheetsHealth = await checkGoogleSheetsHealth();
 
         // Determine overall system health
-        const overallHealth = determineOverallHealth([fplCacheHealth, firebaseHealth, googleSheetsHealth]);
+        const overallHealth = determineOverallHealth([fplHealth, firebaseHealth, googleSheetsHealth]);
 
         // Generate recommendations
         const recommendations = generateRecommendations({
-            fplCacheHealth,
+            fplHealth,
             firebaseHealth,
             googleSheetsHealth,
             transferStatus,
@@ -47,7 +48,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         const summary: SystemStatusSummary = {
             currentGameweek,
             systemHealth: {
-                fplCache: fplCacheHealth,
+                fplCache: fplHealth,
                 firebase: firebaseHealth,
                 googleSheets: googleSheetsHealth,
                 overall: overallHealth,
@@ -79,7 +80,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
             draft: { isActive: false, currentDivisionId: null, currentUserId: null, currentPick: null, byDivision: {} },
             gameweekProcessing: {
                 currentGameweek: 1,
-                lastProcessedGameweek: null,
+                lastProcessedGameweek: 0,
                 totalGameweeks: 38,
                 processedGameweeks: [],
                 pendingGameweeks: [],
@@ -340,7 +341,7 @@ async function getGameweekProcessingStatusReal() {
         console.error('Failed to load gameweek processing status:', error);
         return {
             currentGameweek: 1,
-            lastProcessedGameweek: null,
+            lastProcessedGameweek: 0,
             totalGameweeks: 38,
             processedGameweeks: [],
             pendingGameweeks: [],
@@ -369,47 +370,49 @@ function determineOverallHealth(healthStatuses: SystemHealthStatus[]): SystemHea
 /**
  * Generate system recommendations based on current status
  */
-function generateRecommendations(data: {
-    fplCacheHealth: SystemHealthStatus;
+function generateRecommendations({
+    fplHealth,
+    firebaseHealth,
+    googleSheetsHealth,
+    transferStatus,
+    draftStatus,
+    gameweekProcessingStatus,
+}: {
+    fplHealth: SystemHealthStatus;
     firebaseHealth: SystemHealthStatus;
     googleSheetsHealth: SystemHealthStatus;
     transferStatus: any;
-    draftStatus: any;
+    draftStatus: DraftStatusData;
     gameweekProcessingStatus: any;
 }): string[] {
     const recommendations: string[] = [];
+    const issues: string[] = [];
 
-    // FPL Cache recommendations
-    if (data.fplCacheHealth.status === 'critical') {
-        recommendations.push('Run "Populate Bootstrap Data" to fix FPL cache issues');
-    } else if (data.fplCacheHealth.status === 'warning') {
-        recommendations.push('Run "Generate Enhanced Data" to resolve FPL cache warnings');
+    // Check for critical issues
+    if (fplHealth.data.missing.elements || fplHealth.data.missing.teams || fplHealth.data.missing.events) {
+        issues.push('Missing core FPL data (teams/events)');
+        recommendations.push('Run "Populate Bootstrap Data" to fetch core FPL data');
+    }
+
+    // draft
+    if (draftStatus.stage !== 'complete') {
+        if (draftStatus.stage === 'order') recommendations.push('Need to generate the draft order');
+        if (draftStatus.stage === 'start') recommendations.push('The "Draft Day" needs running');
+        if (draftStatus.stage === 'stop') recommendations.push('Draft is complete, stop it');
+        if (draftStatus.stage === 'commit') recommendations.push('Save the draft to the db (commit)');
     }
 
     // Transfer recommendations
-    if (data.transferStatus.overall.pending > 0) {
-        recommendations.push(`${data.transferStatus.overall.pending} transfers pending review`);
-    }
-
-    // Draft recommendations
-    if (data.draftStatus.isActive) {
-        recommendations.push(`Draft is active in ${data.draftStatus.currentDivisionId} - sync to Firebase if needed`);
+    if (transferStatus.overall.pending > 0) {
+        issues.push(`${transferStatus.overall.pending} transfers pending review`);
+        recommendations.push('Approve / Reject transfers');
     }
 
     // Gameweek processing recommendations
-    if (!data.gameweekProcessingStatus.isUpToDate) {
-        const pendingCount = data.gameweekProcessingStatus.pendingGameweeks.length;
+    if (!gameweekProcessingStatus.isUpToDate) {
+        const pendingCount = gameweekProcessingStatus.pendingGameweeks.length;
+        issues.push('GameWeek data is out of date');
         recommendations.push(`${pendingCount} gameweek${pendingCount === 1 ? '' : 's'} need processing`);
-    }
-
-    // Firebase recommendations
-    if (data.firebaseHealth.status === 'critical') {
-        recommendations.push('Check Firebase connection and permissions');
-    }
-
-    // Google Sheets recommendations
-    if (data.googleSheetsHealth.status === 'critical') {
-        recommendations.push('Check Google Sheets API connection and permissions');
     }
 
     return recommendations;

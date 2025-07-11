@@ -2,33 +2,23 @@
 
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
+import { FirestoreClearService } from '../../../_shared/lib/firestore-cache/clear-service';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
+import { FplFirestore } from '../../../_shared/lib/fpl/fpl-firestore';
 import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import type { DraftAction } from '../../../draft/types/draft-types';
 import type { DivisionId } from '../../../teams/types/team-types';
 import type { AdminDataContext, GameweekStatusSummary } from '../../types/admin-orchestrator-types';
+import type { AdminActionResult } from '../../types/admin-types';
+import { handleForceRegenerateAllPoints, handleGenerateGameweekPoints } from '../actions/points-actions';
 import { getSystemStatus } from './system-status.service';
 
-interface SmartUpdateResult {
-    success: boolean;
-    message: string;
-    actionsPerformed: string[];
-    errors: string[];
-}
-
+const firestore = new FplFirestore();
+const clearService = new FirestoreClearService();
 interface DraftResult {
     success: boolean;
     message: string;
     data?: any;
-}
-
-interface GameweekResult {
-    success: boolean;
-    message: string;
-    gameweek: number;
-    transfersProcessed: number;
-    pointsCalculated: number;
-    standingsUpdated: boolean;
 }
 
 /**
@@ -66,105 +56,51 @@ export class AdminOrchestrator {
     }
 
     /**
-     * Execute smart update - analyzes system and performs needed actions
-     */
-    async executeSmartUpdate(): Promise<SmartUpdateResult> {
-        try {
-            console.log('🔄 AdminOrchestrator.executeSmartUpdate() - Starting smart update');
-
-            // Use system-status service to determine what actions are needed
-            const systemStatus = await getSystemStatus();
-            const actions = this.determineSmartActions(systemStatus);
-
-            if (actions.length === 0) {
-                return {
-                    success: true,
-                    message: 'System is healthy - no actions needed',
-                    actionsPerformed: [],
-                    errors: [],
-                };
-            }
-
-            // Execute the recommended actions
-            const executedActions = [];
-            const errors = [];
-
-            for (const action of actions) {
-                try {
-                    console.log(`🔄 Executing smart action: ${action}`);
-
-                    // Execute action based on type
-                    const result = await this.executeSmartAction(action);
-
-                    if (result.success) {
-                        executedActions.push(action);
-                    } else {
-                        errors.push(`${action}: ${result.message}`);
-                    }
-
-                    // Invalidate relevant caches after each action
-                    this.invalidateCachesForAction(action);
-                } catch (error) {
-                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                    errors.push(`${action}: ${errorMessage}`);
-                    console.error(`❌ Smart action ${action} failed:`, error);
-                }
-            }
-
-            return {
-                success: errors.length === 0,
-                message: `Smart update completed - ${executedActions.length} actions executed, ${errors.length} errors`,
-                actionsPerformed: executedActions,
-                errors,
-            };
-        } catch (error) {
-            console.error('❌ AdminOrchestrator.executeSmartUpdate() failed:', error);
-            return {
-                success: false,
-                message: error instanceof Error ? error.message : 'Smart update failed',
-                actionsPerformed: [],
-                errors: [error instanceof Error ? error.message : 'Unknown error'],
-            };
-        }
-    }
-
-    /**
      * Process gameweek
      */
-    async processGameweek(params: { gameweek: number; fplData: any; sheetData: any }): Promise<GameweekResult> {
+    async processGameweek(params: { type: string; gameweek: number }): Promise<AdminActionResult> {
         try {
             console.log(`🔄 AdminOrchestrator.processGameweek(${params.gameweek})`);
+            const contextData = await this.getSharedContext();
+            const systemStatus = await this.getSystemStatus();
 
-            const { GameweekProcessingService } = await import('./gameweek-processing.service');
-            const processingService = new GameweekProcessingService();
-            const systemStatus = await getSystemStatus();
+            switch (params.type) {
+                case 'gameweek': {
+                    const result = await handleGenerateGameweekPoints({
+                        contextData,
+                        systemStatus,
+                        gameweek: params.gameweek,
+                    });
+                    this.invalidateCachesForAction('processGameweek');
 
-            const result = await processingService.processGameweekAtomically({
-                gameweek: params.gameweek,
-                fplData: params.fplData,
-                sheetData: params.sheetData,
-                transferStatus: systemStatus.transfers,
-            });
+                    return result;
+                }
+                case 'all': {
+                    const result = await handleForceRegenerateAllPoints({
+                        contextData,
+                        systemStatus,
+                    });
+                    this.invalidateCachesForAction('processGameweek');
 
-            // Invalidate caches after gameweek processing
-            this.invalidateCachesForAction('processGameweek');
-
-            return {
-                success: true,
-                message: `Gameweek ${params.gameweek} processed successfully`,
-                gameweek: params.gameweek,
-                transfersProcessed: result.transfersProcessed,
-                pointsCalculated: result.pointsCalculated,
-                standingsUpdated: result.standingsUpdated,
-            };
+                    return result;
+                }
+                default: {
+                    return {
+                        success: false,
+                        message: 'Gameweek processing failed',
+                    };
+                }
+            }
         } catch (error) {
             return {
                 success: false,
                 message: error instanceof Error ? error.message : 'Gameweek processing failed',
-                gameweek: params.gameweek,
-                transfersProcessed: 0,
-                pointsCalculated: 0,
-                standingsUpdated: false,
+                data: {
+                    gameweek: params.gameweek,
+                    transfersProcessed: 0,
+                    pointsCalculated: 0,
+                    standingsUpdated: false,
+                },
             };
         }
     }
@@ -187,11 +123,13 @@ export class AdminOrchestrator {
                     break;
                 case 'startDraft':
                     result = await draftService.startDraft(params.divisionId);
+                    this.invalidateCachesForAction('processDraft');
                     break;
                 case 'stopDraft':
                     result = await draftService.stopDraft();
+                    this.invalidateCachesForAction('processDraft');
                     break;
-                case 'sync':
+                case 'syncDraft':
                     result = await draftService.syncDraft(params.divisionId);
                     break;
                 case 'commitTeamsToFirestore':
@@ -199,6 +137,7 @@ export class AdminOrchestrator {
                     break;
                 case 'reset':
                     result = await draftService.resetDraft(params.divisionId);
+                    this.invalidateCachesForAction('processDraft');
                     break;
                 default:
                     throw new Error(`Unknown draft action: ${params.type}`);
@@ -220,77 +159,6 @@ export class AdminOrchestrator {
         }
     }
 
-    // ================================
-    // PRIVATE HELPER METHODS
-    // ================================
-
-    /**
-     * Determine what smart actions are needed based on system status
-     */
-    private determineSmartActions(systemStatus: any): string[] {
-        const actions = [];
-
-        // FPL Cache actions
-        if (systemStatus.systemHealth.fplCache.status === 'critical') {
-            actions.push('populateBootstrapData');
-        } else if (systemStatus.systemHealth.fplCache.status === 'warning') {
-            actions.push('generateEnhancedData');
-        }
-
-        // Transfer actions
-        if (systemStatus.transfers.pending > 0) {
-            actions.push('processTransfers');
-        }
-
-        // Gameweek actions
-        if (!systemStatus.gameweekProcessing.isUpToDate) {
-            actions.push('updateGameweekPoints');
-        }
-
-        return actions;
-    }
-
-    /**
-     * Execute a specific smart action
-     */
-    private async executeSmartAction(action: string): Promise<{ success: boolean; message: string }> {
-        try {
-            switch (action) {
-                case 'populateBootstrapData': {
-                    const { handlePopulateBootstrapData } = await import('../actions/data-actions');
-                    return await handlePopulateBootstrapData();
-                }
-
-                case 'generateEnhancedData': {
-                    const { handleGenerateEnhancedData } = await import('../actions/data-actions');
-                    return await handleGenerateEnhancedData();
-                }
-
-                // case 'processTransfers': {
-                //     const { handleProcessTransfers } = await import('../actions/transfer-actions');
-                //     return await handleProcessTransfers();
-                // }
-
-                case 'updateGameweekPoints': {
-                    const { handleGenerateGameweekPoints } = await import('../actions/points-actions');
-                    return await handleGenerateGameweekPoints();
-                }
-
-                default: {
-                    return {
-                        success: false,
-                        message: `Unknown smart action: ${action}`,
-                    };
-                }
-            }
-        } catch (error) {
-            return {
-                success: false,
-                message: error instanceof Error ? error.message : 'Action execution failed',
-            };
-        }
-    }
-
     /**
      * Invalidate relevant caches after actions
      */
@@ -298,8 +166,7 @@ export class AdminOrchestrator {
         const cacheKeysToInvalidate = [];
 
         switch (action) {
-            case 'populateBootstrapData':
-            case 'generateEnhancedData': {
+            case 'populateBootstrapData': {
                 cacheKeysToInvalidate.push(CACHE_KEYS.FPL.PLAYERS, CACHE_KEYS.FPL.TEAMS, CACHE_KEYS.FPL.EVENTS);
                 break;
             }
@@ -323,8 +190,6 @@ export class AdminOrchestrator {
             }
 
             default: {
-                // Invalidate admin context for any action
-                // cacheKeysToInvalidate.push(CACHE_KEYS.ADMIN.CONTEXT);
                 break;
             }
         }
@@ -332,9 +197,8 @@ export class AdminOrchestrator {
         // Invalidate the cache keys
         for (const key of cacheKeysToInvalidate) {
             if (key.includes('*')) {
-                // Handle pattern invalidation if needed
                 console.log(`🗑️ Cache pattern invalidation needed: ${key}`);
-                // TODO: Implement pattern invalidation in DataCacheService if needed
+                dataCache.invalidatePattern(key);
             } else {
                 dataCache.invalidate(key);
                 console.log(`🗑️ Cache invalidated: ${key}`);
@@ -414,27 +278,7 @@ export class AdminOrchestrator {
     private async loadCacheStatus() {
         try {
             const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-            const cacheHealth = await fplApiCache.getCacheHealth();
-
-            // Map FPL cache health status to AdminDataContext expected types
-            let healthStatus: 'healthy' | 'warning' | 'unknown' | 'unhealthy';
-            const overallHealth = cacheHealth.health?.overall;
-
-            if (overallHealth === 'healthy') {
-                healthStatus = 'healthy';
-            } else if (overallHealth === 'warning') {
-                healthStatus = 'warning';
-            } else if (overallHealth === 'critical') {
-                healthStatus = 'unhealthy'; // Map 'critical' to 'unhealthy'
-            } else {
-                healthStatus = 'unknown';
-            }
-
-            return {
-                health: healthStatus,
-                completionPercentage: cacheHealth.completionPercentage || 0,
-                lastUpdated: cacheHealth.lastUpdated || null,
-            };
+            return await fplApiCache.getCacheHealth();
         } catch (_error) {
             return {
                 health: 'unhealthy' as const, // Use 'unhealthy' instead of 'critical'
@@ -472,7 +316,7 @@ export class AdminOrchestrator {
             console.error('Failed to load gameweek status:', error);
             return {
                 currentGameweek: null,
-                lastProcessedGameweek: null,
+                lastProcessedGameweek: 0,
                 needsProcessing: false,
                 pendingGameweeks: [],
                 lastProcessedAt: null,
@@ -483,5 +327,15 @@ export class AdminOrchestrator {
 
     public getSystemStatus() {
         return getSystemStatus();
+    }
+
+    public async preloadCommonData() {
+        const result = await firestore.preloadCommonData();
+        this.invalidateCachesForAction('populateBootstrapData');
+        return result;
+    }
+
+    public async clearAllData() {
+        return await clearService.clearAllData();
     }
 }

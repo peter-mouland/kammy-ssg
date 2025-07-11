@@ -14,81 +14,86 @@ interface DraftCardProps {
 }
 
 type DraftVariant = 'generate' | 'start' | 'stop' | 'disabled';
+type DraftAction = 'generateOrder' | 'startDraft' | 'stopDraft' | 'commitTeamsToFirestore';
 
 interface DivisionStatus {
     status: string;
     color: string;
     disabled: boolean;
-    action?: string;
+    action?: DraftAction;
     variant: DraftVariant;
 }
+
+const getDivisionStatus = ({ teams, orders, draftState, draftStatus, division }: DraftCardProps): DivisionStatus => {
+    console.log({ draftState, draftStatus });
+    if (teams.length === 0) {
+        return { status: 'No Teams', color: '#6b7280', disabled: true, variant: 'disabled' };
+    } else if (orders.length === 0) {
+        // division order
+        return {
+            status: '🎲 Generate Order',
+            color: '#f59e0b',
+            disabled: false,
+            action: 'generateOrder',
+            variant: 'generate',
+        };
+    } else if (draftState?.isActive && draftState.currentDivisionId === division.id) {
+        return {
+            status: '🛑 Stop Draft',
+            color: '#ef4444',
+            disabled: false,
+            action: 'stopDraft',
+            variant: 'stop',
+        };
+    } else if (draftState?.isActive && draftState.currentDivisionId !== division.id) {
+        return {
+            status: '⚪️ Start Draft',
+            color: '#6b7280',
+            disabled: true,
+            variant: 'disabled',
+        };
+    } else if (!draftState?.completedAt && !draftState?.isActive) {
+        return {
+            status: '🟢️ Start Draft',
+            color: '#6b7280',
+            disabled: false,
+            action: 'startDraft',
+            variant: 'start',
+        };
+    } else if (!draftStatus?.byDivision?.[division.id].isCommitted) {
+        return {
+            status: '🟠️ Commit Draft',
+            color: '#6b7280',
+            disabled: false,
+            action: 'commitTeamsToFirestore',
+            variant: 'generate',
+        };
+    }
+    return {
+        status: 'Draft Complete',
+        color: '#10b981',
+        variant: 'disabled',
+        disabled: true,
+    };
+};
 
 export const DraftCard = ({ division, teams, orders, draftState, draftStatus }: DraftCardProps) => {
     const fetcher = useFetcher();
     const isLoading = fetcher.state === 'submitting';
-    console.log({ draftState, draftStatus });
     const handleAction = (action: string) => {
-        fetcher.submit(
-            { actionType: 'processDraft', draftAction: action, divisionId: division.id },
-            { method: 'post' },
-        );
+        const formData = new FormData();
+        formData.append('actionType', 'processDraft');
+        formData.append('draftAction', action);
+        formData.append('divisionId', division.id);
+
+        fetcher.submit(formData, {
+            method: 'POST',
+            action: '/admin', // Submit to parent route
+        });
     };
 
     const isActive = !!(draftState?.isActive && draftState.currentDivisionId === division.id);
-
-    const getDivisionStatus = (): DivisionStatus => {
-        if (teams.length === 0) {
-            return { status: 'No Teams', color: '#6b7280', disabled: true, variant: 'disabled' };
-        } else if (orders.length === 0) {
-            return {
-                status: '🎲 Generate Order',
-                color: '#f59e0b',
-                disabled: false,
-                action: 'generateOrder',
-                variant: 'generate',
-            };
-        } else if (isActive) {
-            return {
-                status: '🛑 Stop Draft',
-                color: '#ef4444',
-                disabled: false,
-                action: 'stopDraft',
-                variant: 'stop',
-            };
-        } else if (draftState?.isActive) {
-            return {
-                status: '⚪️ Start Draft',
-                color: '#6b7280',
-                disabled: true,
-                action: 'startDraft',
-                variant: 'disabled',
-            };
-        } else if (!draftState?.completedAt) {
-            return {
-                status: '⚪️ Start Draft',
-                color: '#6b7280',
-                disabled: true,
-                action: 'startDraft',
-                variant: 'disabled',
-            };
-        } else if (!draftStatus?.byDivision?.[division.id].isCommitted) {
-            return {
-                status: '🟠️ Commit Draft',
-                color: '#6b7280',
-                disabled: true,
-                action: 'commitTeamsToFirestore',
-                variant: 'generate',
-            };
-        }
-        return {
-            status: 'Draft Complete',
-            color: '#10b981',
-            variant: 'disabled',
-            disabled: true,
-        };
-    };
-
-    const divisionStatus = getDivisionStatus();
+    const divisionStatus = getDivisionStatus({ division, teams, orders, draftState, draftStatus });
 
     return (
         <div className={`${styles.divisionCard} ${isActive ? styles.active : ''}`}>

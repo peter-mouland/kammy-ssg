@@ -5,19 +5,6 @@ import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types
 import { getTransfersDataForDivision } from '../../transfers/server/services/transfers-data.service';
 import type { TransferAdminOverviewData, TransferRecommendation } from '../../transfers/types/transfer-rule-types';
 
-/**
- * Action types for transfers admin
- */
-type TransfersActionType = 'refreshTransfers' | 'approveTransfer' | 'rejectTransfer';
-
-interface TransfersActionParams {
-    actionType: TransfersActionType;
-    divisionId?: DivisionId;
-    transferId?: string;
-    recommendation?: TransferRecommendation;
-    rules?: any[];
-}
-
 interface TransfersActionResult {
     success: boolean;
     error?: string;
@@ -70,78 +57,6 @@ export async function getTransfersAdminData(
 
     console.log(`✅ Loaded transfers data for ${Object.keys(transfersData).length} divisions`);
     return transfersData;
-}
-
-/**
- * Handle transfers admin actions
- */
-export async function handleTransfersActions(params: TransfersActionParams): Promise<TransfersActionResult> {
-    const { actionType, divisionId = 'leagueOne', transferId } = params;
-
-    console.log(`🎯 Handling transfers action: ${actionType} for division: ${divisionId}`);
-
-    try {
-        switch (actionType) {
-            case 'refreshTransfers':
-                return await handleRefreshTransfers(divisionId);
-
-            case 'approveTransfer':
-                if (!transferId) {
-                    return {
-                        success: false,
-                        error: 'Transfer ID is required for approval',
-                        message: 'Invalid transferId',
-                    };
-                }
-                return await handleApproveTransfer(divisionId, transferId, 'APPROVE');
-
-            case 'rejectTransfer':
-                if (!transferId) {
-                    return {
-                        success: false,
-                        error: 'Transfer ID is required for rejection',
-                        message: 'Invalid transferId',
-                    };
-                }
-                return await handleRejectTransfer(divisionId, transferId, 'REJECT');
-
-            default:
-                return {
-                    success: false,
-                    error: `Unknown action type: ${actionType}`,
-                    message: 'Invalid action type',
-                };
-        }
-    } catch (error) {
-        console.error(`❌ Error handling transfers action ${actionType}:`, error);
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
-            message: `Failed to ${actionType}`,
-        };
-    }
-}
-
-/**
- * Refresh transfers data from Google Sheets
- */
-async function handleRefreshTransfers(divisionId: DivisionId): Promise<TransfersActionResult> {
-    try {
-        // This would invalidate cache and reload from sheets
-        // For now, just return success
-        console.log(`🔄 Refreshing transfers data for division: ${divisionId}`);
-
-        return {
-            success: true,
-            message: `Transfers data refreshed for division ${divisionId}`,
-            data: {
-                divisionId,
-                refreshedAt: new Date().toISOString(),
-            },
-        };
-    } catch (error) {
-        throw new Error(`Failed to refresh transfers: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
 }
 
 /**

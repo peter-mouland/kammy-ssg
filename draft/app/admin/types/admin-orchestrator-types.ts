@@ -1,6 +1,6 @@
 // app/admin/types/admin-orchestrator-types.ts
 
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
@@ -30,7 +30,7 @@ export interface TransferStatusSummary {
 
 export interface GameweekStatusSummary {
     currentGameweek: GameWeekData;
-    lastProcessedGameweek: number | null;
+    lastProcessedGameweek: number;
     needsProcessing: boolean;
     pendingGameweeks: number[];
     lastProcessedAt: null;
@@ -110,8 +110,8 @@ export interface AdminDataContext {
 
 export interface FplDataContext {
     players: EnhancedPlayerData[];
-    teams: any[];
-    events: any[];
+    teams: FplTeam[];
+    events: GameWeekData[];
     currentGameweek: number;
 }
 

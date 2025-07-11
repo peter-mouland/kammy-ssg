@@ -67,6 +67,7 @@ export async function handleCommitTeamsToFirestore(
                     teamPosition: pick.position, // Will be recalculated in conversion
                     isSub: false, // Will be determined by position availability
                     onLoanTo: null,
+                    onLoanFrom: null,
                     onLoanStart: null,
                     gameweek: 0, // Draft is gameweek 0
                 };

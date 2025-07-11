@@ -77,50 +77,6 @@ export const SettingsSection = () => {
                 </div>
             </AdminSection>
 
-            <AdminSection title="Cache Actions" icon={<Icons.SettingsIcon />} collapsible={false} expanded={true}>
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => onExecuteAction('refreshCache')}
-                    disabled={isLoading}
-                >
-                    <Icons.RefreshIcon />
-                    Refresh Admin Cache
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.warning}`}
-                    onClick={() => onExecuteAction('clearCache')}
-                    disabled={isLoading}
-                >
-                    <Icons.AlertIcon />
-                    Clear All Cache
-                </button>
-
-                <h3 className={styles.sectionTitle}>Debug Actions</h3>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => window.open('/api/cache?action=status', '_blank')}
-                    disabled={isLoading}
-                >
-                    <Icons.FileIcon />
-                    View Cache Statistics
-                </button>
-
-                <button
-                    type="button"
-                    className={`${styles.actionButton} ${styles.secondary}`}
-                    onClick={() => window.open('/api/cache?action=keys', '_blank')}
-                    disabled={isLoading}
-                >
-                    <Icons.DatabaseIcon />
-                    View All Cache Keys
-                </button>
-            </AdminSection>
-
             <AdminSection
                 title="Manual Database Clearing"
                 icon={<Icons.TrashIcon />}

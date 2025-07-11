@@ -64,7 +64,13 @@ export interface DraftStateData {
     completedAt: Date | null;
 }
 
-export type DraftAction = 'generateOrder' | 'startDraft' | 'stopDraft' | 'sync' | 'commitTeamsToFirestore' | 'reset';
+export type DraftAction =
+    | 'generateOrder'
+    | 'startDraft'
+    | 'stopDraft'
+    | 'syncDraft'
+    | 'commitTeamsToFirestore'
+    | 'reset';
 
 export interface DraftStatusData {
     stage: 'order' | 'running' | 'commit' | 'complete' | 'stop' | 'start';

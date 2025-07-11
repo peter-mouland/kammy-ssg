@@ -181,11 +181,21 @@ export class DataCacheService {
     /**
      * Clear all cache entries
      */
-    clear(): void {
+    clear(reason?: string) {
         const size = this.cache.size;
         this.cache.clear();
         this.pendingPromises.clear();
         console.log(`🧹 CACHE CLEARED: ${size} entries removed`);
+
+        return {
+            success: true,
+            message: 'All cache cleared',
+            data: {
+                clearedAt: new Date().toISOString(),
+                reason,
+                stats: dataCache.getStats(),
+            },
+        };
     }
 
     /**

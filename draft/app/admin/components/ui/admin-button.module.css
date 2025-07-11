@@ -1,0 +1,99 @@
+/* Location: app/admin/components/ui/admin-button.module.css */
+
+.actionButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    white-space: nowrap;
+    min-height: 44px;
+    text-decoration: none;
+}
+
+.actionButton:hover:not(.disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.actionButton:active:not(.disabled) {
+    transform: translateY(0);
+}
+
+.actionButton svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+/* Primary variant */
+.actionButton.primary {
+    background: var(--color-primary, #4299e1);
+    color: var(--color-white, white);
+}
+
+.actionButton.primary:hover:not(.disabled) {
+    background: var(--color-primary-hover, #3182ce);
+}
+
+/* Secondary variant */
+.actionButton.secondary {
+    background: var(--color-gray-100, #edf2f7);
+    color: var(--color-gray-700, #4a5568);
+    border: 1px solid var(--color-gray-300, #d1d5db);
+}
+
+.actionButton.secondary:hover:not(.disabled) {
+    background: var(--color-gray-200, #e2e8f0);
+    border-color: var(--color-gray-400, #9ca3af);
+}
+
+/* Danger variant */
+.actionButton.danger {
+    background: var(--color-red-500, #ef4444);
+    color: var(--color-white, white);
+}
+
+.actionButton.danger:hover:not(.disabled) {
+    background: var(--color-red-600, #dc2626);
+}
+
+/* Disabled state */
+.actionButton.disabled {
+    background: var(--color-gray-200, #e5e7eb);
+    color: var(--color-gray-500, #6b7280);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    border-color: var(--color-gray-200, #e5e7eb);
+}
+
+.actionButton.disabled:hover {
+    background: var(--color-gray-200, #e5e7eb);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Loading animation */
+.actionButton svg {
+    animation: none;
+}
+
+.actionButton.disabled svg {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

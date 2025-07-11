@@ -1,8 +1,8 @@
 /* Location: app/_shared/lib/firestore-cache/firestore-client.ts */
 /** biome-ignore-all lint/style/useNamingConvention: <i likey> */
 
-// src/lib/firestore-cache/firestore-client.ts
-import { getFirestoreInstance } from './firebase.admin'; // Your firebase config
+import { processBatchedReads } from '../batch-processor';
+import { getFirestoreInstance } from './firebase.admin';
 import type { CacheDocument } from './types';
 
 export class FirestoreClient {
@@ -70,18 +70,21 @@ export class FirestoreClient {
     ): Promise<Array<(CacheDocument & { data: TData }) | null>> {
         if (docIds.length === 0) return [];
 
-        // Admin SDK doesn't have the same batch read limitations as client SDK
-        // But we'll still chunk for performance
-        const chunks = this.chunkArray(docIds, 10);
-        const results: Array<(CacheDocument & { data: TData }) | null> = [];
+        return await processBatchedReads(
+            docIds,
+            async (batch: string[]) => {
+                const docRefs = batch.map((id) => this.db.collection(collectionName).doc(id));
+                const snapshots = await this.db.getAll(...docRefs);
 
-        for (const chunk of chunks) {
-            const promises = chunk.map((id) => this.getDocument<TData>(collectionName, id));
-            const chunkResults = await Promise.all(promises);
-            results.push(...chunkResults);
-        }
-
-        return results;
+                return snapshots.map((snapshot) =>
+                    snapshot.exists ? (snapshot.data() as CacheDocument & { data: TData }) : null,
+                );
+            },
+            {
+                batchSize: 100, // Matches Firestore's getAll() limit
+                logProgress: false, // Keep it quiet for internal operations
+            },
+        );
     }
 
     async batchWrite(
@@ -92,25 +95,37 @@ export class FirestoreClient {
             operation: 'set' | 'update';
         }>,
     ): Promise<void> {
-        const batch = this.db.batch();
-        const timestamp = new Date().toISOString();
+        if (operations.length === 0) return;
 
-        operations.forEach(({ collection: collectionName, docId, data, operation }) => {
-            const docRef = this.db.collection(collectionName).doc(docId);
-            const documentData: CacheDocument = {
-                ...data,
-                id: docId,
-                lastUpdated: timestamp,
-            };
+        await processBatchedReads(
+            operations,
+            async (operationBatch) => {
+                const batch = this.db.batch();
+                const timestamp = new Date().toISOString();
 
-            if (operation === 'set') {
-                batch.set(docRef, documentData);
-            } else {
-                batch.update(docRef, documentData);
-            }
-        });
+                operationBatch.forEach(({ collection: collectionName, docId, data, operation }) => {
+                    const docRef = this.db.collection(collectionName).doc(docId);
+                    const documentData: CacheDocument = {
+                        ...data,
+                        id: docId,
+                        lastUpdated: timestamp,
+                    };
 
-        await batch.commit();
+                    if (operation === 'set') {
+                        batch.set(docRef, documentData);
+                    } else {
+                        batch.update(docRef, documentData);
+                    }
+                });
+
+                await batch.commit();
+                return []; // processBatchedReads expects a return value
+            },
+            {
+                batchSize: 500, // Firestore's batch write limit
+                logProgress: operations.length > 500, // Only log for large operations
+            },
+        );
     }
 
     async queryDocuments<TData = unknown>(
@@ -125,14 +140,6 @@ export class FirestoreClient {
 
         const querySnapshot = await query.get();
         return querySnapshot.docs.map((doc) => doc.data() as CacheDocument & { data: TData });
-    }
-
-    private chunkArray<T>(array: T[], size: number): T[][] {
-        const chunks: T[][] = [];
-        for (let i = 0; i < array.length; i += size) {
-            chunks.push(array.slice(i, i + size));
-        }
-        return chunks;
     }
 
     // Collection getters for type safety

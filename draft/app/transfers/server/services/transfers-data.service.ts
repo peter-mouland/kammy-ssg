@@ -21,7 +21,7 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
         ]);
 
         // Validate gameweek data structure and extract ID safely
-        const gameweekId = gameweek.fplEvent.id;
+        const gameweekId = gameweek?.fplEvent.id || 0;
 
         console.log(`🔄 Getting transfers data for ${divisionId} GW${gameweekId}`);
 

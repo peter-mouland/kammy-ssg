@@ -1,29 +1,20 @@
 /* Location: app/admin/admin-overview.route.tsx */
 
 import { useState } from 'react';
-import { type ActionFunctionArgs, type LoaderFunctionArgs, useLoaderData } from 'react-router';
+import { useOutletContext } from 'react-router';
 import { OverviewSection } from './components/sections/overview-section';
+import type { AdminDataContext } from './types/admin-orchestrator-types';
+import type { SystemStatusSummary } from './types/admin-types';
 
-/**
- * Load admin system status using the unified AdminOrchestrator
- */
-export async function loader({ request }: LoaderFunctionArgs) {
-    // Use the updated AdminOrchestrator which now delegates to system-status.service.ts
-    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
-    const orchestrator = new AdminOrchestrator();
-    const systemStatus = await orchestrator.getSystemStatus();
-    const sharedContext = await orchestrator.getSharedContext();
-
-    return {
-        sharedContext,
-        systemStatus,
-    };
+interface AdminOutletContext {
+    systemStatus: SystemStatusSummary;
+    sharedContext: AdminDataContext;
+    transfersData: Record<string, any> | null;
+    loadedAt: string;
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {}
-
 export default function AdminOverviewRoute() {
-    const { systemStatus, sharedContext } = useLoaderData();
+    const { systemStatus, sharedContext } = useOutletContext<AdminOutletContext>();
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
     const toggleSection = (section: string): void => {

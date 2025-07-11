@@ -7,7 +7,7 @@ import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
 import { DraftCard } from '../ui/draft-card';
-import { FirebaseSyncSection } from './firebase-sync-section';
+import { DraftSyncSection } from './draft-sync-section';
 
 interface DraftSectionProps {
     divisions: AdminDashboardData['divisions'];
@@ -49,7 +49,7 @@ export const DraftSection = ({ divisions, draftOrders, managers, draftState, dra
                 icon={<Icons.SyncIcon />}
                 description="If the GSheet was manually changed (e.g. a drafted player remove), we will need to sync"
             >
-                <FirebaseSyncSection />
+                <DraftSyncSection draftState={draftState} />
             </AdminSection>
         </AdminContainer>
     );

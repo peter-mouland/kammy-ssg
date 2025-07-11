@@ -121,7 +121,9 @@ export class FplApiCache {
      */
     async getCurrentGameweekData(): Promise<GameWeekData> {
         const events = await this.getFplEvents();
-        return events.find((event) => event.fplEvent.is_current) || events[events.length - 1];
+        return (
+            events.find((event) => event.fplEvent.is_current) || events[events.length - 1] || { fplEvent: { id: 0 } }
+        );
     }
 
     /**
@@ -129,7 +131,7 @@ export class FplApiCache {
      */
     async getCurrentGameweek(): Promise<number> {
         const event = await this.getCurrentGameweekData();
-        return event.fplEvent.id;
+        return event?.fplEvent.id || 0;
     }
 
     /**
@@ -203,43 +205,22 @@ export class FplApiCache {
         return await dataCache.get(
             'fpl:cache-health',
             async () => {
-                const status = await this.getCacheStatus();
-
-                const health = {
-                    overall: 'healthy' as 'healthy' | 'warning' | 'critical',
-                    issues: [] as string[],
-                    recommendations: [] as string[],
-                };
+                const data = await this.getCacheStatus();
+                let status = 'health' as 'healthy' | 'warning' | 'critical';
 
                 // Check for critical issues
-                if (status.missing.elements) {
-                    health.overall = 'critical';
-                    health.issues.push('No player data (elements) found');
-                    health.recommendations.push('Run "Populate Bootstrap Data" to fetch basic player data');
-                }
-
-                if (status.missing.teams || status.missing.events) {
-                    health.overall = 'critical';
-                    health.issues.push('Missing core FPL data (teams/events)');
-                    health.recommendations.push('Run "Populate Bootstrap Data" to fetch core FPL data');
-                }
+                if (data.missing.elements) status = 'critical';
+                if (data.missing.teams || data.missing.events) status = 'critical';
 
                 // Check for warnings
-                if (status.missing.draftData && status.counts.elements > 0) {
-                    if (health.overall !== 'critical') health.overall = 'warning';
-                    health.issues.push('Player data missing draft calculations');
-                    health.recommendations.push('Run "Generate Enhanced Data" to add draft scoring');
-                }
-
-                if (status.missing.elementDetailedStats && status.counts.elements > 0) {
-                    if (health.overall !== 'critical') health.overall = 'warning';
-                    health.issues.push('Missing detailed player statistics');
-                    health.recommendations.push('Run "Populate Element Summaries" for detailed stats');
+                if (status !== 'critical') {
+                    if (data.missing.draftData && data.counts.elements > 0) status = 'warning';
+                    if (data.missing.elementDetailedStats && data.counts.elements > 0) status = 'warning';
                 }
 
                 return {
-                    ...status,
-                    health,
+                    status: status,
+                    data: data,
                 };
             },
             { ttlMs: getCacheTTL('fpl:cache-health') },
