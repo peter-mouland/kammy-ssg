@@ -80,11 +80,11 @@ export function isGameweekComplete(
 // Helper function to determine if a stat is relevant for a position
 export const isStatRelevant = (stat: string, position: string): boolean => {
     switch (stat) {
-        case 'clean_sheets':
+        case 'cleanSheets':
             return ['gk', 'cb', 'fb', 'mid'].includes(position.toLowerCase());
-        case 'goals_conceded':
+        case 'goalsConceded':
             return ['gk', 'cb', 'fb'].includes(position.toLowerCase());
-        case 'penalties_saved':
+        case 'penaltiesSaved':
             return position.toLowerCase() === 'gk';
         case 'saves':
             return position.toLowerCase() === 'gk';

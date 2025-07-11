@@ -62,7 +62,7 @@ async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekP
             const gameweekPoints = new Map<string, number>(); // we need an ordered object
             playerGameweekData.forEach((historyEntry: any, _index: number) => {
                 const singleGameStats = convertToPlayerGameweekStats(historyEntry);
-                const gameweekPointsBreakdown = calculateGameweekPoints(singleGameStats, position);
+                const gameweekPointsBreakdown = calculateGameweekPoints([singleGameStats], position);
                 let colKey = `gw-${historyEntry.round}`;
                 if (gameweekPoints.has(colKey)) colKey += '-b';
                 gameweekPoints.set(colKey, gameweekPointsBreakdown.total);

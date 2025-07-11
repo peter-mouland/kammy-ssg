@@ -52,7 +52,7 @@ export const POSITION_RULES: PositionRules = {
         savesThreshold: 2,
         savesRatio: 3, // 1 point per 3 saves after threshold
         penaltiesSaved: 5,
-        goalsConcededPenalty: -1, // per 2 goals,
+        goalsConcededPenalty: -1, // <=1 goal conceded : 0 points // 2nd goal conceded : -1 points etc...
         yellowCard: -1,
         redCardPenalty: -3,
         appearance: {
@@ -64,7 +64,7 @@ export const POSITION_RULES: PositionRules = {
         goalPoints: 8,
         assists: 3,
         cleanSheetPoints: 5,
-        goalsConcededPenalty: -1, // per 2 goals,
+        goalsConcededPenalty: -1, // <=1 goal conceded : 0 points // 2nd goal conceded : -1 points etc...
         yellowCard: -1,
         redCardPenalty: -3,
         appearance: {
@@ -76,7 +76,7 @@ export const POSITION_RULES: PositionRules = {
         goalPoints: 8,
         assists: 3,
         cleanSheetPoints: 5,
-        goalsConcededPenalty: -1, // per 2 goals,
+        goalsConcededPenalty: -1, // <=1 goal conceded : 0 points // 2nd goal conceded : -1 points etc...
         yellowCard: -1,
         redCardPenalty: -3,
         bonus: 1,

@@ -14,7 +14,6 @@ export const PlayerPage = () => {
 
     const playerName = `${player.first_name} ${player.second_name}`;
     const positionColor = getPositionColor(position);
-
     return (
         <div className={styles.playerDetailContainer}>
             {/* Navigation */}
@@ -26,7 +25,11 @@ export const PlayerPage = () => {
 
             {/* Player Header */}
             <PageHeader
-                title={playerName}
+                title={
+                    <Link target={'_blank'} to={`https://fantasy.premierleague.com/api/element-summary/${player.id}/`}>
+                        {playerName}
+                    </Link>
+                }
                 subTitle={
                     <div className={styles.playerMeta}>
                         <span className={styles.position} style={{ backgroundColor: positionColor }}>

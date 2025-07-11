@@ -9,10 +9,16 @@ import { dataCache } from '../cache/data-cache.service';
 import { FplFirestore } from './fpl-firestore';
 import type { FplPlayerSeasonData, GameWeekData } from './fpl-types';
 
+interface Doc<T> {
+    lastUpdated: string;
+    source?: string;
+    data: T;
+}
+
 /**
- * Updated FPL Data Orchestrator - Uses DataCacheService
- * Removes custom caching logic, keeps promise deduplication for performance
- * All caching is now handled by the unified DataCacheService
+ * Updated FPL Data Orchestrator - Uses Individual Player Caching
+ * Fixes cache key explosion by caching individual players instead of batches
+ * Maintains performance with smart batching for cache misses
  */
 export class FplApiCache {
     fplFirestore: FplFirestore;
@@ -110,6 +116,16 @@ export class FplApiCache {
     /**
      * Get specific players by IDs (from cached elements)
      */
+    async getPlayerByCode(playerCode: number): Promise<EnhancedPlayerData> {
+        const elements = await this.getFplPlayers();
+        if (!elements) return null;
+
+        return elements.find((player) => player.code === playerCode);
+    }
+
+    /**
+     * Get specific players by IDs (from cached elements)
+     */
     async getPlayersByCode(): Promise<Record<EnhancedPlayerData['code'], EnhancedPlayerData>> {
         const elements = await this.getFplPlayers();
         if (!elements) return {};
@@ -127,7 +143,17 @@ export class FplApiCache {
     }
 
     /**
-     * Get current gameweek from cached events
+     * Get finished events using unified cache
+     */
+    async getFinishedEvents(): Promise<GameWeekData[]> {
+        const events = await this.getFplEvents();
+        if (!events) return [];
+
+        return events.filter((event) => event.fplEvent.finished);
+    }
+
+    /**
+     * Get current gameweek number from cached events
      */
     async getCurrentGameweek(): Promise<number> {
         const event = await this.getCurrentGameweekData();
@@ -159,9 +185,10 @@ export class FplApiCache {
     // === DETAILED STATS ORCHESTRATION ===
 
     /**
-     * Get detailed stats for a single player using unified cache
+     * Get detailed stats for a single player using individual cache
      */
-    async getPlayerDetailedStats(playerId: number) {
+
+    async getPlayerDetailedStats(playerId: number): Promise<Doc<FplPlayerSeasonData | null>> {
         const cacheKey = CACHE_KEYS.FPL.PLAYER_STATS(playerId.toString());
 
         return await dataCache.get(
@@ -176,24 +203,71 @@ export class FplApiCache {
     }
 
     /**
-     * Get batch player detailed stats using unified cache
+     * Get batch player detailed stats using individual caching with smart batching
+     * NEW APPROACH: Check individual caches first, batch fetch only cache misses
      */
     async getBatchPlayerDetailedStats(playerIds: number[]): Promise<Record<number, FplPlayerSeasonData>> {
-        const sortedIds = [...playerIds].sort();
-        const cacheKey = CACHE_KEYS.FPL.BATCH_PLAYER_STATS(sortedIds.map(String));
+        console.log(`🔄 getBatchPlayerDetailedStats() - Processing ${playerIds.length} players`);
 
-        return await dataCache.get(
-            cacheKey,
-            async () => {
-                console.log(`🔄 getBatchPlayerDetailedStats() - Loading ${playerIds.length} players from Firestore`);
+        const results: Record<number, FplPlayerSeasonData> = {};
+        const cacheMisses: number[] = [];
 
-                const results = await this.fplFirestore.getPlayerDetailedStats(playerIds);
+        // Step 1: Check individual caches for each player
+        for (const playerId of playerIds) {
+            const cacheKey = CACHE_KEYS.FPL.PLAYER_STATS(playerId.toString());
 
-                console.log(`✅ Batch player stats loaded: ${Object.keys(results).length}/${playerIds.length} players`);
-                return results;
-            },
-            { ttlMs: getCacheTTL(cacheKey) },
-        );
+            // Check if data exists in cache and is not expired
+            if (dataCache.has(cacheKey)) {
+                const cached = dataCache.getCacheInfo(cacheKey);
+                if (cached.exists && !cached.expired) {
+                    // Get the cached data using the existing get method (will be a cache hit)
+                    const data = await dataCache.get(
+                        cacheKey,
+                        async () => {
+                            // This should not be called due to cache hit
+                            throw new Error('Unexpected cache miss');
+                        },
+                        { ttlMs: getCacheTTL(cacheKey) },
+                    );
+                    results[playerId] = data;
+                } else {
+                    cacheMisses.push(playerId);
+                }
+            } else {
+                cacheMisses.push(playerId);
+            }
+        }
+
+        console.log(`💾 Cache hits: ${Object.keys(results).length}/${playerIds.length} players`);
+
+        // Step 2: Batch fetch cache misses from Firestore
+        if (cacheMisses.length > 0) {
+            console.log(`🔄 Fetching ${cacheMisses.length} players from Firestore`);
+
+            try {
+                const firestoreResults = await this.fplFirestore.getBatchPlayerDetailedStats(cacheMisses);
+
+                // Step 3: Cache individual results and add to final results
+                for (const [playerIdStr, data] of Object.entries(firestoreResults)) {
+                    const playerId = Number.parseInt(playerIdStr, 10);
+                    const cacheKey = CACHE_KEYS.FPL.PLAYER_STATS(playerId.toString());
+
+                    // Cache individual player data using existing set method
+                    dataCache.set(cacheKey, data, getCacheTTL(cacheKey));
+
+                    // Add to results
+                    results[playerId] = data;
+                }
+
+                console.log(`✅ Cached ${Object.keys(firestoreResults).length} new players individually`);
+            } catch (error) {
+                console.error('❌ Failed to fetch cache misses:', error);
+                // Continue with partial results from cache hits
+            }
+        }
+
+        console.log(`✅ Batch player stats completed: ${Object.keys(results).length}/${playerIds.length} players`);
+        return results;
     }
 
     // === CACHE MANAGEMENT ===
@@ -206,7 +280,7 @@ export class FplApiCache {
             'fpl:cache-health',
             async () => {
                 const data = await this.getCacheStatus();
-                let status = 'health' as 'healthy' | 'warning' | 'critical';
+                let status = 'healthy' as 'healthy' | 'warning' | 'critical';
 
                 // Check for critical issues
                 if (data.missing.elements) status = 'critical';
@@ -245,8 +319,7 @@ export class FplApiCache {
         const hasDraftData = elements?.some((player) => player.draft) || false;
 
         return {
-            completionPercentage: elementsCount > 0 ? 100 : 0,
-            lastUpdated: this.fplFirestore.lastUpdated?.elements || null,
+            completionPercentage: elementsCount > 0 ? Math.round((elementDetailedStatsCount / elementsCount) * 100) : 0,
             counts: {
                 elements: elementsCount,
                 events: eventsCount,
@@ -257,7 +330,7 @@ export class FplApiCache {
                 elements: elementsCount === 0,
                 events: eventsCount === 0,
                 teams: teamsCount === 0,
-                elementDetailedStats: elementDetailedStatsCount === 0, // Would need to implement this check
+                elementDetailedStats: elementDetailedStatsCount === 0,
                 draftData: !hasDraftData,
             },
         };
@@ -272,6 +345,24 @@ export class FplApiCache {
     }
 
     /**
+     * Clear all FPL related caches
+     */
+    async clearFplCaches(): Promise<void> {
+        console.log('🗑️ Clearing all FPL caches');
+
+        // Clear main FPL data caches
+        dataCache.invalidate(CACHE_KEYS.FPL.PLAYERS);
+        dataCache.invalidate(CACHE_KEYS.FPL.TEAMS);
+        dataCache.invalidate(CACHE_KEYS.FPL.EVENTS);
+        dataCache.invalidate('fpl:cache-health');
+
+        // Clear all individual player stats caches
+        dataCache.invalidatePattern('fpl:player-stats:');
+
+        console.log('✅ FPL caches cleared');
+    }
+
+    /**
      * Invalidate specific cache
      */
     invalidateCache(cacheKey: string): void {
@@ -280,7 +371,7 @@ export class FplApiCache {
     }
 }
 
-// Export a singleton instance for easy use
+// Export singleton instance
 export const fplApiCache = new FplApiCache();
 
 // Export the class for testing or multiple instances

@@ -1,11 +1,10 @@
 /* Location: app/players/components/player-highlights.tsx */
 
-// app/components/player-highlights.tsx
-import { formatPointsDisplay } from '../../scoring/lib';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import styles from './player-highlights.module.css';
 
 interface PlayerHighlightsProps {
-    player: any;
+    player: EnhancedPlayerData;
     seasonTotals: any;
     currentGameweek: number;
     position: string;
@@ -21,7 +20,7 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
             <div className={styles.statsGrid}>
                 <StatCard
                     title="Custom Points"
-                    value={formatPointsDisplay(seasonTotals.totalCustomPoints)}
+                    value={player.draft?.pointsTotal}
                     subtitle={`Avg: ${seasonTotals.averageCustomPoints}/game`}
                     className={styles.customPoints}
                 />

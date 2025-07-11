@@ -102,8 +102,8 @@ export function Table<T = any>({
     rowClassName,
     actions,
     pagination,
-   getRowProps,
-   getCellProps,
+    getRowProps,
+    getCellProps,
     className = '',
     containerClassName = '',
 }: TableProps<T>) {
@@ -325,9 +325,12 @@ export function Table<T = any>({
                                             .join(' ');
 
                                         return (
-                                            <td key={column.key}
+                                            <td
+                                                key={column.key}
                                                 {...cellProps}
-                                                className={cellClasses}>
+                                                title={column.title?.(item, column, rowIndex)}
+                                                className={cellClasses}
+                                            >
                                                 {renderCell(item, column, rowIndex)}
                                             </td>
                                         );

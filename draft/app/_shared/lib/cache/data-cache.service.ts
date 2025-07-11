@@ -94,7 +94,8 @@ export class DataCacheService {
     }
 
     /**
-     * Set cache entry with TTL
+     * Set cache entry with TTL (overload for direct TTL)
+     * Extension to support direct TTL parameter for individual caching
      */
     set<T>(key: string, data: T, ttlMs: number): void {
         // Evict oldest entries if cache is full
@@ -247,6 +248,52 @@ export class DataCacheService {
         const entry = this.cache.get(key);
         if (!entry) return false;
         return Date.now() - entry.timestamp < entry.ttl;
+    }
+
+    /**
+     * Delete cache entry (alias for invalidate)
+     */
+    delete(key: string): boolean {
+        return this.invalidate(key);
+    }
+
+    /**
+     * Delete all cache entries matching a pattern
+     * Used for clearing individual player stats caches
+     */
+    deletePattern(pattern: string): number {
+        let deletedCount = 0;
+        const keys = Array.from(this.cache.keys());
+
+        for (const key of keys) {
+            if (this.matchesPattern(key, pattern)) {
+                this.cache.delete(key);
+                deletedCount++;
+            }
+        }
+
+        if (deletedCount > 0) {
+            console.log(`🗑️ CACHE PATTERN DELETE: ${pattern} (${deletedCount} entries)`);
+        }
+        return deletedCount;
+    }
+
+    /**
+     * Check if a key matches a pattern
+     * Supports patterns like 'fpl:player-stats:*' or 'fpl:player-stats:'
+     */
+    private matchesPattern(key: string, pattern: string): boolean {
+        if (pattern.endsWith('*')) {
+            const prefix = pattern.slice(0, -1);
+            return key.startsWith(prefix);
+        }
+
+        if (pattern.endsWith(':')) {
+            const prefix = pattern.slice(0, -1);
+            return key.startsWith(prefix);
+        }
+
+        return key === pattern;
     }
 
     /**

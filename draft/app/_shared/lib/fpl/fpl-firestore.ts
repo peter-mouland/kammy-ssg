@@ -108,13 +108,13 @@ export class FplFirestore {
      * Batch get element summaries
      */
 
-    async getPlayerDetailedStats(playerId: number[] | number) {
+    async getBatchPlayerDetailedStats(playerId: number[]) {
         const playerIds = Array.isArray(playerId) ? playerId : [playerId];
 
         const docIds = playerIds.map((id) => `element-${id}`);
         const docs = await this.client.batchGetDocuments(this.client.collections.FPL_ELEMENTS, docIds);
 
-        const results: Record<number, any> = {};
+        const results: Record<number, FplPlayerSeasonData> = {};
         playerIds.forEach((playerId, index) => {
             if (docs[index]?.data) {
                 results[playerId] = docs[index].data;
@@ -124,16 +124,9 @@ export class FplFirestore {
         return results;
     }
 
-    /**
-     * Get element summary data (individual player gameweek breakdown)
-     */
-    async getElementDetailedStats(playerId: number): Promise<FplPlayerSeasonData | null> {
-        const doc = await this.client.getDocument<FplPlayerSeasonData>(
-            this.client.collections.FPL_ELEMENTS,
-            `element-${playerId}`,
-        );
-        this.lastUpdated.elementDetailedStats = doc?.lastUpdated || '';
-        return doc ? doc.data : null;
+    async getPlayerDetailedStats(playerId: number) {
+        const doc = await this.client.getDocument(this.client.collections.FPL_ELEMENTS, `element-${playerId}`);
+        return doc;
     }
 
     // === HELPER METHODS ===
@@ -184,7 +177,7 @@ export class FplFirestore {
             playerIds.push(player.id);
             return acc;
         }, {});
-        const fplPlayerGameweeksById = await this.getPlayerDetailedStats(playerIds);
+        const fplPlayerGameweeksById = await this.getBatchPlayerDetailedStats(playerIds);
 
         const filteredPlayers = players.filter((player) => sheetsPlayersById[player.id]);
 

@@ -7,9 +7,7 @@ import type { PlayerGameweekStatsData } from '../../../players/types/player-type
 import type {
     DivisionId,
     DivisionTeamsDocument,
-    ManagerId,
     PositionSlotKey,
-    RosterByManagerId,
     TeamPositionSlot,
 } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
@@ -44,31 +42,31 @@ export async function populatePointsIntoDivisionDocuments(
     // const sortedGameweeks = [32, 33, 34, 35, 36, 37, 38].sort((a, b) => a - b);
 
     for (const division of divisions) {
-        // if (division.id === 'premierLeague') {
-        try {
-            results.divisionsProcessed++;
-            console.log(`🔄 Processing division: ${division.id}`);
+        if (division.id === 'premierLeague') {
+            try {
+                results.divisionsProcessed++;
+                console.log(`🔄 Processing division: ${division.id}`);
 
-            for (const gameweekId of sortedGameweeks) {
-                const playersUpdated = await populatePointsForDivisionGameweek(division.id, gameweekId, {
-                    ...options,
-                    isFirstGameweekInRegeneration: gameweekId === sortedGameweeks[0],
-                });
+                for (const gameweekId of sortedGameweeks) {
+                    const playersUpdated = await populatePointsForDivisionGameweek(division.id, gameweekId, {
+                        ...options,
+                        isFirstGameweekInRegeneration: gameweekId === sortedGameweeks[0],
+                    });
 
-                if (playersUpdated > 0) {
-                    results.documentsUpdated++;
-                    results.playersUpdated += playersUpdated;
-                    console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
+                    if (playersUpdated > 0) {
+                        results.documentsUpdated++;
+                        results.playersUpdated += playersUpdated;
+                        console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
+                    }
                 }
+            } catch (error) {
+                const errorMsg = `Failed to process division ${division.id}, probably an error in populatePointsForDivisionGameweek: ${
+                    error instanceof Error ? error.message : 'Unknown error'
+                }`;
+                console.error(`❌ ${errorMsg}`);
+                results.errors.push(errorMsg);
             }
-        } catch (error) {
-            const errorMsg = `Failed to process division ${division.id}, probably an error in populatePointsForDivisionGameweek: ${
-                error instanceof Error ? error.message : 'Unknown error'
-            }`;
-            console.error(`❌ ${errorMsg}`);
-            results.errors.push(errorMsg);
         }
-        // }
     }
 
     console.log(

@@ -228,7 +228,6 @@ function applyLoanStart(managerRoster: TeamRoster, transfer: ProcessedTransfer):
  */
 function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
     const { managerId, playerIn, playerOut } = transfer;
-    const owningRoster = managerRoster;
 
     // Find the player in on_loan_0 slot
     const loanedPlayer = managerRoster.on_loan_0?.player;
@@ -246,7 +245,9 @@ function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer)
 
     // if the loan to someone is ending, then remove player from loan slot
     if (transfer.onLoanTo) {
-        owningRoster.on_loan_0 = null;
+        // managerRoster.on_loan_0 = null;
+        // managerRoster.on_loan_0 = { player: { playerCode: 0 } };
+        delete managerRoster.on_loan_0;
     }
 
     return {

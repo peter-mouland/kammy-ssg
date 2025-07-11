@@ -13,7 +13,7 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
 
         // Get basic player data - all from cache
         const [fplPlayer, fplTeams, currentGameweek] = await Promise.all([
-            fplApiCache.getFplPlayer(playerCode),
+            fplApiCache.getPlayerByCode(playerCode),
             fplApiCache.getFplTeams(),
             fplApiCache.getCurrentGameweek(),
         ]);
@@ -38,12 +38,8 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
         );
 
         // Get detailed player stats and gameweek points (all from cache)
-        const [playerDetailedStats] = await Promise.all([fplApiCache.getPlayerDetailedStats(fplPlayer.id)]);
-
-        // Process gameweek data
+        const { data: playerDetailedStats } = await fplApiCache.getPlayerDetailedStats(fplPlayer.id);
         const gameweekStats = processGameweekData(playerDetailedStats?.history || [], teamLookup);
-
-        // Calculate season totals
         const seasonTotals = calculateSeasonTotals(gameweekStats);
 
         console.log(`✅ Player detail data loaded for ${fplPlayer.first_name} ${fplPlayer.second_name}`);
@@ -51,7 +47,7 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
         return {
             player: fplPlayer,
             team,
-            position: fplPlayer.draft?.position.toLowerCase() as CustomPosition, // TODO ONLY PROCESS PLAYERS IN SHEETS
+            position: fplPlayer.draft?.position.toLowerCase() as CustomPosition,
             gameweekStats,
             seasonTotals,
             currentGameweek: currentGameweek || 1,

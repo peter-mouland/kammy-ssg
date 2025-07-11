@@ -2,6 +2,7 @@
 
 // /teams/components/player-card.tsx
 import type React from 'react';
+import { Link } from 'react-router';
 import type { RosterPlayer } from '../types/team-types';
 import styles from './player-card.module.css';
 
@@ -58,9 +59,9 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
 
             {/* Player Info */}
             <div className={styles.playerInfo}>
-                <div className={styles.playerName} title={player.playerName}>
+                <Link to={`/players/${player.playerCode}`} className={styles.playerName} title={player.playerName}>
                     {displayName}
-                </div>
+                </Link>
 
                 {!isOnPitch && (
                     <div className={styles.playerDetails}>

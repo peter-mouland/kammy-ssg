@@ -1,5 +1,6 @@
 // app/teams/components/position-slot-card.tsx
 import type React from 'react';
+import { Link } from 'react-router';
 import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
 
@@ -31,7 +32,9 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
 
             {/* Player Info */}
             <div className={styles.playerInfo}>
-                <div className={styles.playerName}>{player.playerName}</div>
+                <Link to={`/players/${player.playerCode}`} className={styles.playerName}>
+                    {player.playerName}
+                </Link>
                 <div className={styles.playerPosition}>{player.playerPosition.toUpperCase()}</div>
             </div>
 

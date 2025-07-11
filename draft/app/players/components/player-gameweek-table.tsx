@@ -2,8 +2,17 @@
 
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import {
+    calculateAppearancePoints,
+    calculateAssistPoints,
+    calculateBonus,
+    calculateCleanSheetPoints,
     calculateGameweekPoints,
-    convertToPlayerGameweekStats,
+    calculateGoalPoints,
+    calculateGoalsConcededPenalty,
+    calculatePenaltiesSaved,
+    calculateRedCardPenalty,
+    calculateSavesBonus,
+    calculateYellowCardPenalty,
     formatPointsDisplay,
     isStatRelevant,
 } from '../../scoring/lib';
@@ -19,46 +28,45 @@ interface PlayerGameweekTableProps {
     currentGameweek: number;
 }
 
+const getStatDisplay = (value: number, stat: string, position: string): React.ReactNode => {
+    if (!isStatRelevant(stat, position)) {
+        return '-';
+    }
+
+    if (value === 0) return '0';
+
+    // Color coding for different stats
+    if (['goals', 'assists', 'cleanSheets', 'saves', 'penaltiesSaved', 'bonus'].includes(stat)) {
+        return <span style={{ color: 'var(--color-success)' }}>{value}</span>;
+    }
+
+    if (['goalsConceded', 'yellowCards', 'redCards'].includes(stat)) {
+        return <span style={{ color: 'var(--color-error)' }}>{value}</span>;
+    }
+
+    return value;
+};
+
+const renderMatchResult = (gw: GameweekStatWithPoints): React.ReactNode => {
+    if (gw.minutes === 0) {
+        return <TableBadge variant="gray">DNP</TableBadge>;
+    }
+
+    const playerScore = gw.wasHome ? gw.teamHScore : gw.teamAScore;
+    const opponentScore = gw.wasHome ? gw.teamAScore : gw.teamHScore;
+
+    let variant: 'success' | 'warning' | 'error' = 'warning';
+    if (playerScore > opponentScore) variant = 'success';
+    if (playerScore < opponentScore) variant = 'error';
+
+    return (
+        <TableBadge variant={variant}>
+            {gw.wasHome ? 'H' : 'A'} {playerScore}-{opponentScore}
+        </TableBadge>
+    );
+};
+
 export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }: PlayerGameweekTableProps) {
-    // Helper functions
-    const getStatDisplay = (value: number, stat: string, position: string): React.ReactNode => {
-        if (!isStatRelevant(stat, position)) {
-            return '-';
-        }
-
-        if (value === 0) return '0';
-
-        // Color coding for different stats
-        if (['goals', 'assists', 'clean_sheets', 'saves', 'penalties_saved', 'bonus'].includes(stat)) {
-            return <span style={{ color: 'var(--color-success)' }}>{value}</span>;
-        }
-
-        if (['goals_conceded', 'yellow_cards', 'red_cards'].includes(stat)) {
-            return <span style={{ color: 'var(--color-error)' }}>{value}</span>;
-        }
-
-        return value;
-    };
-
-    const renderMatchResult = (gw: GameweekStatWithPoints): React.ReactNode => {
-        if (gw.minutes === 0) {
-            return <TableBadge variant="gray">DNP</TableBadge>;
-        }
-
-        const playerScore = gw.wasHome ? gw.teamHScore : gw.teamAScore;
-        const opponentScore = gw.wasHome ? gw.teamAScore : gw.teamHScore;
-
-        let variant: 'success' | 'warning' | 'error' = 'warning';
-        if (playerScore > opponentScore) variant = 'success';
-        if (playerScore < opponentScore) variant = 'error';
-
-        return (
-            <TableBadge variant={variant}>
-                {gw.wasHome ? 'H' : 'A'} {playerScore}-{opponentScore}
-            </TableBadge>
-        );
-    };
-
     const columns: TableColumn<GameweekStatWithPoints>[] = [
         {
             key: 'gameweek',
@@ -79,6 +87,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'minutes',
             align: 'center',
             width: 60,
+            title: (stat) => calculateAppearancePoints(stat.minutes, position),
             render: (minutes) =>
                 minutes === 0 ? (
                     <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>0</span>
@@ -92,6 +101,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'goals',
             align: 'center',
             width: 60,
+            title: (stat) => calculateGoalPoints(stat.goals, position),
             render: (goals) => getStatDisplay(goals, 'goals', position),
         },
         {
@@ -100,30 +110,33 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'assists',
             align: 'center',
             width: 70,
+            title: (stat) => calculateAssistPoints(stat.assists, position),
             render: (assists) => getStatDisplay(assists, 'assists', position),
         },
     ];
 
     // Add position-specific columns
-    if (isStatRelevant('clean_sheets', position)) {
+    if (isStatRelevant('cleanSheets', position)) {
         columns.push({
             key: 'cleanSheets',
             header: 'CS',
             accessor: 'cleanSheets',
             align: 'center',
             width: 50,
-            render: (cs) => getStatDisplay(cs, 'clean_sheets', position),
+            title: (stats) => calculateCleanSheetPoints(stats.cleanSheets, position),
+            render: (cs) => getStatDisplay(cs, 'cleanSheets', position),
         });
     }
 
-    if (isStatRelevant('goals_conceded', position)) {
+    if (isStatRelevant('goalsConceded', position)) {
         columns.push({
             key: 'goalsConceded',
             header: 'GC',
             accessor: 'goalsConceded',
             align: 'center',
             width: 50,
-            render: (gc) => getStatDisplay(gc, 'goals_conceded', position),
+            title: (stat) => calculateGoalsConcededPenalty(stat.goalsConceded, position),
+            render: (gc) => getStatDisplay(gc, 'goalsConceded', position),
         });
     }
 
@@ -134,18 +147,20 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'saves',
             align: 'center',
             width: 60,
+            title: (stat) => calculateSavesBonus(stat.saves, position),
             render: (saves) => getStatDisplay(saves, 'saves', position),
         });
     }
 
-    if (isStatRelevant('penalties_saved', position)) {
+    if (isStatRelevant('penaltiesSaved', position)) {
         columns.push({
             key: 'penaltiesSaved',
             header: 'Pen S',
             accessor: 'penaltiesSaved',
             align: 'center',
             width: 60,
-            render: (ps) => getStatDisplay(ps, 'penalties_saved', position),
+            title: (stat) => calculatePenaltiesSaved(stat.penaltiesSaved, position),
+            render: (ps) => getStatDisplay(ps, 'penaltiesSaved', position),
         });
     }
 
@@ -157,7 +172,8 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'yellowCards',
             align: 'center',
             width: 50,
-            render: (yc) => getStatDisplay(yc, 'yellow_cards', position),
+            title: (stat) => calculateYellowCardPenalty(stat.yellowCards, position),
+            render: (yc) => getStatDisplay(yc, 'yellowCards', position),
         },
         {
             key: 'redCards',
@@ -165,7 +181,8 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'redCards',
             align: 'center',
             width: 50,
-            render: (rc) => getStatDisplay(rc, 'red_cards', position),
+            title: (stat) => calculateRedCardPenalty(stat.redCards, position),
+            render: (rc) => getStatDisplay(rc, 'redCards', position),
         },
     );
 
@@ -177,6 +194,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'bonus',
             align: 'center',
             width: 60,
+            title: (stat) => calculateBonus(stat.bonus, position),
             render: (bonus) => getStatDisplay(bonus, 'bonus', position),
         });
     }

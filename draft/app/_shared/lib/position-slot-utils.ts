@@ -118,7 +118,7 @@ export function getActiveScoringSlots<T extends { player: { playerCode: number }
     roster: Record<PositionSlotKey, T>,
 ): T[] {
     return Object.entries(roster)
-        .filter(([slotKey, slot]) => isSlotScoringActive(slotKey as PositionSlotKey) && slot.player.playerCode > 0)
+        .filter(([slotKey, slot]) => isSlotScoringActive(slotKey as PositionSlotKey) && slot.player?.playerCode > 0)
         .map(([, slot]) => slot);
 }
 

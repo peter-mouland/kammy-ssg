@@ -153,7 +153,7 @@ function PositionPointsTable({
             width: 100,
             align: 'center',
             sortable: true,
-            accessor: (team) => positionRankings[team.userId]?.total,
+            accessor: (team) => team[pointsSource]['total'],
             render: (points, team) => {
                 const rank = positionRankings[team.userId]?.total;
                 if (showRankChange) {
@@ -337,6 +337,7 @@ function DivisionStandingsTable({
 export const LeagueStandings = () => {
     const { divisions, selectedDivision, selectedGameweek, currentGameweek, availableGameweeks, standingsData } =
         useLoaderData<EnhancedLeagueStandingsLoaderData>();
+    console.log({ divisions, selectedDivision, selectedGameweek, currentGameweek, availableGameweeks, standingsData });
     const navigate = useNavigate();
     const actionData = useActionData<typeof action>();
     const [searchParams, setSearchParams] = useSearchParams();

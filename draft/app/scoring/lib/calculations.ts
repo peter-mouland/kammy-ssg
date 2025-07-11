@@ -48,6 +48,8 @@ export function calculateAssistPoints(assists: number, position: CustomPosition)
  */
 export function calculateCleanSheetPoints(cleanSheets: number, position: CustomPosition): number {
     const rule = POSITION_RULES[position];
+    if (!('cleanSheetPoints' in rule)) return 0;
+
     return cleanSheets * (rule.cleanSheetPoints || 0);
 }
 
@@ -168,7 +170,7 @@ export function calculateSeasonPoints(
 
     // Sum up all gameweek breakdowns
     gameweekStats.forEach((gwStats) => {
-        const gwBreakdown = calculateGameweekPoints(gwStats, position);
+        const gwBreakdown = calculateGameweekPoints([gwStats], position);
 
         Object.entries(gwBreakdown).forEach(([key, value]) => {
             if (key !== 'total') {
@@ -247,10 +249,10 @@ export function getFullBreakdown(
             label: 'Clean Sheets',
             stat: stats.cleanSheets,
             points: points.cleanSheets || 0,
-            formula: isStatRelevant('clean_sheets', position)
+            formula: isStatRelevant('cleanSheets', position)
                 ? `${stats.cleanSheets} × ${rules.cleanSheetPoints || 0} pts`
                 : 'Not applicable for this position',
-            isRelevant: isStatRelevant('clean_sheets', position),
+            isRelevant: isStatRelevant('cleanSheets', position),
         },
         yellowCards: {
             label: 'Yellow Cards',
@@ -281,21 +283,21 @@ export function getFullBreakdown(
             label: 'Penalties Saved',
             stat: stats.penaltiesSaved,
             points: points.penaltiesSaved || 0,
-            formula: isStatRelevant('penalties_saved', position)
+            formula: isStatRelevant('penaltiesSaved', position)
                 ? `${stats.penaltiesSaved} × ${'penaltiesSaved' in rules ? rules.penaltiesSaved : 0} pts`
                 : 'Not applicable for this position',
-            isRelevant: isStatRelevant('penalties_saved', position),
+            isRelevant: isStatRelevant('penaltiesSaved', position),
         },
         goalsConceded: {
             label: 'Goals Conceded',
             stat: stats.goalsConceded,
             points: points.goalsConceded || 0,
-            formula: isStatRelevant('goals_conceded', position)
+            formula: isStatRelevant('goalsConceded', position)
                 ? `${Object.entries(gcByGameCount)
                       .map(([gc, count]) => `${count} games with ${gc} goals conceded`)
                       .join(', ')}`
                 : 'Not applicable for this position',
-            isRelevant: isStatRelevant('goals_conceded', position),
+            isRelevant: isStatRelevant('goalsConceded', position),
         },
         bonus: {
             label: 'Bonus',
