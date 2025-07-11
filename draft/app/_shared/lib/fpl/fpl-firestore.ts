@@ -134,7 +134,7 @@ export class FplFirestore {
     /**
      * Update elements with draft data
      */
-    async updateElementsWithDraft(draftDataById: Record<number, any>): Promise<void> {
+    async updateElementsWithDraft(draftDataById: Record<number, EnhancedPlayerData>): Promise<void> {
         const elements = await this.getElements();
         if (!elements) {
             throw new Error('No elements found to update with draft data');
@@ -188,7 +188,11 @@ export class FplFirestore {
         console.log(`🔄 Generating enhanced data for ${filteredPlayers.length} players...`);
 
         const enhancedPlayers = generateSeasonData(filteredPlayers, fplPlayerGameweeksById, sheetsPlayersById);
-        await this.updateElementsWithDraft(enhancedPlayers);
+        const playersById = enhancedPlayers.reduce((acc: Record<string, EnhancedPlayerData>, player) => {
+            acc[player.id] = player;
+            return acc;
+        }, {});
+        await this.updateElementsWithDraft(playersById);
 
         console.log(`✅ Enhanced data generated and cached for ${enhancedPlayers.length} players`);
         return enhancedPlayers;
