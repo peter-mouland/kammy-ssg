@@ -7,12 +7,11 @@ import {
     getUserTeamForGameweek,
     getUserTeamHistory,
 } from '../../scoring/server/services/division-teams.service';
-import type { CurrentUser, TeamGameweekData, TeamViewData, UserTeamsSheetData } from '../types/team-types';
+import type { CurrentUser, DivisionId, TeamGameweekData, TeamViewData, UserTeamsSheetData } from '../types/team-types';
 
 export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
     try {
         const userTeams = await readUserTeams();
-
         const currentUser = await getCurrentUser(params.managerId, userTeams);
         if (!currentUser) {
             throw new Error('User not authenticated');
@@ -25,8 +24,15 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             throw new Error('Division not found');
         }
 
-        // Get current gameweek
-        const currentGameweek = await getCurrentGameweek();
+        // Get available gameweeks from service
+        const availableGameweeks = await getAvailableGameweeksFromService(currentUser.divisionId);
+        const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
+        const currentGameweekData = await fplApiCache.getCurrentGameweekData();
+        const currentGameweek = currentGameweekData.fplEvent.id;
+        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
+        const events = await fplApiCache.getFplEvents();
+        const targetGameweek = selectedGameweek ?? currentGameweek;
+        const selectedGameweekData = events.find((e) => e.fplEvent.id === targetGameweek);
 
         // Get current team data from new division-teams structure
         const currentTeam = await getUserTeamForGameweek(currentUser.divisionId, currentUser.id, currentGameweek);
@@ -44,9 +50,6 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             currentGameweek,
         );
 
-        // Get available gameweeks from service
-        const availableGameweeks = await getAvailableGameweeksFromService(currentUser.divisionId);
-
         return {
             currentUser,
             division: {
@@ -54,6 +57,8 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
                 name: division.label,
             },
             currentGameweek,
+            currentGameweekData,
+            selectedGameweekData,
             currentTeam,
             gameweekHistory,
             availableGameweeks: availableGameweeks.sort((a, b) => a - b),

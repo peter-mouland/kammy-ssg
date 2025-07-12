@@ -24,7 +24,7 @@ interface AdminOutletContext {
 export default function AdminTransfersRoute() {
     const { sharedContext, systemStatus, transfersData } = useOutletContext<AdminOutletContext>();
     const [searchParams] = useSearchParams();
-
+    console.log({ transfersData });
     // Get filter parameters from URL
     const selectedDivisionId = searchParams.get('division') || sharedContext.sheetData.divisions[0]?.id;
     const selectedGameweekId =

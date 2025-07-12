@@ -77,11 +77,13 @@ export interface TransfersPageData {
     divisions: DivisionSheetData[];
     managers: UserTeamsSheetData[];
     currentGameweek: number;
+    selectedGameweek: number;
+    currentGameweekData: GameWeekData;
+    selectedGameweekData: GameWeekData;
     availableGameweeks: number[];
     gameweekData: GameWeekData;
     selectedDivision: DivisionId;
     selectedManager: ManagerId;
-    selectedGameweek: number;
     currentTransfers: Array<{
         transfer: ProcessedTransfer;
         validation: TransferValidationResult;

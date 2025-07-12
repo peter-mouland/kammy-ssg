@@ -3,6 +3,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
+import type { DivisionId } from '../teams/types/team-types';
 import { TransfersPage } from './transfers.page';
 import type { TransfersPageData } from './types/transfer-form-types';
 
@@ -23,7 +24,7 @@ interface ActionData {
 export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
-        const selectedDivision = params.divisionId || 'premierLeague';
+        const selectedDivision = (params.divisionId || 'premierLeague') as DivisionId;
         const selectedManager = url.searchParams.get('manager') || '';
         const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || '0', 10);
 

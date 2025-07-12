@@ -1,5 +1,6 @@
 /* Location: app/leagues/types/league-standings-types.ts */
 
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../teams/types/team-types';
 
 export interface PositionPointsBreakdown {
@@ -35,7 +36,9 @@ export interface EnhancedLeagueStandingsLoaderData {
     divisions: DivisionSheetData[];
     selectedDivision: DivisionSheetData;
     selectedGameweek: number;
+    selectedGameweekData: GameWeekData;
     currentGameweek: number;
+    currentGameweekData: GameWeekData;
     availableGameweeks: number[];
     standingsData: Record<string, LeagueStandingsTeamData[]>;
 }

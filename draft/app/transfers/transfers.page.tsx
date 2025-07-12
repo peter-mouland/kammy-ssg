@@ -42,8 +42,8 @@ export function TransfersPage() {
                 actions={
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
                         <GameweekSelector
-                            currentGameweek={data.currentGameweek}
-                            selectedGameweek={data.selectedGameweek}
+                            currentGameweekData={data.currentGameweekData}
+                            selectedGameweekData={data.selectedGameweekData}
                             availableGameweeks={data.availableGameweeks}
                             onGameweekChange={handleGameweekChange}
                         />

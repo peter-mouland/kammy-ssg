@@ -20,7 +20,12 @@
 .label {
     font-size: 14px;
     font-weight: 500;
-    color: #374151;
+    color: var(--color-gray-700, #374151);
+}
+
+.endData {
+    font-size: 12px;
+    color: var(--color-gray-500, #374151);
 }
 
 .currentBadge {

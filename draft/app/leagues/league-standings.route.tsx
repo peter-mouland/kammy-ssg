@@ -23,13 +23,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
         const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-        const currentGameweek = await fplApiCache.getCurrentGameweek();
+        const currentGameweekData = await fplApiCache.getCurrentGameweekData();
+        const currentGameweek = currentGameweekData.fplEvent.id;
         const selectedDivision = (params.divisionId || 'premierLeague') as DivisionId;
         const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
 
         // Dynamic import to keep server code on server
         const { getEnhancedLeagueStandingsData } = await import('./server/league-standings.server');
-        const loaderData = await getEnhancedLeagueStandingsData({ selectedDivision, selectedGameweek });
+        const loaderData = await getEnhancedLeagueStandingsData({
+            currentGameweekData,
+            selectedDivision,
+            selectedGameweek,
+        });
 
         return data<EnhancedLeagueStandingsLoaderData>(loaderData);
     } catch (error) {

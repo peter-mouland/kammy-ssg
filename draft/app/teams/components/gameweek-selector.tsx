@@ -3,21 +3,24 @@
 // /teams/components/gameweek-selector.tsx
 import type React from 'react';
 import { useState } from 'react';
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import styles from './gameweek-selector.module.css';
 
 interface GameweekSelectorProps {
-    currentGameweek: number;
-    selectedGameweek: number;
+    currentGameweekData: GameWeekData;
+    selectedGameweekData: GameWeekData;
     availableGameweeks: number[];
     onGameweekChange: (gameweek: number) => void;
 }
 
 export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
-    currentGameweek,
-    selectedGameweek,
+    currentGameweekData,
+    selectedGameweekData,
     availableGameweeks,
     onGameweekChange,
 }) => {
+    const selectedGameweek = selectedGameweekData.fplEvent.id;
+    const currentGameweek = currentGameweekData.fplEvent.id;
     const [isOpen, setIsOpen] = useState(false);
 
     const handlePrevious = () => {
@@ -40,12 +43,18 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     return (
         <div className={styles.gameweekSelector}>
             <div className={styles.selectorHeader}>
-                <span className={styles.label}>Gameweek</span>
+                <div className={styles.label}>Gameweek</div>
+            </div>
+
+            <div className={styles.endData}>
+                {selectedGameweekData.end.toLocaleDateString('en-gb')}
+                {selectedGameweekData.end.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
             </div>
 
             <div className={styles.selectorControls}>
                 {/* Previous Button */}
                 <button
+                    type={'button'}
                     onClick={handlePrevious}
                     disabled={!canGoPrevious}
                     className={`${styles.navButton} ${styles.previousButton}`}
@@ -56,7 +65,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
 
                 {/* Current Gameweek Display */}
                 <div className={styles.gameweekDisplay}>
-                    <button onClick={() => setIsOpen(!isOpen)} className={styles.gameweekButton}>
+                    <button type={'button'} onClick={() => setIsOpen(!isOpen)} className={styles.gameweekButton}>
                         <span className={styles.gameweekNumber}>{selectedGameweek}</span>
                         <span className={styles.dropdownIcon}>▼</span>
                     </button>
@@ -68,6 +77,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                                 {availableGameweeks.map((gw) => (
                                     <button
                                         key={gw}
+                                        type={'button'}
                                         onClick={() => {
                                             onGameweekChange(gw);
                                             setIsOpen(false);
@@ -88,6 +98,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
 
                 {/* Next Button */}
                 <button
+                    type={'button'}
                     onClick={handleNext}
                     disabled={!canGoNext}
                     className={`${styles.navButton} ${styles.nextButton}`}

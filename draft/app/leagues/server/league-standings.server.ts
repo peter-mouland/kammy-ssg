@@ -1,5 +1,7 @@
 /* Location: app/leagues/server/league-standings.server.ts */
 
+import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { getDivisionTeamsDocument } from '../../scoring/server/services/division-teams.service';
@@ -19,9 +21,7 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
     const divisions = await readDivisions();
     const currentGameweek = await fplApiCache.getCurrentGameweek();
     const targetGameweek = currentGameweek;
-
     const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
-
     const standingsData: Record<DivisionId, LeagueStandingsTeamData[]> = {};
 
     // Get data for specific division with position rank changes
@@ -41,17 +41,19 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
 export async function getEnhancedLeagueStandingsData({
     selectedDivision,
     selectedGameweek,
+    currentGameweekData,
 }: {
     selectedDivision: DivisionId;
     selectedGameweek?: number;
+    currentGameweekData: GameWeekData;
 }): Promise<EnhancedLeagueStandingsLoaderData> {
     // Import services dynamically to keep server code on server
-    const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
-
+    const currentGameweek = currentGameweekData.fplEvent.id;
     const divisions = await readDivisions();
     const division = divisions.find((d) => selectedDivision === d.id)!;
-    const currentGameweek = await fplApiCache.getCurrentGameweek();
+    const events = await fplApiCache.getFplEvents();
     const targetGameweek = selectedGameweek ?? currentGameweek;
+    const targetGameweekData = events.find((e) => e.fplEvent.id === targetGameweek);
 
     const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
 
@@ -65,6 +67,8 @@ export async function getEnhancedLeagueStandingsData({
         divisions,
         selectedDivision: division,
         selectedGameweek: targetGameweek,
+        selectedGameweekData: targetGameweekData,
+        currentGameweekData,
         currentGameweek,
         availableGameweeks,
         standingsData,

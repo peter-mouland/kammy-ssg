@@ -1,6 +1,7 @@
 // app/teams/types/team-types.ts
 /** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../../scoring/types/scoring-types';
 
@@ -169,6 +170,8 @@ export interface TeamViewData {
     currentUser: CurrentUser;
     division: Division;
     currentGameweek: number;
+    currentGameweekData: GameWeekData;
+    selectedGameweekData: GameWeekData;
     currentTeam: TeamGameweekData;
     gameweekHistory: TeamGameweekData[];
     availableGameweeks: number[];

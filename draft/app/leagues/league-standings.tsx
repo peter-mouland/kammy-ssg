@@ -335,9 +335,17 @@ function DivisionStandingsTable({
 }
 
 export const LeagueStandings = () => {
-    const { divisions, selectedDivision, selectedGameweek, currentGameweek, availableGameweeks, standingsData } =
-        useLoaderData<EnhancedLeagueStandingsLoaderData>();
-    console.log({ divisions, selectedDivision, selectedGameweek, currentGameweek, availableGameweeks, standingsData });
+    const {
+        divisions,
+        selectedDivision,
+        selectedGameweek,
+        currentGameweek,
+        selectedGameweekData,
+        currentGameweekData,
+        availableGameweeks,
+        standingsData,
+    } = useLoaderData<EnhancedLeagueStandingsLoaderData>();
+
     const navigate = useNavigate();
     const actionData = useActionData<typeof action>();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -369,8 +377,8 @@ export const LeagueStandings = () => {
                 actions={
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
                         <GameweekSelector
-                            currentGameweek={currentGameweek}
-                            selectedGameweek={selectedGameweek}
+                            currentGameweekData={currentGameweekData}
+                            selectedGameweekData={selectedGameweekData}
                             availableGameweeks={availableGameweeks}
                             onGameweekChange={handleGameweekChange}
                         />

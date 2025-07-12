@@ -14,8 +14,8 @@ import styles from './team-view.module.css';
 
 export const TeamView = () => {
     const data = useLoaderData<TeamViewData>();
-    const [searchParams, setSearchParams] = useSearchParams();
-    const selectedGameweek = Number.parseInt(searchParams.get('gameweek') || data.currentGameweek.toString());
+    const [_searchParams, setSearchParams] = useSearchParams();
+    const selectedGameweek = data.selectedGameweekData.fplEvent.id;
 
     // Global view mode state - controls both pitch and stats
     const [viewMode, setViewMode] = useState<StatsViewMode>('season');
@@ -54,10 +54,9 @@ export const TeamView = () => {
                 </div>
 
                 <div className={styles.headerControls}>
-                    <StatsViewToggle viewMode={viewMode} onToggle={handleViewModeChange} />
                     <GameweekSelector
-                        currentGameweek={data.currentGameweek}
-                        selectedGameweek={selectedGameweek}
+                        currentGameweekData={data.currentGameweekData}
+                        selectedGameweekData={data.selectedGameweekData}
                         availableGameweeks={data.availableGameweeks}
                         onGameweekChange={handleGameweekChange}
                     />

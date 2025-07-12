@@ -123,6 +123,12 @@ function GameweekTransfersSection({
             render: (_, item) => <span className={styles.transfer_type_badge}>{item.transfer.transferType}</span>,
         },
         {
+            key: 'manager',
+            header: 'Manager',
+            width: '100px',
+            render: (_, item) => item.transfer.managerId,
+        },
+        {
             key: 'playerOut',
             header: 'Player Out',
             width: '200px',
@@ -390,6 +396,7 @@ export function TransfersSection({
         }
         setSearchParams(newParams);
     };
+
     const handleRefreshTransfers = (actionType: string) => {
         const formData = new FormData();
         formData.append('actionType', actionType);
@@ -407,8 +414,8 @@ export function TransfersSection({
                 actions={
                     <ActionBar align={'right'} gap={'md'}>
                         <GameweekSelector
-                            currentGameweek={systemStatus.currentGameweek.fplEvent.id}
-                            selectedGameweek={selectedGameweek.fplEvent.id}
+                            currentGameweekData={systemStatus.currentGameweek}
+                            selectedGameweekData={selectedGameweek}
                             availableGameweeks={availableGameweeks}
                             onGameweekChange={handleGameweekChange}
                         />

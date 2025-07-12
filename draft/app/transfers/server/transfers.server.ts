@@ -26,7 +26,8 @@ export async function getTransfersPageData({
         console.log('🔄 Loading transfers page data...');
 
         // Get current gameweek and FPL data
-        const currentGameweek = await fplApiCache.getCurrentGameweek();
+        const currentGameweekData = await fplApiCache.getCurrentGameweekData();
+        const currentGameweek = currentGameweekData.fplEvent.id;
         const gameweeks = await fplApiCache.getFplEvents();
         const fplTeams = await fplApiCache.getFplTeams();
         const players = await fplApiCache.getFplPlayers();
@@ -35,6 +36,7 @@ export async function getTransfersPageData({
 
         const gameweekToLoad = selectedGameweek || currentGameweek || 1;
 
+        const selectedGameweekData = gameweeks.find((gw) => gw.fplEvent.id === selectedGameweek);
         const gameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad);
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
         const { transfers: currentTransfers, divisionRosters } = await getTransfersDataForDivision(
@@ -60,12 +62,14 @@ export async function getTransfersPageData({
         return {
             divisions,
             managers: divisionManagers,
+            currentGameweekData,
             currentGameweek,
             availableGameweeks,
             gameweekData,
             selectedDivision: selectedDivision,
             selectedManager: selectedManager,
             selectedGameweek: gameweekToLoad,
+            selectedGameweekData,
             currentTransfers,
             managerRoster,
             availablePlayers: players,

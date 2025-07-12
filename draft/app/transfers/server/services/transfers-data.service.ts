@@ -30,7 +30,7 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
         const fplPlayersByCode = await fplApiCache.getPlayersByCode();
         const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, gameweekData);
         const currentGameweek = await fplApiCache.getCurrentGameweekData();
-        const divisionRosters = await getDivisionRosters(divisionId, gameweekId);
+        const divisionRosters = await getDivisionRosters(divisionId, gameweekId - 1);
         const rules = getDefaultRuleConfiguration(divisionId);
 
         console.log(
