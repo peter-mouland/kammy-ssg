@@ -365,15 +365,12 @@ export function TransfersSection({
     selectedDivision,
     selectedGameweek,
     transfersData,
-    sharedContext,
+    systemStatus,
 }: TransfersSectionProps) {
     const navigate = useNavigate();
     const fetcher = useFetcher();
     const [searchParams, setSearchParams] = useSearchParams();
-    const availableGameweeks = Array.from(
-        { length: sharedContext.gameweekStatus.currentGameweek.fplEvent.id },
-        (_, i) => i + 1,
-    );
+    const availableGameweeks = Array.from({ length: systemStatus.currentGameweek.fplEvent.id }, (_, i) => i + 1);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
     const handleDivisionChange = (divisionId: string) => {
         if (divisionId !== 'all') {
@@ -388,7 +385,7 @@ export function TransfersSection({
         if (selectedDivision) {
             newParams.set('division', selectedDivision.id);
         }
-        if (gameweek !== sharedContext.gameweekStatus.currentGameweek.fplEvent.id) {
+        if (gameweek !== systemStatus.currentGameweek.fplEvent.id) {
             newParams.set('gameweek', gameweek.toString());
         }
         setSearchParams(newParams);
@@ -410,7 +407,7 @@ export function TransfersSection({
                 actions={
                     <ActionBar align={'right'} gap={'md'}>
                         <GameweekSelector
-                            currentGameweek={sharedContext.gameweekStatus.currentGameweek.fplEvent.id}
+                            currentGameweek={systemStatus.currentGameweek.fplEvent.id}
                             selectedGameweek={selectedGameweek.fplEvent.id}
                             availableGameweeks={availableGameweeks}
                             onGameweekChange={handleGameweekChange}

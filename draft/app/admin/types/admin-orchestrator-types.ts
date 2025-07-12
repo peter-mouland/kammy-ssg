@@ -1,6 +1,7 @@
 // app/admin/types/admin-orchestrator-types.ts
 
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { PlayersSheetData } from '../../_shared/types/sheets-types';
 import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
@@ -104,7 +105,6 @@ export interface AdminDataContext {
     fplData: FplDataContext;
     sheetData: SheetDataContext;
     cacheStatus: CacheStatusContext;
-    gameweekStatus: GameweekStatusSummary;
     loadedAt: string;
 }
 
@@ -118,6 +118,7 @@ export interface FplDataContext {
 export interface SheetDataContext {
     divisions: DivisionSheetData[];
     managers: UserTeamsSheetData[];
+    players: PlayersSheetData[];
     draftState: DraftStateData;
     draftOrder: Record<DivisionId, DraftOrderData[]>;
     transfers: TransferByDivisionId;

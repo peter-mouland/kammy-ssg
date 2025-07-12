@@ -2,6 +2,7 @@
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
+import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
@@ -17,8 +18,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         console.log('🔄 getSystemStatus() - Loading comprehensive system status');
 
         // Load all status data in parallel for better performance
-        const [currentGameweek, transferStatus, draftStatus, gameweekProcessingStatus] = await Promise.all([
-            fplApiCache.getCurrentGameweek(),
+        const [transferStatus, draftStatus, gameweekProcessingStatus] = await Promise.all([
             getTransferStatusReal(),
             getDraftStatusReal(),
             getGameweekProcessingStatusReal(),
@@ -46,7 +46,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         });
 
         const summary: SystemStatusSummary = {
-            currentGameweek,
+            currentGameweek: gameweekProcessingStatus.currentGameweek,
             systemHealth: {
                 fplCache: fplHealth,
                 firebase: firebaseHealth,
@@ -60,7 +60,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         };
 
         console.log(
-            `✅ System Status Summary: GW${currentGameweek}, ${overallHealth.status.toUpperCase()}, ${recommendations.length} recommendations`,
+            `✅ System Status Summary: GW${gameweekProcessingStatus.currentGameweek.fplEvent.id}, ${overallHealth.status.toUpperCase()}, ${recommendations.length} recommendations`,
         );
 
         return summary;
@@ -69,7 +69,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
 
         // Return safe defaults on error
         return {
-            currentGameweek: 1,
+            currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
             systemHealth: {
                 fplCache: { status: 'critical', message: 'Failed to load FPL cache status' },
                 firebase: { status: 'critical', message: 'Failed to connect to Firebase' },
@@ -79,41 +79,18 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
             transfers: { pending: 0, approved: 0, rejected: 0, total: 0, byDivision: {} },
             draft: { isActive: false, currentDivisionId: null, currentUserId: null, currentPick: null, byDivision: {} },
             gameweekProcessing: {
-                currentGameweek: 1,
+                currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
                 lastProcessedGameweek: 0,
                 totalGameweeks: 38,
                 processedGameweeks: [],
                 pendingGameweeks: [],
                 isUpToDate: false,
+                needsProcessing: true,
                 completionPercentage: 0,
+                lastProcessedAt: null,
             },
             recommendations: ['System health check failed - please check logs'],
         };
-    }
-}
-
-/**
- * Check FPL cache health
- */
-async function checkFplCacheHealth(): Promise<SystemHealthStatus> {
-    try {
-        const cacheHealth = await fplApiCache.getCacheHealth();
-
-        if (cacheHealth.health?.overall === 'healthy') {
-            return { status: 'healthy', message: 'FPL cache is healthy' };
-        } else if (cacheHealth.health?.overall === 'warning') {
-            return {
-                status: 'warning',
-                message: `FPL cache has warnings: ${cacheHealth.health.issues?.join(', ') || 'Unknown issues'}`,
-            };
-        } else {
-            return {
-                status: 'critical',
-                message: `FPL cache is critical: ${cacheHealth.health?.issues?.join(', ') || 'Unknown issues'}`,
-            };
-        }
-    } catch (_error) {
-        return { status: 'critical', message: 'Failed to check FPL cache health' };
     }
 }
 
@@ -307,10 +284,10 @@ async function getGameweekProcessingStatusReal() {
 
         // Use the GameweekPointsService which tracks actual point generation
         const { GameweekPointsService } = await import('../../../scoring/server/services/gameweek-points.service');
-        const pointsService = new GameweekPointsService();
+        const pointsService = new GameweekPointsService(); // todo: pass in context
         const pointsStatus = await pointsService.getPointsStatus();
 
-        const currentGameweek = pointsStatus.currentGameweek;
+        const currentGameweekId = pointsStatus.currentGameweek.fplEvent.id;
         const lastProcessedGameweek = pointsStatus.lastGameweek;
 
         // Calculate processed and pending gameweeks
@@ -318,35 +295,39 @@ async function getGameweekProcessingStatusReal() {
             lastProcessedGameweek > 0 ? Array.from({ length: lastProcessedGameweek }, (_, i) => i + 1) : [];
 
         const pendingGameweeks =
-            currentGameweek > lastProcessedGameweek
+            currentGameweekId > lastProcessedGameweek
                 ? Array.from(
-                      { length: currentGameweek - lastProcessedGameweek },
+                      { length: currentGameweekId - lastProcessedGameweek },
                       (_, i) => lastProcessedGameweek + i + 1,
                   )
                 : [];
 
         const completionPercentage =
-            currentGameweek > 0 ? Math.round((lastProcessedGameweek / currentGameweek) * 100) : 0;
+            currentGameweekId > 0 ? Math.round((lastProcessedGameweek / currentGameweekId) * 100) : 0;
 
         return {
-            currentGameweek,
+            currentGameweek: pointsStatus.currentGameweek,
             lastProcessedGameweek,
             totalGameweeks: 38,
             processedGameweeks,
             pendingGameweeks,
-            isUpToDate: currentGameweek === lastProcessedGameweek,
+            isUpToDate: currentGameweekId === lastProcessedGameweek,
+            needsProcessing: currentGameweekId > lastProcessedGameweek,
             completionPercentage,
+            lastProcessedAt: null, // todo
         };
     } catch (error) {
         console.error('Failed to load gameweek processing status:', error);
         return {
-            currentGameweek: 1,
+            currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
             lastProcessedGameweek: 0,
             totalGameweeks: 38,
             processedGameweeks: [],
             pendingGameweeks: [],
             isUpToDate: false,
+            needsProcessing: true,
             completionPercentage: 0,
+            lastProcessedAt: null, // todo
         };
     }
 }

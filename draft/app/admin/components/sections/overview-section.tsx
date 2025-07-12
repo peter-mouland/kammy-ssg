@@ -81,13 +81,13 @@ export function OverviewSection({ systemStatus, sharedContext }: OverviewSection
                         label="Gameweek Processing"
                         percentage={
                             systemStatus.gameweekProcessing.lastProcessedGameweek ===
-                            sharedContext.gameweekStatus.currentGameweek.fplEvent.id
-                                ? `GW ${sharedContext.gameweekStatus.currentGameweek.fplEvent.id} processed`
-                                : `GW ${sharedContext.gameweekStatus.currentGameweek.fplEvent.id} needs processing`
+                            systemStatus.currentGameweek.fplEvent.id
+                                ? `GW ${systemStatus.currentGameweek.fplEvent.id} processed`
+                                : `GW ${systemStatus.currentGameweek.fplEvent.id} needs processing`
                         }
                         status={
                             systemStatus.gameweekProcessing.lastProcessedGameweek ===
-                            sharedContext.gameweekStatus.currentGameweek.fplEvent.id
+                            systemStatus.currentGameweek.fplEvent.id
                                 ? 'healthy'
                                 : 'warning'
                         }
@@ -145,7 +145,7 @@ export function OverviewSection({ systemStatus, sharedContext }: OverviewSection
                     <StatusCard
                         icon="📅"
                         label="Current Gameweek"
-                        percentage={sharedContext.gameweekStatus.currentGameweek.fplEvent.id.toString()}
+                        percentage={systemStatus.currentGameweek.fplEvent.id.toString()}
                         status="healthy"
                     />
                 </AdminGrid>

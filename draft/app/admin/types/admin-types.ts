@@ -1,7 +1,7 @@
 /* Location: app/admin/types/admin-types.ts */
 
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../draft/types/draft-types';
-// Import types from their proper domains
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
 // ==========================================
@@ -106,7 +106,7 @@ export type DraftDivisionStatus = {
 export type DraftStatusByDivisionId = Record<DivisionId, DraftDivisionStatus>;
 
 export interface SystemStatusSummary {
-    currentGameweek: number;
+    currentGameweek: GameWeekData;
     systemHealth: {
         fplCache: SystemHealthStatus;
         firebase: SystemHealthStatus;
@@ -130,13 +130,15 @@ export interface SystemStatusSummary {
     };
     draft: DraftStatusData;
     gameweekProcessing: {
-        currentGameweek: number;
+        currentGameweek: GameWeekData;
         lastProcessedGameweek: number;
         totalGameweeks: number;
         processedGameweeks: number[];
         pendingGameweeks: number[];
         isUpToDate: boolean;
+        needsProcessing: boolean;
         completionPercentage: number;
+        lastProcessedAt: null;
     };
     recommendations: string[];
 }

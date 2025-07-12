@@ -28,8 +28,7 @@ export default function AdminTransfersRoute() {
     // Get filter parameters from URL
     const selectedDivisionId = searchParams.get('division') || sharedContext.sheetData.divisions[0]?.id;
     const selectedGameweekId =
-        Number.parseInt(searchParams.get('gameweek') || '', 10) ||
-        sharedContext.gameweekStatus.currentGameweek.fplEvent.id;
+        Number.parseInt(searchParams.get('gameweek') || '', 10) || systemStatus.currentGameweek.fplEvent.id;
 
     // Find the selected division and gameweek objects
     const selectedDivision: DivisionSheetData =
@@ -38,7 +37,7 @@ export default function AdminTransfersRoute() {
 
     const selectedGameweek =
         sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId) ||
-        sharedContext.gameweekStatus.currentGameweek;
+        systemStatus.currentGameweek;
 
     return (
         <TransfersSection

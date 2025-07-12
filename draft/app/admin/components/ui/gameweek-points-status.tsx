@@ -1,6 +1,5 @@
 /* Location: app/admin/components/ui/gameweek-points-status.tsx */
 
-import React from 'react';
 import type { SystemStatusSummary } from '../../types/admin-types';
 import styles from './gameweek-points-status.module.css';
 
@@ -15,7 +14,7 @@ export const GameweekPointsStatus = ({ systemStatus }: GameweekPointsStatusData)
             <div className={styles.statusGrid}>
                 <div className={styles.statusItem}>
                     <div className={styles.statusLabel}>Current Gameweek:</div>
-                    <div className={styles.statusValue}>{systemStatus.gameweekProcessing.currentGameweek}</div>
+                    <div className={styles.statusValue}>{systemStatus.currentGameweek.fplEvent.id}</div>
                 </div>
                 <div className={styles.statusItem}>
                     <div className={styles.statusLabel}>Last Generated:</div>

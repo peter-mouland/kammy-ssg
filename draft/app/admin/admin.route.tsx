@@ -66,8 +66,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<AdminLoad
         const { getTransfersAdminData } = await import('./server/transfers-admin.server');
         const divisions = sharedContext.sheetData.divisions;
         const selectedGameweekId =
-            Number.parseInt(url.searchParams.get('gameweek') || '', 10) ||
-            sharedContext.gameweekStatus.currentGameweek.fplEvent.id;
+            Number.parseInt(url.searchParams.get('gameweek') || '', 10) || systemStatus.currentGameweek.fplEvent.id;
         const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
 
         transfersData = await getTransfersAdminData(divisions, gameweek);
@@ -123,6 +122,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             }
 
             case 'processGameweek': {
+                dataCache.clear();
                 result = await orchestrator.processGameweek({ type: gameweekActionType, gameweek });
                 break;
             }

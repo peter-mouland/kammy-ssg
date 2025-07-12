@@ -3,12 +3,12 @@
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { FirestoreClearService } from '../../../_shared/lib/firestore-cache/clear-service';
-import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { FplFirestore } from '../../../_shared/lib/fpl/fpl-firestore';
+import { readPlayers } from '../../../_shared/lib/sheets/players';
 import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import type { DraftAction } from '../../../draft/types/draft-types';
 import type { DivisionId } from '../../../teams/types/team-types';
-import type { AdminDataContext, GameweekStatusSummary } from '../../types/admin-orchestrator-types';
+import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import type { AdminActionResult } from '../../types/admin-types';
 import { handleForceRegenerateAllPoints, handleGenerateGameweekPoints } from '../actions/points-actions';
 import { getSystemStatus } from './system-status.service';
@@ -36,18 +36,16 @@ export class AdminOrchestrator {
      */
     async getSharedContext(): Promise<AdminDataContext> {
         console.log('🔄 AdminOrchestrator.getSharedContext() - Loading fresh context');
-        const [fplData, sheetData, cacheStatus, gameweekStatus] = await Promise.all([
+        const [fplData, sheetData, cacheStatus] = await Promise.all([
             this.loadFplData(),
             this.loadSheetData(),
             this.loadCacheStatus(),
-            this.loadGameweekStatus(),
         ]);
 
         const context: AdminDataContext = {
             fplData,
             sheetData,
             cacheStatus,
-            gameweekStatus,
             loadedAt: new Date().toISOString(),
         };
 
@@ -246,6 +244,7 @@ export class AdminOrchestrator {
             managers,
             draftState,
             draftOrder,
+            players,
             premierLeagueTransfers,
             championshipTransfers,
             leagueOneTransfers,
@@ -254,6 +253,7 @@ export class AdminOrchestrator {
             readUserTeams(),
             readDraftState(),
             readDraftOrders(),
+            readPlayers(),
             readTransfers('premierLeague'),
             readTransfers('championship'),
             readTransfers('leagueOne'),
@@ -264,6 +264,7 @@ export class AdminOrchestrator {
             managers,
             draftState,
             draftOrder,
+            players,
             transfers: {
                 premierLeague: premierLeagueTransfers,
                 championship: championshipTransfers,
@@ -291,39 +292,6 @@ export class AdminOrchestrator {
     /**
      * Load gameweek status
      */
-    private async loadGameweekStatus(): Promise<GameweekStatusSummary> {
-        try {
-            const { GameweekPointsService } = await import('../../../scoring/server/services/gameweek-points.service');
-            const pointsService = new GameweekPointsService();
-            const pointsStatus = await pointsService.getPointsStatus();
-            const currentGameweek = await fplApiCache.getCurrentGameweekData();
-
-            return {
-                currentGameweek: currentGameweek,
-                lastProcessedGameweek: pointsStatus.lastGameweek,
-                needsProcessing: pointsStatus.currentGameweek > pointsStatus.lastGameweek,
-                pendingGameweeks:
-                    pointsStatus.currentGameweek > pointsStatus.lastGameweek
-                        ? Array.from(
-                              { length: pointsStatus.currentGameweek - pointsStatus.lastGameweek },
-                              (_, i) => pointsStatus.lastGameweek + i + 1,
-                          )
-                        : [],
-                isProcessing: false,
-                lastProcessedAt: null, // todo
-            };
-        } catch (error) {
-            console.error('Failed to load gameweek status:', error);
-            return {
-                currentGameweek: null,
-                lastProcessedGameweek: 0,
-                needsProcessing: false,
-                pendingGameweeks: [],
-                lastProcessedAt: null,
-                isProcessing: false,
-            };
-        }
-    }
 
     public getSystemStatus() {
         return getSystemStatus();

@@ -18,13 +18,13 @@ interface GameweekProcessingSectionProps {
     sharedContext: AdminDataContext;
 }
 
-export function GameweekProcessingSection({ systemStatus, sharedContext }: GameweekProcessingSectionProps) {
+export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSectionProps) {
     const fetcher = useFetcher();
 
     const isLoading = fetcher.state !== 'idle';
     const actionData = fetcher.data;
 
-    const currentGameweek = sharedContext.gameweekStatus.currentGameweek.fplEvent.id;
+    const currentGameweek = systemStatus.gameweekProcessing.currentGameweek.fplEvent.id;
     const lastProcessedGameweek = systemStatus.gameweekProcessing.lastProcessedGameweek;
     const needsProcessing = currentGameweek > lastProcessedGameweek;
 

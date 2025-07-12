@@ -265,7 +265,7 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                             <li>Divisions: {sharedContext.sheetData.divisions.length}</li>
                             <li>Managers: {sharedContext.sheetData.managers.length}</li>
                             <li>Players: {sharedContext.fplData.players.length}</li>
-                            <li>Current Gameweek: {sharedContext.gameweekStatus.currentGameweek.fplEvent.id}</li>
+                            <li>Current Gameweek: {systemStatus.currentGameweek?.fplEvent.id}</li>
                             <li>Draft Status: {systemStatus.draft.stage}</li>
                             <li>Pending Transfers: {systemStatus.transfers.pending}</li>
                         </ul>

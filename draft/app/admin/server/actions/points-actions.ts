@@ -6,7 +6,6 @@ import type { AdminActionResult, SystemStatusSummary } from '../../types/admin-t
 // Enhanced "Smart Points Update" action with division teams integration
 export async function handleGenerateGameweekPoints({
     contextData,
-    systemStatus,
     gameweek,
 }: {
     contextData: AdminDataContext;
@@ -17,11 +16,7 @@ export async function handleGenerateGameweekPoints({
         console.log('🔄 Checking and updating gameweek points...');
 
         const gameweekService = new GameweekPointsService();
-        const updateResult = await gameweekService.updateGameweekPointsIfNeeded({
-            contextData,
-            systemStatus,
-            gameweek,
-        });
+        const updateResult = await gameweekService.updateGameweekPoints({ contextData, gameweek });
 
         if (updateResult.updated) {
             const message = `✅ Points updated! Generated ${updateResult.gameweeksGenerated.join(', ')} for ${
@@ -62,7 +57,6 @@ export async function handleGenerateGameweekPoints({
 // Enhanced "Force Regenerate All Points" action with division teams integration
 export async function handleForceRegenerateAllPoints({
     contextData,
-    systemStatus,
 }: {
     contextData: AdminDataContext;
     systemStatus: SystemStatusSummary;
@@ -71,7 +65,7 @@ export async function handleForceRegenerateAllPoints({
         console.log('🔄 Force regenerating all points...');
 
         const gameweekService = new GameweekPointsService();
-        const result = await gameweekService.forceFullRegeneration({ contextData, systemStatus });
+        const result = await gameweekService.updateGameweekPoints({ contextData, forceFullRegeneration: true });
 
         // Enhanced success message with points population
         let message = `🔄 All points regenerated! ${result.playerCount} players updated for gameweek ${result.currentGameweek}`;
