@@ -32,7 +32,7 @@ interface TransferFormProps {
     managers: UserTeamsSheetData[];
     currentGameweek: number;
     availableGameweeks: number[];
-    gameweekData: GameWeekData;
+    selectedGameweekData: GameWeekData;
     selectedDivision: DivisionId;
     selectedManager: ManagerId;
     managerRoster?: TeamRoster;
@@ -86,7 +86,10 @@ export function TransferForm({
     const [comment, setComment] = useState('');
     const [validation, setValidation] = useState<TransferValidationResult>(INITIAL_VALIDATION);
 
-    // Get managers for selected division
+    const playersByCode: Record<number, EnhancedPlayerData> = availablePlayers.reduce(
+        (acc, player) => ({ ...acc, [player.code]: player }),
+        {},
+    );
     const divisionsManagers = managers.filter((m) => m.divisionId === selectedDivision);
     const currentManager = divisionsManagers.find((m) => m.userId === selectedManager);
     const ownedPlayersByCode = Object.entries(divisionRosters).reduce((acc: OwnedPlayersByCode, [managerId, team]) => {
@@ -256,6 +259,8 @@ export function TransferForm({
                     <>
                         <div className={styles.section}>
                             <PlayerOutSelector
+                                playersByCode={playersByCode}
+                                teamsByCode={teamsByCode}
                                 roster={managerRoster}
                                 selectedPlayer={playerSelection.playerOut}
                                 onPlayerChange={handlePlayerOutChange}

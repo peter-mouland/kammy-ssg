@@ -5,11 +5,7 @@ import type { CustomPosition, PlayerGameweekStatsData } from '../../players/type
 import type { TeamPositionSlot } from '../../teams/types/team-types';
 import type { EnhancedPlayerData, Points } from '../types/scoring-types';
 import { calculateGameweekPoints, calculateSeasonPoints, getFullBreakdown } from './calculations';
-import {
-    convertToPlayerGameweekStats,
-    convertToPlayerGameweeksStats,
-    convertToSingleGameweeksStats,
-} from './data-conversion';
+import { convertToPlayerGameweeksStats, convertToSingleGameweeksStats } from './data-conversion';
 
 const baselineStats = {
     appearance: 0,

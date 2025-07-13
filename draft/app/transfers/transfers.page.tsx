@@ -35,6 +35,7 @@ export function TransfersPage() {
         }
         setSearchParams(newParams);
     };
+
     return (
         <div className={styles.pageContainer}>
             <PageHeader
@@ -61,6 +62,7 @@ export function TransfersPage() {
             {/* Current Transfers Section */}
             <div className={styles.transfersSection}>
                 <CurrentTransfers
+                    teamsByCode={data.teamsByCode}
                     transfers={data.currentTransfers}
                     currentGameweek={data.currentGameweek}
                     availableGameweeks={data.availableGameweeks}
@@ -89,7 +91,7 @@ export function TransfersPage() {
                         managers={data.managers}
                         currentGameweek={data.currentGameweek}
                         availableGameweeks={data.availableGameweeks}
-                        gameweekData={data.gameweekData}
+                        selectedGameweekData={data.selectedGameweekData}
                         selectedDivision={data.selectedDivision}
                         selectedManager={data.selectedManager}
                         managerRoster={data.managerRoster}

@@ -1,6 +1,8 @@
 /* Location: app/transfers/components/player-out-selector.tsx */
 
 import { useState } from 'react';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { RosterPlayer, TeamRoster } from '../../teams/types/team-types';
 import type { TransferType } from '../types/transfer-types';
 import styles from './player-out-selector.module.css';
@@ -10,9 +12,18 @@ interface PlayerOutSelectorProps {
     selectedPlayer: RosterPlayer | null;
     onPlayerChange: (player: RosterPlayer | null) => void;
     transferType: TransferType;
+    playersByCode: Record<number, EnhancedPlayerData>;
+    teamsByCode: Record<number, FplTeam>;
 }
 
-export function PlayerOutSelector({ roster, selectedPlayer, onPlayerChange, transferType }: PlayerOutSelectorProps) {
+export function PlayerOutSelector({
+    teamsByCode,
+    playersByCode,
+    roster,
+    selectedPlayer,
+    onPlayerChange,
+    transferType,
+}: PlayerOutSelectorProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedPosition, setSelectedPosition] = useState<string>('all');
 
@@ -100,7 +111,9 @@ export function PlayerOutSelector({ roster, selectedPlayer, onPlayerChange, tran
                     filteredPlayers.map((player) => {
                         const displayInfo = getPlayerDisplayInfo(player);
                         const isSelected = selectedPlayer?.playerCode === player.playerCode;
-
+                        const fplPlayer = playersByCode[player.playerCode];
+                        const team = teamsByCode[fplPlayer.team_code];
+                        console.log(fplPlayer.draft);
                         return (
                             <div
                                 key={player.playerCode}
@@ -114,14 +127,16 @@ export function PlayerOutSelector({ roster, selectedPlayer, onPlayerChange, tran
                                     <div className={styles.playerInfo}>
                                         <div className={styles.playerName}>{player.playerName}</div>
                                         <div className={styles.playerDetails}>
-                                            <span className={styles.positionBadge}>{displayInfo.positionType}</span>
-                                            <span className={styles.slotBadge}>{displayInfo.positionSlot}</span>
-                                            {displayInfo.isSubstitute && <span className={styles.subBadge}>SUB</span>}
+                                            <span className={styles.slotBadge}>
+                                                {displayInfo.positionSlot.toUpperCase()}
+                                            </span>
+                                            {displayInfo.isSubstitute && <span className={styles.subBadge}>SUB</span>}•{' '}
+                                            {team.name}
                                         </div>
                                     </div>
 
                                     <div className={styles.playerStats}>
-                                        <div className={styles.statValue}>0 pts</div>
+                                        <div className={styles.statValue}>{fplPlayer.draft.pointsTotal} pts</div>
                                         <div className={styles.statLabel}>Season</div>
                                     </div>
                                 </div>

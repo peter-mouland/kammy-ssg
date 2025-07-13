@@ -8,7 +8,6 @@ import { FootballPitch } from './football-pitch';
 import { GameweekSelector } from './gameweek-selector';
 import { LoanStatus } from './loan-status';
 import { PositionSlotCard } from './position-slot-card';
-import { StatsViewToggle } from './stats-view-toggle';
 import { TeamStats } from './team-stats';
 import styles from './team-view.module.css';
 

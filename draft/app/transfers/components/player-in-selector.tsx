@@ -3,13 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type {
-    ManagerId,
-    PositionSlotKey,
-    RosterByManagerId,
-    RosterPlayer,
-    TeamPositionSlot,
-} from '../../teams/types/team-types';
+import type { RosterPlayer } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import type { OwnedPlayersByCode, PlayerEligibility } from '../types/transfer-form-types';
 import type { TransferType } from '../types/transfer-types';
@@ -48,13 +42,13 @@ export function PlayerInSelector({
             if (ownership.isOwned) {
                 return {
                     isEligible: true,
-                    reason: `Owned by ${ownership.ownerName} - loan request`,
+                    reason: 'loan request',
                     icon: '🔄',
                 };
             } else {
                 return {
                     isEligible: true,
-                    reason: 'Unowned player - direct acquisition',
+                    reason: 'Unowned player',
                     icon: '✅',
                 };
             }
@@ -230,7 +224,8 @@ export function PlayerInSelector({
                         <div className={styles.playerInfo}>
                             <div className={styles.playerName}>{player.web_name}</div>
                             <div className={styles.playerDetails}>
-                                {player.draft?.position} • {player.team_code}
+                                <span className={styles.slotBadge}>{player.draft?.position.toUpperCase()}</span> •{' '}
+                                {teamsByCode[player.team_code].name}
                             </div>
                         </div>
 

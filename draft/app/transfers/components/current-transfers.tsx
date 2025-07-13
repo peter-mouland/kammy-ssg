@@ -1,6 +1,7 @@
 /* Location: app/transfers/components/current-transfers.tsx */
 
 import { Table, type TableColumn } from '../../_shared/components/table';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId } from '../../teams/types/team-types';
 import type { TransferRecommendation, TransferValidationResult } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
@@ -16,9 +17,11 @@ interface CurrentTransfersProps {
     availableGameweeks: number[];
     selectedGameweek: number;
     selectedDivision: DivisionId;
+    teamsByCode: Record<number, FplTeam>;
 }
 
 export function CurrentTransfers({
+    teamsByCode,
     transfers,
     currentGameweek,
     selectedGameweek,
@@ -54,9 +57,7 @@ export function CurrentTransfers({
                     <div className={styles.player_name}>{item.transfer.playerOut.web_name}</div>
                     <div className={styles.player_details}>
                         <span className={styles.position}>{item.transfer.playerOut.draft.position}</span>
-                        <span className={styles.team}>
-                            {item.transfer.playerOut.team_name || `Team ${item.transfer.playerOut.team_code}`}
-                        </span>
+                        <span className={styles.team}>{teamsByCode[item.transfer.playerOut.team_code].name}</span>
                     </div>
                 </div>
             ),
@@ -70,9 +71,7 @@ export function CurrentTransfers({
                     <div className={styles.player_name}>{item.transfer.playerIn.web_name}</div>
                     <div className={styles.player_details}>
                         <span className={styles.position}>{item.transfer.playerIn.draft.position}</span>
-                        <span className={styles.team}>
-                            {item.transfer.playerIn.team_name || `Team ${item.transfer.playerIn.team_code}`}
-                        </span>
+                        <span className={styles.team}>{teamsByCode[item.transfer.playerIn.team_code].name}</span>
                     </div>
                 </div>
             ),

@@ -129,22 +129,22 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                 description="Run specific processing steps individually (for debugging)"
             >
                 <AdminGrid columns="auto" minWidth="200px">
+                    <AdminButton variant="danger" onClick={() => handleProcessGameweek('all')} disabled={isLoading}>
+                        Regenerate All Points
+                    </AdminButton>
                     <AdminButton
                         variant="secondary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek - 1)}
-                        disabled={isLoading}
+                        disabled={isLoading || currentGameweek <= 1}
                     >
-                        Regenerate Last GameWeek
+                        Regenerate Last GameWeek ({currentGameweek - 1})
                     </AdminButton>
                     <AdminButton
-                        variant="secondary"
+                        variant="primary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek)}
                         disabled={isLoading}
                     >
-                        Regenerate This GameWeek
-                    </AdminButton>
-                    <AdminButton variant="secondary" onClick={() => handleProcessGameweek('all')} disabled={isLoading}>
-                        Regenerate All Points
+                        Regenerate This GameWeek ({currentGameweek})
                     </AdminButton>
                 </AdminGrid>
             </AdminSection>

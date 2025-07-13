@@ -24,13 +24,14 @@ import type {
 } from './fpl-types';
 import { getGameweekData } from './gameweeks';
 
-export const convertFplElementToCache = (element: FplPlayerData) => ({
+export const convertFplElementToCache = (element: FplPlayerData, teamsByCode: Record<number, FplTeam>) => ({
     id: element.id,
     code: element.code,
     first_name: element.first_name,
     second_name: element.second_name,
     web_name: element.web_name,
     team_code: element.team_code,
+    team_name: teamsByCode[element.team_code],
     form: element.form,
     now_cost: element.now_cost,
 });
@@ -177,9 +178,8 @@ export class FplFirestore {
             playerIds.push(player.id);
             return acc;
         }, {});
-        const fplPlayerGameweeksById = await this.getBatchPlayerDetailedStats(playerIds);
-
         const filteredPlayers = players.filter((player) => sheetsPlayersById[player.id]);
+        const fplPlayerGameweeksById = await this.getBatchPlayerDetailedStats(playerIds);
 
         if (filteredPlayers.length === 0) {
             throw new Error('No players found that exist in both FPL data and sheets');
@@ -258,9 +258,12 @@ export class FplFirestore {
     /**
      * Populate elements document with fresh data (minimal fields only)
      */
-    async populateElements(elementsData: FplPlayerData[]) {
+    async populateElements(elementsData: FplPlayerData[], teams) {
         console.log('🎉 Populating FPL_BOOTSTRAP elements document with fresh data...');
-        const filteredElements: FilteredFplPlayerData[] = elementsData.map(convertFplElementToCache);
+        const teamsByCode = teams.reduce((acc, e) => ({ ...acc, [e.code]: e }), {});
+        const filteredElements: FilteredFplPlayerData[] = elementsData.map((e) =>
+            convertFplElementToCache(e, teamsByCode),
+        );
 
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
             lastUpdated: new Date().toISOString(),
@@ -277,7 +280,7 @@ export class FplFirestore {
         const bootstrapData = await fplApi.getFplBootstrapData();
         const teams = await this.populateTeams(bootstrapData.teams);
         const events = await this.populateEvents(bootstrapData.events);
-        const elements = await this.populateElements(bootstrapData.elements);
+        const elements = await this.populateElements(bootstrapData.elements, bootstrapData.teams);
         return { teams, events, elements };
     }
 

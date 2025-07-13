@@ -7,7 +7,7 @@ import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { FplFirestore } from './fpl-firestore';
-import type { FplPlayerSeasonData, GameWeekData } from './fpl-types';
+import type { FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
 
 interface Doc<T> {
     lastUpdated: string;
@@ -82,7 +82,7 @@ export class FplApiCache {
     /**
      * Get teams by code using unified cache
      */
-    async getTeamsByCode() {
+    async getTeamsByCode(): Promise<Record<FplTeam['code'], FplTeam>> {
         return await dataCache.get(
             'fpl:teams-by-code',
             async () => {

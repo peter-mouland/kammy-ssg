@@ -98,11 +98,12 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             accessor: (player) => formatPlayerName(player, 'full'),
             sortable: true,
             render: (_, player) => {
+                const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
                 const position = getPlayerPosition(player);
                 return (
                     <div className={styles.playerInfo}>
                         <div className={styles.playerAvatar} style={{ backgroundColor: getPositionColor(position) }}>
-                            {getPositionDisplayName(position)}
+                            <img src={img} loading="lazy" alt="" width={35} />
                         </div>
                         <div className={styles.playerDetails}>
                             <div className={styles.playerName}>
