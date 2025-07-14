@@ -8,16 +8,15 @@ import type { PlayerGameweekStatsData } from '../../../players/types/player-type
 import type {
     DivisionId,
     DivisionTeamsDocument,
-    PositionSlotKey,
+    PositionSlotKey, TeamGameweekData,
     TeamPositionSlot,
 } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { generateGameweekData } from '../../lib/generators';
 import type { EnhancedPlayerData, Points } from '../../types/scoring-types';
-import { getDivisionTeamsDocument, updateDivisionTeamsDocument } from './division-teams.service';
+import { getDivisionTeamsDocument } from './division-teams.service';
 
 export class DivisionGameweekPointsService {
-    private client: FirestoreClient;
     private contextData: AdminDataContext;
     private gameweek?: number;
     private playerIds: number[];
@@ -30,7 +29,6 @@ export class DivisionGameweekPointsService {
         contextData: AdminDataContext;
         gameweek?: number;
     }) {
-        this.client = new FirestoreClient();
         this.contextData = contextData;
         this.gameweek = gameweek;
 
@@ -46,141 +44,49 @@ export class DivisionGameweekPointsService {
         this.fplPlayers = fplPlayers.filter((player) => sheetsPlayersById[player.id]);
         this.playerIds = this.fplPlayers.map((p) => p.id);
     }
+}
 
-    async populatePoints(
-        targetGameweeks: number[],
-        options: { forceFullRegeneration?: boolean } = {},
-    ): Promise<{
-        divisionsProcessed: number;
-        documentsUpdated: number;
-        playersUpdated: number;
-        errors: string[];
-    }> {
-        console.log(`🔄 Populating points into division documents for gameweeks: ${targetGameweeks.join(', ')}`);
-        const divisions = this.contextData.sheetData.divisions;
+type CalcProps = {
+    gameweek: number;
+    userId: string;
+    teamData: TeamGameweekData;
+    divisionDoc: DivisionTeamsDocument;
+    previousDivisionDoc: DivisionTeamsDocument;
+}
+export async function calculateSingleTeamPoints({ gameweek, userId, teamData, divisionDoc, previousDivisionDoc }: CalcProps) {
+    const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
+    const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
+    const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);
+    const playerGameweekPoints = generateGameweekData(rosterPlayers, fplPlayerGameweeksById, gameweek);
 
-        const results = {
-            divisionsProcessed: 0,
-            documentsUpdated: 0,
-            playersUpdated: 0,
-            errors: [] as string[],
-        };
+    // Update each position slot
+    for (const [slotKey, positionSlot] of Object.entries<TeamPositionSlot>(teamData.roster)) {
+        const slot = slotKey as PositionSlotKey;
 
-        const sortedGameweeks = [...targetGameweeks].sort((a, b) => a - b);
-        // const sortedGameweeks = [32, 33, 34, 35, 36, 37, 38].sort((a, b) => a - b);
-
-        for (const division of divisions) {
-            try {
-                results.divisionsProcessed++;
-                console.log(`🔄 Processing division: ${division.id}`);
-
-                for (const gameweekId of sortedGameweeks) {
-                    const playersUpdated = await this.populateGameweekPoints(division.id, gameweekId, {
-                        ...options,
-                        isFirstGameweekInRegeneration: gameweekId === sortedGameweeks[0],
-                    });
-
-                    if (playersUpdated > 0) {
-                        results.documentsUpdated++;
-                        results.playersUpdated += playersUpdated;
-                        console.log(`✅ Updated ${playersUpdated} players in ${division.id}_gw${gameweekId}`);
-                    }
-                }
-            } catch (error) {
-                const errorMsg = `Failed to process division ${division.id}, probably an error in populateGameweekPoints: ${
-                    error instanceof Error ? error.message : 'Unknown error'
-                }`;
-                console.error(`❌ ${errorMsg}`);
-                results.errors.push(errorMsg);
-            }
+        // Update gameweek points and stats
+        const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
+        const prevGameweek = previousDivisionDoc.teams[userId].roster[slot]
+        if (!playerGameweek) {
+            console.error(
+                `🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`,
+            );
         }
-
-        console.log(
-            `✅ Points population complete: ${results.documentsUpdated} documents updated, ${results.playersUpdated} players updated`,
+        const updatedPositionSlot = updatePositionSlotPoints(
+            positionSlot,
+            gameweek,
+            playerGameweek.stats || createEmptyStats(),
+            playerGameweek.points || createEmptyPoints(),
+            prevGameweek
         );
-        return results;
-    }
-    async populateGameweekPoints(
-        divisionId: DivisionId,
-        gameweek: number,
-        options: {
-            forceTransfers?: boolean;
-            forceFullRegeneration?: boolean;
-            isFirstGameweekInRegeneration?: boolean;
-        } = {},
-    ): Promise<number> {
-        try {
-            const divisionDoc = await upsertDivisionTeamsDocument(divisionId, gameweek, options);
 
-            console.log(`🔄 Populating points for ${divisionId}_gw${gameweek}`);
-
-            let playersUpdated = 0;
-            let hasUpdates = false;
-
-            // Update each team's roster
-            for (const [userId, teamData] of Object.entries(divisionDoc.teams)) {
-                if (!teamData.roster) {
-                    console.warn(`⚠️ No roster found for user ${userId} in ${divisionId}_gw${gameweek}`);
-                    continue;
-                }
-                const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
-                const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
-                const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);
-                const playerGameweekPoints = generateGameweekData(rosterPlayers, fplPlayerGameweeksById, gameweek);
-
-                // Update each position slot
-                for (const [slotKey, positionSlot] of Object.entries<TeamPositionSlot>(teamData.roster)) {
-                    const slot = slotKey as PositionSlotKey;
-
-                    // Update gameweek points and stats
-                    const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
-                    if (!playerGameweek) {
-                        console.error(
-                            `🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`,
-                        );
-                    }
-                    const updatedPositionSlot = updatePositionSlotPoints(
-                        positionSlot,
-                        gameweek,
-                        playerGameweek.stats || createEmptyStats(),
-                        playerGameweek.points || createEmptyPoints(),
-                        options.forceFullRegeneration && options.isFirstGameweekInRegeneration,
-                    );
-
-                    // Update the roster
-                    divisionDoc.teams[userId].roster[slot] = updatedPositionSlot;
-                    playersUpdated++;
-                    hasUpdates = true;
-
-                    console.log(
-                        `✓ Updated ${positionSlot.player.playerName} (${slot}) - ${playerGameweek.points.total || 0} points`,
-                    );
-                }
-            }
-
-            // Save the updated document if there were changes
-            if (hasUpdates) {
-                await updateDivisionTeamsDocument(divisionId, gameweek, {
-                    teams: divisionDoc.teams,
-                    'metadata.pointsLastUpdated': new Date().toISOString(),
-                    'metadata.pointsLastGameweek': gameweek,
-                });
-
-                console.log(`✅ Saved updates to ${divisionId}_gw${gameweek}`);
-            }
-
-            return playersUpdated;
-        } catch (error) {
-            console.error(`❌ Failed to populate points for ${divisionId} GW${gameweek}:`, error);
-            throw error;
-        }
+        divisionDoc.teams[userId].roster[slot] = updatedPositionSlot;
     }
 }
 
 export async function upsertDivisionTeamsDocument(divisionId: DivisionId, gameweek: number, options) {
     let divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
 
-    if (!divisionDoc || options.forceTransfers || options.forceFullRegeneration) {
+    if (!divisionDoc || options.forceFullRegeneration) {
         console.log(`📄 Document ${divisionId}_gw${gameweek} doesn't exist - creating it...`);
 
         // Create the missing document by copying from previous gameweek
@@ -345,70 +251,16 @@ async function createGameweekDocumentFromSource(
 
 /**
  * Update position slot with new gameweek points and smart season total accumulation
- * FIXED: Only adds gameweek points to season if this gameweek hasn't been included yet
- * FOR FULL REGENERATION: Can reset season totals to start fresh
  */
 function updatePositionSlotPoints(
     positionSlot: TeamPositionSlot,
     gameweek: number,
     gameweekStats: PlayerGameweekStatsData,
     gameweekPoints: Points,
-    isGameweekOneReset: boolean = false,
+    previousGameweekPositionSlot: TeamPositionSlot,
 ): TeamPositionSlot {
-    const now = new Date().toISOString();
-
-    // For full regeneration, reset season totals on the first gameweek
-    if (isGameweekOneReset) {
-        console.log(
-            `🔄 FULL REGENERATION: Resetting season totals for ${positionSlot.player.playerName} and starting fresh from GW${gameweek}`,
-        );
-
-        const updated: TeamPositionSlot = {
-            ...positionSlot,
-            gameweek: {
-                stats: gameweekStats,
-                points: gameweekPoints,
-            },
-            season: {
-                // Start fresh with just this gameweek's data
-                stats: { ...gameweekStats },
-                points: { ...gameweekPoints },
-                seasonUpToGameweek: gameweek,
-                seasonGeneratedOn: now,
-            },
-        };
-
-        return updated;
-    }
-
-    // Normal incremental logic (existing logic)
-    // Ensure season tracking fields exist (for backward compatibility)
-    const currentSeasonUpToGameweek = positionSlot.season.seasonUpToGameweek || 0;
-    const currentSeasonGeneratedOn = positionSlot.season.seasonGeneratedOn || now;
-
-    // Determine if we need to add this gameweek to season totals
-    const shouldAddToSeason = gameweek > currentSeasonUpToGameweek;
-
-    let updatedSeasonStats = positionSlot.season.stats;
-    let updatedSeasonPoints = positionSlot.season.points;
-    let updatedSeasonUpToGameweek = currentSeasonUpToGameweek;
-    let updatedSeasonGeneratedOn = currentSeasonGeneratedOn;
-
-    if (shouldAddToSeason) {
-        // Only add to season totals if this gameweek hasn't been included yet
-        updatedSeasonStats = addStatsToSeason(positionSlot.season.stats, gameweekStats);
-        updatedSeasonPoints = addPointsToSeason(positionSlot.season.points, gameweekPoints);
-        updatedSeasonUpToGameweek = gameweek;
-        updatedSeasonGeneratedOn = now;
-
-        console.log(
-            `📈 Adding GW${gameweek} to season totals for player ${positionSlot.player.playerName} (was up to GW${currentSeasonUpToGameweek})`,
-        );
-    } else {
-        console.log(
-            `⏭️ Skipping season addition for GW${gameweek} - already included (season up to GW${currentSeasonUpToGameweek})`,
-        );
-    }
+    const updatedSeasonStats = addStatsToSeason(previousGameweekPositionSlot.season.stats, gameweekStats);
+    const updatedSeasonPoints = addPointsToSeason(previousGameweekPositionSlot.season.points, gameweekPoints);
 
     // Create updated position slot
     const updated: TeamPositionSlot = {
@@ -420,8 +272,8 @@ function updatePositionSlotPoints(
         season: {
             stats: updatedSeasonStats,
             points: updatedSeasonPoints,
-            seasonUpToGameweek: updatedSeasonUpToGameweek,
-            seasonGeneratedOn: updatedSeasonGeneratedOn,
+            seasonUpToGameweek: gameweek,
+            seasonGeneratedOn: new Date().toISOString(),
         },
     };
 

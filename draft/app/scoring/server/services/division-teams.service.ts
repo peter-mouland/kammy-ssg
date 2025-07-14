@@ -8,6 +8,7 @@ import type {
     TeamGameweekData,
     UserTeamRoster,
 } from '../../../teams/types/team-types';
+import { GameweekPointsService } from './gameweek-points.service';
 
 /**
  * Get division teams document for specific gameweek
@@ -206,12 +207,23 @@ export async function updateDivisionTeamsDocument(
         const docId = `${divisionId}_gw${gameweek}`;
         const docRef = db.collection('division-teams').doc(docId);
 
-        const updateData = {
-            ...updates,
-            'metadata.updatedAt': new Date().toISOString(),
-        };
+        await docRef.update(updates);
 
-        await docRef.update(updateData);
+        // Update metadata
+        const ps = new GameweekPointsService();
+        await ps.updatePointsMetadata({
+            lastGeneratedGameweek: gameweek,
+            lastGeneratedAt: new Date().toISOString(),
+            currentGameweek: gameweek,
+            generationHistory: [
+                {
+                    gameweek: gameweek,
+                    generatedAt: new Date().toISOString(),
+                    playerCount: 0,
+                    type: 'selective',
+                },
+            ],
+        });
 
         console.log(`✅ Updated division teams document: ${docId}`);
     } catch (error) {

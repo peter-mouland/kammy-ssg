@@ -9,8 +9,6 @@ import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import type { DraftAction } from '../../../draft/types/draft-types';
 import type { DivisionId } from '../../../teams/types/team-types';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
-import type { AdminActionResult } from '../../types/admin-types';
-import { handleForceRegenerateAllPoints, handleGenerateGameweekPoints } from '../actions/points-actions';
 import { getSystemStatus } from './system-status.service';
 
 const firestore = new FplFirestore();
@@ -51,56 +49,6 @@ export class AdminOrchestrator {
 
         console.log('✅ AdminOrchestrator.getSharedContext() - Context loaded');
         return context;
-    }
-
-    /**
-     * Process gameweek
-     */
-    async processGameweek(params: { type: string; gameweek: number }): Promise<AdminActionResult> {
-        try {
-            console.log(`🔄 AdminOrchestrator.processGameweek(${params.gameweek})`);
-            const contextData = await this.getSharedContext();
-            const systemStatus = await this.getSystemStatus();
-
-            switch (params.type) {
-                case 'gameweek': {
-                    const result = await handleGenerateGameweekPoints({
-                        contextData,
-                        systemStatus,
-                        gameweek: params.gameweek,
-                    });
-                    this.invalidateCachesForAction('processGameweek');
-
-                    return result;
-                }
-                case 'all': {
-                    const result = await handleForceRegenerateAllPoints({
-                        contextData,
-                        systemStatus,
-                    });
-                    this.invalidateCachesForAction('processGameweek');
-
-                    return result;
-                }
-                default: {
-                    return {
-                        success: false,
-                        message: 'Gameweek processing failed',
-                    };
-                }
-            }
-        } catch (error) {
-            return {
-                success: false,
-                message: error instanceof Error ? error.message : 'Gameweek processing failed',
-                data: {
-                    gameweek: params.gameweek,
-                    transfersProcessed: 0,
-                    pointsCalculated: 0,
-                    standingsUpdated: false,
-                },
-            };
-        }
     }
 
     /**

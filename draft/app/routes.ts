@@ -19,6 +19,8 @@ export default [
     route('api/cache', 'api/cache/api.cache.ts'),
 
     // Admin routes with nested sections (legacy - for backward compatibility)
+    route('admin-progress/:jobId', 'admin/admin-progress.route.tsx'),
+
     route('admin', 'admin/admin.route.tsx', [
         index('admin/admin-overview.route.tsx'),
         route('draft', 'admin/admin-draft.route.tsx'),

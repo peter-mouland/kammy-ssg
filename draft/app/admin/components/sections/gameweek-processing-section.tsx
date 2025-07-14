@@ -1,5 +1,6 @@
-/* Location: app/admin/components/sections/gameweek-processing-section.tsx */
+// app/admin/components/sections/gameweek-processing-section.tsx
 
+import { useEffect, useState } from 'react';
 import { useFetcher } from 'react-router';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import type { SystemStatusSummary } from '../../types/admin-types';
@@ -10,8 +11,8 @@ import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
 import { AdminButton } from '../ui/admin-button';
 import { AdminMessage } from '../ui/admin-message';
+import { ProgressModal } from '../ui/progress-modal';
 import { StatusCard } from '../ui/status-card';
-import styles from './gameweek-processing-section.module.css';
 
 interface GameweekProcessingSectionProps {
     systemStatus: SystemStatusSummary;
@@ -20,6 +21,10 @@ interface GameweekProcessingSectionProps {
 
 export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSectionProps) {
     const fetcher = useFetcher();
+
+    // Progress modal state
+    const [showProgressModal, setShowProgressModal] = useState(false);
+    const [currentJobId, setCurrentJobId] = useState<string | null>(null);
 
     const isLoading = fetcher.state !== 'idle';
     const actionData = fetcher.data;
@@ -36,13 +41,23 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
 
         fetcher.submit(formData, {
             method: 'POST',
-            action: '/admin', // Submit to parent route
+            action: '/admin',
         });
     };
 
+    // Replace the inline if statement with useEffect:
+    useEffect(() => {
+        if (actionData?.jobId && !currentJobId && !showProgressModal) {
+            console.log('🔍 Setting up progress modal for jobId:', actionData.jobId);
+            setCurrentJobId(actionData.jobId);
+            setShowProgressModal(true);
+            // Clear the fetcher data to prevent re-triggering
+            fetcher.data = null;
+        }
+    }, [actionData?.jobId, currentJobId, showProgressModal]);
+
     return (
         <AdminContainer>
-            {/* Main Gameweek Processing */}
             <AdminSection
                 title="Gameweek Processing"
                 icon={<Icons.ChartIcon />}
@@ -59,9 +74,7 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                                 Process Gameweek {currentGameweek}
                             </AdminButton>
                         ) : (
-                            <div className={styles.statusBadge + ' ' + styles.success}>
-                                ✅ Gameweek {currentGameweek} Processed
-                            </div>
+                            <AdminMessage type="success">All gameweeks up to date</AdminMessage>
                         )}
                     </ActionBar>
                 }
@@ -86,61 +99,53 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                         status={needsProcessing ? 'warning' : 'healthy'}
                     />
                 </AdminGrid>
-
-                {/* Processing Overview */}
-                <div className={styles.processingOverview}>
-                    <h4>Gameweek Processing Steps</h4>
-                    <div className={styles.processingSteps}>
-                        <div className={styles.step}>
-                            <span className={styles.stepNumber}>1</span>
-                            <div className={styles.stepContent}>
-                                <h5>Apply Approved Transfers</h5>
-                                <p>Process all approved transfers for the gameweek and update team rosters</p>
-                            </div>
-                        </div>
-                        <div className={styles.step}>
-                            <span className={styles.stepNumber}>2</span>
-                            <div className={styles.stepContent}>
-                                <h5>Calculate Points</h5>
-                                <p>Generate points for all players based on FPL stats and custom scoring rules</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </AdminSection>
-
-            {/* Legacy Actions (for backward compatibility) */}
-            <AdminSection
-                title="Individual Actions"
-                icon={<Icons.SettingsIcon />}
-                description="Run specific processing steps individually (for debugging)"
-            >
-                <AdminGrid columns="auto" minWidth="200px">
-                    <AdminButton variant="danger" onClick={() => handleProcessGameweek('all')} disabled={isLoading}>
+            <AdminSection title="Gameweek Processing: Actions" icon={<Icons.ChartIcon />}>
+                <AdminGrid columns="auto" minWidth="250px">
+                    <AdminButton
+                        icon={<Icons.RefreshIcon />}
+                        variant="danger"
+                        onClick={() => handleProcessGameweek('all')}
+                        disabled={isLoading}
+                    >
                         Regenerate All Points
                     </AdminButton>
+
                     <AdminButton
                         variant="secondary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek - 1)}
                         disabled={isLoading || currentGameweek <= 1}
+                        icon={'↩️'}
                     >
-                        Regenerate Last GameWeek ({currentGameweek - 1})
+                        Regenerate Last Gameweek
                     </AdminButton>
+
                     <AdminButton
                         variant="primary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek)}
                         disabled={isLoading}
+                        icon={'▶️'}
                     >
-                        Regenerate This GameWeek ({currentGameweek})
+                        Run Gameweek {currentGameweek}
                     </AdminButton>
+                    {actionData?.error && <AdminMessage type="error">Error: ${actionData.error}</AdminMessage>}
                 </AdminGrid>
             </AdminSection>
 
-            {/* Action Messages */}
-            {actionData?.success && actionData.message && (
-                <AdminMessage type="success">{actionData.message}</AdminMessage>
-            )}
-            {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
+            <ProgressModal
+                isOpen={showProgressModal}
+                jobId={currentJobId}
+                onClose={() => {
+                    setShowProgressModal(false);
+                    setCurrentJobId(null);
+                }}
+                onComplete={() => {
+                    setTimeout(() => window.location.reload(), 1000);
+                }}
+                onError={(update) => {
+                    console.error('Progress error:', update);
+                }}
+            />
         </AdminContainer>
     );
 }

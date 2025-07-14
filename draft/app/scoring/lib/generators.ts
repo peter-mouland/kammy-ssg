@@ -57,7 +57,7 @@ export function generateSeasonData(
         });
 }
 
-export type GamweekPointsAndStats = {
+export type GameweekPointsAndStats = {
     points: Points;
     stats: PlayerGameweekStatsData;
     metadata: unknown;
@@ -74,7 +74,7 @@ export function generateGameweekData(
 ) {
     console.log(`🔄 generateGameweekData - Processing ${fplPlayers.length} players for gameweek: ${gameweek}`);
 
-    const result: Record<FplPlayerData['id'], Record<GameWeekData['fplEvent']['id'], GamweekPointsAndStats>> = {};
+    const result: Record<FplPlayerData['id'], Record<GameWeekData['fplEvent']['id'], GameweekPointsAndStats>> = {};
 
     fplPlayers.forEach((fplPlayer) => {
         const position = fplPlayer.playerPosition.toLowerCase() as CustomPosition;
@@ -83,7 +83,7 @@ export function generateGameweekData(
             throw new Error('position should never be SUB here, please check draft data and re-submit');
         }
         const allGameweekData = fplPlayerGameweeksById[fplPlayer.playerId]?.history || [];
-        const gameweekPoints: Record<GameWeekData['fplEvent']['id'], GamweekPointsAndStats> = {};
+        const gameweekPoints: Record<GameWeekData['fplEvent']['id'], GameweekPointsAndStats> = {};
 
         const gameweekData = allGameweekData.filter((gw) => gw.round === gameweek); // step 1: find gw's (account for double gw's)
         let points;

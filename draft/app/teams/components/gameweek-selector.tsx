@@ -19,8 +19,8 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     availableGameweeks,
     onGameweekChange,
 }) => {
-    const selectedGameweek = selectedGameweekData.fplEvent.id;
-    const currentGameweek = currentGameweekData.fplEvent.id;
+    const selectedGameweek = selectedGameweekData?.fplEvent.id || 0;
+    const currentGameweek = currentGameweekData?.fplEvent.id || 0;
     const [isOpen, setIsOpen] = useState(false);
 
     const handlePrevious = () => {
@@ -47,8 +47,8 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
             </div>
 
             <div className={styles.endData}>
-                {selectedGameweekData.end.toLocaleDateString('en-gb')}
-                {selectedGameweekData.end.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
+                {selectedGameweekData?.end.toLocaleDateString('en-gb')}
+                {selectedGameweekData?.end.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
             </div>
 
             <div className={styles.selectorControls}>

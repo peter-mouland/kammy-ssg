@@ -11,7 +11,6 @@ import {
 import { getInvalidationKeys } from '../_shared/lib/cache/cache-config';
 import { dataCache } from '../_shared/lib/cache/data-cache.service';
 import { requestFormData } from '../_shared/lib/form-data';
-import { fplApiCache } from '../_shared/lib/fpl/api-cache';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
 import type { DraftAction } from '../draft/types/draft-types';
 import type { DivisionId } from '../teams/types/team-types';
@@ -36,20 +35,11 @@ interface AdminLoaderData {
     loadedAt: string;
 }
 
-interface AdminActionData {
-    success?: boolean;
-    error?: string;
-    message?: string;
-    data?: any;
-}
-
-/**
- * Shared loader for all admin routes - loads system status and shared context once
- */
-export async function loader({ request }: LoaderFunctionArgs): Promise<AdminLoaderData> {
+export async function loader({ request }: LoaderFunctionArgs) {
+    const url = new URL(request.url);
     console.log('🔄 Loading admin dashboard data...');
 
-    const url = new URL(request.url);
+    const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
     const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
     const orchestrator = new AdminOrchestrator();
     const teamsByCode = await fplApiCache.getTeamsByCode();
@@ -63,7 +53,6 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<AdminLoad
     let transfersData: Record<string, TransferAdminOverviewData> | null = null;
 
     const isTransferRoute = url.pathname.includes('/admin/transfers') || url.pathname === '/admin';
-    const isCacheRoute = url.pathname.includes('/admin/settings') || url.pathname === '/admin';
 
     if (isTransferRoute) {
         console.log('🔄 Loading transfer admin data...');
@@ -93,7 +82,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
     const actionType = formData.get('actionType')?.trim();
     const divisionId = formData.get('divisionId')?.trim() as DivisionId;
     const draftActionType = formData.get('draftAction')?.trim() as DraftAction;
-    const gameweekActionType = formData.get('gameweekAction')?.trim();
+    const gameweekActionType = formData.get('gameweekAction')?.trim() || 'all';
     const gameweek = Number.parseInt(formData.get('gameweek') as string, 10) || undefined;
     if (!actionType) {
         return data<AdminActionData>({
@@ -125,8 +114,34 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             }
 
             case 'processGameweek': {
+                console.log('🔍 processGameweek action triggered with:', { actionType, gameweekActionType, gameweek });
+
                 dataCache.clear();
-                result = await orchestrator.processGameweek({ type: gameweekActionType, gameweek });
+
+                const { generateJobId } = await import('./libs/admin-progress.server');
+                const { progressStore } = await import('./libs/progress-store.server');
+                const { regeneratePoints } = await import('./libs/background-jobs.server');
+                const jobType = gameweekActionType;
+                const jobId = generateJobId();
+                console.log('🔍 Generated jobId:', jobId);
+
+                progressStore.createJob(jobId, jobType);
+                console.log('🔍 Created job in progressStore with type:', jobType);
+
+                // Add a small delay to let the SSE connection establish first
+                setTimeout(() => {
+                    console.log('🔍 About to call regeneratePoints with delay:', { jobId, gameweekId: gameweek });
+                    regeneratePoints(jobId, orchestrator, gameweek || undefined).catch((error) => {
+                        console.error('🚨 Background job error:', error);
+                    });
+                    console.log('🔍 regeneratePoints call initiated');
+                }, 100); // 100ms delay
+
+                result = {
+                    success: true,
+                    jobId,
+                    message: `Started ${jobType} job with progress tracking`,
+                };
                 break;
             }
 
@@ -146,6 +161,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             // Cache management actions using the unified cache API
             case 'resetDatabase': {
                 await orchestrator.clearAllData();
+                result = { success: true, message: 'Database reset completed' };
                 break;
             }
             case 'refreshSheetsData': {
