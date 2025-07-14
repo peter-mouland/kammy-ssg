@@ -24,16 +24,14 @@ import type {
 } from './fpl-types';
 import { getGameweekData } from './gameweeks';
 
-export const convertFplElementToCache = (element: FplPlayerData, teamsByCode: Record<number, FplTeam>) => ({
+export const convertFplElementToCache = (element: FplPlayerData) => ({
     id: element.id,
     code: element.code,
     first_name: element.first_name,
     second_name: element.second_name,
     web_name: element.web_name,
     team_code: element.team_code,
-    team_name: teamsByCode[element.team_code],
     form: element.form,
-    now_cost: element.now_cost,
 });
 
 export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) => ({
@@ -216,8 +214,8 @@ export class FplFirestore {
 
             // populate base db info
             results.bootstrap = await this.populateBootstrap();
+            results.elementDetailedStats = await this.populatePlayerDetailedStats(playerIds); // must go before generateAndCacheEnhancedData
             results.enhanced = await this.generateAndCacheEnhancedData();
-            results.elementDetailedStats = await this.populatePlayerDetailedStats(playerIds);
 
             return {
                 success: true,
@@ -258,12 +256,9 @@ export class FplFirestore {
     /**
      * Populate elements document with fresh data (minimal fields only)
      */
-    async populateElements(elementsData: FplPlayerData[], teams) {
+    async populateElements(elementsData: FplPlayerData[]) {
         console.log('🎉 Populating FPL_BOOTSTRAP elements document with fresh data...');
-        const teamsByCode = teams.reduce((acc, e) => ({ ...acc, [e.code]: e }), {});
-        const filteredElements: FilteredFplPlayerData[] = elementsData.map((e) =>
-            convertFplElementToCache(e, teamsByCode),
-        );
+        const filteredElements: FilteredFplPlayerData[] = elementsData.map((e) => convertFplElementToCache(e));
 
         await this.client.setDocument(this.client.collections.FPL_BOOTSTRAP, 'elements', {
             lastUpdated: new Date().toISOString(),
@@ -278,9 +273,16 @@ export class FplFirestore {
      */
     async populateBootstrap() {
         const bootstrapData = await fplApi.getFplBootstrapData();
+        const sheetPlayers = await readPlayers();
+        const sheetsPlayersById = sheetPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+            acc[player.id] = player;
+            return acc;
+        }, {});
+        const availablePlayers = bootstrapData.elements.filter((player) => sheetsPlayersById[player.id]);
+
         const teams = await this.populateTeams(bootstrapData.teams);
         const events = await this.populateEvents(bootstrapData.events);
-        const elements = await this.populateElements(bootstrapData.elements, bootstrapData.teams);
+        const elements = await this.populateElements(availablePlayers);
         return { teams, events, elements };
     }
 

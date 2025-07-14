@@ -11,6 +11,11 @@ import { findPlayerInRoster } from '../find-player-in-roster';
  */
 export function validatePositionCompatibility(context: TransferRuleContext): RuleValidationResult {
     const { transfer, divisionRosters } = context;
+
+    if (!transfer.playerIn.draft) {
+        console.error(' 🚨 : draft data doesnt exist, re-run points');
+    }
+
     const playerIn = transfer.playerIn;
     const playerOut = transfer.playerOut;
     const playerInPosition = playerIn.draft.position;

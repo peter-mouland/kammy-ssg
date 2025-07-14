@@ -45,13 +45,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request, context }: ActionFunctionArgs) {
     try {
-        const formData = await requestFormData({ request, context });
-
-        // Dynamic import to keep server code on server
-        const { handleLeagueStandingsAction } = await import('./server/league-standings.server');
-        const result = await handleLeagueStandingsAction(formData);
-
-        return data<ActionData>(result);
+        return data<ActionData>();
     } catch (error) {
         console.error('League standings action error:', error);
         return data<ActionData>({

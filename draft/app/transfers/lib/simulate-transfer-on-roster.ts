@@ -8,6 +8,10 @@ import { findPlayerInRoster } from './find-player-in-roster';
 export function simulateTransferOnRoster(currentRoster: TeamRoster, transfer: ProcessedTransfer): TeamRoster {
     const simulatedRoster = JSON.parse(JSON.stringify(currentRoster)) as TeamRoster;
 
+    if (!transfer.playerIn.draft) {
+        console.error(' 🚨 : draft data doesnt exist, re-run points');
+    }
+
     switch (transfer.transferType) {
         case 'NEW_PLAYER':
         case 'TRANSFER':

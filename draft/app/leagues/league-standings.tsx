@@ -1,7 +1,7 @@
 /* Location: app/leagues/league-standings.tsx */
 
 import { useMemo } from 'react';
-import { Link, useActionData, useLoaderData, useNavigate, useSearchParams } from 'react-router';
+import { Link, useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
@@ -347,7 +347,6 @@ export const LeagueStandings = () => {
     } = useLoaderData<EnhancedLeagueStandingsLoaderData>();
 
     const navigate = useNavigate();
-    const actionData = useActionData<typeof action>();
     const [searchParams, setSearchParams] = useSearchParams();
     const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);
 
@@ -392,19 +391,6 @@ export const LeagueStandings = () => {
             />
 
             {!isCurrentGameweek && <TimeTravelBanner currentGameweek={currentGameweek} />}
-
-            {/* Action Messages */}
-            {actionData?.success && (
-                <div className="success" style={{ marginBottom: '1rem' }}>
-                    ✅ Standings updated successfully!
-                </div>
-            )}
-
-            {actionData?.error && (
-                <div className="error" style={{ marginBottom: '1rem' }}>
-                    ❌ {actionData.error}
-                </div>
-            )}
 
             {/* Show specific division if selected */}
             {selectedDivision ? (

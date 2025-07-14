@@ -232,39 +232,6 @@ function calculatePositionRankChanges(
     });
 }
 
-function calculatePositionRanks(
-    standings: LeagueStandingsTeamData[],
-    positionKeys: (keyof PositionPointsBreakdown)[],
-): Record<keyof PositionPointsBreakdown, Map<string, number>> {
-    const positionRanks: Record<keyof PositionPointsBreakdown, Map<string, number>> = {
-        gk: new Map(),
-        cb: new Map(),
-        fb: new Map(),
-        mid: new Map(),
-        wa: new Map(),
-        ca: new Map(),
-        total: new Map(),
-    };
-
-    positionKeys.forEach((position) => {
-        // Sort teams by position points (descending)
-        const sortedByPosition = [...standings].sort((a, b) => b.gameweekPoints[position] - a.gameweekPoints[position]);
-
-        // Assign ranks (1-based)
-        sortedByPosition.forEach((team, index) => {
-            positionRanks[position].set(team.userId, index + 1);
-        });
-    });
-
-    return positionRanks;
-}
-
-export async function handleLeagueStandingsAction(formData: FormData | URLSearchParams) {
-    // Handle any actions needed for league standings
-    // This can be extended for future functionality
-    return { success: true };
-}
-
 function convertRankScoreToRank(rankScore: number, numTeams: number): number {
     // Convert rank score back to 1-based rank
     // Rank score 0 = worst rank (numTeams), rank score (numTeams-1) = best rank (1)
