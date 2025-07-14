@@ -153,14 +153,13 @@ function PositionPointsTable({
             width: 100,
             align: 'center',
             sortable: true,
-            accessor: (team) => team[pointsSource]['total'],
-            render: (points, team) => {
-                const rank = positionRankings[team.userId]?.total;
+            accessor: (team) => positionRankings[team.userId]?.total,
+            render: (rank, team) => {
                 if (showRankChange) {
                     // For gameweek table, show points with rank change
                     return (
                         <PositionRankChange
-                            points={points}
+                            points={team[pointsSource]['total']}
                             rankChange={team.positionRankChanges?.total ?? null}
                             isFirstGameweek={isFirstGameweek}
                         />
