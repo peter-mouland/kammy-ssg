@@ -3,6 +3,7 @@
 /* Notes: */
 /* - 100% of use-cases should use api-firestore or api-cache */
 
+import { processBatched } from '../batch-processor';
 import { createAppError } from '../sheets/utils/common';
 import type { FplBootstrapData, FplPlayerSeasonData } from './fpl-types';
 
@@ -19,12 +20,6 @@ const _FPL_ENTRY_HISTORY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${ent
  * No caching or orchestration logic, just HTTP requests
  */
 export class FplApi {
-    private bootstrapCache: { data: FplBootstrapData | null; timestamp: number } = {
-        data: null,
-        timestamp: 0,
-    };
-    private readonly CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
-
     /**
      * Fetch data from FPL API with error handling
      */
@@ -50,20 +45,8 @@ export class FplApi {
      * Get FPL bootstrap data (with basic in-memory cache)
      */
     async getFplBootstrapData(): Promise<FplBootstrapData> {
-        const now = Date.now();
-
-        if (this.bootstrapCache.data && now - this.bootstrapCache.timestamp < this.CACHE_DURATION) {
-            return this.bootstrapCache.data;
-        }
-
         try {
             const data = await this.fetchFplData<FplBootstrapData>(FPL_BOOTSTRAP_URL);
-
-            this.bootstrapCache = {
-                data,
-                timestamp: now,
-            };
-
             return data;
         } catch (error) {
             throw createAppError('FPL_BOOTSTRAP_ERROR', 'Failed to fetch FPL bootstrap data', error);
@@ -84,6 +67,37 @@ export class FplApi {
                 error,
             );
         }
+    }
+
+    async getBatchPlayerDetailedStats(playerIds: number[]): Promise<Record<number, FplPlayerSeasonData>> {
+        const freshData: Record<number, FplPlayerSeasonData> = {};
+
+        if (playerIds.length > 0) {
+            const fetchPlayer = async (playerId: number) => {
+                try {
+                    const playerData = await fplApi.getPlayerDetailedStats(playerId);
+                    return { playerId, playerData };
+                } catch (error) {
+                    console.error(`Failed to fetch player ${playerId}:`, error);
+                    return { playerId, playerData: null };
+                }
+            };
+
+            const results = await processBatched(playerIds, fetchPlayer, {
+                batchSize: 50,
+                maxConcurrent: 10,
+                logProgress: true,
+            });
+
+            // Convert results to freshData object
+            results.forEach(({ playerId, playerData }) => {
+                if (playerData) {
+                    freshData[playerId] = playerData;
+                }
+            });
+            return freshData;
+        }
+        return {};
     }
 }
 

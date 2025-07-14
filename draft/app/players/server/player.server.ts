@@ -38,7 +38,7 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
         );
 
         // Get detailed player stats and gameweek points (all from cache)
-        const { data: playerDetailedStats } = await fplApiCache.getPlayerDetailedStats(fplPlayer.id);
+        const playerDetailedStats = await fplApiCache.getPlayerDetailedStats(fplPlayer.id);
         const gameweekStats = processGameweekData(playerDetailedStats?.history || [], teamLookup);
         const seasonTotals = calculateSeasonTotals(gameweekStats);
 

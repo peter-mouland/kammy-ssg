@@ -34,26 +34,6 @@ export const convertFplElementToCache = (element: FplPlayerData) => ({
     form: element.form,
 });
 
-export const convertFplElementHistoryToCache = (element: FplPlayerGameweekData) => ({
-    element: element.element,
-    round: element.round,
-    fixture: element.fixture,
-    assists: element.assists,
-    bonus: element.bonus,
-    clean_sheets: element.clean_sheets,
-    goals_conceded: element.goals_conceded,
-    goals_scored: element.goals_scored,
-    minutes: element.minutes,
-    own_goals: element.own_goals,
-    penalties_saved: element.penalties_saved,
-    penalties_missed: element.penalties_missed,
-    red_cards: element.red_cards,
-    saves: element.saves,
-    yellow_cards: element.yellow_cards,
-    team_a_score: element.team_a_score,
-    team_h_score: element.team_h_score,
-});
-
 export class FplFirestore {
     private client: FirestoreClient;
     public clearService: FirestoreClearService;
@@ -101,31 +81,6 @@ export class FplFirestore {
         );
         this.lastUpdated.elements = doc?.lastUpdated || '';
         return doc ? doc.data : [];
-    }
-
-    /**
-     * Batch get element summaries
-     */
-
-    async getBatchPlayerDetailedStats(playerId: number[]) {
-        const playerIds = Array.isArray(playerId) ? playerId : [playerId];
-
-        const docIds = playerIds.map((id) => `element-${id}`);
-        const docs = await this.client.batchGetDocuments(this.client.collections.FPL_ELEMENTS, docIds);
-
-        const results: Record<number, FplPlayerSeasonData> = {};
-        playerIds.forEach((playerId, index) => {
-            if (docs[index]?.data) {
-                results[playerId] = docs[index].data;
-            }
-        });
-
-        return results;
-    }
-
-    async getPlayerDetailedStats(playerId: number) {
-        const doc = await this.client.getDocument(this.client.collections.FPL_ELEMENTS, `element-${playerId}`);
-        return doc;
     }
 
     // === HELPER METHODS ===
@@ -177,7 +132,7 @@ export class FplFirestore {
             return acc;
         }, {});
         const filteredPlayers = players.filter((player) => sheetsPlayersById[player.id]);
-        const fplPlayerGameweeksById = await this.getBatchPlayerDetailedStats(playerIds);
+        const fplPlayerGameweeksById = await fplApi.getBatchPlayerDetailedStats(playerIds);
 
         if (filteredPlayers.length === 0) {
             throw new Error('No players found that exist in both FPL data and sheets');
@@ -205,16 +160,11 @@ export class FplFirestore {
         const results: any = {};
 
         try {
-            const sheetsPlayers = await readPlayers();
-            const playerIds = sheetsPlayers.map((p: any) => p.id);
-
             // ensure db is clean
             await this.clearBootstrapData();
-            await this.clearElementDetailedStats();
 
             // populate base db info
             results.bootstrap = await this.populateBootstrap();
-            results.elementDetailedStats = await this.populatePlayerDetailedStats(playerIds); // must go before generateAndCacheEnhancedData
             results.enhanced = await this.generateAndCacheEnhancedData();
 
             return {
@@ -287,62 +237,6 @@ export class FplFirestore {
     }
 
     /**
-     * Populate multiple element summary documents with fresh data
-     */
-    async populatePlayerDetailedStats(playerIds: number[]): Promise<Record<number, FplPlayerSeasonData>> {
-        console.log(`🔄 populatePlayerDetailedStats([${playerIds.length} players]) - Start`);
-
-        // Fetch missing players from API in manageable chunks
-        const freshData: Record<number, FplPlayerSeasonData> = {};
-
-        if (playerIds.length > 0) {
-            const fetchPlayer = async (playerId: number) => {
-                try {
-                    const playerData = await fplApi.getPlayerDetailedStats(playerId);
-                    return { playerId, playerData };
-                } catch (error) {
-                    console.error(`Failed to fetch player ${playerId}:`, error);
-                    return { playerId, playerData: null };
-                }
-            };
-
-            const results = await processBatched(playerIds, fetchPlayer, {
-                batchSize: 50,
-                maxConcurrent: 10,
-                logProgress: true,
-            });
-
-            // Convert results to freshData object
-            results.forEach(({ playerId, playerData }) => {
-                if (playerData) {
-                    freshData[playerId] = playerData;
-                }
-            });
-            await this.populateElementDetailedStats(freshData);
-            return freshData;
-        }
-        return {};
-    }
-
-    // todo : batch to reduce cost
-    // todo : restrict to id in sheeets
-    async populateElementDetailedStats(summariesData: Record<number, any>): Promise<void> {
-        const entries = Object.entries(summariesData);
-        console.log(`📝 Writing ${entries.length} element summaries individually to avoid payload limits`);
-
-        for (const [playerIdStr, data] of entries) {
-            console.log(`📝 ... ${playerIdStr}`);
-            await this.client.setDocument(this.client.collections.FPL_ELEMENTS, `element-${playerIdStr}`, {
-                lastUpdated: new Date().toISOString(),
-                source: 'fpl' as const,
-                data,
-            });
-        }
-
-        console.log(`✅ Successfully wrote ${entries.length} element summaries`);
-    }
-
-    /**
      * Get count of teams in cache
      */
     async getTeamsCount(): Promise<number> {
@@ -406,19 +300,6 @@ export class FplFirestore {
             console.log('✅ Bootstrap data cleared');
         } catch (error) {
             console.error('❌ Error clearing bootstrap data:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Clear element summaries
-     */
-    async clearElementDetailedStats(): Promise<void> {
-        try {
-            await this.clearService.clearCollection(this.client.collections.FPL_ELEMENTS);
-            console.log('✅ Element summaries cleared');
-        } catch (error) {
-            console.error('❌ Error clearing element summaries:', error);
             throw error;
         }
     }

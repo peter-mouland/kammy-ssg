@@ -6,6 +6,7 @@
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
+import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
 import type { FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
 
@@ -188,14 +189,14 @@ export class FplApiCache {
      * Get detailed stats for a single player using individual cache
      */
 
-    async getPlayerDetailedStats(playerId: number): Promise<Doc<FplPlayerSeasonData | null>> {
+    async getPlayerDetailedStats(playerId: number): Promise<FplPlayerSeasonData | null> {
         const cacheKey = CACHE_KEYS.FPL.PLAYER_STATS(playerId.toString());
 
         return await dataCache.get(
             cacheKey,
             async () => {
                 console.log(`🔄 getPlayerDetailedStats(${playerId}) - Loading from Firestore`);
-                const cached = await this.fplFirestore.getPlayerDetailedStats(playerId);
+                const cached = await fplApi.getPlayerDetailedStats(playerId);
                 return cached;
             },
             { ttlMs: getCacheTTL(cacheKey) },
@@ -204,7 +205,7 @@ export class FplApiCache {
 
     /**
      * Get batch player detailed stats using individual caching with smart batching
-     * NEW APPROACH: Check individual caches first, batch fetch only cache misses
+     * Check individual caches first, batch fetch only cache misses
      */
     async getBatchPlayerDetailedStats(playerIds: number[]): Promise<Record<number, FplPlayerSeasonData>> {
         console.log(`🔄 getBatchPlayerDetailedStats() - Processing ${playerIds.length} players`);
@@ -245,7 +246,7 @@ export class FplApiCache {
             console.log(`🔄 Fetching ${cacheMisses.length} players from Firestore`);
 
             try {
-                const firestoreResults = await this.fplFirestore.getBatchPlayerDetailedStats(cacheMisses);
+                const firestoreResults = await fplApi.getBatchPlayerDetailedStats(cacheMisses);
 
                 // Step 3: Cache individual results and add to final results
                 for (const [playerIdStr, data] of Object.entries(firestoreResults)) {
