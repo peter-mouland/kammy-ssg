@@ -74,21 +74,15 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                         status="healthy"
                     />
                     <StatusCard
-                        icon="⚡"
-                        label="Processing Status"
-                        percentage={needsProcessing ? 'Needs Processing' : 'Up to Date'}
-                        status={needsProcessing ? 'warning' : 'healthy'}
-                    />
-                    <StatusCard
                         icon="🔄"
                         label="Transfers"
                         percentage={`${systemStatus.transfers.pending} pending`}
                         status={systemStatus.transfers.pending > 0 ? 'warning' : 'healthy'}
                     />
                     <StatusCard
-                        icon="📊"
-                        label="Points Calculated"
-                        percentage={`Up to GW ${lastProcessedGameweek}`}
+                        icon="⚡"
+                        label="Processing Status"
+                        percentage={needsProcessing ? `${lastProcessedGameweek + 1} Needs Processing` : 'Up to Date'}
                         status={needsProcessing ? 'warning' : 'healthy'}
                     />
                 </AdminGrid>
@@ -109,13 +103,6 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                             <div className={styles.stepContent}>
                                 <h5>Calculate Points</h5>
                                 <p>Generate points for all players based on FPL stats and custom scoring rules</p>
-                            </div>
-                        </div>
-                        <div className={styles.step}>
-                            <span className={styles.stepNumber}>3</span>
-                            <div className={styles.stepContent}>
-                                <h5>Update Standings</h5>
-                                <p>Recalculate league standings across all divisions</p>
                             </div>
                         </div>
                     </div>

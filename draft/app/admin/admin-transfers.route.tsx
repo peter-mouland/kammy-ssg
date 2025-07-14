@@ -1,6 +1,7 @@
 /* Location: app/admin/admin-transfers.route.tsx */
 
 import { type MetaFunction, useOutletContext, useSearchParams } from 'react-router';
+import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
 import type { DivisionSheetData } from '../teams/types/team-types';
 import type { TransferAdminOverviewData } from '../transfers/types/transfer-rule-types';
 import { TransfersSection } from './components/sections/transfers-section';
@@ -18,13 +19,14 @@ interface AdminOutletContext {
     systemStatus: SystemStatusSummary;
     sharedContext: AdminDataContext;
     transfersData: Record<string, TransferAdminOverviewData> | null;
+    teamsByCode: Record<number, FplTeam> | null;
     loadedAt: string;
 }
 
 export default function AdminTransfersRoute() {
-    const { sharedContext, systemStatus, transfersData } = useOutletContext<AdminOutletContext>();
+    const { sharedContext, systemStatus, transfersData, teamsByCode } = useOutletContext<AdminOutletContext>();
     const [searchParams] = useSearchParams();
-    console.log({ transfersData });
+
     // Get filter parameters from URL
     const selectedDivisionId = searchParams.get('division') || sharedContext.sheetData.divisions[0]?.id;
     const selectedGameweekId =
@@ -44,6 +46,7 @@ export default function AdminTransfersRoute() {
             divisions={sharedContext.sheetData.divisions}
             selectedDivision={selectedDivision}
             selectedGameweek={selectedGameweek}
+            teamsByCode={teamsByCode}
             transfersData={transfersData}
             sharedContext={sharedContext}
             systemStatus={systemStatus}

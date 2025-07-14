@@ -11,6 +11,8 @@ import {
 import { getInvalidationKeys } from '../_shared/lib/cache/cache-config';
 import { dataCache } from '../_shared/lib/cache/data-cache.service';
 import { requestFormData } from '../_shared/lib/form-data';
+import { fplApiCache } from '../_shared/lib/fpl/api-cache';
+import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
 import type { DraftAction } from '../draft/types/draft-types';
 import type { DivisionId } from '../teams/types/team-types';
 import type { TransferAdminOverviewData } from '../transfers/types/transfer-rule-types';
@@ -29,6 +31,7 @@ interface AdminLoaderData {
     systemStatus: SystemStatusSummary;
     sharedContext: AdminDataContext;
     transfersData: Record<string, TransferAdminOverviewData> | null;
+    teamsByCode: Record<number, FplTeam> | null;
     cacheStats: any | null;
     loadedAt: string;
 }
@@ -49,6 +52,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<AdminLoad
     const url = new URL(request.url);
     const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
     const orchestrator = new AdminOrchestrator();
+    const teamsByCode = await fplApiCache.getTeamsByCode();
 
     const [systemStatus, sharedContext] = await Promise.all([
         orchestrator.getSystemStatus(),
@@ -76,6 +80,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<AdminLoad
         systemStatus,
         sharedContext,
         transfersData,
+        teamsByCode,
         loadedAt: new Date().toISOString(),
     };
 }
@@ -96,8 +101,6 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
             error: 'Action type is required',
         });
     }
-
-    console.log(`🎬 Admin action: ${actionType}`);
 
     const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
     const orchestrator = new AdminOrchestrator();
@@ -195,11 +198,11 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
 }
 
 export default function AdminRoute() {
-    const { systemStatus, sharedContext, transfersData, cacheStats, loadedAt } = useLoaderData<AdminLoaderData>();
+    const context = useLoaderData<AdminLoaderData>();
 
     return (
         <AdminLayout>
-            <Outlet context={{ systemStatus, sharedContext, transfersData, cacheStats, loadedAt }} />
+            <Outlet context={context} />
         </AdminLayout>
     );
 }

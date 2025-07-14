@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useFetcher, useNavigate, useSearchParams } from 'react-router';
 import { SelectDivision } from '../../../_shared/components/select-division';
 import { Table, type TableColumn } from '../../../_shared/components/table';
-import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
+import type { FplTeam, GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import { GameweekSelector } from '../../../teams/components/gameweek-selector';
 import type { DivisionSheetData } from '../../../teams/types/team-types';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';
@@ -26,6 +26,7 @@ interface TransfersSectionProps {
     sharedContext: AdminDataContext;
     selectedDivision: DivisionSheetData;
     selectedGameweek: GameWeekData;
+    teamsByCode: Record<number, FplTeam> | null;
 }
 
 interface GameweekTransfersData {
@@ -89,11 +90,13 @@ function RecommendationTooltip({ validation, children }: RecommendationTooltipPr
 }
 
 function GameweekTransfersSection({
+    teamsByCode,
     selectedDivision,
     gameweekInfo,
     onApprove,
     onReject,
 }: {
+    teamsByCode: Record<number, FplTeam> | null;
     selectedDivision: DivisionSheetData;
     gameweekInfo: GameweekTransfersData;
     onApprove: (transferId: string) => void;
@@ -137,9 +140,7 @@ function GameweekTransfersSection({
                     <div className={styles.player_name}>{item.transfer.playerOut.web_name}</div>
                     <div className={styles.player_details}>
                         <span className={styles.position}>{item.transfer.playerOut.draft.position}</span>
-                        <span className={styles.team}>
-                            {item.transfer.playerOut.team_name || `Team ${item.transfer.playerOut.team_code}`}
-                        </span>
+                        <span className={styles.team}>{teamsByCode?.[item.transfer.playerOut.team_code].name}</span>
                     </div>
                 </div>
             ),
@@ -153,9 +154,7 @@ function GameweekTransfersSection({
                     <div className={styles.player_name}>{item.transfer.playerIn.web_name}</div>
                     <div className={styles.player_details}>
                         <span className={styles.position}>{item.transfer.playerIn.draft.position}</span>
-                        <span className={styles.team}>
-                            {item.transfer.playerIn.team_name || `Team ${item.transfer.playerIn.team_code}`}
-                        </span>
+                        <span className={styles.team}>{teamsByCode?.[item.transfer.playerIn.team_code].name}</span>
                     </div>
                 </div>
             ),
@@ -272,9 +271,11 @@ function GameweekTransfersSection({
 function DivisionTransfersPanel({
     selectedDivision,
     transfersData,
+    teamsByCode,
 }: {
     selectedDivision: DivisionSheetData;
     transfersData?: TransferAdminOverviewData;
+    teamsByCode: Record<number, FplTeam> | null;
 }) {
     const fetcher = useFetcher();
 
@@ -318,6 +319,7 @@ function DivisionTransfersPanel({
                             onApprove={handleApprove}
                             onReject={handleReject}
                             selectedDivision={selectedDivision}
+                            teamsByCode={teamsByCode}
                         />
                     ))}
                 </div>
@@ -372,6 +374,7 @@ export function TransfersSection({
     selectedGameweek,
     transfersData,
     systemStatus,
+    teamsByCode,
 }: TransfersSectionProps) {
     const navigate = useNavigate();
     const fetcher = useFetcher();
@@ -427,7 +430,11 @@ export function TransfersSection({
                     </ActionBar>
                 }
             >
-                <DivisionTransfersPanel selectedDivision={selectedDivision} transfersData={selectedDivisionData} />
+                <DivisionTransfersPanel
+                    selectedDivision={selectedDivision}
+                    transfersData={selectedDivisionData}
+                    teamsByCode={teamsByCode}
+                />
                 <br />
                 <br />
                 <ActionCard
