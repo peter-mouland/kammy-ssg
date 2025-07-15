@@ -7,7 +7,7 @@ import { TableFilters } from '../../_shared/components/table-filters';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
 import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
-import { getPositionDisplayName } from '../../scoring/lib';
+import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';
 import { WishlistTags } from '../../wishlist/components/wishlist-tags';
@@ -95,56 +95,173 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         {
             key: 'name',
             header: 'Player',
-            accessor: (player) => formatPlayerName(player, 'full'),
+            accessor: (player) => formatPlayerName(player, 'web'),
             sortable: true,
             render: (_, player) => {
                 const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
                 const position = getPlayerPosition(player);
                 return (
                     <div className={styles.playerInfo}>
-                        <div className={styles.playerAvatar} style={{ backgroundColor: getPositionColor(position) }}>
+                        <div className={styles.playerAvatar}>
                             <img src={img} loading="lazy" alt="" width={35} />
                         </div>
+
+                        <span
+                            className={styles.positionBadge}
+                            style={{ backgroundColor: getPositionColor(position) }}
+                            title={getPositionDisplayName(position)}
+                        >
+                            {position.toUpperCase()}
+                        </span>
                         <div className={styles.playerDetails}>
                             <div className={styles.playerName}>
                                 <Link to={`/players/${player.code}`} className={styles.playerNameLink}>
-                                    {formatPlayerName(player, 'full')}
+                                    {formatPlayerName(player, 'web')}
                                 </Link>
                             </div>
-                            <div className={styles.playerWebName}>{player.web_name}</div>
+                            <div className={styles.playerWebName}>
+                                {teams[player.team_code] || `Team ${player.team_code}`}
+                            </div>
                         </div>
                     </div>
                 );
             },
         },
         {
-            key: 'position',
-            header: 'Position',
-            accessor: (player) => getPositionDisplayName(getPlayerPosition(player)),
+            key: 'apps',
+            header: 'Mins',
+            accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
             sortable: true,
-            render: (_, player) => {
-                const position = getPlayerPosition(player);
-                return (
-                    <span className={styles.positionBadge} style={{ backgroundColor: getPositionColor(position) }}>
-                        {getPositionDisplayName(position)}
-                    </span>
-                );
-            },
+            variant: 'numeric',
+            render: (stat, player) => stat,
         },
         {
-            key: 'team',
-            header: 'Team',
-            accessor: (player) => teams[player.team_code] || `Team ${player.team_code}`,
+            key: 'goals',
+            header: 'Goals',
+            accessor: (player) => player.draft?.pointsBreakdown.goals.stat || 0,
             sortable: true,
-            render: (_, player) => (
-                <div className={styles.teamName}>{teams[player.team_code] || `Team ${player.team_code}`}</div>
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'assists',
+            header: 'Assists',
+            accessor: (player) => player.draft?.pointsBreakdown.assists.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'cleanSheets',
+            header: (
+                <div>
+                    Clean
+                    <br />
+                    Sheets
+                </div>
             ),
+            accessor: (player) =>
+                isStatRelevant('cleanSheets', player.draft.position)
+                    ? player.draft?.pointsBreakdown.cleanSheets.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('cleanSheets', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'goalsConceded',
+            header: (
+                <div>
+                    Goals
+                    <br />
+                    Con.
+                </div>
+            ),
+            accessor: (player) =>
+                isStatRelevant('goalsConceded', player.draft.position)
+                    ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'penaltiesSaved',
+            header: (
+                <div>
+                    Pens
+                    <br />
+                    Saved
+                </div>
+            ),
+            accessor: (player) =>
+                isStatRelevant('penaltiesSaved', player.draft.position)
+                    ? player.draft?.pointsBreakdown.penaltiesSaved.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('penaltiesSaved', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'saves',
+            header: 'Saves',
+            accessor: (player) =>
+                isStatRelevant('saves', player.draft.position) ? player.draft?.pointsBreakdown.saves.stat || 0 : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('saves', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'yellowCards',
+            header: (
+                <div>
+                    Y.
+                    <br />
+                    Cards
+                </div>
+            ),
+            accessor: (player) => player.draft?.pointsBreakdown.yellowCards.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'redCards',
+            header: (
+                <div>
+                    R.
+                    <br />
+                    Cards
+                </div>
+            ),
+            accessor: (player) => player.draft?.pointsBreakdown.redCards.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'bonus',
+            header: 'Bonus',
+            accessor: (player) => player.draft?.pointsBreakdown.bonus.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
         },
         {
             key: 'points',
             header: 'Points',
             accessor: (player) => player.draft?.pointsTotal || 0,
             sortable: true,
+            align: 'center',
             variant: 'numeric',
             render: (_, player) => (
                 <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>

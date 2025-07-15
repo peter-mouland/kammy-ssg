@@ -1,10 +1,10 @@
 // app/teams/lib/team-stats-utils.ts
-import type { ContributingStatsBreakdown, TeamRoster } from '../types/team-types';
+import type { TeamRoster } from '../types/team-types';
 
 /**
  * Calculate contributing stats breakdown for the team
  */
-export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: boolean): ContributingStatsBreakdown {
+export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: boolean) {
     const allStats = {
         appearance: 0,
         goals: 0,

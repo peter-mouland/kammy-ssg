@@ -124,6 +124,7 @@ export interface PointsBreakdownItem {
     label: string;
     isRelevant?: boolean;
     points: number;
+    stat: number;
     formula: string | string[];
 }
 
@@ -141,7 +142,6 @@ export interface EnhancedPlayerData {
         position: CustomPosition;
         pointsTotal: number;
         pointsBreakdown: PointsBreakdown;
-        gameweekPoints?: Record<number, Points>;
         __generatedFor?: {
             gameweeks?: number[];
             generatedAt: string;
