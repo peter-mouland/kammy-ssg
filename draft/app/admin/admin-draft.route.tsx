@@ -20,7 +20,7 @@ export default function AdminDraftRoute() {
             divisions={sharedContext.sheetData.divisions}
             draftOrders={sharedContext.sheetData.draftOrder}
             managers={sharedContext.sheetData.managers}
-            draftState={sharedContext.sheetData.draftState}
+            draftStates={sharedContext.sheetData.draftStates}
             draftStatus={systemStatus.draft}
         />
     );

@@ -1,7 +1,6 @@
 /* Location: app/admin/components/sections/firebase-sync-section.tsx */
 
-import { useFetcher, useLoaderData } from 'react-router';
-import type { AdminDashboardData } from '../../types/admin-types';
+import { useFetcher } from 'react-router';
 import * as Icons from '../icons/admin-icons';
 import { AdminMessage } from '../ui/admin-message';
 import styles from './draft-sync-section.module.css';
@@ -13,7 +12,7 @@ export const DraftSyncSection = ({ draftState }) => {
         const formData = new FormData();
         formData.append('actionType', 'processDraft');
         formData.append('draftAction', 'syncDraft');
-        formData.append('divisionId', draftState.currentDivisionId);
+        formData.append('divisionId', draftState.divisionId);
         fetcher.submit(formData, {
             method: 'POST',
             action: '/admin', // This ensures we hit the parent route's action

@@ -11,12 +11,13 @@ export interface StatusCardProps {
     status: 'healthy' | 'warning' | 'critical';
 }
 
-export const StatusCard: React.FC<StatusCardProps> = ({ icon, label, percentage, status }) => {
+export const StatusCard: React.FC<StatusCardProps> = ({ icon, label, percentage, status, children }) => {
     return (
         <div className={`${styles.statusCard} ${styles[status]}`}>
             <div className={styles.statusValue}>{icon}</div>
             <div className={styles.statusLabel}>{label}</div>
             <div className={styles.statusPercentage}>{percentage}</div>
+            {children}
         </div>
     );
 };

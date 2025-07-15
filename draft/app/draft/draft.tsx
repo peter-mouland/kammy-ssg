@@ -270,7 +270,7 @@ export const Draft = () => {
     }
 
     const title = loaderData.draftState?.isActive
-        ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.draftState?.currentDivisionId)?.label} Draft Room`
+        ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.currentUserInfo.divisionId)?.label} Draft Room`
         : '⚪️ Draft Room';
 
     return (
@@ -290,7 +290,7 @@ export const Draft = () => {
 
             {/* Firebase Handler - manages real-time connections */}
             <DraftFirebaseHandler
-                divisionId={loaderData.draftState?.currentDivisionId!}
+                divisionId={loaderData.draftState?.divisionId}
                 currentUserId={loaderData.currentUser}
                 isDraftActive={loaderData.draftState?.isActive || false}
             >

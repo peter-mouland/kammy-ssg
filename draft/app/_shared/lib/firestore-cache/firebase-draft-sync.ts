@@ -1,6 +1,7 @@
 /* Location: app/_shared/lib/firestore-cache/firebase-draft-sync.ts */
 /** biome-ignore-all lint/complexity/noStaticOnlyClass: <explanation> */
 
+import type { DivisionId } from '../../../teams/types/team-types';
 // /_shared/lib/firestore-cache/firebase-draft-sync.ts - ENHANCED WITH RESET CAPABILITY
 import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
 
@@ -314,79 +315,53 @@ export class FirebaseDraftSync {
         }
     }
 
-    // NEW: Sync entire draft from sheets to Firebase (RESET + REBUILD)
-    static async syncDraftFromSheets(divisionId: string, forceReset = false) {
-        try {
-            console.log(`🔥 SERVER: Starting ${forceReset ? 'RESET' : 'SYNC'} for division ${divisionId}`);
+    /**
+     * Sync draft from Google Sheets to Firebase for a specific division
+     * UPDATED: Now uses calculated currentPick from the new sheets approach
+     */
+    static async syncDraftFromSheets(divisionId: DivisionId, forceReset = false) {
+        console.log(`🔥 SERVER: ${forceReset ? 'RESET' : 'SYNC'} starting for division ${divisionId}`);
 
+        try {
             // Import sheets functions dynamically
-            const { readDraftState } = await import('../../lib/sheets/draft');
+            const { readDraftStateByDivision } = await import('../../lib/sheets/draft');
             const { getDraftPicksByDivision } = await import('../../lib/sheets/draft');
             const { getDraftOrderByDivision } = await import('../../lib/sheets/draft-order');
-            const { getNextDraftState } = await import('../../../draft/lib/get-next-draft-state');
 
             // Get data from sheets (source of truth)
             const [draftState, draftPicks, draftOrder] = await Promise.all([
-                readDraftState(),
+                readDraftStateByDivision(divisionId),
                 getDraftPicksByDivision(divisionId),
                 getDraftOrderByDivision(divisionId),
             ]);
 
             if (!draftState) {
-                throw new Error('No draft state found in sheets');
+                throw new Error(`No draft state found in sheets for division ${divisionId}`);
             }
 
             if (draftOrder.length === 0) {
-                throw new Error('No draft order found for this division');
+                throw new Error(`No draft order found for division ${divisionId}`);
             }
 
-            // Calculate correct state based on actual picks in sheets
+            // Use the currentPick from draftState (now calculated in sheets)
+            const currentPick = draftState.currentPick; // This is now calculated!
+            const currentUserId = draftState.currentUserId;
+            const isActive = draftState.isActive;
             const picksCount = draftPicks.length;
             const totalTeams = draftOrder.length;
-            const picksPerTeam = draftState.picksPerTeam || 12;
-            const totalPossiblePicks = totalTeams * picksPerTeam;
+            const totalPossiblePicks = totalTeams * draftState.picksPerTeam;
 
-            // Use the same logic as draft completion to determine current state
-            let currentPick = picksCount + 1;
-            let currentUserId = draftState.currentUserId;
-            let isActive = draftState.isActive;
+            console.log(`🔥 SERVER: Division ${divisionId} state from sheets:`, {
+                picksCount,
+                currentPick, // Now calculated in sheets
+                currentUserId,
+                isActive,
+                totalPossiblePicks,
+            });
 
-            // If there are picks, recalculate the next state from the last pick
-            if (picksCount > 0) {
-                // Create a mock previous state to calculate next state
-                const mockPreviousState = {
-                    ...draftState,
-                    currentPick: picksCount,
-                    isActive: true,
-                };
-
-                const calculatedNextState = getNextDraftState(mockPreviousState, draftOrder);
-                currentPick = calculatedNextState.currentPick;
-                currentUserId = calculatedNextState.currentUserId;
-                isActive = calculatedNextState.isActive;
-            } else {
-                // No picks yet, use first person in draft order
-                const firstUser = draftOrder.find((order) => order.position === 1);
-                if (firstUser) {
-                    currentUserId = firstUser.userId;
-                    currentPick = 1;
-                    isActive = draftState.isActive;
-                }
-            }
-
-            console.log(
-                `🔥 SERVER: Calculated state from sheets: Pick ${currentPick}, User ${currentUserId}, Active ${isActive}`,
-            );
-
-            // Clear cache to force fresh sync
-            FirebaseDraftSync.clearCache(divisionId);
-
-            // If force reset or if we detect inconsistencies, clear everything
+            // Clear existing Firebase data if force reset
             if (forceReset) {
-                console.log(`🔥 SERVER: 🧹 FORCE RESET - Clearing all Firebase data for division ${divisionId}`);
-                await FirebaseDraftSync.clearAllEvents(divisionId);
-
-                // Clear all picks
+                console.log(`🔥 SERVER: 🧹 Force resetting Firebase data for division ${divisionId}`);
                 const picksRef = adminDatabase.ref(`drafts/${divisionId}/picks`);
                 await picksRef.remove();
             } else {
@@ -395,9 +370,9 @@ export class FirebaseDraftSync {
                 await FirebaseDraftSync.removeOrphanedPicks(divisionId, validPickNumbers);
             }
 
-            // Update Firebase with the correct state from sheets
+            // Update Firebase with the state from sheets (currentPick is now calculated)
             const firebaseState: DraftState = {
-                currentPick,
+                currentPick, // Use calculated value from sheets
                 currentUserId,
                 isActive,
                 totalPicks: totalPossiblePicks,
@@ -408,7 +383,9 @@ export class FirebaseDraftSync {
             await FirebaseDraftSync.updateDraftState(divisionId, firebaseState);
 
             // Sync all picks from sheets to Firebase
-            console.log(`🔥 SERVER: Syncing ${draftPicks.length} picks from sheets to Firebase`);
+            console.log(
+                `🔥 SERVER: Syncing ${draftPicks.length} picks from sheets to Firebase for division ${divisionId}`,
+            );
             for (const pick of draftPicks) {
                 await FirebaseDraftSync.updateDraftPick(divisionId, pick.pickNumber, {
                     pickNumber: pick.pickNumber,
@@ -431,10 +408,10 @@ export class FirebaseDraftSync {
                 type: forceReset ? 'draft-reset' : 'draft-synced',
                 data: {
                     message: forceReset
-                        ? 'Draft completely reset and synced from Google Sheets'
-                        : 'Draft synced from Google Sheets',
+                        ? `Draft completely reset and synced from Google Sheets for division ${divisionId}`
+                        : `Draft synced from Google Sheets for division ${divisionId}`,
                     picksCount,
-                    currentPick,
+                    currentPick, // Now calculated value
                     currentUserId,
                     isActive,
                     totalPossiblePicks,
@@ -443,26 +420,31 @@ export class FirebaseDraftSync {
                 },
             });
 
-            console.log(`🔥 ✅ Draft ${forceReset ? 'RESET' : 'SYNC'} completed for division ${divisionId}:`, {
-                picksCount,
-                currentPick,
-                currentUserId,
-                isActive,
-                totalPossiblePicks,
-                forceReset,
-            });
+            console.log(`🔥 ✅ Draft ${forceReset ? 'reset and' : ''} synced for division ${divisionId}`);
 
             return {
                 success: true,
+                divisionId,
                 picksCount,
-                currentPick,
+                currentPick, // Calculated value
                 currentUserId,
                 isActive,
                 totalPossiblePicks,
                 forceReset,
             };
         } catch (error) {
-            console.error(`🔥 ❌ Draft sync failed for division ${divisionId}:`, error);
+            console.error(`🔥 ❌ Failed to sync draft for division ${divisionId}:`, error);
+
+            // Add error event
+            await FirebaseDraftSync.addDraftEvent(divisionId, {
+                type: 'draft-synced',
+                data: {
+                    error: true,
+                    message: `Failed to sync draft: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                    timestamp: new Date().toISOString(),
+                },
+            });
+
             throw error;
         }
     }

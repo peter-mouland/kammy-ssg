@@ -119,7 +119,7 @@ export interface SheetDataContext {
     divisions: DivisionSheetData[];
     managers: UserTeamsSheetData[];
     players: PlayersSheetData[];
-    draftState: DraftStateData;
+    draftStates: DraftStateData[];
     draftOrder: Record<DivisionId, DraftOrderData[]>;
     transfers: TransferByDivisionId;
 }

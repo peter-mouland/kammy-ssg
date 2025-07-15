@@ -1,4 +1,5 @@
-/* Location: app/routes.ts */
+// app/routes.ts
+// Add these new routes to your existing routes configuration
 
 import { index, type RouteConfig, route } from '@react-router/dev/routes';
 
@@ -17,6 +18,10 @@ export default [
 
     // NEW: Unified Cache Management API
     route('api/cache', 'api/cache/api.cache.ts'),
+
+    // NEW: Draft sync comparison API route
+    route('api/admin/draft-sync-comparisons', 'admin/api/api.admin.draft-sync-comparisons.ts'),
+    // route('api/admin/draft-actions', 'admin/api/api.admin.draft-actions.ts'),
 
     // Admin routes with nested sections (legacy - for backward compatibility)
     route('admin-progress/:jobId', 'admin/admin-progress.route.tsx'),

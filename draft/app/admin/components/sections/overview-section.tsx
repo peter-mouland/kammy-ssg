@@ -8,7 +8,6 @@ import { ActionBar } from '../layout/action-bar';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
-import { AdminButton } from '../ui/admin-button';
 import { AdminMessage } from '../ui/admin-message';
 import { StatusCard } from '../ui/status-card';
 import styles from './overview-section.module.css';
@@ -20,10 +19,8 @@ interface OverviewSectionProps {
     toggleSection: (section: string) => void;
 }
 
-export function OverviewSection({ systemStatus, sharedContext }: OverviewSectionProps) {
+export function OverviewSection({ systemStatus }: OverviewSectionProps) {
     const fetcher = useFetcher();
-
-    const isLoading = fetcher.state !== 'idle';
     const actionData = fetcher.data;
 
     const getStatusIcon = (status: string) => {
@@ -92,12 +89,6 @@ export function OverviewSection({ systemStatus, sharedContext }: OverviewSection
                                 : 'warning'
                         }
                     />
-                    <StatusCard
-                        icon="🗄️"
-                        label="Cache Health"
-                        percentage={`${sharedContext.cacheStatus.completionPercentage}%`}
-                        status={sharedContext.cacheStatus.health}
-                    />
                 </AdminGrid>
             </AdminSection>
 
@@ -120,60 +111,6 @@ export function OverviewSection({ systemStatus, sharedContext }: OverviewSection
                 <AdminMessage type="success">{actionData.message}</AdminMessage>
             )}
             {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
-
-            {/* Quick Stats */}
-            <AdminSection title="Quick Stats" icon={<Icons.DatabaseIcon />} description="Current system data overview">
-                <AdminGrid columns="auto" minWidth="200px">
-                    <StatusCard
-                        icon="🏆"
-                        label="Divisions"
-                        percentage={sharedContext.sheetData.divisions.length.toString()}
-                        status="healthy"
-                    />
-                    <StatusCard
-                        icon="👥"
-                        label="Managers"
-                        percentage={sharedContext.sheetData.managers.length.toString()}
-                        status="healthy"
-                    />
-                    <StatusCard
-                        icon="⚽"
-                        label="Players"
-                        percentage={sharedContext.fplData.players.length.toString()}
-                        status="healthy"
-                    />
-                    <StatusCard
-                        icon="📅"
-                        label="Current Gameweek"
-                        percentage={systemStatus.currentGameweek.fplEvent.id.toString()}
-                        status="healthy"
-                    />
-                </AdminGrid>
-            </AdminSection>
-
-            {/* System Messages */}
-
-            {/* Data Freshness Info */}
-            <AdminSection
-                title="Data Freshness"
-                icon={<Icons.ClockIcon />}
-                description="When data was last loaded and cached"
-            >
-                <div className={styles.dataFreshness}>
-                    <div className={styles.freshnessItem}>
-                        <strong>System Data Loaded:</strong> {new Date(sharedContext.loadedAt).toLocaleString()}
-                    </div>
-                    <div className={styles.freshnessItem}>
-                        <strong>Cache Last Updated:</strong>{' '}
-                        {sharedContext.cacheStatus.lastUpdated
-                            ? new Date(sharedContext.cacheStatus.lastUpdated).toLocaleString()
-                            : 'Never'}
-                    </div>
-                    <div className={styles.freshnessItem}>
-                        <strong>FPL Data Status:</strong> {sharedContext.fplData.players.length} players loaded
-                    </div>
-                </div>
-            </AdminSection>
         </AdminContainer>
     );
 }

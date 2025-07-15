@@ -77,7 +77,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
                 overall: { status: 'critical', message: 'System status check failed' },
             },
             transfers: { pending: 0, approved: 0, rejected: 0, total: 0, byDivision: {} },
-            draft: { isActive: false, currentDivisionId: null, currentUserId: null, currentPick: null, byDivision: {} },
+            draft: { isActive: false, divisionId: null, currentUserId: null, currentPick: null, byDivision: {} },
             gameweekProcessing: {
                 currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
                 lastProcessedGameweek: 0,
@@ -254,7 +254,7 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
                   : 'start',
             isComplete: !hasOutstandingCommits,
             isActive: draftState?.isActive || false,
-            currentDivisionId: draftState?.currentDivisionId || null,
+            divisionId: draftState?.divisionId || null,
             currentUserId: draftState?.currentUserId || null,
             currentPick: draftState?.currentPick || null,
             totalPicks,
@@ -267,7 +267,7 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
         console.error('Failed to load draft status:', error);
         return {
             isActive: false,
-            currentDivisionId: null,
+            divisionId: null,
             currentUserId: null,
             currentPick: null,
             byDivision: {},

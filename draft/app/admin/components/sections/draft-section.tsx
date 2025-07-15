@@ -1,3 +1,6 @@
+// app/admin/components/sections/draft-section.tsx
+// Enhanced with better sync status - minimal changes to existing structure
+
 import { useActionData } from 'react-router';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import type { AdminDashboardData } from '../../types/admin-types';
@@ -5,33 +8,35 @@ import * as Icons from '../icons/admin-icons';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
+import { AdminButton } from '../ui/admin-button';
 import { AdminMessage } from '../ui/admin-message';
 import { DraftCard } from '../ui/draft-card';
 import { DraftSyncSection } from './draft-sync-section';
+import { EnhancedDraftSyncSection } from './enhanced-draft-sync-section'; // NEW: Enhanced sync component
 
 interface DraftSectionProps {
     divisions: AdminDashboardData['divisions'];
     draftOrders: AdminDashboardData['draftOrders'];
     managers: AdminDashboardData['managers'];
-    draftState: AdminDashboardData['draftState'];
+    draftStates: AdminDashboardData['draftStates'];
     draftStatus: AdminDashboardData['draftStatus'];
 }
 
-export const DraftSection = ({ divisions, draftOrders, managers, draftState, draftStatus }: DraftSectionProps) => {
+export const DraftSection = ({ divisions, draftOrders, managers, draftStates, draftStatus }: DraftSectionProps) => {
     const userTeamsByDivision = groupByDivision(divisions, managers);
     const actionData = useActionData();
 
     return (
         <AdminContainer>
             <AdminSection title="Draft Management" icon={<Icons.UsersIcon />}>
-                <AdminGrid columns="auto" minWidth="300px">
+                <AdminGrid columns="3" minWidth="300px">
                     {divisions.map((division) => (
                         <DraftCard
                             key={division.id}
                             division={division}
                             teams={userTeamsByDivision[division.id] || []}
                             orders={draftOrders[division.id] || []}
-                            draftState={draftState}
+                            draftStates={draftStates}
                             draftStatus={draftStatus}
                         />
                     ))}
@@ -44,12 +49,13 @@ export const DraftSection = ({ divisions, draftOrders, managers, draftState, dra
                 {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
             </AdminSection>
 
+            {/* ENHANCED: Better sync section with multi-division support */}
             <AdminSection
-                title="Firebase + GSheets Sync"
+                title="Firebase ↔ Sheets Sync Status"
                 icon={<Icons.SyncIcon />}
-                description="If the GSheet was manually changed (e.g. a drafted player remove), we will need to sync"
+                description="Monitor sync status between Firebase (real-time) and Google Sheets (source of truth). Use sync buttons to resolve discrepancies."
             >
-                <DraftSyncSection draftState={draftState} />
+                <EnhancedDraftSyncSection divisions={divisions} draftStates={draftStates} draftStatus={draftStatus} />
             </AdminSection>
         </AdminContainer>
     );

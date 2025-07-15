@@ -18,7 +18,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
     const { showToast } = useToast();
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [celebrationShown, setCelebrationShown] = React.useState(false);
-
+console.log({draftPicks, draftState, draftSequence})
     const isDraftComplete = () => {
         if (!draftState?.isActive || draftSequence.length === 0) return false;
         return draftPicks.length >= draftSequence.length;
@@ -84,11 +84,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                                     {draftPicks.length} picks made • All teams are set!
                                 </div>
                             </div>
-                        ) : nextPicker ? null : (
-                            <div className={styles.draftLoading}>
-                                <span>Calculating next pick...</span>
-                            </div>
-                        )}
+                        ) : nextPicker ? null : null}
                     </div>
                 )}
             </div>

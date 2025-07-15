@@ -9,7 +9,7 @@ interface DraftCardProps {
     division: DivisionSheetData;
     teams: UserTeamsSheetData[];
     orders: DraftOrderData[];
-    draftState: DraftStateData | null;
+    draftStates: DraftStateData[] | null;
     draftStatus: DraftStatusData | null;
 }
 
@@ -25,7 +25,7 @@ interface DivisionStatus {
 }
 
 const getDivisionStatus = ({ teams, orders, draftState, draftStatus, division }: DraftCardProps): DivisionStatus => {
-    console.log({ draftState, draftStatus });
+
     if (teams.length === 0) {
         return { status: 'No Teams', color: '#6b7280', disabled: true, variant: 'disabled' };
     } else if (orders.length === 0) {
@@ -37,7 +37,7 @@ const getDivisionStatus = ({ teams, orders, draftState, draftStatus, division }:
             action: 'generateOrder',
             variant: 'generate',
         };
-    } else if (draftState?.isActive && draftState.currentDivisionId === division.id) {
+    } else if (draftState?.isActive && draftState.divisionId === division.id) {
         return {
             status: '🛑 Stop Draft',
             color: '#ef4444',
@@ -45,7 +45,7 @@ const getDivisionStatus = ({ teams, orders, draftState, draftStatus, division }:
             action: 'stopDraft',
             variant: 'stop',
         };
-    } else if (draftState?.isActive && draftState.currentDivisionId !== division.id) {
+    } else if (draftState?.isActive && draftState.divisionId !== division.id) {
         return {
             status: '⚪️ Start Draft',
             color: '#6b7280',
@@ -77,10 +77,13 @@ const getDivisionStatus = ({ teams, orders, draftState, draftStatus, division }:
     };
 };
 
-export const DraftCard = ({ division, teams, orders, draftState, draftStatus }: DraftCardProps) => {
+export const DraftCard = ({ division, teams, orders, draftStates, draftStatus }: DraftCardProps) => {
+    const draftState = draftStates.find((s) => s.divisionId === division.id)
     const fetcher = useFetcher();
     const isLoading = fetcher.state === 'submitting';
     const handleAction = (action: string) => {
+        console.log("division.id")
+        console.log(division.id)
         const formData = new FormData();
         formData.append('actionType', 'processDraft');
         formData.append('draftAction', action);
@@ -92,7 +95,7 @@ export const DraftCard = ({ division, teams, orders, draftState, draftStatus }: 
         });
     };
 
-    const isActive = !!(draftState?.isActive && draftState.currentDivisionId === division.id);
+    const isActive = !!(draftState?.isActive && draftState.divisionId === division.id);
     const divisionStatus = getDivisionStatus({ division, teams, orders, draftState, draftStatus });
 
     return (
@@ -107,15 +110,15 @@ export const DraftCard = ({ division, teams, orders, draftState, draftStatus }: 
                         {teams.length} teams {orders.length > 0 ? '' : ' • No order yet'}
                     </div>
                 </div>
-                <button
-                    type={'button'}
-                    onClick={() => divisionStatus.action && handleAction(divisionStatus.action)}
-                    className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}
-                    disabled={divisionStatus.disabled || isLoading}
-                >
-                    {isLoading ? 'Loading...' : divisionStatus.status}
-                </button>
             </div>
+            <button
+                type={'button'}
+                onClick={() => divisionStatus.action && handleAction(divisionStatus.action)}
+                className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}
+                disabled={divisionStatus.disabled || isLoading}
+            >
+                {isLoading ? 'Loading...' : divisionStatus.status}
+            </button>
 
             {orders.length > 0 && <div className={styles.orderInfo}>Draft order generated • {orders.length} teams</div>}
         </div>

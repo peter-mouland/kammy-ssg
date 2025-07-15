@@ -3,7 +3,7 @@
 import { getInvalidationKeys } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { FirebaseDraftSync } from '../../../_shared/lib/firestore-cache/firebase-draft-sync';
-import { readDraftState, updateDraftState } from '../../../_shared/lib/sheets/draft';
+import { readDraftState, readDraftStateByDivision, updateDraftState } from '../../../_shared/lib/sheets/draft';
 import {
     clearDraftOrder,
     draftOrderExists,
@@ -39,12 +39,12 @@ export class DraftService {
                 throw new Error('No users found in draft order');
             }
 
-            // Initialize draft state
+            // Initialize draft state - currentPick will be calculated when read back
             await updateDraftState({
                 isActive: true,
-                currentPick: 1,
+                currentPick: 1, // This will be calculated correctly when sheets are read
                 currentUserId: firstUser.userId,
-                currentDivisionId: divisionId,
+                divisionId: divisionId, // Keep existing field name
                 picksPerTeam: 12,
                 startedAt: new Date(),
                 completedAt: null,
@@ -63,8 +63,8 @@ export class DraftService {
         }
     }
 
-    async stopDraft(): Promise<AdminActionResult> {
-        const currentDraftState = await readDraftState();
+    async stopDraft(divisionId: DivisionId): Promise<AdminActionResult> {
+        const currentDraftState = await readDraftStateByDivision(divisionId);
         if (!currentDraftState?.isActive) {
             throw new Error('No active draft to stop');
         }
@@ -89,6 +89,10 @@ export class DraftService {
         try {
             const syncResult = await FirebaseDraftSync.syncDraftFromSheets(divisionId, false);
 
+            // Invalidate sync comparison cache
+            const keysToInvalidate = getInvalidationKeys('DRAFT_SYNC_ACTION', divisionId);
+            dataCache.invalidateMultiple(keysToInvalidate);
+
             return {
                 success: true,
                 message: `Draft synced for division ${divisionId}! ${syncResult.picksCount} picks, current pick: ${
@@ -99,7 +103,7 @@ export class DraftService {
         } catch (error) {
             return {
                 success: false,
-                message: error instanceof Error ? error.message : 'Failed to sync draft',
+                message: `Failed to sync draft for division ${divisionId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
             };
         }
     }
@@ -147,7 +151,7 @@ export class DraftService {
                 isActive: true,
                 currentPick: 0,
                 currentUserId: '',
-                currentDivisionId: divisionId,
+                divisionId: divisionId,
                 picksPerTeam: 12,
                 startedAt: new Date(),
                 completedAt: null,

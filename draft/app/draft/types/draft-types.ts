@@ -1,118 +1,86 @@
 // app/draft/types/draft-types.ts
-/** biome-ignore-all lint/style/useNamingConvention: <fpl init> */
+// Updated to support multiple divisions
 
-import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
-import type { DraftStatusByDivisionId } from '../../admin/types/admin-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { DivisionId } from '../../teams/types/team-types';
 
-/**
- * Draft domain type definitions
- * Contains all types related to the drafting process
- */
-
-export type DraftSequence = Array<{ pick: number; userId: string; userName: string }>;
-
-export interface DraftLoaderData {
-    draftState: DraftStateData | null;
-    draftPicks: DraftPickData[];
-    draftOrder: DraftOrderData[];
-    availablePlayers: EnhancedPlayerData[];
-    currentUser: string;
-    isUserTurn: boolean;
-    divisions: DivisionSheetData[];
-    userTeams: UserTeamsSheetData[];
-    selectedDivision: DivisionId;
-    selectedUser: string;
-    draftSequence: DraftSequence;
-    teams: FplTeam[];
-    filters: {
-        selectedUser: string;
-        search: string;
-        position: string;
-    };
-}
-
-export interface DraftActionData {
-    success?: boolean;
-    error?: string;
-    pick?: DraftPickData;
-    action?: string;
+export interface DraftStateData {
+    divisionId: DivisionId; // Division identifier
+    isActive: boolean;
+    currentPick: number; // CALCULATED: Computed from picks data, not stored in sheets
+    currentUserId: string;
+    picksPerTeam: number;
+    startedAt: Date | null;
+    completedAt: Date | null;
 }
 
 export interface DraftPickData {
     pickNumber: number;
     round: number;
     userId: string;
-    playerId: number;
-    playerCode: number;
+    playerId: string;
+    playerCode: string;
     playerName: string;
-    teamCode: number;
+    teamCode: string;
     teamName: string;
     position: string;
     pickedAt: Date;
-    divisionId: DivisionId;
+    divisionId: string;
 }
 
-export interface DraftStateData {
-    isActive: boolean;
+// NEW: Interface for comparing Firebase vs Sheets data
+export interface DraftSyncComparison {
+    divisionId: string;
+    sheetsState: DraftStateData | null;
+    firebaseState: FirebaseDraftState | null;
+    sheetsPicks: DraftPickData[];
+    firebasePicks: FirebaseDraftPick[];
+    differences: DraftSyncDifference[];
+    lastSyncedAt?: number;
+}
+
+export interface DraftSyncDifference {
+    type: 'state' | 'pick' | 'missing-pick' | 'extra-pick';
+    field?: string;
+    sheetsValue?: any;
+    firebaseValue?: any;
+    pickNumber?: number;
+    severity: 'low' | 'medium' | 'high';
+    description: string;
+}
+
+export interface FirebaseDraftState {
     currentPick: number;
     currentUserId: string;
-    currentDivisionId: DivisionId;
-    picksPerTeam: number;
-    startedAt: Date | null;
-    completedAt: Date | null;
-}
-
-export type DraftAction =
-    | 'generateOrder'
-    | 'startDraft'
-    | 'stopDraft'
-    | 'syncDraft'
-    | 'commitTeamsToFirestore'
-    | 'reset';
-
-export interface DraftStatusData {
-    stage: 'order' | 'running' | 'commit' | 'complete' | 'stop' | 'start';
-    isComplete: boolean;
     isActive: boolean;
-    totalPicks: number;
-    currentPick: number | null;
-    currentUserId: string | null;
-    currentDivisionId: DivisionId | null;
-    picksPerTeam: number;
-    startedAt: Date | null;
-    completedAt: Date | null;
-    byDivision: DraftStatusByDivisionId;
+    lastUpdate: number;
+    totalPicks?: number;
+    syncedFromSheets?: boolean;
 }
 
-export interface DraftOrderData {
-    divisionId: DivisionId;
-    position: number;
+export interface FirebaseDraftPick {
+    pickNumber: number;
+    round: number;
     userId: string;
-    userName: string;
-    generatedAt: Date;
+    playerId: string;
+    playerCode: string;
+    playerName: string;
+    teamCode: string;
+    teamName: string;
+    position: string;
+    pickedAt: string;
+    divisionId: string;
+    timestamp: number;
 }
 
-export interface PositionCounts {
-    gk: number;
-    cb: number;
-    fb: number;
-    mid: number;
-    wa: number;
-    ca: number;
-    sub: number;
-    total: number;
+// NEW: Admin action results for multi-division operations
+export interface MultiDivisionDraftResult {
+    success: boolean;
+    message: string;
+    divisionResults: Record<string, DraftResult>;
 }
 
-export interface TeamCounts {
-    [teamCode: number]: {
-        count: number;
-        teamName: string;
-    };
+export interface DraftResult {
+    success: boolean;
+    message: string;
+    data?: any;
 }
-
-export type SquadComposition = {
-    positionCounts: PositionCounts;
-    teamCounts: TeamCounts;
-};

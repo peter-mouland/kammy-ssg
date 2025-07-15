@@ -198,7 +198,7 @@ export function DraftPlayers({
                                         <div className={styles.playerInfo}>
                                             <div className={styles.playerName}>
                                                 <span>
-                                                    {player.first_name} {player.second_name}
+                                                    {player.web_name}
                                                 </span>
                                                 {validation.canAddToSub && (
                                                     <span className={styles.subOnlyBadge}>SUB ONLY</span>
@@ -210,8 +210,6 @@ export function DraftPlayers({
                                                 </span>
                                                 <span>•</span>
                                                 <span>{teamName}</span>
-                                                <span>•</span>
-                                                <span>£{(player.now_cost / 10).toFixed(1)}m</span>
                                             </div>
                                         </div>
 

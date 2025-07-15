@@ -72,7 +72,7 @@ export class AdminOrchestrator {
                     this.invalidateCachesForAction('processDraft');
                     break;
                 case 'stopDraft':
-                    result = await draftService.stopDraft();
+                    result = await draftService.stopDraft(params.divisionId);
                     this.invalidateCachesForAction('processDraft');
                     break;
                 case 'syncDraft':
@@ -183,14 +183,14 @@ export class AdminOrchestrator {
     private async loadSheetData() {
         const { readDivisions } = await import('../../../_shared/lib/sheets/divisions');
         const { readUserTeams } = await import('../../../_shared/lib/sheets/user-teams');
-        const { readDraftState } = await import('../../../_shared/lib/sheets/draft');
+        const { readAllDraftStates } = await import('../../../_shared/lib/sheets/draft');
         const { readDraftOrders } = await import('../../../_shared/lib/sheets/draft-order');
         const { readTransfers } = await import('../../../_shared/lib/sheets/transfers');
 
         const [
             divisions,
             managers,
-            draftState,
+            draftStates,
             draftOrder,
             players,
             premierLeagueTransfers,
@@ -199,7 +199,7 @@ export class AdminOrchestrator {
         ] = await Promise.all([
             readDivisions(),
             readUserTeams(),
-            readDraftState(),
+            readAllDraftStates(),
             readDraftOrders(),
             readPlayers(),
             readTransfers('premierLeague'),
@@ -210,7 +210,7 @@ export class AdminOrchestrator {
         return {
             divisions,
             managers,
-            draftState,
+            draftStates,
             draftOrder,
             players,
             transfers: {

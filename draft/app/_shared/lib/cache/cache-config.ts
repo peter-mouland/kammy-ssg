@@ -1,4 +1,6 @@
 // app/_shared/lib/cache/cache-config.ts
+// Updated cache configuration for multi-division draft support
+
 /** biome-ignore-all lint/style/useNamingConvention: <consts in'it> */
 
 /**
@@ -17,9 +19,9 @@ export const CACHE_TTL = {
     // Google Sheets Data - manual data entry, changes less frequently
     SHEETS_DIVISIONS: 24 * 60 * 60 * 1000, // 24 hours - division structure rarely changes
     SHEETS_USER_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - manager data rarely changes
-    SHEETS_DRAFT_STATE: 5 * 60 * 1000, // 5 minutes - draft order set before draft
+    SHEETS_DRAFT_STATE: 2 * 60 * 1000, // 2 minutes - draft state changes during drafts (reduced from 5 min)
     SHEETS_DRAFT_ORDERS: 24 * 60 * 60 * 1000, // 24 hours - draft order set before draft
-    SHEETS_DRAFT: 5 * 60 * 1000, // 5 minutes - draft order set before draft
+    SHEETS_DRAFT: 2 * 60 * 1000, // 2 minutes - draft picks change during drafts (reduced from 5 min)
     SHEETS_TRANSFERS: 2 * 60 * 1000, // 2 minute - can change during drafts
     SHEETS_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player positions might be updated
 
@@ -27,6 +29,9 @@ export const CACHE_TTL = {
     FIREBASE_DRAFT_STATE: 150 * 1000, // 150 seconds - changes rapidly during draft
     FIREBASE_DRAFT_PICKS: 300 * 1000, // 300 seconds - picks happen frequently during draft
     FIRESTORE_CACHE_STATUS: 1 * 60 * 1000, // 1 minute - cache health status
+
+    // NEW: Draft sync comparison data
+    DRAFT_SYNC_COMPARISON: 30 * 1000, // 30 seconds - for admin monitoring
 
     // Transfer & Scoring Data - changes with admin actions
     DIVISION_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team rosters change with transfers/draft
@@ -56,9 +61,10 @@ export const CACHE_KEYS = {
         DIVISIONS: 'sheets:divisions',
         USER_TEAMS: 'sheets:user-teams',
         DRAFT_STATE: 'sheets:draft-state',
+        DRAFT_STATE_BY_DIVISION: (divisionId: string) => `sheets:draft-state:${divisionId}`, // NEW: Division-specific cache
         DRAFT_ORDERS: 'sheets:draft-orders',
         DRAFT: 'sheets:draft-picks',
-        TRANSFERS: (divisionId: string) => `sheets:TRANSFERS:${divisionId}`,
+        TRANSFERS: (divisionId: string) => `sheets:transfers:${divisionId}`,
         PLAYERS: 'sheets:players',
     },
 
@@ -67,6 +73,12 @@ export const CACHE_KEYS = {
         DRAFT_STATE: (divisionId: string) => `firebase:draft-state:${divisionId}`,
         DRAFT_PICKS: (divisionId: string) => `firebase:draft-picks:${divisionId}`,
         CACHE_STATUS: 'firebase:cache-status',
+    },
+
+    // NEW: Draft sync comparison keys
+    DRAFT_SYNC: {
+        COMPARISON: (divisionId: string) => `draft-sync:comparison:${divisionId}`,
+        ALL_COMPARISONS: 'draft-sync:all-comparisons',
     },
 
     SCORING: {
@@ -94,23 +106,39 @@ export const CACHE_INVALIDATION_RULES = {
         CACHE_KEYS.SCORING.DIVISION_TEAMS(divisionId, gameWeek),
     ],
 
-    // When draft actions happen
+    // When draft actions happen - UPDATED for multi-division
     DRAFT_ACTION: (divisionId: string) => [
         CACHE_KEYS.FIREBASE.DRAFT_STATE(divisionId),
         CACHE_KEYS.FIREBASE.DRAFT_PICKS(divisionId),
         CACHE_KEYS.SHEETS.DRAFT,
-        CACHE_KEYS.SHEETS.DRAFT_STATE,
+        CACHE_KEYS.SHEETS.DRAFT_STATE, // Invalidate all draft states
+        CACHE_KEYS.SHEETS.DRAFT_STATE_BY_DIVISION(divisionId), // Invalidate division-specific state
         CACHE_KEYS.SHEETS.DRAFT_ORDERS,
+        CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId), // NEW: Invalidate sync comparison
+        CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS, // NEW: Invalidate all comparisons
+    ],
+
+    // NEW: When draft sync happens
+    DRAFT_SYNC_ACTION: (divisionId: string) => [
+        CACHE_KEYS.FIREBASE.DRAFT_STATE(divisionId),
+        CACHE_KEYS.FIREBASE.DRAFT_PICKS(divisionId),
+        CACHE_KEYS.SHEETS.DRAFT_STATE,
+        CACHE_KEYS.SHEETS.DRAFT_STATE_BY_DIVISION(divisionId),
+        CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId),
+        CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS,
     ],
 
     SHEETS_CLEAR: (divisionId: string) => [
         CACHE_KEYS.SHEETS.TRANSFERS(divisionId),
         CACHE_KEYS.SHEETS.DRAFT,
         CACHE_KEYS.SHEETS.DRAFT_STATE,
+        CACHE_KEYS.SHEETS.DRAFT_STATE_BY_DIVISION(divisionId), // NEW: Clear division-specific state
         CACHE_KEYS.SHEETS.DRAFT_ORDERS,
         CACHE_KEYS.SHEETS.PLAYERS,
         CACHE_KEYS.SHEETS.DIVISIONS,
         CACHE_KEYS.SHEETS.USER_TEAMS,
+        CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId), // NEW: Clear sync comparison
+        CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS, // NEW: Clear all comparisons
     ],
 } as const;
 
@@ -137,6 +165,9 @@ export function getCacheTTL(key: string): number {
     if (key.includes('firebase:draft-state')) return CACHE_TTL.FIREBASE_DRAFT_STATE;
     if (key.includes('firebase:draft-picks')) return CACHE_TTL.FIREBASE_DRAFT_PICKS;
     if (key.includes('firebase:cache-status')) return CACHE_TTL.FIRESTORE_CACHE_STATUS;
+
+    // NEW: Draft sync comparison keys
+    if (key.includes('draft-sync:comparison')) return CACHE_TTL.DRAFT_SYNC_COMPARISON;
 
     // Scoring keys
     if (key.includes('scoring:teams')) return CACHE_TTL.DIVISION_TEAMS;
