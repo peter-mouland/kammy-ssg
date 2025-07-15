@@ -123,18 +123,15 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 const { regeneratePoints } = await import('./libs/background-jobs.server');
                 const jobType = gameweekActionType;
                 const jobId = generateJobId();
-                console.log('🔍 Generated jobId:', jobId);
 
                 progressStore.createJob(jobId, jobType);
-                console.log('🔍 Created job in progressStore with type:', jobType);
 
                 // Add a small delay to let the SSE connection establish first
                 setTimeout(() => {
-                    console.log('🔍 About to call regeneratePoints with delay:', { jobId, gameweekId: gameweek });
-                    regeneratePoints(jobId, orchestrator, gameweek || undefined).catch((error) => {
+                    regeneratePoints(jobId, jobType, orchestrator, gameweek || undefined).catch((error) => {
                         console.error('🚨 Background job error:', error);
+                        throw new Error('🚨 Background job error:', error.message)
                     });
-                    console.log('🔍 regeneratePoints call initiated');
                 }, 100); // 100ms delay
 
                 result = {

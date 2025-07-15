@@ -9,12 +9,8 @@ export function createProgressStream(request: Request, jobIdIn?: string): Respon
         return new Response('Missing jobId parameter', { status: 400 });
     }
 
-    console.log('🔍 Creating progress stream for jobId:', jobId);
-
     const stream = new ReadableStream({
         start(controller) {
-            console.log('🔍 ReadableStream started for jobId:', jobId);
-
             const subscriber: ProgressSubscriber = {
                 response: new Response(),
                 controller,
@@ -29,7 +25,6 @@ export function createProgressStream(request: Request, jobIdIn?: string): Respon
                 timestamp: Date.now(),
             })}\n\n`;
 
-            console.log('🔍 Sending connection data:', connectionData);
             controller.enqueue(new TextEncoder().encode(connectionData));
 
             request.signal.addEventListener('abort', () => {
@@ -47,7 +42,6 @@ export function createProgressStream(request: Request, jobIdIn?: string): Respon
         },
     });
 
-    console.log('🔍 Returning SSE response with headers');
     return new Response(stream, {
         headers: {
             'Content-Type': 'text/event-stream',

@@ -10,16 +10,16 @@ import {
 } from '../../scoring/server/services/division-teams-points-population.service';
 import type { DivisionSheetData, DivisionTeamsDocument } from '../../teams/types/team-types';
 import { progressStore } from './progress-store.server';
+import * as process from 'node:process';
 
 interface DivisionInfo {
     division: DivisionSheetData;
     teamCount: number;
 }
 
-export async function regeneratePoints(jobId: string, orchestrator: any, gameweekId: number): Promise<void> {
+export async function regeneratePoints(jobId: string, jobType: 'all' | 'gameweek' | 'gameweeks', orchestrator: any, gameweekId: number): Promise<void> {
     console.log('🔍 regeneratePoints called with:', { jobId, gameweekId });
-    const availableGameweeks = gameweekId ? [gameweekId] : await getAllGameweekIds();
-    const options = { forceFullRegeneration: !!gameweekId };
+    const options = { forceFullRegeneration: jobType === 'all' };
 
     try {
         progressStore.updateProgress(jobId, {
@@ -28,8 +28,10 @@ export async function regeneratePoints(jobId: string, orchestrator: any, gamewee
             message: 'Loading gameweeks and divisions...',
             status: 'running',
         });
-        console.log('🔍 First progress update sent for jobId:', jobId);
 
+        const availableGameweeks = jobType === 'gameweeks'
+            ?  await createGameweekIds(gameweekId) : gameweekId
+                ? [gameweekId] : await getAllGameweekIds();
         const allGameweeks = availableGameweeks;
         const totalGameweeks = allGameweeks.length;
 
@@ -75,6 +77,7 @@ export async function regeneratePoints(jobId: string, orchestrator: any, gamewee
             status: 'error',
             error: error instanceof Error ? error.message : 'Unknown error',
         });
+        throw Error(`Error in regenerating all points: ${error instanceof Error ? error.message : 'Unknown error'}`,)
     }
 }
 
@@ -87,43 +90,55 @@ async function processGameweekWithProgress(
     totalOperations: number,
     options: any,
 ): Promise<number> {
-    let completedOperations = startingCompletedOperations;
+    try {
+        let completedOperations = startingCompletedOperations;
 
-    for (let i = 0; i < divisionInfos.length; i++) {
-        const { division } = divisionInfos[i];
+        for (let i = 0; i < divisionInfos.length; i++) {
+            const { division } = divisionInfos[i];
 
-        progressStore.updateProgress(jobId, {
-            stage: 'division',
-            percentage: Math.floor((completedOperations / totalOperations) * 100),
-            message: `Gameweek ${gameweekId}: Processing division ${division.id}`,
-            details: {
-                currentGameweek: gameweekId,
-                currentDivision: division.id,
+            progressStore.updateProgress(jobId, {
+                stage: 'division',
+                percentage: Math.floor((completedOperations / totalOperations) * 100),
+                message: `Gameweek ${gameweekId}: Processing division ${division.id}`,
+                details: {
+                    currentGameweek: gameweekId,
+                    currentDivision: division.id,
+                    completedOperations,
+                    totalOperations,
+                    currentTeam: '-',
+                },
+            });
+
+            const divisionDoc = await upsertDivisionTeamsDocument(division.id, gameweekId, options);
+
+            completedOperations = await processDivisionWithProgress(
+                jobId,
+                gameweekId,
+                divisionDoc,
                 completedOperations,
                 totalOperations,
-                currentTeam: '-',
-            },
+            );
+
+            await updateDivisionTeamsDocument(division.id, gameweekId, {
+                teams: divisionDoc?.teams,
+                'metadata.updatedAt': new Date().toISOString(),
+                'metadata.pointsLastUpdated': new Date().toISOString(),
+                'metadata.pointsLastGameweek': gameweekId,
+            });
+        }
+
+        return completedOperations;
+
+    } catch (error) {
+        progressStore.updateProgress(jobId, {
+            stage: 'error',
+            percentage: 0,
+            message: `Error in processGameweekWithProgress: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            status: 'error',
+            error: error instanceof Error ? error.message : 'Unknown error',
         });
-
-        const divisionDoc = await upsertDivisionTeamsDocument(division.id, gameweekId, options);
-
-        completedOperations = await processDivisionWithProgress(
-            jobId,
-            gameweekId,
-            divisionDoc,
-            completedOperations,
-            totalOperations,
-        );
-
-        await updateDivisionTeamsDocument(division.id, gameweekId, {
-            teams: divisionDoc.teams,
-            'metadata.updatedAt': new Date().toISOString(),
-            'metadata.pointsLastUpdated': new Date().toISOString(),
-            'metadata.pointsLastGameweek': gameweekId,
-        });
+        throw Error(`Error in processGameweekWithProgress: ${error instanceof Error ? error.message : 'Unknown error'}`,)
     }
-
-    return completedOperations;
 }
 
 async function processDivisionWithProgress(
@@ -133,38 +148,50 @@ async function processDivisionWithProgress(
     startingCompletedOperations: number,
     totalOperations: number,
 ): Promise<number> {
-    const previousDivisionDoc = await getDivisionTeamsDocument(divisionDoc.divisionId, gameweekId - 1);
-    const RosterByManagerId = divisionDoc.teams || [];
-    const managers = Object.keys(RosterByManagerId);
-    const totalTeams = managers.length;
-    let completedOperations = startingCompletedOperations;
+    try {
 
-    for (let i = 0; i < managers.length; i++) {
-        const manager = managers[i];
-        const teamData = RosterByManagerId[manager];
+        const previousDivisionDoc = await getDivisionTeamsDocument(divisionDoc.divisionId, gameweekId - 1);
+        const RosterByManagerId = divisionDoc.teams || [];
+        const managers = Object.keys(RosterByManagerId);
+        const totalTeams = managers.length;
+        let completedOperations = startingCompletedOperations;
 
+        for (let i = 0; i < managers.length; i++) {
+            const manager = managers[i];
+            const teamData = RosterByManagerId[manager];
+
+            progressStore.updateProgress(jobId, {
+                stage: 'team',
+                percentage: Math.floor((completedOperations / totalOperations) * 100),
+                message: `Processing team: ${manager}`,
+                details: {
+                    currentGameweek: gameweekId,
+                    currentDivision: divisionDoc.divisionId,
+                    currentTeam: manager,
+                    teamProgress: `${i + 1}/${totalTeams}`,
+                    completedOperations,
+                    totalOperations,
+                },
+            });
+
+            await calculateSingleTeamPoints(
+                { divisionId: divisionDoc.divisionId, gameweek: gameweekId, userId: manager, teamData, divisionDoc, previousDivisionDoc },
+            );
+
+            completedOperations++;
+        }
+
+        return completedOperations;
+    } catch (error) {
         progressStore.updateProgress(jobId, {
-            stage: 'team',
-            percentage: Math.floor((completedOperations / totalOperations) * 100),
-            message: `Processing team: ${manager}`,
-            details: {
-                currentGameweek: gameweekId,
-                currentDivision: divisionDoc.divisionId,
-                currentTeam: manager,
-                teamProgress: `${i + 1}/${totalTeams}`,
-                completedOperations,
-                totalOperations,
-            },
+            stage: 'error',
+            percentage: 0,
+            message: `Error processDivisionWithProgress: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            status: 'error',
+            error: error instanceof Error ? error.message : 'Unknown error',
         });
-
-        await calculateSingleTeamPoints(
-            { divisionId: divisionDoc.divisionId, gameweek: gameweekId, userId: manager, teamData, divisionDoc, previousDivisionDoc },
-        );
-
-        completedOperations++;
+        throw Error(`Error in processDivisionWithProgress: ${error instanceof Error ? error.message : 'Unknown error'}`,)
     }
-
-    return completedOperations;
 }
 
 async function getDivisionInfos(divisions: DivisionSheetData[], sampleGameweek: number): Promise<DivisionInfo[]> {
@@ -194,6 +221,11 @@ async function getCurrentGameweekId(): Promise<number> {
 async function getAllGameweekIds(): Promise<number[]> {
     const currentId = await getCurrentGameweekId();
     return Array.from({ length: currentId }, (_, i) => i + 1);
+}
+
+async function createGameweekIds(gameweekId: number): Promise<number[]> {
+    const currentId = await getCurrentGameweekId();
+    return Array.from({ length: currentId - gameweekId + 1 }, (_, i) => gameweekId + i);
 }
 
 async function loadDivisionsData(): Promise<DivisionSheetData[]> {

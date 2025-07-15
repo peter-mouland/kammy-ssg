@@ -112,9 +112,20 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                     </AdminButton>
 
                     <AdminButton
+                        icon={<Icons.RefreshIcon />}
+                        variant="danger"
+                        onClick={() => handleProcessGameweek('gameweeks', lastProcessedGameweek)}
+                        disabled={isLoading || lastProcessedGameweek === currentGameweek}
+                        loading={isLoading}
+                    >
+                        Regenerate Points {lastProcessedGameweek}+
+                    </AdminButton>
+
+                    <AdminButton
                         variant="secondary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek - 1)}
                         disabled={isLoading || currentGameweek <= 1}
+                        loading={isLoading}
                         icon={'↩️'}
                     >
                         Regenerate Last Gameweek
@@ -124,6 +135,7 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                         variant="primary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek)}
                         disabled={isLoading}
+                        loading={isLoading}
                         icon={'▶️'}
                     >
                         Run Gameweek {currentGameweek}

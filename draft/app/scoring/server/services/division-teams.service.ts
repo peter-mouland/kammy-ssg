@@ -135,6 +135,7 @@ export async function updateDivisionTeamsDocument(
     try {
         const db = getFirestoreInstance();
         const docId = `${divisionId}_gw${gameweek}`;
+        console.log({ docId })
         const docRef = db.collection('division-teams').doc(docId);
 
         await docRef.update(updates);

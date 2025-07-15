@@ -54,32 +54,43 @@ type CalcProps = {
     previousDivisionDoc: DivisionTeamsDocument;
 }
 export async function calculateSingleTeamPoints({ gameweek, userId, teamData, divisionDoc, previousDivisionDoc }: CalcProps) {
-    const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
-    const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
-    const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);
-    const playerGameweekPoints = generateGameweekData(rosterPlayers, fplPlayerGameweeksById, gameweek);
+    try {
+        const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
+        const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
+        const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);
+        const playerGameweekPoints = generateGameweekData(rosterPlayers, fplPlayerGameweeksById, gameweek);
 
-    // Update each position slot
-    for (const [slotKey, positionSlot] of Object.entries<TeamPositionSlot>(teamData.roster)) {
-        const slot = slotKey as PositionSlotKey;
+        // Update each position slot
+        for (const [slotKey, positionSlot] of Object.entries<TeamPositionSlot>(teamData.roster)) {
+            const slot = slotKey as PositionSlotKey;
 
-        // Update gameweek points and stats
-        const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
-        const prevGameweek = previousDivisionDoc.teams[userId].roster[slot]
-        if (!playerGameweek) {
-            console.error(
-                `🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`,
-            );
+            // Update gameweek points and stats
+            const playerGameweek = playerGameweekPoints[positionSlot.player.playerId][gameweek];
+            if (!playerGameweek) {
+                console.error(
+                    `🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`,
+                );
+            }
+            const prevGameweek = previousDivisionDoc.teams[userId].roster[slot]
+            if (!prevGameweek && slot === 'on_loan_0') {
+                // not a concern, loans get deleted when finished
+            } else if (!prevGameweek) {
+                    console.error(`🚨 no data for prevGameweek: ${userId} ${slot}`);
+            } else {
+                const updatedPositionSlot = updatePositionSlotPoints(
+                    positionSlot,
+                    gameweek,
+                    playerGameweek.stats || createEmptyStats(),
+                    playerGameweek.points || createEmptyPoints(),
+                    prevGameweek
+                );
+
+                divisionDoc.teams[userId].roster[slot] = updatedPositionSlot;
+            }
         }
-        const updatedPositionSlot = updatePositionSlotPoints(
-            positionSlot,
-            gameweek,
-            playerGameweek.stats || createEmptyStats(),
-            playerGameweek.points || createEmptyPoints(),
-            prevGameweek
-        );
-
-        divisionDoc.teams[userId].roster[slot] = updatedPositionSlot;
+    } catch (e) {
+        console.error(e)
+        throw new Error(`calculateSingleTeamPoints: ` + e.message)
     }
 }
 
@@ -259,25 +270,30 @@ function updatePositionSlotPoints(
     gameweekPoints: Points,
     previousGameweekPositionSlot: TeamPositionSlot,
 ): TeamPositionSlot {
-    const updatedSeasonStats = addStatsToSeason(previousGameweekPositionSlot.season.stats, gameweekStats);
-    const updatedSeasonPoints = addPointsToSeason(previousGameweekPositionSlot.season.points, gameweekPoints);
+    try {
+        const updatedSeasonStats = addStatsToSeason(previousGameweekPositionSlot.season.stats, gameweekStats);
+        const updatedSeasonPoints = addPointsToSeason(previousGameweekPositionSlot.season.points, gameweekPoints);
 
-    // Create updated position slot
-    const updated: TeamPositionSlot = {
-        ...positionSlot,
-        gameweek: {
-            stats: gameweekStats,
-            points: gameweekPoints,
-        },
-        season: {
-            stats: updatedSeasonStats,
-            points: updatedSeasonPoints,
-            seasonUpToGameweek: gameweek,
-            seasonGeneratedOn: new Date().toISOString(),
-        },
-    };
+        // Create updated position slot
+        const updated: TeamPositionSlot = {
+            ...positionSlot,
+            gameweek: {
+                stats: gameweekStats,
+                points: gameweekPoints,
+            },
+            season: {
+                stats: updatedSeasonStats,
+                points: updatedSeasonPoints,
+                seasonUpToGameweek: gameweek,
+                seasonGeneratedOn: new Date().toISOString(),
+            },
+        };
+        return updated;
+    } catch (e) {
+        console.log(`updatePositionSlotPoints + ${e.message}`)
+        throw new Error(`updatePositionSlotPoints + ${e.message}`)
+    }
 
-    return updated;
 }
 
 /**

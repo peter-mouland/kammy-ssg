@@ -70,8 +70,6 @@ export class DataCacheService {
         const cached = this.cache.get(key);
         if (cached && Date.now() - cached.timestamp < cached.ttl) {
             this.stats.hits++;
-            const age = Date.now() - cached.timestamp;
-            console.log(`✅ CACHE HIT: ${key} (age: ${age}ms, ttl: ${cached.ttl}ms)`);
             return cached.data;
         }
 
@@ -109,8 +107,6 @@ export class DataCacheService {
             key,
             ttl: ttlMs,
         });
-
-        console.log(`💾 CACHE SET: ${key} (ttl: ${ttlMs}ms, cache size: ${this.cache.size})`);
     }
 
     /**

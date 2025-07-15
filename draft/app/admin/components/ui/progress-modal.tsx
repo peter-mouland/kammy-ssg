@@ -56,6 +56,8 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
                 return 'Regenerating All Points';
             case 'gameweek':
                 return 'Regenerating Gameweek';
+            case 'gameweeks':
+                return 'Regenerating Gameweeks';
             default:
                 return 'Processing';
         }

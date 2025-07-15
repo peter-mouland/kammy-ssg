@@ -33,7 +33,6 @@ export class AdminOrchestrator {
      * Uses DataCacheService for caching
      */
     async getSharedContext(): Promise<AdminDataContext> {
-        console.log('🔄 AdminOrchestrator.getSharedContext() - Loading fresh context');
         const [fplData, sheetData, cacheStatus] = await Promise.all([
             this.loadFplData(),
             this.loadSheetData(),
@@ -46,8 +45,6 @@ export class AdminOrchestrator {
             cacheStatus,
             loadedAt: new Date().toISOString(),
         };
-
-        console.log('✅ AdminOrchestrator.getSharedContext() - Context loaded');
         return context;
     }
 

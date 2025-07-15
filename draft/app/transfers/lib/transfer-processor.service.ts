@@ -37,8 +37,6 @@ export async function applyTransfersToRosters(
     const appliedTransfers: TransferApplicationResult[] = [];
     const errors: string[] = [];
 
-    console.log(`📋 Found ${relevantTransfers.length} transfers to apply`);
-
     for (const transfer of relevantTransfers) {
         try {
             const result = await applyIndividualTransfer(updatedRosters, transfer);
@@ -58,7 +56,6 @@ export async function applyTransfersToRosters(
         }
     }
 
-    console.log(`✅ Applied ${appliedTransfers.length} transfers successfully`);
     if (errors.length > 0) {
         console.warn(`⚠️ ${errors.length} transfer application errors`);
     }
@@ -102,7 +99,6 @@ async function applyIndividualTransfer(
  * Apply external transfer (player in/out of team)
  */
 function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
-    console.log('🔄 applyExternalTransfer');
     const { managerId, playerOut, playerIn } = transfer;
 
     // Find the position slot containing the outgoing player
@@ -129,7 +125,6 @@ function applyExternalTransfer(managerRoster: TeamRoster, transfer: ProcessedTra
  * Apply internal swap (between positions in same team)
  */
 function applyInternalSwap(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
-    console.log('🔄 applyInternalSwap');
     const { managerId, playerOut, playerIn } = transfer;
 
     // Find both players in the roster
@@ -163,7 +158,6 @@ function applyInternalSwap(managerRoster: TeamRoster, transfer: ProcessedTransfe
  * Apply loan start - moves player to on_loan_0 slot and adds incoming player to original slot
  */
 function applyLoanStart(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
-    console.log('🟢 start applyLoanStart');
     const { managerId, playerOut, playerIn } = transfer;
 
     // Find the player being loaned out in lending team

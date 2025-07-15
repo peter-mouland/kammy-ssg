@@ -130,8 +130,6 @@ export class GameweekPointsService {
                 source: 'enhanced',
                 data: updatedMetadata,
             });
-
-            console.log('📝 Points metadata updated:', updatedMetadata);
         } catch (error) {
             console.error('Error updating points metadata:', error);
             throw error;

@@ -2,7 +2,7 @@
 
 export interface ProgressUpdate {
     jobId: string;
-    jobType: 'all' | 'gameweek';
+    jobType: 'all' | 'gameweek' | 'gameweeks';
     stage: 'starting' | 'gameweek' | 'division' | 'team' | 'completed' | 'error';
     percentage: number;
     message: string;
@@ -44,7 +44,6 @@ class ProgressStore {
 
         if (fullUpdate.status === 'completed' || fullUpdate.status === 'error') {
             setTimeout(() => {
-                console.log('🔍 Cleaning up completed job:', jobId);
                 this.jobs.delete(jobId);
             }, 5000);
         }
@@ -62,9 +61,7 @@ class ProgressStore {
 
         // This should send current progress, but let's debug it
         const currentProgress = this.jobs.get(jobId);
-        console.log('🔍 Subscribing to jobId:', jobId, 'current progress:', currentProgress ? 'found' : 'not found');
         if (currentProgress) {
-            console.log('🔍 Sending current progress to new subscriber:', currentProgress);
             this.sendToSubscriber(subscriber, currentProgress);
         }
     }
@@ -87,7 +84,6 @@ class ProgressStore {
         const data = `data: ${JSON.stringify(update)}\n\n`;
         try {
             subscriber.controller.enqueue(new TextEncoder().encode(data));
-            console.log('✅ Successfully sent update to subscriber');
         } catch (error) {
             console.error('❌ Failed to send update to subscriber:', error);
             throw error;
@@ -96,16 +92,11 @@ class ProgressStore {
 
     private notifySubscribers(jobId: string, update: ProgressUpdate): void {
         const jobSubscribers = this.subscribers.get(jobId);
-        console.log('🔍 notifySubscribers called for jobId:', jobId, 'subscribers count:', jobSubscribers?.size || 0);
-
         if (!jobSubscribers) {
-            console.log('❌ No subscribers found for jobId:', jobId);
             return;
         }
 
         const subscribersArray = Array.from(jobSubscribers);
-        console.log('🔍 Notifying', subscribersArray.length, 'subscribers');
-
         subscribersArray.forEach((subscriber) => {
             try {
                 this.sendToSubscriber(subscriber, update);
