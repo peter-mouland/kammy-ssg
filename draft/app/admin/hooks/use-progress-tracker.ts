@@ -11,29 +11,166 @@ interface UseProgressTrackerProps {
 
 interface UseProgressTrackerReturn {
     progress: ProgressUpdate | null;
-    isConnected: boolean;
-    hasError: boolean;
+    connectionState: ConnectionState;
     reconnect: () => void;
 }
+
+// ============================================================================
+// TYPES & CONSTANTS
+// ============================================================================
+
+type ConnectionState =
+    | { status: 'disconnected'; attempts: number }
+    | { status: 'connecting'; attempts: number }
+    | { status: 'connected'; attempts: number }
+    | { status: 'error'; attempts: number; maxReached: boolean };
 
 const MAX_RECONNECT_ATTEMPTS = 3;
 const RECONNECT_DELAY = 3000;
 
-export function useProgressTracker({ jobId, onComplete, onError }: UseProgressTrackerProps): UseProgressTrackerReturn {
+// ============================================================================
+// EVENTSOURCE-SPECIFIC HANDLERS (Pure functions for EventSource lifecycle)
+// ============================================================================
+
+interface ConnectionStateUpdaters {
+    setConnecting: () => void;
+    setConnected: () => void;
+    setError: (maxReached?: boolean) => void;
+    setDisconnected: () => void;
+}
+
+function createConnectionStateUpdaters(
+    setConnectionState: React.Dispatch<React.SetStateAction<ConnectionState>>
+): ConnectionStateUpdaters {
+    return {
+        setConnecting: () => setConnectionState(prev => ({
+            status: 'connecting' as const,
+            attempts: prev.attempts
+        })),
+        setConnected: () => setConnectionState(prev => ({
+            status: 'connected' as const,
+            attempts: 0 // Reset on success
+        })),
+        setError: (maxReached = false) => setConnectionState(prev => ({
+            status: 'error' as const,
+            attempts: prev.attempts + 1,
+            maxReached
+        })),
+        setDisconnected: () => setConnectionState(prev => ({
+            status: 'disconnected' as const,
+            attempts: prev.attempts
+        })),
+    };
+}
+
+function handleEventSourceOpen(updaters: ConnectionStateUpdaters): void {
+    console.log('✅ EventSource connected successfully');
+    updaters.setConnected();
+}
+
+function handleEventSourceError(
+    updaters: ConnectionStateUpdaters,
+    currentAttempts: number
+): void {
+    console.log('❌ EventSource error occurred');
+    const maxReached = currentAttempts >= MAX_RECONNECT_ATTEMPTS - 1;
+    updaters.setError(maxReached);
+}
+
+// ============================================================================
+// PROGRESS-SPECIFIC HANDLERS (Pure functions for progress updates)
+// ============================================================================
+
+interface ProgressCallbacks {
+    onProgress: (update: ProgressUpdate) => void;
+    onComplete: (update: ProgressUpdate) => void;
+    onError: (update: ProgressUpdate) => void;
+    onJobFinished: () => void;
+}
+
+function handleProgressMessage(
+    event: MessageEvent,
+    callbacks: ProgressCallbacks
+): void {
+    try {
+        const data = JSON.parse(event.data);
+
+        // Handle connection confirmation
+        if (data.type === 'connection') {
+            console.log('✅ Progress stream connection confirmed');
+            return;
+        }
+
+        // Handle actual progress updates
+        if (data.jobId && data.stage) {
+            console.log('📊 Progress update:', data.stage, `${data.percentage}%`);
+            const update = data as ProgressUpdate;
+            callbacks.onProgress(update);
+
+            // Check if job is finished
+            if (update.status === 'completed') {
+                console.log('✅ Job completed successfully');
+                callbacks.onJobFinished();
+                callbacks.onComplete(update);
+            } else if (update.status === 'error') {
+                console.log('❌ Job failed with error');
+                callbacks.onJobFinished();
+                callbacks.onError(update);
+            }
+        }
+    } catch (parseError) {
+        console.error('❌ Error parsing progress update:', parseError);
+    }
+}
+
+// ============================================================================
+// EVENTSOURCE FACTORY
+// ============================================================================
+
+interface EventSourceConfig {
+    jobId: string;
+    connectionUpdaters: ConnectionStateUpdaters;
+    progressCallbacks: ProgressCallbacks;
+    currentAttempts: number;
+}
+
+function createProgressEventSource(config: EventSourceConfig): EventSource {
+    const eventSource = new EventSource(`/admin-progress/${config.jobId}`);
+
+    eventSource.onopen = () => handleEventSourceOpen(config.connectionUpdaters);
+
+    eventSource.onmessage = (event) => handleProgressMessage(event, config.progressCallbacks);
+
+    eventSource.onerror = () => handleEventSourceError(
+        config.connectionUpdaters,
+        config.currentAttempts
+    );
+
+    return eventSource;
+}
+
+// ============================================================================
+// HOOK IMPLEMENTATION
+// ============================================================================
+
+export function useProgressTracker({
+                                       jobId,
+                                       onComplete = () => {},
+                                       onError = () => {}
+                                   }: UseProgressTrackerProps): UseProgressTrackerReturn {
     const [progress, setProgress] = useState<ProgressUpdate | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const [hasError, setHasError] = useState(false);
-    const [connectionAttempts, setConnectionAttempts] = useState(0);
+    const [connectionState, setConnectionState] = useState<ConnectionState>({
+        status: 'disconnected',
+        attempts: 0
+    });
 
     const eventSourceRef = useRef<EventSource | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isJobFinishedRef = useRef<boolean>(false);
 
+    // FIXED: Remove all dependencies that could cause loops
     const cleanup = useCallback(() => {
-        console.log('🔍 Cleaning up EventSource for jobId:', jobId);
-
         if (eventSourceRef.current) {
-            console.log('🔍 Closing EventSource, readyState:', eventSourceRef.current.readyState);
             eventSourceRef.current.close();
             eventSourceRef.current = null;
         }
@@ -43,9 +180,8 @@ export function useProgressTracker({ jobId, onComplete, onError }: UseProgressTr
             reconnectTimeoutRef.current = null;
         }
 
-        setIsConnected(false);
-        setConnectionAttempts(0);
-    }, [jobId]);
+        setConnectionState({ status: 'disconnected', attempts: 0 });
+    }, []);
 
     const connect = useCallback(() => {
         if (!jobId) {
@@ -53,172 +189,96 @@ export function useProgressTracker({ jobId, onComplete, onError }: UseProgressTr
             return;
         }
 
-        // Prevent connection if job is already finished
         if (isJobFinishedRef.current) {
             console.log('🔍 Job already finished, not connecting');
             return;
         }
 
-        // Prevent too many reconnection attempts
-        if (connectionAttempts >= MAX_RECONNECT_ATTEMPTS) {
-            console.log('🚨 Max reconnection attempts reached:', connectionAttempts);
-            setHasError(true);
+        if (connectionState.status === 'error' && connectionState.maxReached) {
+            console.log('🚨 Max reconnection attempts reached');
             return;
         }
 
-        console.log('🔍 Connection attempt:', connectionAttempts + 1, 'for jobId:', jobId);
+        console.log('🔍 Connection attempt:', connectionState.attempts + 1, 'for jobId:', jobId);
 
         cleanup();
-        setHasError(false);
 
         try {
-            const eventSource = new EventSource(`/admin-progress/${jobId}`);
+            const connectionUpdaters = createConnectionStateUpdaters(setConnectionState);
+            connectionUpdaters.setConnecting();
+
+            const progressCallbacks: ProgressCallbacks = {
+                onProgress: setProgress,
+                onComplete,
+                onError,
+                onJobFinished: () => { isJobFinishedRef.current = true; },
+            };
+
+            const eventSource = createProgressEventSource({
+                jobId,
+                connectionUpdaters,
+                progressCallbacks,
+                currentAttempts: connectionState.attempts,
+            });
+
             eventSourceRef.current = eventSource;
-
-            eventSource.onopen = () => {
-                console.log('✅ EventSource connected successfully');
-                setIsConnected(true);
-                setHasError(false);
-                // Reset connection attempts on successful connection
-                setConnectionAttempts(0);
-            };
-
-            eventSource.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-
-                    // Handle connection confirmation
-                    if (data.type === 'connection') {
-                        console.log('✅ Progress stream connection confirmed');
-                        return;
-                    }
-
-                    // Handle actual progress updates
-                    if (data.jobId && data.stage) {
-                        console.log('📊 Progress update:', data.stage, `${data.percentage}%`);
-                        const update = data as ProgressUpdate;
-                        setProgress(update);
-
-                        // Check if job is finished
-                        if (update.status === 'completed') {
-                            console.log('✅ Job completed successfully');
-                            isJobFinishedRef.current = true;
-                            if (onComplete) {
-                                onComplete(update);
-                            }
-                        }
-
-                        if (update.status === 'error') {
-                            console.log('❌ Job failed with error');
-                            isJobFinishedRef.current = true;
-                            if (onError) {
-                                onError(update);
-                            }
-                        }
-                    }
-                } catch (parseError) {
-                    console.error('❌ Error parsing progress update:', parseError);
-                }
-            };
-
-            eventSource.onerror = (error) => {
-                console.log('❌ EventSource error, readyState:', eventSource.readyState);
-                setIsConnected(false);
-
-                // Only set error and attempt reconnection if job isn't finished
-                if (isJobFinishedRef.current) {
-                    console.log('✅ Job finished, ignoring EventSource error');
-                } else {
-                    setHasError(true);
-                    setConnectionAttempts((prev) => prev + 1);
-
-                    // Only auto-reconnect if we haven't exceeded max attempts
-                    if (connectionAttempts < MAX_RECONNECT_ATTEMPTS - 1) {
-                        console.log(
-                            `🔄 Will retry connection in ${RECONNECT_DELAY}ms (attempt ${connectionAttempts + 2}/${MAX_RECONNECT_ATTEMPTS})`,
-                        );
-
-                        reconnectTimeoutRef.current = setTimeout(() => {
-                            if (jobId && !eventSourceRef.current && !isJobFinishedRef.current) {
-                                connect();
-                            }
-                        }, RECONNECT_DELAY);
-                    } else {
-                        console.log('🚨 Max reconnection attempts will be reached, stopping auto-reconnect');
-                    }
-                }
-            };
         } catch (error) {
             console.error('❌ Error creating EventSource:', error);
-            setHasError(true);
-            setConnectionAttempts((prev) => prev + 1);
+            setConnectionState(prev => ({
+                status: 'error',
+                attempts: prev.attempts + 1,
+                maxReached: prev.attempts >= MAX_RECONNECT_ATTEMPTS - 1
+            }));
         }
-    }, [jobId, onComplete, onError, cleanup, connectionAttempts]);
+    }, [jobId, connectionState.attempts, connectionState.status, onComplete, onError]); // Removed cleanup
+
+    // Auto-reconnect logic
+    useEffect(() => {
+        if (connectionState.status === 'error' &&
+            !connectionState.maxReached &&
+            !isJobFinishedRef.current &&
+            jobId) {
+
+            console.log(
+                `🔄 Will retry connection in ${RECONNECT_DELAY}ms (attempt ${connectionState.attempts + 1}/${MAX_RECONNECT_ATTEMPTS})`
+            );
+
+            reconnectTimeoutRef.current = setTimeout(() => {
+                if (jobId && !isJobFinishedRef.current) {
+                    connect();
+                }
+            }, RECONNECT_DELAY);
+        }
+
+        return () => {
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+                reconnectTimeoutRef.current = null;
+            }
+        };
+    }, [connectionState, jobId, connect]);
 
     const reconnect = useCallback(() => {
         console.log('🔄 Manual reconnection requested');
-        setConnectionAttempts(0); // Reset attempts for manual reconnection
-        isJobFinishedRef.current = false; // Reset finished state
+        setConnectionState({ status: 'disconnected', attempts: 0 });
+        isJobFinishedRef.current = false;
         connect();
     }, [connect]);
 
-    // Connect when jobId changes
     useEffect(() => {
         if (jobId) {
             console.log('🔍 Setting up connection for new jobId:', jobId);
-            isJobFinishedRef.current = false; // Reset finished state for new job
-            setConnectionAttempts(0); // Reset attempts for new job
+            isJobFinishedRef.current = false;
+            setConnectionState({ status: 'disconnected', attempts: 0 });
 
-            // Call connect directly to avoid dependency issues
-            const eventSource = new EventSource(`/admin-progress/${jobId}`);
-            eventSourceRef.current = eventSource;
+            // Call connect directly instead of through dependencies
+            const timeoutId = setTimeout(() => {
+                connect();
+            }, 0);
 
-            eventSource.onopen = () => {
-                console.log('✅ EventSource connected successfully');
-                setIsConnected(true);
-                setHasError(false);
-            };
-
-            eventSource.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-
-                    if (data.type === 'connection') {
-                        console.log('✅ Progress stream connection confirmed');
-                        return;
-                    }
-
-                    if (data.jobId && data.stage) {
-                        console.log('📊 Progress update:', data.stage, `${data.percentage}%`);
-                        const update = data as ProgressUpdate;
-                        setProgress(update);
-
-                        if (update.status === 'completed') {
-                            console.log('✅ Job completed successfully');
-                            isJobFinishedRef.current = true;
-                            if (onComplete) {
-                                onComplete(update);
-                            }
-                        }
-
-                        if (update.status === 'error') {
-                            console.log('❌ Job failed with error');
-                            isJobFinishedRef.current = true;
-                            if (onError) {
-                                onError(update);
-                            }
-                        }
-                    }
-                } catch (parseError) {
-                    console.error('❌ Error parsing progress update:', parseError);
-                }
-            };
-
-            eventSource.onerror = (error) => {
-                console.log('❌ EventSource error, readyState:', eventSource.readyState);
-                setIsConnected(false);
-                setHasError(true);
-                // DO NOT auto-reconnect to prevent loops
+            return () => {
+                clearTimeout(timeoutId);
+                cleanup();
             };
         } else {
             console.log('🔍 No jobId, cleaning up');
@@ -226,22 +286,16 @@ export function useProgressTracker({ jobId, onComplete, onError }: UseProgressTr
             setProgress(null);
             isJobFinishedRef.current = false;
         }
-
-        return cleanup;
-    }, [jobId]);
+    }, [jobId]); // ONLY jobId dependency
 
     // Cleanup on unmount
     useEffect(() => {
-        return () => {
-            console.log('🔍 useProgressTracker unmounting, cleaning up');
-            cleanup();
-        };
+        return cleanup;
     }, [cleanup]);
 
     return {
         progress,
-        isConnected,
-        hasError,
+        connectionState,
         reconnect,
     };
 }

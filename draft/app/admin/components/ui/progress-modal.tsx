@@ -15,7 +15,7 @@ interface ProgressModalProps {
 }
 
 export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: ProgressModalProps) {
-    const { progress, isConnected, hasError, reconnect } = useProgressTracker({
+    const { progress, connectionState, reconnect } = useProgressTracker({
         jobId,
         onComplete: (update) => {
             onComplete?.(update);
@@ -23,9 +23,7 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
                 onClose();
             }, 3000);
         },
-        onError: (update) => {
-            onError?.(update);
-        },
+        onError,
     });
 
     useEffect(() => {
@@ -103,7 +101,7 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
                 </div>
 
                 <div className={styles.modalBody}>
-                    {hasError && (
+                    {connectionState.status === "error" && (
                         <div className={styles.connectionError}>
                             <span>⚠️ Connection lost</span>
                             <button className={styles.reconnectButton} onClick={reconnect}>
@@ -112,7 +110,7 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
                         </div>
                     )}
 
-                    {!isConnected && !hasError && <div className={styles.connecting}>🔄 Connecting...</div>}
+                    {connectionState.status === "connecting" && <div className={styles.connecting}>🔄 Connecting...</div>}
 
                     {progress && (
                         <>
