@@ -18,8 +18,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const { loadDraftData } = await import('../draft/server/draft.server');
         const url = new URL(request.url);
-        const loaderData = await loadDraftData(url);
-        return data<DraftLoaderData>(loaderData);
+        const draftData = await loadDraftData(url);
+
+        // Return the same data regardless of user param
+        return Response.json(draftData, {
+            headers: {
+                'Cache-Control': 'public, max-age=0, s-maxage=0', // draft needs to be fresh
+            },
+        });
     } catch (error) {
         console.error('Draft loader error:', error);
         throw new Response('Failed to load draft data', { status: 500 });
