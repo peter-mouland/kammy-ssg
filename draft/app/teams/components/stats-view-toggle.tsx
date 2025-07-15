@@ -10,15 +10,33 @@ export const StatsViewToggle: React.FC<StatsViewToggleProps> = ({ viewMode, onTo
 
     return (
         <div className={styles.toggleContainer}>
-            <button
-                onClick={handleToggle}
-                className={styles.toggleButton}
-                title={`Switch to ${viewMode === 'gameweek' ? 'season' : 'gameweek'} view`}
-            >
-                <span className={styles.toggleIcon}>{viewMode === 'gameweek' ? '📅' : '📊'}</span>
-                <span className={styles.toggleLabel}>{viewMode === 'gameweek' ? 'Gameweek' : 'Season'}</span>
-                <span className={styles.switchIcon}>⇄</span>
-            </button>
+            <div className={styles.toggleTrack} data-active={viewMode}>
+                {/* Sliding background indicator */}
+                <div className={styles.toggleSlider} data-position={viewMode} />
+
+                {/* Toggle buttons */}
+                <button
+                    type="button"
+                    onClick={() => onToggle('gameweek')}
+                    className={`${styles.toggleOption} ${viewMode === 'gameweek' ? styles.active : ''}`}
+                    aria-pressed={viewMode === 'gameweek'}
+                    title="View gameweek stats"
+                >
+                    <span className={styles.toggleIcon}>📅</span>
+                    <span className={styles.toggleLabel}>Gameweek</span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => onToggle('season')}
+                    className={`${styles.toggleOption} ${viewMode === 'season' ? styles.active : ''}`}
+                    aria-pressed={viewMode === 'season'}
+                    title="View season stats"
+                >
+                    <span className={styles.toggleIcon}>📊</span>
+                    <span className={styles.toggleLabel}>Season</span>
+                </button>
+            </div>
         </div>
     );
 };

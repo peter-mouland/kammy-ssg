@@ -1,0 +1,258 @@
+/* app/teams/components/all-teams-table.module.css */
+
+.allTeamsTable {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+}
+
+.tableTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.tableTitle h3 {
+    margin: 0;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.playerCount {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+    background-color: var(--color-gray-100);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+}
+
+.viewModeToggle {
+    display: flex;
+    background-color: var(--color-gray-100);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-1);
+}
+
+.toggleButton {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: none;
+    background: transparent;
+    color: var(--color-gray-600);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.toggleButton:hover {
+    color: var(--color-gray-800);
+}
+
+.toggleButton.active {
+    background-color: var(--color-white);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Filters styles */
+.filtersContainer {
+    padding: var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+    background-color: var(--color-gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.filtersRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-3);
+}
+
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.filterLabel {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+}
+
+.searchInput,
+.selectInput {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    background-color: var(--color-white);
+    color: var(--color-gray-900);
+    transition: var(--transition-normal);
+}
+
+.searchInput:focus,
+.selectInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+    color: var(--color-gray-500);
+}
+
+.filtersActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.resetButton {
+    padding: var(--spacing-2) var(--spacing-4);
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-700);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.resetButton:hover {
+    background-color: var(--color-gray-300);
+}
+
+/* Player cell styles */
+.playerCell {
+    min-width: 180px;
+}
+
+.managerCell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    min-width: 150px;
+}
+
+.managerLink {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-normal);
+}
+
+.managerLink:hover {
+    color: var(--color-primary);
+}
+
+.teamName {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+    font-size: var(--font-sm);
+}
+
+.managerName {
+    font-size: var(--font-xs);
+    color: var(--color-gray-600);
+}
+
+.teamSlot {
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    background-color: var(--color-gray-100);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-gray-700);
+    font-weight: var(--font-weight-medium);
+}
+
+.points {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-sm);
+}
+
+.points.positive {
+    color: var(--color-green-600);
+}
+
+.points.negative {
+    color: var(--color-red-600);
+}
+
+.statsCell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1);
+    min-width: 120px;
+}
+
+.stat {
+    font-size: var(--font-xs);
+    background-color: var(--color-blue-100);
+    color: var(--color-blue-800);
+    padding: var(--spacing-05) var(--spacing-1);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.statMins {
+    font-size: var(--font-xs);
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+    padding: var(--spacing-05) var(--spacing-1);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.statusCell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    align-items: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .tableHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .viewModeToggle {
+        align-self: center;
+    }
+
+    .filtersRow {
+        grid-template-columns: 1fr;
+    }
+
+    .playerCell {
+        min-width: 140px;
+    }
+
+    .managerCell {
+        min-width: 120px;
+    }
+
+    .statsCell {
+        min-width: 100px;
+    }
+
+    .stat,
+    .statMins {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+}

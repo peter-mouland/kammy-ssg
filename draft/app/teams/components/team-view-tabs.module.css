@@ -1,0 +1,113 @@
+/* app/teams/components/team-view-tabs.module.css */
+
+.tabsContainer {
+    position: relative;
+    margin-bottom: var(--spacing-6);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.tabsList {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+}
+
+.viewModeToggle {
+    margin-left: auto;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--color-gray-600);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    position: relative;
+    white-space: nowrap;
+}
+
+.tab:hover {
+    color: var(--color-gray-800);
+    background-color: var(--color-gray-50);
+}
+
+.tab:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+}
+
+.tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    background-color: var(--color-primary-50);
+}
+
+.tabIcon {
+    font-size: var(--font-base);
+}
+
+.tabLabel {
+    font-weight: var(--font-weight-semibold);
+}
+
+.tabCount {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    background-color: var(--color-gray-100);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    margin-left: var(--spacing-1);
+}
+
+.tab.active .tabCount {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-700);
+}
+
+.tabIndicator {
+    position: absolute;
+    bottom: -1px;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: var(--transition-normal);
+    border-radius: 1px 1px 0 0;
+}
+
+/* Tab indicator positioning */
+.tabIndicator[data-active-tab="my-team"] {
+    left: 0;
+    width: 120px; /* Approximate width of "My Team" tab */
+}
+
+.tabIndicator[data-active-tab="all-teams"] {
+    left: 120px; /* Start after "My Team" tab */
+    width: 160px; /* Approximate width of "All Teams" tab */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .tab {
+        padding: var(--spacing-2) var(--spacing-3);
+        font-size: var(--font-xs);
+    }
+
+    .tabCount {
+        display: none;
+    }
+
+    .tabIndicator[data-active-tab="my-team"] {
+        width: 100px;
+    }
+
+    .tabIndicator[data-active-tab="all-teams"] {
+        left: 100px;
+        width: 120px;
+    }
+}

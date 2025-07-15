@@ -1,206 +1,189 @@
-/* Location: app/teams/components/team-view.module.css */
+/* app/teams/components/team-view.module.css */
 
 .teamViewContainer {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    padding: var(--spacing-4);
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Header */
+/* Header styles */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 24px;
-    background: #ffffff;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    gap: var(--spacing-4);
+    padding: var(--spacing-6);
+    background: var(--card-background);
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
 }
 
 .teamInfo {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .teamName {
-    font-size: 24px;
-    font-weight: 700;
-    color: #111827;
     margin: 0;
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
 }
 
 .managerName {
-    font-size: 18px;
-    color: #4b5563;
     margin: 0;
+    font-size: var(--font-base);
+    color: var(--color-gray-600);
 }
 
 .divisionBadge {
-    background: var(--color-primary);
-    color: #ffffff;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    font-size: 14px;
-    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) var(--spacing-3);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    border-radius: var(--radius-full);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
     width: fit-content;
 }
 
-/* Header Controls */
 .headerControls {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-end;
+    gap: var(--spacing-3);
+    align-items: center;
 }
 
-/* Main content */
+/* Main content layouts */
 .mainContent {
     display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 24px;
+    grid-template-columns: 1fr 300px;
+    gap: var(--spacing-6);
     align-items: start;
+}
+
+.allTeamsContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
 }
 
 .pitchColumn {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-6);
 }
 
 .infoColumn {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-4);
+    position: sticky;
+    top: var(--spacing-4);
 }
 
 /* Substitutes section */
 .substitutesSection {
-    background: #ffffff;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
 }
 
 .sectionTitle {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 12px 0;
+    margin: 0;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .playerCount {
-    font-size: 14px;
-    color: #6b7280;
-    font-weight: 400;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-normal);
 }
 
 .substitutesList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-}
-
-/* Formation info */
-.formationInfo {
-    background: #ffffff;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.formationDisplay {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-primary);
-    text-align: center;
-    margin: 12px 0;
-    padding: 8px;
-    background: #dbeafe;
-    border-radius: 6px;
-}
-
-.formationBreakdown {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-}
-
-.positionCount {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background: #f9fafb;
-    border-radius: 6px;
+    gap: var(--spacing-3);
 }
 
-.positionLabel {
-    font-weight: 500;
-    color: #374151;
+/* Loading state for all teams */
+.loadingAllTeams {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    background: var(--card-background);
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+}
+
+.loadingMessage {
+    text-align: center;
+    color: var(--color-gray-600);
+}
+
+.loadingMessage h3 {
+    margin: 0 0 var(--spacing-2) 0;
+    font-size: var(--font-lg);
+    color: var(--color-gray-900);
+}
+
+.loadingMessage p {
+    margin: 0;
+    font-size: var(--font-sm);
 }
 
 /* Responsive design */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+    .mainContent {
+        grid-template-columns: 1fr 250px;
+        gap: var(--spacing-4);
+    }
+}
+
+@media (max-width: 968px) {
     .mainContent {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: var(--spacing-4);
     }
 
     .infoColumn {
-        order: -1;
-    }
-
-    .substitutesList {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        position: static;
     }
 }
 
 @media (max-width: 768px) {
     .teamViewContainer {
-        padding: 8px;
+        padding: var(--spacing-2);
+        gap: var(--spacing-4);
     }
 
     .header {
         flex-direction: column;
         align-items: stretch;
-        gap: 16px;
+        gap: var(--spacing-3);
+        padding: var(--spacing-4);
     }
 
     .headerControls {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .timeTravelBanner {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
-    }
-
-    .backToCurrentButton {
-        margin-left: 0;
-        align-self: center;
+        justify-content: center;
     }
 
     .teamName {
-        font-size: 20px;
-    }
-
-    .managerName {
-        font-size: 16px;
+        font-size: var(--font-xl);
     }
 
     .substitutesList {
-        grid-template-columns: 1fr;
-    }
-
-    .formationBreakdown {
-        grid-template-columns: 1fr;
+        flex-direction: column;
     }
 }

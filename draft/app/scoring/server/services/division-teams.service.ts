@@ -1,13 +1,7 @@
 // app/scoring/server/services/division-teams.service.ts
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
-import type {
-    DivisionId,
-    DivisionTeamsDocument,
-    ManagerId,
-    TeamGameweekData,
-    UserTeamRoster,
-} from '../../../teams/types/team-types';
+import type { DivisionId, DivisionTeamsDocument, ManagerId } from '../../../teams/types/team-types';
 import { GameweekPointsService } from './gameweek-points.service';
 
 /**
@@ -40,11 +34,7 @@ export async function getDivisionTeamsDocument(
 /**
  * Get user's team data for specific gameweek
  */
-export async function getUserTeamForGameweek(
-    divisionId: DivisionId,
-    userId: ManagerId,
-    gameweek: number,
-): Promise<TeamGameweekData | null> {
+export async function getTeamsForGameweek(divisionId: DivisionId, userId: ManagerId, gameweek: number) {
     try {
         const divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
         if (!divisionDoc || !divisionDoc.teams[userId]) {
@@ -54,73 +44,13 @@ export async function getUserTeamForGameweek(
         return {
             gameweek,
             roster: divisionDoc.teams[userId].roster,
+            divisionDoc: divisionDoc,
             lastUpdated: divisionDoc.lastUpdated,
         };
     } catch (error) {
         console.error('Get user team for gameweek error:', error);
         throw new Error(
             `Failed to get user team for ${userId} in ${divisionId} GW${gameweek}: ${
-                error instanceof Error ? error.message : 'Unknown error'
-            }`,
-        );
-    }
-}
-
-/**
- * Get user's team history across multiple gameweeks
- */
-export async function getUserTeamHistory(
-    divisionId: DivisionId,
-    userId: ManagerId,
-    startGameweek: number = 0,
-    endGameweek?: number,
-): Promise<TeamGameweekData[]> {
-    try {
-        const { fplApiCache } = await import('../../../_shared/lib/fpl/api-cache');
-
-        // If no end gameweek specified, get current gameweek
-        const finalGameweek = endGameweek ?? (await fplApiCache.getCurrentGameweek());
-
-        // Get documents for each gameweek
-        const promises: Promise<TeamGameweekData | null>[] = [];
-        for (let gw = startGameweek; gw <= finalGameweek; gw++) {
-            promises.push(getUserTeamForGameweek(divisionId, userId, gw));
-        }
-
-        const results = await Promise.all(promises);
-
-        // Filter out null results and sort by gameweek
-        return results
-            .filter((team): team is TeamGameweekData => team !== null)
-            .sort((a, b) => a.gameweek - b.gameweek);
-    } catch (error) {
-        console.error('Get user team history error:', error);
-        throw new Error(
-            `Failed to get team history for ${userId} in ${divisionId}: ${
-                error instanceof Error ? error.message : 'Unknown error'
-            }`,
-        );
-    }
-}
-
-/**
- * Get all teams in division for specific gameweek
- */
-export async function getAllTeamsInDivision(divisionId: DivisionId, gameweek: number): Promise<UserTeamRoster[]> {
-    try {
-        const divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
-        if (!divisionDoc) {
-            return [];
-        }
-
-        return Object.entries(divisionDoc.teams).map(([userId, teamData]) => ({
-            userId,
-            roster: teamData.roster,
-        }));
-    } catch (error) {
-        console.error('Get all teams in division error:', error);
-        throw new Error(
-            `Failed to get all teams for ${divisionId} GW${gameweek}: ${
                 error instanceof Error ? error.message : 'Unknown error'
             }`,
         );

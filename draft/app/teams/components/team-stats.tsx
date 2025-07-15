@@ -88,11 +88,6 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
         return points > 0 ? `+${points}` : points.toString();
     };
 
-    // Handle view mode toggle
-    const handleViewModeToggle = (newMode: StatsViewMode) => {
-        onViewModeChange(newMode);
-    };
-
     return (
         <div className={styles.teamStats}>
             {hideToggle ? (
@@ -100,7 +95,6 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
             ) : (
                 <div className={styles.sectionHeader}>
                     <h3 className={styles.sectionTitle}>Team Statistics</h3>
-                    <StatsViewToggle viewMode={viewMode} onToggle={handleViewModeToggle} />
                 </div>
             )}
 

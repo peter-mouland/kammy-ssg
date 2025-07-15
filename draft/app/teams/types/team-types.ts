@@ -4,6 +4,7 @@
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../../scoring/types/scoring-types';
+import type { AllTeamsData } from './team-view-types';
 
 export type ManagerId = string;
 
@@ -156,25 +157,17 @@ export interface CurrentUser {
 }
 
 /**
- * Division info for team views
- */
-export interface Division {
-    id: DivisionId;
-    name: string;
-}
-
-/**
  * Complete team view data
  */
 export interface TeamViewData {
-    currentUser: CurrentUser;
-    division: Division;
+    currentUser: UserTeamsSheetData;
+    division: DivisionSheetData;
     currentGameweek: number;
     currentGameweekData: GameWeekData;
     selectedGameweekData: GameWeekData;
     currentTeam: TeamGameweekData;
-    gameweekHistory: TeamGameweekData[];
     availableGameweeks: number[];
+    allTeamsData: AllTeamsData;
 }
 
 /**
@@ -250,4 +243,33 @@ export interface ContributingStatsProps {
 export interface UserTeamRoster {
     userId: ManagerId;
     roster: TeamRoster;
+}
+
+// app/teams/types/team-types.ts - Add these interfaces to the existing file
+
+/**
+ * Contributing stats breakdown for the team
+ */
+export interface ContributingStatsBreakdown {
+    appearance: ContributingStatItem;
+    goals: ContributingStatItem;
+    assists: ContributingStatItem;
+    cleanSheets: ContributingStatItem;
+    yellowCards: ContributingStatItem;
+    redCards: ContributingStatItem;
+    saves: ContributingStatItem;
+    penaltiesSaved: ContributingStatItem;
+    goalsConceded: ContributingStatItem;
+    bonus: ContributingStatItem;
+}
+
+/**
+ * Individual contributing stat item
+ */
+export interface ContributingStatItem {
+    label: string;
+    statValue: number;
+    pointsValue: number;
+    isRelevant: boolean;
+    description: string;
 }

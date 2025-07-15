@@ -1,0 +1,48 @@
+// app/teams/components/team-view-tabs.tsx
+import type React from 'react';
+import type { TeamViewTabsProps } from '../types/team-view-types';
+import { StatsViewToggle } from './stats-view-toggle';
+import styles from './team-view-tabs.module.css';
+
+export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({
+    activeTab,
+    onTabChange,
+    setViewMode,
+    viewMode,
+    playerCount,
+}) => {
+    return (
+        <div className={styles.tabsContainer}>
+            <div className={styles.tabsList} role="tablist">
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'my-team'}
+                    onClick={() => onTabChange('my-team')}
+                    className={`${styles.tab} ${activeTab === 'my-team' ? styles.active : ''}`}
+                >
+                    <span className={styles.tabIcon}>👤</span>
+                    <span className={styles.tabLabel}>My Team</span>
+                </button>
+
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'all-teams'}
+                    onClick={() => onTabChange('all-teams')}
+                    className={`${styles.tab} ${activeTab === 'all-teams' ? styles.active : ''}`}
+                >
+                    <span className={styles.tabIcon}>👥</span>
+                    <span className={styles.tabLabel}>All Teams</span>
+                    {playerCount && <span className={styles.tabCount}>{playerCount} players</span>}
+                </button>
+
+                <div className={styles.viewModeToggle}>
+                    <StatsViewToggle viewMode={viewMode} onToggle={setViewMode} />
+                </div>
+            </div>
+
+            <div className={styles.tabIndicator} data-active-tab={activeTab} />
+        </div>
+    );
+};

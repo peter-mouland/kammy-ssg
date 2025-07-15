@@ -9,7 +9,7 @@ export type SortDirection = 'asc' | 'desc' | null;
 export type CellAlignment = 'left' | 'center' | 'right';
 export type CellVariant = 'default' | 'numeric' | 'bold' | 'muted' | 'success' | 'warning' | 'error';
 export type BadgeVariant = 'primary' | 'success' | 'warning' | 'error' | 'gray';
-export type PositionType = 'gk' | 'def' | 'mid' | 'att';
+export type PositionType = 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca';
 export type TableSize = 'compact' | 'default' | 'comfortable';
 
 export interface TableColumn<T = any> {

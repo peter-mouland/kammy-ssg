@@ -6,62 +6,144 @@
     justify-content: center;
 }
 
-.toggleButton {
+.toggleTrack {
+    position: relative;
+    display: flex;
+    background-color: var(--color-gray-100);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.toggleTrack:hover {
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.15),
+        0 0 0 1px var(--color-gray-300);
+}
+
+/* Sliding background indicator */
+.toggleSlider {
+    position: absolute;
+    top: var(--spacing-1);
+    left: var(--spacing-1);
+    height: calc(100% - var(--spacing-2));
+    width: calc(50% - var(--spacing-1));
+    background-color: var(--color-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    z-index: 1;
+}
+
+/* Slider positions */
+.toggleSlider[data-position="gameweek"] {
+    transform: translateX(0);
+}
+
+.toggleSlider[data-position="season"] {
+    transform: translateX(100%);
+}
+
+/* Toggle option buttons */
+.toggleOption {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: #ffffff;
-    border: 2px solid var(--color-primary);
-    border-radius: var(--radius-lg);
-    padding: 8px 16px;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s ease;
     font-size: var(--font-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+    transition: all var(--transition-normal);
+    z-index: 2;
+    min-width: 150px;
+    justify-content: center;
+    white-space: nowrap;
 }
 
-.toggleButton:hover {
-    background: var(--color-primary);
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.toggleOption:hover {
+    color: var(--color-gray-800);
 }
 
-.toggleButton:hover .switchIcon {
-    transform: rotate(180deg);
+.toggleOption:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
+/* Active state */
+.toggleOption.active {
+    color: var(--color-white);
+}
+
+.toggleOption.active:hover {
+    color: var(--color-white);
+}
+
+/* Icons and labels */
 .toggleIcon {
-    font-size: 16px;
-    transition: transform 0.2s ease;
+    font-size: var(--font-base);
+    transition: transform var(--transition-normal);
 }
 
 .toggleLabel {
     font-weight: var(--font-weight-semibold);
-    transition: color 0.2s ease;
+    transition: all var(--transition-normal);
 }
 
-.switchIcon {
-    font-size: 14px;
-    opacity: 0.7;
-    transition: all 0.3s ease;
+/* Hover effects for non-active buttons */
+.toggleOption:not(.active):hover .toggleIcon {
+    transform: scale(1.1);
 }
 
-/* Responsive adjustments */
+.toggleOption:not(.active):hover .toggleLabel {
+    font-weight: var(--font-weight-bold);
+}
+
+/* Active button effects */
+.toggleOption.active .toggleIcon {
+    transform: scale(1.05);
+}
+
+/* Pressed state animation */
+.toggleOption:active {
+    transform: scale(0.98);
+}
+
+/* Enhanced sliding animation on track hover */
+.toggleTrack:hover .toggleSlider {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
-    .toggleButton {
-        padding: 6px 12px;
+    .toggleOption {
+        padding: var(--spacing-1) var(--spacing-3);
         font-size: var(--font-xs);
-        gap: 6px;
+        gap: var(--spacing-1);
+        min-width: 90px;
     }
 
     .toggleIcon {
-        font-size: 14px;
+        font-size: var(--font-sm);
     }
 
-    .switchIcon {
-        font-size: 12px;
+    .toggleLabel {
+        display: none; /* Hide labels on very small screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .toggleOption {
+        min-width: 70px;
+        padding: var(--spacing-1) var(--spacing-2);
+    }
+
+    .toggleIcon {
+        font-size: var(--font-xs);
     }
 }

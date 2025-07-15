@@ -23,7 +23,6 @@ export function TopPlayers({ players }: TopPlayersProps) {
             key: 'player',
             header: 'Player',
             sortable: true,
-            sortKey: 'second_name',
             render: (_, player) => (
                 <div>
                     <div style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--color-gray-900)' }}>
