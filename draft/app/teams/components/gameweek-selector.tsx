@@ -43,12 +43,14 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     return (
         <div className={styles.gameweekSelector}>
             <div className={styles.selectorHeader}>
-                <div className={styles.label}>Gameweek</div>
+                <div className={styles.label}>Gameweek Deadline:</div>
             </div>
 
             <div className={styles.endData}>
-                {selectedGameweekData?.end.toLocaleDateString('en-gb')}
-                {selectedGameweekData?.end.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
+                <span>{selectedGameweekData?.end.toLocaleDateString('en-gb')}</span>
+                <span>
+                    {selectedGameweekData?.end.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
+                </span>
             </div>
 
             <div className={styles.selectorControls}>
@@ -74,23 +76,25 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                     {isOpen && (
                         <div className={styles.gameweekDropdown}>
                             <div className={styles.dropdownContent}>
-                                {availableGameweeks.map((gw) => (
-                                    <button
-                                        key={gw}
-                                        type={'button'}
-                                        onClick={() => {
-                                            onGameweekChange(gw);
-                                            setIsOpen(false);
-                                        }}
-                                        className={`
+                                {availableGameweeks
+                                    .sort((gwa, gwb) => (gwa > gwb ? -1 : 1))
+                                    .map((gw) => (
+                                        <button
+                                            key={gw}
+                                            type={'button'}
+                                            onClick={() => {
+                                                onGameweekChange(gw);
+                                                setIsOpen(false);
+                                            }}
+                                            className={`
                                             ${styles.gameweekOption}
                                             ${gw === selectedGameweek ? styles.selected : ''}
                                             ${gw === currentGameweek ? styles.current : ''}
                                         `}
-                                    >
-                                        <span>GW {gw}</span>
-                                    </button>
-                                ))}
+                                        >
+                                            <span>GW {gw}</span>
+                                        </button>
+                                    ))}
                             </div>
                         </div>
                     )}
