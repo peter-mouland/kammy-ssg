@@ -212,7 +212,10 @@ function compareData(
     const maxPicks = Math.max(sheetsPicks.length, firebasePicks.length);
     for (let i = 0; i < maxPicks; i++) {
         const sheetsPick = sheetsPicks[i];
-        const firebasePick = firebasePicks.find((pick) => pick.pickNumber === i + 1);
+        if (!firebasePicks?.find) {
+            throw new Error('draft sync comparison service "firebasePicks?.find" error')
+        }
+        const firebasePick = firebasePicks?.find((pick) => pick.pickNumber === i + 1);
 
         if (sheetsPick && !firebasePick) {
             differences.push({

@@ -21,7 +21,7 @@ interface DraftResult {
 
 /**
  * Admin Orchestrator - Coordinates high-level admin operations
- * Uses system-status.service.ts directly (no more redundant wrapper)
+ * Enhanced with draft sync comparison data
  */
 export class AdminOrchestrator {
     constructor() {
@@ -30,7 +30,7 @@ export class AdminOrchestrator {
 
     /**
      * Get shared context for orchestration operations
-     * Uses DataCacheService for caching
+     * Enhanced with draft sync comparison data
      */
     async getSharedContext(): Promise<AdminDataContext> {
         const [fplData, sheetData, cacheStatus] = await Promise.all([
@@ -39,10 +39,23 @@ export class AdminOrchestrator {
             this.loadCacheStatus(),
         ]);
 
+        // Load draft sync comparisons for all divisions
+        let draftSyncComparisons = null;
+        try {
+            const { getAllDraftSyncComparisons } = await import('./draft-sync-comparison.service');
+            draftSyncComparisons = await getAllDraftSyncComparisons();
+            console.log(`✅ Loaded draft sync comparisons for ${draftSyncComparisons.length} divisions`);
+        } catch (error) {
+            console.error('❌ Failed to load draft sync comparisons:', error);
+            // Don't fail the whole context load if sync comparisons fail
+            draftSyncComparisons = [];
+        }
+
         const context: AdminDataContext = {
             fplData,
             sheetData,
             cacheStatus,
+            draftSyncComparisons, // NEW: Add sync comparison data
             loadedAt: new Date().toISOString(),
         };
         return context;
@@ -74,6 +87,8 @@ export class AdminOrchestrator {
                     break;
                 case 'syncDraft':
                     result = await draftService.syncDraft(params.divisionId);
+                    // Invalidate sync comparison cache after sync
+                    this.invalidateSyncComparisonCache(params.divisionId);
                     break;
                 case 'commitTeamsToFirestore':
                     result = await draftService.commitDraft(params.divisionId);
@@ -81,6 +96,7 @@ export class AdminOrchestrator {
                 case 'reset':
                     result = await draftService.resetDraft(params.divisionId);
                     this.invalidateCachesForAction('processDraft');
+                    this.invalidateSyncComparisonCache(params.divisionId);
                     break;
                 default:
                     throw new Error(`Unknown draft action: ${params.type}`);
@@ -99,6 +115,22 @@ export class AdminOrchestrator {
                 success: false,
                 message: error instanceof Error ? error.message : 'Draft processing failed',
             };
+        }
+    }
+
+    /**
+     * Invalidate sync comparison cache for a specific division
+     */
+    private invalidateSyncComparisonCache(divisionId?: DivisionId): void {
+        try {
+            // Invalidate the comparison cache for this division and all comparisons
+            if (divisionId) {
+                dataCache.invalidate(`${CACHE_KEYS.DRAFT_SYNC?.COMPARISON?.(divisionId)}`);
+            }
+            dataCache.invalidate(`${CACHE_KEYS.DRAFT_SYNC?.ALL_COMPARISONS}`);
+            console.log(`🗑️ Draft sync comparison cache invalidated for division: ${divisionId || 'all'}`);
+        } catch (error) {
+            console.warn('Failed to invalidate sync comparison cache:', error);
         }
     }
 

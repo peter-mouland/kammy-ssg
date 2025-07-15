@@ -39,6 +39,24 @@ export interface GameweekStatusSummary {
 }
 
 // ================================
+// DRAFT SYNC COMPARISON TYPES
+// ================================
+
+export interface DraftSyncComparison {
+    divisionId: string;
+    sheetsState: any;
+    firebaseState: any;
+    sheetsPicks: any[];
+    firebasePicks: any[];
+    differences: Array<{
+        type: string;
+        severity: 'low' | 'medium' | 'high';
+        description: string;
+    }>;
+    lastSyncedAt?: number;
+}
+
+// ================================
 // SMART UPDATE TYPES
 // ================================
 
@@ -101,10 +119,12 @@ export interface DraftResult {
 // SHARED DATA CONTEXT TYPES
 // ================================
 export type TransferByDivisionId = Record<DivisionId, ProcessedTransferSheetData[]>;
+
 export interface AdminDataContext {
     fplData: FplDataContext;
     sheetData: SheetDataContext;
     cacheStatus: CacheStatusContext;
+    draftSyncComparisons?: DraftSyncComparison[] | null; // NEW: Draft sync comparison data
     loadedAt: string;
 }
 

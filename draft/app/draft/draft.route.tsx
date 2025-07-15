@@ -5,6 +5,7 @@ import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { Draft } from './draft';
 import type { DraftActionData, DraftLoaderData } from './types/draft-types';
+import { ErrorBoundary } from '../_shared/components/error-boundary';
 
 export const meta: MetaFunction = () => {
     return [
@@ -47,4 +48,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
     }
 }
 
-export default Draft;
+export default () => (
+    <ErrorBoundary>
+        <Draft />
+    </ErrorBoundary>
+);

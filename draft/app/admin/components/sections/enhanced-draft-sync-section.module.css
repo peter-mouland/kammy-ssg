@@ -128,3 +128,30 @@
         justify-content: center;
     }
 }
+
+.refreshSection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .autoRefreshToggle {
+        justify-content: center;
+    }
+
+    .refreshSection {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

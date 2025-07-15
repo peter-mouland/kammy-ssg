@@ -60,6 +60,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const divisions = sharedContext.sheetData.divisions;
         const selectedGameweekId =
             Number.parseInt(url.searchParams.get('gameweek') || '', 10) || systemStatus.currentGameweek.fplEvent.id;
+        if (!sharedContext.fplData.events?.find) {
+            throw new Error('admin.route "sharedContext.fplData.events?.find" error')
+        }
         const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
 
         transfersData = await getTransfersAdminData(divisions, gameweek);

@@ -144,7 +144,13 @@ export const DraftSyncStatus: React.FC<DraftSyncStatusProps> = ({ divisions, onS
             <div className={styles.grid}>
                 {comparisons.map((comparison) => {
                     const overallStatus = getOverallStatus(comparison);
-                    const division = divisions.find((d) => d.id === comparison.divisionId);
+                    if (!comparison.divisionId) {
+                        throw new Error('draft-sync-status error comparison.divisionId')
+                    }
+                    if (!divisions) {
+                        throw new Error('draft-sync-status error divisions')
+                    }
+                    const division = divisions?.find((d) => d.id === comparison.divisionId);
                     const isSyncing = syncing[comparison.divisionId];
 
                     return (

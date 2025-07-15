@@ -31,7 +31,8 @@ export const CACHE_TTL = {
     FIRESTORE_CACHE_STATUS: 1 * 60 * 1000, // 1 minute - cache health status
 
     // NEW: Draft sync comparison data
-    DRAFT_SYNC_COMPARISON: 30 * 1000, // 30 seconds - for admin monitoring
+    DRAFT_SYNC_COMPARISON: 2 * 60 * 1000, // 2 minutes
+    DRAFT_SYNC_ALL_COMPARISONS: 2 * 60 * 1000, // 2 minutes
 
     // Transfer & Scoring Data - changes with admin actions
     DIVISION_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team rosters change with transfers/draft
@@ -75,7 +76,7 @@ export const CACHE_KEYS = {
         CACHE_STATUS: 'firebase:cache-status',
     },
 
-    // NEW: Draft sync comparison keys
+    // Draft sync comparison keys
     DRAFT_SYNC: {
         COMPARISON: (divisionId: string) => `draft-sync:comparison:${divisionId}`,
         ALL_COMPARISONS: 'draft-sync:all-comparisons',
@@ -120,12 +121,12 @@ export const CACHE_INVALIDATION_RULES = {
 
     // NEW: When draft sync happens
     DRAFT_SYNC_ACTION: (divisionId: string) => [
-        CACHE_KEYS.FIREBASE.DRAFT_STATE(divisionId),
-        CACHE_KEYS.FIREBASE.DRAFT_PICKS(divisionId),
-        CACHE_KEYS.SHEETS.DRAFT_STATE,
-        CACHE_KEYS.SHEETS.DRAFT_STATE_BY_DIVISION(divisionId),
         CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId),
         CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS,
+        CACHE_KEYS.FIREBASE.DRAFT_STATE(divisionId),
+        CACHE_KEYS.FIREBASE.DRAFT_PICKS(divisionId),
+        CACHE_KEYS.SHEETS.DRAFT,
+        CACHE_KEYS.SHEETS.DRAFT_STATE,
     ],
 
     SHEETS_CLEAR: (divisionId: string) => [
@@ -168,6 +169,7 @@ export function getCacheTTL(key: string): number {
 
     // NEW: Draft sync comparison keys
     if (key.includes('draft-sync:comparison')) return CACHE_TTL.DRAFT_SYNC_COMPARISON;
+    if (key.includes('draft-sync:all-comparisons')) return CACHE_TTL.DRAFT_SYNC_ALL_COMPARISONS;
 
     // Scoring keys
     if (key.includes('scoring:teams')) return CACHE_TTL.DIVISION_TEAMS;

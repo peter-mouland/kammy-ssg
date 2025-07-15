@@ -269,8 +269,8 @@ export const Draft = () => {
         );
     }
 
-    const title = loaderData.draftState?.isActive
-        ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.currentUserInfo.divisionId)?.label} Draft Room`
+    const title = loaderData.selectedUser && loaderData.draftState?.isActive
+        ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.currentUserInfo?.divisionId)?.label} Draft Room`
         : '⚪️ Draft Room';
 
     return (
@@ -332,7 +332,13 @@ export const Draft = () => {
                         {isNavigating && <div className={styles.navigationAlert}>🔄 Navigating to new page...</div>}
 
                         {/* Main Draft Interface */}
-                        {loaderData.draftState?.isActive ? (
+                        {loaderData.draftState?.isActive && !loaderData.selectedUser ? (
+                            <div className={styles.draftInactive}>
+                                <div className={styles.inactiveIcon}>👤</div>
+                                <h3 className={styles.inactiveTitle}>Please select a user</h3>
+                                <p className={styles.inactiveMessage}>View the active draft by picking a user to follow</p>
+                            </div>
+                        ) : loaderData.draftState?.isActive && loaderData.selectedUser ? (
                             <div className={styles.draftInterface}>
                                 {/* Available Players */}
                                 <div className={styles.playersSection}>
