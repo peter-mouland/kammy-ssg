@@ -1,5 +1,5 @@
 // app/admin/components/sections/draft-section.tsx
-// Enhanced with server-side sync status data
+// Enhanced with server-side sync status data and reset instructions
 
 import { useActionData } from 'react-router';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
@@ -11,6 +11,7 @@ import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
 import { DraftCard } from '../ui/draft-card';
+import { DraftResetInstructions } from './draft-reset-instructions';
 import { EnhancedDraftSyncSection } from './enhanced-draft-sync-section';
 
 interface DraftSectionProps {
@@ -69,6 +70,9 @@ export const DraftSection = ({
                     draftSyncComparisons={draftSyncComparisons}
                 />
             </AdminSection>
+
+            {/* NEW: Draft Reset Instructions */}
+            <DraftResetInstructions />
         </AdminContainer>
     );
 };
