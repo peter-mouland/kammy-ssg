@@ -83,7 +83,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
                                 <NavButton
                                     key={item.key}
                                     active={activeSection === item.key}
-                                    onClick={() => navigate(item.path)}
+                                    href={item.path}
                                     icon={item.icon}
                                     label={item.label}
                                 />

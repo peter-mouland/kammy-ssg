@@ -18,7 +18,6 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
     const { progress, isConnected, hasError, reconnect } = useProgressTracker({
         jobId,
         onComplete: (update) => {
-            console.log('onCompleteonCompleteonCompleteonComplete');
             onComplete?.(update);
             setTimeout(() => {
                 onClose();
@@ -28,7 +27,6 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
             onError?.(update);
         },
     });
-    console.log({ progress, isConnected, hasError, reconnect });
 
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
@@ -89,7 +87,7 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
     };
 
     const canClose = progress?.status !== 'running';
-    console.log({ progress });
+
     return (
         <div className={styles.modalOverlay} onClick={canClose ? onClose : undefined}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
