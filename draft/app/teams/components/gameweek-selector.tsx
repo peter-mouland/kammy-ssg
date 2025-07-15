@@ -5,12 +5,13 @@ import type React from 'react';
 import { useState } from 'react';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import styles from './gameweek-selector.module.css';
+import { useSearchParams } from 'react-router';
 
 interface GameweekSelectorProps {
     currentGameweekData: GameWeekData;
     selectedGameweekData: GameWeekData;
     availableGameweeks: number[];
-    onGameweekChange: (gameweek: number) => void;
+    onGameweekChange?: (gameweek: number) => void;
 }
 
 export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
@@ -19,26 +20,29 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     availableGameweeks,
     onGameweekChange,
 }) => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const handleGameweekChange = (gameweek: number) => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('gameweek', gameweek.toString());
+        setSearchParams(newParams);
+        setIsOpen(false);
+        onGameweekChange?.(gameweek)
+    };
+
     const selectedGameweek = selectedGameweekData?.fplEvent.id || 0;
     const currentGameweek = currentGameweekData?.fplEvent.id || 0;
     const [isOpen, setIsOpen] = useState(false);
 
     const handlePrevious = () => {
-        const currentIndex = availableGameweeks.indexOf(selectedGameweek);
-        if (currentIndex > 0) {
-            onGameweekChange(availableGameweeks[currentIndex - 1]);
-        }
+        handleGameweekChange(selectedGameweek - 1);
     };
 
     const handleNext = () => {
-        const currentIndex = availableGameweeks.indexOf(selectedGameweek);
-        if (currentIndex < availableGameweeks.length - 1) {
-            onGameweekChange(availableGameweeks[currentIndex + 1]);
-        }
+      handleGameweekChange(selectedGameweek + 1);
     };
 
-    const canGoPrevious = availableGameweeks.indexOf(selectedGameweek) > 0;
-    const canGoNext = availableGameweeks.indexOf(selectedGameweek) < availableGameweeks.length - 1;
+    const canGoPrevious = selectedGameweek > 0;
+    const canGoNext = selectedGameweek < availableGameweeks.length - 1;
 
     return (
         <div className={styles.gameweekSelector}>
@@ -83,8 +87,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                                             key={gw}
                                             type={'button'}
                                             onClick={() => {
-                                                onGameweekChange(gw);
-                                                setIsOpen(false);
+                                                handleGameweekChange(gw);
                                             }}
                                             className={`
                                             ${styles.gameweekOption}

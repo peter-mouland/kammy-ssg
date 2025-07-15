@@ -61,30 +61,3 @@ export function Icon({ type, fallback, className = '' }: IconProps) {
         </span>
     );
 }
-
-// Alternative text-based icons for critical UI elements
-interface TextIconProps {
-    type: 'active' | 'inactive' | 'check' | 'error' | 'warning' | 'up' | 'down' | 'left' | 'right';
-    children?: React.ReactNode;
-}
-
-export function TextIcon({ type, children }: TextIconProps) {
-    const iconText = {
-        active: '[●]',
-        inactive: '[○]',
-        check: '[✓]',
-        error: '[✗]',
-        warning: '[!]',
-        up: '[↑]',
-        down: '[↓]',
-        left: '[←]',
-        right: '[→]',
-    };
-
-    return (
-        <span className={`${styles.textIcon} ${styles[type]}`}>
-            {iconText[type] || `[${type.toUpperCase()}]`}
-            {children && ` ${children}`}
-        </span>
-    );
-}

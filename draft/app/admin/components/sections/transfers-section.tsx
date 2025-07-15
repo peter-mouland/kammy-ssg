@@ -378,7 +378,6 @@ export function TransfersSection({
 }: TransfersSectionProps) {
     const navigate = useNavigate();
     const fetcher = useFetcher();
-    const [searchParams, setSearchParams] = useSearchParams();
     const availableGameweeks = Array.from({ length: systemStatus.currentGameweek.fplEvent.id }, (_, i) => i + 1);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
     const handleDivisionChange = (divisionId: string) => {
@@ -387,17 +386,6 @@ export function TransfersSection({
         } else {
             navigate(`/admin/transfers?gameweek=${selectedGameweek.fplEvent.id}`);
         }
-    };
-
-    const handleGameweekChange = (gameweek: number) => {
-        const newParams = new URLSearchParams();
-        if (selectedDivision) {
-            newParams.set('division', selectedDivision.id);
-        }
-        if (gameweek !== systemStatus.currentGameweek.fplEvent.id) {
-            newParams.set('gameweek', gameweek.toString());
-        }
-        setSearchParams(newParams);
     };
 
     const handleRefreshTransfers = (actionType: string) => {
@@ -420,7 +408,6 @@ export function TransfersSection({
                             currentGameweekData={systemStatus.currentGameweek}
                             selectedGameweekData={selectedGameweek}
                             availableGameweeks={availableGameweeks}
-                            onGameweekChange={handleGameweekChange}
                         />
                         <SelectDivision
                             divisions={divisions}

@@ -25,17 +25,6 @@ export function TransfersPage() {
         }
     };
 
-    const handleGameweekChange = (gameweek: number) => {
-        const newParams = new URLSearchParams();
-        if (data.selectedDivision) {
-            newParams.set('division', data.selectedDivision);
-        }
-        if (gameweek !== data.currentGameweek) {
-            newParams.set('gameweek', gameweek.toString());
-        }
-        setSearchParams(newParams);
-    };
-
     return (
         <div className={styles.pageContainer}>
             <PageHeader
@@ -46,7 +35,6 @@ export function TransfersPage() {
                             currentGameweekData={data.currentGameweekData}
                             selectedGameweekData={data.selectedGameweekData}
                             availableGameweeks={data.availableGameweeks}
-                            onGameweekChange={handleGameweekChange}
                         />
                         <SelectDivision
                             divisions={data.divisions}

@@ -3,8 +3,8 @@ import { useMemo, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
 import { extractLoanStatus } from '../../_shared/lib/roster-conversion-utils';
-import type { StatsViewMode } from '../types/team-types';
-import type { TeamViewData, TeamViewTab } from '../types/team-view-types';
+import type { StatsViewMode, TeamViewData } from '../types/team-types';
+import type { TeamViewTab } from '../types/team-view-types';
 import { AllTeamsTable } from './all-teams-table';
 import { FootballPitch } from './football-pitch';
 import { GameweekSelector } from './gameweek-selector';
@@ -18,6 +18,8 @@ export const TeamView = () => {
     const data = useLoaderData<TeamViewData>();
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedGameweek = data.selectedGameweekData.fplEvent.id;
+    const teamData = data.currentTeam;
+    const substitute = teamData.roster.sub_0;
 
     // Get active tab from URL or default to 'my-team'
     const activeTab = (searchParams.get('tab') as TeamViewTab) || 'my-team';
@@ -25,19 +27,10 @@ export const TeamView = () => {
     // Global view mode state - controls both pitch and stats
     const [viewMode, setViewMode] = useState<StatsViewMode>('season');
 
-    const teamData = data.currentTeam;
-    const substitute = teamData.roster.sub_0;
-
     // Extract loan status
     const loanStatus = useMemo(() => {
-        return extractLoanStatus(teamData.roster, data.currentUser.id);
-    }, [teamData.roster, data.currentUser.id]);
-
-    const handleGameweekChange = (gameweek: number) => {
-        const newParams = new URLSearchParams(searchParams);
-        newParams.set('gameweek', gameweek.toString());
-        setSearchParams(newParams);
-    };
+        return extractLoanStatus(teamData.roster, data.currentUser.userId);
+    }, [teamData.roster, data.currentUser.userId]);
 
     const handleTabChange = (tab: TeamViewTab) => {
         const newParams = new URLSearchParams(searchParams);
@@ -66,7 +59,6 @@ export const TeamView = () => {
                         currentGameweekData={data.currentGameweekData}
                         selectedGameweekData={data.selectedGameweekData}
                         availableGameweeks={data.availableGameweeks}
-                        onGameweekChange={handleGameweekChange}
                     />
                 </div>
             </div>
@@ -151,7 +143,7 @@ export const TeamView = () => {
                         <div className={styles.loadingAllTeams}>
                             <div className={styles.loadingMessage}>
                                 <h3>Loading all teams data...</h3>
-                                <p>Please wait while we fetch data for all teams in {data.division.name}.</p>
+                                <p>Please wait while we fetch data for all teams in {data.division.label}.</p>
                             </div>
                         </div>
                     )}

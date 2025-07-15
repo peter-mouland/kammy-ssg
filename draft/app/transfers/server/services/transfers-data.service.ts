@@ -132,12 +132,8 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
  */
 async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Promise<RosterByManagerId> {
     try {
-        console.log(`📋 Getting division rosters for ${divisionId} GW${gameweek}`);
-
-        // Import the division teams service
         const { getDivisionTeamsDocument } = await import('../../../scoring/server/services/division-teams.service');
 
-        // Get the division teams document for the current gameweek
         const divisionDocument = await getDivisionTeamsDocument(divisionId, gameweek);
 
         if (!divisionDocument) {
@@ -158,7 +154,6 @@ async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Pro
             return {};
         }
 
-        console.log(`✅ Found division document for ${divisionId} GW${gameweek}`);
         return divisionDocument.teams;
     } catch (error) {
         console.error(`❌ Failed to get division rosters for ${divisionId}:`, error);

@@ -344,7 +344,7 @@ export const LeagueStandings = () => {
         availableGameweeks,
         standingsData,
     } = useLoaderData<EnhancedLeagueStandingsLoaderData>();
-
+console.log({availableGameweeks})
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);
@@ -357,16 +357,6 @@ export const LeagueStandings = () => {
         }
     };
 
-    const handleGameweekChange = (gameweek: number) => {
-        const newParams = new URLSearchParams();
-        if (selectedDivision) {
-            newParams.set('division', selectedDivision.id);
-        }
-        if (gameweek !== currentGameweek) {
-            newParams.set('gameweek', gameweek.toString());
-        }
-        setSearchParams(newParams);
-    };
 
     return (
         <div>
@@ -378,7 +368,6 @@ export const LeagueStandings = () => {
                             currentGameweekData={currentGameweekData}
                             selectedGameweekData={selectedGameweekData}
                             availableGameweeks={availableGameweeks}
-                            onGameweekChange={handleGameweekChange}
                         />
                         <SelectDivision
                             divisions={divisions}

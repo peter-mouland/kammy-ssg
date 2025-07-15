@@ -19,22 +19,21 @@ interface OverviewSectionProps {
     toggleSection: (section: string) => void;
 }
 
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'healthy':
+            return '✅';
+        case 'warning':
+            return '⚠️';
+        case 'critical':
+            return '❌';
+        default:
+            return '❓';
+    }
+};
 export function OverviewSection({ systemStatus }: OverviewSectionProps) {
     const fetcher = useFetcher();
     const actionData = fetcher.data;
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'healthy':
-                return '✅';
-            case 'warning':
-                return '⚠️';
-            case 'critical':
-                return '❌';
-            default:
-                return '❓';
-        }
-    };
 
     return (
         <AdminContainer>
