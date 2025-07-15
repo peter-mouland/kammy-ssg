@@ -52,29 +52,45 @@ export function CurrentTransfers({
             key: 'playerOut',
             header: 'Player Out',
             width: '200px',
-            render: (_, item) => (
-                <div className={styles.player_cell}>
-                    <div className={styles.player_name}>{item.transfer.playerOut.web_name}</div>
-                    <div className={styles.player_details}>
-                        <span className={styles.position}>{item.transfer.playerOut.draft.position}</span>
-                        <span className={styles.team}>{teamsByCode[item.transfer.playerOut.team_code].name}</span>
+            render: (_, item) => {
+                const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${item.transfer.playerOut.code}.png`}`;
+                return (
+                    <div className={styles.player_cell}>
+                        <img src={img} loading="lazy" alt="" width={35} />
+                        <div className={styles.player_cell_details}>
+                            <div className={styles.player_name}>{item.transfer.playerOut.web_name}</div>
+                            <div className={styles.player_details}>
+                                <span className={styles.position}>{item.transfer.playerOut.draft.position}</span>
+                                <span className={styles.team}>
+                                    {teamsByCode[item.transfer.playerOut.team_code].name}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            ),
+                );
+            },
         },
         {
             key: 'playerIn',
             header: 'Player In',
             width: '200px',
-            render: (_, item) => (
-                <div className={styles.player_cell}>
-                    <div className={styles.player_name}>{item.transfer.playerIn.web_name}</div>
-                    <div className={styles.player_details}>
-                        <span className={styles.position}>{item.transfer.playerIn.draft.position}</span>
-                        <span className={styles.team}>{teamsByCode[item.transfer.playerIn.team_code].name}</span>
+            render: (_, item) => {
+                const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${item.transfer.playerIn.code}.png`}`;
+                return (
+                    <div className={styles.player_cell}>
+                        <img src={img} loading="lazy" alt="" width={35} />
+                        <div className={styles.player_cell_details}>
+                            <div className={styles.player_name}>{item.transfer.playerIn.web_name}</div>
+                            <div className={styles.player_details}>
+                                <span className={styles.position}>{item.transfer.playerIn.draft.position}</span>
+                                <span className={styles.team}>
+                                    {teamsByCode[item.transfer.playerIn.team_code].name}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            ),
+                );
+            },
         },
         {
             key: 'sheetStatus',

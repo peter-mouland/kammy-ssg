@@ -7,7 +7,6 @@
 - refresh data button on transfer
 - chevron icon to expand
 - teams page - all teams divs page
-- player page stats
 
 maybe
 - CHECKOUT GW ENDS

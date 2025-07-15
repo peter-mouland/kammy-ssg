@@ -428,59 +428,6 @@ export const LeagueStandings = () => {
                     )}
                 </div>
             )}
-
-            {/* Instructions */}
-            <div className="card" style={{ marginTop: '2rem' }}>
-                <div className="card-header">
-                    <h3 className="card-title">📋 How to Read the Standings</h3>
-                </div>
-                <div style={{ padding: '1rem' }}>
-                    <p style={{ marginBottom: '1rem', color: 'var(--color-gray-600)' }}>
-                        The standings table shows points breakdown by position. Each column represents the combined
-                        points from players in those roster slots:
-                    </p>
-                    <div
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                            gap: '0.5rem',
-                            fontSize: 'var(--font-sm)',
-                        }}
-                    >
-                        {POSITION_COLUMNS.map((col) => (
-                            <div key={col.key} style={{ textAlign: 'center', padding: '0.5rem' }}>
-                                <div style={{ fontWeight: 'var(--font-weight-semibold)', color: col.color }}>
-                                    {col.label}
-                                </div>
-                                <div style={{ fontSize: 'var(--font-xs)', color: 'var(--color-gray-500)' }}>
-                                    {col.key === 'gk' && '2 players'}
-                                    {col.key === 'cb' && '2 players'}
-                                    {col.key === 'fb' && '2 players'}
-                                    {col.key === 'mid' && '2 players'}
-                                    {col.key === 'wa' && '2 players'}
-                                    {col.key === 'ca' && '2 players'}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div
-                        style={{
-                            marginTop: '1rem',
-                            padding: '1rem',
-                            backgroundColor: '#f1f5f9',
-                            borderRadius: '0.375rem',
-                        }}
-                    >
-                        <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'var(--font-weight-semibold)' }}>
-                            📈 Gameweek Rank Changes
-                        </p>
-                        <p style={{ margin: 0, fontSize: 'var(--font-sm)', color: 'var(--color-gray-600)' }}>
-                            In the gameweek table, each position shows points scored and rank movement. For example: "7
-                            +2" means 7 points scored and moved up 2 positions in that category since last gameweek.
-                        </p>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };
