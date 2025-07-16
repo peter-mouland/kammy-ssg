@@ -3,8 +3,8 @@
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, PositionSlotKey, RosterByManagerId } from '../../../teams/types/team-types';
 import { validateTransfers } from '../../lib/transfer-validation.service';
-import type { TransferValidationResult } from '../../types/transfer-rule-types';
 import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
+import type { TransferValidationResult } from '../../types/transfer-rule-types';
 
 /**
  * Get transfers data for a specific division using enhanced validation
@@ -31,14 +31,6 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
         const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, gameweekData);
         const currentGameweek = await fplApiCache.getCurrentGameweekData();
         const divisionRosters = await getDivisionRosters(divisionId, gameweekId - 1);
-        const ownedPlayersByCode = Object.entries(divisionRosters).reduce((acc: OwnedPlayersByCode, [managerId, team]) => {
-            (Object.keys(team.roster) as PositionSlotKey[]).forEach((slotKey) => {
-                const slot = team.roster[slotKey];
-                acc[slot.player.playerCode] = { managerId, slotKey, slot };
-            });
-
-            return acc;
-        }, {});
 
         console.log(
             `🔄 Running enhanced sequential validation for ${transferResult.transfers.length} transfers: ${divisionId}: gw${gameweekId}`,
@@ -60,7 +52,6 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
             fplPlayersByCode,
             divisionId,
             currentGameweek: gameweekId,
-            ownedPlayersByCode,
         };
         const sequentialResult = await validateTransfers(gameweekTransfers, validationContext);
 

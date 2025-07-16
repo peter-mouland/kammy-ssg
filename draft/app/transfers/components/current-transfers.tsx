@@ -7,6 +7,43 @@ import type { TransferRecommendation, TransferValidationResult } from '../types/
 import type { ProcessedTransfer } from '../types/transfer-types';
 import styles from './current-transfers.module.css';
 
+const Player = ({ teamsByCode, player }) => {
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
+    return (
+        <>
+            <div className={styles.player_cell}>
+                <img src={img} loading="lazy" alt="" width={35} />
+                <div className={styles.player_cell_details}>
+                    <div className={styles.player_name}>{player.web_name}</div>
+                    <div className={styles.player_details}>
+                        <span className={styles.position}>{player.draft.position}</span>
+                        <span className={styles.team}>{teamsByCode[player.team_code].name}</span>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
+function getTransferTypeIcon(transferType: string): string {
+    switch (transferType) {
+        case 'TRANSFER':
+            return '🔄';
+        case 'SWAP':
+            return '🔀';
+        case 'LOAN_START':
+            return '📤';
+        case 'LOAN_END':
+            return '📥';
+        case 'TRADE':
+            return '🤝';
+        case 'NEW_PLAYER':
+            return '✨';
+        default:
+            return '📋';
+    }
+}
+
 interface CurrentTransfersProps {
     transfers: Array<{
         transfer: ProcessedTransfer;
@@ -46,28 +83,26 @@ export function CurrentTransfers({
             key: 'type',
             header: 'Type',
             width: '100px',
-            render: (_, item) => <span className={styles.transfer_type_badge}>{item.transfer.transferType}</span>,
+            render: (_, item) => (
+                <span className={`${styles.transfer_type_badge} ${item.transfer.transferType}`}>
+                    {getTransferTypeIcon(item.transfer.transferType)}
+                    <span style={{ padding: '0.25em' }} />
+                    {item.transfer.transferType}
+                </span>
+            ),
+        },
+        {
+            key: 'manager',
+            header: 'Manager',
+            width: '100px',
+            render: (_, item) => item.transfer.managerId,
         },
         {
             key: 'playerOut',
             header: 'Player Out',
             width: '200px',
             render: (_, item) => {
-                const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${item.transfer.playerOut.code}.png`}`;
-                return (
-                    <div className={styles.player_cell}>
-                        <img src={img} loading="lazy" alt="" width={35} />
-                        <div className={styles.player_cell_details}>
-                            <div className={styles.player_name}>{item.transfer.playerOut.web_name}</div>
-                            <div className={styles.player_details}>
-                                <span className={styles.position}>{item.transfer.playerOut.draft.position}</span>
-                                <span className={styles.team}>
-                                    {teamsByCode[item.transfer.playerOut.team_code].name}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                );
+                return <Player player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
             },
         },
         {
@@ -75,22 +110,15 @@ export function CurrentTransfers({
             header: 'Player In',
             width: '200px',
             render: (_, item) => {
-                const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${item.transfer.playerIn.code}.png`}`;
-                return (
-                    <div className={styles.player_cell}>
-                        <img src={img} loading="lazy" alt="" width={35} />
-                        <div className={styles.player_cell_details}>
-                            <div className={styles.player_name}>{item.transfer.playerIn.web_name}</div>
-                            <div className={styles.player_details}>
-                                <span className={styles.position}>{item.transfer.playerIn.draft.position}</span>
-                                <span className={styles.team}>
-                                    {teamsByCode[item.transfer.playerIn.team_code].name}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                );
+                return <Player player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
             },
+        },
+        {
+            key: 'comment',
+            header: 'Comments',
+            width: '120px',
+            align: 'center',
+            render: (_, item) => <span>{item.transfer.comment}</span>,
         },
         {
             key: 'sheetStatus',

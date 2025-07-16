@@ -83,18 +83,18 @@ function validateReplacementCompatibility(
     playerIn: EnhancedPlayerData,
 ): RuleValidationResult {
     if (!playerIn?.draft) {
-        console.error('playerIn should be EnhancedPlayerData')
-        console.error(playerIn)
+        console.error('playerIn should be EnhancedPlayerData');
+        console.error(playerIn);
     }
     if (!playerOut?.draft) {
-        console.error('playerOut should be EnhancedPlayerData')
-        console.error(playerOut)
+        console.error('playerOut should be EnhancedPlayerData');
+        console.error(playerOut);
     }
     const playerInPosition = playerIn.draft.position;
     const playerOutPosition = playerOut.draft.position;
     const rosterOut = findPlayerInRoster(roster, playerOut.code);
+
     if (!rosterOut) {
-        // console.log(roster.)
         return {
             ruleId: 'position-compatibility',
             ruleName: 'Position Compatibility',
@@ -165,6 +165,7 @@ function validateSwapReplacementCompatibility(
     const playerInPosition = playerIn.draft.position;
     const playerOutPosition = playerOut.draft.position;
     const rosterOut = findPlayerInRoster(roster, playerOut.code);
+    const rosterIn = findPlayerInRoster(roster, playerIn.code);
 
     if (!rosterOut) {
         return {
@@ -179,14 +180,27 @@ function validateSwapReplacementCompatibility(
             },
         };
     }
-
-    if (!rosterOut.slot.player.isSub) {
+    if (!rosterIn) {
         return {
             ruleId: 'position-compatibility',
             ruleName: 'Position Compatibility',
             passed: false,
             severity: 'blocking',
-            message: `Player ${playerOut.web_name} must be on substitute bench`,
+            message: `Outgoing player ${playerIn.web_name} not found in roster`,
+            details: {
+                playerInName: playerIn.web_name,
+                playerInCode: playerIn.code,
+            },
+        };
+    }
+
+    if (!rosterOut.slot.player.isSub && !rosterIn.slot.player.isSub) {
+        return {
+            ruleId: 'position-compatibility',
+            ruleName: 'Position Compatibility',
+            passed: false,
+            severity: 'blocking',
+            message: 'Swap must be involve a player on the substitute bench',
             details: {
                 playerInPosition,
                 targetPosition: playerOutPosition,

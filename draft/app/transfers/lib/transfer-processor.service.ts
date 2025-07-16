@@ -70,7 +70,7 @@ export async function applyTransfersToRosters(
 /**
  * Apply a single transfer to the rosters
  */
-async function applyIndividualTransfer(
+export async function applyIndividualTransfer(
     rosters: RosterByManagerId,
     transfer: ProcessedTransfer,
 ): Promise<TransferApplicationResult | null> {

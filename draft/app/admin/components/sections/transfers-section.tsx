@@ -89,6 +89,43 @@ function RecommendationTooltip({ validation, children }: RecommendationTooltipPr
     );
 }
 
+function getTransferTypeIcon(transferType: string): string {
+    switch (transferType) {
+        case 'TRANSFER':
+            return '🔄';
+        case 'SWAP':
+            return '🔀';
+        case 'LOAN_START':
+            return '📤';
+        case 'LOAN_END':
+            return '📥';
+        case 'TRADE':
+            return '🤝';
+        case 'NEW_PLAYER':
+            return '✨';
+        default:
+            return '📋';
+    }
+}
+
+const Player = ({ teamsByCode, player }) => {
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
+    return (
+        <>
+            <div className={styles.player_cell}>
+                <img src={img} loading="lazy" alt="" width={35} />
+                <div className={styles.player_cell_details}>
+                    <div className={styles.player_name}>{player.web_name}</div>
+                    <div className={styles.player_details}>
+                        <span className={styles.position}>{player.draft.position}</span>
+                        <span className={styles.team}>{teamsByCode[player.team_code].name}</span>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
+
 function GameweekTransfersSection({
     teamsByCode,
     selectedDivision,
@@ -102,8 +139,6 @@ function GameweekTransfersSection({
     onApprove: (transferId: string) => void;
     onReject: (transferId: string) => void;
 }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-
     const columns: TableColumn<{ transfer: ProcessedTransfer; validation: TransferValidationResult }>[] = [
         {
             key: 'timestamp',
@@ -123,7 +158,14 @@ function GameweekTransfersSection({
             key: 'type',
             header: 'Type',
             width: '100px',
-            render: (_, item) => <span className={styles.transfer_type_badge}>{item.transfer.transferType}</span>,
+
+            render: (_, item) => (
+                <span className={`${styles.transfer_type_badge} ${item.transfer.transferType}`}>
+                    {getTransferTypeIcon(item.transfer.transferType)}
+                    <span style={{ padding: '0.25em' }} />
+                    {item.transfer.transferType}
+                </span>
+            ),
         },
         {
             key: 'manager',
@@ -135,29 +177,24 @@ function GameweekTransfersSection({
             key: 'playerOut',
             header: 'Player Out',
             width: '200px',
-            render: (_, item) => (
-                <div className={styles.player_cell}>
-                    <div className={styles.player_name}>{item.transfer.playerOut.web_name}</div>
-                    <div className={styles.player_details}>
-                        <span className={styles.position}>{item.transfer.playerOut.draft.position}</span>
-                        <span className={styles.team}>{teamsByCode?.[item.transfer.playerOut.team_code].name}</span>
-                    </div>
-                </div>
-            ),
+            render: (_, item) => {
+                return <Player player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
+            },
         },
         {
             key: 'playerIn',
             header: 'Player In',
             width: '200px',
-            render: (_, item) => (
-                <div className={styles.player_cell}>
-                    <div className={styles.player_name}>{item.transfer.playerIn.web_name}</div>
-                    <div className={styles.player_details}>
-                        <span className={styles.position}>{item.transfer.playerIn.draft.position}</span>
-                        <span className={styles.team}>{teamsByCode?.[item.transfer.playerIn.team_code].name}</span>
-                    </div>
-                </div>
-            ),
+            render: (_, item) => {
+                return <Player player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
+            },
+        },
+        {
+            key: 'comment',
+            header: 'Comments',
+            width: '120px',
+            align: 'center',
+            render: (_, item) => <span>{item.transfer.comment}</span>,
         },
         {
             key: 'sheetStatus',
@@ -216,54 +253,47 @@ function GameweekTransfersSection({
     ];
 
     return (
-        <div className={styles.gameweek_section}>
-            <button type={'button'} className={styles.gameweek_header} onClick={() => setIsExpanded(!isExpanded)}>
-                <div className={styles.gameweek_info}>
-                    <div className={styles.gameweek_title}>
-                        <div className={styles.gameweek_label}>
-                            {selectedDivision.label} Gameweek {gameweekInfo.gameweekData.fplEvent.id}
-                        </div>
-                        <div className={styles.gameweek_dates}>
-                            {gameweekInfo.gameweekData.start.toLocaleString('en-gb')} -{' '}
-                            {gameweekInfo.gameweekData.end.toLocaleString('en-gb')}
-                        </div>
+        <div>
+            <div className={styles.gameweek_info}>
+                <div className={styles.gameweek_title}>
+                    <div className={styles.gameweek_label}>
+                        {selectedDivision.label} Gameweek {gameweekInfo.gameweekData.fplEvent.id}
                     </div>
-                    <div className={styles.gameweek_stats}>
-                        <span className={`${styles.stat_badge} ${styles.approved}`}>
-                            {gameweekInfo.summary.approve} approve
-                        </span>
-                        <span className={`${styles.stat_badge} ${styles.rejected}`}>
-                            {gameweekInfo.summary.reject} reject
-                        </span>
-                        <span className={`${styles.stat_badge} ${styles.pending}`}>
-                            {gameweekInfo.summary.pending} pending
-                        </span>
-                        <span className={`${styles.stat_badge} ${styles.review}`}>
-                            {gameweekInfo.summary.needsReview} need review
-                        </span>
+                    <div className={styles.gameweek_dates}>
+                        {gameweekInfo.gameweekData.start.toLocaleString('en-gb')} -{' '}
+                        {gameweekInfo.gameweekData.end.toLocaleString('en-gb')}
                     </div>
                 </div>
-                <div className={styles.expand_icon}>
-                    -{/*<Icons.ChevronDownIcon className={isExpanded ? styles.expanded : ''} />*/}
+                <div className={styles.gameweek_stats}>
+                    <span className={`${styles.stat_badge} ${styles.approved}`}>
+                        {gameweekInfo.summary.approve} approve
+                    </span>
+                    <span className={`${styles.stat_badge} ${styles.rejected}`}>
+                        {gameweekInfo.summary.reject} reject
+                    </span>
+                    <span className={`${styles.stat_badge} ${styles.pending}`}>
+                        {gameweekInfo.summary.pending} pending
+                    </span>
+                    <span className={`${styles.stat_badge} ${styles.review}`}>
+                        {gameweekInfo.summary.needsReview} need review
+                    </span>
                 </div>
-            </button>
+            </div>
 
-            {isExpanded && (
-                <div className={styles.gameweek_content}>
-                    {gameweekInfo.transfers.length === 0 ? (
-                        <AdminMessage type="info">No transfers for this gameweek</AdminMessage>
-                    ) : (
-                        <Table
-                            data={gameweekInfo.transfers}
-                            columns={columns}
-                            size="compact"
-                            bordered={true}
-                            sortable={true}
-                            defaultSort={{ key: 'timestamp', direction: 'desc' }}
-                        />
-                    )}
-                </div>
-            )}
+            <div style={{ marginTop: '2em' }}>
+                {gameweekInfo.transfers.length === 0 ? (
+                    <AdminMessage type="info">No transfers for this gameweek</AdminMessage>
+                ) : (
+                    <Table
+                        data={gameweekInfo.transfers}
+                        columns={columns}
+                        size="compact"
+                        bordered={true}
+                        sortable={true}
+                        defaultSort={{ key: 'timestamp', direction: 'desc' }}
+                    />
+                )}
+            </div>
         </div>
     );
 }
@@ -377,7 +407,6 @@ export function TransfersSection({
     teamsByCode,
 }: TransfersSectionProps) {
     const navigate = useNavigate();
-    const fetcher = useFetcher();
     const availableGameweeks = Array.from({ length: systemStatus.currentGameweek.fplEvent.id }, (_, i) => i + 1);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
     const handleDivisionChange = (divisionId: string) => {
@@ -386,14 +415,6 @@ export function TransfersSection({
         } else {
             navigate(`/admin/transfers?gameweek=${selectedGameweek.fplEvent.id}`);
         }
-    };
-
-    const handleRefreshTransfers = (actionType: string) => {
-        const formData = new FormData();
-        formData.append('actionType', actionType);
-        formData.append('divisionId', selectedDivision.id);
-
-        fetcher.submit(formData, { method: 'POST' });
     };
 
     return (
@@ -422,26 +443,6 @@ export function TransfersSection({
                     transfersData={selectedDivisionData}
                     teamsByCode={teamsByCode}
                 />
-                <br />
-                <br />
-                <ActionCard
-                    title="Refresh Transfers"
-                    description="Reload transfer data from Google Sheets"
-                    icon={<Icons.RefreshIcon />}
-                    buttonText="Refresh Data"
-                    actionType="refreshTransfers"
-                    onExecute={handleRefreshTransfers}
-                    fetcher={fetcher}
-                />
-
-                {/* Error/Success Display */}
-                {fetcher.data?.error && (
-                    <AdminMessage type="error">{fetcher.data.error || 'Action Failed'}</AdminMessage>
-                )}
-
-                {fetcher.data?.success && (
-                    <AdminMessage type="success">{fetcher.data.message || 'Action completed'}</AdminMessage>
-                )}
             </AdminSection>
         </AdminContainer>
     );

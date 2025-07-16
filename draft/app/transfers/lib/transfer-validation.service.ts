@@ -2,14 +2,13 @@
 
 import type { ManagerId } from '../../teams/types/team-types';
 import type {
-    RuleValidationFunctions,
     RuleValidationResult,
     TransferRecommendation,
-    TransferRule,
     TransferRuleContext,
     TransferValidationResult,
 } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
+import { applyIndividualTransfer } from './transfer-processor.service';
 import { getRuleValidationFunctions } from './validators';
 
 export interface EnhancedTransferValidationResult extends TransferValidationResult {
@@ -43,7 +42,7 @@ export interface SequentialValidationResult {
  */
 export async function validateTransfer(
     transfer: ProcessedTransfer,
-    context: Omit<TransferRuleContext,'transfer'>,
+    context: Omit<TransferRuleContext, 'transfer'>,
 ): Promise<TransferValidationResult> {
     // Create validation context
     const validationContext: TransferRuleContext = {
@@ -54,7 +53,6 @@ export async function validateTransfer(
         fplPlayersByCode: context.fplPlayersByCode,
         divisionId: context.divisionId,
         currentGameweek: context.currentGameweek,
-        ownedPlayersByCode: context.ownedPlayersByCode,
     };
 
     // Filter rules applicable to this transfer type
@@ -102,7 +100,7 @@ export async function validateTransfer(
 
 export async function validateTransfers(
     transfers: ProcessedTransfer[],
-    context: Omit<TransferRuleContext,'transfer'>,
+    context: Omit<TransferRuleContext, 'transfer'>,
 ): Promise<SequentialValidationResult> {
     console.log(`🔄 Starting sequential validation of ${transfers.length} transfers`);
 
@@ -120,6 +118,11 @@ export async function validateTransfers(
 
         // Run validation
         const validation = await validateTransfer(transfer, context);
+
+        // no blocking failures so apply valid transfers
+        if (validation.isValid || ['APPROVED'].includes(transfer.status)) {
+            await applyIndividualTransfer(context.divisionRosters, transfer); //sideeffect update to roster
+        }
 
         // Update summary counts
         switch (validation.recommendation) {
@@ -178,5 +181,3 @@ function createValidationSummary(ruleResults: RuleValidationResult[], recommenda
 
     return summary;
 }
-
-
