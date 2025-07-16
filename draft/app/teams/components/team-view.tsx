@@ -132,6 +132,8 @@ export const TeamView = () => {
                 <div className={styles.allTeamsContent}>
                     {data.allTeamsData ? (
                         <AllTeamsTable
+                            teamsByCode={data.teamsByCode}
+                            fplPlayersByCode={data.fplPlayersByCode}
                             allTeamsData={data.allTeamsData}
                             currentUser={data.currentUser}
                             division={data.division}

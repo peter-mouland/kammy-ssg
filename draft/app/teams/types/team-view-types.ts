@@ -1,5 +1,7 @@
 // app/teams/types/team-view-types.ts
 
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
     CurrentUser,
     Division,
@@ -68,6 +70,8 @@ export interface AllTeamsTableProps {
     gameweek: number;
     isCurrentGameweek: boolean;
     viewMode: 'gameweek' | 'season';
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode: Record<number, EnhancedPlayerData>;
 }
 
 /**

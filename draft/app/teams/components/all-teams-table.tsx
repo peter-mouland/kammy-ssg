@@ -4,16 +4,48 @@ import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { PositionBadge, Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { AllTeamsTableProps, TeamFilters, TeamRowData } from '../types/team-view-types';
 import styles from './all-teams-table.module.css';
-import { PlayerCard } from './player-card';
+
+const Player = ({
+    teamsByCode,
+    fplPlayersByCode,
+    player,
+}: {
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode: Record<number, EnhancedPlayerData>;
+    player: any;
+}) => {
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode}.png`}`;
+    return (
+        <>
+            <div className={styles.player_cell}>
+                <img src={img} loading="lazy" alt="" width={35} />
+                <div className={styles.player_cell_details}>
+                    <div className={styles.player_name}>{player.playerName}</div>
+                    <div className={styles.player_details}>
+                        <PositionBadge position={player.playerPosition || player.draft.position}>
+                            {player.playerPosition || player.draft.position}
+                        </PositionBadge>
+                        <span className={styles.team}>
+                            {teamsByCode[fplPlayersByCode[player.playerCode].team_code].name}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
 
 export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
+    teamsByCode,
+    fplPlayersByCode,
     allTeamsData,
-    currentUser,
-    division,
     gameweek,
-    isCurrentGameweek,
     viewMode,
 }) => {
     const { filters, setFilter, resetFilters } = useTableFilters<TeamFilters>({
@@ -73,9 +105,9 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             const searchLower = filters.search.toLowerCase();
             filtered = filtered.filter(
                 (team) =>
-                    team.player.playerName.toLowerCase().includes(searchLower) ||
-                    team.managerInfo.userId.toLowerCase().includes(searchLower) ||
-                    team.managerInfo.teamName.toLowerCase().includes(searchLower),
+                    fuzzyStringMatch(team.player.playerName, searchLower) ||
+                    fuzzyStringMatch(team.managerInfo.userName, searchLower) ||
+                    fuzzyStringMatch(teamsByCode[fplPlayersByCode[team.player.playerCode].team_code].name, searchLower),
             );
         }
 
@@ -90,28 +122,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             accessor: ({ player }) => player.playerName,
             sortable: false,
             render: (_, team) => (
-                <div className={styles.playerCell}>
-                    <PlayerCard
-                        player={{
-                            ...team.player,
-                            assignedAt: team.assignedAt,
-                        }}
-                        isSubstitute={team.player.isSub}
-                        gameweek={gameweek}
-                    />
-                </div>
-            ),
-        },
-        {
-            key: 'position',
-            header: 'Position',
-            accessor: ({ player }) => player.playerPosition,
-            sortable: true,
-            align: 'center',
-            render: (_, team) => (
-                <PositionBadge position={team.player.playerPosition}>
-                    {team.player.playerPosition.toUpperCase()}
-                </PositionBadge>
+                <Player player={team.player} fplPlayersByCode={fplPlayersByCode} teamsByCode={teamsByCode} />
             ),
         },
         {
@@ -126,6 +137,143 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     </Link>
                 </div>
             ),
+        },
+        {
+            key: 'stats.appearance',
+            header: 'Mins',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.appearance >= 0 ? styles.positive : styles.negative}`}>
+                        {stats.appearance > 0 ? `+${stats.appearance}` : stats.appearance}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.goals',
+            header: 'Goals',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.goals >= 0 ? styles.positive : styles.negative}`}>
+                        {stats.goals > 0 ? `+${stats.goals}` : stats.goals}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.assists',
+            header: 'Assists',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.assists >= 0 ? styles.positive : styles.negative}`}>
+                        {stats.assists > 0 ? `+${stats.assists}` : stats.assists}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.cleanSheets',
+            header: 'Clean Sheets',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.cleanSheets >= 0 ? styles.positive : styles.negative}`}>
+                        {stats.cleanSheets > 0 ? `+${stats.cleanSheets}` : stats.cleanSheets}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.penaltiesSaved',
+            header: 'Pens. Saved',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span
+                        className={`${styles.points} ${stats.penaltiesSaved >= 0 ? styles.positive : styles.negative}`}
+                    >
+                        {stats.penaltiesSaved > 0 ? `+${stats.penaltiesSaved}` : stats.penaltiesSaved}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.saves',
+            header: 'Saves',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.saves >= 0 ? styles.positive : styles.negative}`}>
+                        {stats.saves > 0 ? `+${stats.saves}` : stats.saves}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.yellowCards',
+            header: 'Yellow Cards',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.yellowCards === 0 ? styles.positive : styles.negative}`}>
+                        {stats.yellowCards > 0 ? `${stats.yellowCards}` : stats.yellowCards}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.redCards',
+            header: 'Red Cards',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.redCards === 0 ? styles.positive : styles.negative}`}>
+                        {stats.redCards > 0 ? `${stats.redCards}` : stats.redCards}
+                    </span>
+                );
+            },
+        },
+        {
+            key: 'stats.bonus',
+            header: 'Bonus',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+            align: 'center',
+            render: (stats: PlayerGameweekStatsData, team) => {
+                return (
+                    <span className={`${styles.points} ${stats.bonus > 0 ? styles.positive : styles.negative}`}>
+                        {stats.bonus > 0 ? `+${stats.bonus}` : stats.bonus}
+                    </span>
+                );
+            },
         },
         {
             key: 'points',

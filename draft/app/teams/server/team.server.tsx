@@ -24,6 +24,8 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
         // Get available gameweeks from service
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
         const currentGameweekData = await fplApiCache.getCurrentGameweekData();
+        const teamsByCode = await fplApiCache.getTeamsByCode();
+        const fplPlayersByCode = await fplApiCache.getPlayersByCode();
         const currentGameweek = currentGameweekData.fplEvent.id;
         const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
         const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
@@ -54,6 +56,8 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             currentTeam: currentTeams,
             availableGameweeks,
             allTeamsData,
+            teamsByCode,
+            fplPlayersByCode,
         };
     } catch (error) {
         console.error('Load team data error:', error);

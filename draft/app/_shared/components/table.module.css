@@ -233,6 +233,7 @@
     font-weight: var(--font-weight-semibold);
     text-align: center;
     min-width: 2.5rem;
+    text-transform: uppercase;
 }
 
 .positionBadge.gk {
