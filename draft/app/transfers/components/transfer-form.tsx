@@ -26,6 +26,7 @@ import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
 import styles from './transfer-form.module.css';
 import { TransferTypeSelector } from './transfer-type-selector';
+import type { TransferRuleContext } from '../types/transfer-rule-types';
 
 interface TransferFormProps {
     divisions: DivisionSheetData[];
@@ -40,6 +41,7 @@ interface TransferFormProps {
     isBeforeDeadline: boolean;
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
+    validationContext: Omit<TransferRuleContext,'transfer'>,
 }
 
 interface LoanSelectionState {
@@ -75,6 +77,7 @@ export function TransferForm({
     isBeforeDeadline,
     divisionRosters,
     teamsByCode,
+                                 validationContext
 }: TransferFormProps) {
     const [searchParams, setSearchParams] = useSearchParams();
     const fetcher = useFetcher();
@@ -277,6 +280,8 @@ export function TransferForm({
                                 playerOut={playerSelection.playerOut}
                                 ownedPlayersByCode={ownedPlayersByCode}
                                 teamsByCode={teamsByCode}
+                                managerId={selectedManager}
+                                validationContext={validationContext}
                             />
                         </div>
                     </>

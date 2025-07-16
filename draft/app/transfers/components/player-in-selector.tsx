@@ -3,11 +3,13 @@
 import { useMemo, useState } from 'react';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { RosterPlayer } from '../../teams/types/team-types';
+import type { ManagerId, RosterPlayer } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
-import type { OwnedPlayersByCode, PlayerEligibility } from '../types/transfer-form-types';
-import type { TransferType } from '../types/transfer-types';
+import type { OwnedPlayersByCode } from '../types/transfer-form-types';
+import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
 import styles from './player-in-selector.module.css';
+import { getPlayerEligibilityFromValidators } from '../lib/player-eligibility-from-validators';
+import type { TransferRuleContext } from '../types/transfer-rule-types';
 
 interface PlayerInSelectorProps {
     availablePlayers: EnhancedPlayerData[];
@@ -17,6 +19,8 @@ interface PlayerInSelectorProps {
     playerOut: RosterPlayer | null;
     ownedPlayersByCode: OwnedPlayersByCode;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
+    validationContext: Omit<TransferRuleContext,'transfer'>,
+    managerId: ManagerId
 }
 
 export function PlayerInSelector({
@@ -27,72 +31,36 @@ export function PlayerInSelector({
     playerOut,
     ownedPlayersByCode,
     teamsByCode,
+                                     managerId,
+                                     validationContext,
 }: PlayerInSelectorProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedPosition, setSelectedPosition] = useState<string>('all');
     const [selectedTeam, setSelectedTeam] = useState<string>('all');
     const [showOnlyEligible, setShowOnlyEligible] = useState(false);
 
-    // Calculate player eligibility
-    const getPlayerEligibility = (player: EnhancedPlayerData): PlayerEligibility => {
-        const ownership = getPlayerOwnership(player, ownedPlayersByCode);
-
-        // For loan transfers, show different eligibility rules
-        if (transferType === 'LOAN_START') {
-            if (ownership.isOwned) {
-                return {
-                    isEligible: true,
-                    reason: 'loan request',
-                    icon: '🔄',
-                };
-            } else {
-                return {
-                    isEligible: true,
-                    reason: 'Unowned player',
-                    icon: '✅',
-                };
+    const getPlayerEligibility = (player: EnhancedPlayerData) => {
+        if (!playerOut){
+            return {
+                isEligible: true,
+                reason: "",
             }
         }
-
-        // For loan finish, only show players currently on loan from this manager
-        if (transferType === 'LOAN_END') {
-            // Would need to check if this player is currently on loan from the selected manager
-            return {
-                isEligible: false,
-                reason: 'Only players currently on loan can be returned',
-                icon: '⚠️',
-            };
+        const mockTransfer: ProcessedTransfer = {
+            playerOut: validationContext.fplPlayersByCode[playerOut.playerCode],
+            playerIn: player,
+            managerId,
+            transferType,
+            gameweekData: validationContext.gameweekData,
+            id: `eligibility-check-${Date.now()}`,
+            timestamp: new Date(),
+            status: 'PENDING',
+            comment: 'Eligibility check',
+            onLoanTo: undefined,
+            onLoanFrom: undefined,
         }
-
-        // Standard transfer eligibility
-        if (ownership.isOwned) {
-            return {
-                isEligible: false,
-                reason: `Already owned by ${ownership.ownerName}`,
-                icon: '🚫',
-            };
-        }
-
-        // Position compatibility check
-        if (playerOut && transferType === 'TRANSFER') {
-            const playerOutPosition = playerOut.playerPosition.toLowerCase();
-            const playerInPosition = player.draft?.position.toLowerCase();
-
-            if (playerOutPosition !== playerInPosition) {
-                return {
-                    isEligible: false,
-                    reason: `Position mismatch: need ${playerOutPosition}, this is ${playerInPosition}`,
-                    icon: '⚠️',
-                };
-            }
-        }
-
-        return {
-            isEligible: true,
-            reason: 'Available for transfer',
-            icon: '✅',
-        };
-    };
+        return getPlayerEligibilityFromValidators({ ...validationContext, transfer: mockTransfer })
+    }
 
     // Filter and sort players
     const filteredPlayers = useMemo(() => {
@@ -232,9 +200,6 @@ export function PlayerInSelector({
                         <div className={styles.playerStatus}>
                             <span className={styles.eligibilityIcon}>{player.eligibility.icon}</span>
                             <div className={styles.statusText}>
-                                {player.ownership.isOwned && (
-                                    <div className={styles.ownershipInfo}>Owned by {player.ownership.ownerName}</div>
-                                )}
                                 <div className={styles.eligibilityReason}>{player.eligibility.reason}</div>
                             </div>
                         </div>

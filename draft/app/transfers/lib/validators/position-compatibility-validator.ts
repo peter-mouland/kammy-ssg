@@ -5,6 +5,8 @@ import type { TeamRoster } from '../../../teams/types/team-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import { findPlayerInRoster } from '../find-player-in-roster';
 
+const description = 'Ensure transferred player fits the position slot';
+
 /**
  * Validate position compatibility for transfers
  * Simple rule: gk -> gk, cb -> cb, fb -> fb, mid -> mid, wa -> wa, ca -> ca
@@ -80,6 +82,14 @@ function validateReplacementCompatibility(
     playerOut: EnhancedPlayerData,
     playerIn: EnhancedPlayerData,
 ): RuleValidationResult {
+    if (!playerIn?.draft) {
+        console.error('playerIn should be EnhancedPlayerData')
+        console.error(playerIn)
+    }
+    if (!playerOut?.draft) {
+        console.error('playerOut should be EnhancedPlayerData')
+        console.error(playerOut)
+    }
     const playerInPosition = playerIn.draft.position;
     const playerOutPosition = playerOut.draft.position;
     const rosterOut = findPlayerInRoster(roster, playerOut.code);
@@ -120,7 +130,7 @@ function validateReplacementCompatibility(
             ruleName: 'Position Compatibility',
             passed: false,
             severity: 'blocking',
-            message: `Position mismatch: ${playerIn.web_name} (${playerInPosition}) cannot replace ${playerOutPosition} position player. Only ${playerOutPosition} players can go into ${playerOutPosition} slots.`,
+            message: `Position mismatch: ${playerIn.web_name} (${playerInPosition}) cannot replace a ${playerOutPosition}.`,
             details: {
                 playerInPosition,
                 targetPosition: playerOutPosition,
@@ -135,7 +145,7 @@ function validateReplacementCompatibility(
         ruleName: 'Position Compatibility',
         passed: true,
         severity: 'blocking',
-        message: `Position match: ${playerIn.web_name} (${playerInPosition}) can replace ${playerOutPosition} position player`,
+        message: `Position match: ${playerIn.web_name} (${playerInPosition}) can replace a ${playerOutPosition}.`,
         details: {
             playerInPosition,
             targetPosition: playerOutPosition,

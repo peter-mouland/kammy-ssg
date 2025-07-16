@@ -113,7 +113,7 @@ export function PlayerOutSelector({
                         const isSelected = selectedPlayer?.playerCode === player.playerCode;
                         const fplPlayer = playersByCode[player.playerCode];
                         const team = teamsByCode[fplPlayer.team_code];
-                        console.log(fplPlayer.draft);
+
                         return (
                             <div
                                 key={player.playerCode}

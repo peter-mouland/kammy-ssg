@@ -1,8 +1,6 @@
 /* Location: app/transfers/lib/transfer-validation.service.ts */
 
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId, ManagerId, RosterByManagerId } from '../../teams/types/team-types';
+import type { ManagerId } from '../../teams/types/team-types';
 import type {
     RuleValidationFunctions,
     RuleValidationResult,
@@ -12,11 +10,7 @@ import type {
     TransferValidationResult,
 } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
-import { validateGameweekTransferLimit } from './validators/gameweek-transfer-limit-validator';
-import { validateMinimumGap } from './validators/min-time-between-validator';
-import { validatePlayerAvailability } from './validators/player-availability-validator';
-import { validatePositionCompatibility } from './validators/position-compatibility-validator';
-import { validatePositionLimits } from './validators/position-limits-validator';
+import { getRuleValidationFunctions } from './validators';
 
 export interface EnhancedTransferValidationResult extends TransferValidationResult {
     virtualStateConflict?: {
@@ -49,19 +43,8 @@ export interface SequentialValidationResult {
  */
 export async function validateTransfer(
     transfer: ProcessedTransfer,
-    rules: TransferRule[],
-    context: {
-        allGameweekTransfers: ProcessedTransfer[];
-        divisionRosters: RosterByManagerId;
-        gameweekData: GameWeekData;
-        fplPlayersByCode: PlayersByCode;
-        divisionId: DivisionId;
-        currentGameweek: number;
-    },
+    context: Omit<TransferRuleContext,'transfer'>,
 ): Promise<TransferValidationResult> {
-    const ruleValidationFunctions = getRuleValidationFunctions();
-    const ruleResults: RuleValidationResult[] = [];
-
     // Create validation context
     const validationContext: TransferRuleContext = {
         transfer,
@@ -71,56 +54,18 @@ export async function validateTransfer(
         fplPlayersByCode: context.fplPlayersByCode,
         divisionId: context.divisionId,
         currentGameweek: context.currentGameweek,
+        ownedPlayersByCode: context.ownedPlayersByCode,
     };
 
     // Filter rules applicable to this transfer type
-    const applicableRules = rules.filter((rule) => rule.isActive && rule.transferTypes.includes(transfer.transferType));
+    const ruleValidationResults = getRuleValidationFunctions(validationContext);
 
-    console.log(`📋 Found ${applicableRules.length} applicable rules for ${transfer.transferType}`);
-    // console.log('context.divisionRosters');
-    // Object.keys(context.divisionRosters).forEach((managerId) => {
-    //     console.log(managerId);
-    //     Object.keys(context.divisionRosters[managerId].roster).forEach((pos) => {
-    //         const player = context.divisionRosters[managerId].roster[pos].player;
-    //         console.log(player.playerPosition, player.playerName);
-    //     });
-    // });
-    // Validate each applicable rule
-    for (const rule of applicableRules) {
-        try {
-            const validationFunction = ruleValidationFunctions[rule.validationFunction];
-
-            if (!validationFunction) {
-                console.warn(`⚠️ Unknown validation function: ${rule.validationFunction}`);
-                ruleResults.push({
-                    ruleId: rule.id,
-                    ruleName: rule.name,
-                    passed: false,
-                    severity: rule.severity,
-                    message: `Unknown validation function: ${rule.validationFunction}`,
-                });
-                continue;
-            }
-
-            const result = validationFunction(validationContext);
-            result.severity = rule.severity; // Ensure severity matches rule config
-            ruleResults.push(result);
-        } catch (error) {
-            console.error(`❌ Error validating rule ${rule.id}:`, error);
-            ruleResults.push({
-                ruleId: rule.id,
-                ruleName: rule.name,
-                passed: false,
-                severity: rule.severity,
-                message: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            });
-        }
-    }
+    console.log(`📋 Found ${ruleValidationResults.length} applicable rules for ${transfer.transferType}`);
 
     // Categorize results by severity
-    const blockingFailures = ruleResults.filter((r) => !r.passed && r.severity === 'blocking');
-    const warnings = ruleResults.filter((r) => !r.passed && r.severity === 'warning');
-    const advisories = ruleResults.filter((r) => !r.passed && r.severity === 'advisory');
+    const blockingFailures = ruleValidationResults.filter((r) => !r.passed && r.severity === 'blocking');
+    const warnings = ruleValidationResults.filter((r) => !r.passed && r.severity === 'warning');
+    const advisories = ruleValidationResults.filter((r) => !r.passed && r.severity === 'advisory');
 
     // Determine overall validation result
     const isValid = blockingFailures.length === 0;
@@ -136,18 +81,18 @@ export async function validateTransfer(
     }
 
     // Create summary message
-    const summary = createValidationSummary(ruleResults, recommendation);
+    const summary = createValidationSummary(ruleValidationResults, recommendation);
 
     console.log(
-        `✅ Transfer validation complete: ${recommendation === 'REJECT' ? '🚨' : ''} ${recommendation} (${ruleResults.length} rules checked)`,
+        `✅ Transfer validation complete: ${recommendation === 'REJECT' ? '🚨' : ''} ${recommendation} (${ruleValidationResults.length} rules checked)`,
     );
-    ruleResults.forEach((result) => console.log(` . . . ${result.message}`));
+    ruleValidationResults.forEach((result) => console.log(` . . . ${result.message}`));
 
     return {
         transferId: transfer.id,
         isValid,
         recommendation,
-        ruleResults,
+        ruleResults: ruleValidationResults,
         blockingFailures,
         warnings,
         advisories,
@@ -157,15 +102,7 @@ export async function validateTransfer(
 
 export async function validateTransfers(
     transfers: ProcessedTransfer[],
-    rules: TransferRule[],
-    context: {
-        allGameweekTransfers: ProcessedTransfer[];
-        divisionRosters: RosterByManagerId;
-        gameweekData: GameWeekData;
-        fplPlayersByCode: PlayersByCode;
-        divisionId: DivisionId;
-        currentGameweek: number;
-    },
+    context: Omit<TransferRuleContext,'transfer'>,
 ): Promise<SequentialValidationResult> {
     console.log(`🔄 Starting sequential validation of ${transfers.length} transfers`);
 
@@ -182,7 +119,7 @@ export async function validateTransfers(
         console.log(`📋 Validating transfer ${transfer.playerOut.web_name} → ${transfer.playerIn.web_name}`);
 
         // Run validation
-        const validation = await validateTransfer(transfer, rules, context);
+        const validation = await validateTransfer(transfer, context);
 
         // Update summary counts
         switch (validation.recommendation) {
@@ -242,15 +179,4 @@ function createValidationSummary(ruleResults: RuleValidationResult[], recommenda
     return summary;
 }
 
-/**
- * Get all available rule validation functions
- */
-function getRuleValidationFunctions(): RuleValidationFunctions {
-    return {
-        validateMinimumGap,
-        validatePlayerAvailability,
-        validatePositionLimits,
-        validateGameweekTransferLimit,
-        validatePositionCompatibility,
-    };
-}
+

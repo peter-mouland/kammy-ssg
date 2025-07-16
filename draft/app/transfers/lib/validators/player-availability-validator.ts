@@ -15,9 +15,9 @@ export function validatePlayerAvailability(context: TransferRuleContext): RuleVa
                 return {
                     ruleId: 'player-availability',
                     ruleName: 'Player Availability',
-                    passed: false,
+                    passed: true,
                     severity: 'blocking',
-                    message: `Player ${playerIn.web_name} is already owned by another manager (${managerId})`,
+                    message: `Player ${playerIn.web_name} is owned by ${managerId}`,
                     details: {
                         currentOwner: managerId,
                     },

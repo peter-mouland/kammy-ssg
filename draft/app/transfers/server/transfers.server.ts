@@ -37,9 +37,9 @@ export async function getTransfersPageData({
         const managers = await readUserTeams();
 
         const gameweekToLoad = selectedGameweek || currentGameweek || 1;
-        const selectedGameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad);
+        const selectedGameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad) || gameweeks[0];
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
-        const { transfers: currentTransfers, divisionRosters } = await getTransfersDataForDivision(
+        const { transfers: currentTransfers, divisionRosters, validationContext } = await getTransfersDataForDivision(
             selectedDivision,
             selectedGameweekData,
         );
@@ -80,6 +80,7 @@ export async function getTransfersPageData({
             teamsByCode,
             isBeforeDeadline,
             divisionRosters,
+            validationContext,
         };
     } catch (error) {
         console.error('❌ Failed to load transfers page data:', error);

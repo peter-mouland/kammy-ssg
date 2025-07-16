@@ -4,6 +4,7 @@ import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { PlayersByCode } from '../../scoring/types/scoring-types';
 import type { DivisionId, RosterByManagerId } from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
+import type { OwnedPlayersByCode } from './transfer-form-types';
 
 /**
  * Individual rule definition
@@ -93,6 +94,7 @@ export interface TransferRuleContext {
     fplPlayersByCode: PlayersByCode;
     divisionId: DivisionId;
     currentGameweek: number;
+    ownedPlayersByCode: OwnedPlayersByCode
 }
 
 /**
@@ -117,12 +119,6 @@ export interface TransferAdminOverviewData {
         validation: TransferValidationResult;
         recommendation: TransferRecommendation;
     }>;
-    ruleStats: {
-        totalRules: number;
-        activeRules: number;
-        blockingRules: number;
-        warningRules: number;
-    };
     statusStats: {
         rejectedCount: number;
         approvedCount: number;

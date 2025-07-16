@@ -1,5 +1,7 @@
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 
+const ruleDescription = 'Minimum time required between transfers for the same manager',
+
 /**
  * Validate minimum gap between transfers
  */

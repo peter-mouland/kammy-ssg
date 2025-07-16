@@ -4,6 +4,9 @@ import type { RosterPosition, TeamRoster } from '../../../teams/types/team-types
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import { simulateTransferOnRoster } from '../simulate-transfer-on-roster';
 
+const description = 'Ensure roster maintains required position limits';
+
+
 // Get position limits from parameters
 const positionLimits = {
     gk: 1,
@@ -13,6 +16,7 @@ const positionLimits = {
     wa: 2,
     ca: 2,
     sub: 1,
+    on_loan: 1,
 };
 
 /**
@@ -21,6 +25,14 @@ const positionLimits = {
 export function validatePositionLimits(context: TransferRuleContext): RuleValidationResult {
     const { transfer, divisionRosters } = context;
     const managerId = transfer.managerId;
+    if (!transfer.playerIn.draft) {
+        console.error('playerIn should be EnhancedPlayerData')
+        console.error(transfer.playerIn)
+    }
+    if (!transfer.playerOut.draft) {
+        console.error('playerOut should be EnhancedPlayerData')
+        console.error(transfer.playerOut)
+    }
 
     // Get manager's current roster
     const managerTeam = divisionRosters[managerId];
@@ -100,6 +112,7 @@ function countPositionsInRoster(roster: TeamRoster): Record<RosterPosition, numb
         wa: 0,
         ca: 0,
         sub: 0,
+        on_loan: 0,
     };
 
     for (const [_slotKey, positionSlot] of Object.entries(roster)) {
@@ -125,6 +138,7 @@ function getPositionDisplayName(position: RosterPosition): string {
         wa: 'Wide Attackers',
         ca: 'Centre Attackers',
         sub: 'Substitutes',
+        on_loan: 'On Loan',
     };
 
     return displayNames[position] || position.toUpperCase();

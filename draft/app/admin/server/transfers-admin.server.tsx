@@ -39,12 +39,6 @@ export async function getTransfersAdminData(
                     processedCount: 0,
                     pendingCount: 0,
                 },
-                ruleStats: {
-                    totalRules: 0,
-                    activeRules: 0,
-                    blockingRules: 0,
-                    warningRules: 0,
-                },
                 validationStats: {
                     totalValidated: 0,
                     autoApproved: 0,

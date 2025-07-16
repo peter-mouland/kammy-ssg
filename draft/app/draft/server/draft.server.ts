@@ -57,7 +57,6 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
         }
     }
 
-    console.log(divisionId)
     // Filter available players
     const draftedPlayerCodes = new Set(draftPicks.map((pick) => pick.playerCode));
     let availablePlayers = allPlayers.filter((player) => !draftedPlayerCodes.has(player.code));

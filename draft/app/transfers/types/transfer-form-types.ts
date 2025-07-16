@@ -13,7 +13,7 @@ import type {
     TeamRoster,
     UserTeamsSheetData,
 } from '../../teams/types/team-types';
-import type { TransferRecommendation } from './transfer-rule-types';
+import type { TransferRecommendation, TransferRuleContext } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
 
 export type OwnedPlayersByCode = Record<
@@ -98,6 +98,7 @@ export interface TransfersPageData {
     activeLoanAgreements?: ActiveLoanAgreement[];
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
+    validationContext: Omit<TransferRuleContext,'transfer'>,
 }
 
 /**

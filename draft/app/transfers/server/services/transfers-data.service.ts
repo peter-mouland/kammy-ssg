@@ -1,10 +1,10 @@
 /* Location: app/transfers/server/services/transfers-data.service.ts */
 
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
-import type { DivisionId, RosterByManagerId } from '../../../teams/types/team-types';
-import { getDefaultRuleConfiguration } from '../../lib/transfer-rule-definitions';
+import type { DivisionId, PositionSlotKey, RosterByManagerId } from '../../../teams/types/team-types';
 import { validateTransfers } from '../../lib/transfer-validation.service';
 import type { TransferValidationResult } from '../../types/transfer-rule-types';
+import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
 
 /**
  * Get transfers data for a specific division using enhanced validation
@@ -31,7 +31,14 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
         const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, gameweekData);
         const currentGameweek = await fplApiCache.getCurrentGameweekData();
         const divisionRosters = await getDivisionRosters(divisionId, gameweekId - 1);
-        const rules = getDefaultRuleConfiguration(divisionId);
+        const ownedPlayersByCode = Object.entries(divisionRosters).reduce((acc: OwnedPlayersByCode, [managerId, team]) => {
+            (Object.keys(team.roster) as PositionSlotKey[]).forEach((slotKey) => {
+                const slot = team.roster[slotKey];
+                acc[slot.player.playerCode] = { managerId, slotKey, slot };
+            });
+
+            return acc;
+        }, {});
 
         console.log(
             `🔄 Running enhanced sequential validation for ${transferResult.transfers.length} transfers: ${divisionId}: gw${gameweekId}`,
@@ -46,14 +53,16 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
             })
             .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
-        const sequentialResult = await validateTransfers(gameweekTransfers, rules, {
+        const validationContext = {
             allGameweekTransfers: gameweekTransfers,
             divisionRosters,
             gameweekData: currentGameweek,
             fplPlayersByCode,
             divisionId,
             currentGameweek: gameweekId,
-        });
+            ownedPlayersByCode,
+        };
+        const sequentialResult = await validateTransfers(gameweekTransfers, validationContext);
 
         // Convert sequential results to the expected format
         const transfers = sequentialResult.transferValidations.map((item) => ({
@@ -77,13 +86,6 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
             needsReview: transfers.filter((t) => t.recommendation === 'REVIEW').length,
         };
 
-        const ruleStats = {
-            totalRules: rules.length,
-            activeRules: rules.filter((r) => r.isActive).length,
-            blockingRules: rules.filter((r) => r.severity === 'blocking').length,
-            warningRules: rules.filter((r) => r.severity === 'warning').length,
-        };
-
         console.log(
             `✅ Transfers data loaded for ${divisionId}: ${transfers.length} transfers, ${statusStats.pendingCount} pending`,
         );
@@ -93,8 +95,8 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
             transfers,
             statusStats,
             validationStats,
-            ruleStats,
             divisionRosters,
+            validationContext,
         };
     } catch (error) {
         console.error(`❌ Failed to get transfers data for ${divisionId}:`, error);
@@ -115,13 +117,8 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
                 autoRejected: 0,
                 needsReview: 0,
             },
-            ruleStats: {
-                totalRules: 0,
-                activeRules: 0,
-                blockingRules: 0,
-                warningRules: 0,
-            },
             divisionRosters: {},
+            validationContext: {},
         };
     }
 }

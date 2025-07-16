@@ -4,6 +4,8 @@
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../../types/transfer-types';
 
+const description = 'Limit number of transfers per manager per gameweek';
+
 /**
  * Validate gameweek transfer limit
  */

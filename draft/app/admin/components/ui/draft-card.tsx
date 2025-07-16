@@ -82,8 +82,6 @@ export const DraftCard = ({ division, teams, orders, draftStates, draftStatus }:
     const fetcher = useFetcher();
     const isLoading = fetcher.state === 'submitting';
     const handleAction = (action: string) => {
-        console.log("division.id")
-        console.log(division.id)
         const formData = new FormData();
         formData.append('actionType', 'processDraft');
         formData.append('draftAction', action);

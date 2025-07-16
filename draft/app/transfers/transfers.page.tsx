@@ -87,6 +87,7 @@ export function TransfersPage() {
                         isBeforeDeadline={true /* data.isBeforeDeadline */}
                         divisionRosters={data.divisionRosters}
                         teamsByCode={data.teamsByCode}
+                        validationContext={data.validationContext}
                     />
                 </div>
             </div>
