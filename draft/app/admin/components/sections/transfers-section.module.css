@@ -30,7 +30,7 @@
 .division_select:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 /* Division Panel */
@@ -169,11 +169,13 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
 .player_cell {
     display: flex;
     flex-direction: row;
     gap: var(--spacing-3);
 }
+
 .player_cell_details {
     display: flex;
     flex-direction: column;
@@ -366,6 +368,185 @@
     color: var(--color-white);
 }
 
+/* Loading spinner for action buttons */
+.loading_spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin var(--duration-normal) linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Updated status badge indicator */
+.updated_indicator {
+    margin-left: var(--spacing-1);
+    font-size: var(--font-xs);
+    opacity: var(--opacity-muted);
+}
+
+/* Action status text for completed actions */
+.action_status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.status_text_approved {
+    color: var(--color-success);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.status_text_rejected {
+    color: var(--color-error);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+/* Enhanced action buttons */
+.action_buttons {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    justify-content: center;
+}
+
+.action_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    font-size: var(--font-sm);
+}
+
+.action_btn:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.action_btn:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.approve_btn {
+    background-color: var(--color-success-light);
+    color: var(--color-success);
+    border: 1px solid var(--color-success-border);
+}
+
+.approve_btn:not(:disabled):hover {
+    background-color: var(--color-success-hover);
+}
+
+.reject_btn {
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-border);
+}
+
+.reject_btn:not(:disabled):hover {
+    background-color: var(--color-error-hover);
+}
+
+/* Enhanced status badges */
+.status_badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+}
+
+.status_approved {
+    background-color: var(--color-success-light);
+    color: var(--color-success);
+    border: 1px solid var(--color-success-border);
+}
+
+.status_rejected {
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-border);
+}
+
+.status_pending {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning-border);
+}
+
+/* Loading state for buttons */
+.action_btn:disabled .loading_spinner {
+    opacity: 1;
+}
+
+/* Success/Error message styles */
+.admin_message {
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.admin_message.success {
+    background-color: var(--color-success-light);
+    color: var(--color-success);
+    border: 1px solid var(--color-success-border);
+}
+
+.admin_message.error {
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-border);
+}
+
+/* Improved visual feedback */
+.action_btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Animation for updated status */
+@keyframes updateFlash {
+    0% {
+        background-color: var(--color-primary);
+        transform: scale(1.05);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+.status_badge .updated_indicator {
+    animation: updateFlash var(--duration-slow) ease-out;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .gameweek_header {
@@ -387,5 +568,21 @@
 
     .expand_icon {
         align-self: flex-end;
+    }
+
+    .action_buttons {
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+
+    .action_btn {
+        width: 28px;
+        height: 28px;
+        font-size: var(--font-xs);
+    }
+
+    .status_text_approved,
+    .status_text_rejected {
+        font-size: var(--font-xs);
     }
 }

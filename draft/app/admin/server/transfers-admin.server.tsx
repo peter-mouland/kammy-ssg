@@ -1,5 +1,7 @@
 /* Location: app/admin/server/transfers-admin.server.ts */
 
+import { CACHE_KEYS } from '../../_shared/lib/cache/cache-config';
+import { dataCache } from '../../_shared/lib/cache/data-cache.service';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types';
 import { getTransfersDataForDivision } from '../../transfers/server/services/transfers-data.service';
@@ -54,6 +56,39 @@ export async function getTransfersAdminData(
 }
 
 /**
+ * Handle transfer action requests
+ */
+export async function handleTransferAction(
+    actionType: string,
+    params: {
+        divisionId: DivisionId;
+        transferId: string;
+        recommendation: TransferRecommendation;
+    },
+): Promise<TransfersActionResult> {
+    const { divisionId, transferId, recommendation } = params;
+
+    try {
+        switch (actionType) {
+            case 'approveTransfer':
+                return await handleApproveTransfer(divisionId, transferId, recommendation);
+
+            case 'rejectTransfer':
+                return await handleRejectTransfer(divisionId, transferId, recommendation);
+
+            default:
+                throw new Error(`Unknown transfer action: ${actionType}`);
+        }
+    } catch (error) {
+        console.error(`❌ Transfer action ${actionType} failed:`, error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            message: `Failed to ${actionType.replace('Transfer', ' transfer')}`,
+        };
+    }
+}
+
 /**
  * Approve a transfer
  */
@@ -65,22 +100,11 @@ async function handleApproveTransfer(
     try {
         console.log(`✅ Approving transfer ${transferId} for division: ${divisionId}`);
 
-        // This would:
-        // 1. Update the Google Sheets with approval
-        // 2. Update recommendation column
-        // 3. Log the decision
-        // 4. Potentially trigger re-validation of other pending transfers
+        // Update Google Sheets with approval
+        await updateTransferRecommendationInSheet(divisionId, transferId, 'APPROVE');
 
-        // const { updateTransferRecommendation } = await import();
-        //
-        // await updateTransferRecommendation(divisionId, transferId, {
-        //     transferId,
-        //     recommendation: 'APPROVE',
-        //     validationSummary: 'Manually approved by admin',
-        //     ruleViolations: [],
-        //     updatedBy: 'admin', // In real app, would get from auth
-        //     updatedAt: new Date(),
-        // });
+        // Invalidate admin context to refresh data
+        dataCache.invalidate(CACHE_KEYS.SHEETS.TRANSFERS(divisionId));
 
         return {
             success: true,
@@ -108,22 +132,11 @@ async function handleRejectTransfer(
     try {
         console.log(`❌ Rejecting transfer ${transferId} for division: ${divisionId}`);
 
-        // This would:
-        // 1. Update the Google Sheets with rejection
-        // 2. Update recommendation column
-        // 3. Log the decision
-        // 4. Potentially trigger re-validation of other pending transfers
+        // Update Google Sheets with rejection
+        await updateTransferRecommendationInSheet(divisionId, transferId, 'REJECT');
 
-        // const { updateTransferRecommendation } = await import('');
-        //
-        // await updateTransferRecommendation(divisionId, transferId, {
-        //     transferId,
-        //     recommendation: 'REJECT',
-        //     validationSummary: 'Manually rejected by admin',
-        //     ruleViolations: [],
-        //     updatedBy: 'admin', // In real app, would get from auth
-        //     updatedAt: new Date(),
-        // });
+        // Invalidate admin context to refresh data
+        dataCache.invalidate(CACHE_KEYS.SHEETS.TRANSFERS(divisionId));
 
         return {
             success: true,
@@ -137,5 +150,134 @@ async function handleRejectTransfer(
         };
     } catch (error) {
         throw new Error(`Failed to reject transfer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+/**
+ * Refresh transfers data for a division
+ */
+export async function handleRefreshTransfers(divisionId: DivisionId): Promise<TransfersActionResult> {
+    try {
+        console.log(`🔄 Refreshing transfers data for division: ${divisionId}`);
+
+        // Invalidate transfer caches
+        dataCache.invalidate(CACHE_KEYS.SHEETS.TRANSFERS(divisionId));
+
+        return {
+            success: true,
+            message: `Transfers data refreshed for division ${divisionId}`,
+            data: {
+                divisionId,
+                refreshedAt: new Date().toISOString(),
+            },
+        };
+    } catch (error) {
+        throw new Error(`Failed to refresh transfers: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+}
+
+/**
+ * Update transfer recommendation in Google Sheets using existing utilities
+ */
+async function updateTransferRecommendationInSheet(
+    divisionId: DivisionId,
+    transferId: string,
+    recommendation: TransferRecommendation,
+): Promise<void> {
+    try {
+        console.log(`📝 Updating transfer ${transferId} recommendation to ${recommendation} in sheets`);
+
+        // Import your existing sheet utilities
+        const { readSheetWithHeaders, writeSheetRange, SPREADSHEET_ID } = await import(
+            '../../_shared/lib/sheets/utils/common'
+        );
+
+        const sheetName = `${divisionId}-transfers`;
+        const range = `'${sheetName}'!A:Z`;
+
+        // Read current data using your existing utility
+        const { headers, data } = await readSheetWithHeaders({
+            spreadsheetId: SPREADSHEET_ID,
+            range,
+        });
+
+        if (data.length === 0) {
+            throw new Error(`No transfer data found in sheet ${sheetName}`);
+        }
+
+        // Parse the transferId to extract components
+        // transferId format: `${divisionId}_${timestampStr}_${rowIndex}`
+        const idParts = transferId.split('_');
+        if (idParts.length < 3) {
+            throw new Error(`Invalid transfer ID format: ${transferId}`);
+        }
+
+        // Extract row index from the transfer ID (last part)
+        const rowIndexFromId = Number.parseInt(idParts[idParts.length - 1], 10);
+
+        // Find column indices
+        const timestampColumnIndex = headers.findIndex(
+            (h) => h.toLowerCase().includes('timestamp') || h.toLowerCase().includes('time'),
+        );
+        const managerColumnIndex = headers.findIndex((h) => h.toLowerCase().includes('manager'));
+        const statusColumnIndex = headers.findIndex((h) => h.toLowerCase().includes('status'));
+
+        if (timestampColumnIndex === -1) {
+            throw new Error(`Timestamp column not found in sheet ${sheetName}`);
+        }
+
+        // Find the matching row by reconstructing the ID for each row
+        let matchingRowIndex = -1;
+
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            const timestamp = new Date(row[timestampColumnIndex]);
+            const timestampStr = timestamp.toISOString().replace(/[:.]/g, '');
+            const reconstructedId = `${divisionId}_${timestampStr}_${i}`;
+
+            if (reconstructedId === transferId) {
+                matchingRowIndex = i;
+                break;
+            }
+        }
+
+        if (matchingRowIndex === -1) {
+            // Fallback: try to find by row index if timestamp matching fails
+            if (rowIndexFromId < data.length) {
+                console.warn(`Using fallback row matching for transfer ${transferId}`);
+                matchingRowIndex = rowIndexFromId;
+            } else {
+                throw new Error(`Transfer ${transferId} not found in sheet ${sheetName}`);
+            }
+        }
+
+        // Update the row data
+        const updatedRow = [...data[matchingRowIndex]];
+
+        // Map recommendation to your sheet's status format
+        const sheetStatus = recommendation === 'APPROVE' ? 'Y' : recommendation === 'REJECT' ? 'N' : '';
+
+        if (statusColumnIndex !== -1) {
+            updatedRow[statusColumnIndex] = sheetStatus;
+        } else {
+            console.warn(`Status column not found, cannot update recommendation for ${transferId}`);
+        }
+
+        // Write the updated row back using your existing utility
+        const updateRange = `'${sheetName}'!A${matchingRowIndex + 2}:${String.fromCharCode(64 + headers.length)}${matchingRowIndex + 2}`;
+        await writeSheetRange(
+            {
+                spreadsheetId: SPREADSHEET_ID,
+                range: updateRange,
+            },
+            [updatedRow],
+        );
+
+        console.log(
+            `✅ Successfully updated transfer ${transferId} recommendation to ${recommendation} (status: ${sheetStatus})`,
+        );
+    } catch (error) {
+        console.error('❌ Failed to update transfer recommendation in sheets:', error);
+        throw error;
     }
 }

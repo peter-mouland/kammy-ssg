@@ -55,14 +55,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const isTransferRoute = url.pathname.includes('/admin/transfers') || url.pathname === '/admin';
 
     if (isTransferRoute) {
-        console.log('🔄 Loading transfer admin data...');
         const { getTransfersAdminData } = await import('./server/transfers-admin.server');
         const divisions = sharedContext.sheetData.divisions;
         const selectedGameweekId =
             Number.parseInt(url.searchParams.get('gameweek') || '', 10) || systemStatus.currentGameweek.fplEvent.id;
-        if (!sharedContext.fplData.events?.find) {
-            throw new Error('admin.route "sharedContext.fplData.events?.find" error')
-        }
         const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
 
         transfersData = await getTransfersAdminData(divisions, gameweek);
@@ -133,7 +129,7 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 setTimeout(() => {
                     regeneratePoints(jobId, jobType, orchestrator, gameweek || undefined).catch((error) => {
                         console.error('🚨 Background job error:', error);
-                        throw new Error('🚨 Background job error:', error.message)
+                        throw new Error('🚨 Background job error:', error.message);
                     });
                 }, 100); // 100ms delay
 
@@ -184,12 +180,52 @@ export async function action({ request, context }: ActionFunctionArgs): Promise<
                 result = dataCache.clear();
                 break;
             }
+            case 'approveTransfer': {
+                const transferId = formData.get('transferId')?.trim();
+                if (!transferId || !divisionId) {
+                    return data<AdminActionData>({
+                        success: false,
+                        error: 'Transfer ID and division ID are required for approval',
+                    });
+                }
+
+                const { handleTransferAction } = await import('./server/transfers-admin.server');
+                result = await handleTransferAction('approveTransfer', {
+                    divisionId,
+                    transferId,
+                    recommendation: 'APPROVE',
+                });
+                break;
+            }
+
+            case 'rejectTransfer': {
+                const transferId = formData.get('transferId')?.trim();
+                if (!transferId || !divisionId) {
+                    return data<AdminActionData>({
+                        success: false,
+                        error: 'Transfer ID and division ID are required for rejection',
+                    });
+                }
+
+                const { handleTransferAction } = await import('./server/transfers-admin.server');
+                result = await handleTransferAction('rejectTransfer', {
+                    divisionId,
+                    transferId,
+                    recommendation: 'REJECT',
+                });
+                break;
+            }
+
             case 'refreshTransfers': {
-                const deletedCount = dataCache.invalidateMultiple(getInvalidationKeys('TRANSFERS_UPDATED', divisionId));
-                result = {
-                    success: true,
-                    data: { deletedCount },
-                };
+                if (!divisionId) {
+                    return data<AdminActionData>({
+                        success: false,
+                        error: 'Division ID is required for refreshing transfers',
+                    });
+                }
+
+                const { handleRefreshTransfers } = await import('./server/transfers-admin.server');
+                result = await handleRefreshTransfers(divisionId);
                 break;
             }
 

@@ -1,6 +1,6 @@
 /* Location: app/admin/components/sections/transfers-section.tsx */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFetcher, useNavigate, useSearchParams } from 'react-router';
 import { SelectDivision } from '../../../_shared/components/select-division';
 import { Table, type TableColumn } from '../../../_shared/components/table';
@@ -132,12 +132,16 @@ function GameweekTransfersSection({
     gameweekInfo,
     onApprove,
     onReject,
+    isLoading,
+    successfulActions,
 }: {
     teamsByCode: Record<number, FplTeam> | null;
     selectedDivision: DivisionSheetData;
     gameweekInfo: GameweekTransfersData;
     onApprove: (transferId: string) => void;
     onReject: (transferId: string) => void;
+    isLoading: boolean;
+    successfulActions: Set<string>;
 }) {
     const columns: TableColumn<{ transfer: ProcessedTransfer; validation: TransferValidationResult }>[] = [
         {
@@ -201,11 +205,25 @@ function GameweekTransfersSection({
             header: 'Sheet Status',
             width: '120px',
             align: 'center',
-            render: (_, item) => (
-                <span className={`${styles.status_badge} ${styles[`status_${item.transfer.status.toLowerCase()}`]}`}>
-                    {item.transfer.status}
-                </span>
-            ),
+            render: (_, item) => {
+                // Check if this transfer was successfully updated
+                const wasApproved = successfulActions.has(`approve_${item.transfer.id}`);
+                const wasRejected = successfulActions.has(`reject_${item.transfer.id}`);
+
+                // Show updated status if action was successful
+                const displayStatus = wasApproved ? 'APPROVED' : wasRejected ? 'REJECTED' : item.transfer.status;
+
+                return (
+                    <span className={`${styles.status_badge} ${styles[`status_${displayStatus.toLowerCase()}`]}`}>
+                        {displayStatus}
+                        {(wasApproved || wasRejected) && (
+                            <span className={styles.updated_indicator} title="Just updated">
+                                ✨
+                            </span>
+                        )}
+                    </span>
+                );
+            },
         },
         {
             key: 'recommendation',
@@ -227,28 +245,49 @@ function GameweekTransfersSection({
             header: 'Actions',
             width: '140px',
             align: 'center',
-            render: (_, item) => (
-                <div className={styles.action_buttons}>
-                    <button
-                        type="button"
-                        onClick={() => onApprove(item.transfer.id)}
-                        disabled={item.transfer.status !== 'PENDING'}
-                        className={`${styles.action_btn} ${styles.approve_btn}`}
-                        title="Approve Transfer"
-                    >
-                        <Icons.CheckIcon />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => onReject(item.transfer.id)}
-                        disabled={item.transfer.status !== 'PENDING'}
-                        className={`${styles.action_btn} ${styles.reject_btn}`}
-                        title="Reject Transfer"
-                    >
-                        <Icons.AlertIcon />
-                    </button>
-                </div>
-            ),
+            render: (_, item) => {
+                const wasApproved = successfulActions.has(`approve_${item.transfer.id}`);
+                const wasRejected = successfulActions.has(`reject_${item.transfer.id}`);
+                const isPending = item.transfer.status === 'PENDING' && !wasApproved && !wasRejected;
+
+                return (
+                    <div className={styles.action_buttons}>
+                        {isPending ? (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => onApprove(item.transfer.id)}
+                                    disabled={isLoading}
+                                    className={`${styles.action_btn} ${styles.approve_btn}`}
+                                    title="Approve Transfer"
+                                >
+                                    {isLoading ? <div className={styles.loading_spinner} /> : <Icons.CheckIcon />}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => onReject(item.transfer.id)}
+                                    disabled={isLoading}
+                                    className={`${styles.action_btn} ${styles.reject_btn}`}
+                                    title="Reject Transfer"
+                                >
+                                    {isLoading ? <div className={styles.loading_spinner} /> : <Icons.AlertIcon />}
+                                </button>
+                            </>
+                        ) : (
+                            <div className={styles.action_status}>
+                                {wasApproved && <span className={styles.status_text_approved}>✅ Approved</span>}
+                                {wasRejected && <span className={styles.status_text_rejected}>❌ Rejected</span>}
+                                {!wasApproved && !wasRejected && item.transfer.status === 'APPROVED' && (
+                                    <span className={styles.status_text_approved}>✅ Approved</span>
+                                )}
+                                {!wasApproved && !wasRejected && item.transfer.status === 'REJECTED' && (
+                                    <span className={styles.status_text_rejected}>❌ Rejected</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                );
+            },
         },
     ];
 
@@ -308,6 +347,23 @@ function DivisionTransfersPanel({
     teamsByCode: Record<number, FplTeam> | null;
 }) {
     const fetcher = useFetcher();
+    const [successfulActions, setSuccessfulActions] = useState<Set<string>>(new Set());
+
+    // Track successful actions and update UI state
+    useEffect(() => {
+        if (fetcher.data?.success && fetcher.data?.data?.transferId) {
+            const transferId = fetcher.data.data.transferId;
+            const recommendation = fetcher.data.data.recommendation;
+            const actionKey = `${recommendation.toLowerCase()}_${transferId}`;
+
+            setSuccessfulActions((prev) => new Set([...prev, actionKey]));
+        }
+    }, [fetcher.data]);
+
+    // Clear successful actions when data changes (e.g., page refresh)
+    useEffect(() => {
+        setSuccessfulActions(new Set());
+    }, [transfersData]);
 
     const handleApprove = (transferId: string) => {
         const formData = new FormData();
@@ -316,7 +372,10 @@ function DivisionTransfersPanel({
         formData.append('transferId', transferId);
         formData.append('recommendation', 'APPROVE');
 
-        fetcher.submit(formData, { method: 'POST' });
+        fetcher.submit(formData, {
+            method: 'POST',
+            action: '/admin', // Submit to parent route
+        });
     };
 
     const handleReject = (transferId: string) => {
@@ -326,8 +385,13 @@ function DivisionTransfersPanel({
         formData.append('transferId', transferId);
         formData.append('recommendation', 'REJECT');
 
-        fetcher.submit(formData, { method: 'POST' });
+        fetcher.submit(formData, {
+            method: 'POST',
+            action: '/admin', // Submit to parent route
+        });
     };
+
+    const isLoading = fetcher.state === 'submitting';
 
     if (!transfersData) {
         return <AdminMessage type="info">Loading transfers...</AdminMessage>;
@@ -338,6 +402,10 @@ function DivisionTransfersPanel({
 
     return (
         <div className={styles.division_panel}>
+            {/* Success/Error Messages */}
+            {fetcher.data?.success && <AdminMessage type="success">{fetcher.data.message}</AdminMessage>}
+            {fetcher.data?.error && <AdminMessage type="error">{fetcher.data.error}</AdminMessage>}
+
             {transfersByGameweek.length === 0 ? (
                 <AdminMessage type="info">No transfers found for this division</AdminMessage>
             ) : (
@@ -350,6 +418,8 @@ function DivisionTransfersPanel({
                             onReject={handleReject}
                             selectedDivision={selectedDivision}
                             teamsByCode={teamsByCode}
+                            isLoading={isLoading}
+                            successfulActions={successfulActions}
                         />
                     ))}
                 </div>
