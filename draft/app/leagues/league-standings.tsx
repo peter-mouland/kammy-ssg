@@ -228,57 +228,6 @@ function PositionPointsTable({
                           },
                 })}
             />
-
-            {/* Table Summary */}
-            {teams.length > 0 && (
-                <div
-                    style={{
-                        padding: '1rem',
-                        backgroundColor: '#f8fafc',
-                        borderTop: '1px solid #e2e8f0',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                        gap: '1rem',
-                    }}
-                >
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#10b981' }}>
-                            {Math.max(...teams.map((team) => team[pointsSource].total))}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Leader</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                            {Math.round(teams.reduce((sum, team) => sum + team[pointsSource].total, 0) / teams.length)}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Average</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#8b5cf6' }}>
-                            {Math.max(...teams.map((team) => team[pointsSource].total))}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Top Score</div>
-                    </div>
-                </div>
-            )}
-
-            {/* Rank Change Legend for Gameweek Table */}
-            {showRankChange && !isFirstGameweek && (
-                <div
-                    style={{
-                        padding: '1rem',
-                        backgroundColor: '#f8fafc',
-                        borderTop: '1px solid #e2e8f0',
-                        fontSize: '0.75rem',
-                        color: '#6b7280',
-                    }}
-                >
-                    <strong>Rank Changes:</strong>
-                    <span style={{ color: '#10b981', marginLeft: '0.5rem' }}>+2 = moved up 2 positions</span>
-                    <span style={{ color: '#ef4444', marginLeft: '1rem' }}>-1 = moved down 1 position</span>
-                    <span style={{ marginLeft: '1rem' }}>- = no change</span>
-                </div>
-            )}
         </div>
     );
 }
@@ -344,7 +293,7 @@ export const LeagueStandings = () => {
         availableGameweeks,
         standingsData,
     } = useLoaderData<EnhancedLeagueStandingsLoaderData>();
-console.log({availableGameweeks})
+
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);

@@ -15,10 +15,8 @@ export const meta: MetaFunction = () => {
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
         // Dynamic import to keep server code on server
-        const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
         const { getAllLeagueStandingsData } = await import('../leagues/server/league-standings.server');
-        const selectedGameweek = await fplApiCache.getCurrentGameweek();
-        const dashboardData = await getAllLeagueStandingsData({ selectedGameweek });
+        const dashboardData = await getAllLeagueStandingsData();
         return data(dashboardData);
     } catch (error) {
         console.error('Dashboard loader error:', error);

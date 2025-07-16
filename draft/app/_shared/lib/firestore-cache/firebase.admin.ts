@@ -6,6 +6,8 @@ import { getFirestore } from 'firebase-admin/firestore';
 let db: FirebaseFirestore.Firestore;
 
 const FIRESTORE_ADMIN_APP_NAME = 'firestore-admin';
+// draft in prod, (default) in dev
+const FIRESTORE_DATABASE_ID = process.env.FIRESTORE_DATABASE_ID || 'draft';
 
 // Parse service account once
 let serviceAccount: Record<string, string>;
@@ -46,7 +48,7 @@ export function getFirestoreInstance() {
             }
 
             // Get Firestore with custom database name if needed
-            db = getFirestore(app, 'draft');
+            db = getFirestore(app, FIRESTORE_DATABASE_ID);
         } catch (error) {
             console.error('❌ Firebase Admin initialization failed:', error);
 
@@ -54,7 +56,7 @@ export function getFirestoreInstance() {
             if (error instanceof Error && error.message.includes('already exists')) {
                 try {
                     const app = getApp(FIRESTORE_ADMIN_APP_NAME);
-                    db = getFirestore(app, 'draft');
+                    db = getFirestore(app, FIRESTORE_DATABASE_ID);
                     console.log('🔄 Recovered by using existing Firebase app');
                 } catch (getAppError) {
                     console.error('❌ Failed to recover Firebase app:', getAppError);

@@ -20,18 +20,18 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
 
     const divisions = await readDivisions();
     const currentGameweek = await fplApiCache.getCurrentGameweek();
-    const targetGameweek = currentGameweek;
     const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
-    const standingsData: Record<DivisionId, LeagueStandingsTeamData[]> = {};
 
     // Get data for specific division with position rank changes
-    standingsData['premierLeague'] = await getDivisionStandingsWithPositionRankChanges('premierLeague', targetGameweek);
-    standingsData['championship'] = await getDivisionStandingsWithPositionRankChanges('championship', targetGameweek);
-    standingsData['leagueOne'] = await getDivisionStandingsWithPositionRankChanges('leagueOne', targetGameweek);
+    const standingsData: Record<DivisionId, LeagueStandingsTeamData[]> = {};
+    const promises = divisions.map(async (division) => {
+        standingsData[division.id] = await getDivisionStandingsWithPositionRankChanges(division.id, currentGameweek);
+    })
+    await Promise.all(promises)
 
     return {
         divisions,
-        selectedGameweek: targetGameweek,
+        selectedGameweek: currentGameweek,
         currentGameweek,
         availableGameweeks,
         standingsData,
@@ -98,7 +98,6 @@ async function getDivisionStandingsData(divisionId: DivisionId, gameweek: number
     try {
         // Get division teams document for the gameweek
         const divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
-
         if (!divisionDoc) {
             console.warn(`No division document found for ${divisionId} GW${gameweek}`);
             return [];
@@ -107,13 +106,11 @@ async function getDivisionStandingsData(divisionId: DivisionId, gameweek: number
         // Get user team sheet data for names
         const userTeams = await getDivisionUserTeams(divisionId);
         const userTeamMap = new Map(userTeams.map((team) => [team.userId, team]));
-
         const standings: LeagueStandingsTeamData[] = [];
 
         // Process each team in the division document
         for (const [userId, teamData] of Object.entries(divisionDoc.teams)) {
             const userTeam = userTeamMap.get(userId);
-
             if (!userTeam) {
                 console.warn(`User team data not found for ${userId} in ${divisionId}`);
                 continue;
