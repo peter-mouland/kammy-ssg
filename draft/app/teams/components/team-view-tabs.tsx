@@ -34,7 +34,6 @@ export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({
                 >
                     <span className={styles.tabIcon}>👥</span>
                     <span className={styles.tabLabel}>All Teams</span>
-                    {playerCount && <span className={styles.tabCount}>{playerCount} players</span>}
                 </button>
 
                 <div className={styles.viewModeToggle}>

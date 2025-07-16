@@ -34,7 +34,7 @@ export async function originalReadDivisions(): Promise<DivisionSheetData[]> {
     try {
         const sheetRange: SheetRange = {
             spreadsheetId,
-            range: `'${DIVISIONS_SHEET_NAME}'!A:C`,
+            range: `'${DIVISIONS_SHEET_NAME}'!A:E`,
         };
 
         const rawData = await readSheetRange(sheetRange);
