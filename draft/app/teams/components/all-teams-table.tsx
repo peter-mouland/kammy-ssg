@@ -7,6 +7,7 @@ import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import { isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { AllTeamsTableProps, TeamFilters, TeamRowData } from '../types/team-view-types';
 import styles from './all-teams-table.module.css';
@@ -128,6 +129,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         {
             key: 'manager',
             header: 'Manager',
+            // width: '100px',
             sortable: true,
             accessor: ({ managerId }) => managerId,
             render: (_, team) => (
@@ -185,32 +187,53 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.cleanSheets',
-            header: 'Clean Sheets',
+            // header: 'Clean Sheets',
+            header: (
+                <div>
+                    Clean
+                    <br />
+                    Sheets
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
-                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+                viewMode === 'gameweek'
+                    ? positionSlot.gameweek.stats.cleanSheets
+                    : positionSlot.season.stats.cleanSheets,
             align: 'center',
-            render: (stats: PlayerGameweekStatsData, team) => {
+            render: (stat: number, team) => {
+                const isRelevant = isStatRelevant('cleanSheets', team.player.playerPosition);
                 return (
-                    <span className={`${styles.points} ${stats.cleanSheets >= 0 ? styles.positive : styles.negative}`}>
-                        {stats.cleanSheets > 0 ? `+${stats.cleanSheets}` : stats.cleanSheets}
+                    <span
+                        className={`${styles.points} ${isRelevant && stat >= 0 ? styles.positive : isRelevant ? styles.negative : styles.neutral}`}
+                    >
+                        {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
             },
         },
         {
             key: 'stats.penaltiesSaved',
-            header: 'Pens. Saved',
+            header: (
+                <div>
+                    Pens.
+                    <br />
+                    Saved
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
-                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+                viewMode === 'gameweek'
+                    ? positionSlot.gameweek.stats.penaltiesSaved
+                    : positionSlot.season.stats.penaltiesSaved,
             align: 'center',
-            render: (stats: PlayerGameweekStatsData, team) => {
+            render: (stat: number, team) => {
+                const isRelevant = isStatRelevant('penaltiesSaved', team.player.playerPosition);
                 return (
                     <span
-                        className={`${styles.points} ${stats.penaltiesSaved >= 0 ? styles.positive : styles.negative}`}
+                        className={`${styles.points} ${isRelevant && stat >= 0 ? styles.positive : isRelevant ? styles.negative : styles.neutral}`}
                     >
-                        {stats.penaltiesSaved > 0 ? `+${stats.penaltiesSaved}` : stats.penaltiesSaved}
+                        {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
             },
@@ -220,19 +243,29 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             header: 'Saves',
             sortable: true,
             accessor: ({ positionSlot }) =>
-                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats.saves : positionSlot.season.stats.saves,
             align: 'center',
-            render: (stats: PlayerGameweekStatsData, team) => {
+            render: (stat: number, team) => {
+                const isRelevant = isStatRelevant('cleanSheets', team.player.playerPosition);
                 return (
-                    <span className={`${styles.points} ${stats.saves >= 0 ? styles.positive : styles.negative}`}>
-                        {stats.saves > 0 ? `+${stats.saves}` : stats.saves}
+                    <span
+                        className={`${styles.points} ${isRelevant && stat >= 0 ? styles.positive : isRelevant ? styles.negative : styles.neutral}`}
+                    >
+                        {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
             },
         },
         {
             key: 'stats.yellowCards',
-            header: 'Yellow Cards',
+            // header: 'Yellow Cards',
+            header: (
+                <div>
+                    Y.
+                    <br />
+                    Cards
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
@@ -247,7 +280,14 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.redCards',
-            header: 'Red Cards',
+            // header: 'Red Cards',
+            header: (
+                <div>
+                    R.
+                    <br />
+                    Cards
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
@@ -287,38 +327,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     <span className={`${styles.points} ${points >= 0 ? styles.positive : styles.negative}`}>
                         {points > 0 ? `+${points}` : points}
                     </span>
-                );
-            },
-        },
-        {
-            key: 'stats',
-            header: 'Key Stats',
-            render: (_, team) => {
-                const stats =
-                    viewMode === 'gameweek' ? team.positionSlot.gameweek.stats : team.positionSlot.season.stats;
-                return (
-                    <div className={styles.statsCell}>
-                        {stats.goals > 0 && (
-                            <span className={styles.stat} title={'goals'}>
-                                ⚽{stats.goals}
-                            </span>
-                        )}
-                        {stats.assists > 0 && (
-                            <span className={styles.stat} title={'assists'}>
-                                🅰️{stats.assists}
-                            </span>
-                        )}
-                        {stats.cleanSheets > 0 && (
-                            <span className={styles.stat} title={'cleanSheets'}>
-                                🛡️{stats.cleanSheets}
-                            </span>
-                        )}
-                        {stats.appearance > 0 && (
-                            <span className={styles.statMins} title={'minutes'}>
-                                {stats.appearance}'
-                            </span>
-                        )}
-                    </div>
                 );
             },
         },
@@ -429,21 +437,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                             className={styles.selectInput}
                         >
                             {filterOptions.loanStatus.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.filterGroup}>
-                        <label className={styles.filterLabel}>Role</label>
-                        <select
-                            value={filters.substitute || 'all'}
-                            onChange={(e) => setFilter('substitute', e.target.value)}
-                            className={styles.selectInput}
-                        >
-                            {filterOptions.substitute.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>

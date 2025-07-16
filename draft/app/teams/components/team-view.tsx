@@ -25,7 +25,7 @@ export const TeamView = () => {
     const activeTab = (searchParams.get('tab') as TeamViewTab) || 'my-team';
 
     // Global view mode state - controls both pitch and stats
-    const [viewMode, setViewMode] = useState<StatsViewMode>('season');
+    const [viewMode, setViewMode] = useState<StatsViewMode>('gameweek');
 
     // Extract loan status
     const loanStatus = useMemo(() => {
@@ -49,8 +49,7 @@ export const TeamView = () => {
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.teamInfo}>
-                    <h1 className={styles.teamName}>{data.currentUser.teamName}</h1>
-                    <p className={styles.managerName}>Manager: {data.currentUser.userName}</p>
+                    <h1 className={styles.teamName}>{data.currentUser.userName}</h1>
                     <div className={styles.divisionBadge}>{data.division.label}</div>
                 </div>
 

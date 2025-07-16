@@ -1,9 +1,9 @@
 // app/teams/types/team-types.ts
 /** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { Points } from '../../scoring/types/scoring-types';
+import type { EnhancedPlayerData, Points } from '../../scoring/types/scoring-types';
 import type { AllTeamsData } from './team-view-types';
 
 export type ManagerId = string;
@@ -168,6 +168,8 @@ export interface TeamViewData {
     currentTeam: TeamGameweekData;
     availableGameweeks: number[];
     allTeamsData: AllTeamsData;
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode: Record<number, EnhancedPlayerData>;
 }
 
 /**

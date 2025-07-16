@@ -179,7 +179,6 @@
 }
 
 .points {
-    font-weight: var(--font-weight-bold);
     font-size: var(--font-sm);
 }
 
@@ -189,6 +188,9 @@
 
 .points.negative {
     color: var(--color-red-600);
+}
+.points.neutral {
+    color: var(--color-gray-600);
 }
 
 .statsCell {
@@ -285,10 +287,6 @@
 }
 
 .position {
-    /*background: var(--color-primary);*/
-    /*color: var(--color-white);*/
-    /*padding: 2px var(--spacing-1);*/
-    /*border-radius: var(--radius-sm);*/
     font-size: var(--font-xs);
     font-weight: var(--font-weight-bold);
     text-transform: uppercase;
