@@ -335,7 +335,12 @@
     display: flex;
     flex-direction: row;
     gap: var(--spacing-3);
+
+    img {
+        align-self: center;
+    }
 }
+
 .player_cell_details {
     display: flex;
     flex-direction: column;

@@ -201,31 +201,6 @@ function GameweekTransfersSection({
             render: (_, item) => <span>{item.transfer.comment}</span>,
         },
         {
-            key: 'sheetStatus',
-            header: 'Sheet Status',
-            width: '120px',
-            align: 'center',
-            render: (_, item) => {
-                // Check if this transfer was successfully updated
-                const wasApproved = successfulActions.has(`approve_${item.transfer.id}`);
-                const wasRejected = successfulActions.has(`reject_${item.transfer.id}`);
-
-                // Show updated status if action was successful
-                const displayStatus = wasApproved ? 'APPROVED' : wasRejected ? 'REJECTED' : item.transfer.status;
-
-                return (
-                    <span className={`${styles.status_badge} ${styles[`status_${displayStatus.toLowerCase()}`]}`}>
-                        {displayStatus}
-                        {(wasApproved || wasRejected) && (
-                            <span className={styles.updated_indicator} title="Just updated">
-                                ✨
-                            </span>
-                        )}
-                    </span>
-                );
-            },
-        },
-        {
             key: 'recommendation',
             header: 'Recommendation',
             width: '140px',
