@@ -196,18 +196,14 @@ function PositionPointsTable({
     ];
 
     return (
-        <div style={{ marginBottom: '2rem' }}>
+        <div className={"card"} style={{ marginBottom: '2rem' }}>
             <div style={{ marginBottom: '1rem' }}>
                 <h3
-                    style={{
-                        margin: '0 0 0.25rem 0',
-                        fontSize: 'var(--font-lg)',
-                        fontWeight: 'var(--font-weight-semibold)',
-                    }}
+                    className={styles.tableTitle}
                 >
                     {title}
                 </h3>
-                <p className={styles.subtitle}>{subtitle}</p>
+                <p className={styles.tableSubtitle}>{subtitle}</p>
             </div>
 
             <Table
@@ -259,7 +255,7 @@ function DivisionStandingsTable({
     }
 
     return (
-        <div className="card" style={{ marginBottom: '2rem' }}>
+        <>
             <PositionPointsTable
                 teams={teams}
                 pointsSource="seasonPoints"
@@ -278,7 +274,7 @@ function DivisionStandingsTable({
                 isFirstGameweek={isFirstGameweek}
                 selectedGameweek={selectedGameweek}
             />
-        </div>
+        </>
     );
 }
 
@@ -308,7 +304,7 @@ export const LeagueStandings = () => {
 
 
     return (
-        <div>
+        <>
             <PageHeader
                 title={`${selectedDivision.label} Standings`}
                 actions={
@@ -366,6 +362,6 @@ export const LeagueStandings = () => {
                     )}
                 </div>
             )}
-        </div>
+        </>
     );
 };

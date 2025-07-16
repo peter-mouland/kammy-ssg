@@ -41,7 +41,6 @@
 }
 
 .tableSubtitle {
-    margin: 0;
     font-size: var(--font-sm);
     color: var(--color-gray-600);
 }
