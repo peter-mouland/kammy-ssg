@@ -5,7 +5,7 @@ export interface Wishlist {
     label: string;
     description?: string;
     color: string;
-    playerIds: number[];
+    playerCodes: number[];
     createdAt: string; // iso Date;
     updatedAt: string; // iso Date;
 }

@@ -12,14 +12,14 @@ import styles from './wishlists.page.module.css';
 
 export const WishlistsPage = () => {
     const { wishlists, isLoading, deleteWishlist, updateWishlist, removePlayerFromWishlist } = useWishlists();
-    const { playersById, teamsByCode } = useLoaderData();
+    const { playersByCode, teamsByCode } = useLoaderData();
 
     const [selectedWishlist, setSelectedWishlist] = useState<string | null>(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [editingWishlist, setEditingWishlist] = useState<string | null>(null);
 
     const totalPlayers = useMemo(() => {
-        return wishlists.reduce((total, wishlist) => total + wishlist.playerIds?.length || 0, 0);
+        return wishlists.reduce((total, wishlist) => total + wishlist.playerCodes?.length || 0, 0);
     }, [wishlists]);
 
     const handleCreateSuccess = async () => {
@@ -98,7 +98,11 @@ export const WishlistsPage = () => {
                                     <p className={styles.emptyMessage}>
                                         Create your first wishlist to start tracking players.
                                     </p>
-                                    <button type={'button'} onClick={() => setShowCreateForm(true)} className={styles.emptyButton}>
+                                    <button
+                                        type={'button'}
+                                        onClick={() => setShowCreateForm(true)}
+                                        className={styles.emptyButton}
+                                    >
                                         Create Wishlist
                                     </button>
                                 </div>
@@ -125,7 +129,7 @@ export const WishlistsPage = () => {
                 <div className={styles.main}>
                     {selectedWishlist ? (
                         <WishlistDetails
-                            playersById={playersById}
+                            playersByCode={playersByCode}
                             teamsByCode={teamsByCode}
                             wishlist={wishlists.find((w) => w.id === selectedWishlist)!}
                             onRemovePlayer={removePlayerFromWishlist}

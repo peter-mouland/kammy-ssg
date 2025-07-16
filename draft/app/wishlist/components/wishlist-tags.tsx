@@ -5,13 +5,13 @@ import { useWishlists } from '../lib/use-wishlists';
 import styles from './wishlist-tags.module.css';
 
 interface WishlistTagsProps {
-    playerId: number;
+    playerCode: number;
     maxVisible?: number;
 }
 
-export function WishlistTags({ playerId, maxVisible = 3 }: WishlistTagsProps) {
+export function WishlistTags({ playerCode, maxVisible = 3 }: WishlistTagsProps) {
     const { getWishlistsForPlayer } = useWishlists();
-    const playerWishlists = getWishlistsForPlayer(playerId);
+    const playerWishlists = getWishlistsForPlayer(playerCode);
     if (playerWishlists.length === 0) return null;
 
     const visibleWishlists = playerWishlists.slice(0, maxVisible);

@@ -12,9 +12,9 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async () => {
-    const playersById = await fplApiCache.getPlayersById();
+    const playersByCode = await fplApiCache.getPlayersByCode();
     const teamsByCode = await fplApiCache.getTeamsByCode();
-    return { playersById, teamsByCode };
+    return { playersByCode, teamsByCode };
 };
 
 export default WishlistsPage;

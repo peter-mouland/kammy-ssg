@@ -28,8 +28,8 @@ type WishlistAction =
     | { type: 'ADD_WISHLIST'; payload: Wishlist }
     | { type: 'UPDATE_WISHLIST'; payload: Wishlist }
     | { type: 'DELETE_WISHLIST'; payload: string }
-    | { type: 'ADD_PLAYER_TO_WISHLIST'; payload: { wishlistId: string; playerId: number } }
-    | { type: 'REMOVE_PLAYER_FROM_WISHLIST'; payload: { wishlistId: string; playerId: number } };
+    | { type: 'ADD_PLAYER_TO_WISHLIST'; payload: { wishlistId: string; playerCode: number } }
+    | { type: 'REMOVE_PLAYER_FROM_WISHLIST'; payload: { wishlistId: string; playerCode: number } };
 
 const initialState: WishlistState = {
     wishlists: [],
@@ -105,7 +105,7 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                     wishlist.id === action.payload.wishlistId
                         ? {
                               ...wishlist,
-                              playerIds: [...wishlist.playerIds, action.payload.playerId],
+                              playerCodes: [...wishlist.playerCodes, action.payload.playerCode],
                               updatedAt: new Date().toISOString(),
                           }
                         : wishlist,
@@ -124,7 +124,7 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                     wishlist.id === action.payload.wishlistId
                         ? {
                               ...wishlist,
-                              playerIds: wishlist.playerIds.filter((id) => id !== action.payload.playerId),
+                              playerCodes: wishlist.playerCodes.filter((id) => id !== action.payload.playerCode),
                               updatedAt: new Date().toISOString(),
                           }
                         : wishlist,
@@ -171,18 +171,21 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }, [state.wishlists]);
 
     // Actions
-    const addWishlist = useCallback((wishlistData: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt' | 'playerIds'>) => {
-        const newWishlist: Wishlist = {
-            ...wishlistData,
-            playerIds: [],
-            id: `wishlist-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
+    const addWishlist = useCallback(
+        (wishlistData: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt' | 'playerCodes'>) => {
+            const newWishlist: Wishlist = {
+                ...wishlistData,
+                playerCodes: [],
+                id: `wishlist-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            };
 
-        console.log('🎯 Context addWishlist called with:', newWishlist.label);
-        dispatch({ type: 'ADD_WISHLIST', payload: newWishlist });
-    }, []);
+            console.log('🎯 Context addWishlist called with:', newWishlist.label);
+            dispatch({ type: 'ADD_WISHLIST', payload: newWishlist });
+        },
+        [],
+    );
 
     const updateWishlist = useCallback((wishlist: Wishlist, updates: Partial<Wishlist>) => {
         console.log('🎯 Context updateWishlist called with:', wishlist.id);
@@ -199,14 +202,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'DELETE_WISHLIST', payload: id });
     }, []);
 
-    const addPlayerToWishlist = useCallback((wishlistId: string, playerId: number) => {
-        console.log('🎯 Context addPlayerToWishlist called:', { wishlistId, playerId });
-        dispatch({ type: 'ADD_PLAYER_TO_WISHLIST', payload: { wishlistId, playerId } });
+    const addPlayerToWishlist = useCallback((wishlistId: string, playerCode: number) => {
+        console.log('🎯 Context addPlayerToWishlist called:', { wishlistId, playerCode });
+        dispatch({ type: 'ADD_PLAYER_TO_WISHLIST', payload: { wishlistId, playerCode } });
     }, []);
 
-    const removePlayerFromWishlist = useCallback((wishlistId: string, playerId: number) => {
-        console.log('🎯 Context removePlayerFromWishlist called:', { wishlistId, playerId });
-        dispatch({ type: 'REMOVE_PLAYER_FROM_WISHLIST', payload: { wishlistId, playerId } });
+    const removePlayerFromWishlist = useCallback((wishlistId: string, playerCode: number) => {
+        console.log('🎯 Context removePlayerFromWishlist called:', { wishlistId, playerCode });
+        dispatch({ type: 'REMOVE_PLAYER_FROM_WISHLIST', payload: { wishlistId, playerCode } });
     }, []);
 
     // Getters
@@ -218,16 +221,16 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     );
 
     const getWishlistsForPlayer = useCallback(
-        (playerId: number) => {
-            return state.wishlists.filter((wishlist) => wishlist.playerIds.includes(playerId));
+        (playerCode: number) => {
+            return state.wishlists.filter((wishlist) => wishlist.playerCodes.includes(playerCode));
         },
         [state.wishlists],
     );
 
     const isPlayerInWishlist = useCallback(
-        (wishlistId: string, playerId: number) => {
+        (wishlistId: string, playerCode: number) => {
             const wishlist = getWishlistById(wishlistId);
-            return wishlist ? wishlist.playerIds.includes(playerId) : false;
+            return wishlist ? wishlist.playerCodes.includes(playerCode) : false;
         },
         [getWishlistById],
     );

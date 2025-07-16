@@ -64,13 +64,18 @@ export function WishlistItem({
                     />
                     <div className={styles.editActions}>
                         <button
+                            type={'button'}
                             onClick={handleSave}
                             disabled={!editLabel.trim()}
                             className={`${styles.editButton} ${styles.saveButton}`}
                         >
                             Save
                         </button>
-                        <button onClick={handleCancel} className={`${styles.editButton} ${styles.cancelButton}`}>
+                        <button
+                            type={'button'}
+                            onClick={handleCancel}
+                            className={`${styles.editButton} ${styles.cancelButton}`}
+                        >
                             Cancel
                         </button>
                     </div>
@@ -92,7 +97,7 @@ export function WishlistItem({
                     {wishlist.description && <p className={styles.description}>{wishlist.description}</p>}
                     <div className={styles.meta}>
                         <span className={styles.playerCount}>
-                            {wishlist.playerIds.length} player{wishlist.playerIds.length !== 1 ? 's' : ''}
+                            {wishlist.playerCodes.length} player{wishlist.playerCodes.length !== 1 ? 's' : ''}
                         </span>
                         <span className={styles.date}>{new Date(wishlist.updatedAt).toLocaleDateString()}</span>
                     </div>
@@ -100,6 +105,7 @@ export function WishlistItem({
 
                 <div className={styles.actions}>
                     <button
+                        type={'button'}
                         onClick={(e) => {
                             e.stopPropagation();
                             onEdit();
@@ -117,6 +123,7 @@ export function WishlistItem({
                         </svg>
                     </button>
                     <button
+                        type={'button'}
                         onClick={(e) => {
                             e.stopPropagation();
                             onDelete();

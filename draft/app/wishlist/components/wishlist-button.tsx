@@ -18,14 +18,14 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
     const [isOpen, setIsOpen] = useState(false);
     const [showCreateForm, setShowCreateForm] = useState(false);
 
-    const playerWishlists = getWishlistsForPlayer(player.id);
+    const playerWishlists = getWishlistsForPlayer(player.code);
     const hasWishlists = playerWishlists.length > 0;
 
     const handleToggleWishlist = (wishlistId: string, isCurrentlyInList: boolean) => {
         if (isCurrentlyInList) {
-            removePlayerFromWishlist(wishlistId, player.id);
+            removePlayerFromWishlist(wishlistId, player.code);
         } else {
-            addPlayerToWishlist(wishlistId, player.id);
+            addPlayerToWishlist(wishlistId, player.code);
         }
     };
 
@@ -93,7 +93,7 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
                                     <p className={styles.emptyMessage}>No wishlists yet. Create one above!</p>
                                 ) : (
                                     wishlists.map((wishlist) => {
-                                        const isInList = wishlist.playerIds.includes(player.id);
+                                        const isInList = wishlist.playerCodes.includes(player.code);
                                         return (
                                             <label key={wishlist.id} className={styles.wishlistItem}>
                                                 <input
@@ -109,7 +109,7 @@ export function WishlistButton({ player, size = 'medium', showLabel = true }: Wi
                                                     />
                                                     <span className={styles.wishlistLabel}>{wishlist.label}</span>
                                                     <span className={styles.playerCount}>
-                                                        ({wishlist.playerIds.length})
+                                                        ({wishlist.playerCodes.length})
                                                     </span>
                                                 </div>
                                             </label>

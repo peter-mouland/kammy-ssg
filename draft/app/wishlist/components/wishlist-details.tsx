@@ -6,17 +6,17 @@ import styles from './wishlist-item.module.css';
 
 interface WishlistDetailsProps {
     wishlist: Wishlist;
-    onRemovePlayer: (wishlistId: string, playerId: number) => void;
-    playersById: any;
+    onRemovePlayer: (wishlistId: string, playerCode: number) => void;
+    playersByCode: any;
     teamsByCode: any;
 }
 
-export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePlayer }: WishlistDetailsProps) {
+export function WishlistDetails({ playersByCode, teamsByCode, wishlist, onRemovePlayer }: WishlistDetailsProps) {
     const [searchTerm, setSearchTerm] = React.useState('');
-
-    const handleRemovePlayer = (playerId: number) => {
+    console.log(wishlist);
+    const handleRemovePlayer = (playerCode: number) => {
         if (confirm('Remove this player from the wishlist?')) {
-            onRemovePlayer(wishlist.id, playerId);
+            onRemovePlayer(wishlist.id, playerCode);
         }
     };
 
@@ -30,7 +30,7 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
                 {wishlist.description && <p className={styles.detailsDescription}>{wishlist.description}</p>}
                 <div className={styles.detailsMeta}>
                     <span className={styles.detailsCount}>
-                        {wishlist.playerIds.length} player{wishlist.playerIds.length !== 1 ? 's' : ''}
+                        {wishlist.playerCodes.length} player{wishlist.playerCodes.length !== 1 ? 's' : ''}
                     </span>
                     <span className={styles.detailsDate}>
                         Last updated: {new Date(wishlist.updatedAt).toLocaleDateString()}
@@ -38,7 +38,7 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
                 </div>
             </div>
 
-            {wishlist.playerIds.length > 0 && (
+            {wishlist.playerCodes.length > 0 && (
                 <div className={styles.searchContainer}>
                     <input
                         type="text"
@@ -51,7 +51,7 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
             )}
 
             <div className={styles.playersContainer}>
-                {wishlist.playerIds.length === 0 ? (
+                {wishlist.playerCodes.length === 0 ? (
                     <div className={styles.emptyPlayers}>
                         <div className={styles.emptyPlayersIcon}>
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,14 +73,14 @@ export function WishlistDetails({ playersById, teamsByCode, wishlist, onRemovePl
                     </div>
                 ) : (
                     <div className={styles.playersList}>
-                        {wishlist.playerIds.map((playerId) => (
+                        {wishlist.playerCodes.map((playerCode) => (
                             <WishlistPlayerRow
-                                key={playerId}
-                                player={playersById[playerId]}
+                                key={playerCode}
+                                player={playersByCode[playerCode]}
                                 teamsByCode={teamsByCode}
                                 wishlistId={wishlist.id}
                                 searchTerm={searchTerm}
-                                onRemove={() => handleRemovePlayer(playerId)}
+                                onRemove={() => handleRemovePlayer(playerCode)}
                             />
                         ))}
                     </div>
@@ -100,6 +100,7 @@ interface WishlistPlayerRowProps {
 }
 
 function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: WishlistPlayerRowProps) {
+    console.log({ player });
     // In a real app, you'd fetch the player data here
     // For demonstration, showing placeholder data
     const playerName = player.web_name;
@@ -130,7 +131,7 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
                 <a href={`/players/${player.code}`} className={styles.viewLink}>
                     View Details
                 </a>
-                <button onClick={onRemove} className={styles.removeButton} title="Remove from wishlist">
+                <button type={'button'} onClick={onRemove} className={styles.removeButton} title="Remove from wishlist">
                     <svg className={styles.removeIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
