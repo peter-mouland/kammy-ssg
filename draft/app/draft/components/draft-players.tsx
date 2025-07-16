@@ -2,6 +2,7 @@
 
 // components/draft-players.tsx - Optimized version
 import { useEffect, useMemo, useState } from 'react';
+import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
 import { DRAFT_RULES, getPlayerPosition, getSquadComposition, validateDraftEligibility } from '../lib/draft-rules';
@@ -91,10 +92,11 @@ export function DraftPlayers({
         return eligiblePlayersWithValidation.filter(({ player, position }) => {
             // Search filter
             if (searchTerm) {
-                const searchLower = searchTerm.toLowerCase();
-                const fullName = `${player.first_name} ${player.second_name}`.toLowerCase();
-                const webName = player.web_name?.toLowerCase() || '';
-                if (!fullName.includes(searchLower) && !webName.includes(searchLower)) {
+                if (
+                    !fuzzyStringMatch(player.web_name, searchTerm) &&
+                    !fuzzyStringMatch(player.first_name, searchTerm) &&
+                    !fuzzyStringMatch(player.second_name, searchTerm)
+                ) {
                     return false;
                 }
             }
@@ -197,9 +199,7 @@ export function DraftPlayers({
                                     <div className={styles.playerContent}>
                                         <div className={styles.playerInfo}>
                                             <div className={styles.playerName}>
-                                                <span>
-                                                    {player.web_name}
-                                                </span>
+                                                <span>{player.web_name}</span>
                                                 {validation.canAddToSub && (
                                                     <span className={styles.subOnlyBadge}>SUB ONLY</span>
                                                 )}

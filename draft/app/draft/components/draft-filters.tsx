@@ -1,9 +1,10 @@
 /* Location: app/draft/components/draft-filters.tsx */
 
 import React, { useMemo } from 'react';
+import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
-import { validateDraftEligibility, getPlayerPosition, DRAFT_RULES } from '../lib/draft-rules';
+import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';
 import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 import styles from './draft-filters.module.css';
 import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters-multi-select';
@@ -106,10 +107,13 @@ export function DraftFilters({
             if (!selectedTeams.includes(player.team_code.toString())) return false;
 
             if (searchTerm) {
-                const searchLower = searchTerm.toLowerCase();
-                const fullName = `${player.first_name} ${player.second_name}`.toLowerCase();
-                const webName = player.web_name?.toLowerCase() || '';
-                if (!fullName.includes(searchLower) && !webName.includes(searchLower)) return false;
+                if (
+                    !fuzzyStringMatch(player.web_name, searchTerm) &&
+                    !fuzzyStringMatch(player.first_name, searchTerm) &&
+                    !fuzzyStringMatch(player.second_name, searchTerm)
+                ) {
+                    return false;
+                }
             }
 
             return true;

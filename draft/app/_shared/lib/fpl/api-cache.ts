@@ -6,15 +6,10 @@
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
+import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
 import type { FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
-
-interface Doc<T> {
-    lastUpdated: string;
-    source?: string;
-    data: T;
-}
 
 /**
  * Updated FPL Data Orchestrator - Uses Individual Player Caching
@@ -169,17 +164,11 @@ export class FplApiCache {
         const elements = await this.getFplPlayers();
         if (!elements) return [];
 
-        const normalizedSearch = searchTerm.toLowerCase().trim();
-
         return elements.filter((player) => {
-            const firstName = player.first_name.toLowerCase();
-            const secondName = player.second_name.toLowerCase();
-            const webName = player.web_name.toLowerCase();
-
             return (
-                firstName.includes(normalizedSearch) ||
-                secondName.includes(normalizedSearch) ||
-                webName.includes(normalizedSearch)
+                fuzzyStringMatch(player.web_name, searchTerm) ||
+                fuzzyStringMatch(player.first_name, searchTerm) ||
+                fuzzyStringMatch(player.second_name, searchTerm)
             );
         });
     }

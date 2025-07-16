@@ -2,14 +2,15 @@
 
 import { useMemo, useState } from 'react';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { ManagerId, RosterPlayer } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
+import { getPlayerEligibilityFromValidators } from '../lib/player-eligibility-from-validators';
 import type { OwnedPlayersByCode } from '../types/transfer-form-types';
+import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
 import styles from './player-in-selector.module.css';
-import { getPlayerEligibilityFromValidators } from '../lib/player-eligibility-from-validators';
-import type { TransferRuleContext } from '../types/transfer-rule-types';
 
 interface PlayerInSelectorProps {
     availablePlayers: EnhancedPlayerData[];
@@ -19,8 +20,8 @@ interface PlayerInSelectorProps {
     playerOut: RosterPlayer | null;
     ownedPlayersByCode: OwnedPlayersByCode;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
-    validationContext: Omit<TransferRuleContext,'transfer'>,
-    managerId: ManagerId
+    validationContext: Omit<TransferRuleContext, 'transfer'>;
+    managerId: ManagerId;
 }
 
 export function PlayerInSelector({
@@ -31,8 +32,8 @@ export function PlayerInSelector({
     playerOut,
     ownedPlayersByCode,
     teamsByCode,
-                                     managerId,
-                                     validationContext,
+    managerId,
+    validationContext,
 }: PlayerInSelectorProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedPosition, setSelectedPosition] = useState<string>('all');
@@ -40,11 +41,11 @@ export function PlayerInSelector({
     const [showOnlyEligible, setShowOnlyEligible] = useState(false);
 
     const getPlayerEligibility = (player: EnhancedPlayerData) => {
-        if (!playerOut){
+        if (!playerOut) {
             return {
                 isEligible: true,
-                reason: "",
-            }
+                reason: '',
+            };
         }
         const mockTransfer: ProcessedTransfer = {
             playerOut: validationContext.fplPlayersByCode[playerOut.playerCode],
@@ -58,9 +59,9 @@ export function PlayerInSelector({
             comment: 'Eligibility check',
             onLoanTo: undefined,
             onLoanFrom: undefined,
-        }
-        return getPlayerEligibilityFromValidators({ ...validationContext, transfer: mockTransfer })
-    }
+        };
+        return getPlayerEligibilityFromValidators({ ...validationContext, transfer: mockTransfer });
+    };
 
     // Filter and sort players
     const filteredPlayers = useMemo(() => {
@@ -68,12 +69,11 @@ export function PlayerInSelector({
 
         // Search filter
         if (searchTerm) {
-            const searchLower = searchTerm.toLowerCase();
             filtered = filtered.filter(
                 (player) =>
-                    player.web_name.toLowerCase().includes(searchLower) ||
-                    player.first_name.toLowerCase().includes(searchLower) ||
-                    player.second_name.toLowerCase().includes(searchLower),
+                    fuzzyStringMatch(player.web_name, searchTerm) ||
+                    fuzzyStringMatch(player.first_name, searchTerm) ||
+                    fuzzyStringMatch(player.second_name, searchTerm),
             );
         }
 

@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { TableFilters } from '../../_shared/components/table-filters';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
 import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
 import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
@@ -59,8 +60,8 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             const teamName = teams[player.team_code]?.toLowerCase() || '';
             const searchMatch =
                 !filters.search ||
-                playerName.includes(filters.search.toLowerCase()) ||
-                teamName.includes(filters.search.toLowerCase());
+                fuzzyStringMatch(playerName, filters.search) ||
+                fuzzyStringMatch(teamName, filters.search);
 
             const positionMatch = !filters.position || getPlayerPosition(player) === filters.position;
 
