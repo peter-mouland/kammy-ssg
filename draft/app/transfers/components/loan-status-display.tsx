@@ -82,8 +82,8 @@ export function LoanStatusDisplay({ pendingLoans, activeLoans, managers, current
                                 </div>
 
                                 <div className={styles.loanTimestamp}>
-                                    Requested: {loan.timestamp.toLocaleDateString()} at{' '}
-                                    {loan.timestamp.toLocaleTimeString()}
+                                    Requested: {loan.timestamp.toLocaleDateString('en-gb')} at{' '}
+                                    {loan.timestamp.toLocaleTimeString('en-gb')}
                                 </div>
 
                                 {loan.needsMatchingRequest && loan.targetManager === currentManagerId && (
@@ -145,7 +145,7 @@ export function LoanStatusDisplay({ pendingLoans, activeLoans, managers, current
                                 </div>
 
                                 <div className={styles.loanTimestamp}>
-                                    Started: {loan.startDate.toLocaleDateString()}
+                                    Started: {loan.startDate.toLocaleDateString('en-gb')}
                                 </div>
 
                                 <div className={styles.loanActions}>

@@ -33,7 +33,7 @@ export function WishlistDetails({ playersByCode, teamsByCode, wishlist, onRemove
                         {wishlist.playerCodes.length} player{wishlist.playerCodes.length !== 1 ? 's' : ''}
                     </span>
                     <span className={styles.detailsDate}>
-                        Last updated: {new Date(wishlist.updatedAt).toLocaleDateString()}
+                        Last updated: {new Date(wishlist.updatedAt).toLocaleDateString('en-gb')}
                     </span>
                 </div>
             </div>

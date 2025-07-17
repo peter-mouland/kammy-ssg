@@ -194,10 +194,14 @@ export function PlayerInSelector({
                             <PlayerSummary player={player} teamsByCode={teamsByCode} />
                         </div>
 
-                        <div className={styles.playerStatus}>
-                            <span className={styles.eligibilityIcon}>{player.eligibility.icon}</span>
-                            <div className={styles.statusText}>
-                                <div className={styles.eligibilityReason}>{player.eligibility.reason}</div>
+                        <div className={styles.playerStats}>
+                            <div className={styles.statValue}>{player.draft.pointsTotal} pts</div>
+                            <div className={styles.statLabel}>Season</div>
+                            <div className={styles.playerStatus}>
+                                <span className={styles.eligibilityIcon}>{player.eligibility.icon}</span>
+                                <div className={styles.statusText}>
+                                    <div className={styles.eligibilityReason}>{player.eligibility.reason}</div>
+                                </div>
                             </div>
                         </div>
                     </div>

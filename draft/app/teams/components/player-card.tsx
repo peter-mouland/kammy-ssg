@@ -78,7 +78,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
                     <div className={styles.playerCode}>#{player.playerCode}</div>
                     {player.onLoanStart && (
                         <div className={styles.loanDetails}>
-                            Loan started: {new Date(player.onLoanStart).toLocaleDateString()}
+                            Loan started: {new Date(player.onLoanStart).toLocaleDateString('en-gb')}
                         </div>
                     )}
                 </div>

@@ -233,3 +233,18 @@
         text-align: left;
     }
 }
+
+.playerStats {
+    text-align: right;
+}
+
+.statValue {
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.statLabel {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
