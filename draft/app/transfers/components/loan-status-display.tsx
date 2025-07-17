@@ -1,159 +1,112 @@
 // app/transfers/components/loan-status-display.tsx
 
-import type { UserTeamsSheetData } from '../../teams/types/team-types';
-import type { ActiveLoanAgreement, PendingLoanRequest } from '../types/transfer-form-types';
+import { PlayerSummary } from '../../players/components/player';
+import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
 import styles from './loan-status-display.module.css';
 
+type ActiveLoan = {
+    player: RosterPlayer;
+    to: ManagerId | null;
+    from: ManagerId | null;
+};
+
 interface LoanStatusDisplayProps {
-    pendingLoans: PendingLoanRequest[];
-    activeLoans: ActiveLoanAgreement[];
+    loans: Record<RosterPlayer['playerCode'], ActiveLoan>;
     managers: UserTeamsSheetData[];
     currentManagerId: string;
+    teamsByCode?: Record<number, any>;
+    fplPlayersByCode?: Record<number, any>;
 }
 
-export function LoanStatusDisplay({ pendingLoans, activeLoans, managers, currentManagerId }: LoanStatusDisplayProps) {
-    const getManagerName = (userId: string) => {
-        const manager = managers.find((m) => m.userId === userId);
-        return manager ? `${manager.userName} (${manager.teamName})` : 'Unknown Manager';
-    };
-
-    // Filter loans relevant to current manager
-    const relevantPendingLoans = pendingLoans.filter(
-        (loan) => loan.requestingManager === currentManagerId || loan.targetManager === currentManagerId,
+export function LoanStatusDisplay({
+    loans,
+    currentManagerId,
+    teamsByCode = {},
+    fplPlayersByCode = {},
+}: LoanStatusDisplayProps) {
+    const loanPlayerCodes = Object.keys(loans);
+    const counts = loanPlayerCodes.reduce(
+        (acc, playerCode) => {
+            const { to, from } = loans[playerCode as unknown as number];
+            return {
+                ...acc,
+                pendingCount: acc.pendingCount + (to && from ? 0 : 1),
+                activeCount: acc.activeCount + (to && from ? 1 : 0),
+            };
+        },
+        { pendingCount: 0, activeCount: 0 },
     );
-
-    const relevantActiveLoans = activeLoans.filter(
-        (loan) => loan.lendingManager === currentManagerId || loan.borrowingManager === currentManagerId,
-    );
-
-    if (relevantPendingLoans.length === 0 && relevantActiveLoans.length === 0) {
-        return null;
-    }
 
     return (
         <div className={styles.loanStatusContainer}>
-            <h3 className={styles.sectionTitle}>
-                <span className={styles.loanIcon}>🔄</span>
-                Loan Status
-            </h3>
-
-            {/* Pending Loan Requests */}
-            {relevantPendingLoans.length > 0 && (
-                <div className={styles.loanSection}>
-                    <h4 className={styles.subsectionTitle}>📋 Pending Loan Requests ({relevantPendingLoans.length})</h4>
-
-                    {relevantPendingLoans.map((loan) => (
-                        <div key={loan.id} className={styles.loanCard}>
-                            <div className={styles.loanHeader}>
-                                <div className={styles.loanPlayers}>
-                                    <span className={styles.playerOut}>{loan.playerOut.web_name}</span>
-                                    <span className={styles.arrow}>⇄</span>
-                                    <span className={styles.playerIn}>{loan.playerIn.web_name}</span>
-                                </div>
-                                <div className={styles.loanStatus}>
-                                    {loan.needsMatchingRequest ? (
-                                        <span className={styles.statusPending}>Awaiting Match</span>
-                                    ) : (
-                                        <span className={styles.statusReady}>Ready for Approval</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className={styles.loanDetails}>
-                                <div className={styles.loanParties}>
-                                    <div className={styles.party}>
-                                        <span className={styles.partyLabel}>Requesting:</span>
-                                        <span className={styles.partyName}>
-                                            {getManagerName(loan.requestingManager)}
-                                            {loan.requestingManager === currentManagerId && (
-                                                <span className={styles.youLabel}> (You)</span>
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className={styles.party}>
-                                        <span className={styles.partyLabel}>Target:</span>
-                                        <span className={styles.partyName}>
-                                            {getManagerName(loan.targetManager)}
-                                            {loan.targetManager === currentManagerId && (
-                                                <span className={styles.youLabel}> (You)</span>
-                                            )}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className={styles.loanTimestamp}>
-                                    Requested: {loan.timestamp.toLocaleDateString('en-gb')} at{' '}
-                                    {loan.timestamp.toLocaleTimeString('en-gb')}
-                                </div>
-
-                                {loan.needsMatchingRequest && loan.targetManager === currentManagerId && (
-                                    <div className={styles.actionRequired}>
-                                        <span className={styles.actionIcon}>⚡</span>
-                                        <span className={styles.actionText}>
-                                            Action required: Submit matching loan request
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+            <div className={styles.header}>
+                <h3 className={styles.sectionTitle}>
+                    <span className={styles.loanIcon}>🔄</span>
+                    Loan Status
+                </h3>
+                <div className={styles.summary}>
+                    {counts.pendingCount > 0 && (
+                        <span className={styles.pendingCount}>{counts.pendingCount} pending</span>
+                    )}
+                    {counts.activeCount > 0 && <span className={styles.activeCount}>{counts.activeCount} active</span>}
                 </div>
-            )}
+            </div>
 
-            {/* Active Loan Agreements */}
-            {relevantActiveLoans.length > 0 && (
-                <div className={styles.loanSection}>
-                    <h4 className={styles.subsectionTitle}>✅ Active Loans ({relevantActiveLoans.length})</h4>
-
-                    {relevantActiveLoans.map((loan) => (
-                        <div key={loan.id} className={styles.loanCard}>
-                            <div className={styles.loanHeader}>
-                                <div className={styles.loanPlayers}>
-                                    <span className={styles.playerOut}>{loan.loanedPlayer.web_name}</span>
-                                    {loan.exchangedPlayer && (
-                                        <>
-                                            <span className={styles.arrow}>⇄</span>
-                                            <span className={styles.playerIn}>{loan.exchangedPlayer.web_name}</span>
-                                        </>
-                                    )}
-                                </div>
-                                <div className={styles.loanStatus}>
-                                    <span className={styles.statusActive}>Active</span>
-                                </div>
-                            </div>
-
-                            <div className={styles.loanDetails}>
-                                <div className={styles.loanParties}>
-                                    <div className={styles.party}>
-                                        <span className={styles.partyLabel}>Lending:</span>
-                                        <span className={styles.partyName}>
-                                            {getManagerName(loan.lendingManager)}
-                                            {loan.lendingManager === currentManagerId && (
-                                                <span className={styles.youLabel}> (You)</span>
-                                            )}
-                                        </span>
+            {loanPlayerCodes.length > 0 && (
+                <div className={styles.section}>
+                    <div className={styles.loansGrid}>
+                        {loanPlayerCodes.map((playerCode) => {
+                            const { player, to, from } = loans[playerCode as unknown as number];
+                            return (
+                                <div key={player.onLoanStart} className={styles.loanCard}>
+                                    <div className={styles.loanStatus}>
+                                        {from && to && <span className={styles.statusActive}>Active</span>}
+                                        {(!from || !to) && <span className={styles.statusPending}>Awaiting Match</span>}
                                     </div>
-                                    <div className={styles.party}>
-                                        <span className={styles.partyLabel}>Borrowing:</span>
-                                        <span className={styles.partyName}>
-                                            {getManagerName(loan.borrowingManager)}
-                                            {loan.borrowingManager === currentManagerId && (
-                                                <span className={styles.youLabel}> (You)</span>
-                                            )}
-                                        </span>
+
+                                    <div className={styles.activeLoanPlayer}>
+                                        <PlayerSummary
+                                            teamsByCode={teamsByCode}
+                                            fplPlayersByCode={fplPlayersByCode}
+                                            player={player}
+                                        />
+                                    </div>
+
+                                    <div className={styles.loanParties}>
+                                        <div className={styles.partyInfo}>
+                                            <div className={styles.partyRole}>Lending</div>
+                                            <div className={styles.partyName}>
+                                                {from}
+                                                {from === currentManagerId && (
+                                                    <span className={styles.youLabel}> (You)</span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.partyInfo}>
+                                            <div className={styles.partyRole}>Borrowing</div>
+                                            <div className={styles.partyName}>
+                                                {to}
+                                                {to === currentManagerId && (
+                                                    <span className={styles.youLabel}> (You)</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.loanMeta}>
+                                        <div className={styles.timestamp}>
+                                            Started{' '}
+                                            {new Date(player.onLoanStart).toLocaleDateString('en-GB', {
+                                                day: 'numeric',
+                                                month: 'short',
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className={styles.loanTimestamp}>
-                                    Started: {loan.startDate.toLocaleDateString('en-gb')}
-                                </div>
-
-                                <div className={styles.loanActions}>
-                                    <span className={styles.actionInfo}>💡 Use "Loan End" to end this agreement</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                            );
+                        })}
+                    </div>
                 </div>
             )}
         </div>

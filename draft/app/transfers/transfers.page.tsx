@@ -5,10 +5,18 @@ import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
+import type { ManagerId, PositionSlotKey, RosterPlayer } from '../teams/types/team-types';
 import { CurrentTransfers } from './components/current-transfers';
+import { LoanStatusDisplay } from './components/loan-status-display';
 import { TransferForm } from './components/transfer-form';
 import styles from './transfers.page.module.css';
 import type { TransfersPageData } from './types/transfer-form-types';
+
+type ActiveLoan = {
+    player: RosterPlayer;
+    to: ManagerId | null;
+    from: ManagerId | null;
+};
 
 export function TransfersPage() {
     const data = useLoaderData<TransfersPageData>();
@@ -16,6 +24,21 @@ export function TransfersPage() {
     const navigate = useNavigate();
     const isCurrentGameweek =
         !searchParams.get('gameweek') || searchParams.get('gameweek') === String(data.currentGameweek);
+
+    const loans: Record<RosterPlayer['playerCode'], ActiveLoan> = {};
+    Object.keys(data.divisionRosters).forEach((managerId) => {
+        const { roster } = data.divisionRosters[managerId];
+        Object.keys(roster).forEach((slotKey) => {
+            const player = roster[slotKey as PositionSlotKey].player;
+            if (player.onLoanTo || player.onLoanFrom) {
+                loans[player.playerCode] = {
+                    player,
+                    to: loans[player.playerCode]?.to || player.onLoanTo,
+                    from: loans[player.playerCode]?.from || player.onLoanFrom,
+                };
+            }
+        });
+    });
 
     const handleDivisionChange = (divisionId: string) => {
         if (divisionId !== 'all') {
@@ -92,6 +115,13 @@ export function TransfersPage() {
                         validationContext={data.validationContext}
                     />
                 </div>
+                <LoanStatusDisplay
+                    teamsByCode={data.teamsByCode}
+                    fplPlayersByCode={data.fplPlayersByCode}
+                    loans={loans}
+                    managers={data.managers}
+                    currentManagerId={data.selectedManager}
+                />
             </div>
         </div>
     );
