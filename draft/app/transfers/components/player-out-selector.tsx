@@ -1,7 +1,8 @@
 /* Location: app/transfers/components/player-out-selector.tsx */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import { PlayerSummary } from '../../players/components/player';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { RosterPlayer, TeamRoster } from '../../teams/types/team-types';
 import type { TransferType } from '../types/transfer-types';
@@ -125,14 +126,7 @@ export function PlayerOutSelector({
                             >
                                 <div className={styles.playerContent}>
                                     <div className={styles.playerInfo}>
-                                        <div className={styles.playerName}>{player.playerName}</div>
-                                        <div className={styles.playerDetails}>
-                                            <span className={styles.slotBadge}>
-                                                {displayInfo.positionSlot.toUpperCase()}
-                                            </span>
-                                            {displayInfo.isSubstitute && <span className={styles.subBadge}>SUB</span>}•{' '}
-                                            {team.name}
-                                        </div>
+                                        <PlayerSummary player={fplPlayer} teamsByCode={teamsByCode} />
                                     </div>
 
                                     <div className={styles.playerStats}>

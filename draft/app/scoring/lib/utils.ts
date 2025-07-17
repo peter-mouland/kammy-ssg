@@ -116,15 +116,15 @@ export function getPositionDisplayName(position: CustomPosition): string | Custo
  */
 export function getPositionColor(position: CustomPosition): string {
     const colors = {
-        gk: '#10B981', // emerald-500
-        fb: '#3B82F6', // blue-500
-        cb: '#3B82F6', // blue-500
-        mid: '#8B5CF6', // violet-500
-        wa: '#F59E0B', // amber-500
-        ca: '#EF4444', // red-500
+        gk: '#10B981',
+        cb: '#10a0B6',
+        fb: '#3B6fFF',
+        mid: '#8B5CF6',
+        wa: '#F59E0B',
+        ca: '#EF4444',
     };
 
-    return colors[position];
+    return colors[position.toLowerCase() as CustomPosition];
 }
 
 /**

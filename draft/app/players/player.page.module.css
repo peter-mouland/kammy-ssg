@@ -72,3 +72,14 @@
     color: #64748b;
     font-weight: normal;
 }
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-8);
+}
+
+.statsGrid > * {
+    align-self: end; /* Align to bottom of grid row */
+}

@@ -2,45 +2,14 @@
 import type React from 'react';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
-import { PositionBadge, Table, TableBadge, type TableColumn } from '../../_shared/components/table';
+import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
-import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
+import { PlayerSummary } from '../../players/components/player';
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import { isStatRelevant } from '../../scoring/lib';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { AllTeamsTableProps, TeamFilters, TeamRowData } from '../types/team-view-types';
 import styles from './all-teams-table.module.css';
-
-const Player = ({
-    teamsByCode,
-    fplPlayersByCode,
-    player,
-}: {
-    teamsByCode: Record<number, FplTeam>;
-    fplPlayersByCode: Record<number, EnhancedPlayerData>;
-    player: any;
-}) => {
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode}.png`}`;
-    return (
-        <>
-            <div className={styles.player_cell}>
-                <img src={img} loading="lazy" alt="" width={35} />
-                <div className={styles.player_cell_details}>
-                    <div className={styles.player_name}>{player.playerName}</div>
-                    <div className={styles.player_details}>
-                        <PositionBadge position={player.playerPosition || player.draft.position}>
-                            {player.playerPosition || player.draft.position}
-                        </PositionBadge>
-                        <span className={styles.team}>
-                            {teamsByCode[fplPlayersByCode[player.playerCode].team_code].name}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
 
 export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
     teamsByCode,
@@ -123,7 +92,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             accessor: ({ player }) => player.playerName,
             sortable: false,
             render: (_, team) => (
-                <Player player={team.player} fplPlayersByCode={fplPlayersByCode} teamsByCode={teamsByCode} />
+                <PlayerSummary player={team.player} fplPlayersByCode={fplPlayersByCode} teamsByCode={teamsByCode} />
             ),
         },
         {

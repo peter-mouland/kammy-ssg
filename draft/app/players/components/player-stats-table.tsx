@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-stats-table.tsx */
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { TableFilters } from '../../_shared/components/table-filters';
@@ -12,7 +12,7 @@ import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';
 import { WishlistTags } from '../../wishlist/components/wishlist-tags';
-import type { CustomPosition } from '../types/player-types';
+import { PlayerSummary } from './player';
 import styles from './player-stats-table.module.css';
 
 interface PlayerStatsTableProps {
@@ -79,18 +79,6 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         return styles.formPoor;
     };
 
-    const getPositionColor = (pos: CustomPosition) => {
-        const colors = {
-            gk: 'var(--color-emerald-500, #10b981)',
-            cb: 'var(--color-blue-500, #3b82f6)',
-            fb: 'var(--color-blue-500, #3b82f6)',
-            mid: 'var(--color-violet-500, #8b5cf6)',
-            wa: 'var(--color-amber-500, #f59e0b)',
-            ca: 'var(--color-red-500, #ef4444)',
-        };
-        return colors[pos] || 'var(--color-gray-500, #6b7280)';
-    };
-
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [
         {
@@ -99,33 +87,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             accessor: (player) => formatPlayerName(player, 'web'),
             sortable: true,
             render: (_, player) => {
-                const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
-                const position = getPlayerPosition(player);
-                return (
-                    <div className={styles.playerInfo}>
-                        <div className={styles.playerAvatar}>
-                            <img src={img} loading="lazy" alt="" width={35} />
-                        </div>
-
-                        <span
-                            className={styles.positionBadge}
-                            style={{ backgroundColor: getPositionColor(position) }}
-                            title={getPositionDisplayName(position)}
-                        >
-                            {position.toUpperCase()}
-                        </span>
-                        <div className={styles.playerDetails}>
-                            <div className={styles.playerName}>
-                                <Link to={`/players/${player.code}`} className={styles.playerNameLink}>
-                                    {formatPlayerName(player, 'web')}
-                                </Link>
-                            </div>
-                            <div className={styles.playerWebName}>
-                                {teams[player.team_code] || `Team ${player.team_code}`}
-                            </div>
-                        </div>
-                    </div>
-                );
+                return <PlayerSummary player={player} teamsByCode={teams} />;
             },
         },
         {

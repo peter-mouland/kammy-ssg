@@ -2,11 +2,10 @@
 
 // app/routes/players.$playerId.tsx
 import { Link, useLoaderData } from 'react-router';
-import { PageHeader } from '../_shared/components/page-header';
-import { getPositionColor } from '../scoring/lib';
 import { DataSourceToggle } from './components/data-source-toggle';
+import { Player } from './components/player';
 import { PlayerGameweekTable } from './components/player-gameweek-table';
-import { PlayerHighlights } from './components/player-highlights';
+import { PlayerHighlights, StatCard } from './components/player-highlights';
 import styles from './player.page.module.css';
 import type { PlayerDetailData } from './types/player-types';
 
@@ -14,8 +13,6 @@ export const PlayerPage = () => {
     const { player, team, position, gameweekStats, seasonTotals, currentGameweek, dataSource } =
         useLoaderData<PlayerDetailData>();
 
-    const playerName = `${player.first_name} ${player.second_name}`;
-    const positionColor = getPositionColor(position);
     return (
         <div className={styles.playerDetailContainer}>
             {/* Navigation */}
@@ -26,29 +23,39 @@ export const PlayerPage = () => {
             </div>
 
             {/* Player Header */}
-            <PageHeader
-                title={
-                    <Link target={'_blank'} to={`https://fantasy.premierleague.com/api/element-summary/${player.id}/`}>
-                        {playerName}
-                    </Link>
-                }
-                subTitle={
-                    <div className={styles.playerMeta}>
-                        <span className={styles.position} style={{ backgroundColor: positionColor }}>
-                            {position}
-                        </span>
-                        <span className={styles.team}>{team.name}</span>
-                    </div>
-                }
-            />
+            <div className={styles.statsGrid}>
+                <Player player={player} team={team} position={position} />
+
+                <StatCard
+                    title="Total Points"
+                    value={player.draft?.pointsTotal}
+                    subtitle={`Avg: ${seasonTotals.averageCustomPoints}/game`}
+                    className={styles.customPoints}
+                />
+
+                <StatCard
+                    title="Games Played"
+                    value={seasonTotals.gamesPlayed.toString()}
+                    subtitle={`${seasonTotals.averageMinutes} min/game`}
+                    className={styles.games}
+                />
+
+                <StatCard
+                    title="Form"
+                    value={seasonTotals.form?.toFixed(1) || '-'}
+                    subtitle="Last 5 games avg"
+                    className={
+                        seasonTotals.form >= 4
+                            ? styles.goodForm
+                            : seasonTotals.form <= 2
+                              ? styles.poorForm
+                              : styles.averageForm
+                    }
+                />
+            </div>
 
             {/* Player Highlights */}
-            <PlayerHighlights
-                player={player}
-                seasonTotals={seasonTotals}
-                currentGameweek={currentGameweek}
-                position={position}
-            />
+            <PlayerHighlights player={player} seasonTotals={seasonTotals} position={position} />
 
             {/* Gameweek Breakdown */}
             <div className={styles.gameweekSection}>

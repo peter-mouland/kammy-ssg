@@ -6,53 +6,14 @@ import styles from './player-highlights.module.css';
 interface PlayerHighlightsProps {
     player: EnhancedPlayerData;
     seasonTotals: any;
-    currentGameweek: number;
     position: string;
 }
 
-export function PlayerHighlights({ player, seasonTotals, currentGameweek, position }: PlayerHighlightsProps) {
-    const form = Number.parseFloat(seasonTotals.form || '0');
+export function PlayerHighlights({ player, seasonTotals, position }: PlayerHighlightsProps) {
     const positionLower = position.toLowerCase();
 
     return (
-        <div className={styles.highlightsContainer}>
-            {/* Key Stats Cards */}
-            <div className={styles.statsGrid}>
-                <StatCard
-                    title="Custom Points"
-                    value={player.draft?.pointsTotal}
-                    subtitle={`Avg: ${seasonTotals.averageCustomPoints}/game`}
-                    className={styles.customPoints}
-                />
-
-                <StatCard
-                    title="FPL Points"
-                    value={seasonTotals.totalFplPoints.toString()}
-                    subtitle={`Avg: ${seasonTotals.averageFplPoints}/game`}
-                    className={styles.fplPoints}
-                />
-
-                <StatCard
-                    title="Games Played"
-                    value={seasonTotals.gamesPlayed.toString()}
-                    subtitle={`${seasonTotals.averageMinutes} min/game`}
-                    className={styles.games}
-                />
-
-                <StatCard
-                    title="Form"
-                    value={seasonTotals.form?.toFixed(1) || '-'}
-                    subtitle="Last 5 games avg"
-                    className={
-                        seasonTotals.form >= 4
-                            ? styles.goodForm
-                            : seasonTotals.form <= 2
-                              ? styles.poorForm
-                              : styles.averageForm
-                    }
-                />
-            </div>
-
+        <>
             {/* Performance Highlights - Compact Visual */}
             <div className={styles.performanceSection}>
                 <h3 className={styles.sectionTitle}>Season Performance</h3>
@@ -208,7 +169,7 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
                     />
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
@@ -219,7 +180,7 @@ interface StatCardProps {
     className?: string;
 }
 
-function StatCard({ title, value, subtitle, className = '' }: StatCardProps) {
+export function StatCard({ title, value, subtitle, className = '' }: StatCardProps) {
     return (
         <div className={`${styles.statCard} ${className}`}>
             <h3 className={styles.statTitle}>{title}</h3>

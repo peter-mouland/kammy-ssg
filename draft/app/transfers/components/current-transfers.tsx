@@ -1,29 +1,13 @@
 /* Location: app/transfers/components/current-transfers.tsx */
 
+import type React from 'react';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import { PlayerSummary } from '../../players/components/player';
 import type { DivisionId } from '../../teams/types/team-types';
 import type { TransferRecommendation, TransferValidationResult } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import styles from './current-transfers.module.css';
-
-const Player = ({ teamsByCode, player }) => {
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
-    return (
-        <>
-            <div className={styles.player_cell}>
-                <img src={img} loading="lazy" alt="" width={35} />
-                <div className={styles.player_cell_details}>
-                    <div className={styles.player_name}>{player.web_name}</div>
-                    <div className={styles.player_details}>
-                        <span className={styles.position}>{player.draft.position}</span>
-                        <span className={styles.team}>{teamsByCode[player.team_code].name}</span>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
 
 function getTransferTypeIcon(transferType: string): string {
     switch (transferType) {
@@ -102,7 +86,7 @@ export function CurrentTransfers({
             header: 'Player Out',
             width: '200px',
             render: (_, item) => {
-                return <Player player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
+                return <PlayerSummary player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
             },
         },
         {
@@ -110,7 +94,7 @@ export function CurrentTransfers({
             header: 'Player In',
             width: '200px',
             render: (_, item) => {
-                return <Player player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
+                return <PlayerSummary player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
             },
         },
         {
@@ -168,32 +152,6 @@ export function CurrentTransfers({
                     />
                 )}
             </div>
-
-            {/* Summary Stats */}
-            {transfers.length > 0 && (
-                <div className={styles.transfersSummary}>
-                    <div className={styles.summaryStats}>
-                        <div className={styles.statItem}>
-                            <span className={styles.statValue}>
-                                {transfers.filter((t) => t.transfer.status === 'PENDING').length}
-                            </span>
-                            <span className={styles.statLabel}>Pending</span>
-                        </div>
-                        <div className={styles.statItem}>
-                            <span className={styles.statValue}>
-                                {transfers.filter((t) => t.transfer.status === 'APPROVED').length}
-                            </span>
-                            <span className={styles.statLabel}>Approved</span>
-                        </div>
-                        <div className={styles.statItem}>
-                            <span className={styles.statValue}>
-                                {transfers.filter((t) => t.transfer.status === 'REJECTED').length}
-                            </span>
-                            <span className={styles.statLabel}>Rejected</span>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

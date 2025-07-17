@@ -12,43 +12,39 @@ import type {
     LeagueStandingsTeamData,
     PositionColumnConfig,
 } from '../leagues/types/league-standings-types';
+import type { CustomPosition } from '../players/types/player-types';
+import { getPositionColor } from '../scoring/lib';
 
 export const POSITION_COLUMNS: PositionColumnConfig[] = [
     {
         key: 'gk',
         label: 'GK / Sub',
         slots: ['gk_0', 'sub_0'],
-        color: 'var(--color-position-gk)',
     },
     {
         key: 'cb',
         label: 'CB',
         slots: ['cb_0', 'cb_1'],
-        color: 'var(--color-position-def)',
     },
     {
         key: 'fb',
         label: 'FB',
         slots: ['fb_0', 'fb_1'],
-        color: 'var(--color-position-def)',
     },
     {
         key: 'mid',
         label: 'MID',
         slots: ['mid_0', 'mid_1'],
-        color: 'var(--color-position-mid)',
     },
     {
         key: 'wa',
         label: 'WA',
         slots: ['wa_0', 'wa_1'],
-        color: 'var(--color-warning)',
     },
     {
         key: 'ca',
         label: 'CA',
         slots: ['ca_0', 'ca_1'],
-        color: 'var(--color-position-att)',
     },
 ];
 
@@ -111,7 +107,10 @@ function PositionPointsTable({
                                         <span
                                             className={styles.positionRank}
                                             style={{
-                                                color: points > 0 ? col.color : 'var(--color-gray-400)',
+                                                color:
+                                                    points > 0
+                                                        ? getPositionColor(col.key as CustomPosition)
+                                                        : 'var(--color-gray-400)',
                                                 fontSize: '1rem',
                                             }}
                                         >

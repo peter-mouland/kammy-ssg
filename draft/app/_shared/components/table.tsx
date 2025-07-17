@@ -9,7 +9,6 @@ export type SortDirection = 'asc' | 'desc' | null;
 export type CellAlignment = 'left' | 'center' | 'right';
 export type CellVariant = 'default' | 'numeric' | 'bold' | 'muted' | 'success' | 'warning' | 'error';
 export type BadgeVariant = 'primary' | 'success' | 'warning' | 'error' | 'gray';
-export type PositionType = 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca';
 export type TableSize = 'compact' | 'default' | 'comfortable';
 
 export interface TableColumn<T = any> {
@@ -75,10 +74,6 @@ export interface TableProps<T = any> {
 // Helper Components
 export function TableBadge({ children, variant = 'gray' }: { children: React.ReactNode; variant?: BadgeVariant }) {
     return <span className={`${styles.cellBadge} ${styles[variant]}`}>{children}</span>;
-}
-
-export function PositionBadge({ position, children }: { position: PositionType; children: React.ReactNode }) {
-    return <span className={`${styles.positionBadge} ${styles[position]}`}>{children}</span>;
 }
 
 export function RankBadge({ rank, isTop = false }: { rank: number; isTop?: boolean }) {

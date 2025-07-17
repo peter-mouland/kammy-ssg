@@ -6,6 +6,7 @@ import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
+import { getPositionColor } from '../scoring/lib';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import styles from './components/league-standings.module.css';
 import { PositionRankChange } from './components/position-rank-change';
@@ -21,37 +22,37 @@ export const POSITION_COLUMNS: PositionColumnConfig[] = [
         key: 'gk',
         label: 'GK / Sub',
         slots: ['gk_0', 'sub_0'],
-        color: 'var(--color-position-gk)',
+        color: getPositionColor('gk'),
     },
     {
         key: 'cb',
         label: 'CB',
         slots: ['cb_0', 'cb_1'],
-        color: 'var(--color-position-def)',
+        color: getPositionColor('cb'),
     },
     {
         key: 'fb',
         label: 'FB',
         slots: ['fb_0', 'fb_1'],
-        color: 'var(--color-position-def)',
+        color: getPositionColor('fb'),
     },
     {
         key: 'mid',
         label: 'MID',
         slots: ['mid_0', 'mid_1'],
-        color: 'var(--color-position-mid)',
+        color: getPositionColor('mid'),
     },
     {
         key: 'wa',
         label: 'WA',
         slots: ['wa_0', 'wa_1'],
-        color: 'var(--color-warning)',
+        color: getPositionColor('wa'),
     },
     {
         key: 'ca',
         label: 'CA',
         slots: ['ca_0', 'ca_1'],
-        color: 'var(--color-position-att)',
+        color: getPositionColor('ca'),
     },
 ];
 
@@ -196,13 +197,9 @@ function PositionPointsTable({
     ];
 
     return (
-        <div className={"card"} style={{ marginBottom: '2rem' }}>
+        <div className={'card'} style={{ marginBottom: '2rem' }}>
             <div style={{ marginBottom: '1rem' }}>
-                <h3
-                    className={styles.tableTitle}
-                >
-                    {title}
-                </h3>
+                <h3 className={styles.tableTitle}>{title}</h3>
                 <p className={styles.tableSubtitle}>{subtitle}</p>
             </div>
 
@@ -301,7 +298,6 @@ export const LeagueStandings = () => {
             navigate(`/leagues?gameweek=${selectedGameweek}`);
         }
     };
-
 
     return (
         <>

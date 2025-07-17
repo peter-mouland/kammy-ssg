@@ -56,8 +56,8 @@
 
 .playerPosition {
     font-size: var(--font-xs);
-    color: #6b7280;
-    background: #f3f4f6;
+    color: whitesmoke;
+    background: var(--position-color);
     padding: 2px 6px;
     border-radius: var(--radius-sm);
     align-self: center;
@@ -186,7 +186,7 @@
     position: relative;
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--position-color, var(--color-primary)) 0%, #1e40af 100%);
+    background: linear-gradient(135deg, var(--position-color) 0%, var(--position-color-light) 100%);
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;

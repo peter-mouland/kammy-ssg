@@ -1,8 +1,9 @@
 // app/transfers/components/player-in-selector.tsx
 
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
+import { PlayerSummary } from '../../players/components/player';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { ManagerId, RosterPlayer } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
@@ -190,11 +191,7 @@ export function PlayerInSelector({
                         onClick={() => onPlayerChange(player)}
                     >
                         <div className={styles.playerInfo}>
-                            <div className={styles.playerName}>{player.web_name}</div>
-                            <div className={styles.playerDetails}>
-                                <span className={styles.slotBadge}>{player.draft?.position.toUpperCase()}</span> •{' '}
-                                {teamsByCode[player.team_code].name}
-                            </div>
+                            <PlayerSummary player={player} teamsByCode={teamsByCode} />
                         </div>
 
                         <div className={styles.playerStatus}>

@@ -2,8 +2,8 @@
 
 // app/routes/server/player-detail.server.ts
 import path from 'node:path';
-import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
-import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
+import type { FplBootstrapData, FplPlayerData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData, GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 import type { CustomPosition, DataSource, PlayerDetailData } from '../types/player-types';
 
 export async function getPlayerDetailData(
@@ -52,7 +52,7 @@ export async function getPlayerDetailData(
         }
 
         const gameweekStats = processGameweekData(playerDetailedStats?.history || [], teamLookup);
-        const seasonTotals = calculateSeasonTotals(gameweekStats);
+        const seasonTotals = calculateSeasonTotals(gameweekStats, fplPlayer);
 
         console.log(
             `✅ Player detail data loaded for ${fplPlayer.first_name} ${fplPlayer.second_name} (${dataSource})`,
@@ -141,7 +141,7 @@ function processGameweekData(fplHistory: any[], teamLookup: Record<number, any>)
 /**
  * Calculate season totals from gameweek data
  */
-function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[]) {
+function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[], fplPlayer: EnhancedPlayerData) {
     const totals = {
         // Basic stats
         gamesPlayed: gameweekStats.filter((gw) => gw.minutes > 0).length,
@@ -158,25 +158,27 @@ function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[]) {
 
         // Points
         totalFplPoints: gameweekStats.reduce((sum, gw) => sum + gw.fplPoints, 0),
-        // todo: needed for player page
-        totalCustomPoints: 0,
+        totalCustomPoints: fplPlayer.draft.pointsTotal,
 
         // Averages
         averageMinutes: 0,
         averageFplPoints: 0,
         averageCustomPoints: 0,
+        form: 0,
 
         // Performance metrics
         goalsPerGame: 0,
+        savesPerGame: 0,
         assistsPerGame: 0,
         cleanSheetPercentage: 0,
+        savesPerGamePercentage: 0,
     };
 
     // Calculate averages (only for games played)
     if (totals.gamesPlayed > 0) {
         totals.averageMinutes = Math.round(totals.totalMinutes / totals.gamesPlayed);
         totals.averageFplPoints = Math.round((totals.totalFplPoints / totals.gamesPlayed) * 10) / 10;
-        totals.averageCustomPoints = Math.round((totals.totalCustomPoints / totals.gamesPlayed) * 10) / 10;
+        totals.averageCustomPoints = Math.round((fplPlayer.draft.pointsTotal / totals.gamesPlayed) * 10) / 10;
         totals.goalsPerGame = Math.round((totals.goals / totals.gamesPlayed) * 100) / 100;
         totals.savesPerGame = Math.round((totals.saves / totals.gamesPlayed) * 100) / 100;
         const maxSavesPerGame = 8; // Reasonable max for a busy goalkeeper

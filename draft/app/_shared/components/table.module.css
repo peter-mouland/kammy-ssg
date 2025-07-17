@@ -222,40 +222,6 @@
     color: var(--color-gray-700);
 }
 
-/* Position badges */
-.positionBadge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-xs);
-    font-weight: var(--font-weight-semibold);
-    text-align: center;
-    min-width: 2.5rem;
-    text-transform: uppercase;
-}
-
-.positionBadge.gk {
-    background-color: var(--color-position-gk-light);
-    color: var(--color-position-gk-text);
-}
-
-.positionBadge.def {
-    background-color: var(--color-position-def-light);
-    color: var(--color-position-def-text);
-}
-
-.positionBadge.mid {
-    background-color: var(--color-position-mid-light);
-    color: var(--color-position-mid-text);
-}
-
-.positionBadge.att {
-    background-color: var(--color-position-att-light);
-    color: var(--color-position-att-text);
-}
-
 /* Rank badge (for standings) */
 .rankBadge {
     display: inline-flex;

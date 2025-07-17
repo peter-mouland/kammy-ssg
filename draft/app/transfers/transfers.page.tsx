@@ -48,7 +48,7 @@ export function TransfersPage() {
             {!isCurrentGameweek && <TimeTravelBanner currentGameweek={data.currentGameweek} />}
 
             {/* Current Transfers Section */}
-            <div className={"card"}>
+            <div className={'card'}>
                 <CurrentTransfers
                     teamsByCode={data.teamsByCode}
                     transfers={data.currentTransfers}
@@ -58,6 +58,8 @@ export function TransfersPage() {
                     selectedDivision={data.selectedDivision}
                 />
             </div>
+            <br />
+            <br />
             <div>
                 {/* Transfer Form Section */}
                 <div className={styles.formSection}>

@@ -15,7 +15,7 @@
     background: var(--color-white);
     border: var(--card-border);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-5);
+    padding: var(--spacing-3);
     text-align: center;
     transition: var(--button-transition);
     box-shadow: var(--shadow-sm);
@@ -29,14 +29,12 @@
 .statTitle {
     font-size: var(--font-sm);
     color: var(--color-gray-600);
-    margin-bottom: var(--spacing-2);
     font-weight: var(--font-weight-medium);
 }
 
 .statValue {
-    font-size: var(--font-4xl);
+    font-size: var(--font-3xl);
     font-weight: var(--font-weight-bold);
-    margin-bottom: var(--spacing-1);
 }
 
 .statSubtitle {

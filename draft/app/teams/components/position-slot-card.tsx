@@ -1,6 +1,7 @@
 // app/teams/components/position-slot-card.tsx
 import type React from 'react';
 import { Link } from 'react-router';
+import { getPositionColor } from '../../scoring/lib';
 import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
 
@@ -17,11 +18,18 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
     const { player } = positionSlot;
     const displayPoints = showPoints ? positionSlot[viewMode].points : null;
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode}.png`}`;
+    const positionColor = getPositionColor(player.playerPosition);
 
     return (
         <div
             className={`${styles.positionSlotCard} ${isSubstitute ? styles.substitute : ''}`}
             data-view-mode={viewMode}
+            style={
+                {
+                    '--position-color': positionColor,
+                    '--position-color-light': `${positionColor}40`, // Add 40 for 25% opacity
+                } as React.CSSProperties
+            }
         >
             {/* Player Jersey/Avatar */}
             <div className={styles.playerJersey}>

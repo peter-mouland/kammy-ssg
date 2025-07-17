@@ -1,10 +1,12 @@
 /* Location: app/admin/components/sections/transfers-section.tsx */
 
+import type React from 'react';
 import { useEffect, useState } from 'react';
-import { useFetcher, useNavigate, useSearchParams } from 'react-router';
+import { useFetcher, useNavigate } from 'react-router';
 import { SelectDivision } from '../../../_shared/components/select-division';
 import { Table, type TableColumn } from '../../../_shared/components/table';
 import type { FplTeam, GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
+import { PlayerSummary } from '../../../players/components/player';
 import { GameweekSelector } from '../../../teams/components/gameweek-selector';
 import type { DivisionSheetData } from '../../../teams/types/team-types';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';
@@ -15,7 +17,6 @@ import * as Icons from '../icons/admin-icons';
 import { ActionBar } from '../layout/action-bar';
 import { AdminContainer } from '../layout/admin-container';
 import { AdminSection } from '../layout/admin-section';
-import { ActionCard } from '../ui/action-card';
 import { AdminMessage } from '../ui/admin-message';
 import styles from './transfers-section.module.css';
 
@@ -108,24 +109,6 @@ function getTransferTypeIcon(transferType: string): string {
     }
 }
 
-const Player = ({ teamsByCode, player }) => {
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
-    return (
-        <>
-            <div className={styles.player_cell}>
-                <img src={img} loading="lazy" alt="" width={35} />
-                <div className={styles.player_cell_details}>
-                    <div className={styles.player_name}>{player.web_name}</div>
-                    <div className={styles.player_details}>
-                        <span className={styles.position}>{player.draft.position}</span>
-                        <span className={styles.team}>{teamsByCode[player.team_code].name}</span>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
-
 function GameweekTransfersSection({
     teamsByCode,
     selectedDivision,
@@ -182,7 +165,7 @@ function GameweekTransfersSection({
             header: 'Player Out',
             width: '200px',
             render: (_, item) => {
-                return <Player player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
+                return <PlayerSummary player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
             },
         },
         {
@@ -190,7 +173,7 @@ function GameweekTransfersSection({
             header: 'Player In',
             width: '200px',
             render: (_, item) => {
-                return <Player player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
+                return <PlayerSummary player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
             },
         },
         {
