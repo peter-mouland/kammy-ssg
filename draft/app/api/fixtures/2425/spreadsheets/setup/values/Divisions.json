@@ -1,0 +1,34 @@
+{
+  "range": "Divisions!A1:AA1001",
+  "majorDimension": "ROWS",
+  "values": [
+    [
+      "id",
+      "spreadsheetKey",
+      "label",
+      "order",
+      "url"
+    ],
+    [
+      "leagueOne",
+      "leagueOne",
+      "League One",
+      "3",
+      "league-one"
+    ],
+    [
+      "championship",
+      "championship",
+      "Championship",
+      "2",
+      "championship"
+    ],
+    [
+      "premierLeague",
+      "premierLeague",
+      "Premier League",
+      "1",
+      "premier-league"
+    ]
+  ]
+}

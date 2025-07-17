@@ -1,0 +1,210 @@
+{
+  "range": "cup!A1:AI1000",
+  "majorDimension": "ROWS",
+  "values": [
+    [
+      "status",
+      "timestamp",
+      "gameweek",
+      "round",
+      "group",
+      "manager",
+      "player1",
+      "player2",
+      "player3",
+      "player4"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP A",
+      "Naked"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP A",
+      "Max"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP A",
+      "Dan"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP A",
+      "Dave G"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP B",
+      "Chris C"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP B",
+      "Chris S"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP B",
+      "Luke"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP B",
+      "Jim Bob"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP C",
+      "Sav"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP C",
+      "Phil"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP C",
+      "Matt"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP C",
+      "Rich W"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP D",
+      "Stuart"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP D",
+      "Nick"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP D",
+      "Johnny"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP D",
+      "Tony"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP E",
+      "Howie"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP E",
+      "Russ"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP E",
+      "Tim"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP E",
+      "Fitch"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP F",
+      "Paul"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP F",
+      "Tom F"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP F",
+      "Andy"
+    ],
+    [
+      "",
+      "",
+      "6",
+      "1",
+      "GROUP F",
+      "Tom S"
+    ]
+  ]
+}

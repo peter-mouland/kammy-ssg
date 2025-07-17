@@ -4,13 +4,15 @@
 import { Link, useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { getPositionColor } from '../scoring/lib';
+import { DataSourceToggle } from './components/data-source-toggle';
 import { PlayerGameweekTable } from './components/player-gameweek-table';
 import { PlayerHighlights } from './components/player-highlights';
 import styles from './player.page.module.css';
 import type { PlayerDetailData } from './types/player-types';
 
 export const PlayerPage = () => {
-    const { player, team, position, gameweekStats, seasonTotals, currentGameweek } = useLoaderData<PlayerDetailData>();
+    const { player, team, position, gameweekStats, seasonTotals, currentGameweek, dataSource } =
+        useLoaderData<PlayerDetailData>();
 
     const playerName = `${player.first_name} ${player.second_name}`;
     const positionColor = getPositionColor(position);
@@ -52,7 +54,7 @@ export const PlayerPage = () => {
             <div className={styles.gameweekSection}>
                 <h2 className={styles.sectionTitle}>
                     Gameweek Performance
-                    <span className={styles.gameweekCount}>{gameweekStats.length} gameweeks played</span>
+                    <DataSourceToggle dataSource={dataSource} />
                 </h2>
 
                 <PlayerGameweekTable

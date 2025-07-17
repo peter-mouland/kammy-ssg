@@ -1,0 +1,1532 @@
+{
+  "range": "championship!A1:I2674",
+  "majorDimension": "ROWS",
+  "values": [
+    [
+      "Status",
+      "Timestamp",
+      "Manager",
+      "Transfer Out",
+      "Code Out",
+      "Transfer In",
+      "Code In",
+      "Transfer Type",
+      "Comment"
+    ],
+    [
+      "Y",
+      "Sun, 31 Jul 2022 18:44:04 GMT+0100",
+      "Dan",
+      "Sarr",
+      "204727",
+      "Fofana",
+      "444463",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 31 Jul 2022 18:44:31 GMT+0100",
+      "Dan",
+      "De Gea",
+      "51940",
+      "Kulusevski",
+      "445044",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 01 Aug 2022 08:38:16 GMT+0100",
+      "Howie",
+      "Zaha",
+      "82403",
+      "Barnes",
+      "201666",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 01 Aug 2022 11:39:48 GMT+0100",
+      "Johnny",
+      "Sá",
+      "149065",
+      "De Gea",
+      "51940",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 03 Aug 2022 10:10:09 GMT+0100",
+      "Luke",
+      "Azpilicueta",
+      "41328",
+      "Coufal",
+      "164555",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 05 Aug 2022 15:13:28 GMT+0100",
+      "Howie",
+      "Wood",
+      "60689",
+      "Edouard",
+      "199670",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 05 Aug 2022 15:54:43 GMT+0100",
+      "Dan",
+      "Jiménez",
+      "102057",
+      "Ings",
+      "84939",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 05 Aug 2022 23:46:28 GMT+0100",
+      "Howie",
+      "Barnes",
+      "201666",
+      "Martinelli",
+      "444145",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 06 Aug 2022 22:07:47 GMT+0100",
+      "Jim Bob",
+      "Guéhi",
+      "209036",
+      "Schär",
+      "119471",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 07 Aug 2022 12:23:52 GMT+0100",
+      "Luke",
+      "Thiago",
+      "61558",
+      "Kanté",
+      "116594",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 08 Aug 2022 15:42:48 GMT+0100",
+      "Johnny",
+      "Scamacca",
+      "195899",
+      "Mitrović",
+      "128389",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Mon, 08 Aug 2022 15:43:19 GMT+0100",
+      "Johnny",
+      "Scamacca",
+      "195899",
+      "Saliba",
+      "462424",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 10 Aug 2022 08:33:39 GMT+0100",
+      "Howie",
+      "Moutinho",
+      "19624",
+      "Joelinton",
+      "180974",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 11 Aug 2022 08:40:48 GMT+0100",
+      "Matt",
+      "Lloris",
+      "37915",
+      "Grealish",
+      "114283",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 13 Aug 2022 08:59:33 GMT+0100",
+      "Chris C",
+      "Cucurella",
+      "179268",
+      "R.Sessegnon",
+      "184349",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 13 Aug 2022 09:01:07 GMT+0100",
+      "Chris C",
+      "Saint-Maximin",
+      "170137",
+      "Emerson Royal",
+      "241157",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 13 Aug 2022 19:26:18 GMT+0100",
+      "Johnny",
+      "De Gea",
+      "51940",
+      "Lloris",
+      "37915",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 14 Aug 2022 21:21:32 GMT+0100",
+      "Howie",
+      "Gallagher",
+      "232787",
+      "Jensen",
+      "207283",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 16 Aug 2022 00:03:03 GMT+0100",
+      "Howie",
+      "Coutinho",
+      "84583",
+      "Groß",
+      "60307",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 18 Aug 2022 23:16:34 GMT+0100",
+      "Chris C",
+      "Digne",
+      "101188",
+      "Emerson Royal",
+      "241157",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Thu, 18 Aug 2022 23:17:54 GMT+0100",
+      "Chris C",
+      "Digne",
+      "101188",
+      "Rodrigo",
+      "80954",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 18 Aug 2022 23:22:11 GMT+0100",
+      "Chris C",
+      "Coady",
+      "94147",
+      "Mee",
+      "51927",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 19 Aug 2022 15:00:18 GMT+0100",
+      "Luke",
+      "Kanté",
+      "116594",
+      "Dewsbury-Hall",
+      "215413",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 19 Aug 2022 15:02:18 GMT+0100",
+      "Luke",
+      "Pickford",
+      "111234",
+      "Henderson",
+      "172649",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 19 Aug 2022 19:04:14 GMT+0100",
+      "Dan",
+      "Dawson",
+      "60232",
+      "Aké",
+      "126184",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Sun, 21 Aug 2022 09:02:40 GMT+0100",
+      "Matt",
+      "Calvert-Lewin",
+      "177815",
+      "Jesus",
+      "205651",
+      "Transfer",
+      "TESTING "
+    ],
+    [
+      "Y",
+      "Sun, 21 Aug 2022 20:26:10 GMT+0100",
+      "Howie",
+      "Targett",
+      "169359",
+      "Walker-Peters",
+      "158534",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 22 Aug 2022 08:02:02 GMT+0100",
+      "Jim Bob",
+      "Lingard",
+      "109322",
+      "Zaha",
+      "82403",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 22 Aug 2022 10:40:21 GMT+0100",
+      "Phil",
+      "Mount",
+      "184341",
+      "Harrison",
+      "221399",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 24 Aug 2022 11:57:21 GMT+0100",
+      "Chris C",
+      "Mee",
+      "51927",
+      "Dunk",
+      "83299",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 25 Aug 2022 21:13:30 GMT+0100",
+      "Howie",
+      "Cash",
+      "199796",
+      "Veltman",
+      "111478",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 27 Aug 2022 09:30:30 GMT+0100",
+      "Phil",
+      "Soucek",
+      "215439",
+      "Xhaka",
+      "84450",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 27 Aug 2022 15:04:25 GMT+0100",
+      "Dan",
+      "Aké",
+      "126184",
+      "Martínez",
+      "221820",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 28 Aug 2022 18:17:57 GMT+0100",
+      "Chris C",
+      "R.Sessegnon",
+      "184349",
+      "Malacia",
+      "222690",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 29 Aug 2022 21:33:31 GMT+0100",
+      "Johnny",
+      "Havertz",
+      "219847",
+      "Firmino",
+      "92217",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Mon, 29 Aug 2022 21:34:06 GMT+0100",
+      "Johnny",
+      "Havertz",
+      "219847",
+      "Firmino",
+      "92217",
+      "Transfer",
+      "Duplicate "
+    ],
+    [
+      "E",
+      "Tue, 30 Aug 2022 21:50:36 GMT+0100",
+      "Luke",
+      "Dewsbury-Hall",
+      "215413",
+      "Casemiro",
+      "61256",
+      "New Player"
+    ],
+    [
+      "E",
+      "Tue, 30 Aug 2022 21:51:39 GMT+0100",
+      "Luke",
+      "Henderson",
+      "172649",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "E",
+      "Wed, 31 Aug 2022 09:27:41 GMT+0100",
+      "Chris C",
+      "Rodrigo",
+      "80954",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "Y",
+      "Wed, 31 Aug 2022 16:04:50 GMT+0100",
+      "Howie",
+      "Thiago Silva",
+      "51090",
+      "Davies",
+      "115556",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Wed, 31 Aug 2022 16:07:48 GMT+0100",
+      "Howie",
+      "Edouard",
+      "199670",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "E",
+      "Wed, 31 Aug 2022 20:39:28 GMT+0100",
+      "Johnny",
+      "Firmino",
+      "92217",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "E",
+      "Wed, 31 Aug 2022 21:54:25 GMT+0100",
+      "Dan",
+      "Ings",
+      "84939",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "E",
+      "Wed, 31 Aug 2022 23:46:54 GMT+0100",
+      "Jim Bob",
+      "Antonio",
+      "57531",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "E",
+      "Fri, 02 Sep 2022 14:43:33 GMT+0100",
+      "Johnny",
+      "Firmino",
+      "92217",
+      "Aubameyang",
+      "54694",
+      "New Player"
+    ],
+    [
+      "E",
+      "Fri, 02 Sep 2022 14:47:24 GMT+0100",
+      "Dan",
+      "Ings",
+      "84939",
+      "Aubameyang",
+      "54694",
+      "New Player"
+    ],
+    [
+      "E",
+      "Fri, 02 Sep 2022 20:28:09 GMT+0100",
+      "Jim Bob",
+      "Antonio",
+      "57531",
+      "Aubameyang",
+      "54694",
+      "New Player"
+    ],
+    [
+      "E",
+      "Fri, 02 Sep 2022 21:43:58 GMT+0100",
+      "Phil",
+      "Wilson",
+      "75115",
+      "Isak",
+      "219168",
+      "New Player"
+    ],
+    [
+      "Y",
+      "Fri, 02 Sep 2022 21:45:34 GMT+0100",
+      "Phil",
+      "Martínez",
+      "98980",
+      "De Gea",
+      "51940",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Sat, 03 Sep 2022 04:48:33 GMT+0100",
+      "Jim Bob",
+      "Henderson",
+      "56979",
+      "Casemiro",
+      "61256",
+      "New Player"
+    ],
+    [
+      "E",
+      "Sat, 03 Sep 2022 04:49:10 GMT+0100",
+      "Jim Bob",
+      "Zaha",
+      "82403",
+      "Antony",
+      "467169",
+      "New Player"
+    ],
+    [
+      "Y",
+      "Sat, 03 Sep 2022 10:31:23 GMT+0100",
+      "Chris C",
+      "Rodrigo",
+      "80954",
+      "Sá",
+      "149065",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 03 Sep 2022 10:50:09 GMT+0100",
+      "Jim Bob",
+      "Laporte",
+      "146941",
+      "Webster",
+      "110735",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 03 Sep 2022 13:18:54 GMT+0100",
+      "Jim Bob",
+      "Webster",
+      "110735",
+      "Laporte",
+      "146941",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Sat, 03 Sep 2022 21:28:31 GMT+0100",
+      "Howie",
+      "Jensen",
+      "207283",
+      "Casemiro",
+      "61256",
+      "New Player"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 14:33:38 GMT+0100",
+      "Jim Bob",
+      "Antonio",
+      "57531",
+      "Isak",
+      "219168",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 14:34:06 GMT+0100",
+      "Johnny",
+      "Firmino",
+      "92217",
+      "Aubameyang",
+      "54694",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 14:34:54 GMT+0100",
+      "Howie",
+      "Jensen",
+      "207283",
+      "Casemiro",
+      "61256",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 14:35:47 GMT+0100",
+      "Jim Bob",
+      "Zaha",
+      "82403",
+      "Antony",
+      "467169",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 15:22:23 GMT+0100",
+      "Howie",
+      "Edouard",
+      "199670",
+      "Firmino",
+      "92217",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 15:36:41 GMT+0100",
+      "Phil",
+      "Bowen",
+      "178186",
+      "Zaha",
+      "82403",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 Sep 2022 17:06:50 GMT+0100",
+      "Dan",
+      "Ings",
+      "84939",
+      "Antonio",
+      "57531",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 05 Sep 2022 14:03:31 GMT+0100",
+      "Johnny",
+      "Maddison",
+      "172780",
+      "Rashford",
+      "176297",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 15 Sep 2022 10:24:07 GMT+0100",
+      "Chris C",
+      "Dunk",
+      "83299",
+      "Tosin",
+      "109646",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 15 Sep 2022 10:24:39 GMT+0100",
+      "Chris C",
+      "Andersen",
+      "174874",
+      "Burn",
+      "78916",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Sep 2022 11:44:02 GMT+0100",
+      "Luke",
+      "Koulibaly",
+      "86129",
+      "Botman",
+      "220237",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Sep 2022 11:45:15 GMT+0100",
+      "Luke",
+      "Dewsbury-Hall",
+      "215413",
+      "Soucek",
+      "215439",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 17 Sep 2022 18:13:38 GMT+0100",
+      "Johnny",
+      "Romero",
+      "221632",
+      "Saliba",
+      "462424",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sun, 18 Sep 2022 07:58:58 GMT+0100",
+      "Howie",
+      "Joelinton",
+      "180974",
+      "Billing",
+      "168991",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 18 Sep 2022 08:03:05 GMT+0100",
+      "Howie",
+      "Walker-Peters",
+      "158534",
+      "Tete",
+      "167074",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 30 Sep 2022 19:20:02 GMT+0100",
+      "Luke",
+      "Botman",
+      "220237",
+      "Coady",
+      "94147",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 30 Sep 2022 19:27:47 GMT+0100",
+      "Luke",
+      "Henderson",
+      "172649",
+      "Maddison",
+      "172780",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 01 Oct 2022 06:22:05 GMT+0100",
+      "Matt",
+      "Calvert-Lewin",
+      "177815",
+      "Maupay",
+      "115382",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 01 Oct 2022 06:23:13 GMT+0100",
+      "Matt",
+      "Ronaldo",
+      "14937",
+      "Diego Costa",
+      "18507",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 01 Oct 2022 17:52:37 GMT+0100",
+      "Phil",
+      "Harrison",
+      "221399",
+      "Trossard",
+      "116216",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 01 Oct 2022 23:41:18 GMT+0100",
+      "Johnny",
+      "Rashford",
+      "176297",
+      "Bowen",
+      "178186",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 02 Oct 2022 08:39:10 GMT+0100",
+      "Chris C",
+      "Emerson Royal",
+      "241157",
+      "Estupiñán",
+      "204214",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 02 Oct 2022 20:46:22 GMT+0100",
+      "Howie",
+      "Luis Díaz",
+      "244731",
+      "Groß",
+      "60307",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sun, 02 Oct 2022 20:49:36 GMT+0100",
+      "Howie",
+      "Luis Díaz",
+      "244731",
+      "Rodrigo",
+      "80954",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 02 Oct 2022 20:58:04 GMT+0100",
+      "Howie",
+      "Davies",
+      "115556",
+      "Mee",
+      "51927",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 02 Oct 2022 21:01:36 GMT+0100",
+      "Howie",
+      "Haaland",
+      "223094",
+      "Rodrigo",
+      "80954",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Mon, 03 Oct 2022 10:46:11 GMT+0100",
+      "Chris C",
+      "Darwin",
+      "447203",
+      "Sá",
+      "149065",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Mon, 03 Oct 2022 10:46:39 GMT+0100",
+      "Chris C",
+      "Sá",
+      "149065",
+      "Richarlison",
+      "212319",
+      "Trade"
+    ],
+    [
+      "Y",
+      "Fri, 07 Oct 2022 20:57:58 GMT+0100",
+      "Luke",
+      "Coufal",
+      "164555",
+      "Cresswell",
+      "55459",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 08 Oct 2022 07:54:01 GMT+0100",
+      "Matt",
+      "Maupay",
+      "115382",
+      "Welbeck",
+      "50175",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 09 Oct 2022 17:26:19 GMT+0100",
+      "Phil",
+      "Matip",
+      "60914",
+      "Dier",
+      "93264",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sun, 09 Oct 2022 17:28:27 GMT+0100",
+      "Phil",
+      "Matip",
+      "60914",
+      "Almirón",
+      "179018",
+      "Transfer",
+      "Watch liverpool keep clean sheets for the rest of the season now."
+    ],
+    [
+      "Y",
+      "Mon, 10 Oct 2022 06:28:19 GMT+0100",
+      "Dan",
+      "Fofana",
+      "444463",
+      "Dunk",
+      "83299",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 10 Oct 2022 08:41:54 GMT+0100",
+      "Johnny",
+      "Van Dijk",
+      "97032",
+      "Romero",
+      "221632",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sun, 16 Oct 2022 15:34:11 GMT+0100",
+      "Johnny",
+      "James",
+      "225796",
+      "Cucurella",
+      "179268",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 16 Oct 2022 20:13:21 GMT+0100",
+      "Dan",
+      "Diogo Jota",
+      "194634",
+      "Solanke",
+      "154566",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 16 Oct 2022 20:13:46 GMT+0100",
+      "Dan",
+      "Antonio",
+      "57531",
+      "Scamacca",
+      "195899",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 16 Oct 2022 20:18:18 GMT+0100",
+      "Howie",
+      "Tete",
+      "167074",
+      "Jonny",
+      "114128",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 17 Oct 2022 21:19:08 GMT+0100",
+      "Howie",
+      "Firmino",
+      "92217",
+      "Haaland",
+      "223094",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Tue, 18 Oct 2022 08:53:00 GMT+0100",
+      "Chris C",
+      "Richarlison",
+      "212319",
+      "Darwin",
+      "447203",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Tue, 18 Oct 2022 09:02:47 GMT+0100",
+      "Chris C",
+      "Malacia",
+      "222690",
+      "Kristensen",
+      "224209",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 18 Oct 2022 09:03:14 GMT+0100",
+      "Chris C",
+      "Richarlison",
+      "212319",
+      "Bamford",
+      "106617",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Tue, 18 Oct 2022 09:03:29 GMT+0100",
+      "Chris C",
+      "Jesus",
+      "205651",
+      "Richarlison",
+      "212319",
+      "Swap",
+      "You'd already dropped Richarlison so this doesn't work 🤯"
+    ],
+    [
+      "Y",
+      "Wed, 19 Oct 2022 13:48:51 GMT+0100",
+      "Jim Bob",
+      "Walker",
+      "58621",
+      "R.Sessegnon",
+      "184349",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 19 Oct 2022 13:50:30 GMT+0100",
+      "Jim Bob",
+      "Isak",
+      "219168",
+      "Daka",
+      "245419",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 20 Oct 2022 06:03:47 GMT+0100",
+      "Howie",
+      "Haaland",
+      "223094",
+      "Firmino",
+      "92217",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Thu, 20 Oct 2022 06:24:04 GMT+0100",
+      "Howie",
+      "Groß",
+      "60307",
+      "Rashford",
+      "176297",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 21 Oct 2022 14:13:13 GMT+0100",
+      "Johnny",
+      "Romero",
+      "221632",
+      "Van Dijk",
+      "97032",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Fri, 21 Oct 2022 17:19:13 GMT+0100",
+      "Chris C",
+      "Estupiñán",
+      "204214",
+      "Castagne",
+      "166477",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 21 Oct 2022 17:20:39 GMT+0100",
+      "Chris C",
+      "Tosin",
+      "109646",
+      "Gomez",
+      "171287",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 22 Oct 2022 16:56:12 GMT+0100",
+      "Dan",
+      "Solanke",
+      "154566",
+      "Calvert-Lewin",
+      "177815",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 23 Oct 2022 08:11:35 GMT+0100",
+      "Jim Bob",
+      "Mendy",
+      "228286",
+      "Henderson",
+      "172649",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 24 Oct 2022 23:41:34 GMT+0100",
+      "Johnny",
+      "Aubameyang",
+      "54694",
+      "Ings",
+      "84939",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 24 Oct 2022 23:43:43 GMT+0100",
+      "Johnny",
+      "Bowen",
+      "178186",
+      "Mount",
+      "184341",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 26 Oct 2022 15:12:02 GMT+0100",
+      "Luke",
+      "Varane",
+      "90152",
+      "Botman",
+      "220237",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 28 Oct 2022 17:07:58 GMT+0100",
+      "Howie",
+      "Firmino",
+      "92217",
+      "Haaland",
+      "223094",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Fri, 28 Oct 2022 17:10:47 GMT+0100",
+      "Howie",
+      "Veltman",
+      "111478",
+      "Mykolenko",
+      "224967",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 30 Oct 2022 21:32:34 GMT",
+      "Howie",
+      "Jonny",
+      "114128",
+      "Mitchell",
+      "244723",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 30 Oct 2022 21:33:29 GMT",
+      "Howie",
+      "Haaland",
+      "223094",
+      "Firmino",
+      "92217",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Tue, 01 Nov 2022 17:01:32 GMT",
+      "Johnny",
+      "Cucurella",
+      "179268",
+      "Shaw",
+      "106760",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 03 Nov 2022 10:37:01 GMT",
+      "Chris C",
+      "Bamford",
+      "106617",
+      "Iwobi",
+      "153133",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 03 Nov 2022 10:37:59 GMT",
+      "Chris C",
+      "Kristensen",
+      "224209",
+      "Dalot",
+      "216051",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 04 Nov 2022 20:59:32 GMT",
+      "Johnny",
+      "Romero",
+      "221632",
+      "Bowen",
+      "178186",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 07 Nov 2022 22:06:18 GMT",
+      "Johnny",
+      "Mount",
+      "184341",
+      "Barnes",
+      "201666",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 09 Nov 2022 15:40:10 GMT",
+      "Jim Bob",
+      "Henderson",
+      "172649",
+      "Sá",
+      "149065",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 09 Nov 2022 22:13:26 GMT",
+      "Phil",
+      "Dier",
+      "93264",
+      "Akanji",
+      "211975",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 11 Nov 2022 19:47:28 GMT",
+      "Chris C",
+      "Iwobi",
+      "153133",
+      "Dewsbury-Hall",
+      "215413",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Nov 2022 10:59:16 GMT",
+      "Matt",
+      "Alonso",
+      "82263",
+      "Lamptey",
+      "232792",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Nov 2022 11:54:49 GMT",
+      "Matt",
+      "Son",
+      "85971",
+      "Grealish",
+      "114283",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sat, 12 Nov 2022 14:31:29 GMT",
+      "Jim Bob",
+      "Daka",
+      "245419",
+      "Isak",
+      "219168",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Nov 2022 16:31:30 GMT",
+      "Johnny",
+      "Bowen",
+      "178186",
+      "Luis Díaz",
+      "244731",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Nov 2022 16:33:04 GMT",
+      "Johnny",
+      "Barnes",
+      "201666",
+      "Luis Díaz",
+      "244731",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sat, 12 Nov 2022 16:34:29 GMT",
+      "Johnny",
+      "Barnes",
+      "201666",
+      "James",
+      "225796",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 15 Nov 2022 11:56:54 GMT",
+      "Johnny",
+      "Shaw",
+      "106760",
+      "James",
+      "225796",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Tue, 15 Nov 2022 11:57:14 GMT",
+      "Johnny",
+      "Shaw",
+      "106760",
+      "Barnes",
+      "201666",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 26 Nov 2022 16:12:33 GMT",
+      "Luke",
+      "Coady",
+      "94147",
+      "Varane",
+      "90152",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Johnny",
+      "Luis Díaz",
+      "244731",
+      "Garnacho",
+      "493105",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Luke",
+      "Fabinho",
+      "116643",
+      "Thiago",
+      "61558",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Luke",
+      "Varane",
+      "90152",
+      "Dier",
+      "93264",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Dan",
+      "Kulusevski",
+      "445044",
+      "Mahrez",
+      "103025",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Dan",
+      "Mahrez",
+      "103025",
+      "Groß",
+      "60307",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Dan",
+      "Calvert-Lewin",
+      "177815",
+      "Adams",
+      "200439",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 7 Dec 2022 08:41:11 GMT",
+      "Dan",
+      "Scamacca",
+      "195899",
+      "Havertz",
+      "219847",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 28 Dec 2022 08:41:11 GMT",
+      "Howie",
+      "Mitchell",
+      "244723",
+      "Veltman",
+      "111478",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 28 Dec 2022 08:41:11 GMT",
+      "Luke",
+      "Dier",
+      "93264",
+      "Varane",
+      "90152",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 28 Dec 2022 14:18:48 GMT",
+      "Johnny",
+      "James",
+      "225796",
+      "Shaw",
+      "106760",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 28 Dec 2022 08:41:11 GMT",
+      "Johnny",
+      "Ings",
+      "84939",
+      "Nketiah",
+      "205533",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Fri, 30 Dec 2022 17:35:52 GMT",
+      "Chris C",
+      "Jesus",
+      "205651",
+      "Nketiah",
+      "205533",
+      "Transfer",
+      "Johnny had transferred him in via WhatsApp "
+    ],
+    [
+      "Y",
+      "Fri, 30 Dec 2022 17:50:18 GMT",
+      "Chris C",
+      "Dewsbury-Hall",
+      "215413",
+      "Mount",
+      "184341",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 02 Jan 2023 08:39:53 GMT",
+      "Luke",
+      "Soucek",
+      "215439",
+      "Gibbs-White",
+      "222531",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 02 Jan 2023 08:43:50 GMT",
+      "Luke",
+      "Maddison",
+      "172780",
+      "Joelinton",
+      "180974",
+      "Transfer"
+    ],
+    [
+      "TBC",
+      "Tue, 03 Jan 2023 07:49:19 GMT",
+      "Matt",
+      "Diego Costa",
+      "18507",
+      "Martial",
+      "148225",
+      "Transfer"
+    ],
+    [
+      "TBC",
+      "Tue, 03 Jan 2023 07:50:11 GMT",
+      "Matt",
+      "Welbeck",
+      "50175",
+      "Calvert-Lewin",
+      "177815",
+      "Transfer"
+    ],
+    [
+      "TBC",
+      "Wed, 04 Jan 2023 10:11:23 GMT",
+      "Chris C",
+      "Gomez",
+      "171287",
+      "Ream",
+      "82514",
+      "Transfer"
+    ],
+    [
+      "TBC",
+      "Wed, 04 Jan 2023 10:19:29 GMT",
+      "Chris C",
+      "Mount",
+      "184341",
+      "Mbeumo",
+      "446008",
+      "Transfer"
+    ],
+    [
+      "TBC",
+      "Wed, 04 Jan 2023 10:19:41 GMT",
+      "Chris C",
+      "Jesus",
+      "205651",
+      "Mbeumo",
+      "446008",
+      "Swap"
+    ]
+  ]
+}

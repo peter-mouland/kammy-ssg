@@ -1,0 +1,1891 @@
+{
+  "range": "leagueOne!A1:I1154",
+  "majorDimension": "ROWS",
+  "values": [
+    [
+      "Status",
+      "Timestamp",
+      "Manager",
+      "Transfer Out",
+      "Code Out",
+      "Transfer In",
+      "Code In",
+      "Transfer Type",
+      "Comment"
+    ],
+    [
+      "Y",
+      "Mon, 12 Aug 2024 04:57:52 GMT+0100",
+      "Russ",
+      "Bailey",
+      "215711",
+      "Luis Díaz",
+      "244731",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 13 Aug 2024 17:19:18 GMT+0100",
+      "Max",
+      "Verbruggen",
+      "489639",
+      "Vicario",
+      "184254",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 13 Aug 2024 23:06:07 GMT+0100",
+      "Chris C",
+      "Ortega Moreno",
+      "88248",
+      "Flekken",
+      "118342",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 13 Aug 2024 23:13:00 GMT+0100",
+      "Chris C",
+      "Sancho",
+      "209243",
+      "Neto",
+      "247632",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 13 Aug 2024 23:18:43 GMT+0100",
+      "Chris C",
+      "Mateta",
+      "231747",
+      "Eze",
+      "232413",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 14:07:41 GMT+0100",
+      "Rich W",
+      "Branthwaite",
+      "480455",
+      "Pau",
+      "244954",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 14:09:33 GMT+0100",
+      "Rich W",
+      "João Cancelo",
+      "121145",
+      "Dalot",
+      "216051",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 14:14:15 GMT+0100",
+      "Rich W",
+      "Jensen",
+      "207283",
+      "Casemiro",
+      "61256",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 14:16:57 GMT+0100",
+      "Rich W",
+      "Romero",
+      "221632",
+      "Quansah",
+      "441428",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 14:53:55 GMT+0100",
+      "Dan",
+      "Estupiñan",
+      "204214",
+      "Burn",
+      "78916",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 14:56:08 GMT+0100",
+      "Dan",
+      "Souček",
+      "215439",
+      "Downes",
+      "220585",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 Aug 2024 15:55:18 GMT+0100",
+      "Luke",
+      "Wilson",
+      "75115",
+      "Füllkrug",
+      "91889",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 17 Aug 2024 19:02:17 GMT+0100",
+      "Dan",
+      "Philip",
+      "168991",
+      "Tielemans",
+      "166989",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 18 Aug 2024 18:26:27 GMT+0100",
+      "Paul",
+      "O'Brien",
+      "512462",
+      "Maguire",
+      "95658",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 18 Aug 2024 18:28:02 GMT+0100",
+      "Paul",
+      "Barkley",
+      "88894",
+      "Souček",
+      "215439",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 18 Aug 2024 19:38:00 GMT+0100",
+      "Chris C",
+      "Schär",
+      "119471",
+      "Romero",
+      "221632",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 18 Aug 2024 19:39:01 GMT+0100",
+      "Chris C",
+      "Calafiori",
+      "466075",
+      "Walker",
+      "58621",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Thu, 22 Aug 2024 16:13:44 GMT+0100",
+      "Max",
+      "Mitchell",
+      "244723",
+      "Livramento",
+      "441191",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 24 Aug 2024 08:10:58 GMT+0100",
+      "Rich W",
+      "Quansah",
+      "441428",
+      "Konaté",
+      "204716",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 24 Aug 2024 08:11:29 GMT+0100",
+      "Rich W",
+      "Solanke",
+      "154566",
+      "Vardy",
+      "101668",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 24 Aug 2024 11:23:36 GMT+0100",
+      "Luke",
+      "Trippier",
+      "77794",
+      "Mazraoui",
+      "230001",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 24 Aug 2024 22:46:10 GMT+0100",
+      "Paul",
+      "Mbeumo",
+      "446008",
+      "Mitoma",
+      "451340",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 25 Aug 2024 21:07:36 GMT+0100",
+      "Jim Bob",
+      "Sterling",
+      "103955",
+      "Madueke",
+      "248857",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 29 Aug 2024 16:22:31 GMT+0100",
+      "Max",
+      "Darwin",
+      "447203",
+      "Cunha",
+      "430871",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 29 Aug 2024 22:48:29 GMT+0100",
+      "Paul",
+      "Onana",
+      "202641",
+      "Iwobi",
+      "153133",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 30 Aug 2024 17:25:21 GMT+0100",
+      "Luke",
+      "Toney",
+      "144485",
+      "João Pedro",
+      "475168",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 31 Aug 2024 07:43:32 GMT+0100",
+      "Rich W",
+      "Foden",
+      "209244",
+      "Sávio",
+      "510281",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 31 Aug 2024 17:51:33 GMT+0100",
+      "Paul",
+      "Stones",
+      "97299",
+      "Kilman",
+      "214048",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 31 Aug 2024 17:51:53 GMT+0100",
+      "Paul",
+      "Iwobi",
+      "153133",
+      "Mbeumo",
+      "446008",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 06 Sep 2024 21:07:26 GMT+0100",
+      "Chris C",
+      "Zirkzee",
+      "458249",
+      "Wissa",
+      "216646",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 06 Sep 2024 21:12:06 GMT+0100",
+      "Chris C",
+      "Neto",
+      "247632",
+      "Foden",
+      "209244",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 09 Sep 2024 12:34:34 GMT+0100",
+      "Jim Bob",
+      "Richarlison",
+      "212319",
+      "Welbeck",
+      "50175",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 10 Sep 2024 21:36:32 GMT+0100",
+      "Max",
+      "Maatsen",
+      "441302",
+      "Muñoz",
+      "247348",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 12 Sep 2024 21:12:02 GMT+0100",
+      "Max",
+      "Kudus",
+      "460842",
+      "Bernardo",
+      "165809",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 13 Sep 2024 09:36:35 GMT+0100",
+      "Russ",
+      "Mykolenko",
+      "224967",
+      "Robinson",
+      "169528",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 13 Sep 2024 09:37:33 GMT+0100",
+      "Russ",
+      "Tarkowski",
+      "17761",
+      "Dunk",
+      "83299",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 13 Sep 2024 16:08:33 GMT+0100",
+      "Luke",
+      "Dewsbury-Hall",
+      "215413",
+      "Cook",
+      "155408",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 13 Sep 2024 16:10:56 GMT+0100",
+      "Luke",
+      "Füllkrug",
+      "91889",
+      "Solanke",
+      "154566",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 15 Sep 2024 08:30:56 GMT+0100",
+      "Max",
+      "Guéhi",
+      "209036",
+      "De Ligt",
+      "209365",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Mon, 16 Sep 2024 19:45:02 GMT+0100",
+      "Chris C",
+      "Ortega Moreno",
+      "88248",
+      "Flekken",
+      "118342",
+      "Transfer",
+      "Too many Man City players"
+    ],
+    [
+      "E",
+      "Mon, 16 Sep 2024 19:45:42 GMT+0100",
+      "Chris C",
+      "Calafiori",
+      "466075",
+      "Walker",
+      "58621",
+      "Swap",
+      "Calafiori was already in SUB, assuming this was your intention"
+    ],
+    [
+      "Y",
+      "Mon, 16 Sep 2024 20:01:35 GMT+0100",
+      "Chris C",
+      "Calafiori",
+      "466075",
+      "Thomas",
+      "167199",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 17 Sep 2024 18:04:41 GMT+0100",
+      "Paul",
+      "Maguire",
+      "95658",
+      "Van Hecke",
+      "469142",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 17 Sep 2024 20:39:24 GMT+0100",
+      "Dan",
+      "José Sá",
+      "149065",
+      "Sels",
+      "85633",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 17 Sep 2024 20:41:52 GMT+0100",
+      "Dan",
+      "Downes",
+      "220585",
+      "Gravenberch",
+      "441266",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 20 Sep 2024 14:50:08 GMT+0100",
+      "Russ",
+      "Ødegaard",
+      "184029",
+      "Nketiah",
+      "205533",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 20 Sep 2024 16:05:51 GMT+0100",
+      "Luke",
+      "João Pedro",
+      "475168",
+      "Mateta",
+      "231747",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 20 Sep 2024 23:18:32 GMT+0100",
+      "Jim Bob",
+      "Aké",
+      "126184",
+      "Faes",
+      "218218",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 20 Sep 2024 23:20:22 GMT+0100",
+      "Jim Bob",
+      "Shaw",
+      "106760",
+      "Lewis",
+      "477064",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 21 Sep 2024 08:32:28 GMT+0100",
+      "Rich W",
+      "Casemiro",
+      "61256",
+      "Ugarte",
+      "232112",
+      "New Player"
+    ],
+    [
+      "Y",
+      "Sat, 21 Sep 2024 19:54:34 GMT+0100",
+      "Paul",
+      "Mitoma",
+      "451340",
+      "Sancho",
+      "209243",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 22 Sep 2024 14:53:12 GMT+0100",
+      "Paul",
+      "Souček",
+      "215439",
+      "Mario Jr.",
+      "151086",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 23 Sep 2024 19:41:27 GMT+0100",
+      "Chris C",
+      "McGinn",
+      "122806",
+      "Thomas",
+      "167199",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Mon, 23 Sep 2024 19:45:09 GMT+0100",
+      "Chris C",
+      "Wissa",
+      "216646",
+      "Duran",
+      "476344",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 23 Sep 2024 20:10:01 GMT+0100",
+      "Chris C",
+      "McGinn",
+      "122806",
+      "Smith Rowe",
+      "209289",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 24 Sep 2024 21:00:34 GMT+0100",
+      "Max",
+      "Livramento",
+      "441191",
+      "Estupiñan",
+      "204214",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 26 Sep 2024 13:59:49 GMT+0100",
+      "Max",
+      "Cunha",
+      "430871",
+      "Rogers",
+      "244850",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 27 Sep 2024 12:52:31 GMT+0100",
+      "Jim Bob",
+      "Gomez",
+      "171287",
+      "Murillo",
+      "575476",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 27 Sep 2024 16:13:29 GMT+0100",
+      "Luke",
+      "Rodrigo",
+      "220566",
+      "Kovačić",
+      "91651",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 27 Sep 2024 16:17:39 GMT+0100",
+      "Luke",
+      "Cook",
+      "155408",
+      "Caicedo",
+      "486672",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 29 Sep 2024 16:23:34 GMT+0100",
+      "Russ",
+      "Nketiah",
+      "205533",
+      "Delap",
+      "463034",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 30 Sep 2024 23:08:47 GMT+0100",
+      "Paul",
+      "Kilman",
+      "214048",
+      "Stones",
+      "97299",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 01 Oct 2024 06:44:55 GMT+0100",
+      "Dan",
+      "Doku",
+      "248875",
+      "McNeil",
+      "433154",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 01 Oct 2024 06:45:42 GMT+0100",
+      "Dan",
+      "Palmer",
+      "244851",
+      "Isak",
+      "219168",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Wed, 02 Oct 2024 22:35:15 GMT+0100",
+      "Max",
+      "De Ligt",
+      "209365",
+      "Colwill",
+      "460028",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 04 Oct 2024 14:47:20 GMT+0100",
+      "Luke",
+      "Leno",
+      "80201",
+      "Johnson",
+      "242898",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 05 Oct 2024 01:00:08 GMT+0100",
+      "Jim Bob",
+      "Almirón",
+      "179018",
+      "Amad",
+      "493250",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 16 Oct 2024 18:52:14 GMT+0100",
+      "Max",
+      "Konsa",
+      "199798",
+      "Van de Ven",
+      "491279",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 18 Oct 2024 14:10:49 GMT+0100",
+      "Luke",
+      "A.Becker",
+      "116535",
+      "Pope",
+      "98747",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 19 Oct 2024 00:26:19 GMT+0100",
+      "Max",
+      "Mainoo",
+      "516895",
+      "Baleba",
+      "535301",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 19 Oct 2024 07:23:06 GMT+0100",
+      "Russ",
+      "Wharton",
+      "496221",
+      "Tonali",
+      "432422",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 25 Oct 2024 15:26:58 GMT+0100",
+      "Luke",
+      "Mateta",
+      "231747",
+      "Wood",
+      "60689",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 25 Oct 2024 18:31:33 GMT+0100",
+      "Russ",
+      "Delap",
+      "463034",
+      "Buonanotte",
+      "536916",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 28 Oct 2024 15:18:50 GMT",
+      "Max",
+      "Estupiñan",
+      "204214",
+      "Aina",
+      "159506",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 29 Oct 2024 13:49:32 GMT",
+      "Chris C",
+      "Walker",
+      "58621",
+      "Digne",
+      "101188",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 29 Oct 2024 13:50:58 GMT",
+      "Chris C",
+      "Flekken",
+      "118342",
+      "Onana",
+      "202641",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 30 Oct 2024 21:44:27 GMT",
+      "Max",
+      "Van de Ven",
+      "491279",
+      "Guéhi",
+      "209036",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 01 Nov 2024 11:49:15 GMT",
+      "Russ",
+      "Dunk",
+      "83299",
+      "Andersen",
+      "174874",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 02 Nov 2024 10:49:37 GMT",
+      "Rich W",
+      "Sávio",
+      "510281",
+      "Damsgaard",
+      "440089",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 02 Nov 2024 10:50:41 GMT",
+      "Rich W",
+      "Gordon",
+      "232826",
+      "Iwobi",
+      "153133",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 02 Nov 2024 23:20:23 GMT",
+      "Max",
+      "Bernardo",
+      "165809",
+      "Ødegaard",
+      "184029",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 08 Nov 2024 10:30:54 GMT",
+      "Chris C",
+      "Eze",
+      "232413",
+      "Smith Rowe",
+      "209289",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Fri, 08 Nov 2024 10:34:02 GMT",
+      "Chris C",
+      "Romero",
+      "221632",
+      "De Ligt",
+      "209365",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 08 Nov 2024 14:05:04 GMT",
+      "Max",
+      "Baleba",
+      "535301",
+      "Janelt",
+      "204580",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 08 Nov 2024 14:21:02 GMT",
+      "Luke",
+      "Rashford",
+      "176297",
+      "Gordon",
+      "232826",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 10 Nov 2024 07:48:08 GMT",
+      "Paul",
+      "Stones",
+      "97299",
+      "Milenković",
+      "227444",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 10 Nov 2024 14:48:55 GMT",
+      "Russ",
+      "Buonanotte",
+      "536916",
+      "Wissa",
+      "216646",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 12 Nov 2024 13:36:32 GMT",
+      "Max",
+      "Vicario",
+      "184254",
+      "A.Becker",
+      "116535",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 13 Nov 2024 14:27:56 GMT",
+      "Dan",
+      "McNeil",
+      "433154",
+      "Mitoma",
+      "451340",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 22 Nov 2024 16:01:57 GMT",
+      "Luke",
+      "Kovačić",
+      "91651",
+      "McGinn",
+      "122806",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 24 Nov 2024 11:34:14 GMT",
+      "Max",
+      "Rogers",
+      "244850",
+      "João Pedro",
+      "475168",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 29 Nov 2024 09:08:33 GMT",
+      "Russ",
+      "Wissa",
+      "216646",
+      "Cunha",
+      "430871",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 03 Dec 2024 09:18:22 GMT",
+      "Russ",
+      "Andersen",
+      "174874",
+      "O'Shea",
+      "216616",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 06 Dec 2024 20:24:53 GMT",
+      "Rich W",
+      "Onana",
+      "449871",
+      "Enzo",
+      "448047",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 07 Dec 2024 05:36:48 GMT",
+      "Chris C",
+      "Foden",
+      "209244",
+      "Doku",
+      "248875",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 07 Dec 2024 05:37:30 GMT",
+      "Chris C",
+      "Duran",
+      "476344",
+      "Eze",
+      "232413",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Sat, 07 Dec 2024 05:39:01 GMT",
+      "Chris C",
+      "Duran",
+      "476344",
+      "Schär",
+      "119471",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 07 Dec 2024 05:41:26 GMT",
+      "Chris C",
+      "Gabriel",
+      "226597",
+      "Schär",
+      "119471",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Thu, 12 Dec 2024 12:16:44 GMT",
+      "Chris C",
+      "Smith Rowe",
+      "209289",
+      "Wissa",
+      "216646",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 12 Dec 2024 12:18:50 GMT",
+      "Chris C",
+      "De Ligt",
+      "209365",
+      "Gabriel",
+      "226597",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Thu, 12 Dec 2024 12:23:29 GMT",
+      "Chris C",
+      "De Ligt",
+      "209365",
+      "Henderson",
+      "172649",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 14 Dec 2024 10:51:35 GMT",
+      "Rich W",
+      "Konaté",
+      "204716",
+      "Lacroix",
+      "437499",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 14 Dec 2024 10:54:44 GMT",
+      "Rich W",
+      "Casemiro",
+      "61256",
+      "Jones",
+      "206915",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 14 Dec 2024 12:11:41 GMT",
+      "Luke",
+      "Pope",
+      "98747",
+      "Sánchez",
+      "215059",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 20 Dec 2024 17:53:12 GMT",
+      "Chris C",
+      "Eze",
+      "232413",
+      "Raúl",
+      "102057",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 26 Dec 2024 10:38:21 GMT",
+      "Rich W",
+      "Lacroix",
+      "437499",
+      "Huijsen",
+      "554605",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 26 Dec 2024 10:44:53 GMT",
+      "Rich W",
+      "Dalot",
+      "216051",
+      "Aït-Nouri",
+      "448514",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 27 Dec 2024 07:01:17 GMT",
+      "Jim Bob",
+      "Ederson M.",
+      "121160",
+      "Leno",
+      "80201",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 30 Dec 2024 09:41:49 GMT",
+      "Paul",
+      "Mario Jr.",
+      "151086",
+      "Anderson",
+      "215379",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 30 Dec 2024 09:42:57 GMT",
+      "Paul",
+      "White",
+      "198869",
+      "J.Timber",
+      "445122",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 02 Jan 2025 07:25:30 GMT",
+      "Jim Bob",
+      "Faes",
+      "218218",
+      "Tarkowski",
+      "17761",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 02 Jan 2025 07:26:23 GMT",
+      "Jim Bob",
+      "Murillo",
+      "575476",
+      "Collins",
+      "432830",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 03 Jan 2025 10:13:21 GMT",
+      "Max",
+      "Janelt",
+      "204580",
+      "Kovačić",
+      "91651",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 04 Jan 2025 08:08:11 GMT",
+      "Rich W",
+      "Bowen",
+      "178186",
+      "Gibbs-White",
+      "222531",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 04 Jan 2025 08:13:36 GMT",
+      "Rich W",
+      "Pau",
+      "244954",
+      "Murillo",
+      "575476",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 04 Jan 2025 16:19:07 GMT",
+      "Paul",
+      "Sancho",
+      "209243",
+      "Sávio",
+      "510281",
+      "Transfer",
+      "Bang in form 💥 "
+    ],
+    [
+      "Y",
+      "Sun, 05 Jan 2025 11:09:48 GMT",
+      "Paul",
+      "Semenyo",
+      "437730",
+      "Mbeumo",
+      "446008",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Mon, 13 Jan 2025 04:21:30 GMT",
+      "Chris C",
+      "Henderson",
+      "172649",
+      "Bayindir",
+      "451302",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 13 Jan 2025 04:28:45 GMT",
+      "Chris C",
+      "Doku",
+      "248875",
+      "Elanga",
+      "449434",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 14 Jan 2025 17:24:44 GMT",
+      "Luke",
+      "McGinn",
+      "122806",
+      "Souček",
+      "215439",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 14 Jan 2025 18:51:53 GMT",
+      "Jim Bob",
+      "Zinchenko",
+      "206325",
+      "Kerkez",
+      "544877",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 16 Jan 2025 22:13:29 GMT",
+      "Jim Bob",
+      "Leno",
+      "80201",
+      "Ederson M.",
+      "121160",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 17 Jan 2025 20:07:33 GMT",
+      "Chris C",
+      "Bayindir",
+      "451302",
+      "Delap",
+      "463034",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 18 Jan 2025 10:32:56 GMT",
+      "Luke",
+      "Johnson",
+      "242898",
+      "Kulusevski",
+      "445044",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 21 Jan 2025 09:26:16 GMT",
+      "Luke",
+      "Solanke",
+      "154566",
+      "Mateta",
+      "231747",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 21 Jan 2025 20:18:32 GMT",
+      "Max",
+      "Colwill",
+      "460028",
+      "Botman",
+      "220237",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 24 Jan 2025 12:53:39 GMT",
+      "Luke",
+      "Sánchez",
+      "215059",
+      "Henderson",
+      "172649",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 24 Jan 2025 23:45:51 GMT",
+      "Max",
+      "Diogo J.",
+      "194634",
+      "Kluivert",
+      "222683",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 25 Jan 2025 10:53:18 GMT",
+      "Rich W",
+      "Jones",
+      "206915",
+      "Mainoo",
+      "516895",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 25 Jan 2025 10:57:59 GMT",
+      "Rich W",
+      "Aït-Nouri",
+      "448514",
+      "Hall",
+      "487838",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 25 Jan 2025 12:52:14 GMT",
+      "Russ",
+      "Garnacho",
+      "493105",
+      "Foden",
+      "209244",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 25 Jan 2025 12:54:46 GMT",
+      "Russ",
+      "Udogie",
+      "487053",
+      "Estupiñan",
+      "204214",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 26 Jan 2025 11:51:25 GMT",
+      "Jim Bob",
+      "Ward-Prowse",
+      "101178",
+      "Cook",
+      "155408",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 26 Jan 2025 13:11:49 GMT",
+      "Max",
+      "Botman",
+      "220237",
+      "Konaté",
+      "204716",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 01 Feb 2025 13:12:57 GMT",
+      "Paul",
+      "Van Hecke",
+      "469142",
+      "Zabarnyi",
+      "477580",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 02 Feb 2025 17:44:40 GMT",
+      "Dan",
+      "Martinez",
+      "221820",
+      "Lacroix",
+      "437499",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 11 Feb 2025 01:32:46 GMT",
+      "Jim Bob",
+      "Lewis",
+      "477064",
+      "Mykolenko",
+      "224967",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 13 Feb 2025 07:57:16 GMT",
+      "Dan",
+      "Burn",
+      "78916",
+      "Lewis-Skelly",
+      "499169",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Thu, 13 Feb 2025 15:22:38 GMT",
+      "Max",
+      "João Pedro",
+      "475168",
+      "Nkunku",
+      "213198",
+      "Transfer"
+    ],
+    [
+      "E",
+      "Fri, 14 Feb 2025 18:11:30 GMT",
+      "Rich W",
+      "Iwobi",
+      "153133",
+      "M.Asensio",
+      "174292",
+      "New Player"
+    ],
+    [
+      "Y",
+      "Fri, 14 Feb 2025 19:51:03 GMT",
+      "Rich W",
+      "Iwobi",
+      "153133",
+      "M.Asensio",
+      "174292",
+      "Transfer",
+      "Unopposed request converted to transfer"
+    ],
+    [
+      "Y",
+      "Sat, 15 Feb 2025 10:56:26 GMT",
+      "Dan",
+      "Akanji",
+      "211975",
+      "Van Hecke",
+      "469142",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 17 Feb 2025 09:12:16 GMT",
+      "Paul",
+      "N.Jackson",
+      "517052",
+      "Beto",
+      "486385",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 21 Feb 2025 17:15:59 GMT",
+      "Rich W",
+      "Mainoo",
+      "516895",
+      "Christie",
+      "158499",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 21 Feb 2025 17:32:29 GMT",
+      "Jim Bob",
+      "Amad",
+      "493250",
+      "Bowen",
+      "178186",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 21 Feb 2025 17:33:08 GMT",
+      "Jim Bob",
+      "Madueke",
+      "248857",
+      "Garnacho",
+      "493105",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 23 Feb 2025 13:36:19 GMT",
+      "Chris C",
+      "Digne",
+      "101188",
+      "Mitchell",
+      "244723",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 25 Feb 2025 18:59:07 GMT",
+      "Paul",
+      "Zabarnyi",
+      "477580",
+      "Branthwaite",
+      "480455",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 26 Feb 2025 15:38:41 GMT",
+      "Russ",
+      "O'Shea",
+      "216616",
+      "Danso",
+      "135720",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 28 Feb 2025 13:24:20 GMT",
+      "Jim Bob",
+      "Garnacho",
+      "493105",
+      "Rashford",
+      "176297",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 07 Mar 2025 15:02:46 GMT",
+      "Luke",
+      "Gordon",
+      "232826",
+      "Diogo J.",
+      "194634",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 07 Mar 2025 16:02:16 GMT",
+      "Luke",
+      "Kulusevski",
+      "445044",
+      "Kudus",
+      "460842",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 08 Mar 2025 08:09:07 GMT",
+      "Rich W",
+      "Hall",
+      "487838",
+      "James",
+      "225796",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 08 Mar 2025 08:11:53 GMT",
+      "Rich W",
+      "Havertz",
+      "219847",
+      "Nwaneri",
+      "499175",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 14 Mar 2025 12:54:24 GMT",
+      "Chris C",
+      "Delap",
+      "463034",
+      "Iwobi",
+      "153133",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 14 Mar 2025 15:27:56 GMT",
+      "Luke",
+      "Diogo J.",
+      "194634",
+      "Kudus",
+      "460842",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Fri, 14 Mar 2025 15:28:21 GMT",
+      "Luke",
+      "Diogo J.",
+      "194634",
+      "Evanilson",
+      "444102",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 28 Mar 2025 15:20:30 GMT",
+      "Max",
+      "Nkunku",
+      "213198",
+      "N.Jackson",
+      "517052",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 31 Mar 2025 15:24:46 GMT+0100",
+      "Paul",
+      "Semenyo",
+      "437730",
+      "João Pedro",
+      "475168",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 01 Apr 2025 13:45:27 GMT+0100",
+      "Max",
+      "De Bruyne",
+      "61366",
+      "Marmoush",
+      "438234",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 02 Apr 2025 08:10:18 GMT+0100",
+      "Paul",
+      "Haaland",
+      "223094",
+      "João Pedro",
+      "475168",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Wed, 02 Apr 2025 08:16:33 GMT+0100",
+      "Paul",
+      "Haaland",
+      "223094",
+      "Strand Larsen",
+      "247412",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 04 Apr 2025 11:45:39 GMT+0100",
+      "Chris C",
+      "Alexander-Arnold",
+      "169187",
+      "N.Williams",
+      "215136",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 04 Apr 2025 11:47:08 GMT+0100",
+      "Chris C",
+      "Iwobi",
+      "153133",
+      "Digne",
+      "101188",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 05 Apr 2025 10:19:24 GMT+0100",
+      "Luke",
+      "Kudus",
+      "460842",
+      "Semenyo",
+      "437730",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 11 Apr 2025 15:44:57 GMT+0100",
+      "Luke",
+      "Wood",
+      "60689",
+      "Evanilson",
+      "444102",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Fri, 11 Apr 2025 15:45:24 GMT+0100",
+      "Luke",
+      "Wood",
+      "60689",
+      "Iwobi",
+      "153133",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Apr 2025 00:03:34 GMT+0100",
+      "Chris C",
+      "Gabriel",
+      "226597",
+      "Colwill",
+      "460028",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Apr 2025 00:15:15 GMT+0100",
+      "Chris C",
+      "Digne",
+      "101188",
+      "Rogers",
+      "244850",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 12 Apr 2025 17:36:57 GMT+0100",
+      "Paul",
+      "Savinho",
+      "510281",
+      "Malen",
+      "204646",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 13 Apr 2025 23:40:09 GMT+0100",
+      "Paul",
+      "Beto",
+      "486385",
+      "De Bruyne",
+      "61366",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 16 Apr 2025 15:15:49 GMT+0100",
+      "Chris C",
+      "Onana",
+      "202641",
+      "Flekken",
+      "118342",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Wed, 16 Apr 2025 15:17:16 GMT+0100",
+      "Chris C",
+      "Raúl",
+      "102057",
+      "Rogers",
+      "244850",
+      "Swap"
+    ],
+    [
+      "Y",
+      "Wed, 16 Apr 2025 15:19:14 GMT+0100",
+      "Chris C",
+      "Raúl",
+      "102057",
+      "Konsa",
+      "199798",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 18 Apr 2025 17:05:46 GMT+0100",
+      "Luke",
+      "Mazraoui",
+      "230001",
+      "Aït-Nouri",
+      "448514",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 20 Apr 2025 19:40:12 GMT+0100",
+      "Paul",
+      "Robertson",
+      "122798",
+      "Alexander-Arnold",
+      "169187",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 20 Apr 2025 20:08:09 GMT+0100",
+      "Paul",
+      "João Pedro",
+      "475168",
+      "Delap",
+      "463034",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 27 Apr 2025 20:43:42 GMT+0100",
+      "Paul",
+      "Malen",
+      "204646",
+      "J.Murphy",
+      "114243",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 27 Apr 2025 20:58:46 GMT+0100",
+      "Paul",
+      "Delap",
+      "463034",
+      "Gündogan",
+      "59859",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Tue, 29 Apr 2025 20:11:57 GMT+0100",
+      "Luke",
+      "Evanilson",
+      "444102",
+      "Wood",
+      "60689",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sat, 03 May 2025 18:47:24 GMT+0100",
+      "Paul",
+      "Gündogan",
+      "59859",
+      "Haaland",
+      "223094",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 May 2025 15:22:13 GMT+0100",
+      "Max",
+      "Joelinton",
+      "180974",
+      "Baleba",
+      "535301",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Sun, 04 May 2025 15:29:54 GMT+0100",
+      "Max",
+      "Kluivert",
+      "222683",
+      "Schade",
+      "513418",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Mon, 05 May 2025 22:29:07 GMT+0100",
+      "Dan",
+      "Maddison",
+      "172780",
+      "Eze",
+      "232413",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 16 May 2025 15:26:01 GMT+0100",
+      "Luke",
+      "Iwobi",
+      "153133",
+      "Gordon",
+      "232826",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 23 May 2025 16:06:25 GMT+0100",
+      "Luke",
+      "Saliba",
+      "462424",
+      "Zabarnyi",
+      "477580",
+      "Transfer"
+    ],
+    [
+      "Y",
+      "Fri, 23 May 2025 16:09:47 GMT+0100",
+      "Luke",
+      "Henderson",
+      "172649",
+      "Pope",
+      "98747",
+      "Transfer"
+    ]
+  ]
+}

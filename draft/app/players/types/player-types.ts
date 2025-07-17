@@ -20,6 +20,8 @@ export type PositionNameMap = {
     ca: 'Centre Attacker';
 };
 
+export type DataSource = 'fpl' | '2425';
+
 export interface PlayerSheetsData {
     id: string;
     code: string;
@@ -62,6 +64,7 @@ export interface PlayerDetailData {
     gameweekStats: GameweekStatWithPoints[];
     seasonTotals: SeasonTotals;
     currentGameweek: number;
+    dataSource: DataSource;
 }
 
 type Positions = {

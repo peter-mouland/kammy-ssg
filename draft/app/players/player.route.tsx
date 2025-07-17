@@ -4,7 +4,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { PlayerPage } from './player.page';
-import type { PlayerDetailData } from './types/player-types';
+import type { DataSource, PlayerDetailData } from './types/player-types';
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
     const playerName = data?.player ? `${data.player.first_name} ${data.player.second_name}` : 'Player';
@@ -14,7 +14,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     ];
 };
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
     const playerCode = params.playerCode;
 
     if (!playerCode || Number.isNaN(Number(playerCode))) {
@@ -22,8 +22,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
     }
 
     try {
+        const url = new URL(request.url);
+        const source = (url.searchParams.get('source') || 'fpl') as DataSource;
+
         const { getPlayerDetailData } = await import('../players/server/player.server');
-        const playerDetailData = await getPlayerDetailData(Number(playerCode));
+        const playerDetailData = await getPlayerDetailData(Number(playerCode), source);
 
         if (!playerDetailData.player) {
             throw new Response('Player not found', { status: 404 });
