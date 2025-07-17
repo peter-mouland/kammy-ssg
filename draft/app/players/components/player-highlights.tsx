@@ -11,7 +11,7 @@ interface PlayerHighlightsProps {
 }
 
 export function PlayerHighlights({ player, seasonTotals, currentGameweek, position }: PlayerHighlightsProps) {
-    const form = Number.parseFloat(player.form || '0');
+    const form = Number.parseFloat(seasonTotals.form || '0');
     const positionLower = position.toLowerCase();
 
     return (
@@ -41,9 +41,15 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
 
                 <StatCard
                     title="Form"
-                    value={form.toFixed(1)}
-                    subtitle="Last 5 games"
-                    className={form >= 4 ? styles.goodForm : form <= 2 ? styles.poorForm : styles.averageForm}
+                    value={seasonTotals.form?.toFixed(1) || '-'}
+                    subtitle="Last 5 games avg"
+                    className={
+                        seasonTotals.form >= 4
+                            ? styles.goodForm
+                            : seasonTotals.form <= 2
+                              ? styles.poorForm
+                              : styles.averageForm
+                    }
                 />
             </div>
 
@@ -56,7 +62,10 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
                     <div className={styles.performanceBar}>
                         <div className={styles.barHeader}>
                             <span className={styles.barLabel}>⚽ Attack</span>
-                            <span className={styles.barValue}>{seasonTotals.goals + seasonTotals.assists} G+A</span>
+                            <span className={styles.barValue}>
+                                {seasonTotals.goals + seasonTotals.assists} (
+                                {(seasonTotals.goalsPerGame + seasonTotals.assistsPerGame).toFixed(2)} /game)
+                            </span>
                         </div>
                         <div className={styles.barContainer}>
                             <div
@@ -95,15 +104,38 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
                                     style={{
                                         width: `${seasonTotals.cleanSheetPercentage}%`,
                                         backgroundColor:
-                                            seasonTotals.cleanSheetPercentage >= 50
+                                            seasonTotals.cleanSheetPercentage >= 30
                                                 ? '#059669'
-                                                : seasonTotals.cleanSheetPercentage >= 30
+                                                : seasonTotals.cleanSheetPercentage >= 15
                                                   ? '#d97706'
                                                   : '#dc2626',
                                     }}
                                 >
                                     <span className={styles.segmentLabel}>{seasonTotals.cleanSheetPercentage}%</span>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+                    {/* Defensive (if relevant) */}
+                    {positionLower === 'gk' && (
+                        <div className={styles.performanceBar}>
+                            <div className={styles.barHeader}>
+                                <span className={styles.barLabel}>🧤️ Saves</span>
+                                <span className={styles.barValue}>{seasonTotals.saves} Saves</span>
+                            </div>
+                            <div
+                                className={styles.barFull}
+                                style={{
+                                    width: `${seasonTotals.savesPerGamePercentage}%`,
+                                    backgroundColor:
+                                        seasonTotals.savesPerGame >= 3
+                                            ? '#059669' // Great (3+ saves/game gets points)
+                                            : seasonTotals.savesPerGame >= 2
+                                              ? '#d97706' // Good (2-3 saves/game)
+                                              : '#dc2626', // Poor (<2 saves/game)
+                                }}
+                            >
+                                <span className={styles.segmentLabel}>{seasonTotals.savesPerGame}/game</span>
                             </div>
                         </div>
                     )}
@@ -169,7 +201,7 @@ export function PlayerHighlights({ player, seasonTotals, currentGameweek, positi
                         icon="🎯"
                         text={getPointsInsight(seasonTotals.totalCustomPoints, seasonTotals.gamesPlayed)}
                     />
-                    <QuickInsight icon="📈" text={getFormInsight(form)} />
+                    <QuickInsight icon="📈" text={getFormInsight(seasonTotals.form)} />
                     <QuickInsight
                         icon="⏱️"
                         text={getMinutesInsight(seasonTotals.totalMinutes, seasonTotals.gamesPlayed)}

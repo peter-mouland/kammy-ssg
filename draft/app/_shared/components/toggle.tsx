@@ -10,42 +10,33 @@ export interface ToggleOption {
 }
 
 export interface GenericToggleProps {
-    options: [ToggleOption, ToggleOption]; // Exactly 2 options for this toggle design
+    options: ToggleOption[];
     activeValue: string;
     onToggle: (value: string) => void;
 }
 
 export const GenericToggle: React.FC<GenericToggleProps> = ({ options, activeValue, onToggle }) => {
-    const [firstOption, secondOption] = options;
-
     return (
         <div className={styles.toggleContainer}>
             <div className={styles.toggleTrack} data-active={activeValue}>
                 {/* Sliding background indicator */}
                 <div className={styles.toggleSlider} data-position={activeValue} />
 
-                {/* Toggle buttons */}
-                <button
-                    type="button"
-                    onClick={() => onToggle(firstOption.value)}
-                    className={`${styles.toggleOption} ${activeValue === firstOption.value ? styles.active : ''}`}
-                    aria-pressed={activeValue === firstOption.value}
-                    title={firstOption.title || `View ${firstOption.label}`}
-                >
-                    <span className={styles.toggleIcon}>{firstOption.icon}</span>
-                    <span className={styles.toggleLabel}>{firstOption.label}</span>
-                </button>
-
-                <button
-                    type="button"
-                    onClick={() => onToggle(secondOption.value)}
-                    className={`${styles.toggleOption} ${activeValue === secondOption.value ? styles.active : ''}`}
-                    aria-pressed={activeValue === secondOption.value}
-                    title={secondOption.title || `View ${secondOption.label}`}
-                >
-                    <span className={styles.toggleIcon}>{secondOption.icon}</span>
-                    <span className={styles.toggleLabel}>{secondOption.label}</span>
-                </button>
+                {options.map((option) => {
+                    return (
+                        <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => onToggle(option.value)}
+                            className={`${styles.toggleOption} ${activeValue === option.value ? styles.active : ''}`}
+                            aria-pressed={activeValue === option.value}
+                            title={option.title || `View ${option.label}`}
+                        >
+                            <span className={styles.toggleIcon}>{option.icon}</span>
+                            <span className={styles.toggleLabel}>{option.label}</span>
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );

@@ -65,6 +65,7 @@ export interface PlayerDetailData {
     seasonTotals: SeasonTotals;
     currentGameweek: number;
     dataSource: DataSource;
+    form: number;
 }
 
 type Positions = {

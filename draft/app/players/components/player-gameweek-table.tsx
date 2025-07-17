@@ -66,6 +66,22 @@ const renderMatchResult = (gw: GameweekStatWithPoints): React.ReactNode => {
     );
 };
 
+/**
+ * Calculate rolling form (last 5 games) up to the current gameweek
+ */
+const calculateRollingForm = (gameweekStats: GameweekStatWithPoints[], currentIndex: number): number => {
+    // Get games up to and including current gameweek, filter for played games
+    const gamesUpToCurrent = gameweekStats
+        .slice(currentIndex) // From current gameweek onwards (data is sorted desc)
+        .filter((gw) => gw.minutes > 0)
+        .slice(0, 5); // Take up to 5 games
+
+    if (gamesUpToCurrent.length === 0) return 0;
+
+    const totalPoints = gamesUpToCurrent.reduce((sum, gw) => sum + gw.fplPoints, 0);
+    return Math.round((totalPoints / gamesUpToCurrent.length) * 10) / 10;
+};
+
 export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }: PlayerGameweekTableProps) {
     const columns: TableColumn<GameweekStatWithPoints>[] = [
         {
@@ -198,6 +214,26 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             render: (bonus) => getStatDisplay(bonus, 'bonus', position),
         });
     }
+
+    // Add form column (after stats, before points)
+    columns.push({
+        key: 'form',
+        header: 'Form',
+        align: 'center',
+        width: 60,
+        title: () => 'Rolling average over last 5 played games',
+        render: (_, gw, index) => {
+            const form = calculateRollingForm(gameweekStats, index);
+            const color =
+                form >= 4 ? 'var(--color-success)' : form <= 2 ? 'var(--color-error)' : 'var(--color-gray-600)';
+
+            return (
+                <span style={{ color, fontWeight: 'var(--font-weight-medium)' }}>
+                    {form > 0 ? form.toFixed(1) : '-'}
+                </span>
+            );
+        },
+    });
 
     // Add points columns
     columns.push(

@@ -35,6 +35,12 @@ export const DataSourceToggle: React.FC<DataSourceToggleProps> = ({ dataSource }
             icon: '📊',
             title: 'View 2024/25 season data',
         },
+        {
+            value: '2223',
+            label: '22/23',
+            icon: '📊',
+            title: 'View 2022/23 season data',
+        },
     ] as const;
 
     return <GenericToggle options={options} activeValue={dataSource} onToggle={handleToggle} />;

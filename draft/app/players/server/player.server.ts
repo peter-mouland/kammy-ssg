@@ -2,7 +2,7 @@
 
 // app/routes/server/player-detail.server.ts
 import path from 'node:path';
-import type { FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
+import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 import type { CustomPosition, DataSource, PlayerDetailData } from '../types/player-types';
 
@@ -48,7 +48,7 @@ export async function getPlayerDetailData(
             playerDetailedStats = await fplApiCache.getPlayerDetailedStats(fplPlayer.id);
         } else {
             // Load 2425 fixture data
-            playerDetailedStats = await loadFixturesPlayerData(fplPlayer.id, dataSource);
+            playerDetailedStats = await loadFixturesPlayerData(fplPlayer.code, dataSource);
         }
 
         const gameweekStats = processGameweekData(playerDetailedStats?.history || [], teamLookup);
@@ -76,12 +76,16 @@ export async function getPlayerDetailData(
 /**
  * Load 2425 fixture data from local files
  */
-async function loadFixturesPlayerData(playerId: number, season: string): Promise<FplPlayerSeasonData | null> {
+async function loadFixturesPlayerData(playerCode: number, season: string): Promise<FplPlayerSeasonData | null> {
     try {
-        const playerSeasonData = await import(`../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`);
+        const bootstrap: FplBootstrapData = await import(`../../api/fixtures/${season}/fpl/bootstrap-static.json`);
+        const playerId = bootstrap.elements.find((e) => e.code === playerCode)?.id;
+        const playerSeasonData: FplPlayerSeasonData = await import(
+            `../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`
+        );
         return playerSeasonData;
-    } catch (error) {
-        console.log(`⚠️ No 2425 data found for player ${playerId}, returning empty stats`);
+    } catch (_error) {
+        console.log(`⚠️ No 2425 data found for player code ${playerCode}, returning empty stats`);
         return null;
     }
 }
@@ -174,9 +178,25 @@ function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[]) {
         totals.averageFplPoints = Math.round((totals.totalFplPoints / totals.gamesPlayed) * 10) / 10;
         totals.averageCustomPoints = Math.round((totals.totalCustomPoints / totals.gamesPlayed) * 10) / 10;
         totals.goalsPerGame = Math.round((totals.goals / totals.gamesPlayed) * 100) / 100;
+        totals.savesPerGame = Math.round((totals.saves / totals.gamesPlayed) * 100) / 100;
+        const maxSavesPerGame = 8; // Reasonable max for a busy goalkeeper
+        totals.savesPerGamePercentage = Math.min((totals.savesPerGame / maxSavesPerGame) * 100, 100);
         totals.assistsPerGame = Math.round((totals.assists / totals.gamesPlayed) * 100) / 100;
         totals.cleanSheetPercentage = Math.round((totals.cleanSheets / totals.gamesPlayed) * 100);
+        totals.form = calculateForm(gameweekStats);
     }
 
     return totals;
+}
+
+/**
+ * Calculate form - average FPL points over last 5 played games
+ */
+function calculateForm(gameweekStats: GameweekStatWithPoints[], lastNGames = 5): number {
+    const playedGames = gameweekStats.filter((gw) => gw.minutes > 0).slice(0, lastNGames);
+
+    if (playedGames.length === 0) return 0;
+
+    const totalPoints = playedGames.reduce((sum, gw) => sum + gw.fplPoints, 0);
+    return Math.round((totalPoints / playedGames.length) * 10) / 10; // Round to 1 decimal
 }
