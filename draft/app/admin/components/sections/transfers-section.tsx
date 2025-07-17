@@ -165,7 +165,6 @@ function GameweekTransfersSection({
             header: 'Player Out',
             width: '200px',
             render: (_, item) => {
-                console.log(item);
                 return (
                     <PlayerSummary
                         player={item.transfer.playerOut}

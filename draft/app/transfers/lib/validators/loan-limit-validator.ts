@@ -1,5 +1,7 @@
 // app/transfers/lib/validators/loan-limit-validator.ts
 
+import type { PositionSlotKey } from '../../../teams/types/team-types';
+import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 
 /**
@@ -7,6 +9,21 @@ import type { RuleValidationResult, TransferRuleContext } from '../../types/tran
  */
 export function validateLoanLimit(context: TransferRuleContext): RuleValidationResult {
     const { transfer, divisionRosters } = context;
+    //  MUST use latest "context.divisionRosters" so we're working on up-to-date rosters i.e. after applying transfers on the fly
+    //  this means this function can not be hoisted higher than 'applyIndividualTransfer'
+    const ownedPlayersByCode = Object.entries(context.divisionRosters).reduce(
+        (acc: OwnedPlayersByCode, [managerId, team]) => {
+            (Object.keys(team.roster) as PositionSlotKey[]).forEach((slotKey) => {
+                const slot = team.roster[slotKey];
+                acc[slot.player.playerCode] = { managerId, slotKey, slot };
+            });
+
+            return acc;
+        },
+        {},
+    );
+    const playerInOwned = ownedPlayersByCode[transfer.playerIn.code];
+    const playerOutOwned = ownedPlayersByCode[transfer.playerOut.code];
 
     // Only apply to loan start transfers
     if (transfer.transferType !== 'LOAN_START') {
@@ -36,7 +53,8 @@ export function validateLoanLimit(context: TransferRuleContext): RuleValidationR
     const onLoanSlot = managerRoster.on_loan_0;
     const hasPlayerOnLoan = onLoanSlot?.player?.playerCode > 0;
 
-    if (hasPlayerOnLoan) {
+    // loaning a player out
+    if (hasPlayerOnLoan && transfer.onLoanTo) {
         const loanedPlayerName = onLoanSlot.player.playerName;
         return {
             ruleId: 'loan-limit',
