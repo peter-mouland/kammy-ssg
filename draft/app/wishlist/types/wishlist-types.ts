@@ -17,16 +17,16 @@ export interface WishlistContextType {
     error: string | null;
 
     // Actions
-    addWishlist: (wishlist: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt' | 'playerIds'>) => void;
+    addWishlist: (wishlist: Omit<Wishlist, 'id' | 'createdAt' | 'updatedAt' | 'playerCodes'>) => void;
     updateWishlist: (wishlist: Wishlist, updates: Partial<Wishlist>) => void;
     deleteWishlist: (id: Wishlist['id']) => void;
-    addPlayerToWishlist: (wishlistId: string, playerId: number) => void;
-    removePlayerFromWishlist: (wishlistId: string, playerId: number) => void;
+    addPlayerToWishlist: (wishlistId: string, playerCode: number) => void;
+    removePlayerFromWishlist: (wishlistId: string, playerCode: number) => void;
 
     // Getters
     getWishlistById: (id: string) => Wishlist | undefined;
-    getWishlistsForPlayer: (playerId: number) => Wishlist[];
-    isPlayerInWishlist: (wishlistId: string, playerId: number) => boolean;
+    getWishlistsForPlayer: (playerCode: number) => Wishlist[];
+    isPlayerInWishlist: (wishlistId: string, playerCode: number) => boolean;
     availableColors: Wishlist['color'][];
     allColors: Record<string, Wishlist['color']>;
 }

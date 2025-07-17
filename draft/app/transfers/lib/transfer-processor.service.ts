@@ -140,8 +140,16 @@ function applyInternalSwap(managerRoster: TeamRoster, transfer: ProcessedTransfe
     }
 
     // Swap the players between positions
-    managerRoster[incomingSlot.slotKey] = movePlayer({ player: playerOut, slot: incomingSlot.slot });
-    managerRoster[outgoingSlot.slotKey] = movePlayer({ player: playerIn, slot: outgoingSlot.slot });
+    // note: keep the slot loan info with the player
+    //  - we don't want to keep sub marked as loan when the player on loan moved
+    managerRoster[incomingSlot.slotKey] = movePlayer(
+        { player: playerOut, slot: incomingSlot.slot },
+        outgoingSlot.slot.player,
+    );
+    managerRoster[outgoingSlot.slotKey] = movePlayer(
+        { player: playerIn, slot: outgoingSlot.slot },
+        incomingSlot.slot.player,
+    );
 
     return {
         rosterId: managerId,
@@ -199,6 +207,8 @@ function applyLoanStart(managerRoster: TeamRoster, transfer: ProcessedTransfer):
     }
     const loanFromDetails = transfer.onLoanFrom
         ? {
+              // firebase hates undefined. loves null
+              onLoanTo: null,
               onLoanFrom: transfer.onLoanFrom,
               onLoanStart: transfer.timestamp.toISOString(),
           }
@@ -223,11 +233,8 @@ function applyLoanStart(managerRoster: TeamRoster, transfer: ProcessedTransfer):
 function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer): TransferApplicationResult {
     const { managerId, playerIn, playerOut } = transfer;
 
-    // Find the player in on_loan_0 slot
-    const loanedPlayer = managerRoster.on_loan_0?.player;
-    if (loanedPlayer?.playerCode !== playerIn.code) {
-        throw new Error(`Player ${playerIn.web_name} (${playerIn.code}) not found in ${managerId}'s loan slot`);
-    }
+    // use-case 1
+    // loan end may be for loaned-in player i.e. the player returning in doesn't have to be the loaned out player
 
     const outgoingSlot = findPlayerInRoster(managerRoster, playerOut.code);
     if (!outgoingSlot) {
@@ -235,7 +242,15 @@ function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer)
     }
 
     // move loaned player back into position
-    managerRoster[outgoingSlot.slotKey] = movePlayer({ player: playerIn, slot: outgoingSlot.slot });
+    // managerRoster[outgoingSlot.slotKey] = movePlayer({ player: playerIn, slot: outgoingSlot.slot });
+    managerRoster[outgoingSlot.slotKey] = movePlayer(
+        { player: playerIn, slot: outgoingSlot.slot },
+        {
+            onLoanTo: null,
+            onLoanFrom: null,
+            onLoanStart: null,
+        },
+    );
 
     // if the loan to someone is ending, then remove player from loan slot
     if (transfer.onLoanTo) {
@@ -289,7 +304,13 @@ function createEmptyPoints(): Points {
     };
 }
 
-const movePlayer = ({ player, slot }, loanInfo = {}) => {
+// firebase hates undefined. loves null
+type LoanInfo = {
+    onLoanTo: string | null;
+    onLoanStart: string | null;
+    onLoanFrom: string | null;
+};
+const movePlayer = ({ player, slot }, loanInfo?: LoanInfo) => {
     return {
         player: {
             playerId: player.id,
@@ -299,9 +320,10 @@ const movePlayer = ({ player, slot }, loanInfo = {}) => {
             teamPosition: slot.player.teamPosition,
             teamSlotIndex: slot.player.teamSlotIndex,
             isSub: slot.player.isSub,
-            onLoanTo: loanInfo.onLoanTo || null,
-            onLoanStart: loanInfo.onLoanStart || null,
-            onLoanFrom: loanInfo.onLoanFrom || null,
+            // update loan info if passed, or keep loan info if exisitng (i.e. do not accidentally remove)
+            onLoanTo: loanInfo ? loanInfo.onLoanTo : slot.player.onLoanTo || null,
+            onLoanStart: loanInfo ? loanInfo.onLoanStart : slot.player.onLoanStart || null,
+            onLoanFrom: loanInfo ? loanInfo.onLoanFrom : slot.player.onLoanFrom || null,
             assignedAt: new Date().toISOString(),
         },
         gameweek: {

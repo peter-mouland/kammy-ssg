@@ -24,7 +24,6 @@ export function getWishlistsFromStorage(): Wishlist[] {
 export function saveWishlistsToStorage(wishlists: Wishlist[]): void {
     try {
         localStorage.setItem(WISHLISTS_STORAGE_KEY, JSON.stringify(wishlists));
-        console.log('💾 Saved wishlists to localStorage:', wishlists);
     } catch (error) {
         console.error('Error saving wishlists to localStorage:', error);
     }

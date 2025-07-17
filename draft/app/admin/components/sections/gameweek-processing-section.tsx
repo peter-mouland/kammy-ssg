@@ -105,6 +105,14 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                     <AdminButton
                         icon={<Icons.RefreshIcon />}
                         variant="danger"
+                        onClick={() => handleProcessGameweek('gameweeks', 30)}
+                        disabled={isLoading}
+                    >
+                        Regenerate 30+
+                    </AdminButton>
+                    <AdminButton
+                        icon={<Icons.RefreshIcon />}
+                        variant="danger"
                         onClick={() => handleProcessGameweek('all')}
                         disabled={isLoading}
                     >

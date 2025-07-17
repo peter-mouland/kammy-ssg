@@ -436,6 +436,9 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     title: 'No players found',
                     description: 'Try adjusting your filters to see more results',
                 }}
+                getCellProps={(team) => ({
+                    style: team.player.onLoanTo ? { background: 'var(--color-gray-200)' } : {},
+                })}
             />
         </div>
     );

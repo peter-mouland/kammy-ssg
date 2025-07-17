@@ -165,7 +165,14 @@ function GameweekTransfersSection({
             header: 'Player Out',
             width: '200px',
             render: (_, item) => {
-                return <PlayerSummary player={item.transfer.playerOut} teamsByCode={teamsByCode} />;
+                console.log(item);
+                return (
+                    <PlayerSummary
+                        player={item.transfer.playerOut}
+                        teamsByCode={teamsByCode}
+                        onLoanTo={item.transfer.onLoanTo}
+                    />
+                );
             },
         },
         {
@@ -173,7 +180,13 @@ function GameweekTransfersSection({
             header: 'Player In',
             width: '200px',
             render: (_, item) => {
-                return <PlayerSummary player={item.transfer.playerIn} teamsByCode={teamsByCode} />;
+                return (
+                    <PlayerSummary
+                        player={item.transfer.playerIn}
+                        teamsByCode={teamsByCode}
+                        onLoanFrom={item.transfer.onLoanFrom}
+                    />
+                );
             },
         },
         {

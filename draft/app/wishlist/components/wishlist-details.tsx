@@ -13,7 +13,7 @@ interface WishlistDetailsProps {
 
 export function WishlistDetails({ playersByCode, teamsByCode, wishlist, onRemovePlayer }: WishlistDetailsProps) {
     const [searchTerm, setSearchTerm] = React.useState('');
-    console.log(wishlist);
+
     const handleRemovePlayer = (playerCode: number) => {
         if (confirm('Remove this player from the wishlist?')) {
             onRemovePlayer(wishlist.id, playerCode);
@@ -100,7 +100,6 @@ interface WishlistPlayerRowProps {
 }
 
 function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: WishlistPlayerRowProps) {
-    console.log({ player });
     // In a real app, you'd fetch the player data here
     // For demonstration, showing placeholder data
     const playerName = player.web_name;

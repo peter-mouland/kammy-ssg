@@ -245,3 +245,16 @@
         }
     }
 }
+
+.loanIndicator {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: var(--color-warning);
+    color: #ffffff;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    line-height: 1;
+}

@@ -22,14 +22,12 @@ export class WishlistManager {
 
     static getWishlists(): Wishlist[] {
         if (!WishlistManager.isClient) {
-            console.log('Server-side: returning empty wishlists array');
             return [];
         }
 
         try {
             const stored = localStorage.getItem(WishlistManager.STORAGE_KEY);
             const wishlists = stored ? JSON.parse(stored) : [];
-            console.log('Loaded wishlists from localStorage:', wishlists);
             return wishlists;
         } catch (error) {
             console.error('Error loading wishlists:', error);
@@ -39,13 +37,11 @@ export class WishlistManager {
 
     static saveWishlists(wishlists: Wishlist[]): void {
         if (!WishlistManager.isClient) {
-            console.warn('Server-side: cannot save wishlists to localStorage');
             return;
         }
 
         try {
             localStorage.setItem(WishlistManager.STORAGE_KEY, JSON.stringify(wishlists));
-            console.log('Saved wishlists to localStorage:', wishlists);
         } catch (error) {
             console.error('Error saving wishlists:', error);
             throw new Error('Failed to save wishlists');
@@ -66,7 +62,7 @@ export class WishlistManager {
             id: WishlistManager.generateId(),
             label,
             description,
-            playerIds: [],
+            playerCodes: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             color: selectedColor,
@@ -79,7 +75,6 @@ export class WishlistManager {
 
     static updateWishlist(id: string, updates: Partial<Omit<Wishlist, 'id' | 'createdAt'>>): boolean {
         if (!WishlistManager.isClient) {
-            console.warn('Server-side: cannot update wishlist');
             return false;
         }
 
@@ -100,7 +95,6 @@ export class WishlistManager {
 
     static deleteWishlist(id: string): boolean {
         if (!WishlistManager.isClient) {
-            console.warn('Server-side: cannot delete wishlist');
             return false;
         }
 
@@ -113,7 +107,7 @@ export class WishlistManager {
         return true;
     }
 
-    static addPlayerToWishlist(wishlistId: string, playerId: number): boolean {
+    static addPlayerToWishlist(wishlistId: string, playerCode: number): boolean {
         if (!WishlistManager.isClient) {
             console.warn('Server-side: cannot add player to wishlist');
             return false;
@@ -122,16 +116,16 @@ export class WishlistManager {
         const wishlists = WishlistManager.getWishlists();
         const wishlist = wishlists.find((w) => w.id === wishlistId);
 
-        if (!wishlist || wishlist.playerIds.includes(playerId)) return false;
+        if (!wishlist || wishlist.playerCodes.includes(playerCode)) return false;
 
-        wishlist.playerIds.push(playerId);
+        wishlist.playerCodes.push(playerCode);
         wishlist.updatedAt = new Date().toISOString();
 
         WishlistManager.saveWishlists(wishlists);
         return true;
     }
 
-    static removePlayerFromWishlist(wishlistId: string, playerId: number): boolean {
+    static removePlayerFromWishlist(wishlistId: string, playerCode: number): boolean {
         if (!WishlistManager.isClient) {
             console.warn('Server-side: cannot remove player from wishlist');
             return false;
@@ -142,23 +136,23 @@ export class WishlistManager {
 
         if (!wishlist) return false;
 
-        const initialLength = wishlist.playerIds.length;
-        wishlist.playerIds = wishlist.playerIds.filter((id) => id !== playerId);
+        const initialLength = wishlist.playerCodes.length;
+        wishlist.playerCodes = wishlist.playerCodes.filter((id) => id !== playerCode);
 
-        if (wishlist.playerIds.length === initialLength) return false;
+        if (wishlist.playerCodes.length === initialLength) return false;
 
         wishlist.updatedAt = new Date().toISOString();
         WishlistManager.saveWishlists(wishlists);
         return true;
     }
 
-    static getPlayerWishlists(playerId: number): Wishlist[] {
-        return WishlistManager.getWishlists().filter((wishlist) => wishlist.playerIds.includes(playerId));
+    static getPlayerWishlists(playerCode: number): Wishlist[] {
+        return WishlistManager.getWishlists().filter((wishlist) => wishlist.playerCodes.includes(playerCode));
     }
 
-    static isPlayerInWishlist(playerId: number, wishlistId: string): boolean {
+    static isPlayerInWishlist(playerCode: number, wishlistId: string): boolean {
         const wishlist = WishlistManager.getWishlists().find((w) => w.id === wishlistId);
-        return wishlist?.playerIds.includes(playerId) || false;
+        return wishlist?.playerCodes.includes(playerCode) || false;
     }
 
     static getAvailableColors(): string[] {

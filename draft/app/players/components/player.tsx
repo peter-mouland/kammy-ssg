@@ -14,10 +14,14 @@ export const PlayerSummary = ({
     teamsByCode,
     fplPlayersByCode,
     player,
+    onLoanTo,
+    onLoanFrom,
 }: {
     teamsByCode: Record<number, FplTeam>;
     fplPlayersByCode?: Record<number, EnhancedPlayerData>;
     player: any;
+    onLoanTo?: string;
+    onLoanFrom?: string;
 }) => {
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
     return (
@@ -30,7 +34,12 @@ export const PlayerSummary = ({
                 } as React.CSSProperties
             }
         >
-            <img src={img} loading="lazy" alt="" width={35} />
+            <div style={{ position: 'relative' }}>
+                <img src={img} loading="lazy" alt="" width={35} />
+
+                {onLoanTo && <div className={styles.loanIndicator}>On Loan to {onLoanTo}</div>}
+                {onLoanFrom && <div className={styles.loanIndicator}>On Loan from {onLoanFrom}</div>}
+            </div>
             <PositionBadge position={player.playerPosition || player.draft.position}>
                 {player.playerPosition || player.draft.position}
             </PositionBadge>

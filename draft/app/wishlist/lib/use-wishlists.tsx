@@ -38,8 +38,6 @@ const initialState: WishlistState = {
 };
 
 function wishlistReducer(state: WishlistState, action: WishlistAction): WishlistState {
-    console.log('🔥 REDUCER ACTION:', action.type, 'Current state length:', state.wishlists.length);
-
     switch (action.type) {
         case 'LOAD_WISHLISTS_START':
             return {
@@ -49,7 +47,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
             };
 
         case 'LOAD_WISHLISTS_SUCCESS':
-            console.log('📥 LOAD_WISHLISTS_SUCCESS - Loaded wishlists:', action.payload.length);
             return {
                 ...state,
                 wishlists: action.payload,
@@ -72,7 +69,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                 error: null,
             };
             saveWishlistsToStorage(newStateAdd.wishlists);
-            console.log('➕ ADD_WISHLIST - New wishlist added, total now:', newStateAdd.wishlists.length);
             return newStateAdd;
         }
 
@@ -83,7 +79,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                 error: null,
             };
             saveWishlistsToStorage(newStateUpdate.wishlists);
-            console.log('✏️ UPDATE_WISHLIST - Wishlist updated:', action.payload.id);
             return newStateUpdate;
         }
 
@@ -94,7 +89,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                 error: null,
             };
             saveWishlistsToStorage(newStateDelete.wishlists);
-            console.log('🗑️ DELETE_WISHLIST - Wishlist removed, total now:', newStateDelete.wishlists.length);
             return newStateDelete;
         }
 
@@ -113,7 +107,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                 error: null,
             };
             saveWishlistsToStorage(newStateAddPlayer.wishlists);
-            console.log('👤➕ ADD_PLAYER_TO_WISHLIST - Player added to wishlist:', action.payload);
             return newStateAddPlayer;
         }
 
@@ -132,7 +125,6 @@ function wishlistReducer(state: WishlistState, action: WishlistAction): Wishlist
                 error: null,
             };
             saveWishlistsToStorage(newStateRemovePlayer.wishlists);
-            console.log('👤➖ REMOVE_PLAYER_FROM_WISHLIST - Player removed from wishlist:', action.payload);
             return newStateRemovePlayer;
         }
 
@@ -148,12 +140,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
     // Load from localStorage on mount
     useEffect(() => {
-        console.log('🔄 WishlistProvider - Initializing...');
         dispatch({ type: 'LOAD_WISHLISTS_START' });
 
         try {
             const stored = getWishlistsFromStorage();
-            console.log('📥 Loaded wishlists from localStorage:', stored);
             dispatch({ type: 'LOAD_WISHLISTS_SUCCESS', payload: stored });
         } catch (error) {
             console.error('❌ Failed to load wishlists:', error);
@@ -163,12 +153,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             });
         }
     }, []);
-
-    // Debug effect to track all state changes
-    useEffect(() => {
-        console.log('🔄 WISHLISTS STATE CHANGED:', state.wishlists.length, 'wishlists in React state');
-        console.log('📋 Wishlist details:', state.wishlists);
-    }, [state.wishlists]);
 
     // Actions
     const addWishlist = useCallback(
@@ -181,14 +165,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
                 updatedAt: new Date().toISOString(),
             };
 
-            console.log('🎯 Context addWishlist called with:', newWishlist.label);
             dispatch({ type: 'ADD_WISHLIST', payload: newWishlist });
         },
         [],
     );
 
     const updateWishlist = useCallback((wishlist: Wishlist, updates: Partial<Wishlist>) => {
-        console.log('🎯 Context updateWishlist called with:', wishlist.id);
         const updatedWishlist = {
             ...wishlist,
             ...updates,
@@ -198,17 +180,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const deleteWishlist = useCallback((id: string) => {
-        console.log('🎯 Context deleteWishlist called with:', id);
         dispatch({ type: 'DELETE_WISHLIST', payload: id });
     }, []);
 
     const addPlayerToWishlist = useCallback((wishlistId: string, playerCode: number) => {
-        console.log('🎯 Context addPlayerToWishlist called:', { wishlistId, playerCode });
         dispatch({ type: 'ADD_PLAYER_TO_WISHLIST', payload: { wishlistId, playerCode } });
     }, []);
 
     const removePlayerFromWishlist = useCallback((wishlistId: string, playerCode: number) => {
-        console.log('🎯 Context removePlayerFromWishlist called:', { wishlistId, playerCode });
         dispatch({ type: 'REMOVE_PLAYER_FROM_WISHLIST', payload: { wishlistId, playerCode } });
     }, []);
 

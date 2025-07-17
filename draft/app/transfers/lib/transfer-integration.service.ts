@@ -26,8 +26,7 @@ export async function applyTransfersToGameweekDocument(
             `📋 Found ${relevantTransfers.length} approved GW transfers for ${sourceDocument.divisionId} GW${targetGameweekId}`,
         );
 
-        if (approvedTransfers.length === 0) {
-            console.log(`ℹ️ No transfers to apply between GW${sourceDocument.gameweek} and GW${targetGameweekId}`);
+        if (relevantTransfers.length === 0) {
             return createNewGameweekDocument(sourceDocument, targetGameweekId);
         }
 
@@ -37,11 +36,6 @@ export async function applyTransfersToGameweekDocument(
         if (rosterUpdate.errors.length > 0) {
             console.warn('⚠️ Transfer application errors:', rosterUpdate.errors);
         }
-
-        console.log(`✅ Applied ${rosterUpdate.appliedTransfers.length} transfers successfully`);
-        rosterUpdate.appliedTransfers.forEach((t) => {
-            console.log(`   ... applied ${t.positionSlot} ${t.playerBefore?.web_name} -> ${t.playerAfter.web_name}`);
-        });
 
         // Create new document with updated rosters
         const newDocument = createNewGameweekDocument(sourceDocument, targetGameweekId);
