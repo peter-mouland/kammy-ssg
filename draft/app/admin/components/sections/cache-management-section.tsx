@@ -9,7 +9,6 @@ import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
 import { AdminButton } from '../ui/admin-button';
 import { AdminMessage } from '../ui/admin-message';
-import { StatusCard } from '../ui/status-card';
 import styles from './cache-management-section.module.css';
 
 interface CacheManagementSectionProps {
@@ -66,39 +65,10 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
 
     return (
         <AdminContainer>
-            {/* Cache Status Overview */}
-            <AdminSection
-                title="Cache Status"
-                icon={<Icons.CloudIcon />}
-                description="Monitor and manage system caches"
-            >
-                <AdminGrid columns="auto" minWidth="200px">
-                    <StatusCard
-                        icon="🗄️"
-                        label="Cache Health"
-                        percentage={cacheStatus.health}
-                        status={getCacheStatusColor(cacheStatus.health)}
-                    />
-                    <StatusCard
-                        icon="📊"
-                        label="Completion"
-                        percentage={`${cacheStatus.completionPercentage}%`}
-                        status={cacheStatus.completionPercentage > 80 ? 'healthy' : 'warning'}
-                    />
-                    <StatusCard icon="🕒" label="Last Updated" percentage={lastUpdated} status="healthy" />
-                    <StatusCard
-                        icon="💾"
-                        label="Data Loaded"
-                        percentage={new Date(sharedContext.loadedAt).toLocaleString()}
-                        status="healthy"
-                    />
-                </AdminGrid>
-            </AdminSection>
-
             {/* Cache Management Actions */}
             <AdminSection
                 title="Cache Management"
-                icon={<Icons.SettingsIcon />}
+                icon={<Icons.CloudIcon />}
                 description="Manage system caches and data sources"
             >
                 <AdminGrid columns="auto" minWidth="250px">
@@ -150,74 +120,6 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                         </AdminButton>
                     </div>
                 </AdminGrid>
-            </AdminSection>
-
-            {/* Cache Statistics Detail */}
-            <AdminSection
-                title="Cache Statistics"
-                icon={<Icons.DatabaseIcon />}
-                description="Detailed cache key information with hit counts and age"
-            >
-                {cacheStats?.data ? (
-                    <div className={styles.cacheStatsGrid}>
-                        {Object.entries(cacheStats.data || {}).map(([cacheKey, stats]: [string, any]) => (
-                            <div key={cacheKey} className={styles.cacheKeyCard}>
-                                <div className={styles.cacheKeyHeader}>
-                                    <h4 className={styles.cacheKeyName}>{cacheKey}</h4>
-                                    <span
-                                        className={`${styles.cacheStatus} ${stats.isExpired ? styles.expired : styles.fresh}`}
-                                    >
-                                        {stats.isExpired ? 'Expired' : 'Fresh'}
-                                    </span>
-                                </div>
-
-                                <div className={styles.cacheKeyStats}>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>Hits:</span>
-                                        <span className={styles.statValue}>{stats.hitCount || 0}</span>
-                                    </div>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>Age:</span>
-                                        <span className={styles.statValue}>
-                                            {stats.lastUpdated ? formatAge(new Date(stats.lastUpdated)) : 'Never set'}
-                                        </span>
-                                    </div>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>Size:</span>
-                                        <span className={styles.statValue}>
-                                            {stats.size ? `${(stats.size / 1024).toFixed(1)}KB` : 'Unknown'}
-                                        </span>
-                                    </div>
-                                    <div className={styles.statItem}>
-                                        <span className={styles.statLabel}>TTL:</span>
-                                        <span className={styles.statValue}>
-                                            {stats.ttl ? `${Math.round(stats.ttl / 1000 / 60)}min` : 'No TTL'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {stats.lastUpdated && (
-                                    <div className={styles.cacheKeyTimestamp}>
-                                        Last updated: {new Date(stats.lastUpdated).toLocaleString()}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-
-                        {Object.keys(cacheStats.data || {}).length === 0 && (
-                            <div className={styles.emptyCacheState}>
-                                <div className={styles.emptyIcon}>🗄️</div>
-                                <h4>No Cache Entries</h4>
-                                <p>No cached data found. Cache might be empty or not initialized.</p>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div className={styles.cacheStatsLoading}>
-                        <div className={styles.loadingIcon}>⏳</div>
-                        <p>Loading cache statistics...</p>
-                    </div>
-                )}
             </AdminSection>
 
             {/* Debug Information */}

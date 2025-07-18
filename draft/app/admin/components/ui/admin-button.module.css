@@ -85,7 +85,7 @@
     animation: none;
 }
 
-.actionButton.disabled svg {
+.actionButton.loading svg {
     animation: spin 1s linear infinite;
 }
 

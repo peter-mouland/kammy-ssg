@@ -10,6 +10,7 @@ docs
 .DS_Store
 .swp
 .env.local
+.env.prod
 .env.developer
 .divshot-cache/
 *.iml

@@ -130,11 +130,11 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                     </AdminButton>
 
                     <AdminButton
+                        icon={<Icons.RefreshIcon />}
                         variant="secondary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek - 1)}
                         disabled={isLoading || currentGameweek <= 1}
                         loading={isLoading}
-                        icon={'↩️'}
                     >
                         Regenerate Last Gameweek
                     </AdminButton>
