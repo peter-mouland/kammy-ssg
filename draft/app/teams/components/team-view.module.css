@@ -35,12 +35,6 @@
     color: var(--color-gray-900);
 }
 
-.managerName {
-    margin: 0;
-    font-size: var(--font-base);
-    color: var(--color-gray-600);
-}
-
 .divisionBadge {
     display: inline-flex;
     align-items: center;

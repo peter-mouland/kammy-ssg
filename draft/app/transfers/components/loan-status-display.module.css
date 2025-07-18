@@ -63,20 +63,6 @@
     margin-bottom: 0;
 }
 
-.subsectionTitle {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    margin: 0 0 var(--spacing-4) 0;
-    color: var(--color-gray-700);
-    font-size: var(--font-lg);
-    font-weight: var(--font-weight-medium);
-}
-
-.statusIcon {
-    font-size: var(--font-lg);
-}
-
 .loansGrid {
     display: grid;
     gap: var(--spacing-4);
@@ -126,46 +112,6 @@
     letter-spacing: 0.5px;
 }
 
-.loanPlayers {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-    margin-bottom: var(--spacing-4);
-    padding: var(--spacing-3);
-    background: var(--color-white);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-gray-200);
-}
-
-.playerSide {
-    flex: 1;
-    min-width: 0;
-}
-
-.playerDirection {
-    font-size: var(--font-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-gray-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: var(--spacing-2);
-}
-
-.exchangeIcon {
-    color: var(--color-primary);
-    font-size: var(--font-xl);
-    font-weight: var(--font-weight-bold);
-    flex-shrink: 0;
-    padding: var(--spacing-2);
-    background: var(--color-primary-light);
-    border-radius: var(--radius-full);
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .activeLoanPlayer {
     margin-bottom: var(--spacing-4);
     padding: var(--spacing-3);
@@ -205,12 +151,6 @@
     margin-bottom: var(--spacing-1);
 }
 
-.teamName {
-    font-size: var(--font-xs);
-    color: var(--color-gray-600);
-    font-weight: var(--font-weight-medium);
-}
-
 .youLabel {
     color: var(--color-primary);
     font-weight: var(--font-weight-bold);
@@ -228,23 +168,6 @@
     font-size: var(--font-xs);
     color: var(--color-gray-600);
     font-weight: var(--font-weight-medium);
-}
-
-.actionRequired {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-1);
-    background: var(--color-warning-light);
-    color: var(--color-warning);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-md);
-    font-size: var(--font-xs);
-    font-weight: var(--font-weight-semibold);
-    border: 1px solid var(--color-warning-border);
-}
-
-.actionIcon {
-    font-size: var(--font-sm);
 }
 
 /* Responsive Design */
@@ -273,16 +196,6 @@
         grid-template-columns: 1fr;
     }
 
-    .loanPlayers {
-        flex-direction: column;
-        gap: var(--spacing-2);
-    }
-
-    .exchangeIcon {
-        transform: rotate(90deg);
-        margin: var(--spacing-1) 0;
-    }
-
     .loanParties {
         flex-direction: column;
         gap: var(--spacing-3);
@@ -302,9 +215,5 @@
 
     .loanIcon {
         font-size: var(--font-xl);
-    }
-
-    .subsectionTitle {
-        font-size: var(--font-base);
     }
 }

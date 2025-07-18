@@ -23,36 +23,6 @@
     text-decoration: underline;
 }
 
-.playerMeta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.position {
-    padding: 4px 8px;
-    border-radius: 4px;
-    color: white;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.team {
-    color: #64748b;
-    font-weight: 500;
-}
-
-.price {
-    background: #dcfce7;
-    color: #059669;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
 .gameweekSection {
     margin-top: 32px;
 }
@@ -65,12 +35,6 @@
     font-size: 20px;
     font-weight: 600;
     color: #1e293b;
-}
-
-.gameweekCount {
-    font-size: 14px;
-    color: #64748b;
-    font-weight: normal;
 }
 
 .statsGrid {

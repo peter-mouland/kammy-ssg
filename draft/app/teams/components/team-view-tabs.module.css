@@ -57,20 +57,6 @@
     font-weight: var(--font-weight-semibold);
 }
 
-.tabCount {
-    font-size: var(--font-xs);
-    color: var(--color-gray-500);
-    background-color: var(--color-gray-100);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-full);
-    margin-left: var(--spacing-1);
-}
-
-.tab.active .tabCount {
-    background-color: var(--color-primary-100);
-    color: var(--color-primary-700);
-}
-
 .tabIndicator {
     position: absolute;
     bottom: -1px;
@@ -96,10 +82,6 @@
     .tab {
         padding: var(--spacing-2) var(--spacing-3);
         font-size: var(--font-xs);
-    }
-
-    .tabCount {
-        display: none;
     }
 
     .tabIndicator[data-active-tab="my-team"] {

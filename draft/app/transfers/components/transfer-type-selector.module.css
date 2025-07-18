@@ -1,29 +1,5 @@
 /* Location: app/transfers/components/transfer-type-selector.module.css */
 
-.transferTypeSelector {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-3);
-}
-
-.selectorHeader {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-}
-
-.selectorLabel {
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-gray-700);
-}
-
-.selectorDescription {
-    font-size: var(--font-sm);
-    color: var(--color-gray-600);
-    margin: 0;
-}
-
 .dropdownContainer {
     position: relative;
     width: 100%;

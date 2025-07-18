@@ -12,6 +12,7 @@
     "dev": "react-router dev",
     "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
+    "check-unused-css": "check-unused-css app",
     "knip": "knip --fix",
     "remove-unused-vars": "biome lint --only correctness/noUnusedVariables --reporter json | remove-unused-vars"
   },
@@ -39,6 +40,7 @@
     "@typescript-eslint/parser": "^8.8.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.21",
+    "check-unused-css": "^0.1.6",
     "firebase-tools": "^14.4.0",
     "knip": "^5.61.3",
     "remove-unused-vars": "^0.0.6",

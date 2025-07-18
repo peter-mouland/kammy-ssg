@@ -27,30 +27,6 @@
     margin-bottom: var(--spacing-2);
 }
 
-.select {
-    padding: var(--spacing-3);
-    border: 1px solid var(--color-gray-300);
-    border-radius: var(--radius-md);
-    background: var(--color-white);
-    font-size: var(--font-sm);
-    color: var(--color-gray-900);
-    transition:
-        border-color var(--transition-normal),
-        box-shadow var(--transition-normal);
-}
-
-.select:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.select:disabled {
-    background: var(--color-gray-100);
-    color: var(--color-gray-500);
-    cursor: not-allowed;
-}
-
 .textarea {
     padding: var(--spacing-3);
     border: 1px solid var(--color-gray-300);
@@ -147,90 +123,6 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-/* Transfer form specific styling */
-.transferFormHeader {
-    border-bottom: 1px solid var(--color-gray-200);
-    padding-bottom: var(--spacing-4);
-    margin-bottom: var(--spacing-6);
-}
-
-.transferFormTitle {
-    font-size: var(--font-xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-gray-900);
-    margin: 0 0 var(--spacing-2) 0;
-}
-
-.transferFormSubtitle {
-    font-size: var(--font-sm);
-    color: var(--color-gray-600);
-    margin: 0;
-}
-
-/* Manager selection specific styling */
-.managerSection {
-    background: var(--color-gray-50);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-4);
-    border: 1px solid var(--color-gray-200);
-}
-
-.managerSection .label {
-    color: var(--color-gray-800);
-    margin-bottom: var(--spacing-3);
-}
-
-/* Section dividers */
-.sectionDivider {
-    height: 1px;
-    background: var(--color-gray-200);
-    margin: var(--spacing-4) 0;
-}
-
-/* Validation summary */
-.validationSummary {
-    background: var(--color-info-light);
-    border: 1px solid var(--color-info-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-4);
-    margin: var(--spacing-4) 0;
-}
-
-.validationSummaryTitle {
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-info);
-    margin-bottom: var(--spacing-2);
-    font-size: var(--font-sm);
-}
-
-.validationItem {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    margin-bottom: var(--spacing-1);
-    font-size: var(--font-xs);
-    color: var(--color-gray-700);
-}
-
-.validationItem:last-child {
-    margin-bottom: 0;
-}
-
-.validationIcon {
-    font-size: var(--font-sm);
-}
-
-/* Success state */
-.submitSuccess {
-    background: var(--color-success-light);
-    border: 1px solid var(--color-success-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-4);
-    margin: var(--spacing-4) 0;
-    color: var(--color-success-text);
-    font-weight: var(--font-weight-medium);
-}
-
 /* Loading state */
 .submitButton.loading {
     position: relative;
@@ -276,19 +168,11 @@
         align-self: stretch;
         text-align: center;
     }
-
-    .managerSection {
-        padding: var(--spacing-3);
-    }
 }
 
 @media (max-width: var(--breakpoint-sm)) {
     .transferForm {
         padding: var(--spacing-3);
         border-radius: var(--radius-md);
-    }
-
-    .transferFormTitle {
-        font-size: var(--font-lg);
     }
 }

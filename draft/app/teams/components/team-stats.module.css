@@ -70,40 +70,6 @@
     line-height: 1.2;
 }
 
-/* Team Breakdown */
-.teamBreakdown {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.breakdownGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.breakdownCard {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: var(--radius-md);
-    padding: 16px;
-    text-align: center;
-}
-
-.breakdownValue {
-    font-size: var(--font-lg);
-    font-weight: 700;
-    color: #111827;
-    line-height: 1;
-}
-
-.breakdownLabel {
-    font-size: var(--font-sm);
-    color: #6b7280;
-    margin-top: 6px;
-}
-
 /* Top Scorer */
 .topScorer {
     display: flex;
@@ -228,11 +194,6 @@
     }
 
     .mainStatsGrid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .breakdownGrid {
         grid-template-columns: 1fr;
         gap: 12px;
     }

@@ -181,15 +181,3 @@
         padding: var(--spacing-2);
     }
 }
-
-/* Handle tooltip positioning near screen edges */
-.tooltip.rightEdge {
-    left: auto;
-    right: 0;
-    transform: none;
-}
-
-.tooltip.leftEdge {
-    left: 0;
-    transform: none;
-}

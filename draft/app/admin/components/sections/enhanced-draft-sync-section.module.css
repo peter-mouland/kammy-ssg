@@ -6,29 +6,6 @@
     gap: 1.5rem;
 }
 
-.controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: #f9fafb;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
-}
-
-.autoRefreshToggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
-    cursor: pointer;
-}
-
-.autoRefreshToggle input[type="checkbox"] {
-    accent-color: #3b82f6;
-}
-
 .cardContent {
     display: flex;
     flex-direction: column;
@@ -116,19 +93,6 @@
     margin-top: 0.5rem;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .controls {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .autoRefreshToggle {
-        justify-content: center;
-    }
-}
-
 .refreshSection {
     display: flex;
     align-items: center;
@@ -140,16 +104,6 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .controls {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .autoRefreshToggle {
-        justify-content: center;
-    }
-
     .refreshSection {
         flex-direction: column;
         gap: 0.5rem;

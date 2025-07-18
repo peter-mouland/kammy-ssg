@@ -1,16 +1,5 @@
 /* Location: app/players/components/player-highlights.module.css */
 
-.highlightsContainer {
-    margin: var(--spacing-6) 0;
-}
-
-.statsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-4);
-    margin-bottom: var(--spacing-8);
-}
-
 .statCard {
     background: var(--color-white);
     border: var(--card-border);
@@ -40,30 +29,6 @@
 .statSubtitle {
     font-size: var(--font-xs);
     color: var(--color-gray-600);
-}
-
-.customPoints .statValue {
-    color: var(--color-primary);
-}
-
-.fplPoints .statValue {
-    color: var(--color-position-mid);
-}
-
-.games .statValue {
-    color: var(--color-info);
-}
-
-.goodForm .statValue {
-    color: var(--color-success);
-}
-
-.averageForm .statValue {
-    color: var(--color-warning-hover);
-}
-
-.poorForm .statValue {
-    color: var(--color-error);
 }
 
 .performanceSection {
@@ -181,14 +146,6 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .statsGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .performanceGrid {
-        grid-template-columns: 1fr;
-    }
-
     .insights {
         grid-template-columns: 1fr;
     }

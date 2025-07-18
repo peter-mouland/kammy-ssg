@@ -95,7 +95,7 @@
 }
 
 .playerItem.selected {
-    background: var(--color-primary-bg);
+    background: var(--color-primary-light);
     border-left: 3px solid var(--color-primary);
 }
 
@@ -107,41 +107,6 @@
 
 .playerInfo {
     flex: 1;
-}
-
-.playerName {
-    font-size: var(--font-base);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-gray-900);
-    margin-bottom: var(--spacing-1);
-}
-
-.playerDetails {
-    font-size: var(--font-sm);
-    color: var(--color-gray-600);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    flex-wrap: wrap;
-}
-
-.positionBadge,
-.slotBadge,
-.subBadge {
-    font-size: var(--font-xs);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-sm);
-    font-weight: var(--font-weight-medium);
-}
-
-.slotBadge {
-    background: var(--color-gray-100);
-    color: var(--color-gray-700);
-}
-
-.subBadge {
-    background: var(--color-orange-100);
-    color: var(--color-orange-800);
 }
 
 .playerStats {

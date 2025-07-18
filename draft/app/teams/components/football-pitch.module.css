@@ -58,31 +58,6 @@
     margin-left: calc(var(--player-index) * 10px - (var(--total-players) - 1) * 5px);
 }
 
-/* Position-specific styling and colors */
-.centralAttacker {
-    --position-color: #dc2626; /* Red for central attackers */
-}
-
-.wideAttacker {
-    --position-color: #ea580c; /* Orange for wide attackers */
-}
-
-.midfielder {
-    --position-color: #3b82f6; /* Blue for midfielders */
-}
-
-.fullback {
-    --position-color: #ca8a04; /* Yellow for fullbacks */
-}
-
-.centreback {
-    --position-color: #16a34a; /* Green for centre backs */
-}
-
-.goalkeeper {
-    --position-color: #7c3aed; /* Purple for goalkeeper */
-}
-
 /* Wide players positioning */
 .wideAttackerLine .playerPosition:first-child {
     margin-right: auto;
@@ -174,12 +149,6 @@
     backdrop-filter: blur(10px);
 }
 
-.formationName {
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-bold);
-    line-height: 1;
-}
-
 .gameweekInfo {
     font-size: var(--font-xs);
     color: rgba(255, 255, 255, 0.8);
@@ -202,10 +171,6 @@
         gap: 6px;
     }
 
-    .positionRow {
-        gap: 12px;
-    }
-
     .emptySlot {
         width: 60px;
         height: 50px;
@@ -219,10 +184,6 @@
 }
 
 @media (max-width: 480px) {
-    .positionRow {
-        gap: 8px;
-    }
-
     .emptySlot {
         width: 50px;
         height: 40px;

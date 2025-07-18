@@ -27,43 +27,6 @@
     color: var(--color-gray-900);
 }
 
-.playerCount {
-    font-size: var(--font-sm);
-    color: var(--color-gray-600);
-    background-color: var(--color-gray-100);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-full);
-}
-
-.viewModeToggle {
-    display: flex;
-    background-color: var(--color-gray-100);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-1);
-}
-
-.toggleButton {
-    padding: var(--spacing-2) var(--spacing-3);
-    border: none;
-    background: transparent;
-    color: var(--color-gray-600);
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-medium);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition-normal);
-}
-
-.toggleButton:hover {
-    color: var(--color-gray-800);
-}
-
-.toggleButton.active {
-    background-color: var(--color-white);
-    color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
-}
-
 /* Filters styles */
 .filtersContainer {
     padding: var(--spacing-4);
@@ -135,11 +98,6 @@
     background-color: var(--color-gray-300);
 }
 
-/* Player cell styles */
-.playerCell {
-    min-width: 180px;
-}
-
 .managerCell {
     display: flex;
     flex-direction: column;
@@ -163,21 +121,6 @@
     font-size: var(--font-sm);
 }
 
-.managerName {
-    font-size: var(--font-xs);
-    color: var(--color-gray-600);
-}
-
-.teamSlot {
-    font-family: var(--font-mono);
-    font-size: var(--font-xs);
-    background-color: var(--color-gray-100);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-sm);
-    color: var(--color-gray-700);
-    font-weight: var(--font-weight-medium);
-}
-
 .points {
     font-size: var(--font-sm);
 }
@@ -191,31 +134,6 @@
 }
 .points.neutral {
     color: var(--color-gray-600);
-}
-
-.statsCell {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-1);
-    min-width: 120px;
-}
-
-.stat {
-    font-size: var(--font-xs);
-    background-color: var(--color-blue-100);
-    color: var(--color-blue-800);
-    padding: var(--spacing-05) var(--spacing-1);
-    border-radius: var(--radius-sm);
-    font-weight: var(--font-weight-medium);
-}
-
-.statMins {
-    font-size: var(--font-xs);
-    background-color: var(--color-gray-100);
-    color: var(--color-gray-700);
-    padding: var(--spacing-05) var(--spacing-1);
-    border-radius: var(--radius-sm);
-    font-weight: var(--font-weight-medium);
 }
 
 .statusCell {
@@ -232,29 +150,11 @@
         align-items: stretch;
     }
 
-    .viewModeToggle {
-        align-self: center;
-    }
-
     .filtersRow {
         grid-template-columns: 1fr;
     }
 
-    .playerCell {
-        min-width: 140px;
-    }
-
     .managerCell {
         min-width: 120px;
-    }
-
-    .statsCell {
-        min-width: 100px;
-    }
-
-    .stat,
-    .statMins {
-        font-size: 10px;
-        padding: 2px 4px;
     }
 }

@@ -127,32 +127,6 @@
     flex: 1;
 }
 
-.playerName {
-    font-size: var(--font-base);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-gray-900);
-    margin-bottom: var(--spacing-1);
-}
-
-.playerDetails {
-    font-size: var(--font-sm);
-    color: var(--color-gray-600);
-}
-
-.positionBadge,
-.slotBadge,
-.subBadge {
-    font-size: var(--font-xs);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-sm);
-    font-weight: var(--font-weight-medium);
-}
-
-.slotBadge {
-    background: var(--color-gray-100);
-    color: var(--color-gray-700);
-}
-
 .playerStatus {
     display: flex;
     align-items: center;
@@ -166,12 +140,6 @@
 
 .statusText {
     font-size: var(--font-xs);
-}
-
-.ownershipInfo {
-    color: var(--color-warning);
-    font-weight: var(--font-weight-medium);
-    margin-bottom: var(--spacing-1);
 }
 
 .eligibilityReason {
