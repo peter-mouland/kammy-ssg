@@ -7,7 +7,7 @@ import { readSheetRange, type SheetRange } from './utils/common';
 
 const PLAYERS_SHEET_NAME = 'Players';
 
-export async function originalReadPlayers(): Promise<PlayersSheetData[]> {
+async function originalReadPlayers(): Promise<PlayersSheetData[]> {
     try {
         console.log('Reading Sheet Players ...');
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;

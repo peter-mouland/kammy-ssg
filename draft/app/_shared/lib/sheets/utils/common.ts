@@ -26,7 +26,7 @@ export interface SheetWriteOptions {
 }
 
 // Initialize Google Sheets API client
-export async function createSheetsClient() {
+async function createSheetsClient() {
     try {
         if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
             throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY environment variable is not set');
@@ -260,7 +260,7 @@ export function convertToSheetRows<T>(
 /**
  * Normalize header names for consistent matching
  */
-export function normalizeHeaderName(header: string): string {
+function normalizeHeaderName(header: string): string {
     return header
         .toLowerCase()
         .trim()

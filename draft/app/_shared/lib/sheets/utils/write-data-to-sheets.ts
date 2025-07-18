@@ -11,7 +11,7 @@ import {
     writeSheetRange,
 } from './common';
 
-export interface SaveDataOptions extends SheetWriteOptions {
+interface SaveDataOptions extends SheetWriteOptions {
     /** Whether to create headers if sheet is empty */
     createHeaders?: boolean;
     /** Whether to append to existing data or overwrite */
@@ -194,7 +194,7 @@ async function SaveDataToSheet<T extends Record<string, any>>(
         }
 
         // Map headers from headerOrder to existing headers
-        const { mapping, missing } = createHeaderMappingFromActual(existingHeaders, headerMapping);
+        const { missing } = createHeaderMappingFromActual(existingHeaders, headerMapping);
 
         missingHeaders = missing;
 
@@ -298,7 +298,7 @@ export async function saveDataToSheet<T extends Record<string, any>>(
             const newHeaders = [...currentHeaders, ...orderedMissingHeaders];
 
             // Update the sheet with new headers (this will require reading all data and rewriting)
-            const { data: existingData } = await readSheetWithHeaders({
+            await readSheetWithHeaders({
                 ...sheetRange,
                 range: `'${sheetName}'!A:Z`,
             });

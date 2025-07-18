@@ -51,17 +51,6 @@ export function PlayerOutSelector({
         }
     };
 
-    const getPlayerDisplayInfo = (player: RosterPlayer) => {
-        // Find which position slot this player is in
-        const rosterPlayer = allRosterPlayers.find((rp) => rp.playerCode === player.playerCode);
-
-        return {
-            positionSlot: rosterPlayer?.teamPosition,
-            isSubstitute: rosterPlayer?.isSub,
-            positionType: rosterPlayer?.playerPosition,
-        };
-    };
-
     return (
         <div className={styles.playerOutSelector}>
             <div className={styles.selectorHeader}>
@@ -110,10 +99,8 @@ export function PlayerOutSelector({
                     </div>
                 ) : (
                     filteredPlayers.map((player) => {
-                        const displayInfo = getPlayerDisplayInfo(player);
                         const isSelected = selectedPlayer?.playerCode === player.playerCode;
                         const fplPlayer = playersByCode[player.playerCode];
-                        const team = teamsByCode[fplPlayer.team_code];
 
                         return (
                             <div

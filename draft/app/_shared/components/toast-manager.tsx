@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import styles from './toast-manager.module.css';
 
-export interface Toast {
+interface Toast {
     id: string;
     message: string;
     type: 'success' | 'error' | 'warning' | 'info';

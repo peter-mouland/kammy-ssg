@@ -31,7 +31,7 @@ export function createProgressStream(request: Request, jobIdIn?: string): Respon
                 progressStore.unsubscribe(jobId, subscriber);
                 try {
                     controller.close();
-                } catch (error) {
+                } catch (_error) {
                     console.log('Controller already closed');
                 }
             });

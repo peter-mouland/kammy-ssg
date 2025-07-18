@@ -64,20 +64,3 @@ export async function getDivisionUserTeams(divisionId: string): Promise<UserTeam
         );
     }
 }
-/**
- * Get user teams by division ID
- */
-export async function getUserTeamsByDivision(): Promise<Record<DivisionId, UserTeamsSheetData[]>> {
-    try {
-        const userTeamsByDivision: Record<DivisionId, UserTeamsSheetData[]> = { 'premierLeague': [], championship: [], leagueOne: []};
-        const userTeams = await readUserTeams();
-        userTeams.forEach((team) => userTeamsByDivision[team.divisionId].push(team));
-        return userTeamsByDivision
-    } catch (error) {
-        throw createAppError(
-            'USER_TEAMS_DIVISION_ERROR',
-            'Failed to get user teams',
-            error,
-        );
-    }
-}

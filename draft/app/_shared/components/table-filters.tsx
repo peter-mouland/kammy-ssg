@@ -4,7 +4,7 @@ import type React from 'react';
 import type { Filters } from '../hooks/use-table-filters';
 import styles from './table-filters.module.css';
 
-export interface TableFiltersProps {
+interface TableFiltersProps {
     filters: Filters;
     onFilterChange: (key: string, value: string | number | undefined) => void;
     onFiltersChange: (filters: Partial<Filters>) => void;

@@ -5,7 +5,7 @@ import type { TeamRoster } from '../../../teams/types/team-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import { findPlayerInRoster } from '../find-player-in-roster';
 
-const description = 'Ensure transferred player fits the position slot';
+// const description = 'Ensure transferred player fits the position slot';
 
 /**
  * Validate position compatibility for transfers

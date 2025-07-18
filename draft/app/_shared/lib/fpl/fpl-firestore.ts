@@ -17,14 +17,12 @@ import type {
     EventData,
     FilteredFplPlayerData,
     FplPlayerData,
-    FplPlayerGameweekData,
-    FplPlayerSeasonData,
     FplTeam,
     GameWeekData,
 } from './fpl-types';
 import { getGameweekData } from './gameweeks';
 
-export const convertFplElementToCache = (element: FplPlayerData) => ({
+const convertFplElementToCache = (element: FplPlayerData) => ({
     id: element.id,
     code: element.code,
     first_name: element.first_name,

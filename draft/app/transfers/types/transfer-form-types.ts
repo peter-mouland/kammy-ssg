@@ -98,13 +98,13 @@ export interface TransfersPageData {
     activeLoanAgreements?: ActiveLoanAgreement[];
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
-    validationContext: Omit<TransferRuleContext,'transfer'>,
+    validationContext: Omit<TransferRuleContext, 'transfer'>;
 }
 
 /**
  * Pending loan request tracking (NEW)
  */
-export interface PendingLoanRequest {
+interface PendingLoanRequest {
     id: string;
     requestingManager: ManagerId;
     targetManager: ManagerId;
@@ -117,7 +117,7 @@ export interface PendingLoanRequest {
 /**
  * Active loan agreement tracking (NEW)
  */
-export interface ActiveLoanAgreement {
+interface ActiveLoanAgreement {
     id: string;
     lendingManager: ManagerId;
     borrowingManager: ManagerId;
@@ -125,16 +125,6 @@ export interface ActiveLoanAgreement {
     exchangedPlayer?: EnhancedPlayerData;
     startDate: Date;
     status: 'ACTIVE' | 'ENDING';
-}
-
-/**
- * Manager information for dropdowns
- */
-export interface Manager {
-    id: ManagerId;
-    name: string;
-    divisionId: DivisionId;
-    email?: string;
 }
 
 /**

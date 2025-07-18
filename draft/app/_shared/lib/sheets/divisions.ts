@@ -28,7 +28,7 @@ const DIVISIONS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DivisionSheetData, (va
 /**
  * Read all divisions from the sheet
  */
-export async function originalReadDivisions(): Promise<DivisionSheetData[]> {
+async function originalReadDivisions(): Promise<DivisionSheetData[]> {
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
 
     try {

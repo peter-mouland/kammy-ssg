@@ -8,8 +8,8 @@ import { RankBadge, Table, type TableColumn } from '../_shared/components/table'
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { getPositionColor } from '../scoring/lib';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
-import styles from './components/league-standings.module.css';
 import { PositionRankChange } from './components/position-rank-change';
+import styles from './league-standings.module.css';
 import { calculatePositionRankings } from './lib/simple-position-rankings';
 import type {
     EnhancedLeagueStandingsLoaderData,
@@ -17,7 +17,7 @@ import type {
     PositionColumnConfig,
 } from './types/league-standings-types';
 
-export const POSITION_COLUMNS: PositionColumnConfig[] = [
+const POSITION_COLUMNS: PositionColumnConfig[] = [
     {
         key: 'gk',
         label: 'GK / Sub',
@@ -288,7 +288,7 @@ export const LeagueStandings = () => {
     } = useLoaderData<EnhancedLeagueStandingsLoaderData>();
 
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);
 
     const handleDivisionChange = (divisionId: string) => {

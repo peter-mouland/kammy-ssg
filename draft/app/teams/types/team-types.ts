@@ -238,21 +238,12 @@ export interface ContributingStatsProps {
     onToggleExpanded: () => void;
 }
 
-/**
- * Service/API interfaces
- */
-
-export interface UserTeamRoster {
-    userId: ManagerId;
-    roster: TeamRoster;
-}
-
 // app/teams/types/team-types.ts - Add these interfaces to the existing file
 
 /**
  * Contributing stats breakdown for the team
  */
-export interface ContributingStatsBreakdown {
+interface ContributingStatsBreakdown {
     appearance: ContributingStatItem;
     goals: ContributingStatItem;
     assists: ContributingStatItem;
@@ -268,7 +259,7 @@ export interface ContributingStatsBreakdown {
 /**
  * Individual contributing stat item
  */
-export interface ContributingStatItem {
+interface ContributingStatItem {
     label: string;
     statValue: number;
     pointsValue: number;

@@ -47,5 +47,4 @@ export interface PositionColumnConfig {
     key: keyof PositionPointsBreakdown;
     label: string;
     slots: PositionSlotKey[];
-    color: string;
 }

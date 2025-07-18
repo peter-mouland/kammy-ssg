@@ -11,7 +11,7 @@ import type { ProcessedTransfer } from '../types/transfer-types';
 import { applyIndividualTransfer } from './transfer-processor.service';
 import { getRuleValidationFunctions } from './validators';
 
-export interface EnhancedTransferValidationResult extends TransferValidationResult {
+interface EnhancedTransferValidationResult extends TransferValidationResult {
     virtualStateConflict?: {
         playerCode: number;
         playerName: string;
@@ -23,7 +23,7 @@ export interface EnhancedTransferValidationResult extends TransferValidationResu
 /**
  * Sequential validation result for a batch of transfers
  */
-export interface SequentialValidationResult {
+interface SequentialValidationResult {
     transferValidations: Array<{
         transfer: ProcessedTransfer;
         validation: EnhancedTransferValidationResult;
@@ -40,7 +40,7 @@ export interface SequentialValidationResult {
 /**
  * Validate a transfer against configured rules
  */
-export async function validateTransfer(
+async function validateTransfer(
     transfer: ProcessedTransfer,
     context: Omit<TransferRuleContext, 'transfer'>,
 ): Promise<TransferValidationResult> {

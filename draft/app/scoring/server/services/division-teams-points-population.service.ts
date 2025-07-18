@@ -1,9 +1,7 @@
 // app/_shared/services/division-teams-points-population.service.ts
 
-import { FirestoreClient } from '../../../_shared/lib/firestore-cache/firestore-client';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { readTransferDataForDivision } from '../../../_shared/lib/sheets/transfers';
-import type { AdminDataContext } from '../../../admin/types/admin-orchestrator-types';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
 import type {
     DivisionId,
@@ -13,38 +11,8 @@ import type {
 } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { generateGameweekData } from '../../lib/generators';
-import type { EnhancedPlayerData, Points } from '../../types/scoring-types';
+import type { Points } from '../../types/scoring-types';
 import { getDivisionTeamsDocument } from './division-teams.service';
-
-export class DivisionGameweekPointsService {
-    private contextData: AdminDataContext;
-    private gameweek?: number;
-    private playerIds: number[];
-    private fplPlayers: EnhancedPlayerData[];
-
-    constructor({
-        contextData,
-        gameweek,
-    }: {
-        contextData: AdminDataContext;
-        gameweek?: number;
-    }) {
-        this.contextData = contextData;
-        this.gameweek = gameweek;
-
-        const fplPlayers = this.contextData.fplData.players;
-        const sheetsPlayers = this.contextData.sheetData.players;
-
-        // Get required players
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
-            acc[player.id] = player;
-            return acc;
-        }, {});
-
-        this.fplPlayers = fplPlayers.filter((player) => sheetsPlayersById[player.id]);
-        this.playerIds = this.fplPlayers.map((p) => p.id);
-    }
-}
 
 type CalcProps = {
     gameweek: number;
@@ -104,7 +72,7 @@ export async function upsertDivisionTeamsDocument(divisionId: DivisionId, gamewe
         const documentCreated = await createMissingGameweekDocument(divisionId, gameweek);
 
         if (!documentCreated) {
-            console.warn(`⚠️ Could not create missing document for ${divisionId}_gw${gameweek}`);
+            console.warn(`! Could not create missing document for ${divisionId}_gw${gameweek}`);
             return null;
         }
 
@@ -132,7 +100,7 @@ async function createMissingGameweekDocument(divisionId: DivisionId, targetGamew
 
         if (targetGameweek === 0) {
             // For GW0 (draft), we can't create it automatically - needs draft data
-            console.warn(`⚠️ Cannot auto-create GW0 document for ${divisionId} - requires draft completion`);
+            console.warn(`! Cannot auto-create GW0 document for ${divisionId} - requires draft completion`);
             return false;
         }
 
@@ -186,7 +154,7 @@ async function createGameweekDocumentFromSource(
     // Read transfer data for this division
     const transferResult = await readTransferDataForDivision(sourceDocument.divisionId, fplPlayersByCode, gameweekData);
     if (transferResult.errors.length > 0) {
-        console.warn(`⚠️ Transfer reading errors for ${sourceDocument.divisionId}:`, transferResult.errors);
+        console.warn(`! Transfer reading errors for ${sourceDocument.divisionId}:`, transferResult.errors);
     }
     const approvedTransfers = transferResult.transfers.filter((transfer) => transfer.status === 'APPROVED');
 
@@ -207,7 +175,7 @@ async function createGameweekDocumentFromSource(
             copiedFrom: newDocument.metadata?.copiedFrom || sourceDocument.gameweek,
         });
     } catch (transferError) {
-        console.warn('⚠️ Transfer integration failed, falling back to basic copy:', transferError);
+        console.warn('! Transfer integration failed, falling back to basic copy:', transferError);
 
         // FALLBACK: Create document without transfers (existing logic)
         const fallbackDocument = {

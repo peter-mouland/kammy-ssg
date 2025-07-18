@@ -9,7 +9,7 @@ import {
     SPREADSHEET_ID,
 } from './common';
 
-export interface ReadDataOptions extends SheetReadOptions {
+interface ReadDataOptions extends SheetReadOptions {
     /** Required: Ordered list of expected headers for consistent column mapping */
     headerOrder: string[];
     /** Custom transformations for specific object keys */

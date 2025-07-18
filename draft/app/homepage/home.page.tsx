@@ -4,8 +4,8 @@ import { useMemo } from 'react';
 import { Link, useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
-import styles from '../leagues/components/league-standings.module.css';
 import { PositionRankChange } from '../leagues/components/position-rank-change';
+import styles from '../leagues/league-standings.module.css';
 import { calculatePositionRankings } from '../leagues/lib/simple-position-rankings';
 import type {
     EnhancedLeagueStandingsLoaderData,
@@ -15,7 +15,7 @@ import type {
 import type { CustomPosition } from '../players/types/player-types';
 import { getPositionColor } from '../scoring/lib';
 
-export const POSITION_COLUMNS: PositionColumnConfig[] = [
+const POSITION_COLUMNS: PositionColumnConfig[] = [
     {
         key: 'gk',
         label: 'GK / Sub',

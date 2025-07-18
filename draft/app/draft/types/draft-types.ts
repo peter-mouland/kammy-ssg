@@ -71,16 +71,3 @@ export interface FirebaseDraftPick {
     divisionId: string;
     timestamp: number;
 }
-
-// NEW: Admin action results for multi-division operations
-export interface MultiDivisionDraftResult {
-    success: boolean;
-    message: string;
-    divisionResults: Record<string, DraftResult>;
-}
-
-export interface DraftResult {
-    success: boolean;
-    message: string;
-    data?: any;
-}

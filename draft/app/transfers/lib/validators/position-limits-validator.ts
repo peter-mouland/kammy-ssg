@@ -4,8 +4,7 @@ import type { RosterPosition, TeamRoster } from '../../../teams/types/team-types
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import { simulateTransferOnRoster } from '../simulate-transfer-on-roster';
 
-const description = 'Ensure roster maintains required position limits';
-
+// const description = 'Ensure roster maintains required position limits';
 
 // Get position limits from parameters
 const positionLimits = {
@@ -26,12 +25,12 @@ export function validatePositionLimits(context: TransferRuleContext): RuleValida
     const { transfer, divisionRosters } = context;
     const managerId = transfer.managerId;
     if (!transfer.playerIn.draft) {
-        console.error('playerIn should be EnhancedPlayerData')
-        console.error(transfer.playerIn)
+        console.error('playerIn should be EnhancedPlayerData');
+        console.error(transfer.playerIn);
     }
     if (!transfer.playerOut.draft) {
-        console.error('playerOut should be EnhancedPlayerData')
-        console.error(transfer.playerOut)
+        console.error('playerOut should be EnhancedPlayerData');
+        console.error(transfer.playerOut);
     }
 
     // Get manager's current roster

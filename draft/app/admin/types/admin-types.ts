@@ -20,7 +20,7 @@ export interface AdminDashboardData {
 // ADMIN NAVIGATION TYPES
 // ==========================================
 
-export type AdminSectionKey = 'overview' | 'draft' | 'transfers' | 'points' | 'settings';
+type AdminSectionKey = 'overview' | 'draft' | 'transfers' | 'points' | 'settings';
 
 export interface AdminNavItem {
     key: AdminSectionKey;
@@ -33,7 +33,7 @@ export interface AdminNavItem {
 // ADMIN ACTION TYPES
 // ==========================================
 
-export type AdminActionType =
+type AdminActionType =
     | 'generateOrder'
     | 'clearOrder'
     | 'startDraft'
@@ -64,9 +64,9 @@ export type AdminActionType =
     | 'clearTransferRecommendations'
     | 'getTransferHistory';
 
-export type ClearVariant = 'all' | 'fpl-only' | 'elements-only';
+type ClearVariant = 'all' | 'fpl-only' | 'elements-only';
 
-export interface AdminActionParams {
+interface AdminActionParams {
     actionType: AdminActionType;
     divisionId?: DivisionId;
     authToken?: string;
@@ -96,7 +96,7 @@ export interface SystemHealthStatus {
     message: string;
 }
 
-export type DraftDivisionStatus = {
+type DraftDivisionStatus = {
     doesDraftOrderExists: boolean;
     pickCount: number;
     picksRemaining: number;

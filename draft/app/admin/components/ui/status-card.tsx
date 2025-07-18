@@ -4,7 +4,7 @@
 import type React from 'react';
 import styles from './status-card.module.css';
 
-export interface StatusCardProps {
+interface StatusCardProps {
     icon: React.ReactNode;
     label: string;
     percentage: string;

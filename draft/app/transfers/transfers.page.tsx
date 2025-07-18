@@ -20,7 +20,7 @@ type ActiveLoan = {
 
 export function TransfersPage() {
     const data = useLoaderData<TransfersPageData>();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams,] = useSearchParams();
     const navigate = useNavigate();
     const isCurrentGameweek =
         !searchParams.get('gameweek') || searchParams.get('gameweek') === String(data.currentGameweek);

@@ -19,7 +19,7 @@ const _FPL_ENTRY_HISTORY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${ent
  * FPL API Client - pure data fetching from FPL endpoints
  * No caching or orchestration logic, just HTTP requests
  */
-export class FplApi {
+class FplApi {
     /**
      * Fetch data from FPL API with error handling
      */
@@ -105,4 +105,3 @@ export class FplApi {
 export const fplApi = new FplApi();
 
 // Export the class for testing or multiple instances
-export default FplApi;

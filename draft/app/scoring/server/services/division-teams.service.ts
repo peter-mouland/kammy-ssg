@@ -75,36 +75,6 @@ export async function divisionDocumentExists(divisionId: DivisionId, gameweek: n
 }
 
 /**
- * Get available gameweeks for division
- */
-export async function getAvailableGameweeks(divisionId: DivisionId): Promise<number[]> {
-    try {
-        const db = getFirestoreInstance();
-        const collectionRef = db.collection('division-teams');
-
-        // Query for all documents that start with divisionId
-        const query = collectionRef.where('divisionId', '==', divisionId).orderBy('gameweek', 'asc');
-
-        const snapshot = await query.get();
-
-        const gameweeks: number[] = [];
-        snapshot.forEach((doc) => {
-            const data = doc.data() as DivisionTeamsDocument;
-            gameweeks.push(data.gameweek);
-        });
-
-        return gameweeks;
-    } catch (error) {
-        console.error('Get available gameweeks error:', error);
-        throw new Error(
-            `Failed to get available gameweeks for ${divisionId}: ${
-                error instanceof Error ? error.message : 'Unknown error'
-            }`,
-        );
-    }
-}
-
-/**
  * Create new division teams document
  */
 export async function createDivisionTeamsDocument(document: DivisionTeamsDocument): Promise<void> {
@@ -159,26 +129,6 @@ export async function updateDivisionTeamsDocument(
         console.error('Update division teams document error:', error);
         throw new Error(
             `Failed to update division teams document: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
-    }
-}
-
-/**
- * Delete division teams document
- */
-export async function deleteDivisionTeamsDocument(divisionId: DivisionId, gameweek: number): Promise<void> {
-    try {
-        const db = getFirestoreInstance();
-        const docId = `${divisionId}_gw${gameweek}`;
-        const docRef = db.collection('division-teams').doc(docId);
-
-        await docRef.delete();
-
-        console.log(`✅ Deleted division teams document: ${docId}`);
-    } catch (error) {
-        console.error('Delete division teams document error:', error);
-        throw new Error(
-            `Failed to delete division teams document: ${error instanceof Error ? error.message : 'Unknown error'}`,
         );
     }
 }

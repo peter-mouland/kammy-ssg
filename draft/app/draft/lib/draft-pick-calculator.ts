@@ -12,20 +12,6 @@ export function calculateCurrentPick(divisionId: DivisionId, allPicks: DraftPick
 }
 
 /**
- * Calculate if a draft is complete based on picks and expected total
- */
-export function isDraftComplete(
-    divisionId: DivisionId,
-    allPicks: DraftPickData[],
-    totalTeams: number,
-    picksPerTeam: number,
-): boolean {
-    const divisionPicks = allPicks.filter((pick) => pick.divisionId === divisionId);
-    const expectedTotalPicks = totalTeams * picksPerTeam;
-    return divisionPicks.length >= expectedTotalPicks;
-}
-
-/**
  * Calculate the current user's turn based on draft order and picks
  */
 export function calculateCurrentUserId(
@@ -55,57 +41,4 @@ export function calculateCurrentUserId(
 
     const currentTeam = draftOrder.find((order) => order.position === teamIndex + 1);
     return currentTeam?.userId || '';
-}
-
-/**
- * Calculate complete draft state from picks and draft order
- */
-export function calculateDraftState(
-    divisionId: DivisionId,
-    allPicks: DraftPickData[],
-    draftOrder: Array<{ position: number; userId: string }>,
-    picksPerTeam: number,
-    isActive: boolean,
-): {
-    currentPick: number;
-    currentUserId: string;
-    isComplete: boolean;
-} {
-    const currentPick = calculateCurrentPick(divisionId, allPicks);
-    const isComplete = isDraftComplete(divisionId, allPicks, draftOrder.length, picksPerTeam);
-    const currentUserId = isComplete ? '' : calculateCurrentUserId(divisionId, allPicks, draftOrder, picksPerTeam);
-
-    return {
-        currentPick,
-        currentUserId: isActive ? currentUserId : '',
-        isComplete,
-    };
-}
-
-/**
- * Validate that picks are in correct order (for debugging)
- */
-export function validatePickOrder(
-    divisionId: DivisionId,
-    allPicks: DraftPickData[],
-): Array<{ pickNumber: number; issue: string }> {
-    const divisionPicks = allPicks
-        .filter((pick) => pick.divisionId === divisionId)
-        .sort((a, b) => a.pickNumber - b.pickNumber);
-
-    const issues: Array<{ pickNumber: number; issue: string }> = [];
-
-    for (let i = 0; i < divisionPicks.length; i++) {
-        const pick = divisionPicks[i];
-        const expectedPickNumber = i + 1;
-
-        if (pick.pickNumber !== expectedPickNumber) {
-            issues.push({
-                pickNumber: pick.pickNumber,
-                issue: `Expected pick number ${expectedPickNumber}, got ${pick.pickNumber}`,
-            });
-        }
-    }
-
-    return issues;
 }

@@ -13,12 +13,12 @@ export interface Filters {
     [key: string]: string | number | undefined; // any filter
 }
 
-export interface UseTableFiltersOptions {
+interface UseTableFiltersOptions {
     defaultFilters?: Partial<Filters>;
     debounceMs?: number;
 }
 
-export interface UseTableFiltersReturn {
+interface UseTableFiltersReturn {
     filters: Filters;
     setFilter: (key: string, value: string | number | undefined) => void;
     setFilters: (newFilters: Partial<Filters>) => void;

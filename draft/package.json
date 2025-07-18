@@ -11,14 +11,17 @@
     "build": "cross-env NODE_ENV=production react-router build",
     "dev": "react-router dev",
     "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "remove-unused-vars": "biome lint --only correctness/noUnusedVariables --reporter json | remove-unused-vars"
   },
   "dependencies": {
+    "@firebase/database": "^1.1.0",
     "@react-router/node": "^7.0.0",
     "@react-router/serve": "^7.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "firebase": "^11.8.1",
+    "firebase-admin": "^13.4.0",
     "google-auth-library": "^9.14.1",
     "googleapis": "^144.0.0",
     "isbot": "^5",
@@ -35,10 +38,9 @@
     "@typescript-eslint/parser": "^8.8.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.11.1",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.9",
     "firebase-tools": "^14.4.0",
+    "knip": "^5.61.3",
+    "remove-unused-vars": "^0.0.6",
     "tsx": "^4.20.2",
     "typescript": "^5.5.3",
     "vite": "^5.4.1"

@@ -90,7 +90,7 @@ export interface FplBootstrapData {
     element_types: FplElementType[];
 }
 
-export interface FplGameweek {
+interface FplGameweek {
     id: number;
     name: string;
     deadline_time: string;
@@ -114,7 +114,7 @@ export interface FplGameweek {
     most_vice_captained: number;
 }
 
-export interface FplGameSettings {
+interface FplGameSettings {
     league_join_private_max: number;
     league_join_public_max: number;
     league_max_size_public_h2h: number;
@@ -142,7 +142,7 @@ export interface FplGameSettings {
     timezone: string;
 }
 
-export interface FplPhase {
+interface FplPhase {
     id: number;
     name: string;
     start_event: number;
@@ -173,12 +173,12 @@ export interface FplTeam {
     pulse_id: number;
 }
 
-export interface FplStat {
+interface FplStat {
     label: string;
     name: string;
 }
 
-export interface FplElementType {
+interface FplElementType {
     id: number;
     plural_name: string;
     plural_name_short: string;
@@ -192,12 +192,12 @@ export interface FplElementType {
     element_count: number;
 }
 
-export interface FplChipPlay {
+interface FplChipPlay {
     chip_name: string;
     num_played: number;
 }
 
-export interface FplTopElementInfo {
+interface FplTopElementInfo {
     id: number;
     points: number;
 }

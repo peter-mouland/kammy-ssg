@@ -47,7 +47,7 @@ function createConnectionStateUpdaters(
             status: 'connecting' as const,
             attempts: prev.attempts
         })),
-        setConnected: () => setConnectionState(prev => ({
+        setConnected: () => setConnectionState( () => ({
             status: 'connected' as const,
             attempts: 0 // Reset on success
         })),

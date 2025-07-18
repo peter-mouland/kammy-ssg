@@ -9,21 +9,6 @@ import type { RuleValidationResult, TransferRuleContext } from '../../types/tran
  */
 export function validateLoanLimit(context: TransferRuleContext): RuleValidationResult {
     const { transfer, divisionRosters } = context;
-    //  MUST use latest "context.divisionRosters" so we're working on up-to-date rosters i.e. after applying transfers on the fly
-    //  this means this function can not be hoisted higher than 'applyIndividualTransfer'
-    const ownedPlayersByCode = Object.entries(context.divisionRosters).reduce(
-        (acc: OwnedPlayersByCode, [managerId, team]) => {
-            (Object.keys(team.roster) as PositionSlotKey[]).forEach((slotKey) => {
-                const slot = team.roster[slotKey];
-                acc[slot.player.playerCode] = { managerId, slotKey, slot };
-            });
-
-            return acc;
-        },
-        {},
-    );
-    const playerInOwned = ownedPlayersByCode[transfer.playerIn.code];
-    const playerOutOwned = ownedPlayersByCode[transfer.playerOut.code];
 
     // Only apply to loan start transfers
     if (transfer.transferType !== 'LOAN_START') {

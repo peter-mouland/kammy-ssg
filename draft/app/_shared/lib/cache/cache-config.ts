@@ -9,7 +9,7 @@
  */
 
 // Cache TTL configurations (in milliseconds)
-export const CACHE_TTL = {
+const CACHE_TTL = {
     // FPL API Data - relatively static during gameWeek
     FPL_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player data changes rarely
     FPL_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team data very static

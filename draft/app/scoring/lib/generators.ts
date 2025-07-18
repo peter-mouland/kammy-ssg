@@ -57,7 +57,7 @@ export function generateSeasonData(
         });
 }
 
-export type GameweekPointsAndStats = {
+type GameweekPointsAndStats = {
     points: Points;
     stats: PlayerGameweekStatsData;
     metadata: unknown;

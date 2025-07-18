@@ -23,9 +23,6 @@ import {
     writeSheetRange,
 } from './utils/common';
 import { readDataFromSheet } from './utils/read-data-from-sheets';
-
-// Sheet configuration
-const TRANSFERS_SHEET_NAME = (divisionId: DivisionId) => `${divisionId}-transfers`;
 const TRANSFERS_HEADERS: Record<keyof TransferSheetData, keyof ProcessedTransferSheetData> = {
     Status: 'status',
     Timestamp: 'timestamp',
@@ -161,30 +158,6 @@ export async function readTransfers(divisionId: DivisionId) {
         ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.TRANSFERS(divisionId)),
     });
 }
-/**
- * Write draft orders to the sheet (overwrites existing data)
- */
-export async function writeTransfers(divisionId: DivisionId, transfer: any): Promise<void> {
-    const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
-    try {
-        // Transform dates to ISO strings for sheet storage
-        const transformedTransfers = {
-            ...transfer,
-            timestamp: Date.now(),
-        };
-
-        const sheetRows = convertToSheetRows(transformedTransfers, TRANSFERS_HEADERS, true);
-
-        const sheetRange: SheetRange = {
-            spreadsheetId,
-            range: `'${TRANSFERS_SHEET_NAME(divisionId)}'!A:I`,
-        };
-
-        await writeSheetRange(sheetRange, sheetRows);
-    } catch (error) {
-        throw createAppError('DRAFT_ORDERS_WRITE_ERROR', 'Failed to write draft orders to sheet', error);
-    }
-}
 
 export async function addTransfer(divisionId: DivisionId, transfer: ProcessedTransferSheetData): Promise<void> {
     try {
@@ -240,7 +213,7 @@ export async function readTransferDataForDivision(
         const normedResult = await readTransfers(divisionId);
 
         if (normedResult.length === 0) {
-            console.log(`ℹ️ No transfer data found for division ${divisionId}`);
+            console.log(`i No transfer data found for division ${divisionId}`);
             return {
                 processedCount: 0,
                 pendingCount: 0,

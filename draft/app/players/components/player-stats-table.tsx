@@ -20,7 +20,7 @@ interface PlayerStatsTableProps {
     teams: Record<number, string>;
 }
 
-export function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 'web' = 'full'): string {
+function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 'web' = 'full'): string {
     switch (style) {
         case 'full':
             return `${player.first_name} ${player.second_name}`;

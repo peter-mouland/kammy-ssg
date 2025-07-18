@@ -5,11 +5,11 @@ import { useMemo, useState } from 'react';
 import styles from './table.module.css';
 
 // Types
-export type SortDirection = 'asc' | 'desc' | null;
-export type CellAlignment = 'left' | 'center' | 'right';
-export type CellVariant = 'default' | 'numeric' | 'bold' | 'muted' | 'success' | 'warning' | 'error';
-export type BadgeVariant = 'primary' | 'success' | 'warning' | 'error' | 'gray';
-export type TableSize = 'compact' | 'default' | 'comfortable';
+type SortDirection = 'asc' | 'desc' | null;
+type CellAlignment = 'left' | 'center' | 'right';
+type CellVariant = 'default' | 'numeric' | 'bold' | 'muted' | 'success' | 'warning' | 'error';
+type BadgeVariant = 'primary' | 'success' | 'warning' | 'error' | 'gray';
+type TableSize = 'compact' | 'default' | 'comfortable';
 
 export interface TableColumn<T = any> {
     key: string;
@@ -26,7 +26,7 @@ export interface TableColumn<T = any> {
     render?: (value: any, item: T, index: number) => React.ReactNode;
 }
 
-export interface TableAction<T = any> {
+interface TableAction<T = any> {
     icon: React.ReactNode;
     label: string;
     onClick: (item: T, index: number) => void;
@@ -35,7 +35,7 @@ export interface TableAction<T = any> {
     hidden?: (item: T) => boolean;
 }
 
-export interface TableProps<T = any> {
+interface TableProps<T = any> {
     data: T[];
     columns: TableColumn<T>[];
     loading?: boolean;

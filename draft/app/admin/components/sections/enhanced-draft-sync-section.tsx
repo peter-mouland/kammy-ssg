@@ -19,11 +19,11 @@ interface EnhancedDraftSyncSectionProps {
 }
 
 export const EnhancedDraftSyncSection = ({
-                                             divisions,
-                                             draftStates,
-                                             draftStatus,
-                                             draftSyncComparisons
-                                         }: EnhancedDraftSyncSectionProps) => {
+    divisions,
+    draftStates,
+    draftStatus,
+    draftSyncComparisons,
+}: EnhancedDraftSyncSectionProps) => {
     const fetcher = useFetcher();
 
     // Handle sync for a specific division
@@ -59,11 +59,7 @@ export const EnhancedDraftSyncSection = ({
         return (
             <div className={styles.container}>
                 <AdminMessage type="info">Loading sync status...</AdminMessage>
-                <AdminButton
-                    variant="secondary"
-                    onClick={() => window.location.reload()}
-                    icon={<Icons.RefreshIcon />}
-                >
+                <AdminButton variant="secondary" onClick={() => window.location.reload()} icon={<Icons.RefreshIcon />}>
                     Refresh Page
                 </AdminButton>
             </div>
@@ -75,11 +71,7 @@ export const EnhancedDraftSyncSection = ({
         return (
             <div className={styles.container}>
                 <AdminMessage type="error">Failed to load sync comparison data</AdminMessage>
-                <AdminButton
-                    variant="secondary"
-                    onClick={() => window.location.reload()}
-                    icon={<Icons.RefreshIcon />}
-                >
+                <AdminButton variant="secondary" onClick={() => window.location.reload()} icon={<Icons.RefreshIcon />}>
                     Retry
                 </AdminButton>
             </div>
@@ -135,8 +127,8 @@ export const EnhancedDraftSyncSection = ({
                                                             {diff.severity === 'high'
                                                                 ? '🔴'
                                                                 : diff.severity === 'medium'
-                                                                    ? '🟡'
-                                                                    : '🟢'}
+                                                                  ? '🟡'
+                                                                  : '🟢'}
                                                         </span>
                                                         <span className={styles.issueText}>{diff.description}</span>
                                                     </li>
@@ -151,7 +143,8 @@ export const EnhancedDraftSyncSection = ({
 
                                         {comparison.lastSyncedAt && (
                                             <div className={styles.lastSync}>
-                                                Last synced: {new Date(comparison.lastSyncedAt).toLocaleTimeString()}
+                                                Last synced:{' '}
+                                                {new Date(comparison.lastSyncedAt).toLocaleTimeString('en-gb')}
                                             </div>
                                         )}
                                     </>

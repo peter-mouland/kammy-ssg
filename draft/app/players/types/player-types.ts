@@ -3,13 +3,6 @@
 import type { EnhancedPlayerData, GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
 
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
-export type CustomPositionName =
-    | 'Goalkeeper'
-    | 'Full Back'
-    | 'Centre Back'
-    | 'Midfielder'
-    | 'Wide Attacker'
-    | 'Centre Attacker';
 // Map position codes to their full names
 export type PositionNameMap = {
     gk: 'Goalkeeper';
@@ -21,24 +14,6 @@ export type PositionNameMap = {
 };
 
 export type DataSource = 'fpl' | '2425';
-
-export interface PlayerSheetsData {
-    id: string;
-    code: string;
-    firstName: string;
-    lastName: string;
-    position: string;
-    team: string;
-    fplId?: number;
-    webName?: string;
-}
-
-export interface PlayerPositionData {
-    playerId: string;
-    customPosition: CustomPosition;
-    team: string;
-    name: string;
-}
 
 export interface PlayerGameweekStatsData {
     appearance: number;

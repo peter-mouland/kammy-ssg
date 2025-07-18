@@ -6,7 +6,7 @@ import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { CustomPosition } from '../types/player-types';
 import styles from './player.module.css';
 
-export function PositionBadge({ position, children }: { position: CustomPosition; children: React.ReactNode }) {
+function PositionBadge({ position, children }: { position: CustomPosition; children: React.ReactNode }) {
     return <span className={`${styles.positionBadge} ${styles[position.toLowerCase()]}`}>{children}</span>;
 }
 

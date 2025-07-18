@@ -3,7 +3,7 @@ import { FirestoreClient } from '../../../_shared/lib/firestore-cache/firestore-
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 
-export interface GameweekPointsMetadata {
+interface GameweekPointsMetadata {
     lastGeneratedGameweek: number;
     lastGeneratedAt: string;
     currentGameweek: number;
@@ -13,21 +13,6 @@ export interface GameweekPointsMetadata {
         playerCount: number;
         type: 'full' | 'selective';
     }>;
-}
-
-export interface GameweekUpdateResult {
-    updated: boolean;
-    reason: string;
-    gameweeksGenerated: number[];
-    playerCount: number;
-    previousGameweek?: number;
-    currentGameweek: number;
-    pointsPopulationResult?: {
-        divisionsProcessed: number;
-        documentsUpdated: number;
-        playersUpdated: number;
-        errors: string[];
-    };
 }
 
 export class GameweekPointsService {

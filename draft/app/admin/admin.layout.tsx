@@ -51,7 +51,6 @@ const navigationItems: AdminNavItem[] = [
 
 export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) => {
     const location = useLocation();
-    const navigate = useNavigate();
 
     const getActiveSection = () => {
         const path = location.pathname;
@@ -98,4 +97,3 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
     );
 };
 
-export default AdminLayout;

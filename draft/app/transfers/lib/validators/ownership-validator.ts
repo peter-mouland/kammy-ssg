@@ -4,7 +4,7 @@ import type { PositionSlotKey } from '../../../teams/types/team-types';
 import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 
-const description = 'Player must be available and not owned by another manager';
+// const description = 'Player must be available and not owned by another manager';
 
 /**
  * Validate loan limits - managers can only have one player on loan at a time

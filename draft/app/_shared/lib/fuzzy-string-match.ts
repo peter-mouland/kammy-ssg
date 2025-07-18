@@ -7,7 +7,7 @@ export function fuzzyStringMatch(
         locale?: string;
     } = {},
 ): boolean {
-    const { ignoreCase = true, ignoreAccents = true, locale = 'en' } = options;
+    const { ignoreCase = true, ignoreAccents = true, } = options;
 
     let a = str1;
     let b = str2;

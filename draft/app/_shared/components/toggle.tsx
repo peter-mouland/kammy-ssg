@@ -2,14 +2,14 @@
 import type React from 'react';
 import styles from './toggle.module.css';
 
-export interface ToggleOption {
+interface ToggleOption {
     value: string;
     label: string;
     icon: string;
     title?: string;
 }
 
-export interface GenericToggleProps {
+interface GenericToggleProps {
     options: ToggleOption[];
     activeValue: string;
     onToggle: (value: string) => void;

@@ -12,19 +12,6 @@ import type {
 import type { DivisionId } from '../../../teams/types/team-types';
 
 /**
- * Compare draft data between Firebase and Google Sheets for a specific division
- */
-export async function getDraftSyncComparison(divisionId: DivisionId): Promise<DraftSyncComparison> {
-    return await dataCache.get(
-        CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId),
-        () => generateDraftSyncComparison(divisionId),
-        {
-            ttlMs: getCacheTTL(CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId)),
-        },
-    );
-}
-
-/**
  * Get all draft sync comparisons for all divisions
  */
 export async function getAllDraftSyncComparisons(): Promise<DraftSyncComparison[]> {
@@ -262,31 +249,4 @@ function compareData(
     }
 
     return differences;
-}
-
-/**
- * Force invalidate cache for a specific division comparison
- */
-export async function invalidateDraftSyncComparison(divisionId: DivisionId): Promise<void> {
-    dataCache.invalidate(CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId));
-    dataCache.invalidate(CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS);
-}
-
-/**
- * Force invalidate all comparison caches
- */
-export async function invalidateAllDraftSyncComparisons(): Promise<void> {
-    dataCache.invalidate(CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS);
-
-    // Also invalidate individual comparisons
-    try {
-        const { readDivisions } = await import('../../../_shared/lib/sheets/divisions');
-        const divisions = await readDivisions();
-
-        divisions.forEach((division) => {
-            dataCache.invalidate(CACHE_KEYS.DRAFT_SYNC.COMPARISON(division.id));
-        });
-    } catch (error) {
-        console.error('❌ Failed to invalidate individual comparison caches:', error);
-    }
 }

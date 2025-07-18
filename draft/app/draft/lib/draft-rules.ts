@@ -6,14 +6,14 @@ import type { CustomPosition, PositionNameMap } from '../../players/types/player
 import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 
 // Positions configuration type using mapped type
-export type PositionsConfig = {
+type PositionsConfig = {
     [K in CustomPosition]: {
         max: number;
         name: PositionNameMap[K];
     };
 };
 
-export type DraftRules = {
+type DraftRules = {
     positions: PositionsConfig;
     maxPlayersPerTeam: number;
     maxSubstitutes: number;
@@ -35,7 +35,7 @@ export const DRAFT_RULES: DraftRules = {
     totalSquadSize: 12,
 };
 
-export interface DraftValidationResult {
+interface DraftValidationResult {
     isEligible: boolean;
     violations: string[];
     canAddToSub: boolean;
@@ -99,11 +99,6 @@ export function getSquadComposition(userPicks: any[]): SquadComposition {
     });
 
     return { positionCounts, teamCounts };
-}
-
-// Hook version (for React components that need memoization)
-export function useSquadComposition(userPicks: any[]) {
-    return useMemo(() => getSquadComposition(userPicks), [userPicks]);
 }
 
 // Function to validate if a player can be drafted - FIXED
@@ -188,37 +183,4 @@ export function validateDraftEligibility(squadComposition: any, targetPlayer: an
         violations,
         canAddToSub: canAddToSub && !canAddToPosition,
     };
-}
-
-// Get eligible players (regular function)
-export function getEligiblePlayers(allPlayers: any[], userPicks: any[]) {
-    const squadComposition = getSquadComposition(userPicks);
-
-    if (squadComposition.positionCounts.total >= DRAFT_RULES.totalSquadSize) {
-        return { eligiblePlayers: [], hiddenCount: allPlayers.length, violations: ['Squad is full'] };
-    }
-
-    const eligiblePlayers: any[] = [];
-    const violations = new Set<string>();
-
-    allPlayers.forEach((player) => {
-        const validation = validateDraftEligibility(squadComposition, player);
-
-        if (validation.isEligible) {
-            eligiblePlayers.push(player);
-        } else {
-            validation.violations.forEach((v) => violations.add(v));
-        }
-    });
-
-    return {
-        eligiblePlayers,
-        hiddenCount: allPlayers.length - eligiblePlayers.length,
-        violations: Array.from(violations),
-    };
-}
-
-// Hook version (for React components that need memoization)
-export function useEligiblePlayers(allPlayers: any[], userPicks: any[]) {
-    return useMemo(() => getEligiblePlayers(allPlayers, userPicks), [allPlayers, userPicks]);
 }

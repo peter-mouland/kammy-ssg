@@ -317,25 +317,3 @@ export function getFullBreakdown(
         },
     };
 }
-
-/**
- * Calculate season totals from gameweek points
- */
-export function calculateSeasonTotalFromGameweekPoints(gameweekPoints: Record<number, any>): {
-    totalPoints: number;
-    gameweeksPlayed: number;
-} {
-    let totalPoints = 0;
-    let gameweeksPlayed = 0;
-
-    Object.values(gameweekPoints).forEach((gw: any) => {
-        if (gw.points && !gw.metadata?.noData) {
-            totalPoints += gw.points.total;
-            if (gw.points.appearance > 0) {
-                gameweeksPlayed++;
-            }
-        }
-    });
-
-    return { totalPoints, gameweeksPlayed };
-}

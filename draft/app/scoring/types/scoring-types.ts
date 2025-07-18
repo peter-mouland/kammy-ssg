@@ -17,32 +17,6 @@ export interface Points {
 }
 
 // ================================
-// SCORING RULES TYPES
-// ================================
-
-export interface PositionScoringRules {
-    appearance?: number;
-    goals?: number;
-    assists?: number;
-    cleanSheets?: number;
-    goalsConceded?: number;
-    goalsConcededPenalty?: number;
-    savesThreshold?: number;
-    savesRatio?: number;
-    penaltiesSaved?: number;
-    bonus?: number;
-}
-
-export interface ScoringRulesConfig {
-    gk: PositionScoringRules;
-    fb: PositionScoringRules;
-    cb: PositionScoringRules;
-    mid: PositionScoringRules;
-    wa: PositionScoringRules;
-    ca: PositionScoringRules;
-}
-
-// ================================
 // ENHANCED PLAYER DATA TYPES
 // ================================
 
@@ -106,7 +80,7 @@ export interface SeasonTotals {
     cleanSheetPercentage: number;
 }
 
-export interface PointsBreakdown {
+interface PointsBreakdown {
     appearance: PointsBreakdownItem;
     goals: PointsBreakdownItem;
     assists: PointsBreakdownItem;
@@ -151,104 +125,3 @@ export interface EnhancedPlayerData {
 }
 
 export type PlayersByCode = Record<EnhancedPlayerData['code'], EnhancedPlayerData>;
-
-// ================================
-// DATA GENERATION TYPES
-// ================================
-
-export interface GameweekDataParams {
-    targetGameweeks: number[];
-    currentGameweek: number;
-}
-
-export interface GameweekDataResult {
-    playerCount: number;
-    gameweeksGenerated: number[];
-    generatedAt: string;
-}
-
-export interface SeasonDataParams {
-    includeBreakdown?: boolean;
-    targetGameweeks?: number[];
-}
-
-// ================================
-// GAMEWEEK POINTS SERVICE TYPES
-// ================================
-
-export interface GameweekPointsMetadata {
-    lastGeneratedGameweek: number;
-    lastGeneratedAt: string;
-    currentGameweek: number;
-    generationHistory: Array<{
-        gameweek: number;
-        generatedAt: string;
-        playerCount: number;
-        type: 'full' | 'selective';
-    }>;
-}
-
-export interface GameweekUpdateResult {
-    updated: boolean;
-    reason: string;
-    gameweeksGenerated: number[];
-    playerCount: number;
-    previousGameweek?: number;
-    currentGameweek: number;
-}
-
-export interface GameweekPointsStatus {
-    lastGenerated: string | null;
-    lastGameweek: number;
-    currentGameweek: number;
-    needsUpdate: boolean;
-    reason: string;
-}
-
-export interface PointsUpdateParams {
-    needed: boolean;
-    reason: string;
-    gameweeksToGenerate: number[];
-}
-
-// ================================
-// UTILITY TYPES
-// ================================
-
-export type StatRelevanceChecker = (stat: string, position: CustomPosition) => boolean;
-
-export interface PositionDisplayConfig {
-    name: string;
-    shortName: string;
-    color: string;
-    order: number;
-}
-
-export interface PointsDisplayOptions {
-    showPrefix?: boolean;
-    decimalPlaces?: number;
-    colorize?: boolean;
-}
-
-// ================================
-// VALIDATION TYPES
-// ================================
-
-export interface ScoringRuleValidation {
-    isValid: boolean;
-    errors: string[];
-    warnings: string[];
-}
-
-export interface GameweekDataValidation {
-    isComplete: boolean;
-    missingPlayers: number[];
-    incompleteGameweeks: number[];
-    dataQualityScore: number;
-}
-
-// ================================
-// TYPE GUARDS (functions belong in utils, not types file)
-// ================================
-// REMOVED: Functions don't belong in types files
-// These should be moved to app/scoring/utils/type-guards.ts

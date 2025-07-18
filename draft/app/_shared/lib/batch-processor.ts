@@ -1,6 +1,6 @@
 /* Location: app/_shared/lib/batch-processor.ts */
 
-export interface BatchProcessorOptions {
+interface BatchProcessorOptions {
     batchSize?: number;
     maxConcurrent?: number;
     logProgress?: boolean;
@@ -52,7 +52,7 @@ function chunkArray<T>(array: T[], size: number): T[][] {
     return chunks;
 }
 
-export interface BatchReadOptions {
+interface BatchReadOptions {
     batchSize?: number;
     logProgress?: boolean;
 }

@@ -3,9 +3,9 @@ import type React from 'react';
 import { useSearchParams } from 'react-router';
 import { GenericToggle } from '../../_shared/components/toggle';
 
-export type DataSource = 'fpl' | '2425';
+type DataSource = 'fpl' | '2425';
 
-export interface DataSourceToggleProps {
+interface DataSourceToggleProps {
     dataSource: DataSource;
 }
 

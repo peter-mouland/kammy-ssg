@@ -16,7 +16,7 @@ import type { FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
  * Fixes cache key explosion by caching individual players instead of batches
  * Maintains performance with smart batching for cache misses
  */
-export class FplApiCache {
+class FplApiCache {
     fplFirestore: FplFirestore;
 
     constructor() {
@@ -366,4 +366,3 @@ export class FplApiCache {
 export const fplApiCache = new FplApiCache();
 
 // Export the class for testing or multiple instances
-export default FplApiCache;

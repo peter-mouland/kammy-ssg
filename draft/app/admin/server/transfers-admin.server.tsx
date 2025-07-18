@@ -219,7 +219,6 @@ async function updateTransferRecommendationInSheet(
         const timestampColumnIndex = headers.findIndex(
             (h) => h.toLowerCase().includes('timestamp') || h.toLowerCase().includes('time'),
         );
-        const managerColumnIndex = headers.findIndex((h) => h.toLowerCase().includes('manager'));
         const statusColumnIndex = headers.findIndex((h) => h.toLowerCase().includes('status'));
 
         if (timestampColumnIndex === -1) {

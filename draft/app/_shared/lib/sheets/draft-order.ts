@@ -75,7 +75,7 @@ export async function readDraftOrders() {
 /**
  * Write draft orders to the sheet (overwrites existing data)
  */
-export async function writeDraftOrders(draftOrders: DraftOrderData[]): Promise<void> {
+async function writeDraftOrders(draftOrders: DraftOrderData[]): Promise<void> {
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
     try {
         // Transform dates to ISO strings for sheet storage

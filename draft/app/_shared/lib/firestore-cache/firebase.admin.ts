@@ -70,9 +70,3 @@ export function getFirestoreInstance() {
 
     return db;
 }
-
-// OPTIONAL: Add cleanup function for development
-export function resetFirebaseInstance() {
-    db = undefined as unknown as FirebaseFirestore.Firestore;
-    console.log('🔄 Firebase instance reset for hot reload');
-}

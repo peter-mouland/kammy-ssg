@@ -79,7 +79,7 @@ export interface TransferProcessingResult {
 /**
  * Transfer processing error
  */
-export interface TransferProcessingError {
+interface TransferProcessingError {
     rowIndex: number;
     transfer: Partial<ProcessedTransferSheetData>;
     error: string;
