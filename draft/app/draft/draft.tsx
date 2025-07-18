@@ -269,9 +269,10 @@ export const Draft = () => {
         );
     }
 
-    const title = loaderData.selectedUser && loaderData.draftState?.isActive
-        ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.currentUserInfo?.divisionId)?.label} Draft Room`
-        : '⚪️ Draft Room';
+    const title =
+        loaderData.selectedUser && loaderData.draftState?.isActive
+            ? `🟢 Live ${loaderData.divisions.find((d) => d.id === loaderData.currentUserInfo?.divisionId)?.label} Draft Room`
+            : '⚪️ Draft Room';
 
     return (
         <div className={styles.draftContainer}>
@@ -336,19 +337,21 @@ export const Draft = () => {
                             <div className={styles.draftInactive}>
                                 <div className={styles.inactiveIcon}>👤</div>
                                 <h3 className={styles.inactiveTitle}>Please select a user</h3>
-                                <p className={styles.inactiveMessage}>View the active draft by picking a user to follow</p>
+                                <p className={styles.inactiveMessage}>
+                                    View the active draft by picking a user to follow
+                                </p>
                             </div>
                         ) : loaderData.draftState?.isActive && loaderData.selectedUser ? (
                             <div className={styles.draftInterface}>
-                                {/* Available Players */}
-                                <div className={styles.playersSection}>
+                                <div className={styles.column}>
+                                    <h3>Your Details</h3>
                                     {/* Squad Status */}
 
                                     <DraftTeam
-                                        userId={loaderData.draftState.currentUserId}
-                                        userName={loaderData.draftState.currentUserId}
+                                        userId={loaderData.selectedUser}
+                                        userName={loaderData.selectedUser}
                                         draftPicks={loaderData.draftPicks?.filter(
-                                            (pick) => pick.userId === loaderData.draftState?.currentUserId,
+                                            (pick) => pick.userId === loaderData.selectedUser,
                                         )}
                                         isCompact={true}
                                     />
@@ -377,7 +380,17 @@ export const Draft = () => {
                                 </div>
 
                                 {/* Right Column */}
-                                <div className={styles.rightColumn}>
+                                <div className={styles.column}>
+                                    <h3>The Draft</h3>
+                                    <DraftTeam
+                                        userId={loaderData.draftState.currentUserId}
+                                        userName={loaderData.draftState.currentUserId}
+                                        draftPicks={loaderData.draftPicks?.filter(
+                                            (pick) => pick.userId === loaderData.draftState?.currentUserId,
+                                        )}
+                                        isCompact={true}
+                                    />
+
                                     {/* Draft Order */}
                                     <MemoizedDraftOrder
                                         draftOrder={loaderData.draftOrder}

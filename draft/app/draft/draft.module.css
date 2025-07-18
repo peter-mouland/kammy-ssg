@@ -56,10 +56,15 @@
     position: relative;
 }
 
-.rightColumn {
-    display: grid;
-    grid-template-rows: 0.7fr 1.3fr;
-    gap: 2rem;
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.column:first-child,
+.column:nth-child(2) {
+    flex: 0 0 auto; /* don't grow, don't shrink, auto size */
 }
 
 /* Optimistic Overlay */
