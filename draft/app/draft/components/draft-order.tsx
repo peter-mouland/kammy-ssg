@@ -91,30 +91,32 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
 
             {/* Rest of your existing draft order component */}
             <ul className={styles.draftOrderList}>
-                {draftOrder.map((user, index) => (
-                    <li
-                        key={user.userId}
-                        className={`${styles.draftOrderItem} ${
-                            user.userId === draftState?.currentUserId ? styles.currentTurn : ''
-                        } ${user.userId === nextPicker?.userId ? styles.nextTurn : ''}`}
-                    >
-                        <div className={styles.orderPosition}>#{index + 1}</div>
-                        <div className={styles.userInfo}>
-                            <div className={styles.userName}>{user.userName}</div>
-                            <div className={styles.teamName}>{user.divisionId}</div>
-                        </div>
-                        {user.userId === draftState?.currentUserId && !draftComplete && (
-                            <div className={styles.turnIndicator}>
-                                <span className={styles.pickingNow}>⏰ on clock</span>
+                {draftOrder.map((user, index) => {
+                    return (
+                        <li
+                            key={user.userId}
+                            className={`${styles.draftOrderItem} ${
+                                user.userId === draftState?.currentUserId ? styles.currentTurn : ''
+                            } ${user.userId === nextPicker?.userId ? styles.nextTurn : ''}`}
+                        >
+                            <div className={styles.orderPosition}>#{index + 1}</div>
+                            <div className={styles.userInfo}>
+                                <div className={styles.userName}>{user.userName}</div>
+                                <div className={styles.teamName}>{user.divisionId}</div>
                             </div>
-                        )}
-                        {user.userId === nextPicker?.userId && !draftComplete && (
-                            <div className={styles.nextIndicator}>
-                                <span className={styles.onDeck}>Get Ready...</span>
-                            </div>
-                        )}
-                    </li>
-                ))}
+                            {user.userId === draftState?.currentUserId && !draftComplete && (
+                                <div className={styles.turnIndicator}>
+                                    <span className={styles.pickingNow}>⏰ on clock</span>
+                                </div>
+                            )}
+                            {user.userId === nextPicker?.userId && !draftComplete && (
+                                <div className={styles.nextIndicator}>
+                                    <span className={styles.onDeck}>Get Ready...</span>
+                                </div>
+                            )}
+                        </li>
+                    )
+                })}
             </ul>
 
             {/* Draft Progress */}

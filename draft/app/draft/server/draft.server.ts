@@ -40,7 +40,7 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
 
     // Get division-specific draft state
     const draftStates = await readAllDraftStates()
-    const draftState = draftStates.find((ds) => ds.isActive) || draftStates.find((ds) => ds.divisionId === divisionId) || draftStates[0];
+    const draftState = draftStates.find((ds) => ds.divisionId === divisionId) || draftStates[0];
 
     let draftPicks: DraftPickData[] = [];
     let draftOrder: DraftOrderData[] = [];
