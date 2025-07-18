@@ -1,9 +1,8 @@
-/* Location: app/draft/components/draft-filters.tsx */
-
 import React, { useMemo } from 'react';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
+import { useWishlists } from '../../wishlist/lib/use-wishlists';
 import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';
 import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 import styles from './draft-filters.module.css';
@@ -16,9 +15,11 @@ interface DraftFiltersProps {
     allTeams: any[];
     selectedPositions: string[];
     selectedTeams: string[];
+    selectedWishlists: string[];
     searchTerm: string;
     onPositionsChange: (positions: string[]) => void;
     onTeamsChange: (teams: string[]) => void;
+    onWishlistsChange: (wishlists: string[]) => void;
     onSearchChange: (search: string) => void;
 }
 
@@ -28,11 +29,15 @@ export function DraftFilters({
     allTeams,
     selectedPositions,
     selectedTeams,
+    selectedWishlists,
     searchTerm,
     onPositionsChange,
     onTeamsChange,
+    onWishlistsChange,
     onSearchChange,
 }: DraftFiltersProps) {
+    const { wishlists } = useWishlists();
+
     // Create team lookup
     const teamLookup = useMemo(() => {
         return allTeams.reduce(
@@ -44,45 +49,36 @@ export function DraftFilters({
         );
     }, [allTeams]);
 
-    // Calculate availability for positions and teams
-    const { positionOptions, teamOptions, eligibleCount, filteredCount } = useMemo(() => {
-        const positionCounts: Record<string, { total: number; eligible: number }> = {};
-        const teamCounts: Record<string, { total: number; eligible: number }> = {};
+    // Calculate counts and options
+    const { positionOptions, teamOptions, wishlistOptions, eligibleCount, filteredCount } = useMemo(() => {
+        // Calculate position and team counts for eligible players
+        const positionCounts: PositionCounts = {};
+        const teamCounts: TeamCounts = {};
 
-        // Initialize counts
-        Object.keys(DRAFT_RULES.positions).forEach((pos) => {
-            positionCounts[pos] = { total: 0, eligible: 0 };
+        Object.keys(DRAFT_RULES.positions).forEach((position) => {
+            positionCounts[position as CustomPosition] = { total: 0, eligible: 0 };
         });
 
         allTeams.forEach((team) => {
             teamCounts[team.code] = { total: 0, eligible: 0 };
         });
 
-        // Count all available players
         availablePlayers.forEach((player) => {
             const position = getPlayerPosition(player);
-            const teamCode = player.team_code;
-            const validation = validateDraftEligibility(squadComposition, player);
+            const isEligible = validateDraftEligibility(squadComposition, player).isEligible;
 
             if (positionCounts[position]) {
                 positionCounts[position].total++;
-                if (validation.isEligible) {
-                    positionCounts[position].eligible++;
-                }
+                if (isEligible) positionCounts[position].eligible++;
             }
 
-            if (teamCounts[teamCode]) {
-                teamCounts[teamCode].total++;
-                if (validation.isEligible) {
-                    teamCounts[teamCode].eligible++;
-                }
+            if (teamCounts[player.team_code]) {
+                teamCounts[player.team_code].total++;
+                if (isEligible) teamCounts[player.team_code].eligible++;
             }
         });
 
-        // Convert to MultiSelectOption format
-        const positions = Object.keys(DRAFT_RULES.positions) as (keyof typeof DRAFT_RULES.positions)[];
-
-        const positionOptions: MultiSelectOption[] = positions.map((position) => ({
+        const positionOptions: MultiSelectOption[] = Object.keys(DRAFT_RULES.positions).map((position) => ({
             id: position,
             label: getPositionDisplayName(position),
             count: positionCounts[position]?.eligible || 0,
@@ -96,6 +92,21 @@ export function DraftFilters({
             disabled: teamCounts[team.code]?.eligible === 0,
         }));
 
+        // Calculate wishlist options with player counts
+        const wishlistOptions: MultiSelectOption[] = wishlists.map((wishlist) => {
+            const eligiblePlayersInWishlist = availablePlayers.filter((player) => {
+                const isEligible = validateDraftEligibility(squadComposition, player).isEligible;
+                return isEligible && wishlist.playerCodes.includes(player.code);
+            });
+
+            return {
+                id: wishlist.id,
+                label: wishlist.label,
+                count: eligiblePlayersInWishlist.length,
+                disabled: eligiblePlayersInWishlist.length === 0,
+            };
+        });
+
         // Calculate filtered results
         const eligiblePlayers = availablePlayers.filter(
             (player) => validateDraftEligibility(squadComposition, player).isEligible,
@@ -105,6 +116,15 @@ export function DraftFilters({
             const position = getPlayerPosition(player);
             if (!selectedPositions.includes(position)) return false;
             if (!selectedTeams.includes(player.team_code.toString())) return false;
+
+            // Wishlist filter
+            if (selectedWishlists.length > 0) {
+                const playerInSelectedWishlists = selectedWishlists.some((wishlistId) => {
+                    const wishlist = wishlists.find((w) => w.id === wishlistId);
+                    return wishlist?.playerCodes.includes(player.code);
+                });
+                if (!playerInSelectedWishlists) return false;
+            }
 
             if (searchTerm) {
                 if (
@@ -122,14 +142,26 @@ export function DraftFilters({
         return {
             positionOptions,
             teamOptions,
+            wishlistOptions,
             eligibleCount: eligiblePlayers.length,
             filteredCount: filteredPlayers.length,
         };
-    }, [availablePlayers, squadComposition, allTeams, selectedPositions, selectedTeams, searchTerm, teamLookup]);
+    }, [
+        availablePlayers,
+        squadComposition,
+        allTeams,
+        selectedPositions,
+        selectedTeams,
+        selectedWishlists,
+        searchTerm,
+        teamLookup,
+        wishlists,
+    ]);
 
     const clearAllFilters = () => {
         onPositionsChange(Object.keys(DRAFT_RULES.positions));
-        onTeamsChange(allTeams.map((t) => t.id.toString()));
+        onTeamsChange(allTeams.map((t) => t.code.toString()));
+        onWishlistsChange([]);
         onSearchChange('');
     };
 
@@ -157,6 +189,14 @@ export function DraftFilters({
                 onSelectionChange={onTeamsChange}
                 placeholder="Teams"
                 sortOptions={true}
+            />
+
+            {/* Wishlists Filter */}
+            <DraftFiltersMultiSelect
+                options={wishlistOptions}
+                selectedValues={selectedWishlists}
+                onSelectionChange={onWishlistsChange}
+                placeholder="Wishlists"
             />
 
             {/* Clear Button */}

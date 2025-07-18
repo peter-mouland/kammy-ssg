@@ -62,8 +62,8 @@
     gap: 1.5rem;
 }
 
-.column:first-child,
-.column:nth-child(2) {
+.column > :first-child,
+.column > :nth-child(2) {
     flex: 0 0 auto; /* don't grow, don't shrink, auto size */
 }
 

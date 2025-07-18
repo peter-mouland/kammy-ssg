@@ -1,14 +1,17 @@
 // app/wishlist/components/wishlist-details.tsx
 
 import React from 'react';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import { PlayerSummary } from '../../players/components/player';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { Wishlist } from '../types/wishlist-types';
 import styles from './wishlist-item.module.css';
 
 interface WishlistDetailsProps {
     wishlist: Wishlist;
     onRemovePlayer: (wishlistId: string, playerCode: number) => void;
-    playersByCode: any;
-    teamsByCode: any;
+    playersByCode: Record<number, EnhancedPlayerData>;
+    teamsByCode: Record<number, FplTeam>;
 }
 
 export function WishlistDetails({ playersByCode, teamsByCode, wishlist, onRemovePlayer }: WishlistDetailsProps) {
@@ -72,7 +75,7 @@ export function WishlistDetails({ playersByCode, teamsByCode, wishlist, onRemove
                         </a>
                     </div>
                 ) : (
-                    <div className={styles.playersList}>
+                    <ul className={styles.playersList}>
                         {wishlist.playerCodes.map((playerCode) => (
                             <WishlistPlayerRow
                                 key={playerCode}
@@ -83,7 +86,7 @@ export function WishlistDetails({ playersByCode, teamsByCode, wishlist, onRemove
                                 onRemove={() => handleRemovePlayer(playerCode)}
                             />
                         ))}
-                    </div>
+                    </ul>
                 )}
             </div>
         </div>
@@ -95,18 +98,15 @@ interface WishlistPlayerRowProps {
     wishlistId: string;
     searchTerm: string;
     onRemove: () => void;
-    player: any;
-    teamsByCode: any;
+    player: EnhancedPlayerData;
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode?: Record<number, EnhancedPlayerData>;
 }
 
 function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: WishlistPlayerRowProps) {
-    // In a real app, you'd fetch the player data here
-    // For demonstration, showing placeholder data
     const playerName = player.web_name;
     const playerTeam = teamsByCode[player.team_code].name;
-    const playerPosition = player.draft.position;
 
-    // Simple search filter
     const matchesSearch =
         !searchTerm ||
         playerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,16 +115,11 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
     if (!matchesSearch) return null;
 
     return (
-        <div className={styles.playerRow}>
+        <li className={styles.playerRow}>
             <div className={styles.playerInfo}>
-                <div className={styles.playerAvatar}>
-                    <span className={styles.playerPosition}>{playerPosition}</span>
-                </div>
-                <div className={styles.playerDetails}>
-                    <h4 className={styles.playerName}>{playerName}</h4>
-                    <p className={styles.playerMeta}>{playerTeam}</p>
-                </div>
+                <PlayerSummary teamsByCode={teamsByCode} player={player} />
             </div>
+            <div className={styles.playerInfo}>{player.code}</div>
 
             <div className={styles.playerActions}>
                 <a href={`/players/${player.code}`} className={styles.viewLink}>
@@ -136,6 +131,6 @@ function WishlistPlayerRow({ player, teamsByCode, searchTerm, onRemove }: Wishli
                     </svg>
                 </button>
             </div>
-        </div>
+        </li>
     );
 }

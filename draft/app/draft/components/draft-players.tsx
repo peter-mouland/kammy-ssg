@@ -1,10 +1,9 @@
-/* Location: app/draft/components/draft-players.tsx */
-
 // components/draft-players.tsx - Optimized version
 import { useEffect, useMemo, useState } from 'react';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
+import { useWishlists } from '../../wishlist/lib/use-wishlists';
 import { DRAFT_RULES, getPlayerPosition, getSquadComposition, validateDraftEligibility } from '../lib/draft-rules';
 import { DraftFilters } from './draft-filters';
 import styles from './draft-players.module.css';
@@ -32,8 +31,10 @@ export function DraftPlayers({
 }: DraftPlayersProps) {
     const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
     const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+    const [selectedWishlists, setSelectedWishlists] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filtersInitialized, setFiltersInitialized] = useState(false);
+    const { wishlists } = useWishlists();
     const squadComposition = getSquadComposition(currentUserPicks);
 
     // Pre-compute validations for all players - this avoids duplicate calculations
@@ -65,9 +66,10 @@ export function DraftPlayers({
 
             setSelectedPositions(availablePositions);
             setSelectedTeams(availableTeamCodes);
+            // Keep selectedWishlists as empty array - empty means "show all"
             setFiltersInitialized(true);
         }
-    }, [eligiblePlayersWithValidation, allTeams, currentUserPicks.length, filtersInitialized]);
+    }, [eligiblePlayersWithValidation, allTeams, currentUserPicks.length, filtersInitialized, wishlists]);
 
     // Reset filters when currentUserPicks changes
     useEffect(() => {
@@ -111,9 +113,20 @@ export function DraftPlayers({
                 return false;
             }
 
+            // Wishlist filter - only show players that are in selected wishlists
+            if (selectedWishlists.length > 0) {
+                const playerInSelectedWishlists = selectedWishlists.some((wishlistId) => {
+                    const wishlist = wishlists.find((w) => w.id === wishlistId);
+                    return wishlist?.playerCodes.includes(player.code);
+                });
+                if (!playerInSelectedWishlists) {
+                    return false;
+                }
+            }
+
             return true;
         });
-    }, [eligiblePlayersWithValidation, searchTerm, selectedPositions, selectedTeams]);
+    }, [eligiblePlayersWithValidation, searchTerm, selectedPositions, selectedTeams, selectedWishlists, wishlists]);
 
     // Calculate stats for display
     const stats = useMemo(() => {
@@ -156,9 +169,11 @@ export function DraftPlayers({
                     allTeams={allTeams}
                     selectedPositions={selectedPositions}
                     selectedTeams={selectedTeams}
+                    selectedWishlists={selectedWishlists}
                     searchTerm={searchTerm}
                     onPositionsChange={setSelectedPositions}
                     onTeamsChange={setSelectedTeams}
+                    onWishlistsChange={setSelectedWishlists}
                     onSearchChange={setSearchTerm}
                 />
             </div>

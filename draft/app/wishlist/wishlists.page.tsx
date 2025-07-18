@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
+import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../scoring/types/scoring-types';
 import { WishlistDetails } from './components/wishlist-details';
 import { CreateWishlistForm } from './components/wishlist-form';
 import { WishlistItem } from './components/wishlist-item';
@@ -12,8 +14,10 @@ import styles from './wishlists.page.module.css';
 
 export const WishlistsPage = () => {
     const { wishlists, isLoading, deleteWishlist, updateWishlist, removePlayerFromWishlist } = useWishlists();
-    const { playersByCode, teamsByCode } = useLoaderData();
-
+    const { playersByCode, teamsByCode } = useLoaderData<{
+        playersByCode: Record<number, EnhancedPlayerData>;
+        teamsByCode: Record<number, FplTeam>;
+    }>();
     const [selectedWishlist, setSelectedWishlist] = useState<string | null>(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [editingWishlist, setEditingWishlist] = useState<string | null>(null);
