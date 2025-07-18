@@ -105,6 +105,24 @@ export function ownershipLimit(context: TransferRuleContext): RuleValidationResu
             message: 'unknown state',
             severity: 'blocking',
         };
+    } else if (transfer.transferType === 'LOAN_END') {
+        if (playerInOwned?.slotKey === 'on_loan_0') {
+            return {
+                ruleId: 'ownership',
+                ruleName: 'Ownership',
+                passed: true,
+                message: 'end loan of play in loan slot. good work.',
+                severity: 'blocking',
+            };
+        } else {
+            return {
+                ruleId: 'ownership',
+                ruleName: 'Ownership',
+                passed: false,
+                message: 'end loan of play NOT in loan slot. questionable.',
+                severity: 'blocking',
+            };
+        }
     }
 
     // For regular transfers, player must be available (not owned by anyone)

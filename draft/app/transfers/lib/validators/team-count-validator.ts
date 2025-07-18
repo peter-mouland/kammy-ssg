@@ -35,7 +35,8 @@ export function teamCountLimit(context: TransferRuleContext): RuleValidationResu
             ruleName: 'Team Count Limit',
             passed: false,
             message: 'Already own 2 players from this team',
-            severity: 'blocking',
+            // loan end issue can be fixed in the very next transfer, so warning is ok
+            severity: transfer.transferType === 'LOAN_END' ? 'warning' : 'blocking',
             details: {
                 teamCode: transfer.playerIn.team_code,
             },
