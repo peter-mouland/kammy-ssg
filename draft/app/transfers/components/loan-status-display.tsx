@@ -1,6 +1,8 @@
 // app/transfers/components/loan-status-display.tsx
 
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { PlayerSummary } from '../../players/components/player';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
 import styles from './loan-status-display.module.css';
 
@@ -14,8 +16,8 @@ interface LoanStatusDisplayProps {
     loans: Record<RosterPlayer['playerCode'], ActiveLoan>;
     managers: UserTeamsSheetData[];
     currentManagerId: string;
-    teamsByCode?: Record<number, any>;
-    fplPlayersByCode?: Record<number, any>;
+    teamsByCode: Record<number, FplTeam> | null;
+    fplPlayersByCode?: Record<number, EnhancedPlayerData>;
 }
 
 export function LoanStatusDisplay({

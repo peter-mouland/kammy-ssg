@@ -1,9 +1,8 @@
 /* Location: app/transfers/server/services/transfers-data.service.ts */
 
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
-import type { DivisionId, PositionSlotKey, RosterByManagerId } from '../../../teams/types/team-types';
+import type { DivisionId, RosterByManagerId } from '../../../teams/types/team-types';
 import { validateTransfers } from '../../lib/transfer-validation.service';
-import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
 import type { TransferValidationResult } from '../../types/transfer-rule-types';
 
 /**

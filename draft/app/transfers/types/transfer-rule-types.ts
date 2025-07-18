@@ -79,4 +79,6 @@ export interface TransferAdminOverviewData {
         autoRejected: number;
         needsReview: number;
     };
+    divisionRosters: RosterByManagerId;
+    validationContext: TransferRuleContext;
 }

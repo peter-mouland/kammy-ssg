@@ -8,7 +8,8 @@ import { Table, type TableColumn } from '../../../_shared/components/table';
 import type { FplTeam, GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import { PlayerSummary } from '../../../players/components/player';
 import { GameweekSelector } from '../../../teams/components/gameweek-selector';
-import type { DivisionSheetData } from '../../../teams/types/team-types';
+import type { DivisionSheetData, ManagerId, PositionSlotKey, RosterPlayer } from '../../../teams/types/team-types';
+import { LoanStatusDisplay } from '../../../transfers/components/loan-status-display';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';
 import type { ProcessedTransfer } from '../../../transfers/types/transfer-types';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
@@ -438,6 +439,12 @@ function groupTransfersByGameweek(
     return Array.from(gameweekMap.values()).sort((a, b) => (b.gameweekData.start > a.gameweekData.start ? 1 : -1));
 }
 
+type ActiveLoan = {
+    player: RosterPlayer;
+    to: ManagerId | null;
+    from: ManagerId | null;
+};
+
 export function TransfersSection({
     divisions,
     selectedDivision,
@@ -445,7 +452,9 @@ export function TransfersSection({
     transfersData,
     systemStatus,
     teamsByCode,
+    sharedContext,
 }: TransfersSectionProps) {
+    const divisionTransferData = transfersData[selectedDivision.id];
     const navigate = useNavigate();
     const availableGameweeks = Array.from({ length: systemStatus.currentGameweek.fplEvent.id }, (_, i) => i + 1);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
@@ -456,6 +465,21 @@ export function TransfersSection({
             navigate(`/admin/transfers?gameweek=${selectedGameweek.fplEvent.id}`);
         }
     };
+
+    const loans: Record<RosterPlayer['playerCode'], ActiveLoan> = {};
+    Object.keys(divisionTransferData.divisionRosters).forEach((managerId) => {
+        const { roster } = divisionTransferData.divisionRosters[managerId];
+        Object.keys(roster).forEach((slotKey) => {
+            const player = roster[slotKey as PositionSlotKey].player;
+            if (player.onLoanTo || player.onLoanFrom) {
+                loans[player.playerCode] = {
+                    player,
+                    to: loans[player.playerCode]?.to || player.onLoanTo,
+                    from: loans[player.playerCode]?.from || player.onLoanFrom,
+                };
+            }
+        });
+    });
 
     return (
         <AdminContainer>
@@ -482,6 +506,13 @@ export function TransfersSection({
                     selectedDivision={selectedDivision}
                     transfersData={selectedDivisionData}
                     teamsByCode={teamsByCode}
+                />
+                <LoanStatusDisplay
+                    teamsByCode={teamsByCode}
+                    fplPlayersByCode={divisionTransferData.validationContext.fplPlayersByCode}
+                    loans={loans}
+                    managers={sharedContext.sheetData.managers}
+                    currentManagerId={''}
                 />
             </AdminSection>
         </AdminContainer>

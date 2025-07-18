@@ -97,6 +97,7 @@ export interface TransfersPageData {
     pendingLoans?: PendingLoanRequest[];
     activeLoanAgreements?: ActiveLoanAgreement[];
     divisionRosters: RosterByManagerId;
+    fplPlayersByCode?: Record<number, EnhancedPlayerData>;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
 }
