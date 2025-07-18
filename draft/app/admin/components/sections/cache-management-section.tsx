@@ -24,7 +24,6 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
     const actionData = fetcher.data;
 
     const cacheStatus = sharedContext.cacheStatus;
-    const lastUpdated = cacheStatus.lastUpdated ? new Date(cacheStatus.lastUpdated).toLocaleString() : 'Never';
 
     const handleCacheAction = (actionType: string) => {
         const formData = new FormData();
@@ -35,32 +34,6 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
             method: 'POST',
             action: '/admin', // This ensures we hit the parent route's action
         });
-    };
-
-    const cacheStats = null;
-
-    const getCacheStatusColor = (health: string) => {
-        switch (health) {
-            case 'healthy':
-                return 'healthy';
-            case 'warning':
-                return 'warning';
-            default:
-                return 'critical';
-        }
-    };
-
-    const formatAge = (lastUpdated: Date): string => {
-        const now = new Date();
-        const diffMs = now.getTime() - lastUpdated.getTime();
-        const diffMinutes = Math.floor(diffMs / (1000 * 60));
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffDays > 0) return `${diffDays}d ${diffHours % 24}h`;
-        if (diffHours > 0) return `${diffHours}h ${diffMinutes % 60}m`;
-        if (diffMinutes > 0) return `${diffMinutes}m`;
-        return 'Just now';
     };
 
     return (
