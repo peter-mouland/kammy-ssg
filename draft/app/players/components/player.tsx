@@ -1,8 +1,8 @@
 import type React from 'react';
 import { Link } from 'react-router';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
-import { getPositionColor } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { RosterPlayer } from '../../teams/types/team-types';
 import type { CustomPosition } from '../types/player-types';
 import styles from './player.module.css';
 
@@ -16,41 +16,37 @@ export const PlayerSummary = ({
     player,
     onLoanTo,
     onLoanFrom,
+    view = 'row',
 }: {
     teamsByCode: Record<number, FplTeam>;
     fplPlayersByCode?: Record<number, EnhancedPlayerData>;
-    player: any;
+    player: EnhancedPlayerData & RosterPlayer;
+    view?: 'row' | 'column';
     onLoanTo?: string;
     onLoanFrom?: string;
 }) => {
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
     return (
-        <div
-            className={styles.player_cell}
-            style={
-                {
-                    '--position-color': getPositionColor(player.playerPosition || player.draft.position),
-                    '--position-color-light': `${getPositionColor(player.playerPosition || player.draft.position)}40`, // Add 40 for 25% opacity
-                } as React.CSSProperties
-            }
-        >
+        <div className={`${styles.player_cell} ${view === 'column' ? styles.player_cell_col : ''}`}>
             <div style={{ position: 'relative' }}>
                 <img src={img} loading="lazy" alt="" width={35} />
 
                 {onLoanTo && <div className={styles.loanIndicator}>On Loan to {onLoanTo}</div>}
                 {onLoanFrom && <div className={styles.loanIndicator}>On Loan from {onLoanFrom}</div>}
             </div>
-            <PositionBadge position={player.playerPosition || player.draft.position}>
-                {player.playerPosition || player.draft.position}
-            </PositionBadge>
-            <div className={styles.player_cell_details}>
-                <div className={styles.player_name}>{player.playerName || player.web_name}</div>
-                <div className={styles.player_details}>
-                    <span className={styles.team}>
-                        {fplPlayersByCode
-                            ? teamsByCode[fplPlayersByCode[player.playerCode].team_code].name
-                            : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
-                    </span>
+            <div className={styles.player_cell}>
+                <PositionBadge position={player.playerPosition || player.draft.position}>
+                    {player.playerPosition || player.draft.position}
+                </PositionBadge>
+                <div className={styles.player_cell_details}>
+                    <div className={styles.player_name}>{player.playerName || player.web_name}</div>
+                    <div className={styles.player_details}>
+                        <span className={styles.team}>
+                            {fplPlayersByCode
+                                ? teamsByCode[fplPlayersByCode[player.playerCode].team_code].name
+                                : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

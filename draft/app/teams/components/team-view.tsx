@@ -83,6 +83,8 @@ export const TeamView = () => {
                             roster={teamData.roster}
                             gameweek={selectedGameweek}
                             isHistorical={!isCurrentGameweek}
+                            teamsByCode={data.teamsByCode}
+                            fplPlayersByCode={data.fplPlayersByCode}
                             viewMode={viewMode}
                         />
 
@@ -101,6 +103,8 @@ export const TeamView = () => {
                                         gameweek={selectedGameweek}
                                         isSubstitute={true}
                                         viewMode={viewMode}
+                                        teamsByCode={data.teamsByCode}
+                                        fplPlayersByCode={data.fplPlayersByCode}
                                     />
                                 </div>
                             </div>

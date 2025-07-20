@@ -10,6 +10,8 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({
     gameweek,
     isHistorical,
     viewMode = 'season',
+    teamsByCode,
+    fplPlayersByCode,
 }) => {
     const formationSlots = getFormationSlots();
 
@@ -38,6 +40,8 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({
                             gameweek={gameweek}
                             isHistorical={isHistorical}
                             showPoints={true}
+                            teamsByCode={teamsByCode}
+                            fplPlayersByCode={fplPlayersByCode}
                             viewMode={viewMode}
                         />
                     </div>

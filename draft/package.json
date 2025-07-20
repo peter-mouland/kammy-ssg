@@ -18,34 +18,32 @@
   },
   "dependencies": {
     "@firebase/database": "^1.1.0",
-    "@react-router/node": "^7.0.0",
-    "@react-router/serve": "^7.0.0",
+    "@react-router/node": "^7.7.0",
+    "@react-router/serve": "^7.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "firebase": "^11.8.1",
+    "firebase": "^11.10.0",
     "firebase-admin": "^13.4.0",
     "google-auth-library": "^9.14.1",
     "googleapis": "^144.0.0",
     "isbot": "^5",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router": "^7.0.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.7.0"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.0.0",
+    "@react-router/dev": "^7.7.0",
     "@types/node": "^22.7.4",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.8.0",
-    "@typescript-eslint/parser": "^8.8.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "check-unused-css": "^0.1.6",
     "firebase-tools": "^14.4.0",
     "knip": "^5.61.3",
     "remove-unused-vars": "^0.0.6",
-    "tsx": "^4.20.2",
-    "typescript": "^5.5.3",
-    "vite": "^5.4.1"
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.5"
   }
 }

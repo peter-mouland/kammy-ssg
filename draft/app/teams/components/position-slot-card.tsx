@@ -1,7 +1,6 @@
 // app/teams/components/position-slot-card.tsx
 import type React from 'react';
-import { Link } from 'react-router';
-import { getPositionColor } from '../../scoring/lib';
+import { PlayerSummary } from '../../players/components/player';
 import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
 
@@ -14,11 +13,11 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
     isSubstitute = false,
     showPoints = true,
     viewMode = 'season',
+    teamsByCode,
+    fplPlayersByCode,
 }) => {
     const { player } = positionSlot;
     const displayPoints = showPoints ? positionSlot[viewMode].points : null;
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode}.png`}`;
-    const positionColor = getPositionColor(player.playerPosition);
 
     return (
         <div
@@ -26,25 +25,16 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
             data-view-mode={viewMode}
             style={
                 {
-                    '--position-color': positionColor,
-                    '--position-color-light': `${positionColor}40`, // Add 40 for 25% opacity
+                    marginTop: '35px',
                 } as React.CSSProperties
             }
         >
-            {/* Player Jersey/Avatar */}
-            <div className={styles.playerJersey}>
-                <div className={styles.jerseyNumber}>
-                    <img src={img} loading="lazy" alt="" width={35} />
-                </div>
-            </div>
-
-            {/* Player Info */}
-            <div className={styles.playerInfo}>
-                <Link to={`/players/${player.playerCode}`} className={styles.playerName}>
-                    {player.playerName}
-                </Link>
-                <div className={styles.playerPosition}>{player.playerPosition.toUpperCase()}</div>
-            </div>
+            <PlayerSummary
+                player={player}
+                teamsByCode={teamsByCode}
+                fplPlayersByCode={fplPlayersByCode}
+                view={'column'}
+            />
 
             {/* Points Display */}
             {showPoints && displayPoints && (

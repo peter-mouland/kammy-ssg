@@ -53,6 +53,19 @@
     img {
         align-self: center;
     }
+    &.player_cell_col {
+        display: block;
+        position: relative;
+        text-align: center;
+        align-items: center;
+    }
+    &.player_cell_col img {
+        margin-top: -35px;
+    }
+    &.player_cell_col .player_cell_details {
+        flex: 1;
+        align-items: center;
+    }
 }
 
 .player_cell_details {

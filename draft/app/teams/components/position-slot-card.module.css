@@ -7,6 +7,9 @@
     padding: 8px;
     min-height: 120px;
     display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 100%;
     flex-direction: column;
     gap: 6px;
     position: relative;

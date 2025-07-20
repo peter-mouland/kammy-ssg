@@ -30,11 +30,7 @@
 .goalkeeperLine {
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 35px;
-    min-height: 60px;
 }
 
 /* Specific positioning for each line */
@@ -50,7 +46,7 @@
     display: flex;
     justify-content: center;
     min-width: 80px;
-    max-width: 120px;
+    max-width: 180px;
 }
 
 /* Dynamic positioning based on number of players */
