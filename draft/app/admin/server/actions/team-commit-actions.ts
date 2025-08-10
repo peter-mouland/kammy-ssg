@@ -31,7 +31,7 @@ export async function handleCommitTeamsToFirestore(
         }
 
         // Create FPL players lookup
-        const fplPlayersMap = new Map(fplPlayers.map((p) => [p.id, p]));
+        const fplPlayersMap = new Map(fplPlayers.map((p) => [p.code, p]));
 
         // Group picks by user
         const teamsByUser = new Map<string, any[]>();

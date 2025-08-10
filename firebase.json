@@ -41,6 +41,6 @@
   "functions": {
     "predeploy": "yarn workspace functions build",
     "source": "functions",
-    "runtime": "nodejs20"
+    "runtime": "nodejs22"
   }
 }

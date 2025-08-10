@@ -121,11 +121,8 @@ export class FplFirestore {
             acc[player.code] = player;
             return acc;
         }, {});
-        const playerIds: number[] = [];
-        const filteredPlayers = players.filter((player) => {
-            playerIds.push(player.id);
-            return sheetsPlayersByCode[player.code];
-        });
+        const filteredPlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
+        const playerIds = filteredPlayers.map((p) => p.id);
         const fplPlayerGameweeksById = await fplApi.getBatchPlayerDetailedStats(playerIds);
 
         if (filteredPlayers.length === 0) {

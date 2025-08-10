@@ -43,7 +43,7 @@ export const PlayerSummary = ({
                     <div className={styles.player_details}>
                         <span className={styles.team}>
                             {fplPlayersByCode
-                                ? teamsByCode[fplPlayersByCode[player.playerCode].team_code].name
+                                ? teamsByCode[fplPlayersByCode[player.playerCode]?.team_code]?.name
                                 : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
                         </span>
                     </div>

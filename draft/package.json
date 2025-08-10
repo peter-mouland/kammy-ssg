@@ -4,8 +4,8 @@
   "type": "module",
   "packageManager": "yarn@4.9.1",
   "engines": {
-    "node": "20.x",
-    "npm": "10.2.0"
+    "node": "22.x",
+    "npm": "10.9.x"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production react-router build",

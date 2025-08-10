@@ -3,9 +3,9 @@
 // /teams/components/gameweek-selector.tsx
 import type React from 'react';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import styles from './gameweek-selector.module.css';
-import { useSearchParams } from 'react-router';
 
 interface GameweekSelectorProps {
     currentGameweekData: GameWeekData;
@@ -26,7 +26,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         newParams.set('gameweek', gameweek.toString());
         setSearchParams(newParams);
         setIsOpen(false);
-        onGameweekChange?.(gameweek)
+        onGameweekChange?.(gameweek);
     };
 
     const selectedGameweek = selectedGameweekData?.fplEvent.id || 0;
@@ -38,7 +38,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     };
 
     const handleNext = () => {
-      handleGameweekChange(selectedGameweek + 1);
+        handleGameweekChange(selectedGameweek + 1);
     };
 
     const canGoPrevious = selectedGameweek > 0;

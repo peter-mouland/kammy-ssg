@@ -135,7 +135,7 @@ class FplApiCache {
         const events = await this.getFplEvents();
         return (
             // events.find((event) => event.fplEvent.id === 4) || events[events.length - 1] || { fplEvent: { id: 0 } }
-            events.find((event) => event.fplEvent.is_current) || { fplEvent: { id: 0 } } // events[events.length - 1] ||
+            events.find((event) => event.isCurrent) //|| { fplEvent: { id: 0 } } // events[events.length - 1] ||
         );
     }
 

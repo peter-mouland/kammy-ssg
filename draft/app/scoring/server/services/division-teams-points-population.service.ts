@@ -6,7 +6,8 @@ import type { PlayerGameweekStatsData } from '../../../players/types/player-type
 import type {
     DivisionId,
     DivisionTeamsDocument,
-    PositionSlotKey, TeamGameweekData,
+    PositionSlotKey,
+    TeamGameweekData,
     TeamPositionSlot,
 } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
@@ -20,10 +21,17 @@ type CalcProps = {
     teamData: TeamGameweekData;
     divisionDoc: DivisionTeamsDocument;
     previousDivisionDoc: DivisionTeamsDocument;
-}
-export async function calculateSingleTeamPoints({ gameweek, userId, teamData, divisionDoc, previousDivisionDoc }: CalcProps) {
+};
+export async function calculateSingleTeamPoints({
+    gameweek,
+    userId,
+    teamData,
+    divisionDoc,
+    previousDivisionDoc,
+}: CalcProps) {
     try {
         const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
+        console.log({ rosterPlayers });
         const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
         const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);
         const playerGameweekPoints = generateGameweekData(rosterPlayers, fplPlayerGameweeksById, gameweek);
@@ -39,26 +47,26 @@ export async function calculateSingleTeamPoints({ gameweek, userId, teamData, di
                     `🚨 no data for ${positionSlot.player.playerName} (${positionSlot.player.playerId}) gw${gameweek}`,
                 );
             }
-            const prevGameweek = previousDivisionDoc.teams[userId].roster[slot]
+            const prevGameweek = previousDivisionDoc.teams[userId].roster[slot];
             if (!prevGameweek && slot === 'on_loan_0') {
                 // not a concern, loans get deleted when finished
-            } else if (!prevGameweek) {
-                    console.error(`🚨 no data for prevGameweek: ${userId} ${slot}`);
-            } else {
+            } else if (prevGameweek) {
                 const updatedPositionSlot = updatePositionSlotPoints(
                     positionSlot,
                     gameweek,
                     playerGameweek.stats || createEmptyStats(),
                     playerGameweek.points || createEmptyPoints(),
-                    prevGameweek
+                    prevGameweek,
                 );
 
                 divisionDoc.teams[userId].roster[slot] = updatedPositionSlot;
+            } else {
+                console.error(`🚨 no data for prevGameweek: ${userId} ${slot}`);
             }
         }
     } catch (e) {
-        console.error(e)
-        throw new Error(`calculateSingleTeamPoints: ` + e.message)
+        console.error(e);
+        throw new Error('calculateSingleTeamPoints: ' + e.message);
     }
 }
 
@@ -258,10 +266,9 @@ function updatePositionSlotPoints(
         };
         return updated;
     } catch (e) {
-        console.log(`updatePositionSlotPoints + ${e.message}`)
-        throw new Error(`updatePositionSlotPoints + ${e.message}`)
+        console.log(`updatePositionSlotPoints + ${e.message}`);
+        throw new Error(`updatePositionSlotPoints + ${e.message}`);
     }
-
 }
 
 /**

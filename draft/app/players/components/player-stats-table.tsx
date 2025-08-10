@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-stats-table.tsx */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { TableFilters } from '../../_shared/components/table-filters';
@@ -70,14 +70,6 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             return searchMatch && positionMatch && teamMatch;
         });
     }, [players, teams, filters.search, filters.position, filters.team]);
-
-    // Helper functions for rendering
-    const _getFormColor = (form: number) => {
-        if (form >= 4.5) return styles.formExcellent;
-        if (form >= 3.5) return styles.formGood;
-        if (form >= 2.5) return styles.formAverage;
-        return styles.formPoor;
-    };
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [

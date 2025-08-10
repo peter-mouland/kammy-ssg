@@ -9,8 +9,8 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "20.x",
-    "npm": "10.2.0"
+    "node": "22.x",
+    "npm": "10.9.x"
   },
   "main": "lib/index.js",
   "dependencies": {
