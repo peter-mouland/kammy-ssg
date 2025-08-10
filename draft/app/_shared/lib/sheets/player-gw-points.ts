@@ -36,12 +36,12 @@ async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekP
         const [sheetsPlayers, fplPlayers] = await Promise.all([readPlayers(), fplApiCache.getFplPlayers()]);
 
         // Create sheets players lookup
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
-            acc[player.id] = player;
+        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
+            acc[player.code] = player;
             return acc;
         }, {});
         // Filter FPL players to only include those in sheets
-        const filteredFplPlayers = fplPlayers.filter((player) => sheetsPlayersById[player.id]);
+        const filteredFplPlayers = fplPlayers.filter((player) => sheetsPlayersByCode[player.code]);
 
         if (filteredFplPlayers.length === 0) {
             throw new Error('No players found that exist in both FPL data and sheets');
@@ -54,7 +54,7 @@ async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekP
         // Process each player to generate Gameweek points
         const dataRows: PlayerGameweekPointsRow[] = [];
         filteredFplPlayers.forEach((fplPlayer: EnhancedPlayerData) => {
-            const playerSheet = sheetsPlayersById[fplPlayer.id];
+            const playerSheet = sheetsPlayersByCode[fplPlayer.code];
             if (!playerSheet) return;
 
             const position = playerSheet.position.toLowerCase() as CustomPosition;

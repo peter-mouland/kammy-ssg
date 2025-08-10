@@ -13,13 +13,7 @@ import { FirestoreClearService } from '../firestore-cache/clear-service';
 import { FirestoreClient } from '../firestore-cache/firestore-client';
 import { readPlayers } from '../sheets/players';
 import { fplApi } from './api';
-import type {
-    EventData,
-    FilteredFplPlayerData,
-    FplPlayerData,
-    FplTeam,
-    GameWeekData,
-} from './fpl-types';
+import type { EventData, FilteredFplPlayerData, FplPlayerData, FplTeam, GameWeekData } from './fpl-types';
 import { getGameweekData } from './gameweeks';
 
 const convertFplElementToCache = (element: FplPlayerData) => ({
@@ -123,13 +117,15 @@ export class FplFirestore {
         const sheetsPlayers = await readPlayers();
 
         // Filter to only players that exist in sheets
-        const playerIds: number[] = [];
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
-            acc[player.id] = player;
-            playerIds.push(player.id);
+        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+            acc[player.code] = player;
             return acc;
         }, {});
-        const filteredPlayers = players.filter((player) => sheetsPlayersById[player.id]);
+        const playerIds: number[] = [];
+        const filteredPlayers = players.filter((player) => {
+            playerIds.push(player.id);
+            return sheetsPlayersByCode[player.code];
+        });
         const fplPlayerGameweeksById = await fplApi.getBatchPlayerDetailedStats(playerIds);
 
         if (filteredPlayers.length === 0) {
@@ -138,7 +134,7 @@ export class FplFirestore {
 
         console.log(`🔄 Generating enhanced data for ${filteredPlayers.length} players...`);
 
-        const enhancedPlayers = generateSeasonData(filteredPlayers, fplPlayerGameweeksById, sheetsPlayersById);
+        const enhancedPlayers = generateSeasonData(filteredPlayers, fplPlayerGameweeksById, sheetsPlayersByCode);
         const playersById = enhancedPlayers.reduce((acc: Record<string, EnhancedPlayerData>, player) => {
             acc[player.id] = player;
             return acc;
@@ -222,11 +218,11 @@ export class FplFirestore {
     async populateBootstrap() {
         const bootstrapData = await fplApi.getFplBootstrapData();
         const sheetPlayers = await readPlayers();
-        const sheetsPlayersById = sheetPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
-            acc[player.id] = player;
+        const sheetsPlayersByCode = sheetPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+            acc[player.code] = player;
             return acc;
         }, {});
-        const availablePlayers = bootstrapData.elements.filter((player) => sheetsPlayersById[player.id]);
+        const availablePlayers = bootstrapData.elements.filter((player) => sheetsPlayersByCode[player.code]);
 
         const teams = await this.populateTeams(bootstrapData.teams);
         const events = await this.populateEvents(bootstrapData.events);

@@ -27,14 +27,14 @@ const baselineStats = {
 export function generateSeasonData(
     fplPlayers: EnhancedPlayerData[],
     fplPlayerGameweeksById: Record<number, any>,
-    sheetsPlayersById: Record<string, any>,
+    sheetsPlayersByCode: Record<string, any>,
 ): EnhancedPlayerData[] {
     console.log(`🔄 generateSeasonData - Processing ${fplPlayers.length} players`);
 
     return fplPlayers
-        .filter((fplPlayer) => sheetsPlayersById[fplPlayer.id])
+        .filter((fplPlayer) => sheetsPlayersByCode[fplPlayer.code])
         .map((fplPlayer) => {
-            const playerSheet = sheetsPlayersById[fplPlayer.id];
+            const playerSheet = sheetsPlayersByCode[fplPlayer.code];
             const gameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
             const playerGameweekStats = convertToPlayerGameweeksStats(gameweekData);
 

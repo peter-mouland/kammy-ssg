@@ -56,16 +56,12 @@ async function originalReadPlayers(): Promise<PlayersSheetData[]> {
                             getValue('second_name'),
                         position: getValue('position') || getValue('pos'), // This is crucial
                         team: getValue('team') || getValue('club'),
-                        fplId:
-                            getNumberValue('fpl') ||
-                            getNumberValue('fpl_id') ||
-                            getNumberValue('fplid') ||
-                            getNumberValue('code'),
+                        fplId: getNumberValue('fpl') || getNumberValue('fpl_id') || getNumberValue('fplid'),
                         webName: getValue('web') || getValue('webname') || getValue('web_name'),
                     };
 
                     // Only return if we have minimum required data
-                    if (player.firstName && player.lastName) {
+                    if (player.code) {
                         return player;
                     }
 

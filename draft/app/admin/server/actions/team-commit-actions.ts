@@ -45,23 +45,21 @@ export async function handleCommitTeamsToFirestore(
         // Convert each user's picks to new roster structure
         const teamsData: Record<string, { roster: Record<PositionSlotKey, TeamPositionSlot> }> = {};
         let totalPlayersProcessed = 0;
-
+        console.log(teamsByUser);
         for (const [userId, userPicks] of teamsByUser) {
             console.log(`Processing ${userPicks.length} picks for user ${userId}`);
 
             // Convert legacy format to new roster structure
             const legacyPlayers = userPicks.map((pick) => {
-                const fplPlayer = fplPlayersMap.get(pick.playerId);
+                const fplPlayer = fplPlayersMap.get(pick.playerCode);
                 if (!fplPlayer) {
-                    console.warn(`FPL player not found for ID ${pick.playerId}`);
-                } else if (pick.playerId === fplPlayer?.code) {
-                    console.warn(`🚨 FPL player ID id CODE ${pick.playerId}`);
+                    console.warn(`FPL player not found for code ${pick.playerCode}`);
                 }
 
                 return {
                     userId,
-                    playerId: pick.playerId,
-                    playerCode: fplPlayer?.code,
+                    playerId: fplPlayer?.id,
+                    playerCode: pick.playerCode,
                     player: fplPlayer?.web_name || 'Unknown Player',
                     playerPosition: pick.position, // Draft position from sheets
                     teamPosition: pick.position, // Will be recalculated in conversion

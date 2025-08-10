@@ -46,11 +46,11 @@ export async function getTransfersPageData({
             validationContext,
         } = await getTransfersDataForDivision(selectedDivision, selectedGameweekData);
 
-        const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
-            acc[player.id] = player;
+        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+            acc[player.code] = player;
             return acc;
         }, {});
-        const availablePlayers = players.filter((player) => sheetsPlayersById[player.id]);
+        const availablePlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
 
         // Load manager's roster if manager is selected
         const managerRoster = divisionRosters[selectedManager]?.roster;

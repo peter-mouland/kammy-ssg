@@ -12,11 +12,11 @@ export async function getPlayerStatsData(): Promise<PlayerStatsData> {
         readPlayers(),
     ]);
 
-    const sheetsPlayersById = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
-        acc[player.id] = player;
+    const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+        acc[player.code] = player;
         return acc;
     }, {});
-    const availablePlayers = players.filter((player) => sheetsPlayersById[player.id]);
+    const availablePlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
 
     const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
         acc[team.code] = team.name;
