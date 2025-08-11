@@ -22,7 +22,7 @@ const TRANSFER_TYPES: Array<{
     {
         value: 'SWAP',
         label: 'Swap',
-        description: 'Exchange players with another manager',
+        description: 'Exchange players within your team',
     },
     {
         value: 'LOAN_START',
@@ -37,12 +37,12 @@ const TRANSFER_TYPES: Array<{
     {
         value: 'TRADE',
         label: 'Trade',
-        description: 'Multi-player trade with another manager',
+        description: 'A permanent player trade with another manager',
     },
     {
         value: 'NEW_PLAYER',
-        label: 'New Player',
-        description: 'Add a new player to your squad',
+        label: 'New Player Request',
+        description: 'Enter a draw for a "New Player"',
     },
 ];
 

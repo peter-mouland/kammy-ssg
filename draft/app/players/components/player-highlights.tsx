@@ -139,13 +139,17 @@ export function PlayerHighlights({ player, seasonTotals, position }: PlayerHighl
                         </span>
                         {seasonTotals.bonus > 0 && (
                             <span className={styles.disciplineItem}>
-                                <span className={styles.disciplineIcon}>⭐</span>
+                                <span className={styles.disciplineIcon} title={'Bonus points'}>
+                                    ⭐
+                                </span>
                                 {seasonTotals.bonus}
                             </span>
                         )}
                         {positionLower === 'gk' && seasonTotals.saves > 0 && (
                             <span className={styles.disciplineItem}>
-                                <span className={styles.disciplineIcon}>🥅</span>
+                                <span className={styles.disciplineIcon} title={'Saves points'}>
+                                    🥅
+                                </span>
                                 {seasonTotals.saves}
                             </span>
                         )}

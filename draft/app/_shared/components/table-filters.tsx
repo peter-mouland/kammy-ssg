@@ -84,7 +84,7 @@ export function TableFilters({
                 {showStatus && statusOptions.length > 0 && (
                     <div className={styles.filterGroup}>
                         <label htmlFor="status" className={styles.filterLabel}>
-                            Status
+                            Positions
                         </label>
                         <select
                             id="status"
@@ -92,7 +92,7 @@ export function TableFilters({
                             onChange={handleStatusChange}
                             className={styles.selectInput}
                         >
-                            <option value="">All Statuses</option>
+                            <option value="">All Positions</option>
                             {statusOptions.map((option) => (
                                 <option key={option.label} value={option.value}>
                                     {option.label}
@@ -105,7 +105,7 @@ export function TableFilters({
                 {showCategory && categoryOptions.length > 0 && (
                     <div className={styles.filterGroup}>
                         <label htmlFor="category" className={styles.filterLabel}>
-                            Category
+                            Club
                         </label>
                         <select
                             id="category"
@@ -113,7 +113,7 @@ export function TableFilters({
                             onChange={handleCategoryChange}
                             className={styles.selectInput}
                         >
-                            <option value="">All Categories</option>
+                            <option value="">All Clubs</option>
                             {categoryOptions.map((option) => (
                                 <option key={option.label} value={option.value}>
                                     {option.label}
