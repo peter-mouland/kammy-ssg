@@ -29,8 +29,8 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         onGameweekChange?.(gameweek);
     };
 
-    const selectedGameweek = selectedGameweekData?.fplEvent.id || 0;
-    const currentGameweek = currentGameweekData?.fplEvent.id || 0;
+    const selectedGameweek = selectedGameweekData?.fplEvent.id || 1;
+    const currentGameweek = currentGameweekData?.fplEvent.id || 1;
     const [isOpen, setIsOpen] = useState(false);
 
     const handlePrevious = () => {
@@ -41,7 +41,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         handleGameweekChange(selectedGameweek + 1);
     };
 
-    const canGoPrevious = selectedGameweek > 0;
+    const canGoPrevious = selectedGameweek > 1;
     const canGoNext = selectedGameweek < availableGameweeks.length - 1;
 
     return (

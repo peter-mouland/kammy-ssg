@@ -40,6 +40,7 @@ export async function getTransfersPageData({
         const gameweekToLoad = selectedGameweek || currentGameweek || 1;
         const selectedGameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad) || gameweeks[0];
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
+
         const {
             transfers: currentTransfers,
             divisionRosters,
