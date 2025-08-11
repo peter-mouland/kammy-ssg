@@ -26,6 +26,7 @@ export interface PlayerGameweekStatsData {
     redCards: number;
     saves: number;
     bonus: number;
+    defensiveContribution: number;
 }
 
 export interface PlayerDetailData {

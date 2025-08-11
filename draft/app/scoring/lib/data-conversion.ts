@@ -58,6 +58,7 @@ export function convertToPlayerGameweekStats(gw: FplPlayerGameweekData): PlayerG
         saves: gw.saves,
         penaltiesSaved: gw.penalties_saved,
         bonus: gw.bonus,
+        defensiveContribution: gw.defensive_contribution,
     };
 }
 /**
@@ -75,5 +76,6 @@ export function convertToGameweekStats(gw: GameweekStatWithPoints): PlayerGamewe
         saves: gw.saves,
         penaltiesSaved: gw.penaltiesSaved,
         bonus: gw.bonus,
+        defensiveContribution: gw.defensiveContribution,
     };
 }

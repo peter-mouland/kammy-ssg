@@ -20,27 +20,29 @@ interface GoalkeeperRules extends BasePositionRules {
     goalsConcededPenalty: number;
 }
 
-interface DefenderRules extends BasePositionRules {
+interface FallBackRules extends BasePositionRules {
     goalsConcededPenalty: number;
+    defensiveContribution: number;
 }
 
-interface CenterBackRules extends DefenderRules {
+interface CenterBackRules extends BasePositionRules {
+    goalsConcededPenalty: number;
     bonus: number;
+    defensiveContribution: number;
 }
 
 interface MidfielderRules extends BasePositionRules {
     bonus: number;
+    defensiveContribution: number;
 }
-
-interface AttackerRules extends BasePositionRules {}
 
 type PositionRules = {
     gk: GoalkeeperRules;
-    fb: DefenderRules;
+    fb: FallBackRules;
     cb: CenterBackRules;
     mid: MidfielderRules;
-    wa: AttackerRules;
-    ca: AttackerRules;
+    wa: BasePositionRules;
+    ca: BasePositionRules;
 };
 
 // Position point multipliers and rules
@@ -71,6 +73,7 @@ export const POSITION_RULES: PositionRules = {
             under45Min: 1,
             over45Min: 3,
         },
+        defensiveContribution: 1,
     },
     cb: {
         goalPoints: 8,
@@ -84,11 +87,12 @@ export const POSITION_RULES: PositionRules = {
             under45Min: 1,
             over45Min: 3,
         },
+        defensiveContribution: 1,
     },
     mid: {
-        goalPoints: 5,
+        goalPoints: 4,
         bonus: 1,
-        cleanSheetPoints: 3,
+        cleanSheetPoints: 2,
         redCardPenalty: -5,
         assists: 3,
         yellowCard: -1,
@@ -96,6 +100,7 @@ export const POSITION_RULES: PositionRules = {
             under45Min: 1,
             over45Min: 3,
         },
+        defensiveContribution: 2,
     },
     wa: {
         goalPoints: 4,

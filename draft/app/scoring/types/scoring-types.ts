@@ -13,6 +13,7 @@ export interface Points {
     penaltiesSaved: number;
     goalsConceded: number;
     bonus: number;
+    defensiveContribution: number;
     total: number;
 }
 
@@ -33,6 +34,7 @@ export interface GameweekStatWithPoints {
     saves: number;
     penaltiesSaved: number;
     bonus: number;
+    defensiveContribution: number;
 
     // Match info
     opponent: number;
@@ -64,6 +66,7 @@ export interface SeasonTotals {
     saves: number;
     penaltiesSaved: number;
     bonus: number;
+    defensiveContribution: number;
 
     // Points
     totalFplPoints: number;
@@ -91,6 +94,7 @@ interface PointsBreakdown {
     penaltiesSaved: PointsBreakdownItem;
     goalsConceded: PointsBreakdownItem;
     bonus: PointsBreakdownItem;
+    defensiveContribution: PointsBreakdownItem;
     total: PointsBreakdownItem;
 }
 

@@ -23,6 +23,7 @@ import {
     writeSheetRange,
 } from './utils/common';
 import { readDataFromSheet } from './utils/read-data-from-sheets';
+
 const TRANSFERS_HEADERS: Record<keyof TransferSheetData, keyof ProcessedTransferSheetData> = {
     Status: 'status',
     Timestamp: 'timestamp',

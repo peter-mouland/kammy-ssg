@@ -8,18 +8,21 @@ export const ScoringInfo = () => (
         <div className={styles.scoringGrid}>
             <div className={styles.scoringItem}>
                 <strong>Minutes Played:</strong>
-                <div>+3 pts (45+ min), +1 pt (&lt;45 min)</div>
+                <div>+1 pt (&lt;45 min)</div>
+                <div>+3 pts (45+ min)</div>
             </div>
             <div className={styles.scoringItem}>
                 <strong>Goals:</strong>
-                <div>GK: +10, CB/FB: +8, MID: +5, WA/CA: +4</div>
+                <div>GK: +10, CB/FB: +8</div>
+                <div>MID: +5, WA/CA: +4</div>
             </div>
             <div className={styles.scoringItem}>
                 <strong>Assists:</strong> <div>+3 pts (all positions)</div>
             </div>
             <div className={styles.scoringItem}>
                 <strong>Clean Sheets:</strong>
-                <div>+5 pts (GK, CB, FB), +3 pts (MID)</div>
+                <div>+5 pts (GK, CB, FB)</div>
+                <div>+2 pts (MID)</div>
             </div>
             <div className={styles.scoringItem}>
                 <strong>Goals Conceded:</strong>
@@ -31,7 +34,8 @@ export const ScoringInfo = () => (
             </div>
             <div className={styles.scoringItem}>
                 <strong>Red Cards:</strong>
-                <div>-3 pts (GK, CB, FB), -5 pts (MID, WA, CA)</div>
+                <div>-3 pts (GK, CB, FB)</div>
+                <div>-5 pts (MID, WA, CA)</div>
             </div>
             <div className={styles.scoringItem}>
                 <strong>Saves:</strong>
@@ -40,6 +44,10 @@ export const ScoringInfo = () => (
             <div className={styles.scoringItem}>
                 <strong>Bonus Points:</strong>
                 <div>Full value (CB, MID only)</div>
+            </div>
+            <div className={styles.scoringItem}>
+                <strong>Defensive Contribution:</strong>
+                <div>CB/FB: +1, MID: +2</div>
             </div>
         </div>
     </div>

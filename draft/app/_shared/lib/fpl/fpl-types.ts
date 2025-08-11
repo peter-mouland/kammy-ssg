@@ -28,6 +28,7 @@ export interface FplPlayerData {
     red_cards: number;
     saves: number;
     bonus: number;
+    defensive_contribution: number;
     bps: number;
     starts: number;
     now_cost: number;
@@ -58,6 +59,7 @@ export interface FplPlayerGameweekData {
     red_cards: number;
     saves: number;
     bonus: number;
+    defensive_contribution: number;
     bps: number;
     influence: string;
     creativity: string;

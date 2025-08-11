@@ -212,6 +212,15 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             render: (stat, player) => stat,
         },
         {
+            key: 'defensiveContribution',
+            header: 'DC',
+            accessor: (player) => player.draft?.pointsBreakdown.defensiveContribution?.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
             key: 'points',
             header: 'Points',
             accessor: (player) => player.draft?.pointsTotal || 0,

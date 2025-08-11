@@ -16,9 +16,20 @@ const baselineStats: Points = {
     penaltiesSaved: 0,
     goalsConceded: 0,
     bonus: 0,
+    defensiveContribution: 0,
     total: 0,
 };
 
+/**
+ * Calculate appearance points based on minutes played
+ */
+export function calculateDefensiveContribution(defensiveContribution: number, position: CustomPosition): number {
+    const rule = POSITION_RULES[position];
+    if (!('defensiveContribution' in rule)) return 0;
+
+    if (defensiveContribution === 0) return 0;
+    return defensiveContribution > 0 ? rule.defensiveContribution : 0;
+}
 /**
  * Calculate appearance points based on minutes played
  */
@@ -130,6 +141,8 @@ export function calculateGameweekPoints(gws: PlayerGameweekStatsData[], position
                 penaltiesSaved: acc.penaltiesSaved + calculatePenaltiesSaved(stats.penaltiesSaved, position),
                 goalsConceded: acc.goalsConceded + calculateGoalsConcededPenalty(stats.goalsConceded, position),
                 bonus: acc.bonus + calculateBonus(stats.bonus, position),
+                defensiveContribution:
+                    acc.defensiveContribution + calculateDefensiveContribution(stats.defensiveContribution, position),
                 total: 0,
             };
 
@@ -146,6 +159,7 @@ export function calculateGameweekPoints(gws: PlayerGameweekStatsData[], position
             penaltiesSaved: 0,
             goalsConceded: 0,
             bonus: 0,
+            defensiveContribution: 0,
             total: 0,
         },
     );
@@ -307,6 +321,15 @@ export function getFullBreakdown(
                 ? `${stats.bonus} × ${'bonus' in rules ? rules.bonus : 0} pts`
                 : 'Not applicable for this position',
             isRelevant: isStatRelevant('bonus', position),
+        },
+        defensiveContribution: {
+            label: 'Defensive Contribution',
+            stat: stats.defensiveContribution,
+            points: points.defensiveContribution || 0,
+            formula: isStatRelevant('defensiveContribution', position)
+                ? `${stats.defensiveContribution} × ${'defensiveContribution' in rules ? rules.defensiveContribution : 0} pts`
+                : 'Not applicable for this position',
+            isRelevant: isStatRelevant('defensiveContribution', position),
         },
         total: {
             label: 'Total',
