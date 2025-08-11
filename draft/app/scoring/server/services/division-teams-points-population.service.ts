@@ -31,7 +31,6 @@ export async function calculateSingleTeamPoints({
 }: CalcProps) {
     try {
         const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
-        console.log({ rosterPlayers });
         const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
         const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);
         const playerGameweekPoints = generateGameweekData(rosterPlayers, fplPlayerGameweeksById, gameweek);
