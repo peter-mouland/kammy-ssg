@@ -8,6 +8,7 @@ import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { PlayerSummary } from '../../players/components/player';
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import { isStatRelevant } from '../../scoring/lib';
+import { compareByManagerThenPosition } from '../lib/sorting-utils';
 import type { AllTeamsTableProps, TeamFilters, TeamRowData } from '../types/team-view-types';
 import styles from './all-teams-table.module.css';
 
@@ -23,7 +24,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             manager: 'all',
             position: 'all',
             loanStatus: 'all',
-            substitute: 'all',
             search: '',
         },
         debounceMs: 300,
@@ -58,18 +58,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             }
         }
 
-        // Substitute filter
-        if (filters.substitute && filters.substitute !== 'all') {
-            switch (filters.substitute) {
-                case 'starters':
-                    filtered = filtered.filter((team) => !team.player.isSub);
-                    break;
-                case 'subs':
-                    filtered = filtered.filter((team) => team.player.isSub);
-                    break;
-            }
-        }
-
         // Search filter
         if (filters.search) {
             const searchLower = filters.search.toLowerCase();
@@ -100,6 +88,12 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             header: 'Manager',
             // width: '100px',
             sortable: true,
+            onSort: (data: TeamRowData[], direction: 'asc' | 'desc') => {
+                return [...data].sort((a, b) => {
+                    const result = compareByManagerThenPosition(a, b);
+                    return direction === 'desc' ? -result : result;
+                });
+            },
             accessor: ({ managerId }) => managerId,
             render: (_, team) => (
                 <div className={styles.managerCell}>
@@ -335,11 +329,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                 { value: 'regular', label: 'Regular Players' },
                 { value: 'loaned-out', label: 'Loaned Out' },
                 { value: 'loaned-in', label: 'Loaned In' },
-            ],
-            substitute: [
-                { value: 'all', label: 'All Players' },
-                { value: 'starters', label: 'Starters Only' },
-                { value: 'subs', label: 'Substitutes Only' },
             ],
         }),
         [allTeamsData],

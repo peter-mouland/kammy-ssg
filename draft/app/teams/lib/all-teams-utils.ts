@@ -2,6 +2,7 @@
 
 import type { DivisionTeamsDocument, UserTeamsSheetData } from '../types/team-types';
 import type { AllTeamsData, ManagerInfo, TeamRowData } from '../types/team-view-types';
+import { compareByManagerThenPosition } from './sorting-utils';
 
 /**
  * Transform division teams data into flattened table rows
@@ -63,7 +64,7 @@ export function transformToTeamRows(
     const availablePositions = Array.from(positionSet).sort();
 
     return {
-        teams: teamRows,
+        teams: teamRows.sort(compareByManagerThenPosition),
         totalPlayers: teamRows.length,
         availablePositions,
         availableManagers,

@@ -17,6 +17,7 @@ export interface TableColumn<T = any> {
     accessor?: keyof T | ((item: T) => any);
     sortable?: boolean;
     sortKey?: string;
+    onSort?: (data: T[], direction: 'asc' | 'desc') => T[];
     width?: string | number;
     minWidth?: string | number;
     align?: CellAlignment;
@@ -134,6 +135,11 @@ export function Table<T = any>({
 
         const column = columns.find((col) => (col.sortKey || col.key) === sortKey);
         if (!column) return data;
+
+        // Check if column has custom sort function
+        if (column.onSort) {
+            return column.onSort(data, sortDirection);
+        }
 
         return [...data].sort((a, b) => {
             let aValue: any;
