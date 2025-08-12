@@ -159,17 +159,19 @@ export interface CurrentUser {
 /**
  * Complete team view data
  */
+// currentUser, division, currentTeam, allTeamsData
 export interface TeamViewData {
-    currentUser: UserTeamsSheetData;
-    division: DivisionSheetData;
+    currentUser?: UserTeamsSheetData;
+    division?: DivisionSheetData;
     currentGameweek: number;
     currentGameweekData: GameWeekData;
     selectedGameweekData: GameWeekData;
-    currentTeam: TeamGameweekData;
+    currentTeam?: TeamGameweekData;
     availableGameweeks: number[];
-    allTeamsData: AllTeamsData;
+    allTeamsData?: AllTeamsData;
     teamsByCode: Record<number, FplTeam>;
     fplPlayersByCode: Record<number, EnhancedPlayerData>;
+    userTeams: UserTeamsSheetData[];
 }
 
 /**

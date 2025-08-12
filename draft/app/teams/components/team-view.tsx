@@ -1,6 +1,9 @@
 // app/teams/components/team-view.tsx
+
+import type * as React from 'react';
 import { useState } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router';
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router';
+import { SelectUser } from '../../_shared/components/select-user';
 import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
 import type { StatsViewMode, TeamViewData } from '../types/team-types';
 import type { TeamViewTab } from '../types/team-view-types';
@@ -13,6 +16,7 @@ import { TeamViewTabs } from './team-view-tabs';
 export const TeamView = () => {
     const data = useLoaderData<TeamViewData>();
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const selectedGameweek = data.selectedGameweekData.fplEvent.id;
 
     // Get active tab from URL or default to 'my-team'
@@ -33,6 +37,36 @@ export const TeamView = () => {
 
     const isCurrentGameweek = selectedGameweek === data.currentGameweek;
 
+    if (!data.currentUser || !data.division) {
+        return (
+            <div className={styles.teamViewContainer}>
+                {/* Header */}
+                <div className={styles.header}>
+                    <div className={styles.teamInfo}>
+                        <h1 className={styles.teamName}>
+                            <em>unknown user</em>
+                        </h1>
+                    </div>
+
+                    <div className={styles.headerControls}>
+                        <SelectUser
+                            selectedUser={''}
+                            users={data.userTeams || []}
+                            handleUserChange={(userId) => {
+                                navigate(`/teams/${userId}?tab=all-teams`);
+                            }}
+                        />
+                        <GameweekSelector
+                            currentGameweekData={data.currentGameweekData}
+                            selectedGameweekData={data.selectedGameweekData}
+                            availableGameweeks={data.availableGameweeks}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.teamViewContainer}>
             {/* Header */}
@@ -43,6 +77,13 @@ export const TeamView = () => {
                 </div>
 
                 <div className={styles.headerControls}>
+                    <SelectUser
+                        selectedUser={data.currentUser.userName}
+                        users={data.userTeams || []}
+                        handleUserChange={(userId) => {
+                            navigate(`/teams/${userId}?tab=all-teams`);
+                        }}
+                    />
                     <GameweekSelector
                         currentGameweekData={data.currentGameweekData}
                         selectedGameweekData={data.selectedGameweekData}
