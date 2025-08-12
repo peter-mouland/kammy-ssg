@@ -120,7 +120,8 @@ export async function validateTransfers(
         const validation = await validateTransfer(transfer, context);
 
         // no blocking failures so apply valid transfers
-        if (validation.isValid || ['APPROVED'].includes(transfer.status)) {
+        const shouldApplyTransfer = validation.isValid && transfer.status !== 'REJECTED';
+        if (shouldApplyTransfer) {
             await applyIndividualTransfer(context.divisionRosters, transfer); //sideeffect update to roster
         }
 

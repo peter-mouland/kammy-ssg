@@ -6,8 +6,13 @@ import type { RosterPlayer } from '../../teams/types/team-types';
 import type { CustomPosition } from '../types/player-types';
 import styles from './player.module.css';
 
-function PositionBadge({ position, children }: { position: CustomPosition; children: React.ReactNode }) {
-    return <span className={`${styles.positionBadge} ${styles[position.toLowerCase()]}`}>{children}</span>;
+function PositionBadge({ position, isSub = false }: { position: CustomPosition; isSub?: boolean }) {
+    return (
+        <span className={`${styles.positionBadge} ${styles[position.toLowerCase()]}`}>
+            {position}
+            {isSub ? <span className={styles.is_sub}>SUB</span> : null}
+        </span>
+    );
 }
 
 export const PlayerSummary = ({
@@ -35,9 +40,7 @@ export const PlayerSummary = ({
                 {onLoanFrom && <div className={styles.loanIndicator}>On Loan from {onLoanFrom}</div>}
             </div>
             <div className={styles.player_cell}>
-                <PositionBadge position={player.playerPosition || player.draft.position}>
-                    {player.playerPosition || player.draft.position}
-                </PositionBadge>
+                <PositionBadge position={player.playerPosition || player.draft.position} isSub={player.isSub} />
                 <div className={styles.player_cell_details}>
                     <div className={styles.player_name}>{player.playerName || player.web_name}</div>
                     <div className={styles.player_details}>
@@ -80,7 +83,7 @@ export const Player = ({
                     </h1>
 
                     <div className={styles.playerMeta}>
-                        <PositionBadge position={position}>{position}</PositionBadge>
+                        <PositionBadge position={position} />
                         <span className={styles.team}>{team.name}</span>
                     </div>
                 </span>

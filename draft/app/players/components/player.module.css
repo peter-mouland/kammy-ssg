@@ -1,17 +1,17 @@
 /* colours */
-
 .gk {
     --position-color: var(--color-position-gk-light);
     --position-color-alt: var(--color-position-gk-text);
 }
 
 .cb {
-    --position-color: var(--color-position-def-light);
-    --position-color-alt: var(--color-position-def-text);
+    --position-color: var(--color-position-cb-light);
+    --position-color-alt: var(--color-position-cb-text);
 }
+
 .fb {
-    --position-color: var(--color-position-def-light);
-    --position-color-alt: var(--color-position-def-text);
+    --position-color: var(--color-position-fb-light);
+    --position-color-alt: var(--color-position-fb-text);
 }
 
 .mid {
@@ -20,20 +20,22 @@
 }
 
 .ca {
-    --position-color: var(--color-position-att-light);
-    --position-color-alt: var(--color-position-att-text);
+    --position-color: var(--color-position-ca-light);
+    --position-color-alt: var(--color-position-ca-text);
 }
+
 .wa {
-    --position-color: var(--color-position-att-light);
-    --position-color-alt: var(--color-position-att-text);
+    --position-color: var(--color-position-wa-light);
+    --position-color-alt: var(--color-position-wa-text);
 }
 
 /* Position badges */
 .positionBadge {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-1) var(--spacing-2);
+    padding: var(--spacing-1) 0;
     border-radius: var(--radius-md);
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
@@ -42,6 +44,13 @@
     text-transform: uppercase;
     background-color: var(--position-color);
     color: var(--position-color-alt);
+
+    & .is_sub {
+        font-size: 0.7rem;
+        width: 100%;
+        background-color: var(--color-gray-200);
+        color: var(--color-gray-700);
+    }
 }
 
 /* PLayer Summary */

@@ -46,22 +46,37 @@
     --color-gray-800: #1f2937;
     --color-gray-900: #111827;
 
-    /* Colors - Position-based */
+    /* Position Colors - Goalkeepers */
     --color-position-gk: #10b981;
-    --color-position-gk-light: #dcfce7;
-    --color-position-gk-text: #166534;
+    --color-position-gk-light: #fef3c7;
+    --color-position-gk-text: #92400e;
 
+    /* Position Colors - Defenders */
     --color-position-def: #3b82f6;
-    --color-position-def-light: #dbeafe;
-    --color-position-def-text: #1e40af;
+    --color-position-def-light: #dcfce7;
+    --color-position-def-text: #166534;
+    --color-position-cb: #22c55e;
+    --color-position-cb-light: #f0fdf4;
+    --color-position-cb-text: #15803d;
+    --color-position-fb: #0ea5e9;
+    --color-position-fb-light: #ccfbf1;
+    --color-position-fb-text: #0369a1;
 
+    /* Position Colors - Midfielders */
     --color-position-mid: #8b5cf6;
-    --color-position-mid-light: #ede9fe;
-    --color-position-mid-text: #7c3aed;
+    --color-position-mid-light: #dbeafe;
+    --color-position-mid-text: #1e40af;
 
+    /* Position Colors - Attackers */
     --color-position-att: #ef4444;
-    --color-position-att-light: #fee2e2;
-    --color-position-att-text: #dc2626;
+    --color-position-att-light: #fed7e2;
+    --color-position-att-text: #be185d;
+    --color-position-ca: #c026d3;
+    --color-position-ca-light: #fce7f3;
+    --color-position-ca-text: #a21caf;
+    --color-position-wa: #f97316;
+    --color-position-wa-light: #fff7ed;
+    --color-position-wa-text: #c2410c;
 
     /* Colors - FPL Brand */
     --color-fpl-primary: #37003c;

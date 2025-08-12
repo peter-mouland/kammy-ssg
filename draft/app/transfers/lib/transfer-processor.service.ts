@@ -11,10 +11,17 @@ import { findPlayerInRoster } from './find-player-in-roster';
 export const getGameweekTransfers = (transfers: ProcessedTransfer[], gameweekData: GameWeekData) =>
     transfers
         .filter((transfer) => {
-            return (
+            // Check if transfer is in the gameweek period
+            const isInGameweek =
                 new Date(transfer.timestamp) >= new Date(gameweekData.start) &&
-                new Date(transfer.timestamp) <= new Date(gameweekData.end)
-            );
+                new Date(transfer.timestamp) <= new Date(gameweekData.end);
+
+            // CRITICAL FIX: Only include APPROVED transfers
+            // This prevents rejected loans from being applied to rosters
+            console.log(transfer.status);
+            const isApproved = transfer.status !== 'REJECTED';
+
+            return isInGameweek && isApproved;
         })
         .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
