@@ -56,7 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                     Fantasy Draft
                                 </a>
                                 <a href="/leagues">League Standings</a>
-                                <a href="/teams">Teams</a>
+                                {/*<a href="/teams?tab=all-teams">Teams</a>*/}
                                 <a href="/players">Players</a>
                                 <a href="/transfers">Transfers</a>
                                 <a href="/wishlists">Wishlists</a>

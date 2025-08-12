@@ -4,13 +4,23 @@ import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { PlayerSummary } from '../../players/components/player';
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import { isStatRelevant } from '../../scoring/lib';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { compareByManagerThenPosition } from '../lib/sorting-utils';
-import type { AllTeamsTableProps, TeamFilters, TeamRowData } from '../types/team-view-types';
+import type { AllTeamsData, TeamFilters, TeamRowData } from '../types/team-view-types';
 import styles from './all-teams-table.module.css';
+
+interface AllTeamsTableProps {
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode: Record<number, EnhancedPlayerData>;
+    allTeamsData: AllTeamsData;
+    gameweek: number;
+    viewMode: 'gameweek' | 'season';
+}
 
 export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
     teamsByCode,
@@ -336,13 +346,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
 
     return (
         <div className={styles.allTeamsTable}>
-            {/* Header with view mode toggle */}
-            <div className={styles.tableHeader}>
-                <div className={styles.tableTitle}>
-                    <h3>Division Teams</h3>
-                </div>
-            </div>
-
             {/* Custom Filters */}
             <div className={styles.filtersContainer}>
                 <div className={styles.filtersRow}>

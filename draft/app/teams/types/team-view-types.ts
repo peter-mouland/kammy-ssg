@@ -1,16 +1,6 @@
 // app/teams/types/team-view-types.ts
 
-import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type {
-    CurrentUser,
-    Division,
-    ManagerId,
-    StatsViewMode,
-    TeamPositionSlot,
-    TeamViewData,
-    UserTeamsSheetData,
-} from './team-types';
+import type { ManagerId, StatsViewMode, TeamPositionSlot, UserTeamsSheetData } from './team-types';
 
 /**
  * Tab management types
@@ -58,20 +48,6 @@ export interface TeamViewTabsProps {
     playerCount?: number;
     viewMode: StatsViewMode;
     setViewMode: (viewMode: StatsViewMode) => void;
-}
-
-/**
- * All teams table props
- */
-export interface AllTeamsTableProps {
-    allTeamsData: AllTeamsData;
-    currentUser: CurrentUser;
-    division: Division;
-    gameweek: number;
-    isCurrentGameweek: boolean;
-    viewMode: 'gameweek' | 'season';
-    teamsByCode: Record<number, FplTeam>;
-    fplPlayersByCode: Record<number, EnhancedPlayerData>;
 }
 
 /**
