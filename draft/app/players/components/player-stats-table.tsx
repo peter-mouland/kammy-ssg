@@ -3,17 +3,18 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
-import { TableFilters } from '../../_shared/components/table-filters';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
 import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
 import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import { sortPositions } from '../../teams/lib/sorting-utils';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';
 import { WishlistTags } from '../../wishlist/components/wishlist-tags';
 import { PlayerSummary } from './player';
 import styles from './player-stats-table.module.css';
+import { PlayersFilters } from './players-filters';
 
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];
@@ -34,24 +35,67 @@ function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 
 }
 
 export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
-    // URL-synced filters for persistence - this handles ALL filter state
+    // URL-synced filters for persistence - updated to handle arrays
     const { filters, setFilter, resetFilters, isUpdating } = useTableFilters({
         defaultFilters: {
             search: '',
-            position: '',
-            team: '',
+            positions: '', // Will be comma-separated string in URL
+            teams: '', // Will be comma-separated string in URL
         },
         debounceMs: 300,
     });
 
-    // Generate filter options
-    const uniquePositions = Array.from(new Set(players.map((p) => getPlayerPosition(p))))
-        .sort()
-        .map((pos) => ({ value: pos, label: getPositionDisplayName(pos) }));
+    // Convert URL string filters to arrays for multi-select
+    const selectedPositions = useMemo(() => {
+        if (!filters.positions || filters.positions === '') return [];
+        return filters.positions.split(',').filter(Boolean);
+    }, [filters.positions]);
 
-    const uniqueTeams = Array.from(new Set(players.map((p) => p.team_code)))
-        .sort((a, b) => (teams[a] || '').localeCompare(teams[b] || ''))
-        .map((teamCode) => ({ value: teamCode.toString(), label: teams[teamCode] || `Team ${teamCode}` }));
+    const selectedTeams = useMemo(() => {
+        if (!filters.teams || filters.teams === '') return [];
+        return filters.teams.split(',').filter(Boolean);
+    }, [filters.teams]);
+
+    // Generate filter options
+    const positionOptions = useMemo(() => {
+        const positions = sortPositions(Array.from(new Set(players.map((p) => getPlayerPosition(p))))).map((pos) => ({
+            id: pos,
+            label: getPositionDisplayName(pos),
+            count: players.filter((p) => getPlayerPosition(p) === pos).length,
+        }));
+        return positions;
+    }, [players]);
+
+    const teamOptions = useMemo(() => {
+        const teamCounts = players.reduce(
+            (acc, player) => {
+                acc[player.team_code] = (acc[player.team_code] || 0) + 1;
+                return acc;
+            },
+            {} as Record<number, number>,
+        );
+
+        return Array.from(new Set(players.map((p) => p.team_code)))
+            .sort((a, b) => (teams[a] || '').localeCompare(teams[b] || ''))
+            .map((teamCode) => ({
+                id: teamCode.toString(),
+                label: teams[teamCode] || `Team ${teamCode}`,
+                count: teamCounts[teamCode] || 0,
+            }));
+    }, [players, teams]);
+
+    // Handle multi-select changes
+    const handlePositionsChange = (positions: string[]) => {
+        setFilter('positions', positions.length > 0 ? positions.join(',') : undefined);
+    };
+
+    const handleTeamsChange = (teams: string[]) => {
+        setFilter('teams', teams.length > 0 ? teams.join(',') : undefined);
+    };
+
+    const handleSearchChange = (search: string) => {
+        setFilter('search', search || undefined);
+    };
 
     // Filter players based on current filters
     const filteredPlayers = useMemo(() => {
@@ -63,13 +107,16 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
                 fuzzyStringMatch(playerName, filters.search) ||
                 fuzzyStringMatch(teamName, filters.search);
 
-            const positionMatch = !filters.position || getPlayerPosition(player) === filters.position;
+            // Position filter (multi-select)
+            const positionMatch =
+                selectedPositions.length === 0 || selectedPositions.includes(getPlayerPosition(player));
 
-            const teamMatch = !filters.team || player.team_code.toString() === filters.team;
+            // Team filter (multi-select)
+            const teamMatch = selectedTeams.length === 0 || selectedTeams.includes(player.team_code.toString());
 
             return searchMatch && positionMatch && teamMatch;
         });
-    }, [players, teams, filters.search, filters.position, filters.team]);
+    }, [players, teams, filters.search, selectedPositions, selectedTeams]);
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [
@@ -148,7 +195,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             key: 'penaltiesSaved',
             header: (
                 <div>
-                    Pens
+                    Pen.
                     <br />
                     Saved
                 </div>
@@ -174,13 +221,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'yellowCards',
-            header: (
-                <div>
-                    Y.
-                    <br />
-                    Cards
-                </div>
-            ),
+            header: <div>Y.C.</div>,
             accessor: (player) => player.draft?.pointsBreakdown.yellowCards.stat || 0,
             sortable: true,
             align: 'center',
@@ -189,13 +230,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'redCards',
-            header: (
-                <div>
-                    R.
-                    <br />
-                    Cards
-                </div>
-            ),
+            header: <div>R.C.</div>,
             accessor: (player) => player.draft?.pointsBreakdown.redCards.stat || 0,
             sortable: true,
             align: 'center',
@@ -252,32 +287,38 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
 
     return (
         <div className={styles.container}>
-            {/* Filters */}
-            <TableFilters
-                filters={{
-                    search: filters.search || '',
-                    status: filters.position || '',
-                    category: filters.team || '',
-                }}
-                onFilterChange={(key, value) => {
-                    if (key === 'search') setFilter('search', value || undefined);
-                    if (key === 'status') setFilter('position', value || undefined);
-                    if (key === 'category') setFilter('team', value || undefined);
-                }}
-                onFiltersChange={() => {}}
+            {/* Multi-Select Filters */}
+            <PlayersFilters
+                searchTerm={filters.search || ''}
+                onSearchChange={handleSearchChange}
+                positionOptions={positionOptions}
+                selectedPositions={selectedPositions}
+                onPositionsChange={handlePositionsChange}
+                teamOptions={teamOptions}
+                selectedTeams={selectedTeams}
+                onTeamsChange={handleTeamsChange}
                 onReset={resetFilters}
                 isUpdating={isUpdating}
-                statusOptions={uniquePositions.map((opt) => ({ value: opt.value, label: opt.label }))}
-                categoryOptions={uniqueTeams.map((opt) => ({ value: opt.value, label: opt.label }))}
-                showSearch={true}
-                showStatus={true}
-                showCategory={true}
-                showSort={false}
             />
 
             {/* Results count */}
             <div className={styles.resultsCount}>
                 Showing {filteredPlayers.length} of {players.length} players
+                {(selectedPositions.length > 0 || selectedTeams.length > 0) && (
+                    <span className={styles.filterInfo}>
+                        {' '}
+                        (filtered by{' '}
+                        {[
+                            selectedPositions.length > 0 &&
+                                `${selectedPositions.length} position${selectedPositions.length > 1 ? 's' : ''}`,
+                            selectedTeams.length > 0 &&
+                                `${selectedTeams.length} team${selectedTeams.length > 1 ? 's' : ''}`,
+                        ]
+                            .filter(Boolean)
+                            .join(' and ')}
+                        )
+                    </span>
+                )}
             </div>
 
             {/* Table - using EXACT same pattern as league-standings */}

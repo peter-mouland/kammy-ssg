@@ -12,6 +12,7 @@ import { isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { compareByManagerThenPosition } from '../lib/sorting-utils';
 import type { AllTeamsData, TeamFilters, TeamRowData } from '../types/team-view-types';
+import { AllTeamsFilters } from './all-teams-filters';
 import styles from './all-teams-table.module.css';
 
 interface AllTeamsTableProps {
@@ -29,43 +30,130 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
     gameweek,
     viewMode,
 }) => {
-    const { filters, setFilter, resetFilters } = useTableFilters<TeamFilters>({
+    // Updated to handle multi-select arrays
+    const { filters, setFilter, resetFilters, isUpdating } = useTableFilters<TeamFilters>({
         defaultFilters: {
-            manager: 'all',
-            position: 'all',
-            loanStatus: 'all',
             search: '',
+            managers: '', // Will be comma-separated string in URL
+            positions: '', // Will be comma-separated string in URL
+            loanStatuses: '', // Will be comma-separated string in URL
         },
-        debounceMs: 300,
+        debounceMs: 500,
     });
+
+    // Convert URL string filters to arrays for multi-select
+    const selectedManagers = useMemo(() => {
+        if (!filters.managers || filters.managers === '') return [];
+        return filters.managers.split(',').filter(Boolean);
+    }, [filters.managers]);
+
+    const selectedPositions = useMemo(() => {
+        if (!filters.positions || filters.positions === '') return [];
+        return filters.positions.split(',').filter(Boolean);
+    }, [filters.positions]);
+
+    const selectedLoanStatuses = useMemo(() => {
+        if (!filters.loanStatuses || filters.loanStatuses === '') return [];
+        return filters.loanStatuses.split(',').filter(Boolean);
+    }, [filters.loanStatuses]);
+
+    // Generate filter options with counts
+    const managerOptions = useMemo(() => {
+        const managerCounts = allTeamsData.teams.reduce(
+            (acc, team) => {
+                acc[team.managerId] = (acc[team.managerId] || 0) + 1;
+                return acc;
+            },
+            {} as Record<string, number>,
+        );
+
+        return allTeamsData.availableManagers.map((manager) => ({
+            id: manager.id,
+            label: `${manager.teamName} (${manager.name})`,
+            count: managerCounts[manager.id] || 0,
+        }));
+    }, [allTeamsData]);
+
+    const positionOptions = useMemo(() => {
+        const positionCounts = allTeamsData.teams.reduce(
+            (acc, team) => {
+                const position = team.player.playerPosition;
+                acc[position] = (acc[position] || 0) + 1;
+                return acc;
+            },
+            {} as Record<string, number>,
+        );
+
+        return allTeamsData.availablePositions.map((position) => ({
+            id: position,
+            label: position.toUpperCase(),
+            count: positionCounts[position] || 0,
+        }));
+    }, [allTeamsData]);
+
+    const loanStatusOptions = useMemo(() => {
+        const statusCounts = allTeamsData.teams.reduce(
+            (acc, team) => {
+                if (team.player.onLoanTo) {
+                    acc['loaned-out'] = (acc['loaned-out'] || 0) + 1;
+                } else if (team.player.onLoanFrom) {
+                    acc['loaned-in'] = (acc['loaned-in'] || 0) + 1;
+                } else {
+                    acc['regular'] = (acc['regular'] || 0) + 1;
+                }
+                return acc;
+            },
+            {} as Record<string, number>,
+        );
+
+        return [
+            { id: 'regular', label: 'Regular Players', count: statusCounts['regular'] || 0 },
+            { id: 'loaned-out', label: 'Loaned Out', count: statusCounts['loaned-out'] || 0 },
+            { id: 'loaned-in', label: 'Loaned In', count: statusCounts['loaned-in'] || 0 },
+        ];
+    }, [allTeamsData]);
+
+    // Handle multi-select changes
+    const handleManagersChange = (managers: string[]) => {
+        setFilter('managers', managers.length > 0 ? managers.join(',') : undefined);
+    };
+
+    const handlePositionsChange = (positions: string[]) => {
+        setFilter('positions', positions.length > 0 ? positions.join(',') : undefined);
+    };
+
+    const handleLoanStatusesChange = (statuses: string[]) => {
+        setFilter('loanStatuses', statuses.length > 0 ? statuses.join(',') : undefined);
+    };
+
+    const handleSearchChange = (search: string) => {
+        setFilter('search', search || undefined);
+    };
 
     // Filter data based on current filters
     const filteredData = useMemo(() => {
         let filtered = allTeamsData.teams;
 
-        // Manager filter
-        if (filters.manager && filters.manager !== 'all') {
-            filtered = filtered.filter((team) => team.managerId === filters.manager);
+        // Manager filter (multi-select)
+        if (selectedManagers.length > 0) {
+            filtered = filtered.filter((team) => selectedManagers.includes(team.managerId));
         }
 
-        // Position filter
-        if (filters.position && filters.position !== 'all') {
-            filtered = filtered.filter((team) => team.player.playerPosition === filters.position);
+        // Position filter (multi-select)
+        if (selectedPositions.length > 0) {
+            filtered = filtered.filter((team) => selectedPositions.includes(team.player.playerPosition));
         }
 
-        // Loan status filter
-        if (filters.loanStatus && filters.loanStatus !== 'all') {
-            switch (filters.loanStatus) {
-                case 'regular':
-                    filtered = filtered.filter((team) => !team.isOnLoan);
-                    break;
-                case 'loaned-out':
-                    filtered = filtered.filter((team) => team.player.onLoanTo !== null);
-                    break;
-                case 'loaned-in':
-                    filtered = filtered.filter((team) => team.player.onLoanFrom !== null);
-                    break;
-            }
+        // Loan status filter (multi-select)
+        if (selectedLoanStatuses.length > 0) {
+            filtered = filtered.filter((team) => {
+                const teamLoanStatus = team.player.onLoanTo
+                    ? 'loaned-out'
+                    : team.player.onLoanFrom
+                      ? 'loaned-in'
+                      : 'regular';
+                return selectedLoanStatuses.includes(teamLoanStatus);
+            });
         }
 
         // Search filter
@@ -80,7 +168,15 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         }
 
         return filtered;
-    }, [allTeamsData.teams, filters]);
+    }, [
+        allTeamsData.teams,
+        selectedManagers,
+        selectedPositions,
+        selectedLoanStatuses,
+        filters.search,
+        teamsByCode,
+        fplPlayersByCode,
+    ]);
 
     // Define table columns
     const columns: TableColumn<TeamRowData>[] = [
@@ -317,100 +413,45 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
     ];
 
-    // Create filter options
-    const filterOptions = useMemo(
-        () => ({
-            managers: [
-                { value: 'all', label: 'All Managers' },
-                ...allTeamsData.availableManagers.map((manager) => ({
-                    value: manager.id,
-                    label: `${manager.teamName} (${manager.name})`,
-                })),
-            ],
-            positions: [
-                { value: 'all', label: 'All Positions' },
-                ...allTeamsData.availablePositions.map((position) => ({
-                    value: position,
-                    label: position.toUpperCase(),
-                })),
-            ],
-            loanStatus: [
-                { value: 'all', label: 'All Players' },
-                { value: 'regular', label: 'Regular Players' },
-                { value: 'loaned-out', label: 'Loaned Out' },
-                { value: 'loaned-in', label: 'Loaned In' },
-            ],
-        }),
-        [allTeamsData],
-    );
-
     return (
         <div className={styles.allTeamsTable}>
-            {/* Custom Filters */}
-            <div className={styles.filtersContainer}>
-                <div className={styles.filtersRow}>
-                    <div className={styles.filterGroup}>
-                        <label className={styles.filterLabel}>Search</label>
-                        <input
-                            type="text"
-                            placeholder="Search players, managers, teams..."
-                            value={filters.search || ''}
-                            onChange={(e) => setFilter('search', e.target.value)}
-                            className={styles.searchInput}
-                        />
-                    </div>
+            {/* Multi-Select Filters */}
+            <AllTeamsFilters
+                searchTerm={filters.search || ''}
+                onSearchChange={handleSearchChange}
+                managerOptions={managerOptions}
+                selectedManagers={selectedManagers}
+                onManagersChange={handleManagersChange}
+                positionOptions={positionOptions}
+                selectedPositions={selectedPositions}
+                onPositionsChange={handlePositionsChange}
+                loanStatusOptions={loanStatusOptions}
+                selectedLoanStatuses={selectedLoanStatuses}
+                onLoanStatusesChange={handleLoanStatusesChange}
+                onReset={resetFilters}
+                isUpdating={isUpdating}
+            />
 
-                    <div className={styles.filterGroup}>
-                        <label className={styles.filterLabel}>Manager</label>
-                        <select
-                            value={filters.manager || 'all'}
-                            onChange={(e) => setFilter('manager', e.target.value)}
-                            className={styles.selectInput}
-                        >
-                            {filterOptions.managers.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.filterGroup}>
-                        <label className={styles.filterLabel}>Position</label>
-                        <select
-                            value={filters.position || 'all'}
-                            onChange={(e) => setFilter('position', e.target.value)}
-                            className={styles.selectInput}
-                        >
-                            {filterOptions.positions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.filterGroup}>
-                        <label className={styles.filterLabel}>Loan Status</label>
-                        <select
-                            value={filters.loanStatus || 'all'}
-                            onChange={(e) => setFilter('loanStatus', e.target.value)}
-                            className={styles.selectInput}
-                        >
-                            {filterOptions.loanStatus.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                <div className={styles.filtersActions}>
-                    <button type="button" onClick={resetFilters} className={styles.resetButton}>
-                        Clear Filters
-                    </button>
-                </div>
+            {/* Results count */}
+            <div className={styles.resultsCount}>
+                Showing {filteredData.length} of {allTeamsData.teams.length} players
+                {(selectedManagers.length > 0 || selectedPositions.length > 0 || selectedLoanStatuses.length > 0) && (
+                    <span className={styles.filterInfo}>
+                        {' '}
+                        (filtered by{' '}
+                        {[
+                            selectedManagers.length > 0 &&
+                                `${selectedManagers.length} manager${selectedManagers.length > 1 ? 's' : ''}`,
+                            selectedPositions.length > 0 &&
+                                `${selectedPositions.length} position${selectedPositions.length > 1 ? 's' : ''}`,
+                            selectedLoanStatuses.length > 0 &&
+                                `${selectedLoanStatuses.length} status${selectedLoanStatuses.length > 1 ? 'es' : ''}`,
+                        ]
+                            .filter(Boolean)
+                            .join(', ')}
+                        )
+                    </span>
+                )}
             </div>
 
             {/* Table */}

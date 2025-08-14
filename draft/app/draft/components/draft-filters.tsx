@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { MultiSelect, type MultiSelectOption } from '../../_shared/components/multi-select';
+import { SearchInput } from '../../_shared/components/search-input';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
@@ -6,8 +8,6 @@ import { useWishlists } from '../../wishlist/lib/use-wishlists';
 import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';
 import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 import styles from './draft-filters.module.css';
-import { DraftFiltersMultiSelect, type MultiSelectOption } from './draft-filters-multi-select';
-import { DraftFiltersSearch } from './draft-filters-search';
 
 interface DraftFiltersProps {
     availablePlayers: any[];
@@ -168,14 +168,10 @@ export function DraftFilters({
     return (
         <div className={styles.filtersContainer}>
             {/* Search */}
-            <DraftFiltersSearch
-                searchTerm={searchTerm}
-                onSearchChange={onSearchChange}
-                placeholder="Search players..."
-            />
+            <SearchInput searchTerm={searchTerm} onSearchChange={onSearchChange} placeholder="Search players..." />
 
             {/* Positions Filter */}
-            <DraftFiltersMultiSelect
+            <MultiSelect
                 options={positionOptions}
                 selectedValues={selectedPositions}
                 onSelectionChange={onPositionsChange}
@@ -183,7 +179,7 @@ export function DraftFilters({
             />
 
             {/* Teams Filter */}
-            <DraftFiltersMultiSelect
+            <MultiSelect
                 options={teamOptions}
                 selectedValues={selectedTeams}
                 onSelectionChange={onTeamsChange}
@@ -192,7 +188,7 @@ export function DraftFilters({
             />
 
             {/* Wishlists Filter */}
-            <DraftFiltersMultiSelect
+            <MultiSelect
                 options={wishlistOptions}
                 selectedValues={selectedWishlists}
                 onSelectionChange={onWishlistsChange}
@@ -200,7 +196,7 @@ export function DraftFilters({
             />
 
             {/* Clear Button */}
-            <button onClick={clearAllFilters} className={styles.clearButton}>
+            <button type={'button'} onClick={clearAllFilters} className={styles.clearButton}>
                 Reset
             </button>
 

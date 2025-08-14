@@ -1,0 +1,134 @@
+/* Location: app/players/components/players-filters.module.css */
+
+.filtersContainer {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    box-shadow: var(--shadow-sm);
+}
+
+.filtersRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: var(--spacing-4);
+    align-items: end;
+}
+
+@media (max-width: 1024px) {
+    .filtersRow {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-4);
+    }
+
+    .searchGroup {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .filtersRow {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-3);
+    }
+
+    .searchGroup {
+        grid-column: 1;
+    }
+}
+
+.searchGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.actionsGroup {
+    display: flex;
+    align-items: end;
+}
+
+.filterLabel {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-1);
+}
+
+.multiSelect {
+    min-width: 140px;
+}
+
+.resetButton {
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    color: var(--color-gray-700);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    white-space: nowrap;
+}
+
+.resetButton:hover:not(:disabled) {
+    background: var(--color-gray-200);
+    border-color: var(--color-gray-400);
+}
+
+.resetButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Active Filters Summary */
+.activeFilters {
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-gray-200);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+}
+
+.activeFiltersLabel {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+    flex-shrink: 0;
+}
+
+.activeFiltersList {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+.activeFilter {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) var(--spacing-3);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-border);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+}
+
+/* Results summary styling for main table */
+.filterInfo {
+    color: var(--color-gray-500);
+    font-size: var(--font-sm);
+    font-style: italic;
+}

@@ -1,8 +1,7 @@
-/* Location: app/draft/components/draft-filters-multi-select.tsx */
+/* Location: app/_shared/components/multi-select.tsx */
 
-// components/draft-filters-multi-select.tsx
 import { useEffect, useRef, useState } from 'react';
-import styles from './draft-filters-multi-select.module.css';
+import styles from './multi-select.module.css';
 
 export interface MultiSelectOption {
     id: string;
@@ -20,7 +19,7 @@ interface DraftFiltersMultiSelectProps {
     sortOptions?: boolean;
 }
 
-export function DraftFiltersMultiSelect({
+export function MultiSelect({
     options,
     selectedValues,
     onSelectionChange,

@@ -1,8 +1,6 @@
 /* Location: app/players/server/player.server.ts */
 
-// app/routes/server/player-detail.server.ts
-import path from 'node:path';
-import type { FplBootstrapData, FplPlayerData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
+import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData, GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 import type { CustomPosition, DataSource, PlayerDetailData } from '../types/player-types';
 

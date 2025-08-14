@@ -1,0 +1,45 @@
+/* Location: app/_shared/components/search-input.module.css */
+
+.searchContainer {
+    position: relative;
+    width: 100%;
+}
+
+.searchInput {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    padding-right: var(--spacing-10);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    font-size: var(--font-sm);
+    transition: var(--transition-normal);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput:disabled {
+    background: var(--color-gray-100);
+    color: var(--color-gray-500);
+    cursor: not-allowed;
+}
+
+.searchInput::placeholder {
+    color: var(--color-gray-500);
+}
+
+.searchIcon {
+    position: absolute;
+    right: var(--spacing-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
