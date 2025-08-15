@@ -76,10 +76,10 @@ export async function getTransfersPageData({
             transfers: currentTransfers,
             divisionRosters,
             validationContext,
-        } = await getTransfersDataForDivision(selectedDivision, selectedGameweekData);
+        } = await getTransfersDataForDivision(selectedDivision, selectedGameweekData, { cache: false });
 
         // Load manager's roster if manager is selected
-        const managerRoster = divisionRosters[selectedUser]?.roster;
+        const managerRoster = divisionRosters[selectedUser?.userId]?.roster;
 
         return {
             divisions,

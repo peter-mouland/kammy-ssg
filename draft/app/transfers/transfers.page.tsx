@@ -73,29 +73,28 @@ export const TransfersPageComp = (data: TransfersPageData) => {
     //         navigate(`/transfers?gameweek=${data.selectedGameweek}`);
     //     }
     // };
-
+    console.log(data);
+    console.log(data.managerRoster);
     return (
         <div className={styles.pageContainer}>
             <PageHeader
                 title={`${data.divisions.find((d) => d.id === data.selectedDivision)?.label} Transfers`}
                 actions={
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
+                        <SelectUser
+                            selectedUser={data.selectedUser}
+                            users={data.userTeams}
+                            handleUserChange={(userId) => {
+                                const newParams = new URLSearchParams(searchParams);
+                                newParams.set('userId', userId);
+                                setSearchParams(newParams);
+                            }}
+                        />
                         <GameweekSelector
                             currentGameweekData={data.currentGameweekData}
                             selectedGameweekData={data.selectedGameweekData}
                             availableGameweeks={data.availableGameweeks}
                         />
-                        <div className={styles.section}>
-                            <SelectUser
-                                selectedUser={data.selectedUser}
-                                users={data.userTeams}
-                                handleUserChange={(userId) => {
-                                    const newParams = new URLSearchParams(searchParams);
-                                    newParams.set('userId', userId);
-                                    setSearchParams(newParams);
-                                }}
-                            />
-                        </div>
                     </div>
                 }
             />

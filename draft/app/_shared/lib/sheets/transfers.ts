@@ -211,7 +211,7 @@ export async function readTransferDataForDivision(
     gameweekData: GameWeekData[],
 ): Promise<TransferProcessingResult> {
     try {
-        const normedResult = await readTransfers(divisionId);
+        const normedResult = await originalReadTransfers(divisionId);
 
         if (normedResult.length === 0) {
             console.log(`i No transfer data found for division ${divisionId}`);
