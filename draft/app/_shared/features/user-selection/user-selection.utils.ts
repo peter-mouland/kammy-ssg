@@ -3,7 +3,7 @@
 import type { UserTeamsSheetData } from '../../../teams/types/team-types';
 
 // Cookie configuration
-const USER_SELECTION_COOKIE_NAME = 'selectedUserId';
+const USER_SELECTION_COOKIE_NAME = '__session'; // MUST BE __SESSION FOR FIREBASE!
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year in seconds
 
 /**
@@ -18,6 +18,7 @@ export function getUserSelection(request: Request): {
 
     // 1. Check URL parameters first (highest priority)
     const urlUserId = url.searchParams.get('userId') || url.searchParams.get('user');
+    // console.log({ urlUserId });
     if (urlUserId) {
         return {
             selectedUserId: urlUserId,

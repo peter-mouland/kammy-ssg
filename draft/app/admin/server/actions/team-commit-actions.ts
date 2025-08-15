@@ -4,12 +4,7 @@ import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
 import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
-import type {
-    DivisionId,
-    DivisionTeamsDocument,
-    PositionSlotKey,
-    TeamPositionSlot,
-} from '../../../teams/types/team-types';
+import type { DivisionTeamsDocument, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
 
 export async function handleCommitTeamsToFirestore(
@@ -45,15 +40,15 @@ export async function handleCommitTeamsToFirestore(
         // Convert each user's picks to new roster structure
         const teamsData: Record<string, { roster: Record<PositionSlotKey, TeamPositionSlot> }> = {};
         let totalPlayersProcessed = 0;
-        console.log(teamsByUser);
+
         for (const [userId, userPicks] of teamsByUser) {
-            console.log(`Processing ${userPicks.length} picks for user ${userId}`);
+            // console.log(`Processing ${userPicks.length} picks for user ${userId}`);
 
             // Convert legacy format to new roster structure
             const legacyPlayers = userPicks.map((pick) => {
                 const fplPlayer = fplPlayersMap.get(pick.playerCode);
                 if (!fplPlayer) {
-                    console.warn(`FPL player not found for code ${pick.playerCode}`);
+                    console.warn(`🚨 FPL player not found for ${userId} code ${pick.playerCode}`);
                 }
 
                 return {
