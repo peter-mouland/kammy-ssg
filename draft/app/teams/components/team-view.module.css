@@ -11,10 +11,6 @@
 
 /* Header styles */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--spacing-4);
     padding: var(--spacing-6);
     background: var(--card-background);
     border: var(--card-border);

@@ -198,7 +198,10 @@ export const LeagueStandings = () => {
 
     return (
         <div>
-            <PageHeader title={'Standings'} subTitle={`Total points accumulated until gameweek ${selectedGameweek}`} />
+            <PageHeader
+                title={'All Standings'}
+                subTitle={`Total points accumulated until gameweek ${selectedGameweek}`}
+            />
             {divisions
                 .sort((a, b) => (a.order < b.order ? -1 : 1))
                 .map((division) => {

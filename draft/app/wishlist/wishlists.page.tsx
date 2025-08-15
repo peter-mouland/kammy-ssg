@@ -54,7 +54,7 @@ export const WishlistsPage = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <>
             <PageHeader
                 title="My Wishlists"
                 subTitle={`${wishlists.length} lists • ${totalPlayers} total players`}
@@ -160,6 +160,6 @@ export const WishlistsPage = () => {
                     )}
                 </div>
             </div>
-        </div>
+        </>
     );
 };

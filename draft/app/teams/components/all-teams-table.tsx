@@ -38,7 +38,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             positions: '', // Will be comma-separated string in URL
             loanStatuses: '', // Will be comma-separated string in URL
         },
-        debounceMs: 500,
+        debounceMs: 600,
     });
 
     // Convert URL string filters to arrays for multi-select

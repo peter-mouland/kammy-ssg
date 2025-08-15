@@ -3,6 +3,8 @@
 import type * as React from 'react';
 import { useState } from 'react';
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router';
+import { PageHeader } from '../../_shared/components/page-header';
+import { SelectDivision } from '../../_shared/components/select-division';
 import { SelectUser } from '../../_shared/components/select-user';
 import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../../_shared/features/user-selection/user-selection-provider';
@@ -60,30 +62,27 @@ export const TeamViewComp = ({ data }) => {
 
     if (!data.currentUser || !data.division) {
         return (
-            <div className={styles.teamViewContainer}>
+            <>
                 {/* Header */}
-                <div className={styles.header}>
-                    <div className={styles.teamInfo}>
-                        <h1 className={styles.teamName}>
-                            <em>unknown user</em>
-                        </h1>
-                    </div>
-
-                    <div className={styles.headerControls}>
-                        <SelectUser
-                            selectedUser={''}
-                            users={data.userTeams || []}
-                            handleUserChange={(userId) => {
-                                navigate(`/teams/${userId}?tab=all-teams`);
-                            }}
-                        />
-                        <GameweekSelector
-                            currentGameweekData={data.currentGameweekData}
-                            selectedGameweekData={data.selectedGameweekData}
-                            availableGameweeks={data.availableGameweeks}
-                        />
-                    </div>
-                </div>
+                <PageHeader
+                    title={'unknown user'}
+                    actions={
+                        <>
+                            <SelectUser
+                                selectedUser={''}
+                                users={data.userTeams || []}
+                                handleUserChange={(userId) => {
+                                    navigate(`/teams/${userId}?tab=all-teams`);
+                                }}
+                            />
+                            <GameweekSelector
+                                currentGameweekData={data.currentGameweekData}
+                                selectedGameweekData={data.selectedGameweekData}
+                                availableGameweeks={data.availableGameweeks}
+                            />
+                        </>
+                    }
+                />
                 {/* Time Travel Indicator */}
                 {!isCurrentGameweek && <TimeTravelBanner currentGameweek={data.currentGameweek} />}
                 {/* Tab Navigation */}
@@ -94,34 +93,34 @@ export const TeamViewComp = ({ data }) => {
                     setViewMode={handleViewModeChange}
                     playerCount={data.allTeamsData?.totalPlayers}
                 />
-            </div>
+            </>
         );
     }
 
     return (
-        <div className={styles.teamViewContainer}>
+        <>
             {/* Header */}
-            <div className={styles.header}>
-                <div className={styles.teamInfo}>
-                    <h1 className={styles.teamName}>{data.currentUser.userName}</h1>
-                    <div className={styles.divisionBadge}>{data.division.label}</div>
-                </div>
 
-                <div className={styles.headerControls}>
-                    <SelectUser
-                        selectedUser={data.currentUser.userName}
-                        users={data.userTeams || []}
-                        handleUserChange={(userId) => {
-                            navigate(`/teams/${userId}?tab=all-teams`);
-                        }}
-                    />
-                    <GameweekSelector
-                        currentGameweekData={data.currentGameweekData}
-                        selectedGameweekData={data.selectedGameweekData}
-                        availableGameweeks={data.availableGameweeks}
-                    />
-                </div>
-            </div>
+            <PageHeader
+                title={data.currentUser.userName}
+                // subTitle={<div className={styles.divisionBadge}>{data.division.label}</div>}
+                actions={
+                    <>
+                        <SelectUser
+                            selectedUser={data.currentUser.userName}
+                            users={data.userTeams || []}
+                            handleUserChange={(userId) => {
+                                navigate(`/teams/${userId}?tab=all-teams`);
+                            }}
+                        />
+                        <GameweekSelector
+                            currentGameweekData={data.currentGameweekData}
+                            selectedGameweekData={data.selectedGameweekData}
+                            availableGameweeks={data.availableGameweeks}
+                        />
+                    </>
+                }
+            />
 
             {/* Time Travel Indicator */}
             {!isCurrentGameweek && <TimeTravelBanner currentGameweek={data.currentGameweek} />}
@@ -150,6 +149,6 @@ export const TeamViewComp = ({ data }) => {
                     viewMode={viewMode}
                 />
             )}
-        </div>
+        </>
     );
 };

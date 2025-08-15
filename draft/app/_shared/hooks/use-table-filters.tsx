@@ -27,7 +27,7 @@ interface UseTableFiltersReturn {
 }
 
 export function useTableFilters(options: UseTableFiltersOptions = {}): UseTableFiltersReturn {
-    const { defaultFilters = {}, debounceMs = 300 } = options;
+    const { defaultFilters = {}, debounceMs = 600 } = options;
     const [searchParams, setSearchParams] = useSearchParams();
     const timeoutRef = useRef<NodeJS.Timeout>();
     const [isUpdating, setIsUpdating] = useState(false);

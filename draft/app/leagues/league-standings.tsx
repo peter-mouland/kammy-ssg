@@ -291,18 +291,18 @@ const LeagueStandingsComp = ({
             <PageHeader
                 title={`${selectedDivision?.label} Standings`}
                 actions={
-                    <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
-                        <GameweekSelector
-                            currentGameweekData={currentGameweekData}
-                            selectedGameweekData={selectedGameweekData}
-                            availableGameweeks={availableGameweeks}
-                        />
+                    <>
                         <SelectDivision
                             divisions={divisions}
                             selectedDivision={selectedDivision?.id}
                             handleDivisionChange={handleDivisionChange}
                         />
-                    </div>
+                        <GameweekSelector
+                            currentGameweekData={currentGameweekData}
+                            selectedGameweekData={selectedGameweekData}
+                            availableGameweeks={availableGameweeks}
+                        />
+                    </>
                 }
             />
 

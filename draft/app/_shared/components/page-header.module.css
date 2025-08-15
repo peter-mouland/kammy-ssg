@@ -1,7 +1,14 @@
 /* Location: app/_shared/components/page-header.module.css */
 
 .pageHeader {
-    margin-bottom: var(--spacing-8);
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3);
+    background: var(--card-background);
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
 }
 
 .primary {
@@ -11,13 +18,19 @@
 }
 
 @media (min-width: 768px) {
+    .pageHeader {
+        margin-bottom: var(--spacing-8);
+        padding: var(--spacing-6);
+        margin-left: 0rem;
+        margin-right: 0rem;
+    }
     .primary {
         display: flex;
     }
 }
 
 .pageTitle {
-    font-size: var(--font-4xl);
+    font-size: var(--font-3xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
     margin-bottom: 1.5rem;
@@ -28,9 +41,15 @@
     font-size: var(--font-lg);
 }
 
+.pageActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .pageTitle {
-        font-size: var(--font-3xl);
+        font-size: var(--font-2xl);
     }
 }
