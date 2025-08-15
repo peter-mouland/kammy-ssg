@@ -26,5 +26,58 @@
 
 .points {
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-sm);
+    font-size: var(--font-xs);
+    color: var(--color-gray-400);
+}
+
+.positionRank {
+    font-size: var(--font-xs);
+}
+.positionRank + .points {
+    padding-left: 0.5rem;
+}
+
+.positionRank.gk {
+    color: var(--color-position-gk);
+}
+.positionRank.cb {
+    color: var(--color-position-cb);
+}
+.positionRank.fb {
+    color: var(--color-position-fb);
+}
+.positionRank.mid {
+    color: var(--color-position-mid);
+}
+.positionRank.wa {
+    color: var(--color-position-wa);
+}
+.positionRank.ca {
+    color: var(--color-position-ca);
+}
+.positionRank.points-0 {
+    color: var(--color-gray-400);
+}
+
+.mobileLabel {
+    display: block;
+}
+.label {
+    display: none;
+}
+
+@media (min-width: 461px) {
+    .positionRank {
+        font-size: var(--font-base);
+    }
+    .points {
+        font-size: var(--font-sm);
+    }
+
+    .mobileLabel {
+        display: none;
+    }
+    .label {
+        display: block;
+    }
 }

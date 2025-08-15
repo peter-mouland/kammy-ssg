@@ -12,12 +12,11 @@ import type {
     LeagueStandingsTeamData,
     PositionColumnConfig,
 } from '../leagues/types/league-standings-types';
-import type { CustomPosition } from '../players/types/player-types';
-import { getPositionColor } from '../scoring/lib';
 
 const POSITION_COLUMNS: PositionColumnConfig[] = [
     {
         key: 'gk',
+        mobileLabel: 'GKS',
         label: 'GK / Sub',
         slots: ['gk_0', 'sub_0'],
     },
@@ -74,6 +73,7 @@ function PositionPointsTable({
             header: 'Rank',
             width: 60,
             sortable: false,
+            hideOnMobile: true,
             render: (_, team, index) => <RankBadge rank={index + 1} />,
         },
         {
@@ -91,7 +91,12 @@ function PositionPointsTable({
         ...POSITION_COLUMNS.map(
             (col): TableColumn<LeagueStandingsTeamData> => ({
                 key: col.key,
-                header: col.label,
+                header: (
+                    <span>
+                        <span className={styles.mobileLabel}>{col.mobileLabel || col.label}</span>
+                        <span className={styles.label}>{col.label}</span>
+                    </span>
+                ),
                 width: 80,
                 align: 'center',
                 sortable: true,
@@ -102,32 +107,10 @@ function PositionPointsTable({
                         const rank = positionRankings[team.userId]?.[col.key];
                         return (
                             <div>
-                                <span>
-                                    {rank && (
-                                        <span
-                                            className={styles.positionRank}
-                                            style={{
-                                                color:
-                                                    points > 0
-                                                        ? getPositionColor(col.key as CustomPosition)
-                                                        : 'var(--color-gray-400)',
-                                                fontSize: '1rem',
-                                            }}
-                                        >
-                                            {rank}
-                                        </span>
-                                    )}
-                                </span>
-                                <span
-                                    className={styles.points}
-                                    style={{
-                                        fontSize: '0.8rem',
-                                        color: 'var(--color-gray-400)',
-                                        marginLeft: '1rem',
-                                    }}
-                                >
-                                    {points}
-                                </span>
+                                {rank && (
+                                    <span className={`${styles.positionRank} ${col.key} points-${points}`}>{rank}</span>
+                                )}
+                                <span className={styles.points}>{points}</span>
                             </div>
                         );
                     }
@@ -164,27 +147,8 @@ function PositionPointsTable({
                 } else {
                     return (
                         <div>
-                            {rank && (
-                                <span
-                                    className={styles.positionRank}
-                                    style={{
-                                        fontSize: '1rem',
-                                        color: 'var(--color-primary)',
-                                    }}
-                                >
-                                    {rank}
-                                </span>
-                            )}
-                            <span
-                                className={styles.points}
-                                style={{
-                                    fontWeight: 'var(--font-weight-bold)',
-                                    color: 'var(--color-gray-400)',
-                                    marginLeft: '1rem',
-                                }}
-                            >
-                                {team[pointsSource].total || 0}
-                            </span>
+                            {rank && <span className={styles.positionRank}>{rank}</span>}
+                            <span className={styles.points}>{team[pointsSource].total || 0}</span>
                         </div>
                     );
                 }
