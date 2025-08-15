@@ -1,0 +1,229 @@
+/* Location: app/_shared/components/mobile-nav.module.css */
+
+/* Mobile Navigation Styles */
+.mobileNav {
+    position: relative;
+    display: none; /* Hidden by default, shown via media query */
+}
+
+.mobileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.mobileLogo {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    text-decoration: none;
+}
+
+/* Hamburger Button */
+.hamburger {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-2);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.hamburger:hover {
+    background-color: #334155; /* Darker slate for hover */
+}
+
+.hamburger:focus-visible {
+    outline: 2px solid var(--color-white);
+    outline-offset: 2px;
+}
+
+.hamburgerLine {
+    width: 1.5rem;
+    height: 2px;
+    background-color: var(--color-white);
+    margin: 2px 0;
+    transition: all var(--transition-normal);
+    transform-origin: center;
+}
+
+/* Hamburger animation when open */
+.hamburgerOpen .hamburgerLine:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.hamburgerOpen .hamburgerLine:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburgerOpen .hamburgerLine:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    animation: fadeIn var(--transition-fast) ease-out;
+}
+
+/* Mobile Menu */
+.mobileMenu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: var(--color-white);
+    z-index: 999;
+    transition: right var(--transition-normal) ease-out;
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+}
+
+.mobileMenuOpen {
+    right: 0;
+}
+
+.mobileMenuList {
+    list-style: none;
+    margin: 0;
+    padding: var(--spacing-6) 0;
+}
+
+.mobileMenuItem {
+    margin: 0;
+}
+
+.mobileMenuLink {
+    display: block;
+    padding: var(--spacing-4) var(--spacing-6);
+    color: var(--color-gray-700);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-lg);
+    border-bottom: 1px solid var(--color-gray-200);
+    transition: all var(--transition-fast);
+    transform: translateX(20px);
+    opacity: 0;
+}
+
+.mobileMenuOpen .mobileMenuLink {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.mobileMenuLink:hover,
+.mobileMenuLink:focus {
+    background-color: var(--color-gray-100);
+    color: var(--color-primary);
+}
+
+.mobileMenuLink:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+}
+
+/* Desktop Navigation Styles */
+.desktopNav {
+    display: flex;
+    gap: var(--spacing-8);
+    align-items: center;
+    width: 100%;
+}
+
+.desktopLogo {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    text-decoration: none;
+    margin-right: auto;
+}
+
+.desktopNavLinks {
+    display: flex;
+    gap: var(--spacing-6);
+    align-items: center;
+}
+
+.desktopNavLink {
+    color: var(--color-gray-300);
+    text-decoration: none;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    font-weight: var(--font-weight-medium);
+}
+
+.desktopNavLink:hover,
+.desktopNavLink:focus {
+    color: var(--color-white);
+    background-color: var(--color-gray-700);
+}
+
+.desktopNavLink:focus-visible {
+    outline: 2px solid var(--color-white);
+    outline-offset: 2px;
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+    .mobileNav {
+        display: block;
+    }
+
+    .desktopNav {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobileNav {
+        display: none;
+    }
+
+    .desktopNav {
+        display: flex;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Accessibility: Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .hamburgerLine,
+    .mobileMenu,
+    .mobileMenuLink,
+    .overlay {
+        transition: none;
+    }
+
+    .mobileMenuLink {
+        transform: none;
+    }
+
+    .mobileMenuOpen .mobileMenuLink {
+        transform: none;
+    }
+}

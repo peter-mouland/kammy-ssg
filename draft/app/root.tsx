@@ -11,6 +11,7 @@ import {
     ScrollRestoration,
     useRouteError,
 } from 'react-router';
+import { DesktopNav, MobileNav } from './_shared/components/g-nav';
 import designTokens from './design-tokens.css?url';
 import globalStyles from './root.css?url';
 import { WishlistProvider } from './wishlist/lib/use-wishlists';
@@ -38,6 +39,21 @@ export const links: LinksFunction = () => [
     { rel: 'stylesheet', href: designTokens },
 ];
 
+// Navigation configuration
+const navigationItems = [
+    { href: '/leagues', label: 'League Standings' },
+    { href: '/teams?tab=all-teams', label: 'Teams' },
+    { href: '/players', label: 'Players' },
+    { href: '/transfers', label: 'Transfers' },
+    { href: '/wishlists', label: 'Wishlists' },
+    { href: '/draft', label: 'Draft' },
+];
+
+const logoConfig = {
+    href: '/',
+    text: 'Fantasy Draft',
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
@@ -51,17 +67,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <WishlistProvider>
                     <div className="header">
                         <div className="container">
-                            <nav className="nav">
-                                <a href="/" className="logo">
-                                    Fantasy Draft
-                                </a>
-                                <a href="/leagues">League Standings</a>
-                                <a href={'/teams?tab=all-teams'}>Teams</a>
-                                <a href="/players">Players</a>
-                                <a href="/transfers">Transfers</a>
-                                <a href="/wishlists">Wishlists</a>
-                                <a href="/draft">Draft</a>
-                            </nav>
+                            {/* Desktop Navigation */}
+                            <DesktopNav items={navigationItems} logo={logoConfig} />
+
+                            {/* Mobile Navigation */}
+                            <MobileNav items={navigationItems} logo={logoConfig} />
                         </div>
                     </div>
 
