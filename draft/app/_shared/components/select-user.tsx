@@ -1,5 +1,7 @@
 /* Location: app/_shared/components/select-user.tsx */
 
+import type { UserTeamsSheetData } from '../../teams/types/team-types';
+import { setUserSelection } from '../features/user-selection/user-selection.utils';
 import styles from './select-user.module.css';
 
 interface User {
@@ -8,19 +10,29 @@ interface User {
 }
 
 interface SelectUserProps {
-    users: User[];
+    users: User[] | UserTeamsSheetData[];
     selectedUser: string | null;
-    handleUserChange: (userId: string) => void;
+    handleUserChange?: (userId: string) => void;
+    showCookieIndicator?: boolean;
 }
 
 export function SelectUser({ users, selectedUser, handleUserChange }: SelectUserProps) {
+    const handleChange = (userId: string) => {
+        if (userId) {
+            setUserSelection(userId, true);
+        }
+        if (handleUserChange) handleUserChange(userId);
+    };
+
     return (
-        <label htmlFor="user-select" className={styles.selectContainer}>
-            <span className={styles.selectLabel}>Select User:</span>
+        <div className={styles.selectContainer}>
+            <label htmlFor="user-select" className={styles.selectLabel}>
+                Select User:
+            </label>
             <select
                 id="user-select"
                 value={selectedUser || ''}
-                onChange={(e) => handleUserChange(e.target.value)}
+                onChange={(e) => handleChange(e.target.value)}
                 className={styles.selectInput}
             >
                 <option value="">Choose a user...</option>
@@ -30,6 +42,6 @@ export function SelectUser({ users, selectedUser, handleUserChange }: SelectUser
                     </option>
                 ))}
             </select>
-        </label>
+        </div>
     );
 }

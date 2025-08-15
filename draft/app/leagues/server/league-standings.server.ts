@@ -1,11 +1,10 @@
 /* Location: app/leagues/server/league-standings.server.ts */
 
-import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { getDivisionTeamsDocument } from '../../scoring/server/services/division-teams.service';
-import type { DivisionId, PositionSlotKey } from '../../teams/types/team-types';
+import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../teams/types/team-types';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
 import type {
     EnhancedLeagueStandingsLoaderData,
@@ -26,8 +25,8 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
     const standingsData: Record<DivisionId, LeagueStandingsTeamData[]> = {};
     const promises = divisions.map(async (division) => {
         standingsData[division.id] = await getDivisionStandingsWithPositionRankChanges(division.id, currentGameweek);
-    })
-    await Promise.all(promises)
+    });
+    await Promise.all(promises);
 
     return {
         divisions,
@@ -42,16 +41,18 @@ export async function getEnhancedLeagueStandingsData({
     selectedDivision,
     selectedGameweek,
     currentGameweekData,
+    divisions,
+    events,
 }: {
     selectedDivision: DivisionId;
     selectedGameweek?: number;
     currentGameweekData: GameWeekData;
+    divisions: DivisionSheetData[];
+    events: GameWeekData[];
 }): Promise<EnhancedLeagueStandingsLoaderData> {
     // Import services dynamically to keep server code on server
     const currentGameweek = currentGameweekData.fplEvent.id;
-    const divisions = await readDivisions();
     const division = divisions.find((d) => selectedDivision === d.id)!;
-    const events = await fplApiCache.getFplEvents();
     const targetGameweek = selectedGameweek ?? currentGameweek;
     const targetGameweekData = events.find((e) => e.fplEvent.id === targetGameweek);
 

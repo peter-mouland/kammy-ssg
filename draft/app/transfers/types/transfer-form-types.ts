@@ -74,6 +74,7 @@ export interface PlayerEligibility {
  * Data structure for the transfers page
  */
 export interface TransfersPageData {
+    persistedUser: { selectedUserId: ManagerId | null; requiresSelection: boolean };
     divisions: DivisionSheetData[];
     managers: UserTeamsSheetData[];
     currentGameweek: number;
@@ -83,7 +84,7 @@ export interface TransfersPageData {
     availableGameweeks: number[];
     gameweekData: GameWeekData;
     selectedDivision: DivisionId;
-    selectedManager: ManagerId;
+    selectedUser: ManagerId;
     currentTransfers: Array<{
         transfer: ProcessedTransfer;
         validation: TransferValidationResult;

@@ -1,9 +1,13 @@
 /* Location: app/transfers/transfers.page.tsx */
 
+import type * as React from 'react';
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
+import { SelectUser } from '../_shared/components/select-user';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
+import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
+import type { EnhancedLeagueStandingsLoaderData } from '../leagues/types/league-standings-types';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import type { ManagerId, PositionSlotKey, RosterPlayer } from '../teams/types/team-types';
 import { CurrentTransfers } from './components/current-transfers';
@@ -18,35 +22,57 @@ type ActiveLoan = {
     from: ManagerId | null;
 };
 
-export function TransfersPage() {
+export const TransfersPage = () => {
     const data = useLoaderData<TransfersPageData>();
-    const [searchParams,] = useSearchParams();
-    const navigate = useNavigate();
+
+    return (
+        <UserSelectionProvider
+            users={data.userTeams}
+            onUserSelected={console.log}
+            redirectOnSelection={true} // Reload page with new user
+            fallbackContent={
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <h2>Welcome to Fantasy Football!</h2>
+                    <p>Please select your profile to continue</p>
+                </div>
+            }
+            initialSelection={data.persistedUser}
+        >
+            <TransfersPageComp {...data} />
+        </UserSelectionProvider>
+    );
+};
+
+export const TransfersPageComp = (data: TransfersPageData) => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    // const navigate = useNavigate();
     const isCurrentGameweek =
         !searchParams.get('gameweek') || searchParams.get('gameweek') === String(data.currentGameweek);
 
     const loans: Record<RosterPlayer['playerCode'], ActiveLoan> = {};
-    Object.keys(data.divisionRosters).forEach((managerId) => {
-        const { roster } = data.divisionRosters[managerId];
-        Object.keys(roster).forEach((slotKey) => {
-            const player = roster[slotKey as PositionSlotKey].player;
-            if (player.onLoanTo || player.onLoanFrom) {
-                loans[player.playerCode] = {
-                    player,
-                    to: loans[player.playerCode]?.to || player.onLoanTo,
-                    from: loans[player.playerCode]?.from || player.onLoanFrom,
-                };
-            }
+    if (data.divisionRosters) {
+        Object.keys(data.divisionRosters).forEach((managerId) => {
+            const { roster } = data.divisionRosters[managerId];
+            Object.keys(roster).forEach((slotKey) => {
+                const player = roster[slotKey as PositionSlotKey].player;
+                if (player.onLoanTo || player.onLoanFrom) {
+                    loans[player.playerCode] = {
+                        player,
+                        to: loans[player.playerCode]?.to || player.onLoanTo,
+                        from: loans[player.playerCode]?.from || player.onLoanFrom,
+                    };
+                }
+            });
         });
-    });
+    }
 
-    const handleDivisionChange = (divisionId: string) => {
-        if (divisionId !== 'all') {
-            navigate(`/transfers/${divisionId}?gameweek=${data.selectedGameweek}`);
-        } else {
-            navigate(`/transfers?gameweek=${data.selectedGameweek}`);
-        }
-    };
+    // const handleDivisionChange = (divisionId: string) => {
+    //     if (divisionId !== 'all') {
+    //         navigate(`/transfers/${divisionId}?gameweek=${data.selectedGameweek}`);
+    //     } else {
+    //         navigate(`/transfers?gameweek=${data.selectedGameweek}`);
+    //     }
+    // };
 
     return (
         <div className={styles.pageContainer}>
@@ -59,11 +85,17 @@ export function TransfersPage() {
                             selectedGameweekData={data.selectedGameweekData}
                             availableGameweeks={data.availableGameweeks}
                         />
-                        <SelectDivision
-                            divisions={data.divisions}
-                            selectedDivision={data.selectedDivision}
-                            handleDivisionChange={handleDivisionChange}
-                        />
+                        <div className={styles.section}>
+                            <SelectUser
+                                selectedUser={data.selectedUser}
+                                users={data.userTeams}
+                                handleUserChange={(userId) => {
+                                    const newParams = new URLSearchParams(searchParams);
+                                    newParams.set('userId', userId);
+                                    setSearchParams(newParams);
+                                }}
+                            />
+                        </div>
                     </div>
                 }
             />
@@ -72,14 +104,16 @@ export function TransfersPage() {
 
             {/* Current Transfers Section */}
             <div className={'card'}>
-                <CurrentTransfers
-                    teamsByCode={data.teamsByCode}
-                    transfers={data.currentTransfers}
-                    currentGameweek={data.currentGameweek}
-                    availableGameweeks={data.availableGameweeks}
-                    selectedGameweek={data.selectedGameweek}
-                    selectedDivision={data.selectedDivision}
-                />
+                {data.currentTransfers ? (
+                    <CurrentTransfers
+                        teamsByCode={data.teamsByCode}
+                        transfers={data.currentTransfers}
+                        currentGameweek={data.currentGameweek}
+                        availableGameweeks={data.availableGameweeks}
+                        selectedGameweek={data.selectedGameweek}
+                        selectedDivision={data.selectedDivision}
+                    />
+                ) : null}
             </div>
             <br />
             <br />
@@ -99,30 +133,32 @@ export function TransfersPage() {
                         </div>
                     </div>
 
-                    <TransferForm
-                        divisions={data.divisions}
-                        managers={data.managers}
-                        currentGameweek={data.currentGameweek}
-                        availableGameweeks={data.availableGameweeks}
-                        selectedGameweekData={data.selectedGameweekData}
-                        selectedDivision={data.selectedDivision}
-                        selectedManager={data.selectedManager}
-                        managerRoster={data.managerRoster}
-                        availablePlayers={data.availablePlayers}
-                        isBeforeDeadline={true /* data.isBeforeDeadline */}
-                        divisionRosters={data.divisionRosters}
-                        teamsByCode={data.teamsByCode}
-                        validationContext={data.validationContext}
-                    />
+                    {data.selectedUser ? (
+                        <TransferForm
+                            divisions={data.divisions}
+                            managers={data.managers}
+                            currentGameweek={data.currentGameweek}
+                            availableGameweeks={data.availableGameweeks}
+                            selectedGameweekData={data.selectedGameweekData}
+                            selectedDivision={data.selectedDivision}
+                            selectedManager={data.selectedUser}
+                            managerRoster={data.managerRoster}
+                            availablePlayers={data.availablePlayers}
+                            isBeforeDeadline={true /* data.isBeforeDeadline */}
+                            divisionRosters={data.divisionRosters}
+                            teamsByCode={data.teamsByCode}
+                            validationContext={data.validationContext}
+                        />
+                    ) : null}
                 </div>
                 <LoanStatusDisplay
                     teamsByCode={data.teamsByCode}
                     fplPlayersByCode={data.fplPlayersByCode}
                     loans={loans}
                     managers={data.managers}
-                    currentManagerId={data.selectedManager}
+                    currentManagerId={data.selectedUser}
                 />
             </div>
         </div>
     );
-}
+};

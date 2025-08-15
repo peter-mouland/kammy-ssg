@@ -6,7 +6,7 @@ import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
-import { getPositionColor } from '../scoring/lib';
+import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { PositionRankChange } from './components/position-rank-change';
 import styles from './league-standings.module.css';
@@ -22,37 +22,37 @@ const POSITION_COLUMNS: PositionColumnConfig[] = [
         key: 'gk',
         label: 'GK / Sub',
         slots: ['gk_0', 'sub_0'],
-        color: getPositionColor('gk'),
+        color: 'var(--color-position-gk)',
     },
     {
         key: 'cb',
         label: 'CB',
         slots: ['cb_0', 'cb_1'],
-        color: getPositionColor('cb'),
+        color: 'var(--color-position-cb)',
     },
     {
         key: 'fb',
         label: 'FB',
         slots: ['fb_0', 'fb_1'],
-        color: getPositionColor('fb'),
+        color: 'var(--color-position-fb)',
     },
     {
         key: 'mid',
         label: 'MID',
         slots: ['mid_0', 'mid_1'],
-        color: getPositionColor('mid'),
+        color: 'var(--color-position-mid)',
     },
     {
         key: 'wa',
         label: 'WA',
         slots: ['wa_0', 'wa_1'],
-        color: getPositionColor('wa'),
+        color: 'var(--color-position-wa)',
     },
     {
         key: 'ca',
         label: 'CA',
         slots: ['ca_0', 'ca_1'],
-        color: getPositionColor('ca'),
+        color: 'var(--color-position-ca)',
     },
 ];
 
@@ -276,17 +276,37 @@ function DivisionStandingsTable({
 }
 
 export const LeagueStandings = () => {
-    const {
-        divisions,
-        selectedDivision,
-        selectedGameweek,
-        currentGameweek,
-        selectedGameweekData,
-        currentGameweekData,
-        availableGameweeks,
-        standingsData,
-    } = useLoaderData<EnhancedLeagueStandingsLoaderData>();
+    const data = useLoaderData<EnhancedLeagueStandingsLoaderData>();
 
+    return (
+        <UserSelectionProvider
+            users={data.userTeams}
+            onUserSelected={console.log}
+            redirectOnSelection={true} // Reload page with new user
+            fallbackContent={
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                    <h2>Welcome to Fantasy Football!</h2>
+                    <p>Please select your profile to continue</p>
+                </div>
+            }
+            initialSelection={data.persistedUser}
+        >
+            <LeagueStandingsComp {...data} />
+        </UserSelectionProvider>
+    );
+};
+
+const LeagueStandingsComp = ({
+    divisions,
+    selectedDivision,
+    selectedGameweek,
+    currentGameweek,
+    selectedGameweekData,
+    currentGameweekData,
+    availableGameweeks,
+    standingsData,
+    persistedUser,
+}: EnhancedLeagueStandingsLoaderData) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);
@@ -302,7 +322,7 @@ export const LeagueStandings = () => {
     return (
         <>
             <PageHeader
-                title={`${selectedDivision.label} Standings`}
+                title={`${selectedDivision?.label} Standings`}
                 actions={
                     <div style={{ display: 'flex', gap: 'var(--spacing-3)', alignItems: 'center' }}>
                         <GameweekSelector
@@ -312,7 +332,7 @@ export const LeagueStandings = () => {
                         />
                         <SelectDivision
                             divisions={divisions}
-                            selectedDivision={selectedDivision.id}
+                            selectedDivision={selectedDivision?.id}
                             handleDivisionChange={handleDivisionChange}
                         />
                     </div>
@@ -325,7 +345,7 @@ export const LeagueStandings = () => {
             {selectedDivision ? (
                 <DivisionStandingsTable
                     division={selectedDivision}
-                    teams={standingsData[selectedDivision.id] || []}
+                    teams={standingsData[selectedDivision?.id] || []}
                     selectedGameweek={selectedGameweek}
                 />
             ) : (

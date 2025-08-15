@@ -2,7 +2,9 @@
 
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
-import { requestFormData } from '../_shared/lib/form-data';
+import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
+import { readDivisions } from '../_shared/lib/sheets/divisions';
+import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../teams/types/team-types';
 import { LeagueStandings } from './league-standings';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
@@ -23,9 +25,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
         const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-        const currentGameweekData = await fplApiCache.getCurrentGameweekData();
+        const [currentGameweekData, events, userTeams, divisions] = await Promise.all([
+            fplApiCache.getCurrentGameweekData(),
+            fplApiCache.getFplEvents(),
+            readUserTeams(),
+            readDivisions(),
+        ]);
+        const persistedUser = getUserSelection(request);
+        const currentUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
         const currentGameweek = currentGameweekData.fplEvent.id;
-        const selectedDivision = (params.divisionId || 'premierLeague') as DivisionId;
+        const selectedDivision = (params.divisionId || currentUser?.divisionId) as DivisionId;
         const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
 
         // Dynamic import to keep server code on server
@@ -34,9 +43,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
             currentGameweekData,
             selectedDivision,
             selectedGameweek,
+            divisions,
+            events,
         });
 
-        return data<EnhancedLeagueStandingsLoaderData>(loaderData);
+        return data<EnhancedLeagueStandingsLoaderData>({ ...loaderData, userTeams, persistedUser });
     } catch (error) {
         console.error('League standings loader error:', error);
         throw new Response('Failed to load enhanced standings data', { status: 500 });

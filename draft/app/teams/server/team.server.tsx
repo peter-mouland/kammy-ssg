@@ -1,12 +1,14 @@
 // app/teams/server/team.server.ts
 
+import { getUserSelection } from '../../_shared/features/user-selection/user-selection.utils';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { getTeamsForGameweek } from '../../scoring/server/services/division-teams.service';
 import { transformToTeamRows } from '../lib/all-teams-utils';
 import type { TeamViewData } from '../types/team-types';
 
-export async function loadTeamData(url: URL, params: any): Promise<TeamViewData> {
+export async function loadTeamData({ request }): Promise<TeamViewData> {
+    const url = new URL(request.url);
     try {
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
         const [currentGameweekData, teamsByCode, fplPlayersByCode, events, userTeams, divisions] = await Promise.all([
@@ -17,7 +19,8 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
             readUserTeams(),
             readDivisions(),
         ]);
-        const currentUser = userTeams.find((t) => t.userId === params.managerId);
+        const persistedUser = getUserSelection(request);
+        const currentUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
         const currentGameweek = currentGameweekData.fplEvent.id;
         const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
         const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
@@ -54,6 +57,7 @@ export async function loadTeamData(url: URL, params: any): Promise<TeamViewData>
         const allTeamsData = transformToTeamRows(currentTeams.divisionDoc, userTeams);
 
         return {
+            persistedUser,
             currentUser,
             division,
             currentGameweek,

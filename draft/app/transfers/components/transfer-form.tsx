@@ -20,13 +20,13 @@ import type {
 } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import type { OwnedPlayersByCode, PlayerSelectionState, TransferValidationResult } from '../types/transfer-form-types';
+import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { TransferType } from '../types/transfer-types';
 import { LoanInfoPanel } from './loan-info-panel';
 import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
 import styles from './transfer-form.module.css';
 import { TransferTypeSelector } from './transfer-type-selector';
-import type { TransferRuleContext } from '../types/transfer-rule-types';
 
 interface TransferFormProps {
     divisions: DivisionSheetData[];
@@ -41,7 +41,7 @@ interface TransferFormProps {
     isBeforeDeadline: boolean;
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
-    validationContext: Omit<TransferRuleContext,'transfer'>,
+    validationContext: Omit<TransferRuleContext, 'transfer'>;
 }
 
 interface LoanSelectionState {
@@ -77,7 +77,7 @@ export function TransferForm({
     isBeforeDeadline,
     divisionRosters,
     teamsByCode,
-                                 validationContext
+    validationContext,
 }: TransferFormProps) {
     const [searchParams, setSearchParams] = useSearchParams();
     const fetcher = useFetcher();
@@ -137,15 +137,15 @@ export function TransferForm({
         }
     }, [fetcher.state, fetcher.data, showToast]);
 
-    const handleManagerChange = (managerId: ManagerId) => {
-        const newParams = new URLSearchParams(searchParams);
-        newParams.set('manager', managerId);
-        setSearchParams(newParams);
-
-        // Reset player selection when manager changes
-        setPlayerSelection(INITIAL_PLAYER_SELECTION);
-        setLoanSelection(INITIAL_LOAN_SELECTION);
-    };
+    // const handleManagerChange = (managerId: ManagerId) => {
+    //     const newParams = new URLSearchParams(searchParams);
+    //     newParams.set('manager', managerId);
+    //     setSearchParams(newParams);
+    //
+    //     // Reset player selection when manager changes
+    //     setPlayerSelection(INITIAL_PLAYER_SELECTION);
+    //     setLoanSelection(INITIAL_LOAN_SELECTION);
+    // };
 
     const handleBorrowingManagerChange = (managerId: ManagerId) => {
         setLoanSelection((curr) => ({
@@ -245,14 +245,6 @@ export function TransferForm({
         <div className={styles.transferForm}>
             <ToastManager maxToasts={3} />
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.section}>
-                    <SelectUser
-                        selectedUser={selectedManager}
-                        users={divisionsManagers}
-                        handleUserChange={handleManagerChange}
-                    />
-                </div>
-
                 <div className={styles.section}>
                     <TransferTypeSelector selectedType={TransferType} onTypeChange={handleTransferTypeChange} />
                 </div>

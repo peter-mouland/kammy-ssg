@@ -2,7 +2,10 @@
 
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
+import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { requestFormData } from '../_shared/lib/form-data';
+import { readDivisions } from '../_shared/lib/sheets/divisions';
+import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../teams/types/team-types';
 import { TransfersPage } from './transfers.page';
 import type { TransfersPageData } from './types/transfer-form-types';
@@ -24,19 +27,35 @@ interface ActionData {
 export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
-        const selectedDivision = (params.divisionId || 'premierLeague') as DivisionId;
-        const selectedManager = url.searchParams.get('manager') || '';
-        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || '0', 10);
+        const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
+        const [currentGameweekData, events, userTeams, divisions] = await Promise.all([
+            fplApiCache.getCurrentGameweekData(),
+            fplApiCache.getFplEvents(),
+            readUserTeams(),
+            readDivisions(),
+        ]);
+        const persistedUser = getUserSelection(request);
+        const selectedUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
+        const currentGameweek = currentGameweekData.fplEvent.id;
+        const selectedDivision = selectedUser?.divisionId;
+        const selectedGameweek = Number.parseInt(
+            url.searchParams.get('gameweek') || String(currentGameweek) || '1',
+            10,
+        );
 
         // Dynamic import to keep server code on server
         const { getTransfersPageData } = await import('./server/transfers.server');
         const transfersData = await getTransfersPageData({
             selectedDivision,
-            selectedManager,
+            selectedUser,
             selectedGameweek,
+            currentGameweekData,
+            userTeams,
+            events,
+            divisions,
         });
 
-        return data<TransfersPageData>(transfersData);
+        return data<TransfersPageData>({ ...transfersData, userTeams, persistedUser });
     } catch (error) {
         console.error('Transfers loader error:', error);
         throw new Response('Failed to load transfers data', { status: 500 });

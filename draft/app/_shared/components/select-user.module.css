@@ -1,42 +1,73 @@
 /* Location: app/_shared/components/select-user.module.css */
 
 .selectContainer {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-4);
-    font-weight: var(--font-weight-medium);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
 }
 
 .selectLabel {
-    margin: 0;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-1);
+}
+
+.cookieIndicator {
+    font-size: var(--font-xs);
+    opacity: 0.7;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 0.7;
+        transform: scale(1);
+    }
 }
 
 .selectInput {
-    padding: var(--input-padding);
-    border: var(--input-border);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-gray-300);
     border-radius: var(--radius-md);
-    background-color: var(--color-white);
+    background: var(--color-white);
     font-size: var(--font-sm);
-    min-width: 150px;
+    color: var(--color-gray-900);
+    transition: var(--transition-normal);
+    cursor: pointer;
 }
 
 .selectInput:focus {
     outline: none;
-    border-color: var(--input-focus-border);
-    box-shadow: var(--input-focus-shadow);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
-    .selectContainer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-2);
-    }
+.selectInput:hover {
+    border-color: var(--color-gray-400);
+}
 
+.selectInput option {
+    padding: var(--spacing-2);
+    color: var(--color-gray-900);
+}
+
+.selectInput option:disabled {
+    color: var(--color-gray-500);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
     .selectInput {
-        width: 100%;
-        min-width: auto;
+        font-size: var(--font-xs);
+        padding: var(--spacing-2);
     }
 }

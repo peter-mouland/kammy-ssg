@@ -1,7 +1,7 @@
 /* Location: app/leagues/types/league-standings-types.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../teams/types/team-types';
+import type { DivisionId, DivisionSheetData, ManagerId, PositionSlotKey } from '../../teams/types/team-types';
 
 export interface PositionPointsBreakdown {
     gk: number; // gk_0 + sub_0 total
@@ -41,6 +41,7 @@ export interface EnhancedLeagueStandingsLoaderData {
     currentGameweekData: GameWeekData;
     availableGameweeks: number[];
     standingsData: Record<string, LeagueStandingsTeamData[]>;
+    persistedUser: { selectedUserId: ManagerId | null; requiresSelection: boolean };
 }
 
 export interface PositionColumnConfig {

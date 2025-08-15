@@ -1,18 +1,19 @@
 /* Location: app/transfers/server/transfers.server.ts */
 
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
-import { readDivisions } from '../../_shared/lib/sheets/divisions';
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
-import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
-import type { DivisionId, ManagerId } from '../../teams/types/team-types';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 import type { TransfersPageData } from '../types/transfer-form-types';
 import { getTransfersDataForDivision } from './services/transfers-data.service';
 
 interface GetTransfersPageDataParams {
     selectedDivision: DivisionId;
-    selectedManager: ManagerId;
+    selectedUser: UserTeamsSheetData | undefined;
     selectedGameweek: number;
+    divisions: DivisionSheetData[];
+    events: GameWeekData[];
 }
 
 /**
@@ -20,25 +21,55 @@ interface GetTransfersPageDataParams {
  */
 export async function getTransfersPageData({
     selectedDivision,
-    selectedManager,
+    selectedUser,
     selectedGameweek,
+    currentGameweekData,
+    events,
+    divisions,
+    userTeams,
 }: GetTransfersPageDataParams): Promise<TransfersPageData> {
     try {
         console.log('🔄 Loading transfers page data...');
 
         // Get current gameweek and FPL data
-        const currentGameweekData = await fplApiCache.getCurrentGameweekData();
         const currentGameweek = currentGameweekData.fplEvent.id;
-        const gameweeks = await fplApiCache.getFplEvents();
+        const gameweeks = events;
         const teamsByCode = await fplApiCache.getTeamsByCode();
         const players = await fplApiCache.getFplPlayers();
         const fplPlayersByCode = await fplApiCache.getPlayersByCode();
         const sheetsPlayers = await readPlayers();
-        const divisions = await readDivisions();
-        const managers = await readUserTeams();
+        const managers = userTeams;
 
-        const gameweekToLoad = selectedGameweek || currentGameweek || 1;
-        const selectedGameweekData = gameweeks.find((gw) => gw.fplEvent.id === gameweekToLoad) || gameweeks[0];
+        // Calculate transfer deadline
+        const selectedGameweekData = events.find((gw) => gw.fplEvent.id === selectedGameweek) || gameweeks[0];
+        const transferDeadline = new Date(selectedGameweekData!.fplEvent.deadline_time);
+        const isBeforeDeadline = new Date() < transferDeadline;
+        const availableGameweeks = Array.from({ length: currentGameweek || 1 }, (_, i) => i + 1);
+
+        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
+            acc[player.code] = player;
+            return acc;
+        }, {});
+        const availablePlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
+
+        if (!selectedDivision) {
+            return {
+                divisions,
+                currentGameweekData,
+                currentGameweek,
+                availableGameweeks,
+                selectedGameweek,
+                selectedGameweekData,
+                availablePlayers,
+                transferDeadline:
+                    transferDeadline.toLocaleDateString('en-gb') +
+                    ' ' +
+                    transferDeadline.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' }),
+                teamsByCode,
+                isBeforeDeadline,
+                fplPlayersByCode,
+            };
+        }
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
 
         const {
@@ -47,21 +78,8 @@ export async function getTransfersPageData({
             validationContext,
         } = await getTransfersDataForDivision(selectedDivision, selectedGameweekData);
 
-        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
-            acc[player.code] = player;
-            return acc;
-        }, {});
-        const availablePlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
-
         // Load manager's roster if manager is selected
-        const managerRoster = divisionRosters[selectedManager]?.roster;
-
-        // Calculate transfer deadline
-        const transferDeadline = new Date(selectedGameweekData!.fplEvent.deadline_time);
-        const isBeforeDeadline = new Date() < transferDeadline;
-
-        // Generate available gameweeks (for historical viewing)
-        const availableGameweeks = Array.from({ length: currentGameweek || 1 }, (_, i) => i + 1);
+        const managerRoster = divisionRosters[selectedUser]?.roster;
 
         return {
             divisions,
@@ -69,9 +87,9 @@ export async function getTransfersPageData({
             currentGameweekData,
             currentGameweek,
             availableGameweeks,
-            selectedDivision: selectedDivision,
-            selectedManager: selectedManager,
-            selectedGameweek: gameweekToLoad,
+            selectedDivision,
+            selectedUser: selectedUser?.userId,
+            selectedGameweek,
             selectedGameweekData,
             currentTransfers,
             managerRoster,
