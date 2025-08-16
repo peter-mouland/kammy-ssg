@@ -42,7 +42,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     };
 
     const canGoPrevious = selectedGameweek > 1;
-    const canGoNext = selectedGameweek < availableGameweeks.length - 1;
+    const canGoNext = selectedGameweek < availableGameweeks.length;
 
     return (
         <div className={styles.gameweekSelector}>

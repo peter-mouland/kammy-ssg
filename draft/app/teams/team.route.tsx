@@ -3,9 +3,8 @@
 // app/teams/team.route.tsx
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
-import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import { TeamView } from './components/team-view';
-import type { TeamViewData, UserTeamsSheetData } from './types/team-types';
+import type { TeamViewData } from './types/team-types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -14,10 +13,10 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
         const { loadTeamData } = await import('./server/team.server');
-        const teamData = await loadTeamData({ request });
+        const teamData = await loadTeamData({ request, params });
         return data<TeamViewData>(teamData);
     } catch (error) {
         console.error('Team loader error:', error);

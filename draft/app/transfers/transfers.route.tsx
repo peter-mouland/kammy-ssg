@@ -36,7 +36,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         ]);
         const persistedUser = getUserSelection(request);
         const selectedUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
-        const currentGameweek = currentGameweekData.fplEvent.id;
+
+        const end = new Date(currentGameweekData.fplEvent.deadline_time);
+        const isPastDeadline = new Date() > end;
+        const currentGameweek = isPastDeadline ? currentGameweekData.fplEvent.id + 1 : currentGameweekData.fplEvent.id;
         const selectedDivision = selectedUser?.divisionId;
         const selectedGameweek = Number.parseInt(
             url.searchParams.get('gameweek') || String(currentGameweek) || '1',
@@ -49,6 +52,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
             selectedDivision,
             selectedUser,
             selectedGameweek,
+            currentGameweek,
             currentGameweekData,
             userTeams,
             events,

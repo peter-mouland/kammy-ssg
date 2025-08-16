@@ -24,7 +24,6 @@ type ActiveLoan = {
 
 export const TransfersPage = () => {
     const data = useLoaderData<TransfersPageData>();
-
     return (
         <UserSelectionProvider
             users={data.userTeams}

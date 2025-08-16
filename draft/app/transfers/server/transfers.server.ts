@@ -11,9 +11,11 @@ import { getTransfersDataForDivision } from './services/transfers-data.service';
 interface GetTransfersPageDataParams {
     selectedDivision: DivisionId;
     selectedUser: UserTeamsSheetData | undefined;
+    currentGameweek: number;
     selectedGameweek: number;
     divisions: DivisionSheetData[];
     events: GameWeekData[];
+    userTeams: UserTeamsSheetData[];
 }
 
 /**
@@ -23,6 +25,7 @@ export async function getTransfersPageData({
     selectedDivision,
     selectedUser,
     selectedGameweek,
+    currentGameweek,
     currentGameweekData,
     events,
     divisions,
@@ -32,7 +35,6 @@ export async function getTransfersPageData({
         console.log('🔄 Loading transfers page data...');
 
         // Get current gameweek and FPL data
-        const currentGameweek = currentGameweekData.fplEvent.id;
         const gameweeks = events;
         const teamsByCode = await fplApiCache.getTeamsByCode();
         const players = await fplApiCache.getFplPlayers();

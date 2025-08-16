@@ -52,7 +52,7 @@
 /* Main content layouts */
 .mainContent {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 350px;
     gap: var(--spacing-6);
     align-items: start;
 }
@@ -136,7 +136,7 @@
 /* Responsive design */
 @media (max-width: 1200px) {
     .mainContent {
-        grid-template-columns: 1fr 250px;
+        grid-template-columns: 1fr 350px;
         gap: var(--spacing-4);
     }
 }

@@ -456,6 +456,7 @@ export function TransfersSection({
 }: TransfersSectionProps) {
     const divisionTransferData = transfersData[selectedDivision.id];
     const navigate = useNavigate();
+
     const availableGameweeks = Array.from({ length: systemStatus.currentGameweek.fplEvent.id }, (_, i) => i + 1);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
     const handleDivisionChange = (divisionId: string) => {

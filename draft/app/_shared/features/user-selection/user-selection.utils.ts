@@ -10,14 +10,17 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year in seconds
  * Server-side utility to get user selection from URL params or cookie
  * Priority: URL > Cookie > null
  */
-export function getUserSelection(request: Request): {
+export function getUserSelection(
+    request: Request,
+    params = {},
+): {
     selectedUserId: string | null;
     requiresSelection: boolean;
 } {
     const url = new URL(request.url);
 
     // 1. Check URL parameters first (highest priority)
-    const urlUserId = url.searchParams.get('userId') || url.searchParams.get('user');
+    const urlUserId = params.userId || url.searchParams.get('userId') || url.searchParams.get('user');
     // console.log({ urlUserId });
     if (urlUserId) {
         return {
