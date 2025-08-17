@@ -52,6 +52,7 @@ export function PointsBreakdownTooltip({ player, children }: PointsBreakdownTool
                         <BreakdownItem {...player.draft.pointsBreakdown.yellowCards} />
                         <BreakdownItem {...player.draft.pointsBreakdown.redCards} />
                         <BreakdownItem {...player.draft.pointsBreakdown.saves} />
+                        <BreakdownItem {...player.draft.pointsBreakdown.defensiveContribution} />
                         <BreakdownItem {...player.draft.pointsBreakdown.bonus} />
                     </div>
 

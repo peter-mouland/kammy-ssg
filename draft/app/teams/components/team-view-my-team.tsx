@@ -32,27 +32,7 @@ export const MyTeamView = ({ data, viewMode, handleViewModeChange }) => {
                     viewMode={viewMode}
                 />
 
-                {/* Substitutes */}
                 <div style={{ display: 'flex', gap: '2rem' }}>
-                    <div className={styles.substitutesSection}>
-                        <h3 className={styles.sectionTitle}>
-                            Substitutes
-                            <span className={styles.playerCount}>(1)</span>
-                        </h3>
-                        <div className={styles.substitutesList}>
-                            <PositionSlotCard
-                                key={'sub_0'}
-                                slot={'sub_0'}
-                                positionSlot={substitute}
-                                gameweek={selectedGameweek}
-                                isSubstitute={true}
-                                viewMode={viewMode}
-                                teamsByCode={data.teamsByCode}
-                                fplPlayersByCode={data.fplPlayersByCode}
-                            />
-                        </div>
-                    </div>
-
                     {/* Loan Status */}
                     <LoanStatus
                         loanedOut={loanStatus.loanedOut}

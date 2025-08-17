@@ -154,7 +154,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .footballPitch {
-        padding: 16px;
+        padding: 8px;
         min-height: 400px;
     }
 
@@ -163,7 +163,7 @@
     }
 
     .formation {
-        padding: 12px;
+        padding: 6px;
         gap: 6px;
     }
 

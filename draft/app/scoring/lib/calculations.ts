@@ -27,8 +27,8 @@ export function calculateDefensiveContribution(defensiveContribution: number, po
     const rule = POSITION_RULES[position];
     if (!('defensiveContribution' in rule)) return 0;
 
-    if (defensiveContribution === 0) return 0;
-    return defensiveContribution > 0 ? rule.defensiveContribution : 0;
+    if ((defensiveContribution || 0) < rule.defensiveContribution.threshold) return 0;
+    return rule.defensiveContribution.points;
 }
 /**
  * Calculate appearance points based on minutes played
@@ -326,9 +326,10 @@ export function getFullBreakdown(
             label: 'Defensive Contribution',
             stat: stats.defensiveContribution,
             points: points.defensiveContribution || 0,
-            formula: isStatRelevant('defensiveContribution', position)
-                ? `${stats.defensiveContribution} × ${'defensiveContribution' in rules ? rules.defensiveContribution : 0} pts`
-                : 'Not applicable for this position',
+            formula:
+                isStatRelevant('defensiveContribution', position) && 'defensiveContribution' in rules
+                    ? `${stats.defensiveContribution} > ${rules.defensiveContribution.threshold} = ${rules.defensiveContribution.points} pts`
+                    : 'Not applicable for this position',
             isRelevant: isStatRelevant('defensiveContribution', position),
         },
         total: {

@@ -80,6 +80,7 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({
                     <div className={styles.goalkeeperLine}>
                         {/* Goalkeeper */}
                         {renderPositionGroup(formationSlots.goalkeeper, 'goalkeeper', 'GK')}
+                        {renderPositionGroup(formationSlots.substitutes, 'substitutes', 'SUB')}
                     </div>
                 </div>
 

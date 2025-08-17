@@ -3,6 +3,10 @@ interface AppearanceRules {
     under45Min: number;
     over45Min: number;
 }
+interface DefensiveContributionRules {
+    threshold: number;
+    points: number;
+}
 
 interface BasePositionRules {
     goalPoints: number;
@@ -22,18 +26,18 @@ interface GoalkeeperRules extends BasePositionRules {
 
 interface FallBackRules extends BasePositionRules {
     goalsConcededPenalty: number;
-    defensiveContribution: number;
+    defensiveContribution: DefensiveContributionRules;
 }
 
 interface CenterBackRules extends BasePositionRules {
     goalsConcededPenalty: number;
     bonus: number;
-    defensiveContribution: number;
+    defensiveContribution: DefensiveContributionRules;
 }
 
 interface MidfielderRules extends BasePositionRules {
     bonus: number;
-    defensiveContribution: number;
+    defensiveContribution: DefensiveContributionRules;
 }
 
 type PositionRules = {
@@ -73,7 +77,10 @@ export const POSITION_RULES: PositionRules = {
             under45Min: 1,
             over45Min: 3,
         },
-        defensiveContribution: 1,
+        defensiveContribution: {
+            points: 1,
+            threshold: 10,
+        },
     },
     cb: {
         goalPoints: 8,
@@ -87,7 +94,10 @@ export const POSITION_RULES: PositionRules = {
             under45Min: 1,
             over45Min: 3,
         },
-        defensiveContribution: 1,
+        defensiveContribution: {
+            points: 1,
+            threshold: 10,
+        },
     },
     mid: {
         goalPoints: 4,
@@ -100,7 +110,10 @@ export const POSITION_RULES: PositionRules = {
             under45Min: 1,
             over45Min: 3,
         },
-        defensiveContribution: 2,
+        defensiveContribution: {
+            points: 2,
+            threshold: 12,
+        },
     },
     wa: {
         goalPoints: 4,
