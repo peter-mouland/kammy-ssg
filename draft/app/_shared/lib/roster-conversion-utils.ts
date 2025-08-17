@@ -141,6 +141,7 @@ export function createEmptyStats(): PlayerGameweekStatsData {
         yellowCards: 0,
         redCards: 0,
         saves: 0,
+        defensiveContribution: 0,
         bonus: 0,
     };
 }
@@ -160,6 +161,7 @@ export function createEmptyPoints(): Points {
         penaltiesSaved: 0,
         goalsConceded: 0,
         bonus: 0,
+        defensiveContribution: 0,
         total: 0,
     };
 }

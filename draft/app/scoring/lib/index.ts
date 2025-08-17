@@ -1,8 +1,6 @@
 /* Location: app/scoring/lib/index.ts */
 
-// Core calculation functions
 export {
-    // Individual calculation functions
     calculateAppearancePoints,
     calculateAssistPoints,
     calculateBonus,
@@ -13,26 +11,12 @@ export {
     calculatePenaltiesSaved,
     calculateRedCardPenalty,
     calculateSavesBonus,
-    
-    
     calculateYellowCardPenalty,
-    
 } from './calculations';
-// Data conversion
-export { convertToPlayerGameweekStats,  } from './data-conversion';
-// Data generation functions
-export {  generateSeasonData } from './generators';
-// Scoring rules/constants
-;
-// Utility functions
+export { convertToPlayerGameweekStats } from './data-conversion';
+export { generateSeasonData } from './generators';
 export {
     formatPointsDisplay,
-    
-    
-    
-    getPositionColor,
     getPositionDisplayName,
-    
-    
     isStatRelevant,
 } from './utils';

@@ -37,7 +37,7 @@ export const TeamView = () => {
     );
 };
 
-export const TeamViewComp = ({ data }) => {
+export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const selectedGameweek = data.selectedGameweekData.fplEvent.id;
@@ -143,6 +143,7 @@ export const TeamViewComp = ({ data }) => {
                     fplPlayersByCode={data.fplPlayersByCode}
                     allTeamsData={data.allTeamsData}
                     currentUser={data.currentUser}
+                    selectedGameweek={data.selectedGameweekData.fplEvent.id}
                     division={data.division}
                     gameweek={selectedGameweek}
                     isCurrentGameweek={isCurrentGameweek}

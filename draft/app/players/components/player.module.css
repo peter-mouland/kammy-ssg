@@ -60,6 +60,7 @@
     gap: var(--spacing-3);
 
     img {
+        min-width: 35px;
         align-self: center;
     }
     &.player_cell_col {

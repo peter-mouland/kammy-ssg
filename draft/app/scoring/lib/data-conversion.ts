@@ -19,6 +19,7 @@ export function convertToSingleGameweeksStats(gameweekData: PlayerGameweekStatsD
             redCards: acc.redCards + curr.redCards,
             saves: acc.saves + curr.saves,
             penaltiesSaved: acc.penaltiesSaved + curr.penaltiesSaved,
+            defensiveContribution: acc.defensiveContribution + curr.defensiveContribution,
             bonus: acc.bonus + curr.bonus,
         }),
         {
@@ -31,6 +32,7 @@ export function convertToSingleGameweeksStats(gameweekData: PlayerGameweekStatsD
             redCards: 0,
             saves: 0,
             penaltiesSaved: 0,
+            defensiveContribution: 0,
             bonus: 0,
         },
     );

@@ -23,6 +23,9 @@ interface AllTeamsTableProps {
     viewMode: 'gameweek' | 'season';
 }
 
+let managerAlt = '';
+let managerAltColor = 'transparent';
+
 export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
     teamsByCode,
     fplPlayersByCode,
@@ -192,7 +195,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         {
             key: 'manager',
             header: 'Manager',
-            // width: '100px',
+            width: '100px',
             sortable: true,
             onSort: (data: TeamRowData[], direction: 'asc' | 'desc') => {
                 return [...data].sort((a, b) => {
@@ -208,6 +211,21 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     </Link>
                 </div>
             ),
+        },
+        {
+            key: 'points',
+            header: viewMode === 'gameweek' ? `GW${gameweek} Pts` : 'Season Pts',
+            sortable: true,
+            accessor: ({ positionSlot }) =>
+                viewMode === 'gameweek' ? positionSlot.gameweek.points.total : positionSlot.season.points.total,
+            align: 'center',
+            render: (points, team) => {
+                return (
+                    <span className={`${styles.points} ${points >= 0 ? styles.positive : styles.negative}`}>
+                        {points > 0 ? `+${points}` : points}
+                    </span>
+                );
+            },
         },
         {
             key: 'stats.appearance',
@@ -328,13 +346,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         {
             key: 'stats.yellowCards',
             // header: 'Yellow Cards',
-            header: (
-                <div>
-                    Y.
-                    <br />
-                    Cards
-                </div>
-            ),
+            header: <div>Y.C.</div>,
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
@@ -350,13 +362,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         {
             key: 'stats.redCards',
             // header: 'Red Cards',
-            header: (
-                <div>
-                    R.
-                    <br />
-                    Cards
-                </div>
-            ),
+            header: <div>R.C.</div>,
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
@@ -385,16 +391,20 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             },
         },
         {
-            key: 'points',
-            header: viewMode === 'gameweek' ? `GW${gameweek} Pts` : 'Season Pts',
+            key: 'stats.defensiveContribution',
+            header: 'D.C.',
             sortable: true,
             accessor: ({ positionSlot }) =>
-                viewMode === 'gameweek' ? positionSlot.gameweek.points.total : positionSlot.season.points.total,
+                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
             align: 'center',
-            render: (points, team) => {
+            render: (stats: PlayerGameweekStatsData, team) => {
                 return (
-                    <span className={`${styles.points} ${points >= 0 ? styles.positive : styles.negative}`}>
-                        {points > 0 ? `+${points}` : points}
+                    <span
+                        className={`${styles.points} ${stats.defensiveContribution > 0 ? styles.positive : styles.negative}`}
+                    >
+                        {stats.defensiveContribution > 0
+                            ? `+${stats.defensiveContribution}`
+                            : stats.defensiveContribution}
                     </span>
                 );
             },
@@ -469,9 +479,25 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     title: 'No players found',
                     description: 'Try adjusting your filters to see more results',
                 }}
-                getCellProps={(team) => ({
-                    style: team.player.onLoanTo ? { background: 'var(--color-gray-200)' } : {},
-                })}
+                getRowProps={(team, _, sortKey) => {
+                    let borderTop = '';
+                    if (managerAlt !== team.managerId && (!sortKey || sortKey === 'manager')) {
+                        managerAlt = team.managerId;
+                        if (managerAltColor === 'transparent') {
+                            borderTop = '6px double lightgrey';
+                            managerAltColor = 'var(--color-gray-100)';
+                        } else {
+                            borderTop = '6px double lightgrey';
+                            managerAltColor = 'transparent';
+                        }
+                    }
+                    const mBG = team.player.onLoanTo ? 'var(--color-gray-200)' : managerAltColor;
+                    return { style: { background: mBG, borderTop } };
+                }}
+                getCellProps={(team) => {
+                    const mBG = team.player.onLoanTo ? 'var(--color-gray-200)' : 'transparent';
+                    return { style: { background: mBG } };
+                }}
             />
         </div>
     );

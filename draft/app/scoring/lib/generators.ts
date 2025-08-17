@@ -17,6 +17,7 @@ const baselineStats = {
     redCards: 0,
     saves: 0,
     penaltiesSaved: 0,
+    defensiveContribution: 0,
     bonus: 0,
 };
 

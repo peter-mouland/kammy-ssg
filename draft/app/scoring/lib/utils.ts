@@ -40,22 +40,6 @@ export function getPositionDisplayName(position: CustomPosition): string | Custo
 }
 
 /**
- * Get position color for UI display
- */
-export function getPositionColor(position: CustomPosition): string {
-    const colors = {
-        gk: '#10B981',
-        cb: '#10a0B6',
-        fb: '#3B6fFF',
-        mid: '#8B5CF6',
-        wa: '#F59E0B',
-        ca: '#EF4444',
-    };
-
-    return colors[position.toLowerCase() as CustomPosition];
-}
-
-/**
  * Format points for display (with + prefix for positive points)
  */
 export function formatPointsDisplay(points: number): string {

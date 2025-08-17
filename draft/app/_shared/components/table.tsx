@@ -296,7 +296,7 @@ export function Table<T = any>({
                     </thead>
                     <tbody>
                         {sortedData.map((item, rowIndex) => {
-                            const rowProps = getRowProps?.(item, rowIndex) || {};
+                            const rowProps = getRowProps?.(item, rowIndex, sortKey) || {};
                             const rowClasses = [rowClassName?.(item, rowIndex)].filter(Boolean).join(' ');
 
                             return (
