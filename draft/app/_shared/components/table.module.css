@@ -5,7 +5,6 @@
     background: var(--color-white);
     border: var(--card-border);
     border-radius: var(--card-border-radius);
-    overflow: hidden;
     box-shadow: var(--card-shadow);
 }
 
@@ -21,7 +20,13 @@
 .tableWrapper {
     overflow-x: auto;
     max-height: var(--table-max-height, none);
-    overflow-y: auto;
+    /*overflow-y: auto;*/
+}
+
+@media (min-width: 768px) {
+    .tableWrapper {
+        overflow-x: unset; /* enable tablet fixed th */
+    }
 }
 
 /* Base table */
@@ -41,6 +46,12 @@
 }
 
 /* Header styles */
+.table thead {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
 .table th {
     background-color: var(--table-header-bg);
     padding: var(--table-padding-cell);
@@ -88,6 +99,10 @@
 }
 
 .sortIcon {
+    font-family: monospace, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-variant-emoji: text;
+    -webkit-font-feature-settings: "liga" off;
+    font-feature-settings: "liga" off;
     font-size: var(--font-xs);
     color: var(--color-gray-400);
     transition: var(--transition-fast);
@@ -119,6 +134,7 @@
 /* Row styles */
 .table tbody tr {
     transition: var(--transition-fast);
+    background-color: white;
 }
 
 .table tbody tr:hover {
@@ -412,7 +428,12 @@
     position: sticky;
     left: 0;
     background-color: inherit;
-    z-index: 5;
+    z-index: 5; /* Ensure fixed column has shadow to show it's floating */
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+th.fixedColumn {
+    z-index: 15;
 }
 
 .fixedColumn::after {
@@ -423,4 +444,13 @@
     bottom: 0;
     width: 1px;
     background-color: var(--color-gray-200);
+}
+
+@media screen and (min-width: 768px) {
+    .fixedColumn {
+        box-shadow: none;
+    }
+    .fixedColumn::after {
+        display: none;
+    }
 }

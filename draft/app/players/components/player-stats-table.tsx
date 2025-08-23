@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-stats-table.tsx */
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
@@ -125,9 +125,21 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             header: 'Player',
             accessor: (player) => formatPlayerName(player, 'web'),
             sortable: true,
+            fixed: true,
             render: (_, player) => {
                 return <PlayerSummary player={player} teamsByCode={teams} />;
             },
+        },
+        {
+            key: 'points',
+            header: 'Points',
+            accessor: (player) => player.draft?.pointsTotal || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (_, player) => (
+                <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
+            ),
         },
         {
             key: 'apps',
@@ -139,7 +151,12 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'goals',
-            header: 'Goals',
+            header: (
+                <div>
+                    <span className={styles.smallScreen}>Gls</span>
+                    <span className={styles.largeScreen}>Goals</span>
+                </div>
+            ),
             accessor: (player) => player.draft?.pointsBreakdown.goals.stat || 0,
             sortable: true,
             align: 'center',
@@ -148,7 +165,12 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'assists',
-            header: 'Assists',
+            header: (
+                <div>
+                    <span className={styles.smallScreen}>Asts</span>
+                    <span className={styles.largeScreen}>Assists</span>
+                </div>
+            ),
             accessor: (player) => player.draft?.pointsBreakdown.assists.stat || 0,
             sortable: true,
             align: 'center',
@@ -159,9 +181,14 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             key: 'cleanSheets',
             header: (
                 <div>
-                    Clean
-                    <br />
-                    Sheets
+                    <span className={styles.smallScreen} title={'Clean Sheets'}>
+                        CS
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Clean
+                        <br />
+                        Sheets
+                    </span>
                 </div>
             ),
             accessor: (player) =>
@@ -174,30 +201,17 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             render: (stat, player) => (isStatRelevant('cleanSheets', player.draft.position) ? stat : '-'),
         },
         {
-            key: 'goalsConceded',
-            header: (
-                <div>
-                    Goals
-                    <br />
-                    Con.
-                </div>
-            ),
-            accessor: (player) =>
-                isStatRelevant('goalsConceded', player.draft.position)
-                    ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
-                    : -1,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
-        },
-        {
             key: 'penaltiesSaved',
             header: (
                 <div>
-                    Pen.
-                    <br />
-                    Saved
+                    <span className={styles.smallScreen} title={'Penalties Saved'}>
+                        PS
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Pens
+                        <br />
+                        Saved
+                    </span>
                 </div>
             ),
             accessor: (player) =>
@@ -220,8 +234,37 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             render: (stat, player) => (isStatRelevant('saves', player.draft.position) ? stat : '-'),
         },
         {
+            key: 'goalsConceded',
+            header: (
+                <div>
+                    Goals
+                    <br />
+                    Con.
+                </div>
+            ),
+            accessor: (player) =>
+                isStatRelevant('goalsConceded', player.draft.position)
+                    ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
+        },
+        {
             key: 'yellowCards',
-            header: <div>Y.C.</div>,
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Yellow Cards'}>
+                        YC
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Yellow
+                        <br />
+                        Cards
+                    </span>
+                </div>
+            ),
             accessor: (player) => player.draft?.pointsBreakdown.yellowCards.stat || 0,
             sortable: true,
             align: 'center',
@@ -230,7 +273,18 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'redCards',
-            header: <div>R.C.</div>,
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Red Cards'}>
+                        RC
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Red
+                        <br />
+                        Cards
+                    </span>
+                </div>
+            ),
             accessor: (player) => player.draft?.pointsBreakdown.redCards.stat || 0,
             sortable: true,
             align: 'center',
@@ -239,7 +293,14 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'bonus',
-            header: 'Bonus',
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Bonus'}>
+                        B
+                    </span>
+                    <span className={styles.largeScreen}>Bonus</span>
+                </div>
+            ),
             accessor: (player) => player.draft?.pointsBreakdown.bonus.stat || 0,
             sortable: true,
             align: 'center',
@@ -248,23 +309,23 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         },
         {
             key: 'defensiveContribution',
-            header: 'DC',
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Defensive Contribution'}>
+                        B
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Def.
+                        <br />
+                        Con.
+                    </span>
+                </div>
+            ),
             accessor: (player) => player.draft?.pointsBreakdown.defensiveContribution?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
             render: (stat, player) => stat,
-        },
-        {
-            key: 'points',
-            header: 'Points',
-            accessor: (player) => player.draft?.pointsTotal || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (_, player) => (
-                <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
-            ),
         },
         {
             key: 'wishlists',

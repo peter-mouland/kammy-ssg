@@ -76,7 +76,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
                 </TwoColumnLayout.Header>
 
                 <TwoColumnLayout.ContentContainer>
-                    <TwoColumnLayout.Sidebar width="16rem">
+                    <TwoColumnLayout.Sidebar width="11rem">
                         <NavGroup direction="vertical">
                             {navigationItems.map((item) => (
                                 <NavButton
@@ -96,4 +96,3 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
         </AppShell>
     );
 };
-

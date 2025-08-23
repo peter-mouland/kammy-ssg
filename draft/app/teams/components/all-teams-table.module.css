@@ -102,7 +102,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-1);
-    min-width: 150px;
 }
 
 .managerLink {
@@ -116,13 +115,12 @@
 }
 
 .teamName {
-    font-weight: var(--font-weight-semibold);
     color: var(--color-gray-900);
     font-size: var(--font-sm);
 }
 
 .points {
-    font-size: var(--font-sm);
+    font-size: var(--font-xs);
 }
 
 .points.positive {
@@ -133,7 +131,7 @@
     color: var(--color-red-600);
 }
 .points.neutral {
-    color: var(--color-gray-600);
+    color: var(--color-gray-500);
 }
 
 .statusCell {
@@ -153,8 +151,25 @@
     .filtersRow {
         grid-template-columns: 1fr;
     }
+}
+@media (min-width: 1024px) {
+    .points {
+        font-size: var(--font-xs);
+    }
+}
 
-    .managerCell {
-        min-width: 120px;
+.smallScreen {
+    display: unset;
+}
+.largeScreen {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .smallScreen {
+        display: none;
+    }
+    .largeScreen {
+        display: unset;
     }
 }

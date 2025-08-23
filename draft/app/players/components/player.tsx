@@ -19,6 +19,7 @@ export const PlayerSummary = ({
     teamsByCode,
     fplPlayersByCode,
     player,
+    manager,
     onLoanTo,
     onLoanFrom,
     view = 'row',
@@ -29,6 +30,7 @@ export const PlayerSummary = ({
     view?: 'row' | 'column';
     onLoanTo?: string;
     onLoanFrom?: string;
+    manager?: string;
 }) => {
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
     return (
@@ -44,11 +46,16 @@ export const PlayerSummary = ({
                 <div className={styles.player_cell_details}>
                     <div className={styles.player_name}>{player.playerName || player.web_name}</div>
                     <div className={styles.player_details}>
-                        <span className={styles.team}>
+                        <div className={styles.team}>
                             {fplPlayersByCode
                                 ? teamsByCode[fplPlayersByCode[player.playerCode]?.team_code]?.name
                                 : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
-                        </span>
+                        </div>
+                        {manager ? (
+                            <div className={styles.owner}>
+                                <span>{manager}</span>
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </div>

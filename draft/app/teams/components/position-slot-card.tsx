@@ -1,5 +1,6 @@
 // app/teams/components/position-slot-card.tsx
 import type React from 'react';
+import { Link } from 'react-router';
 import { PlayerSummary } from '../../players/components/player';
 import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
@@ -20,7 +21,7 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
     const displayPoints = showPoints ? positionSlot[viewMode].points : null;
 
     return (
-        <div
+        <Link
             className={`${styles.positionSlotCard} ${isSubstitute ? styles.substitute : ''}`}
             data-view-mode={viewMode}
             style={
@@ -28,6 +29,7 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
                     marginTop: '35px',
                 } as React.CSSProperties
             }
+            to={`/players/${player.playerCode}`}
         >
             <PlayerSummary
                 player={player}
@@ -47,6 +49,6 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
 
             {player.onLoanTo && <div className={styles.loanIndicator}>On Loan to {player.onLoanTo}</div>}
             {player.onLoanFrom && <div className={styles.loanIndicator}>On Loan from {player.onLoanFrom}</div>}
-        </div>
+        </Link>
     );
 };

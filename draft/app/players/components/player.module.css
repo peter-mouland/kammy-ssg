@@ -40,7 +40,7 @@
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
     text-align: center;
-    min-width: 2.5rem;
+    min-width: 2.25rem;
     text-transform: uppercase;
     background-color: var(--position-color);
     color: var(--position-color-alt);
@@ -57,7 +57,7 @@
 .player_cell {
     display: flex;
     flex-direction: row;
-    gap: var(--spacing-3);
+    gap: var(--spacing-2);
 
     img {
         min-width: 35px;
@@ -88,11 +88,16 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-gray-900);
     font-size: var(--font-sm);
+    line-height: 0.85em;
 }
 
 .player_details {
-    display: flex;
     gap: var(--spacing-2);
+}
+@media (min-width: 1024px) {
+    .player_details {
+        gap: var(--spacing-3);
+    }
 }
 
 .position {

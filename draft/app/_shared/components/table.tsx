@@ -202,7 +202,7 @@ export function Table<T = any>({
 
         const key = column.sortKey || column.key;
         if (sortKey !== key) {
-            return <span className={styles.sortIcon}>↕</span>;
+            return <span className={styles.sortIcon} dangerouslySetInnerHTML={{ __html: '&#8597;&#xFE0E;' }} />;
         }
 
         if (sortDirection === 'asc') {
@@ -211,7 +211,7 @@ export function Table<T = any>({
             return <span className={styles.sortIcon}>↓</span>;
         }
 
-        return <span className={styles.sortIcon}>↕</span>;
+        return <span className={styles.sortIcon} dangerouslySetInnerHTML={{ __html: '&#8597;&#xFE0E;' }} />;
     };
 
     // Container classes
@@ -266,6 +266,7 @@ export function Table<T = any>({
                                     column.sortable && sortable && styles.sortableHeader,
                                     sortKey === (column.sortKey || column.key) && styles.sorted,
                                     column.hideOnMobile && styles.hideOnMobile,
+                                    // column.hideOnTablet && styles.hideOnTablet,
                                     column.fixed && styles.fixedColumn,
                                     column.align &&
                                         styles[`cell${column.align.charAt(0).toUpperCase() + column.align.slice(1)}`],
@@ -280,6 +281,7 @@ export function Table<T = any>({
                                 return (
                                     <th
                                         key={column.key}
+                                        dataKey={column.key}
                                         className={headerClasses}
                                         style={headerStyle}
                                         onClick={() => handleSort(column)}

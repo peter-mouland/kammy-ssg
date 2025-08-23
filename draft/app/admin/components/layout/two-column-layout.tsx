@@ -51,7 +51,7 @@ interface TwoColumnSidebarProps {
     className?: string;
 }
 
-const TwoColumnSidebar = ({ children, width = '16rem', className = '' }: TwoColumnSidebarProps) => {
+const TwoColumnSidebar = ({ children, width = '11rem', className = '' }: TwoColumnSidebarProps) => {
     return (
         <aside className={`${styles.sidebar} ${className}`} style={{ '--sidebar-width': width } as React.CSSProperties}>
             {children}

@@ -26,6 +26,9 @@ interface AllTeamsTableProps {
 let managerAlt = '';
 let managerAltColor = 'transparent';
 
+const positiveNegativeStyle = (stat: number) =>
+    stat > 0 ? styles.positive : stat < 0 ? styles.negative : styles.neutral;
+
 export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
     teamsByCode,
     fplPlayersByCode,
@@ -187,15 +190,30 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             key: 'player',
             header: 'Player',
             accessor: ({ player }) => player.playerName,
-            sortable: false,
+            sortable: true,
+            fixed: true,
+
+            onSort: (data: TeamRowData[], direction: 'asc' | 'desc') => {
+                return [...data].sort((a, b) => {
+                    const result = compareByManagerThenPosition(a, b);
+                    return direction === 'desc' ? -result : result;
+                });
+            },
             render: (_, team) => (
-                <PlayerSummary player={team.player} fplPlayersByCode={fplPlayersByCode} teamsByCode={teamsByCode} />
+                <Link to={`/players/${team.player.playerCode}`}>
+                    <PlayerSummary
+                        player={team.player}
+                        fplPlayersByCode={fplPlayersByCode}
+                        teamsByCode={teamsByCode}
+                        // manager={team.managerInfo.userName}
+                    />
+                </Link>
             ),
         },
         {
             key: 'manager',
             header: 'Manager',
-            width: '100px',
+            // hideOnMobile: true,
             sortable: true,
             onSort: (data: TeamRowData[], direction: 'asc' | 'desc') => {
                 return [...data].sort((a, b) => {
@@ -214,14 +232,14 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'points',
-            header: viewMode === 'gameweek' ? `GW${gameweek} Pts` : 'Season Pts',
+            header: viewMode === 'gameweek' ? `GW${gameweek}` : 'Season',
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.points.total : positionSlot.season.points.total,
             align: 'center',
             render: (points, team) => {
                 return (
-                    <span className={`${styles.points} ${points >= 0 ? styles.positive : styles.negative}`}>
+                    <span className={`${styles.points} ${points === 0 ? styles.negative : styles.positive}`}>
                         {points > 0 ? `+${points}` : points}
                     </span>
                 );
@@ -236,7 +254,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             align: 'center',
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
-                    <span className={`${styles.points} ${stats.appearance >= 0 ? styles.positive : styles.negative}`}>
+                    <span className={`${styles.points} ${stats.appearance === 0 ? styles.negative : styles.positive}`}>
                         {stats.appearance > 0 ? `+${stats.appearance}` : stats.appearance}
                     </span>
                 );
@@ -244,14 +262,19 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.goals',
-            header: 'Goals',
+            header: (
+                <div>
+                    <span className={styles.smallScreen}>Gls</span>
+                    <span className={styles.largeScreen}>Goals</span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
             align: 'center',
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
-                    <span className={`${styles.points} ${stats.goals >= 0 ? styles.positive : styles.negative}`}>
+                    <span className={`${styles.points} ${positiveNegativeStyle(stats.goals)}`}>
                         {stats.goals > 0 ? `+${stats.goals}` : stats.goals}
                     </span>
                 );
@@ -259,14 +282,19 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.assists',
-            header: 'Assists',
+            header: (
+                <div>
+                    <span className={styles.smallScreen}>Asts</span>
+                    <span className={styles.largeScreen}>Assists</span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
             align: 'center',
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
-                    <span className={`${styles.points} ${stats.assists >= 0 ? styles.positive : styles.negative}`}>
+                    <span className={`${styles.points} ${positiveNegativeStyle(stats.assists)}`}>
                         {stats.assists > 0 ? `+${stats.assists}` : stats.assists}
                     </span>
                 );
@@ -274,12 +302,16 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.cleanSheets',
-            // header: 'Clean Sheets',
             header: (
                 <div>
-                    Clean
-                    <br />
-                    Sheets
+                    <span className={styles.smallScreen} title={'Clean Sheets'}>
+                        CS
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Clean
+                        <br />
+                        Sheets
+                    </span>
                 </div>
             ),
             sortable: true,
@@ -291,9 +323,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stat: number, team) => {
                 const isRelevant = isStatRelevant('cleanSheets', team.player.playerPosition);
                 return (
-                    <span
-                        className={`${styles.points} ${isRelevant && stat >= 0 ? styles.positive : isRelevant ? styles.negative : styles.neutral}`}
-                    >
+                    <span className={`${styles.points} ${isRelevant && positiveNegativeStyle(stat)}`}>
                         {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
@@ -303,9 +333,14 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             key: 'stats.penaltiesSaved',
             header: (
                 <div>
-                    Pens.
-                    <br />
-                    Saved
+                    <span className={styles.smallScreen} title={'Penalties Saved'}>
+                        PS
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Pens
+                        <br />
+                        Saved
+                    </span>
                 </div>
             ),
             sortable: true,
@@ -327,7 +362,14 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.saves',
-            header: 'Saves',
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Saves'}>
+                        S
+                    </span>
+                    <span className={styles.largeScreen}>Saves</span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats.saves : positionSlot.season.stats.saves,
@@ -335,9 +377,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stat: number, team) => {
                 const isRelevant = isStatRelevant('cleanSheets', team.player.playerPosition);
                 return (
-                    <span
-                        className={`${styles.points} ${isRelevant && stat >= 0 ? styles.positive : isRelevant ? styles.negative : styles.neutral}`}
-                    >
+                    <span className={`${styles.points} ${isRelevant && positiveNegativeStyle(stat)}`}>
                         {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
@@ -345,8 +385,18 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.yellowCards',
-            // header: 'Yellow Cards',
-            header: <div>Y.C.</div>,
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Yellow Cards'}>
+                        YC
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Yellow
+                        <br />
+                        Cards
+                    </span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
@@ -361,8 +411,18 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.redCards',
-            // header: 'Red Cards',
-            header: <div>R.C.</div>,
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Red Cards'}>
+                        RC
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Red
+                        <br />
+                        Cards
+                    </span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
@@ -377,14 +437,21 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.bonus',
-            header: 'Bonus',
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Bonus'}>
+                        B
+                    </span>
+                    <span className={styles.largeScreen}>Bonus</span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
             align: 'center',
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
-                    <span className={`${styles.points} ${stats.bonus > 0 ? styles.positive : styles.negative}`}>
+                    <span className={`${styles.points} ${positiveNegativeStyle(stats.bonus)}`}>
                         {stats.bonus > 0 ? `+${stats.bonus}` : stats.bonus}
                     </span>
                 );
@@ -392,16 +459,25 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'stats.defensiveContribution',
-            header: 'D.C.',
+            header: (
+                <div>
+                    <span className={styles.smallScreen} title={'Defensive Contribution'}>
+                        B
+                    </span>
+                    <span className={styles.largeScreen}>
+                        Def.
+                        <br />
+                        Con.
+                    </span>
+                </div>
+            ),
             sortable: true,
             accessor: ({ positionSlot }) =>
                 viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
             align: 'center',
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
-                    <span
-                        className={`${styles.points} ${stats.defensiveContribution > 0 ? styles.positive : styles.negative}`}
-                    >
+                    <span className={`${styles.points} ${positiveNegativeStyle(stats.defensiveContribution)}`}>
                         {stats.defensiveContribution > 0
                             ? `+${stats.defensiveContribution}`
                             : stats.defensiveContribution}
@@ -481,21 +557,21 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                 }}
                 getRowProps={(team, _, sortKey) => {
                     let borderTop = '';
-                    if (managerAlt !== team.managerId && (!sortKey || sortKey === 'manager')) {
+                    if (managerAlt !== team.managerId && (!sortKey || sortKey === 'manager' || sortKey === 'player')) {
                         managerAlt = team.managerId;
-                        if (managerAltColor === 'transparent') {
+                        if (managerAltColor === 'white') {
                             borderTop = '6px double lightgrey';
                             managerAltColor = 'var(--color-gray-100)';
                         } else {
                             borderTop = '6px double lightgrey';
-                            managerAltColor = 'transparent';
+                            managerAltColor = 'white';
                         }
                     }
                     const mBG = team.player.onLoanTo ? 'var(--color-gray-200)' : managerAltColor;
                     return { style: { background: mBG, borderTop } };
                 }}
                 getCellProps={(team) => {
-                    const mBG = team.player.onLoanTo ? 'var(--color-gray-200)' : 'transparent';
+                    const mBG = team.player.onLoanTo ? 'var(--color-gray-200)' : '';
                     return { style: { background: mBG } };
                 }}
             />

@@ -72,7 +72,6 @@ function PositionPointsTable({
             key: 'rank',
             header: 'Rank',
             width: 60,
-            sortable: false,
             hideOnMobile: true,
             render: (_, team, index) => <RankBadge rank={index + 1} />,
         },
@@ -81,7 +80,6 @@ function PositionPointsTable({
             header: 'Manager',
             accessor: 'userName',
             width: 180,
-            sortable: true,
             render: (userName) => (
                 <Link to={`/teams/${userName}?gameweek=${selectedGameweek}`} className={styles.managerName}>
                     {userName}
@@ -99,7 +97,6 @@ function PositionPointsTable({
                 ),
                 width: 80,
                 align: 'center',
-                sortable: true,
                 accessor: (team) => team[pointsSource][col.key],
                 render: (points, team) => {
                     // For season table, show rank and points as before

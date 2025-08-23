@@ -34,7 +34,7 @@
     font-size: var(--font-xs);
 }
 .positionRank + .points {
-    padding-left: 0.5rem;
+    padding-left: 0.25rem;
 }
 
 .positionRank.gk {
@@ -72,6 +72,10 @@
     }
     .points {
         font-size: var(--font-sm);
+    }
+
+    .positionRank + .points {
+        padding-left: 0.5rem;
     }
 
     .mobileLabel {

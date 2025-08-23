@@ -10,6 +10,11 @@
     border-radius: 8px;
     overflow: hidden;
 }
+@media screen and (min-width: 768px) {
+    .container {
+        overflow: unset;
+    }
+}
 
 /* Results count */
 .resultsCount {
@@ -57,4 +62,20 @@
 
 .viewLink:hover {
     color: var(--color-primary-hover, #1d4ed8);
+}
+
+.smallScreen {
+    display: unset;
+}
+.largeScreen {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .smallScreen {
+        display: none;
+    }
+    .largeScreen {
+        display: unset;
+    }
 }
