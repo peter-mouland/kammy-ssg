@@ -242,7 +242,7 @@ export function TransferForm({
         !playerSelection.playerIn;
 
     return (
-        <div className={styles.transferForm}>
+        <div>
             <ToastManager maxToasts={3} />
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.section}>
@@ -262,7 +262,7 @@ export function TransferForm({
                                 transferType={TransferType}
                             />
                         </div>
-
+                        <hr />
                         <div className={styles.section}>
                             <PlayerInSelector
                                 availablePlayers={availablePlayers}

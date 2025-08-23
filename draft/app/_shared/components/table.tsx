@@ -305,7 +305,7 @@ export function Table<T = any>({
                                 <tr
                                     key={rowIndex}
                                     {...rowProps}
-                                    className={rowClasses}
+                                    className={`${rowClasses} ${rowProps.className ? rowProps.className : ''}`}
                                     onClick={onRowClick ? () => onRowClick(item, rowIndex) : undefined}
                                     style={{ ...rowProps?.style, cursor: onRowClick ? 'pointer' : undefined }}
                                 >

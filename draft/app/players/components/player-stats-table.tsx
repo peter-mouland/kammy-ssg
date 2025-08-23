@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
 import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
@@ -18,7 +19,7 @@ import { PlayersFilters } from './players-filters';
 
 interface PlayerStatsTableProps {
     players: EnhancedPlayerData[];
-    teams: Record<number, string>;
+    teamsByCode: Record<number, FplTeam>;
 }
 
 function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 'web' = 'full'): string {
@@ -34,7 +35,7 @@ function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 
     }
 }
 
-export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
+export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps) {
     // URL-synced filters for persistence - updated to handle arrays
     const { filters, setFilter, resetFilters, isUpdating } = useTableFilters({
         defaultFilters: {
@@ -76,13 +77,13 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
         );
 
         return Array.from(new Set(players.map((p) => p.team_code)))
-            .sort((a, b) => (teams[a] || '').localeCompare(teams[b] || ''))
+            .sort((a, b) => (teamsByCode[a].name || '').localeCompare(teamsByCode[b].name || ''))
             .map((teamCode) => ({
                 id: teamCode.toString(),
-                label: teams[teamCode] || `Team ${teamCode}`,
+                label: teamsByCode[teamCode].name || `Team ${teamCode}`,
                 count: teamCounts[teamCode] || 0,
             }));
-    }, [players, teams]);
+    }, [players, teamsByCode]);
 
     // Handle multi-select changes
     const handlePositionsChange = (positions: string[]) => {
@@ -101,7 +102,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
     const filteredPlayers = useMemo(() => {
         return players.filter((player) => {
             const playerName = formatPlayerName(player, 'full').toLowerCase();
-            const teamName = teams[player.team_code]?.toLowerCase() || '';
+            const teamName = teamsByCode[player.team_code].name?.toLowerCase() || '';
             const searchMatch =
                 !filters.search ||
                 fuzzyStringMatch(playerName, filters.search) ||
@@ -116,7 +117,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
 
             return searchMatch && positionMatch && teamMatch;
         });
-    }, [players, teams, filters.search, selectedPositions, selectedTeams]);
+    }, [players, teamsByCode, filters.search, selectedPositions, selectedTeams]);
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [
@@ -127,7 +128,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             sortable: true,
             fixed: true,
             render: (_, player) => {
-                return <PlayerSummary player={player} teamsByCode={teams} />;
+                return <PlayerSummary player={player} teamsByCode={teamsByCode} />;
             },
         },
         {
@@ -312,7 +313,7 @@ export function PlayerStatsTable({ players, teams }: PlayerStatsTableProps) {
             header: (
                 <div>
                     <span className={styles.smallScreen} title={'Defensive Contribution'}>
-                        B
+                        DC
                     </span>
                     <span className={styles.largeScreen}>
                         Def.

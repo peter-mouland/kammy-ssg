@@ -1,6 +1,7 @@
 /* Location: app/players/server/players.server.ts */
 
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
 import type { PlayerStatsData } from '../types/player-types';
@@ -18,14 +19,14 @@ export async function getPlayerStatsData(): Promise<PlayerStatsData> {
     }, {});
     const availablePlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
 
-    const teams = fplTeams.reduce((acc: Record<number, string>, team) => {
-        acc[team.code] = team.name;
+    const teamsByCode = fplTeams.reduce((acc: Record<number, FplTeam>, team) => {
+        acc[team.code] = team;
         return acc;
     }, {});
 
     return {
         players: availablePlayers,
-        teams,
+        teamsByCode,
         positions: {
             gk: 'gk',
             cb: 'cb',
