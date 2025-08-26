@@ -3,6 +3,26 @@
 // FPL DATA INTEGRATION TYPES
 // ================================
 
+export type FplFixtureData = {
+    code: number; // 2561895,
+    event: number; // 1,
+    finished: boolean; // true,
+    finished_provisional: number; // true,
+    id: number; //1,
+    kickoff_time: string; // "2025-08-15T19:00:00Z",
+    minutes: number; //90,
+    provisional_start_time: boolean; // false,
+    started: boolean; // true,
+    team_a: number; //4,
+    team_a_score: number; //2,
+    team_h: number; //12,
+    team_h_score: number; //4,
+    stats: any[];
+    team_h_difficulty: number; //3,
+    team_a_difficulty: number; //5,
+    pulse_id: number; //124791
+};
+
 export interface FplPlayerData {
     code: number;
     chance_of_playing_next_round: number | null;

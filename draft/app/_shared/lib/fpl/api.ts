@@ -5,11 +5,12 @@
 
 import { processBatched } from '../batch-processor';
 import { createAppError } from '../sheets/utils/common';
-import type { FplBootstrapData, FplPlayerSeasonData } from './fpl-types';
+import type { FplBootstrapData, FplFixtureData, FplPlayerSeasonData } from './fpl-types';
 
 // FPL API endpoints
 const FPL_BASE_URL = 'https://fantasy.premierleague.com/api';
 const FPL_BOOTSTRAP_URL = `${FPL_BASE_URL}/bootstrap-static/`;
+const FPL_FIXTURES_URL = `${FPL_BASE_URL}/fixtures/`;
 const FPL_PLAYER_DETAIL_URL = (playerId: number) => `${FPL_BASE_URL}/element-summary/${playerId}/`;
 const _FPL_GAMEWEEK_LIVE_URL = (gameweek: number) => `${FPL_BASE_URL}/event/${gameweek}/live/`;
 const _FPL_ENTRY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${entryId}/`;
@@ -50,6 +51,18 @@ class FplApi {
             return data;
         } catch (error) {
             throw createAppError('FPL_BOOTSTRAP_ERROR', 'Failed to fetch FPL bootstrap data', error);
+        }
+    }
+
+    /**
+     * Get FPL bootstrap data (with basic in-memory cache)
+     */
+    async getFplFixtureData(): Promise<FplFixtureData[]> {
+        try {
+            const data = await this.fetchFplData<FplFixtureData[]>(FPL_FIXTURES_URL);
+            return data;
+        } catch (error) {
+            throw createAppError('FPL_FIXTURES_ERROR', 'Failed to fetch FPL fixture data', error);
         }
     }
 

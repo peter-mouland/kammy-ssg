@@ -234,12 +234,9 @@ export function TransferForm({
     // Determine if this is a loan transfer type
     const isLoanTransfer = TransferType === 'LOAN_START' || TransferType === 'LOAN_END';
     const canSubmit =
-        !validation.isValid ||
-        validation.blockingIssues.length > 0 ||
-        !isBeforeDeadline ||
-        fetcher.state === 'submitting' ||
-        !playerSelection.playerOut ||
-        !playerSelection.playerIn;
+        // playerSelection.playerIn?.eligibility.isEligible ||
+        // !isBeforeDeadline ||
+        fetcher.state === 'submitting' || !playerSelection.playerOut || !playerSelection.playerIn;
 
     return (
         <div>
@@ -312,19 +309,15 @@ export function TransferForm({
                 )}
 
                 {/* Validation Messages */}
-                {(validation.errors.length > 0 || validation.blockingIssues.length > 0 || !isBeforeDeadline) && (
+                {((playerSelection.playerIn && !playerSelection.playerIn?.eligibility.isEligible) ||
+                    !isBeforeDeadline) && (
                     <div className={styles.validationErrors}>
                         {!isBeforeDeadline && <div className={styles.blockingIssue}>🚫 Missed the Deadline</div>}
-                        {validation.blockingIssues.map((issue, index) => (
-                            <div key={index} className={styles.blockingIssue}>
-                                🚫 {issue}
+                        {!playerSelection.playerIn?.eligibility.isEligible && (
+                            <div className={styles.blockingIssue}>
+                                🚫 {playerSelection.playerIn?.eligibility.reason}
                             </div>
-                        ))}
-                        {validation.errors.map((error, index) => (
-                            <div key={index} className={styles.error}>
-                                ❌ {error}
-                            </div>
-                        ))}
+                        )}
                     </div>
                 )}
 

@@ -1,8 +1,10 @@
 /* Location: app/transfers/components/player-out-selector.tsx */
 
-import React, { useState } from 'react';
+import { Table, type TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { PlayerSummary } from '../../players/components/player';
+import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
+import { isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { RosterPlayer, TeamRoster } from '../../teams/types/team-types';
 import type { TransferType } from '../types/transfer-types';
@@ -25,31 +27,150 @@ export function PlayerOutSelector({
     onPlayerChange,
     transferType,
 }: PlayerOutSelectorProps) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedPosition, setSelectedPosition] = useState<string>('all');
-
-    // Get all players from roster (starting + substitutes)
-    const allRosterPlayers = Object.values(roster).map(({ player }) => player);
-
-    // Filter players based on search and position
-    const filteredPlayers = allRosterPlayers.filter((player) => {
-        const matchesSearch = !searchTerm || player.playerName.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesPosition = selectedPosition === 'all' || player.playerPosition === selectedPosition;
-
-        return matchesSearch && matchesPosition;
+    const rosterPlayersByCode: Record<number, RosterPlayer> = {};
+    const allRosterPlayers = Object.values(roster).map(({ player }) => {
+        rosterPlayersByCode[player.playerCode] = player;
+        return playersByCode[player.playerCode];
     });
 
-    // Get unique positions for filter
-    const positions = Array.from(new Set(allRosterPlayers.map((p) => p.playerPosition).filter(Boolean)));
-
-    const handlePlayerClick = (player: RosterPlayer) => {
-        if (selectedPlayer?.playerCode === player.playerCode) {
+    const handlePlayerClick = (player: EnhancedPlayerData) => {
+        if (selectedPlayer?.playerCode === player.code) {
             onPlayerChange(null);
         } else {
-            onPlayerChange(player);
+            onPlayerChange(rosterPlayersByCode[player.code]);
         }
     };
+    const columns: TableColumn<EnhancedPlayerData>[] = [
+        {
+            key: 'name',
+            header: 'Player',
+            accessor: (player) => player.web_name,
+            sortable: true,
+            fixed: true,
+            render: (_, player) => {
+                return <PlayerSummary player={player} teamsByCode={teamsByCode} />;
+            },
+        },
+        {
+            key: 'points',
+            header: 'Pts',
+            accessor: (player) => player.draft?.pointsTotal || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (_, player) => (
+                <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
+            ),
+        },
+        {
+            key: 'apps',
+            header: 'Mins',
+            accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
+            sortable: true,
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'goals',
+            header: <span title={'Goals'}>Gls</span>,
+            accessor: (player) => player.draft?.pointsBreakdown.goals.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'assists',
+            header: <span title={'Assists'}>Asts</span>,
+            accessor: (player) => player.draft?.pointsBreakdown.assists.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'cleanSheets',
+            header: <span title={'Clean Sheets'}>CS</span>,
+            accessor: (player) =>
+                isStatRelevant('cleanSheets', player.draft.position)
+                    ? player.draft?.pointsBreakdown.cleanSheets.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('cleanSheets', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'penaltiesSaved',
+            header: <span title={'Penalties Saved'}>PS</span>,
+            accessor: (player) =>
+                isStatRelevant('penaltiesSaved', player.draft.position)
+                    ? player.draft?.pointsBreakdown.penaltiesSaved.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('penaltiesSaved', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'saves',
+            header: 'Saves',
+            accessor: (player) =>
+                isStatRelevant('saves', player.draft.position) ? player.draft?.pointsBreakdown.saves.stat || 0 : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('saves', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'goalsConceded',
+            header: <div title={'Goals Conceded'}>GC</div>,
+            accessor: (player) =>
+                isStatRelevant('goalsConceded', player.draft.position)
+                    ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
+        },
+        {
+            key: 'yellowCards',
+            header: <span title={'Yellow Cards'}>YC</span>,
+            accessor: (player) => player.draft?.pointsBreakdown.yellowCards.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'redCards',
+            header: <span title={'Red Cards'}>RC</span>,
+            accessor: (player) => player.draft?.pointsBreakdown.redCards.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'bonus',
+            header: <span title={'Bonus'}>B</span>,
+            accessor: (player) => player.draft?.pointsBreakdown.bonus.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat, player) => stat,
+        },
+        {
+            key: 'defensiveContribution',
+            header: <span title={'Defensive Contribution'}>DC</span>,
+            accessor: (player) => player.draft?.pointsBreakdown.defensiveContribution?.stat || 0,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            render: (stat) => stat,
+        },
+    ];
 
     return (
         <div className={styles.playerOutSelector}>
@@ -58,83 +179,47 @@ export function PlayerOutSelector({
                 <p className={styles.selectorDescription}>Select a player from your current squad</p>
             </div>
 
-            {/* Search and Filter Controls */}
-            <div className={styles.filterControls}>
-                <div className={styles.searchGroup}>
-                    <input
-                        type="text"
-                        placeholder="Search players..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={styles.searchInput}
-                    />
-                </div>
-
-                <div className={styles.positionGroup}>
-                    <select
-                        value={selectedPosition}
-                        onChange={(e) => setSelectedPosition(e.target.value)}
-                        className={styles.positionSelect}
-                    >
-                        <option value="all">All Positions</option>
-                        {positions.map((position) => (
-                            <option key={position} value={position}>
-                                {position}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
             {/* Player List */}
-            <div className={styles.playersList}>
-                {filteredPlayers.length === 0 ? (
-                    <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>👤</div>
-                        <p className={styles.emptyMessage}>
-                            {searchTerm || selectedPosition !== 'all'
-                                ? 'No players match your filters'
-                                : 'No players in your squad'}
-                        </p>
-                    </div>
-                ) : (
-                    filteredPlayers.map((player) => {
-                        const isSelected = selectedPlayer?.playerCode === player.playerCode;
-                        const fplPlayer = playersByCode[player.playerCode];
-
-                        return (
-                            <div
-                                key={player.playerCode}
-                                onClick={() => handlePlayerClick(player)}
-                                className={`
-                                    ${styles.playerItem}
-                                    ${isSelected ? styles.selected : ''}
-                                `}
-                            >
-                                <div className={styles.playerContent}>
-                                    <div className={styles.playerInfo}>
-                                        <PlayerSummary player={fplPlayer} teamsByCode={teamsByCode} />
-                                    </div>
-
-                                    <div className={styles.playerStats}>
-                                        <div className={styles.statValue}>{fplPlayer.draft.pointsTotal} pts</div>
-                                        <div className={styles.statLabel}>Season</div>
-                                    </div>
-                                </div>
-
-                                {isSelected && <div className={styles.selectedIndicator}>✓</div>}
-                            </div>
-                        );
-                    })
-                )}
+            <div className={styles.playerList}>
+                <Table
+                    data={allRosterPlayers}
+                    columns={columns}
+                    onRowClick={(player) => handlePlayerClick(player)}
+                    getRowProps={(player) => {
+                        return {
+                            className: `${styles.playerItem} ${selectedPlayer?.playerCode === player.code ? styles.selected : ''}`,
+                        };
+                    }}
+                    empty={{
+                        icon: (
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
+                            </svg>
+                        ),
+                        title: 'No players found',
+                        description: 'Try adjusting your search or filter criteria.',
+                    }}
+                />
             </div>
 
-            {/* Selected Player Summary */}
+            {/* Selected Player Display */}
             {selectedPlayer && (
                 <div className={styles.selectedSummary}>
                     <div className={styles.summaryHeader}>
                         <span className={styles.summaryLabel}>Selected:</span>
-                        <span className={styles.summaryPlayer}>{selectedPlayer.playerName}</span>
+                        <span className={styles.summaryPlayer}>
+                            <strong>{selectedPlayer.playerName}</strong>
+                            <span className={styles.summaryDetails}>
+                                {' '}
+                                {selectedPlayer.playerPosition} •{' '}
+                                {teamsByCode[playersByCode[selectedPlayer.playerCode].team_code].name}
+                            </span>
+                        </span>
                     </div>
                 </div>
             )}

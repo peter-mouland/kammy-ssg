@@ -25,7 +25,7 @@ export function teamCountLimit(context: TransferRuleContext): RuleValidationResu
             severity: 'blocking',
         };
     }
-    teams.set(transfer.playerOut.team_code, teams.get(transfer.playerOut.team_code) - 1);
+    if (transfer.playerOut) teams.set(transfer.playerOut.team_code, teams.get(transfer.playerOut.team_code) - 1);
     teams.set(transfer.playerIn.team_code, teams.get(transfer.playerIn.team_code) + 1);
     const newTeamCount = teams.get(transfer.playerIn.team_code);
 

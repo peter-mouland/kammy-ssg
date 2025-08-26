@@ -3,17 +3,25 @@
 import type { PlayerEligibility } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import { getRuleValidationFunctions } from './validators';
+import { validateGameweekTransferLimit } from './validators/gameweek-transfer-limit-validator';
+import { validatePlayerAvailability } from './validators/player-availability-validator';
+import { teamCountLimit } from './validators/team-count-validator';
 
 /**
  * Get player eligibility by reusing existing transfer validators
  */
 export function getPlayerEligibilityFromValidators(validationContext: TransferRuleContext): PlayerEligibility {
     try {
-        const validationResults = getRuleValidationFunctions(validationContext);
+        const validationResults = validationContext.transfer.playerOut
+            ? getRuleValidationFunctions(validationContext)
+            : [
+                  validateGameweekTransferLimit(validationContext), // no playerOut needed
+                  validatePlayerAvailability(validationContext), // no playerOut needed
+                  teamCountLimit(validationContext),
+              ];
+        // const validationResults = getRuleValidationFunctions(validationContext);
 
-        const blockingFailures = validationResults.filter(
-            (result) => !result.passed && result.severity === 'blocking'
-        );
+        const blockingFailures = validationResults.filter((result) => !result.passed && result.severity === 'blocking');
 
         if (blockingFailures.length > 0) {
             const firstFailure = blockingFailures[0];
@@ -25,9 +33,7 @@ export function getPlayerEligibilityFromValidators(validationContext: TransferRu
         }
 
         // Check for warnings
-        const warnings = validationResults.filter(
-            (result) => !result.passed && result.severity === 'warning'
-        );
+        const warnings = validationResults.filter((result) => !result.passed && result.severity === 'warning');
 
         if (warnings.length > 0) {
             const firstWarning = warnings[0];
@@ -41,10 +47,13 @@ export function getPlayerEligibilityFromValidators(validationContext: TransferRu
         // All checks passed
         return {
             isEligible: true,
-            reason: validationResults.filter((result)=>result.showPassMessage).map((result)=>result.message).join('') || 'Available for transfer',
+            reason:
+                validationResults
+                    .filter((result) => result.showPassMessage)
+                    .map((result) => result.message)
+                    .join('') || 'Available for transfer',
             icon: '✅',
         };
-
     } catch (error) {
         console.error('Error checking player eligibility:', error);
         return {

@@ -9,7 +9,7 @@ import { dataCache } from '../cache/data-cache.service';
 import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
-import type { FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
+import type { FplFixtureData, FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
 
 /**
  * Updated FPL Data Orchestrator - Uses Individual Player Caching
@@ -42,6 +42,25 @@ class FplApiCache {
                 }
             },
             { ttlMs: getCacheTTL(CACHE_KEYS.FPL.PLAYERS) },
+        );
+    }
+    /**
+     * Get all FPL players using unified cache
+     */
+    async getFplFixtures(): Promise<FplFixtureData[]> {
+        return await dataCache.get(
+            CACHE_KEYS.FPL.FIXTURES,
+            async () => {
+                console.log('🔄 getFplFixtures() - Loading from Firestore');
+                try {
+                    const cached = await fplApi.getFplFixtureData();
+                    return cached;
+                } catch (error) {
+                    console.error('❌ getFplFixtures() - Error:', error);
+                    throw error;
+                }
+            },
+            { ttlMs: getCacheTTL(CACHE_KEYS.FPL.FIXTURES) },
         );
     }
 
@@ -340,6 +359,7 @@ class FplApiCache {
         console.log('🗑️ Clearing all FPL caches');
 
         // Clear main FPL data caches
+        dataCache.invalidate(CACHE_KEYS.FPL.FIXTURES);
         dataCache.invalidate(CACHE_KEYS.FPL.PLAYERS);
         dataCache.invalidate(CACHE_KEYS.FPL.TEAMS);
         dataCache.invalidate(CACHE_KEYS.FPL.EVENTS);

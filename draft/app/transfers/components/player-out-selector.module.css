@@ -163,3 +163,8 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-gray-900);
 }
+.summaryDetails {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-gray-700);
+}

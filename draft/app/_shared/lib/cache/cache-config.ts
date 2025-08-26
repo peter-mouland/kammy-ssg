@@ -11,6 +11,7 @@
 // Cache TTL configurations (in milliseconds)
 const CACHE_TTL = {
     // FPL API Data - relatively static during gameWeek
+    FPL_FIXTURES: 24 * 60 * 60 * 1000, // 24 hours - fixtured data changes rarely
     FPL_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player data changes rarely
     FPL_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team data very static
     FPL_EVENTS: 24 * 60 * 60 * 1000, // 24 hours - gameWeek data changes rarely // todo: add cron for 11pm updates
@@ -50,6 +51,7 @@ const CACHE_TTL = {
 export const CACHE_KEYS = {
     // FPL API keys
     FPL: {
+        FIXTURES: 'fpl:fixtures',
         PLAYERS: 'fpl:players',
         TEAMS: 'fpl:teams',
         EVENTS: 'fpl:events',
@@ -93,6 +95,7 @@ export const CACHE_KEYS = {
 export const CACHE_INVALIDATION_RULES = {
     // When FPL data is refreshed (e.g. cron @ 11pm)
     FPL_DATA_UPDATED: [
+        CACHE_KEYS.FPL.FIXTURES,
         CACHE_KEYS.FPL.PLAYERS,
         CACHE_KEYS.FPL.TEAMS,
         CACHE_KEYS.FPL.EVENTS,
@@ -148,6 +151,7 @@ export const CACHE_INVALIDATION_RULES = {
  */
 export function getCacheTTL(key: string): number {
     // FPL keys
+    if (key.includes('fpl:fixtures')) return CACHE_TTL.FPL_FIXTURES;
     if (key.includes('fpl:players')) return CACHE_TTL.FPL_PLAYERS;
     if (key.includes('fpl:teams')) return CACHE_TTL.FPL_TEAMS;
     if (key.includes('fpl:events')) return CACHE_TTL.FPL_EVENTS;

@@ -43,9 +43,6 @@ export function PlayerInSelector({
     managerId,
     validationContext,
 }: PlayerInSelectorProps) {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedPosition, setSelectedPosition] = useState<string>('all');
-    const [selectedTeam, setSelectedTeam] = useState<string>('all');
     const [showOnlyEligible, setShowOnlyEligible] = useState(false);
 
     // URL-synced filters for persistence - updated to handle arrays
@@ -113,14 +110,8 @@ export function PlayerInSelector({
     };
 
     const getPlayerEligibility = (player: EnhancedPlayerData) => {
-        if (!playerOut) {
-            return {
-                isEligible: true,
-                reason: '',
-            };
-        }
         const mockTransfer: ProcessedTransfer = {
-            playerOut: validationContext.fplPlayersByCode[playerOut.playerCode],
+            playerOut: playerOut ? validationContext.fplPlayersByCode[playerOut.playerCode] : null,
             playerIn: player,
             managerId,
             transferType,
@@ -142,10 +133,10 @@ export function PlayerInSelector({
         // Search filter
         filtered = filtered.filter((player) => {
             const searchMatch =
-                !searchTerm ||
-                fuzzyStringMatch(player.web_name, searchTerm) ||
-                fuzzyStringMatch(player.first_name, searchTerm) ||
-                fuzzyStringMatch(player.second_name, searchTerm);
+                !filters.search ||
+                fuzzyStringMatch(player.web_name, filters.search) ||
+                fuzzyStringMatch(player.first_name, filters.search) ||
+                fuzzyStringMatch(player.second_name, filters.search);
 
             const positionMatch =
                 selectedPositions.length === 0 || selectedPositions.includes(getPlayerPosition(player));
@@ -165,16 +156,7 @@ export function PlayerInSelector({
             eligibility: getPlayerEligibility(player),
             ownership: getPlayerOwnership(player, ownedPlayersByCode),
         }));
-    }, [availablePlayers, searchTerm, selectedPosition, selectedTeam, showOnlyEligible, transferType, playerOut]);
-
-    const positions = useMemo(() => {
-        const positionSet = new Set(availablePlayers.map((p) => p.draft?.position).filter(Boolean));
-        return Array.from(positionSet).sort();
-    }, [availablePlayers]);
-
-    const teams = Object.keys(teamsByCode)
-        .map((code) => teamsByCode[Number.parseInt(code, 10)])
-        .sort((a, b) => (a.name < b.name ? -1 : 1));
+    }, [availablePlayers, filters.search, showOnlyEligible, transferType, playerOut]);
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [
@@ -350,8 +332,8 @@ export function PlayerInSelector({
                 <input
                     type="text"
                     placeholder="Search players..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={filters.search}
+                    onChange={(e) => onSearchChange(e.target.value)}
                     className={styles.searchInput}
                 />
 
@@ -425,13 +407,15 @@ export function PlayerInSelector({
 
             {/* Selected Player Display */}
             {selectedPlayer && (
-                <div className={styles.selectedPlayer}>
-                    <div className={styles.selectedLabel}>Selected:</div>
-                    <div className={styles.selectedInfo}>
-                        <strong>{selectedPlayer.web_name}</strong>
-                        <span className={styles.selectedDetails}>
-                            {selectedPlayer.draft?.position} • {selectedPlayer.team_code}
-                        </span>
+                <div className={styles.selectedSummary}>
+                    <div className={styles.summaryHeader}>
+                        <div className={styles.summaryLabel}>Selected:</div>
+                        <div className={styles.summaryPlayer}>
+                            <strong>{selectedPlayer.web_name}</strong>
+                            <span className={styles.summaryDetails}>
+                                {selectedPlayer.draft?.position} • {teamsByCode[selectedPlayer.team_code].name}
+                            </span>
+                        </div>
                     </div>
                 </div>
             )}

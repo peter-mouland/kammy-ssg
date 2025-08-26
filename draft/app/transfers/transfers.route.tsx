@@ -6,7 +6,6 @@ import { getUserSelection } from '../_shared/features/user-selection/user-select
 import { requestFormData } from '../_shared/lib/form-data';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
-import type { DivisionId } from '../teams/types/team-types';
 import { TransfersPage } from './transfers.page';
 import type { TransfersPageData } from './types/transfer-form-types';
 
