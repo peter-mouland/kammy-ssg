@@ -4,7 +4,7 @@
     background: var(--color-white);
     border: var(--card-border);
     border-radius: var(--radius-lg);
-    padding: var(--spacing-3);
+    padding: var(--spacing-1);
     text-align: center;
     transition: var(--button-transition);
     box-shadow: var(--shadow-sm);
@@ -16,19 +16,33 @@
 }
 
 .statTitle {
-    font-size: var(--font-sm);
+    font-size: var(--font-xs);
     color: var(--color-gray-600);
     font-weight: var(--font-weight-medium);
 }
 
 .statValue {
-    font-size: var(--font-3xl);
+    font-size: var(--font-xl);
     font-weight: var(--font-weight-bold);
 }
 
 .statSubtitle {
     font-size: var(--font-xs);
     color: var(--color-gray-600);
+}
+
+@media screen and (min-width: 768px) {
+    .statCard {
+        padding: var(--spacing-3);
+    }
+
+    .statTitle {
+        font-size: var(--font-sm);
+    }
+
+    .statValue {
+        font-size: var(--font-3xl);
+    }
 }
 
 .performanceSection {

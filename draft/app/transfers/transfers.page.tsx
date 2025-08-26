@@ -1,13 +1,11 @@
 /* Location: app/transfers/transfers.page.tsx */
 
 import type * as React from 'react';
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
-import { SelectDivision } from '../_shared/components/select-division';
 import { SelectUser } from '../_shared/components/select-user';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
-import type { EnhancedLeagueStandingsLoaderData } from '../leagues/types/league-standings-types';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import type { ManagerId, PositionSlotKey, RosterPlayer } from '../teams/types/team-types';
 import { CurrentTransfers } from './components/current-transfers';
@@ -65,13 +63,6 @@ export const TransfersPageComp = (data: TransfersPageData) => {
         });
     }
 
-    // const handleDivisionChange = (divisionId: string) => {
-    //     if (divisionId !== 'all') {
-    //         navigate(`/transfers/${divisionId}?gameweek=${data.selectedGameweek}`);
-    //     } else {
-    //         navigate(`/transfers?gameweek=${data.selectedGameweek}`);
-    //     }
-    // };
     return (
         <div className={styles.pageContainer}>
             <PageHeader
