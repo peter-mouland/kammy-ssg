@@ -2,10 +2,12 @@ import { useSearchParams } from 'react-router';
 import styles from './time-travel-banner.module.css';
 
 export const TimeTravelBanner = ({ currentGameweek }) => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
 
     const handleGameweekChange = (gameweek: number) => {
-        setSearchParams({ gameweek: gameweek.toString() });
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('gameweek', gameweek.toString());
+        setSearchParams(newParams);
     };
     return (
         <div className={styles.timeTravelBanner}>

@@ -9,18 +9,17 @@
 }
 
 .points {
-    font-weight: var(--font-weight-medium);
     font-size: var(--font-xs);
     color: var(--color-gray-400);
 }
 
 .rankChange {
-    font-size: var(--font-base);
-    padding: 1px var(--spacing-1);
+    font-size: var(--font-xs);
     border-radius: var(--radius-sm);
     line-height: 1;
-    min-width: 1.5rem;
+    /*min-width: 1.25rem;*/
     text-align: center;
+    font-weight: 500;
 }
 
 .improvement {

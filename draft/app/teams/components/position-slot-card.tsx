@@ -6,7 +6,7 @@ import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
 
 const formatPoints = (points: number) => {
-    return points > 0 ? `+${points}` : points.toString();
+    return points < 0 ? `-${points}` : points.toString();
 };
 
 export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
@@ -26,17 +26,20 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
             data-view-mode={viewMode}
             style={
                 {
-                    marginTop: '35px',
+                    marginTop: '25px',
                 } as React.CSSProperties
             }
             to={`/players/${player.playerCode}`}
         >
-            <PlayerSummary
-                player={player}
-                teamsByCode={teamsByCode}
-                fplPlayersByCode={fplPlayersByCode}
-                view={'column'}
-            />
+            <div
+                style={
+                    {
+                        padding: '4px',
+                    } as React.CSSProperties
+                }
+            >
+                <PlayerSummary player={player} teamsByCode={teamsByCode} fplPlayersByCode={fplPlayersByCode} />
+            </div>
 
             {/* Points Display */}
             {showPoints && displayPoints && (

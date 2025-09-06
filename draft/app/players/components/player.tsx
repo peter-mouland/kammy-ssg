@@ -42,7 +42,8 @@ export const PlayerSummary = ({
                 {onLoanFrom && <div className={styles.loanIndicator}>On Loan from {onLoanFrom}</div>}
             </div>
             <div className={styles.player_cell}>
-                <PositionBadge position={player.playerPosition || player.draft.position} isSub={player.isSub} />
+                {player.draft?.isNew ? <div className={styles.newPlayer}>New</div> : null}
+                <PositionBadge position={player.playerPosition || player.draft?.position} isSub={player.isSub} />
                 <div className={styles.player_cell_details}>
                     <div className={styles.player_name}>{player.playerName || player.web_name}</div>
                     <div className={styles.player_details}>
@@ -84,8 +85,8 @@ export const Player = ({
                             target={'_blank'}
                             to={`https://fantasy.premierleague.com/api/element-summary/${player.id}/`}
                         >
-                            {player.web_name}
                             <div className={styles.player_fullname}>{playerName}</div>
+                            {player.web_name}
                         </Link>
                     </h1>
 

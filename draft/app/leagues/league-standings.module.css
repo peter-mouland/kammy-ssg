@@ -17,6 +17,7 @@
     text-decoration: none;
     font-weight: var(--font-weight-medium);
     transition: var(--transition-fast);
+    text-wrap: nowrap;
 }
 
 .managerName:hover {
@@ -25,13 +26,13 @@
 }
 
 .points {
-    font-weight: var(--font-weight-medium);
     font-size: var(--font-xs);
     color: var(--color-gray-400);
 }
 
 .positionRank {
     font-size: var(--font-xs);
+    font-weight: 500;
 }
 .positionRank + .points {
     padding-left: 0.25rem;

@@ -43,14 +43,13 @@ export function PlayerInSelector({
     managerId,
     validationContext,
 }: PlayerInSelectorProps) {
-    const [showOnlyEligible, setShowOnlyEligible] = useState(false);
-
     // URL-synced filters for persistence - updated to handle arrays
     const { filters, setFilter, resetFilters, isUpdating } = useTableFilters({
         defaultFilters: {
             search: '',
             positions: '', // Will be comma-separated string in URL
             teams: '', // Will be comma-separated string in URL
+            status: '', // Will be comma-separated string in URL
         },
         debounceMs: 600,
     });
@@ -65,6 +64,11 @@ export function PlayerInSelector({
         if (!filters.teams || filters.teams === '') return [];
         return filters.teams.split(',').filter(Boolean);
     }, [filters.teams]);
+
+    const selectedStatuses = useMemo(() => {
+        if (!filters.status || filters.status === '') return [];
+        return filters.status.split(',').filter(Boolean);
+    }, [filters.status]);
 
     // Generate filter options
     const positionOptions = useMemo(() => {
@@ -109,6 +113,10 @@ export function PlayerInSelector({
         setFilter('search', search || undefined);
     };
 
+    const onStatusChange = (statuses: string[]) => {
+        setFilter('status', statuses.length > 0 ? statuses.join(',') : undefined);
+    };
+
     const getPlayerEligibility = (player: EnhancedPlayerData) => {
         const mockTransfer: ProcessedTransfer = {
             playerOut: playerOut ? validationContext.fplPlayersByCode[playerOut.playerCode] : null,
@@ -126,6 +134,28 @@ export function PlayerInSelector({
         return getPlayerEligibilityFromValidators({ ...validationContext, transfer: mockTransfer });
     };
 
+    // NEW: Status filter options
+    const statusOptions = useMemo(() => {
+        const newPlayerCount = availablePlayers.filter((p) => p.draft.isNew).length;
+        const options = [
+            {
+                id: 'eligible',
+                label: 'Eligible',
+                count: availablePlayers.filter((p) => getPlayerEligibility(p).isEligible).length,
+            },
+        ];
+
+        if (newPlayerCount > 0) {
+            options.push({
+                id: 'new',
+                label: 'New',
+                count: newPlayerCount,
+            });
+        }
+
+        return options;
+    }, [availablePlayers]);
+
     // Filter and sort players
     const filteredPlayers = useMemo(() => {
         let filtered = availablePlayers;
@@ -140,14 +170,14 @@ export function PlayerInSelector({
 
             const positionMatch =
                 selectedPositions.length === 0 || selectedPositions.includes(getPlayerPosition(player));
-
-            // Team filter (multi-select)
             const teamMatch = selectedTeams.length === 0 || selectedTeams.includes(player.team_code.toString());
 
-            // Eligibility filter
-            const isEligible = showOnlyEligible ? getPlayerEligibility(player).isEligible : true;
+            // status filter
+            const newMatch = !selectedStatuses.includes('new') || player.draft.isNew === true;
+            const eligibleMatch = !selectedStatuses.includes('eligible') || getPlayerEligibility(player).isEligible;
+            const statusMatch = selectedStatuses.length === 0 || (newMatch && eligibleMatch);
 
-            return searchMatch && positionMatch && teamMatch && isEligible;
+            return searchMatch && positionMatch && teamMatch && statusMatch;
         });
 
         // Add eligibility info to each player
@@ -156,7 +186,7 @@ export function PlayerInSelector({
             eligibility: getPlayerEligibility(player),
             ownership: getPlayerOwnership(player, ownedPlayersByCode),
         }));
-    }, [availablePlayers, filters.search, showOnlyEligible, transferType, playerOut]);
+    }, [availablePlayers, filters.search, filters.status, transferType, playerOut]);
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [
@@ -362,16 +392,39 @@ export function PlayerInSelector({
                     />
                 </div>
 
-                <label className={styles.checkboxLabel}>
-                    Show only eligible
-                    <br />
-                    <input
-                        type="checkbox"
-                        checked={showOnlyEligible}
-                        onChange={(e) => setShowOnlyEligible(e.target.checked)}
-                        className={styles.checkbox}
-                    />
-                </label>
+                {/* NEW: Status filter */}
+                {statusOptions.length > 0 && (
+                    <div className={styles.filterGroup}>
+                        <label className={styles.filterLabel}>Status</label>
+                        <MultiSelect
+                            options={statusOptions}
+                            selectedValues={selectedStatuses}
+                            onSelectionChange={onStatusChange}
+                            placeholder="Player Status"
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Results count */}
+            <div className={styles.resultsCount}>
+                Showing {filteredPlayers.length} of {availablePlayers.length} players
+                {(selectedPositions.length > 0 || selectedTeams.length > 0 || selectedStatuses.length > 0) && (
+                    <span className={styles.filterInfo}>
+                        {' '}
+                        (filtered by{' '}
+                        {[
+                            selectedPositions.length > 0 &&
+                                `${selectedPositions.length} position${selectedPositions.length > 1 ? 's' : ''}`,
+                            selectedTeams.length > 0 &&
+                                `${selectedTeams.length} team${selectedTeams.length > 1 ? 's' : ''}`,
+                            selectedStatuses.includes('new') && 'new players only',
+                        ]
+                            .filter(Boolean)
+                            .join(', ')}
+                        )
+                    </span>
+                )}
             </div>
 
             {/* Player List */}

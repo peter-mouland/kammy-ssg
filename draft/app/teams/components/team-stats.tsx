@@ -85,7 +85,7 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
 
     // Format points display
     const formatPoints = (points: number) => {
-        return points > 0 ? `+${points}` : points.toString();
+        return points < 0 ? `-${points}` : points.toString();
     };
 
     return (

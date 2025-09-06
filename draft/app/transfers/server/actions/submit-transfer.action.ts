@@ -149,7 +149,7 @@ function mapTransferTypeToSheet(transferType: string): TransferSheetData['Transf
         case 'TRADE':
             return 'trade';
         case 'NEW_PLAYER':
-            return 'Transfer'; // New players use standard transfer format
+            return 'new player'; // New players use standard transfer format
         default:
             return 'Transfer';
     }

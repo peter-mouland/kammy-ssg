@@ -27,10 +27,9 @@ interface UseTableFiltersReturn {
 }
 
 export function useTableFilters(options: UseTableFiltersOptions = {}): UseTableFiltersReturn {
-    const { defaultFilters = {}, debounceMs = 600 } = options;
-    const [searchParams, setSearchParams] = useSearchParams();
-    const timeoutRef = useRef<NodeJS.Timeout>();
-    const [isUpdating, setIsUpdating] = useState(false);
+    const { defaultFilters = {} } = options;
+    const [searchParams] = useSearchParams();
+    const [isUpdating] = useState(false);
 
     // Stabilize defaultFilters to prevent re-renders
     const stableDefaultFilters = useRef(defaultFilters);
@@ -61,48 +60,6 @@ export function useTableFilters(options: UseTableFiltersOptions = {}): UseTableF
 
     // Local state for immediate UI updates
     const [localFilters, setLocalFilters] = useState<Filters>(() => parseFiltersFromUrl());
-
-    // Update URL with debounce (replace: true to avoid history pollution)
-    const updateUrlFilters = useCallback(
-        (filters: Filters) => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-
-            setIsUpdating(true);
-
-            timeoutRef.current = setTimeout(() => {
-                const newSearchParams = new URLSearchParams();
-
-                Object.entries(filters).forEach(([key, value]) => {
-                    if (value !== undefined && value !== null && value !== '') {
-                        // Skip default values to keep URL clean
-                        if (stableDefaultFilters.current[key] !== value) {
-                            newSearchParams.set(key, String(value));
-                        }
-                    }
-                });
-
-                setSearchParams(newSearchParams, { replace: true });
-                setIsUpdating(false);
-            }, debounceMs);
-        },
-        [setSearchParams, debounceMs],
-    );
-
-    // Sync local filters with URL when local state changes
-    useEffect(() => {
-        updateUrlFilters(localFilters);
-    }, [localFilters, updateUrlFilters]);
-
-    // Cleanup timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
-    }, []);
 
     // Update a single filter
     const setFilter = useCallback((key: string, value: string | number | undefined) => {

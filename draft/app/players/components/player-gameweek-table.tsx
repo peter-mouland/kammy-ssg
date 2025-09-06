@@ -16,6 +16,7 @@ import {
     formatPointsDisplay,
     isStatRelevant,
 } from '../../scoring/lib';
+import { calculateDefensiveContribution } from '../../scoring/lib/calculations';
 import { convertToGameweekStats } from '../../scoring/lib/data-conversion';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 import type { CustomPosition } from '../types/player-types';
@@ -222,8 +223,8 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'defensiveContribution',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculateBonus(stat.defensiveContribution, position)} points`,
-            render: (bonus) => getStatDisplay(bonus, 'defensiveContribution', position),
+            title: (stat) => `${calculateDefensiveContribution(stat.defensiveContribution, position)} points`,
+            render: (dc) => getStatDisplay(dc, 'defensiveContribution', position),
         });
     }
 

@@ -42,6 +42,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             search: '',
             positions: '', // Will be comma-separated string in URL
             teams: '', // Will be comma-separated string in URL
+            status: '', // Will be comma-separated string in URL
         },
         debounceMs: 600,
     });

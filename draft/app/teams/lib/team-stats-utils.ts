@@ -15,6 +15,7 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
         saves: 0,
         penaltiesSaved: 0,
         goalsConceded: 0,
+        defensiveContribution: 0,
         bonus: 0,
     };
 
@@ -28,6 +29,7 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
         saves: 0,
         penaltiesSaved: 0,
         goalsConceded: 0,
+        defensiveContribution: 0,
         bonus: 0,
     };
 
@@ -117,6 +119,13 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
             pointsValue: allPoints.bonus,
             isRelevant: allStats.bonus > 0,
             description: 'FPL bonus points system',
+        },
+        defensiveContribution: {
+            label: 'Defensive Contribution',
+            statValue: allStats.defensiveContribution,
+            pointsValue: allPoints.defensiveContribution,
+            isRelevant: allStats.defensiveContribution > 0,
+            description: 'FPL defensiveContribution system',
         },
     };
 }

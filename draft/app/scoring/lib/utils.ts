@@ -43,6 +43,6 @@ export function getPositionDisplayName(position: CustomPosition): string | Custo
  * Format points for display (with + prefix for positive points)
  */
 export function formatPointsDisplay(points: number): string {
-    if (points > 0) return `+${points}`;
+    if (points < 0) return `-${points}`;
     return points.toString();
 }

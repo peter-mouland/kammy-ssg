@@ -88,7 +88,7 @@ function PositionPointsTable({
         },
         {
             key: 'manager',
-            header: 'Manager',
+            header: 'User',
             accessor: 'userName',
             width: 180,
             sortable: true,
@@ -249,7 +249,7 @@ export const LeagueStandings = () => {
         <UserSelectionProvider
             users={data.userTeams}
             onUserSelected={console.log}
-            redirectOnSelection={true} // Reload page with new user
+            redirectOnSelection={false} // Reload page with new user
             fallbackContent={
                 <div style={{ textAlign: 'center', padding: '2rem' }}>
                     <h2>Welcome to Fantasy Football!</h2>

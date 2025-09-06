@@ -1,5 +1,8 @@
 /* Location: app/root.tsx */
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import React from 'react';
 import {
     isRouteErrorResponse,
     Links,
@@ -55,6 +58,34 @@ const logoConfig = {
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
+    const [queryClient] = React.useState(
+        () =>
+            new QueryClient({
+                defaultOptions: {
+                    queries: {
+                        // Data is fresh for 0ms for transfers (always stale, always refetch)
+                        staleTime: 0,
+                        // Keep data in cache for 5 minutes
+                        gcTime: 1000 * 60 * 5,
+                        // Retry failed requests 3 times
+                        retry: 3,
+                        // Retry delay increases exponentially
+                        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+                        // Refetch on window focus for real-time updates
+                        refetchOnWindowFocus: true,
+                        // Refetch when component mounts
+                        refetchOnMount: true,
+                        // Don't refetch on reconnect by default
+                        refetchOnReconnect: false,
+                    },
+                    mutations: {
+                        // Retry mutations once
+                        retry: 1,
+                        retryDelay: 1000,
+                    },
+                },
+            }),
+    );
     return (
         <html lang="en">
             <head>
@@ -64,30 +95,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body>
-                <WishlistProvider>
-                    <div className="header">
-                        <div className="container">
-                            {/* Desktop Navigation */}
-                            <DesktopNav items={navigationItems} logo={logoConfig} />
+                <QueryClientProvider client={queryClient}>
+                    <WishlistProvider>
+                        <div className="header">
+                            <div className="container">
+                                {/* Desktop Navigation */}
+                                <DesktopNav items={navigationItems} logo={logoConfig} />
 
-                            {/* Mobile Navigation */}
-                            <MobileNav items={navigationItems} logo={logoConfig} />
+                                {/* Mobile Navigation */}
+                                <MobileNav items={navigationItems} logo={logoConfig} />
+                            </div>
                         </div>
-                    </div>
 
-                    <main className="main">
-                        <div className="container">{children}</div>
-                    </main>
+                        <main className="main">
+                            <div className="container">{children}</div>
+                        </main>
 
-                    <footer className="footer">
-                        <div className="container">
-                            <p>&copy; 2025 Fantasy Football Draft Application</p>
-                        </div>
-                    </footer>
-
-                    <ScrollRestoration />
-                    <Scripts />
-                </WishlistProvider>
+                        <footer className="footer">
+                            <div className="container">
+                                <p>&copy; 2025 Fantasy Football Draft Application</p>
+                            </div>
+                        </footer>
+                    </WishlistProvider>
+                    <ReactQueryDevtools initialIsOpen={false} />
+                </QueryClientProvider>
+                <ScrollRestoration />
+                <Scripts />
             </body>
         </html>
     );

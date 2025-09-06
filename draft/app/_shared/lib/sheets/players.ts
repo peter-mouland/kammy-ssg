@@ -46,18 +46,12 @@ async function originalReadPlayers(): Promise<PlayersSheetData[]> {
                     };
 
                     const player: PlayersSheetData = {
-                        id: getNumberValue('id') || getNumberValue('player_id'),
+                        isHidden: getValue('isHidden'),
                         code: getNumberValue('code'),
-                        firstName: getValue('first') || getValue('firstname') || getValue('first_name'),
-                        lastName:
-                            getValue('last') ||
-                            getValue('lastname') ||
-                            getValue('last_name') ||
-                            getValue('second_name'),
                         position: getValue('position') || getValue('pos'), // This is crucial
                         team: getValue('team') || getValue('club'),
-                        fplId: getNumberValue('fpl') || getNumberValue('fpl_id') || getNumberValue('fplid'),
                         webName: getValue('web') || getValue('webname') || getValue('web_name'),
+                        new: getValue('new') || getValue('isNew') || getValue('is_new'),
                     };
 
                     // Only return if we have minimum required data
@@ -71,7 +65,7 @@ async function originalReadPlayers(): Promise<PlayersSheetData[]> {
                     return null;
                 }
             })
-            .filter((player) => player !== null);
+            .filter((player) => player !== null && player.isHidden !== 'hidden');
         console.log(`...found ${gsheetPlayers.length} gSheet Players ...`);
         return gsheetPlayers;
     } catch (error) {

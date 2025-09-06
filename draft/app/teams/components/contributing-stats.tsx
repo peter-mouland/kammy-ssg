@@ -16,7 +16,7 @@ export const ContributingStats: React.FC<ContributingStatsProps> = ({
 
     // Format points display
     const formatPoints = (points: number) => {
-        return points > 0 ? `+${points}` : points.toString();
+        return points < 0 ? `-${points}` : points.toString();
     };
 
     // Get stat icon

@@ -157,7 +157,7 @@ function GameweekTransfersSection({
         },
         {
             key: 'manager',
-            header: 'Manager',
+            header: 'User',
             width: '100px',
             render: (_, item) => item.transfer.managerId,
         },

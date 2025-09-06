@@ -16,7 +16,7 @@ export interface TransferSheetData {
     'Code Out': number; // player.code
     'Transfer In': string; // player.web_name
     'Code In': number; // player.code
-    'Transfer Type': 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade';
+    'Transfer Type': 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade' | 'new player';
     Comment: string;
     'Loan To': string; // userId of manager receiving the loan (NEW)
     'Loan From': string; // userId of manager lending the player (NEW)
@@ -29,7 +29,7 @@ export interface ProcessedTransferSheetData {
     codeOut: number; // player.code
     transferIn: string; // player.web_name
     codeIn: number; // player.code
-    transferType: 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade';
+    transferType: 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade' | 'new player';
     comment: string;
     loanTo: string; // userId of manager receiving the loan (NEW)
     loanFrom: string; // userId of manager lending the player (NEW)

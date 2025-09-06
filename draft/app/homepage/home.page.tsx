@@ -77,7 +77,7 @@ function PositionPointsTable({
         },
         {
             key: 'manager',
-            header: 'Manager',
+            header: 'User',
             accessor: 'userName',
             width: 180,
             render: (userName) => (

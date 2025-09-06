@@ -117,6 +117,7 @@ export interface EnhancedPlayerData {
 
     // Enhanced draft data
     draft: {
+        isNew?: boolean; // Flag indicating if this is a new player available for request
         position: CustomPosition;
         pointsTotal: number;
         pointsBreakdown: PointsBreakdown;

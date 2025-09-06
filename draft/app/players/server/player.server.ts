@@ -15,10 +15,11 @@ export async function getPlayerDetailData(
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
         // Get basic player data - all from cache
-        const [fplPlayer, fplTeams, currentGameweek] = await Promise.all([
+        const [fplPlayer, fplTeams, currentGameweek, fplEvents] = await Promise.all([
             fplApiCache.getPlayerByCode(playerCode),
             fplApiCache.getFplTeams(),
             fplApiCache.getCurrentGameweek(),
+            fplApiCache.getFplEvents(),
         ]);
 
         if (!fplPlayer) {
@@ -64,6 +65,9 @@ export async function getPlayerDetailData(
             seasonTotals,
             currentGameweek: currentGameweek || 1,
             dataSource,
+            fixtures: playerDetailedStats?.fixtures,
+            fplTeamsById: teamLookup,
+            fplEvents,
         };
     } catch (error) {
         console.error(`❌ Failed to load player detail data for player ${playerCode}:`, error);
@@ -124,6 +128,7 @@ function processGameweekData(fplHistory: any[], teamLookup: Record<number, any>)
 
             // FPL points
             fplPoints: gwData.total_points,
+            defensiveContribution: gwData.defensive_contribution,
 
             // Metadata
             generatedAt: null,
@@ -153,6 +158,7 @@ function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[], fplPlaye
         saves: gameweekStats.reduce((sum, gw) => sum + gw.saves, 0),
         penaltiesSaved: gameweekStats.reduce((sum, gw) => sum + gw.penaltiesSaved, 0),
         bonus: gameweekStats.reduce((sum, gw) => sum + gw.bonus, 0),
+        defensiveContribution: gameweekStats.reduce((sum, gw) => sum + gw.defensiveContribution, 0),
 
         // Points
         totalFplPoints: gameweekStats.reduce((sum, gw) => sum + gw.fplPoints, 0),

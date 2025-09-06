@@ -2961,6 +2961,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.85.5":
+  version: 5.85.5
+  resolution: "@tanstack/query-core@npm:5.85.5"
+  checksum: 10/fcce94550f0de4f9a623a818d99b529389f074d505322d229f2933ae85f25ea6177a1d5e4bc067ad0d52441cb6189554532a1043c345faf395769e7268529536
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.84.0":
+  version: 5.84.0
+  resolution: "@tanstack/query-devtools@npm:5.84.0"
+  checksum: 10/a8ccadb8ae0e1a43e1b56acb6bf2d7ec79016cd6d0502de776e22e211bf9416124333087ff825b27cba3f5f03ae7991e78f176711de5d1b2a59a8d69f19a8091
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.85.5":
+  version: 5.85.5
+  resolution: "@tanstack/react-query-devtools@npm:5.85.5"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.84.0"
+  peerDependencies:
+    "@tanstack/react-query": ^5.85.5
+    react: ^18 || ^19
+  checksum: 10/c6c18a3f5e58a80d271b4843862ffb2a064f9f9912a931974e71627a418f14b127510df84db7bf0c1bc6b1331f3eb7e44e54416cb08e06e5b64dffec7fdfa53c
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.85.5":
+  version: 5.85.5
+  resolution: "@tanstack/react-query@npm:5.85.5"
+  dependencies:
+    "@tanstack/query-core": "npm:5.85.5"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10/3d77a928fb75cd3263e699633a62c17a3e9da675dab0a92cff6bc3e7530ad67f47e1d8e64cc6451e96436664cfb77a517ea4dbee2a0441049565f6969f10eff4
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -4561,6 +4598,8 @@ __metadata:
     "@react-router/dev": "npm:^7.7.0"
     "@react-router/node": "npm:^7.7.0"
     "@react-router/serve": "npm:^7.7.0"
+    "@tanstack/react-query": "npm:^5.85.5"
+    "@tanstack/react-query-devtools": "npm:^5.85.5"
     "@types/node": "npm:^22.7.4"
     "@types/react": "npm:^19.1.8"
     "@types/react-dom": "npm:^19.1.6"
@@ -5634,6 +5673,8 @@ __metadata:
     "@react-router/express": "npm:^7.0.0"
     "@react-router/node": "npm:^7.0.0"
     "@react-router/serve": "npm:^7.0.0"
+    "@tanstack/react-query": "npm:^5.85.5"
+    "@tanstack/react-query-devtools": "npm:^5.85.5"
     "@types/express": "npm:^4.0.0"
     "@types/node": "npm:^20.0.0"
     clsx: "npm:^2.1.1"

@@ -95,8 +95,25 @@ export interface FplPlayerGameweekData {
 export interface FplPlayerSeasonData {
     history: FplPlayerGameweekData[];
     history_past: unknown[];
-    fixtures: unknown[];
+    fixtures: FplPlayerSeasonFixture[];
 }
+
+export type FplPlayerSeasonFixture = {
+    id: number; // 25,
+    code: number; // 2561919,
+    team_h: number; // 12,
+    team_h_score: number; // null,
+    team_a: number; // 1,
+    team_a_score: number; // null,
+    event: number; // 3,
+    finished: boolean; // false,
+    minutes: number; // 0,
+    provisional_start_time: boolean; // false,
+    kickoff_time: string; // "2025-08-31T15:30:00Z",
+    event_name: string; // "Gameweek 3",
+    is_home: boolean; // false,
+    difficulty: number; // 5
+};
 
 /**
  * FPL API common types (used across multiple domains)

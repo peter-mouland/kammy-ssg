@@ -89,7 +89,7 @@
     height: 100vh;
     background: var(--color-white);
     z-index: 999;
-    transition: right var(--transition-normal) ease-out;
+    transition: right var(--transition-slow) ease-out;
     box-shadow: var(--shadow-lg);
     overflow-y: auto;
 }

@@ -286,3 +286,19 @@
     border-radius: var(--radius-sm);
     line-height: 1;
 }
+
+.newPlayer {
+    position: absolute;
+    padding: var(--spacing-1) var(--spacing-2);
+    background-color: var(--color-info-light);
+    color: var(--color-info);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    left: -10px;
+    rotate: -40deg;
+    z-index: -1;
+    top: 0px;
+}

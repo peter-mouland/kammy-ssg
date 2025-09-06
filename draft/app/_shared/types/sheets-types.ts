@@ -1,12 +1,8 @@
-
-
 export type PlayersSheetData = {
-    id: number;
+    isHidden: string;
     code: number;
-    firstName: string;
-    lastName: string;
     position: string;
     team: string;
-    fplId: number;
     webName: string;
+    new: string;
 };

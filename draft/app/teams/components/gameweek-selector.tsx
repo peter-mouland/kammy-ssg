@@ -21,17 +21,15 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     onGameweekChange,
 }) => {
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isOpen, setIsOpen] = useState(false);
+
     const handleGameweekChange = (gameweek: number) => {
         const newParams = new URLSearchParams(searchParams);
         newParams.set('gameweek', gameweek.toString());
-        setSearchParams(newParams);
         setIsOpen(false);
-        onGameweekChange?.(gameweek);
+        setSearchParams(newParams, { replace: true });
+        // onGameweekChange?.(gameweek);
     };
-
-    const selectedGameweek = selectedGameweekData?.fplEvent.id || 1;
-    const currentGameweek = currentGameweekData?.fplEvent.id || 1;
-    const [isOpen, setIsOpen] = useState(false);
 
     const handlePrevious = () => {
         handleGameweekChange(selectedGameweek - 1);
@@ -41,6 +39,8 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         handleGameweekChange(selectedGameweek + 1);
     };
 
+    const selectedGameweek = selectedGameweekData?.fplEvent.id || 1;
+    const currentGameweek = currentGameweekData?.fplEvent.id || 1;
     const canGoPrevious = selectedGameweek > 1;
     const canGoNext = selectedGameweek < availableGameweeks.length;
 

@@ -11,10 +11,11 @@
 // Cache TTL configurations (in milliseconds)
 const CACHE_TTL = {
     // FPL API Data - relatively static during gameWeek
-    FPL_FIXTURES: 24 * 60 * 60 * 1000, // 24 hours - fixtured data changes rarely
+    FPL_BOOTSTRAP: 4 * 60 * 60 * 1000, // 4 hours - data changes rarely
+    FPL_FIXTURES: 24 * 60 * 60 * 1000, // 24 hours - fixtures data changes rarely
     FPL_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player data changes rarely
     FPL_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team data very static
-    FPL_EVENTS: 24 * 60 * 60 * 1000, // 24 hours - gameWeek data changes rarely // todo: add cron for 11pm updates
+    FPL_EVENTS: 4 * 60 * 60 * 1000, // 4 hours - gameWeek data changes rarely
     FPL_PLAYER_STATS: 24 * 60 * 60 * 1000, // 24 hours - detailed player stats change rarely
 
     // Google Sheets Data - manual data entry, changes less frequently
@@ -23,7 +24,7 @@ const CACHE_TTL = {
     SHEETS_DRAFT_STATE: 2 * 60 * 1000, // 2 minutes - draft state changes during drafts (reduced from 5 min)
     SHEETS_DRAFT_ORDERS: 24 * 60 * 60 * 1000, // 24 hours - draft order set before draft
     SHEETS_DRAFT: 2 * 60 * 1000, // 2 minutes - draft picks change during drafts (reduced from 5 min)
-    SHEETS_TRANSFERS: 2 * 60 * 1000, // 2 minute - can change during drafts
+    SHEETS_TRANSFERS: 30 * 1000, // 30s - can change during drafts
     SHEETS_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player positions might be updated
 
     // Firebase/Firestore Data - real-time or frequently changing
@@ -51,6 +52,7 @@ const CACHE_TTL = {
 export const CACHE_KEYS = {
     // FPL API keys
     FPL: {
+        BOOTSTRAP: 'fpl:bootstrap',
         FIXTURES: 'fpl:fixtures',
         PLAYERS: 'fpl:players',
         TEAMS: 'fpl:teams',
@@ -95,6 +97,7 @@ export const CACHE_KEYS = {
 export const CACHE_INVALIDATION_RULES = {
     // When FPL data is refreshed (e.g. cron @ 11pm)
     FPL_DATA_UPDATED: [
+        CACHE_KEYS.FPL.BOOTSTRAP,
         CACHE_KEYS.FPL.FIXTURES,
         CACHE_KEYS.FPL.PLAYERS,
         CACHE_KEYS.FPL.TEAMS,
@@ -151,6 +154,7 @@ export const CACHE_INVALIDATION_RULES = {
  */
 export function getCacheTTL(key: string): number {
     // FPL keys
+    if (key.includes('fpl:bootstrap')) return CACHE_TTL.FPL_BOOTSTRAP;
     if (key.includes('fpl:fixtures')) return CACHE_TTL.FPL_FIXTURES;
     if (key.includes('fpl:players')) return CACHE_TTL.FPL_PLAYERS;
     if (key.includes('fpl:teams')) return CACHE_TTL.FPL_TEAMS;

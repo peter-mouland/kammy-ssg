@@ -16,6 +16,9 @@ export default [
 
     route('scoring/api/gw-points', 'scoring/api/api.gw-points.ts'),
 
+    // NEW: Fresh transfers API for client-side fetching
+    route('api/transfers/:divisionId', 'api/transfers/api.transfers.ts'),
+
     // NEW: Unified Cache Management API
     route('api/cache', 'api/cache/api.cache.ts'),
 

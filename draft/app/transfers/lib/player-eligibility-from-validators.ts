@@ -4,6 +4,7 @@ import type { PlayerEligibility } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import { getRuleValidationFunctions } from './validators';
 import { validateGameweekTransferLimit } from './validators/gameweek-transfer-limit-validator';
+import { ownershipLimit } from './validators/ownership-validator';
 import { validatePlayerAvailability } from './validators/player-availability-validator';
 import { teamCountLimit } from './validators/team-count-validator';
 
@@ -15,6 +16,7 @@ export function getPlayerEligibilityFromValidators(validationContext: TransferRu
         const validationResults = validationContext.transfer.playerOut
             ? getRuleValidationFunctions(validationContext)
             : [
+                  ownershipLimit(validationContext),
                   validateGameweekTransferLimit(validationContext), // no playerOut needed
                   validatePlayerAvailability(validationContext), // no playerOut needed
                   teamCountLimit(validationContext),
@@ -51,7 +53,7 @@ export function getPlayerEligibilityFromValidators(validationContext: TransferRu
                 validationResults
                     .filter((result) => result.showPassMessage)
                     .map((result) => result.message)
-                    .join('') || 'Available for transfer',
+                    .join('') || 'Free Agent',
             icon: '✅',
         };
     } catch (error) {

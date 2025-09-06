@@ -18,7 +18,7 @@ const formatRankChange = (rankChange, isFirstGameweek) => {
     }
 
     if (rankChange > 0) {
-        return `+${rankChange}`;
+        return `${rankChange}`;
     }
 
     return rankChange.toString();
@@ -31,15 +31,13 @@ export function PositionRankChange({ points, rankChange, isFirstGameweek }: Posi
             {formattedRankChange && (
                 <span
                     className={`${styles.rankChange} ${
-                        !rankChange ? styles.noChange : rankChange > 0 ? styles.improvement : styles.decline
+                        rankChange ? (rankChange > 0 ? styles.improvement : styles.decline) : styles.noChange
                     }`}
                 >
                     {formattedRankChange}
                 </span>
             )}
-            <span className={styles.points}>
-                {points || '-'}
-            </span>
+            <span className={styles.points}>{points || '-'}</span>
         </div>
     );
 }

@@ -212,7 +212,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
         },
         {
             key: 'manager',
-            header: 'Manager',
+            header: 'User',
             // hideOnMobile: true,
             sortable: true,
             onSort: (data: TeamRowData[], direction: 'asc' | 'desc') => {
@@ -240,7 +240,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (points, team) => {
                 return (
                     <span className={`${styles.points} ${points === 0 ? styles.negative : styles.positive}`}>
-                        {points > 0 ? `+${points}` : points}
+                        {points < 0 ? `-${points}` : points}
                     </span>
                 );
             },
@@ -255,7 +255,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
                     <span className={`${styles.points} ${stats.appearance === 0 ? styles.negative : styles.positive}`}>
-                        {stats.appearance > 0 ? `+${stats.appearance}` : stats.appearance}
+                        {stats.appearance < 0 ? `-${stats.appearance}` : stats.appearance}
                     </span>
                 );
             },
@@ -275,7 +275,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
                     <span className={`${styles.points} ${positiveNegativeStyle(stats.goals)}`}>
-                        {stats.goals > 0 ? `+${stats.goals}` : stats.goals}
+                        {stats.goals < 0 ? `-${stats.goals}` : stats.goals}
                     </span>
                 );
             },
@@ -295,7 +295,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
                     <span className={`${styles.points} ${positiveNegativeStyle(stats.assists)}`}>
-                        {stats.assists > 0 ? `+${stats.assists}` : stats.assists}
+                        {stats.assists < 0 ? `-${stats.assists}` : stats.assists}
                     </span>
                 );
             },
@@ -324,7 +324,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                 const isRelevant = isStatRelevant('cleanSheets', team.player.playerPosition);
                 return (
                     <span className={`${styles.points} ${isRelevant && positiveNegativeStyle(stat)}`}>
-                        {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
+                        {isRelevant && stat < 0 ? `-${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
             },
@@ -355,7 +355,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     <span
                         className={`${styles.points} ${isRelevant && stat >= 0 ? styles.positive : isRelevant ? styles.negative : styles.neutral}`}
                     >
-                        {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
+                        {isRelevant && stat < 0 ? `-${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
             },
@@ -378,7 +378,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                 const isRelevant = isStatRelevant('cleanSheets', team.player.playerPosition);
                 return (
                     <span className={`${styles.points} ${isRelevant && positiveNegativeStyle(stat)}`}>
-                        {isRelevant && stat > 0 ? `+${stat}` : isRelevant ? stat : '-'}
+                        {isRelevant && stat < 0 ? `-${stat}` : isRelevant ? stat : '-'}
                     </span>
                 );
             },
@@ -452,7 +452,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
                     <span className={`${styles.points} ${positiveNegativeStyle(stats.bonus)}`}>
-                        {stats.bonus > 0 ? `+${stats.bonus}` : stats.bonus}
+                        {stats.bonus < 0 ? `-${stats.bonus}` : stats.bonus}
                     </span>
                 );
             },
@@ -478,8 +478,8 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             render: (stats: PlayerGameweekStatsData, team) => {
                 return (
                     <span className={`${styles.points} ${positiveNegativeStyle(stats.defensiveContribution)}`}>
-                        {stats.defensiveContribution > 0
-                            ? `+${stats.defensiveContribution}`
+                        {stats.defensiveContribution < 0
+                            ? `-${stats.defensiveContribution}`
                             : stats.defensiveContribution}
                     </span>
                 );
@@ -517,7 +517,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                 onReset={resetFilters}
                 isUpdating={isUpdating}
             />
-
             {/* Results count */}
             <div className={styles.resultsCount}>
                 Showing {filteredData.length} of {allTeamsData.teams.length} players
@@ -539,8 +538,7 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     </span>
                 )}
             </div>
-
-            {/* Table */}
+            Table
             <Table
                 data={filteredData}
                 columns={columns}
@@ -559,11 +557,10 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
                     let borderTop = '';
                     if (managerAlt !== team.managerId && (!sortKey || sortKey === 'manager' || sortKey === 'player')) {
                         managerAlt = team.managerId;
+                        borderTop = '12px groove lightgrey';
                         if (managerAltColor === 'white') {
-                            borderTop = '6px double lightgrey';
                             managerAltColor = 'var(--color-gray-100)';
                         } else {
-                            borderTop = '6px double lightgrey';
                             managerAltColor = 'white';
                         }
                     }

@@ -36,7 +36,7 @@ export function ownershipLimit(context: TransferRuleContext): RuleValidationResu
         {},
     );
     const playerInOwned = ownedPlayersByCode[transfer.playerIn.code];
-    const playerOutOwned = ownedPlayersByCode[transfer.playerOut.code];
+    const playerOutOwned = ownedPlayersByCode[transfer.playerOut?.code];
 
     // For loan transfers, different rules apply
     if (transfer.transferType === 'LOAN_START') {

@@ -50,34 +50,8 @@ export function CurrentTransfers({
 }: CurrentTransfersProps) {
     const columns: TableColumn<{ transfer: ProcessedTransfer; validation: TransferValidationResult }>[] = [
         {
-            key: 'timestamp',
-            header: 'Time',
-            width: '120px',
-            render: (_, item) => (
-                <div className={styles.timestamp_cell}>
-                    {item.transfer.timestamp.toLocaleDateString('en-gb')}
-                    <br />
-                    <span className={styles.time_small}>
-                        {item.transfer.timestamp.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                </div>
-            ),
-        },
-        {
-            key: 'type',
-            header: 'Type',
-            width: '100px',
-            render: (_, item) => (
-                <span className={`${styles.transfer_type_badge} ${item.transfer.transferType}`}>
-                    {getTransferTypeIcon(item.transfer.transferType)}
-                    <span style={{ padding: '0.25em' }} />
-                    {item.transfer.transferType}
-                </span>
-            ),
-        },
-        {
             key: 'manager',
-            header: 'Manager',
+            header: 'User',
             width: '100px',
             render: (_, item) => item.transfer.managerId,
         },
@@ -98,11 +72,16 @@ export function CurrentTransfers({
             },
         },
         {
-            key: 'comment',
-            header: 'Comments',
-            width: '120px',
-            align: 'center',
-            render: (_, item) => <span>{item.transfer.comment}</span>,
+            key: 'type',
+            header: 'Type',
+            width: '100px',
+            render: (_, item) => (
+                <span className={`${styles.transfer_type_badge} ${item.transfer.transferType}`}>
+                    {getTransferTypeIcon(item.transfer.transferType)}
+                    <span style={{ padding: '0.25em' }} />
+                    {item.transfer.transferType}
+                </span>
+            ),
         },
         {
             key: 'sheetStatus',
@@ -114,6 +93,27 @@ export function CurrentTransfers({
                     {item.transfer.status}
                 </span>
             ),
+        },
+        {
+            key: 'timestamp',
+            header: 'Time',
+            width: '120px',
+            render: (_, item) => (
+                <div className={styles.timestamp_cell}>
+                    {item.transfer.timestamp.toLocaleDateString('en-gb')}
+                    <br />
+                    <span className={styles.time_small}>
+                        {item.transfer.timestamp.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                </div>
+            ),
+        },
+        {
+            key: 'comment',
+            header: 'Comments',
+            width: '120px',
+            align: 'center',
+            render: (_, item) => <span>{item.transfer.comment}</span>,
         },
     ];
 

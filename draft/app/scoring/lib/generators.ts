@@ -1,6 +1,7 @@
 /* Location: app/scoring/lib/generators.ts */
 
 import type { FplPlayerData, FplPlayerSeasonData, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { PlayersSheetData } from '../../_shared/types/sheets-types';
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { TeamPositionSlot } from '../../teams/types/team-types';
 import type { EnhancedPlayerData, Points } from '../types/scoring-types';
@@ -28,7 +29,7 @@ const baselineStats = {
 export function generateSeasonData(
     fplPlayers: EnhancedPlayerData[],
     fplPlayerGameweeksById: Record<number, any>,
-    sheetsPlayersByCode: Record<string, any>,
+    sheetsPlayersByCode: Record<string, PlayersSheetData>,
 ): EnhancedPlayerData[] {
     console.log(`🔄 generateSeasonData - Processing ${fplPlayers.length} players`);
 
@@ -38,14 +39,17 @@ export function generateSeasonData(
             const playerSheet = sheetsPlayersByCode[fplPlayer.code];
             const gameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
             const playerGameweekStats = convertToPlayerGameweeksStats(gameweekData);
-
             const position = playerSheet.position.toLowerCase() as CustomPosition;
             const breakdown = calculateSeasonPoints(playerGameweekStats, position);
             const fullBreakdown = getFullBreakdown(playerGameweekStats, position, breakdown);
-
+            if (playerSheet.code === 488213 || playerSheet.code === '488213') {
+                console.log(playerSheet);
+            }
+            if (playerSheet.new) console.log(playerSheet.new, fplPlayer.web_name);
             return {
                 ...fplPlayer,
                 draft: {
+                    isNew: Boolean(playerSheet.new),
                     position: playerSheet.position,
                     pointsTotal: breakdown.points.total,
                     pointsBreakdown: fullBreakdown,
