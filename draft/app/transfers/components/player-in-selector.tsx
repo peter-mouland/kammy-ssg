@@ -168,14 +168,13 @@ export function PlayerInSelector({
                 fuzzyStringMatch(player.first_name, filters.search) ||
                 fuzzyStringMatch(player.second_name, filters.search);
 
-            const positionMatch =
-                selectedPositions.length === 0 || selectedPositions.includes(getPlayerPosition(player));
-            const teamMatch = selectedTeams.length === 0 || selectedTeams.includes(player.team_code.toString());
+            const positionMatch = !selectedPositions.length || selectedPositions.includes(getPlayerPosition(player));
+            const teamMatch = !selectedTeams.length || selectedTeams.includes(player.team_code.toString());
 
             // status filter
             const newMatch = !selectedStatuses.includes('new') || player.draft.isNew === true;
             const eligibleMatch = !selectedStatuses.includes('eligible') || getPlayerEligibility(player).isEligible;
-            const statusMatch = selectedStatuses.length === 0 || (newMatch && eligibleMatch);
+            const statusMatch = !selectedStatuses.length || (newMatch && eligibleMatch);
 
             return searchMatch && positionMatch && teamMatch && statusMatch;
         });
@@ -186,7 +185,7 @@ export function PlayerInSelector({
             eligibility: getPlayerEligibility(player),
             ownership: getPlayerOwnership(player, ownedPlayersByCode),
         }));
-    }, [availablePlayers, filters.search, filters.status, transferType, playerOut]);
+    }, [availablePlayers, filters.positions, filters.search, filters.status, transferType, playerOut]);
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [

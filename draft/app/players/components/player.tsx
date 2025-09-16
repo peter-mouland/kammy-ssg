@@ -9,8 +9,8 @@ import styles from './player.module.css';
 function PositionBadge({ position, isSub = false }: { position: CustomPosition; isSub?: boolean }) {
     return (
         <span className={`${styles.positionBadge} ${styles[position.toLowerCase()]}`}>
-            {position}
-            {isSub ? <span className={styles.is_sub}>SUB</span> : null}
+            <span>{position}</span>
+            {isSub ? <span className={styles.is_sub}>sub</span> : null}
         </span>
     );
 }
@@ -60,6 +60,78 @@ export const PlayerSummary = ({
                     </div>
                 </div>
             </div>
+        </div>
+    );
+};
+export const PlayerSummaryPoints = ({
+    teamsByCode,
+    fplPlayersByCode,
+    player,
+    manager,
+    onLoanTo,
+    onLoanFrom,
+    points,
+}: {
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode?: Record<number, EnhancedPlayerData>;
+    player: EnhancedPlayerData & RosterPlayer;
+    onLoanTo?: string;
+    onLoanFrom?: string;
+    manager?: string;
+    points: number;
+}) => {
+    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
+    return (
+        <div className={styles.layout}>
+            <div className={styles.layoutImg}>
+                <img src={img} loading="lazy" alt="" width={35} />
+            </div>
+
+            {onLoanTo || onLoanFrom ? (
+                <div className={styles.layoutLoan}>
+                    <div className={styles.loanIndicator}>Loan</div>
+                </div>
+            ) : null}
+
+            {player.draft?.isNew ? (
+                <div className={styles.layoutNew}>
+                    <div className={styles.newPlayer}>New</div>
+                </div>
+            ) : null}
+
+            <div className={styles.layoutPosition}>
+                <PositionBadge position={player.playerPosition || player.draft?.position} isSub={player.isSub} />
+            </div>
+
+            <div className={styles.layoutPlayerName}>
+                <div className={styles.player_name}>{player.playerName || player.web_name}</div>
+            </div>
+
+            <div className={styles.layoutTeam}>
+                <div className={styles.team}>
+                    {fplPlayersByCode
+                        ? teamsByCode[fplPlayersByCode[player.playerCode]?.team_code]?.name
+                        : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
+                </div>
+            </div>
+
+            <div className={styles.layoutOwner}>
+                {manager ? (
+                    <div className={styles.owner}>
+                        <span>{manager}</span>
+                    </div>
+                ) : null}
+            </div>
+
+            <div className={styles.layoutPoints}>
+                <div className={`${styles.points} ${points >= 0 ? styles.positive : styles.negative}`}>
+                    {points} pts
+                </div>
+            </div>
+
+            {/*<div className={styles.layoutFixture}>*/}
+            {/*    <div className={styles.fixture}>fixture</div>*/}
+            {/*</div>*/}
         </div>
     );
 };

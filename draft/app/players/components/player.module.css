@@ -32,7 +32,7 @@
 /* Position badges */
 .positionBadge {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     padding: var(--spacing-1) 0;
@@ -44,10 +44,11 @@
     text-transform: uppercase;
     background-color: var(--position-color);
     color: var(--position-color-alt);
+    gap: 4px;
 
     & .is_sub {
         font-size: 0.7rem;
-        width: 100%;
+        width: 40%;
         background-color: var(--color-gray-200);
         color: var(--color-gray-700);
     }
@@ -106,6 +107,7 @@
     text-transform: uppercase;
 }
 
+.fixture,
 .team {
     color: var(--color-gray-600);
     font-size: var(--font-xs);
@@ -275,30 +277,94 @@
 }
 
 .loanIndicator {
-    position: absolute;
-    top: 6px;
-    right: 6px;
+    border-radius: var(--radius-sm);
     background: var(--color-warning);
     color: #ffffff;
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
     padding: 2px 6px;
-    border-radius: var(--radius-sm);
     line-height: 1;
 }
 
 .newPlayer {
-    position: absolute;
-    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
     background-color: var(--color-info-light);
     color: var(--color-info);
-    border-radius: var(--radius-sm);
     font-size: var(--font-xs);
-    font-weight: var(--font-weight-bold);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-weight: var(--font-weight-semibold);
+    padding: 2px 6px;
+    line-height: 1;
+}
+
+.points {
+    color: var(--color-primary);
+}
+
+/*
+NEW LAYOUT
+ */
+
+.layout {
+    display: grid;
+    grid-template-areas:
+        "image       player-name"
+        "image       team"
+        "image    points"
+        "position    points"
+        "owner       owner"
+        "fixture     fixture";
+}
+
+.layoutImg {
+    grid-area: image;
+    grid-row-end: 4;
+    text-align: center;
+}
+
+.layoutLoan {
+    grid-area: image;
+    text-align: center;
+    position: absolute;
+    top: -3px;
+    right: -13px;
+    rotate: 40deg;
+}
+
+.layoutNew {
+    grid-area: image;
+    text-align: center;
+    position: absolute;
+    top: -3px;
     left: -10px;
     rotate: -40deg;
-    z-index: -1;
-    top: 0px;
+}
+
+.layoutPosition {
+    grid-area: position;
+    text-align: center;
+}
+.layoutPlayerName {
+    grid-area: player-name;
+    text-align: center;
+    padding: 2px;
+}
+.layoutTeam {
+    grid-area: team;
+    text-align: center;
+}
+.layoutOwner {
+    grid-area: owner;
+    text-align: center;
+}
+
+.layoutFixture {
+    grid-area: fixture;
+    text-align: center;
+}
+
+.layoutPoints {
+    grid-area: points;
+    text-align: center;
+    justify-self: center;
+    align-content: center;
 }

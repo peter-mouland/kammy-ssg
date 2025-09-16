@@ -48,13 +48,15 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         <div className={styles.gameweekSelector}>
             <div className={styles.selectorHeader}>
                 <div className={styles.label}>Gameweek Deadline:</div>
-            </div>
-
-            <div className={styles.endData}>
-                <span>{selectedGameweekData?.end.toLocaleDateString('en-gb')}</span>
-                <span>
-                    {selectedGameweekData?.end.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+                <div className={styles.endData}>
+                    <span>{selectedGameweekData?.end.toLocaleDateString('en-gb')}</span>
+                    <span>
+                        {selectedGameweekData?.end.toLocaleTimeString(['en-gb'], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        })}
+                    </span>
+                </div>
             </div>
 
             <div className={styles.selectorControls}>

@@ -1,7 +1,7 @@
 // app/teams/components/position-slot-card.tsx
 import type React from 'react';
 import { Link } from 'react-router';
-import { PlayerSummary } from '../../players/components/player';
+import { PlayerSummaryPoints } from '../../players/components/player';
 import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
 
@@ -23,35 +23,15 @@ export const PositionSlotCard: React.FC<PositionSlotCardProps> = ({
     return (
         <Link
             className={`${styles.positionSlotCard} ${isSubstitute ? styles.substitute : ''}`}
-            data-view-mode={viewMode}
-            style={
-                {
-                    marginTop: '25px',
-                } as React.CSSProperties
-            }
             to={`/players/${player.playerCode}`}
         >
-            <div
-                style={
-                    {
-                        padding: '4px',
-                    } as React.CSSProperties
-                }
-            >
-                <PlayerSummary player={player} teamsByCode={teamsByCode} fplPlayersByCode={fplPlayersByCode} />
-            </div>
-
-            {/* Points Display */}
-            {showPoints && displayPoints && (
-                <div
-                    className={`${styles.pointsDisplay} ${displayPoints.total >= 0 ? styles.positive : styles.negative}`}
-                >
-                    {formatPoints(displayPoints.total)}
-                </div>
-            )}
-
-            {player.onLoanTo && <div className={styles.loanIndicator}>On Loan to {player.onLoanTo}</div>}
-            {player.onLoanFrom && <div className={styles.loanIndicator}>On Loan from {player.onLoanFrom}</div>}
+            <PlayerSummaryPoints
+                player={player}
+                teamsByCode={teamsByCode}
+                fplPlayersByCode={fplPlayersByCode}
+                points={showPoints && displayPoints ? formatPoints(displayPoints.total) : null}
+                onLoanTo={player.onLoanTo || player.onLoanFrom}
+            />
         </Link>
     );
 };
