@@ -14,9 +14,10 @@ interface MobileNavProps {
         href: string;
         text: string;
     };
+    scoresUpToDate?: boolean;
 }
 
-export function MobileNav({ items, logo }: MobileNavProps) {
+export function MobileNav({ items, logo, scoresUpToDate }: MobileNavProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     // Close menu when clicking outside or on escape
@@ -63,6 +64,12 @@ export function MobileNav({ items, logo }: MobileNavProps) {
                 {logo && (
                     <a href={logo.href} className={styles.mobileLogo}>
                         {logo.text}
+                        {scoresUpToDate !== undefined && (
+                            <span
+                                className={`${styles.statusDot} ${scoresUpToDate ? styles.statusDotGreen : styles.statusDotOrange}`}
+                                title={scoresUpToDate ? 'Scores up to date' : 'Scores need updating'}
+                            />
+                        )}
                     </a>
                 )}
 
@@ -114,14 +121,21 @@ interface DesktopNavProps {
         href: string;
         text: string;
     };
+    scoresUpToDate?: boolean;
 }
 
-export function DesktopNav({ items, logo }: DesktopNavProps) {
+export function DesktopNav({ items, logo, scoresUpToDate }: DesktopNavProps) {
     return (
         <nav className={styles.desktopNav}>
             {logo && (
                 <a href={logo.href} className={styles.desktopLogo}>
                     {logo.text}
+                    {scoresUpToDate !== undefined && (
+                        <span
+                            className={`${styles.statusDot} ${scoresUpToDate ? styles.statusDotGreen : styles.statusDotOrange}`}
+                            title={scoresUpToDate ? 'Scores up to date' : 'Scores need updating'}
+                        />
+                    )}
                 </a>
             )}
 

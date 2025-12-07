@@ -12,6 +12,10 @@ export function teamCountLimit(context: TransferRuleContext): RuleValidationResu
     const teams = new Map();
     Object.values(roster).forEach((slot) => {
         const player = fplPlayersByCode[slot.player.playerCode];
+        if (!player) {
+            console.error('No FPL Player Match: ' + slot.player.playerCode);
+            console.error(slot.player);
+        }
         teams.set(player.team_code, (teams.get(player.team_code) || 0) + 1);
     });
 
@@ -26,7 +30,7 @@ export function teamCountLimit(context: TransferRuleContext): RuleValidationResu
         };
     }
     if (transfer.playerOut) teams.set(transfer.playerOut.team_code, teams.get(transfer.playerOut.team_code) - 1);
-    teams.set(transfer.playerIn.team_code, teams.get(transfer.playerIn.team_code) + 1);
+    if (transfer.playerIn) teams.set(transfer.playerIn.team_code, teams.get(transfer.playerIn.team_code) + 1);
     const newTeamCount = teams.get(transfer.playerIn.team_code);
 
     if (newTeamCount > 2) {

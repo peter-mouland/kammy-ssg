@@ -42,13 +42,11 @@ export function generateSeasonData(
             const position = playerSheet.position.toLowerCase() as CustomPosition;
             const breakdown = calculateSeasonPoints(playerGameweekStats, position);
             const fullBreakdown = getFullBreakdown(playerGameweekStats, position, breakdown);
-            if (playerSheet.code === 488213 || playerSheet.code === '488213') {
-                console.log(playerSheet);
-            }
-            if (playerSheet.new) console.log(playerSheet.new, fplPlayer.web_name);
+
             return {
                 ...fplPlayer,
                 draft: {
+                    isHidden: Boolean(playerSheet.isHidden),
                     isNew: Boolean(playerSheet.new),
                     position: playerSheet.position,
                     pointsTotal: breakdown.points.total,

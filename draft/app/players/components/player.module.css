@@ -309,7 +309,7 @@ NEW LAYOUT
     grid-template-areas:
         "image       player-name"
         "image       team"
-        "image    points"
+        "image       points"
         "position    points"
         "owner       owner"
         "fixture     fixture";
@@ -346,11 +346,15 @@ NEW LAYOUT
 .layoutPlayerName {
     grid-area: player-name;
     text-align: center;
+    justify-self: center;
+    align-self: end;
     padding: 2px;
 }
 .layoutTeam {
     grid-area: team;
     text-align: center;
+    justify-self: center;
+    align-self: start;
 }
 .layoutOwner {
     grid-area: owner;

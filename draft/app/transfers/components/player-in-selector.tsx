@@ -172,11 +172,12 @@ export function PlayerInSelector({
             const teamMatch = !selectedTeams.length || selectedTeams.includes(player.team_code.toString());
 
             // status filter
+            const isHidden = player.draft.isHidden;
             const newMatch = !selectedStatuses.includes('new') || player.draft.isNew === true;
             const eligibleMatch = !selectedStatuses.includes('eligible') || getPlayerEligibility(player).isEligible;
             const statusMatch = !selectedStatuses.length || (newMatch && eligibleMatch);
 
-            return searchMatch && positionMatch && teamMatch && statusMatch;
+            return searchMatch && positionMatch && teamMatch && statusMatch && !isHidden;
         });
 
         // Add eligibility info to each player

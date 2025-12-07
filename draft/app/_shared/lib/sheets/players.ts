@@ -65,7 +65,10 @@ async function originalReadPlayers(): Promise<PlayersSheetData[]> {
                     return null;
                 }
             })
-            .filter((player) => player !== null && player.isHidden !== 'hidden');
+            .filter((player) => player !== null);
+        // can't filter 'isHidden here, // && player.isHidden !== 'hidden');
+        // if a player is hidden mid-season, we break historical views of the site
+
         console.log(`...found ${gsheetPlayers.length} gSheet Players ...`);
         return gsheetPlayers;
     } catch (error) {
