@@ -281,7 +281,6 @@ export function Table<T = any>({
                                 return (
                                     <th
                                         key={column.key}
-                                        dataKey={column.key}
                                         className={headerClasses}
                                         style={headerStyle}
                                         onClick={() => handleSort(column)}
