@@ -14,10 +14,10 @@ interface MobileNavProps {
         href: string;
         text: string;
     };
-    scoresUpToDate?: boolean;
+    statusBadge?: React.ReactNode;
 }
 
-export function MobileNav({ items, logo, scoresUpToDate }: MobileNavProps) {
+export function MobileNav({ items, logo, statusBadge }: MobileNavProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     // Close menu when clicking outside or on escape
@@ -64,12 +64,7 @@ export function MobileNav({ items, logo, scoresUpToDate }: MobileNavProps) {
                 {logo && (
                     <a href={logo.href} className={styles.mobileLogo}>
                         {logo.text}
-                        {scoresUpToDate !== undefined && (
-                            <span
-                                className={`${styles.statusDot} ${scoresUpToDate ? styles.statusDotGreen : styles.statusDotOrange}`}
-                                title={scoresUpToDate ? 'Scores up to date' : 'Scores need updating'}
-                            />
-                        )}
+                        {statusBadge}
                     </a>
                 )}
 
@@ -121,21 +116,16 @@ interface DesktopNavProps {
         href: string;
         text: string;
     };
-    scoresUpToDate?: boolean;
+    statusBadge?: React.ReactNode;
 }
 
-export function DesktopNav({ items, logo, scoresUpToDate }: DesktopNavProps) {
+export function DesktopNav({ items, logo, statusBadge }: DesktopNavProps) {
     return (
         <nav className={styles.desktopNav}>
             {logo && (
                 <a href={logo.href} className={styles.desktopLogo}>
                     {logo.text}
-                    {scoresUpToDate !== undefined && (
-                        <span
-                            className={`${styles.statusDot} ${scoresUpToDate ? styles.statusDotGreen : styles.statusDotOrange}`}
-                            title={scoresUpToDate ? 'Scores up to date' : 'Scores need updating'}
-                        />
-                    )}
+                    {statusBadge}
                 </a>
             )}
 
