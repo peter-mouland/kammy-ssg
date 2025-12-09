@@ -112,6 +112,12 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
 
                     {connectionState.status === "connecting" && <div className={styles.connecting}>🔄 Connecting...</div>}
 
+                    {connectionState.status === "polling" && (
+                        <div className={styles.pollingMode}>
+                            📊 Using polling mode (live updates unavailable)
+                        </div>
+                    )}
+
                     {progress && (
                         <>
                             <div className={styles.progressSection}>

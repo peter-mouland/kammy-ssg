@@ -28,6 +28,7 @@ export default [
 
     // Admin routes with nested sections (legacy - for backward compatibility)
     route('admin-progress/:jobId', 'admin/admin-progress.route.tsx'),
+    route('admin-progress-poll/:jobId', 'admin/admin-progress-poll.route.tsx'),
 
     route('admin', 'admin/admin.route.tsx', [
         index('admin/admin-overview.route.tsx'),
