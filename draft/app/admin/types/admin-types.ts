@@ -107,6 +107,7 @@ export type DraftStatusByDivisionId = Record<DivisionId, DraftDivisionStatus>;
 
 export interface SystemStatusSummary {
     currentGameweek: GameWeekData;
+    bootstrapLastUpdated: string | null;
     systemHealth: {
         fplCache: SystemHealthStatus;
         firebase: SystemHealthStatus;

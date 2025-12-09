@@ -83,14 +83,6 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                         >
                             Reset Database
                         </AdminButton>
-
-                        <AdminButton
-                            variant={'primary'}
-                            disabled={isLoading}
-                            onClick={() => handleCacheAction('populateBootstrapData')}
-                        >
-                            Populate Bootstrap Data
-                        </AdminButton>
                     </div>
                 </AdminGrid>
             </AdminSection>

@@ -33,6 +33,22 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
     const lastProcessedGameweek = systemStatus.gameweekProcessing.lastProcessedGameweek;
     const needsProcessing = currentGameweek > lastProcessedGameweek;
 
+    // Check if bootstrap was run during the current gameweek
+    const currentGameweekStart = systemStatus.gameweekProcessing.currentGameweek.start;
+    const bootstrapLastUpdated = systemStatus.bootstrapLastUpdated ? new Date(systemStatus.bootstrapLastUpdated) : null;
+    const bootstrapRecommended = !bootstrapLastUpdated || bootstrapLastUpdated < currentGameweekStart;
+
+    const handleCacheAction = (actionType: string) => {
+        const formData = new FormData();
+        formData.append('actionType', actionType);
+
+        // Submit to the parent admin route, not the current nested route
+        fetcher.submit(formData, {
+            method: 'POST',
+            action: '/admin', // This ensures we hit the parent route's action
+        });
+    };
+
     const handleProcessGameweek = (type: string, gameweek?: number) => {
         const formData = new FormData();
         formData.append('actionType', 'processGameweek');
@@ -101,15 +117,26 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                 </AdminGrid>
             </AdminSection>
             <AdminSection title="Gameweek Processing: Actions" icon={<Icons.ChartIcon />}>
+                <AdminButton
+                    variant={bootstrapRecommended ? 'primary' : 'secondary'}
+                    disabled={isLoading}
+                    onClick={() => handleCacheAction('populateBootstrapData')}
+                    icon={bootstrapRecommended ? '⭐' : undefined}
+                >
+                    Populate Bootstrap Data
+                    {bootstrapRecommended && ' (Recommended)'}
+                </AdminButton>
+                <br />
+                {bootstrapRecommended && (
+                    <p>
+                        Bootstrap data refresh recommended when starting a new gameweek to get latest player prices and
+                        team updates
+                    </p>
+                )}
+                <br />
+                <hr />
+                <br />
                 <AdminGrid columns="auto" minWidth="250px">
-                    <AdminButton
-                        icon={<Icons.RefreshIcon />}
-                        variant="danger"
-                        onClick={() => handleProcessGameweek('gameweeks', 30)}
-                        disabled={isLoading}
-                    >
-                        Regenerate 30+
-                    </AdminButton>
                     <AdminButton
                         icon={<Icons.RefreshIcon />}
                         variant="danger"

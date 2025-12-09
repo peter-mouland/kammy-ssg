@@ -18,10 +18,11 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         console.log('🔄 getSystemStatus() - Loading comprehensive system status');
 
         // Load all status data in parallel for better performance
-        const [transferStatus, draftStatus, gameweekProcessingStatus] = await Promise.all([
+        const [transferStatus, draftStatus, gameweekProcessingStatus, bootstrapLastUpdated] = await Promise.all([
             getTransferStatusReal(),
             getDraftStatusReal(),
             getGameweekProcessingStatusReal(),
+            getBootstrapLastUpdated(),
         ]);
 
         const fplHealth = await fplApiCache.getCacheHealth();
@@ -47,6 +48,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
 
         const summary: SystemStatusSummary = {
             currentGameweek: gameweekProcessingStatus.currentGameweek,
+            bootstrapLastUpdated,
             systemHealth: {
                 fplCache: fplHealth,
                 firebase: firebaseHealth,
@@ -70,6 +72,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         // Return safe defaults on error
         return {
             currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
+            bootstrapLastUpdated: null,
             systemHealth: {
                 fplCache: { status: 'critical', message: 'Failed to load FPL cache status' },
                 firebase: { status: 'critical', message: 'Failed to connect to Firebase' },
@@ -91,6 +94,26 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
             },
             recommendations: ['System health check failed - please check logs'],
         };
+    }
+}
+
+/**
+ * Get bootstrap last updated timestamp
+ */
+async function getBootstrapLastUpdated(): Promise<string | null> {
+    try {
+        const db = getFirestoreInstance();
+        const elementsDoc = await db.collection('fpl-bootstrap').doc('elements').get();
+
+        if (elementsDoc.exists) {
+            const data = elementsDoc.data();
+            return data?.lastUpdated || null;
+        }
+
+        return null;
+    } catch (error) {
+        console.error('❌ Failed to get bootstrap lastUpdated:', error);
+        return null;
     }
 }
 
