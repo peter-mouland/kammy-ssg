@@ -77,10 +77,14 @@ export interface SeasonTotals {
     averageFplPoints: number;
     averageCustomPoints: number;
 
+    form: number;
+
     // Performance metrics
     goalsPerGame: number;
+    savesPerGame: number;
     assistsPerGame: number;
     cleanSheetPercentage: number;
+    savesPerGamePercentage: number;
 }
 
 interface PointsBreakdown {

@@ -10,6 +10,7 @@ export default [
     route('leagues/:divisionId?', 'leagues/league-standings.route.tsx'),
     route('draft', 'draft/draft.route.tsx'),
     route('players', 'players/players.route.tsx'),
+    route('players/:playerCode.json', 'players/player-json.route.ts'),
     route('players/:playerCode', 'players/player.route.tsx'),
     route('transfers/:divisionId?', 'transfers/transfers.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),

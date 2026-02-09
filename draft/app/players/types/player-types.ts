@@ -1,6 +1,6 @@
 // app/players/types/player-types.ts
 
-import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { FplPlayerSeasonFixture, FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData, GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
 
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
@@ -42,7 +42,9 @@ export interface PlayerDetailData {
     seasonTotals: SeasonTotals;
     currentGameweek: number;
     dataSource: DataSource;
-    form: number;
+    fixtures: FplPlayerSeasonFixture[];
+    fplTeamsById: Record<number, FplTeam>;
+    fplEvents: GameWeekData[];
 }
 
 type Positions = {

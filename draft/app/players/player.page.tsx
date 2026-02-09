@@ -28,7 +28,7 @@ export const PlayerPage = () => {
         is_home: f.is_home,
         kickoff_time: f.kickoff_time,
         eventId: f.event,
-        event_name: f.event_name.split(' ')[1],
+        event_name: f.event_name?.split(' ')[1],
         event: fplEvents[f.event],
         team_a_id: f.team_a,
         team_a: fplTeamsById[f.team_a],

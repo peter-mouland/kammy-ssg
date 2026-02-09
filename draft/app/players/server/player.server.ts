@@ -65,7 +65,7 @@ export async function getPlayerDetailData(
             seasonTotals,
             currentGameweek: currentGameweek || 1,
             dataSource,
-            fixtures: playerDetailedStats?.fixtures,
+            fixtures: playerDetailedStats?.fixtures ?? [],
             fplTeamsById: teamLookup,
             fplEvents,
         };
