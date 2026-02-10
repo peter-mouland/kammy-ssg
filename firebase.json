@@ -48,7 +48,7 @@
     ]
   },
   "functions": {
-    "predeploy": "yarn workspace functions build",
+    "predeploy": "yarn copy-build && yarn workspace functions build",
     "source": "functions",
     "runtime": "nodejs22"
   }

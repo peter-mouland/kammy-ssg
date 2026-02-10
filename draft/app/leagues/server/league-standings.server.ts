@@ -16,6 +16,7 @@ import type {
 export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandingsLoaderData> {
     // Import services dynamically to keep server code on server
     const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
+    const { getTeamOfTheWeek } = await import('./team-of-the-week.server');
 
     const divisions = await readDivisions();
     const currentGameweek = await fplApiCache.getCurrentGameweek();
@@ -23,10 +24,14 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
 
     // Get data for specific division with position rank changes
     const standingsData: Record<DivisionId, LeagueStandingsTeamData[]> = {};
-    const promises = divisions.map(async (division) => {
+    const standingsPromises = divisions.map(async (division) => {
         standingsData[division.id] = await getDivisionStandingsWithPositionRankChanges(division.id, currentGameweek);
     });
-    await Promise.all(promises);
+
+    const [, teamOfTheWeek] = await Promise.all([
+        Promise.all(standingsPromises),
+        getTeamOfTheWeek(currentGameweek),
+    ]);
 
     return {
         divisions,
@@ -34,6 +39,7 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
         currentGameweek,
         availableGameweeks,
         standingsData,
+        teamOfTheWeek: teamOfTheWeek ?? undefined,
     };
 }
 
@@ -51,6 +57,8 @@ export async function getEnhancedLeagueStandingsData({
     events: GameWeekData[];
 }): Promise<EnhancedLeagueStandingsLoaderData> {
     // Import services dynamically to keep server code on server
+    const { getTeamOfTheWeek } = await import('./team-of-the-week.server');
+
     const currentGameweek = currentGameweekData.fplEvent.id;
     const division = divisions.find((d) => selectedDivision === d.id)!;
     const targetGameweek = selectedGameweek ?? currentGameweek;
@@ -60,8 +68,11 @@ export async function getEnhancedLeagueStandingsData({
 
     const standingsData: Record<string, LeagueStandingsTeamData[]> = {};
 
-    // Get data for specific division with position rank changes
-    const divisionStandings = await getDivisionStandingsWithPositionRankChanges(selectedDivision, targetGameweek);
+    // Get data for specific division with position rank changes and TOTW in parallel
+    const [divisionStandings, teamOfTheWeek] = await Promise.all([
+        getDivisionStandingsWithPositionRankChanges(selectedDivision, targetGameweek),
+        getTeamOfTheWeek(targetGameweek),
+    ]);
     standingsData[selectedDivision] = divisionStandings;
 
     return {
@@ -73,6 +84,7 @@ export async function getEnhancedLeagueStandingsData({
         currentGameweek,
         availableGameweeks,
         standingsData,
+        teamOfTheWeek: teamOfTheWeek ?? undefined,
     };
 }
 

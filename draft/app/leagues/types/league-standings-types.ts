@@ -1,6 +1,7 @@
 /* Location: app/leagues/types/league-standings-types.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../players/types/player-types';
 import type { DivisionId, DivisionSheetData, ManagerId, PositionSlotKey } from '../../teams/types/team-types';
 
 export interface PositionPointsBreakdown {
@@ -32,6 +33,27 @@ export interface LeagueStandingsTeamData {
     positionRankChanges?: PositionRankChange;
 }
 
+export interface TeamOfTheWeekPlayer {
+    code: number;
+    web_name: string;
+    team_code: number;
+    position: CustomPosition;
+    points: number;
+}
+
+export interface TeamOfTheWeekData {
+    gameweek: number;
+    players: {
+        gk: TeamOfTheWeekPlayer[];
+        cb: TeamOfTheWeekPlayer[];
+        fb: TeamOfTheWeekPlayer[];
+        mid: TeamOfTheWeekPlayer[];
+        wa: TeamOfTheWeekPlayer[];
+        ca: TeamOfTheWeekPlayer[];
+    };
+    teamsByCode: Record<number, { short_name: string }>;
+}
+
 export interface EnhancedLeagueStandingsLoaderData {
     divisions: DivisionSheetData[];
     selectedDivision: DivisionSheetData;
@@ -42,6 +64,7 @@ export interface EnhancedLeagueStandingsLoaderData {
     availableGameweeks: number[];
     standingsData: Record<string, LeagueStandingsTeamData[]>;
     persistedUser: { selectedUserId: ManagerId | null; requiresSelection: boolean };
+    teamOfTheWeek?: TeamOfTheWeekData;
 }
 
 export interface PositionColumnConfig {

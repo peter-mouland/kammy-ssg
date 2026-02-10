@@ -9,6 +9,7 @@ import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { PositionRankChange } from './components/position-rank-change';
+import { TeamOfTheWeek } from './components/team-of-the-week';
 import styles from './league-standings.module.css';
 import { calculatePositionRankings } from './lib/simple-position-rankings';
 import type {
@@ -111,6 +112,19 @@ function PositionPointsTable({
                 align: 'center',
                 sortable: true,
                 accessor: (team) => team[pointsSource][col.key],
+                onSort: (data, direction) => {
+                    const dir = direction === 'asc' ? 1 : -1;
+                    return [...data].sort((a, b) => {
+                        const aRank = showRankChange
+                            ? (a.positionRankChanges?.[col.key] ?? 0)
+                            : (positionRankings[a.userId]?.[col.key] ?? 0);
+                        const bRank = showRankChange
+                            ? (b.positionRankChanges?.[col.key] ?? 0)
+                            : (positionRankings[b.userId]?.[col.key] ?? 0);
+                        if (aRank !== bRank) return (aRank - bRank) * dir;
+                        return (a[pointsSource][col.key] - b[pointsSource][col.key]) * dir;
+                    });
+                },
                 render: (points, team) => {
                     // For season table, show rank and points as before
                     if (!showRankChange) {
@@ -140,8 +154,24 @@ function PositionPointsTable({
             width: 100,
             align: 'center',
             sortable: true,
-            accessor: (team) => positionRankings[team.userId]?.total,
-            render: (rank, team) => {
+            accessor: (team) =>
+                showRankChange
+                    ? (team.positionRankChanges?.total ?? 0)
+                    : (positionRankings[team.userId]?.total ?? 0),
+            onSort: (data, direction) => {
+                const dir = direction === 'asc' ? 1 : -1;
+                return [...data].sort((a, b) => {
+                    const aRank = showRankChange
+                        ? (a.positionRankChanges?.total ?? 0)
+                        : (positionRankings[a.userId]?.total ?? 0);
+                    const bRank = showRankChange
+                        ? (b.positionRankChanges?.total ?? 0)
+                        : (positionRankings[b.userId]?.total ?? 0);
+                    if (aRank !== bRank) return (aRank - bRank) * dir;
+                    return (a[pointsSource].total - b[pointsSource].total) * dir;
+                });
+            },
+            render: (value, team) => {
                 if (showRankChange) {
                     // For gameweek table, show points with rank change
                     return (
@@ -152,6 +182,7 @@ function PositionPointsTable({
                         />
                     );
                 } else {
+                    const rank = positionRankings[team.userId]?.total;
                     return (
                         <div>
                             {rank && <span className={styles.positionRank}>{rank}</span>}
@@ -273,6 +304,7 @@ const LeagueStandingsComp = ({
     availableGameweeks,
     standingsData,
     persistedUser,
+    teamOfTheWeek,
 }: EnhancedLeagueStandingsLoaderData) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -345,6 +377,8 @@ const LeagueStandingsComp = ({
                     )}
                 </div>
             )}
+
+            {teamOfTheWeek && <TeamOfTheWeek data={teamOfTheWeek} />}
         </>
     );
 };
