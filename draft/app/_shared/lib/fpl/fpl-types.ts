@@ -251,6 +251,15 @@ export interface FilteredFplPlayerData {
     // Remove all season stats - these should come from element summary instead
 }
 
+export interface FplLiveElement {
+    id: number;
+    stats: FplPlayerGameweekData;
+}
+
+export interface FplLiveData {
+    elements: FplLiveElement[];
+}
+
 export interface EventData {
     deadline_time: string | Date; // Assuming it's either a string or Date object
     finished: boolean;

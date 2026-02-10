@@ -5,14 +5,14 @@
 
 import { processBatched } from '../batch-processor';
 import { createAppError } from '../sheets/utils/common';
-import type { FplBootstrapData, FplFixtureData, FplPlayerSeasonData } from './fpl-types';
+import type { FplBootstrapData, FplFixtureData, FplLiveData, FplPlayerSeasonData } from './fpl-types';
 
 // FPL API endpoints
 const FPL_BASE_URL = 'https://fantasy.premierleague.com/api';
 const FPL_BOOTSTRAP_URL = `${FPL_BASE_URL}/bootstrap-static/`;
 const FPL_FIXTURES_URL = `${FPL_BASE_URL}/fixtures/`;
 const FPL_PLAYER_DETAIL_URL = (playerId: number) => `${FPL_BASE_URL}/element-summary/${playerId}/`;
-const _FPL_GAMEWEEK_LIVE_URL = (gameweek: number) => `${FPL_BASE_URL}/event/${gameweek}/live/`;
+const FPL_GAMEWEEK_LIVE_URL = (gameweek: number) => `${FPL_BASE_URL}/event/${gameweek}/live/`;
 const _FPL_ENTRY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${entryId}/`;
 const _FPL_ENTRY_HISTORY_URL = (entryId: number) => `${FPL_BASE_URL}/entry/${entryId}/history/`;
 
@@ -77,6 +77,22 @@ class FplApi {
             throw createAppError(
                 'PLAYER_DETAILED_STATS_ERROR',
                 `Failed to get detailed stats for player: ${playerId}`,
+                error,
+            );
+        }
+    }
+
+    /**
+     * Get live data for all players in a specific gameweek
+     */
+    async getGameweekLiveData(gameweek: number): Promise<FplLiveData> {
+        try {
+            const url = FPL_GAMEWEEK_LIVE_URL(gameweek);
+            return await this.fetchFplData<FplLiveData>(url);
+        } catch (error) {
+            throw createAppError(
+                'FPL_GAMEWEEK_LIVE_ERROR',
+                `Failed to fetch live data for gameweek: ${gameweek}`,
                 error,
             );
         }

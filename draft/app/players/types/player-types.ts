@@ -55,4 +55,8 @@ export interface PlayerStatsData {
     players: EnhancedPlayerData[];
     teamsByCode: Record<number, FplTeam>;
     positions: Positions;
+    currentGameweekData?: GameWeekData;
+    selectedGameweekData?: GameWeekData;
+    availableGameweeks?: number[];
+    selectedGameweek?: number | null;
 }

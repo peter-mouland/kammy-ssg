@@ -15,7 +15,18 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
-        // Dynamic import to keep server code on server
+        const url = new URL(request.url);
+        const gameweekParam = url.searchParams.get('gameweek');
+
+        if (gameweekParam) {
+            const gameweek = Number.parseInt(gameweekParam, 10);
+            if (!Number.isNaN(gameweek) && gameweek > 0) {
+                const { getPlayerStatsForGameweek } = await import('../players/server/players.server');
+                const playerStatsData = await getPlayerStatsForGameweek(gameweek);
+                return data<PlayerStatsData>(playerStatsData);
+            }
+        }
+
         const { getPlayerStatsData } = await import('../players/server/players.server');
         const playerStatsData = await getPlayerStatsData();
         return data<PlayerStatsData>(playerStatsData);

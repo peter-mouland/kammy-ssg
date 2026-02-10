@@ -59,6 +59,7 @@ export const CACHE_KEYS = {
         EVENTS: 'fpl:events',
         PLAYER_STATS: (playerId: string) => `fpl:player-stats:${playerId}`,
         BATCH_PLAYER_STATS: (playerIds: string[]) => `fpl:batch-stats:${playerIds.sort().join(',')}`,
+        GAMEWEEK_LIVE: (gw: number) => `fpl:gameweek-live:${gw}`,
     },
 
     // Google Sheets keys
@@ -159,6 +160,7 @@ export function getCacheTTL(key: string): number {
     if (key.includes('fpl:players')) return CACHE_TTL.FPL_PLAYERS;
     if (key.includes('fpl:teams')) return CACHE_TTL.FPL_TEAMS;
     if (key.includes('fpl:events')) return CACHE_TTL.FPL_EVENTS;
+    if (key.includes('fpl:gameweek-live')) return CACHE_TTL.FPL_PLAYER_STATS;
     if (key.includes('fpl:player-stats') || key.includes('fpl:batch-stats')) return CACHE_TTL.FPL_PLAYER_STATS;
 
     // Sheets keys

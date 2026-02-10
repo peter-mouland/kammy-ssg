@@ -11,6 +11,8 @@ interface GameweekSelectorProps {
     currentGameweekData: GameWeekData;
     selectedGameweekData: GameWeekData;
     availableGameweeks: number[];
+    showSeasonOption?: boolean;
+    isSeasonSelected?: boolean;
     onGameweekChange?: (gameweek: number) => void;
 }
 
@@ -18,6 +20,8 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     currentGameweekData,
     selectedGameweekData,
     availableGameweeks,
+    showSeasonOption = false,
+    isSeasonSelected = false,
     onGameweekChange,
 }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -31,18 +35,33 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         // onGameweekChange?.(gameweek);
     };
 
+    const handleSeasonSelect = () => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('gameweek');
+        setIsOpen(false);
+        setSearchParams(newParams, { replace: true });
+    };
+
     const handlePrevious = () => {
+        if (isSeasonSelected) {
+            handleGameweekChange(availableGameweeks[availableGameweeks.length - 1]);
+            return;
+        }
         handleGameweekChange(selectedGameweek - 1);
     };
 
     const handleNext = () => {
+        if (showSeasonOption && selectedGameweek >= availableGameweeks.length) {
+            handleSeasonSelect();
+            return;
+        }
         handleGameweekChange(selectedGameweek + 1);
     };
 
     const selectedGameweek = selectedGameweekData?.fplEvent.id || 1;
     const currentGameweek = currentGameweekData?.fplEvent.id || 1;
-    const canGoPrevious = selectedGameweek > 1;
-    const canGoNext = selectedGameweek < availableGameweeks.length;
+    const canGoPrevious = isSeasonSelected || selectedGameweek > 1;
+    const canGoNext = isSeasonSelected ? false : selectedGameweek < availableGameweeks.length || showSeasonOption;
 
     return (
         <div className={styles.gameweekSelector}>
@@ -74,7 +93,9 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                 {/* Current Gameweek Display */}
                 <div className={styles.gameweekDisplay}>
                     <button type={'button'} onClick={() => setIsOpen(!isOpen)} className={styles.gameweekButton}>
-                        <span className={styles.gameweekNumber}>{selectedGameweek}</span>
+                        <span className={styles.gameweekNumber}>
+                            {isSeasonSelected ? 'Season' : selectedGameweek}
+                        </span>
                         <span className={styles.dropdownIcon}>▼</span>
                     </button>
 
@@ -82,6 +103,18 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                     {isOpen && (
                         <div className={styles.gameweekDropdown}>
                             <div className={styles.dropdownContent}>
+                                {showSeasonOption && (
+                                    <button
+                                        type={'button'}
+                                        onClick={handleSeasonSelect}
+                                        className={`
+                                            ${styles.gameweekOption}
+                                            ${isSeasonSelected ? styles.selected : ''}
+                                        `}
+                                    >
+                                        <span>Season Totals</span>
+                                    </button>
+                                )}
                                 {availableGameweeks
                                     .sort((gwa, gwb) => (gwa > gwb ? -1 : 1))
                                     .map((gw) => (
@@ -93,7 +126,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                                             }}
                                             className={`
                                             ${styles.gameweekOption}
-                                            ${gw === selectedGameweek ? styles.selected : ''}
+                                            ${!isSeasonSelected && gw === selectedGameweek ? styles.selected : ''}
                                             ${gw === currentGameweek ? styles.current : ''}
                                         `}
                                         >

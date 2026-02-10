@@ -9,7 +9,7 @@ import { dataCache } from '../cache/data-cache.service';
 import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
-import type { FplBootstrapData, FplFixtureData, FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
+import type { FplBootstrapData, FplFixtureData, FplLiveData, FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
 import { getGameweekData } from './gameweeks';
 
 /**
@@ -81,6 +81,27 @@ class FplApiCache {
                 }
             },
             { ttlMs: getCacheTTL(CACHE_KEYS.FPL.FIXTURES) },
+        );
+    }
+
+    /**
+     * Get live data for all players in a specific gameweek
+     */
+    async getGameweekLiveData(gameweek: number): Promise<FplLiveData> {
+        const cacheKey = CACHE_KEYS.FPL.GAMEWEEK_LIVE(gameweek);
+        return await dataCache.get(
+            cacheKey,
+            async () => {
+                console.log(`🔄 getGameweekLiveData(${gameweek}) - Loading from FPL API`);
+                try {
+                    const data = await fplApi.getGameweekLiveData(gameweek);
+                    return data;
+                } catch (error) {
+                    console.error(`❌ getGameweekLiveData(${gameweek}) - Error:`, error);
+                    throw error;
+                }
+            },
+            { ttlMs: getCacheTTL(cacheKey) },
         );
     }
 

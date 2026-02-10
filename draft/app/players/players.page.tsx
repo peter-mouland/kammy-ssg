@@ -4,17 +4,37 @@
 import { useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { ScoringInfo } from '../scoring/components/scoring-info';
+import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { PlayerStatsTable } from './components/player-stats-table';
 import type { PlayerStatsData } from './types/player-types';
 
 export const PlayersPage = () => {
-    const { players, teamsByCode } = useLoaderData<PlayerStatsData>();
+    const { players, teamsByCode, currentGameweekData, selectedGameweekData, availableGameweeks, selectedGameweek } =
+        useLoaderData<PlayerStatsData>();
+
+    const isSeasonView = selectedGameweek === null || selectedGameweek === undefined;
+    const subtitle = isSeasonView
+        ? `Comprehensive stats for all ${players.length} Premier League players with custom scoring`
+        : `Gameweek ${selectedGameweek} stats for all ${players.length} Premier League players`;
 
     return (
         <div>
             <PageHeader
                 title={'Player Statistics'}
-                subTitle={`Comprehensive stats for all ${players.length} Premier League players with custom scoring`}
+                subTitle={subtitle}
+                actions={
+                    currentGameweekData &&
+                    selectedGameweekData &&
+                    availableGameweeks && (
+                        <GameweekSelector
+                            currentGameweekData={currentGameweekData}
+                            selectedGameweekData={isSeasonView ? currentGameweekData : selectedGameweekData}
+                            availableGameweeks={availableGameweeks}
+                            showSeasonOption
+                            isSeasonSelected={isSeasonView}
+                        />
+                    )
+                }
             />
 
             <ScoringInfo />
