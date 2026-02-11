@@ -1,0 +1,214 @@
+/* Team of the Week pitch layout */
+
+.container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    margin: 0 0 1rem 0;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.pitch {
+    background: linear-gradient(90deg, #2d5a2d 0%, #4a7c4a 25%, #2d5a2d 50%, #4a7c4a 75%, #2d5a2d 100%);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative;
+    border: 3px solid #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: clamp(min(100%, 768px), 325px, max(100%, 768px));
+
+}
+
+.pitchInner {
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 16px 8px;
+}
+
+/* Goal markings */
+.goal {
+    position: absolute;
+    top: -3px;
+    left: 30%;
+    right: 30%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 3px;
+}
+
+.penaltyArea {
+    position: absolute;
+    bottom: -3px;
+    left: 25%;
+    right: 25%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 3px;
+}
+
+/* Formation rows */
+.formation {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Wide rows spread to edges */
+.rowWide {
+    composes: row;
+    justify-content: space-between;
+    padding: 0 4px;
+}
+
+/* Player card */
+.playerCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    min-width: 70px;
+    max-width: 100px;
+    transition: transform 0.15s ease;
+}
+
+.playerCard:hover {
+    transform: scale(1.05);
+}
+
+.photoWrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    margin-bottom: 4px;
+}
+
+.photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.name {
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    line-height: 1.2;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.team {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.manager {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: var(--font-weight-medium);
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pointsBadge {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 2px;
+    backdrop-filter: blur(4px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pitch {
+        padding: 12px;
+    }
+
+    .pitchInner {
+        padding: 12px 4px;
+    }
+
+    .formation {
+        gap: 8px;
+    }
+
+    .photoWrapper {
+        width: 44px;
+        height: 44px;
+    }
+
+    .name {
+        font-size: 10px;
+        max-width: 65px;
+    }
+
+    .team {
+        font-size: 8px;
+    }
+
+    .manager {
+        font-size: 8px;
+        max-width: 65px;
+    }
+
+    .pointsBadge {
+        font-size: 10px;
+        padding: 1px 6px;
+    }
+
+    .playerCard {
+        min-width: 55px;
+        max-width: 75px;
+    }
+}
+
+@media (max-width: 480px) {
+    .photoWrapper {
+        width: 36px;
+        height: 36px;
+    }
+
+    .playerCard {
+        min-width: 45px;
+        max-width: 65px;
+    }
+
+    .name {
+        font-size: 9px;
+        max-width: 55px;
+    }
+
+    .pointsBadge {
+        font-size: 9px;
+    }
+}

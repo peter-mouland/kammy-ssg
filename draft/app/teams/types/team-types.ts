@@ -225,14 +225,7 @@ export interface TeamStatsProps {
     teamData: TeamGameweekData;
     gameweek: number;
     isCurrentGameweek: boolean;
-    hideToggle?: boolean;
     viewMode: StatsViewMode;
-    onViewModeChange: (mode: StatsViewMode) => void;
-}
-
-export interface StatsViewToggleProps {
-    viewMode: StatsViewMode;
-    onToggle: (mode: StatsViewMode) => void;
 }
 
 export interface ContributingStatsProps {

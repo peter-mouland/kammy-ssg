@@ -1,6 +1,6 @@
 // app/teams/types/team-view-types.ts
 
-import type { ManagerId, StatsViewMode, TeamPositionSlot, UserTeamsSheetData } from './team-types';
+import type { ManagerId, TeamPositionSlot, UserTeamsSheetData } from './team-types';
 
 /**
  * Tab management types
@@ -46,8 +46,6 @@ export interface TeamViewTabsProps {
     onTabChange: (tab: TeamViewTab) => void;
     teamCount?: number;
     playerCount?: number;
-    viewMode: StatsViewMode;
-    setViewMode: (viewMode: StatsViewMode) => void;
 }
 
 /**

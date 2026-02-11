@@ -7,7 +7,7 @@ import { PositionSlotCard } from './position-slot-card';
 import { TeamStats } from './team-stats';
 import styles from './team-view.module.css';
 
-export const MyTeamView = ({ data, viewMode, handleViewModeChange }) => {
+export const MyTeamView = ({ data, viewMode }) => {
     const selectedGameweek = data.selectedGameweekData.fplEvent.id;
     const teamData = data.currentTeam;
     const substitute = teamData.roster.sub_0;
@@ -49,8 +49,6 @@ export const MyTeamView = ({ data, viewMode, handleViewModeChange }) => {
                     gameweek={selectedGameweek}
                     isCurrentGameweek={isCurrentGameweek}
                     viewMode={viewMode}
-                    onViewModeChange={handleViewModeChange}
-                    hideToggle={false}
                 />
             </div>
         </div>

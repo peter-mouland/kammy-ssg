@@ -1,14 +1,12 @@
 // app/teams/components/team-view.tsx
 
 import type * as React from 'react';
-import { useState } from 'react';
 import { Link, useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../../_shared/components/page-header';
-import { SelectDivision } from '../../_shared/components/select-division';
 import { SelectUser } from '../../_shared/components/select-user';
 import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../../_shared/features/user-selection/user-selection-provider';
-import type { StatsViewMode, TeamViewData, UserTeamsSheetData } from '../types/team-types';
+import type { StatsViewMode, TeamViewData } from '../types/team-types';
 import type { TeamViewTab } from '../types/team-view-types';
 import { GameweekSelector } from './gameweek-selector';
 import styles from './team-view.module.css';
@@ -46,8 +44,9 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
     // Get active tab from URL or default to 'my-team'
     const activeTab = (searchParams.get('tab') as TeamViewTab) || 'my-team';
 
-    // Global view mode state - controls both pitch and stats
-    const [viewMode, setViewMode] = useState<StatsViewMode>('gameweek');
+    // Derive view mode from URL: ?gameweek=season means season view
+    const isSeasonView = searchParams.get('gameweek') === 'season';
+    const viewMode: StatsViewMode = isSeasonView ? 'season' : 'gameweek';
 
     const handleTabChange = (tab: TeamViewTab) => {
         const newParams = new URLSearchParams(searchParams);
@@ -55,11 +54,7 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
         setSearchParams(newParams);
     };
 
-    const handleViewModeChange = (newMode: StatsViewMode) => {
-        setViewMode(newMode);
-    };
-
-    const isCurrentGameweek = selectedGameweek === data.currentGameweek;
+    const isCurrentGameweek = !isSeasonView && selectedGameweek === data.currentGameweek;
 
     if (!data.currentUser || !data.division) {
         return (
@@ -78,8 +73,10 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                             />
                             <GameweekSelector
                                 currentGameweekData={data.currentGameweekData}
-                                selectedGameweekData={data.selectedGameweekData}
+                                selectedGameweekData={isSeasonView ? data.currentGameweekData : data.selectedGameweekData}
                                 availableGameweeks={data.availableGameweeks}
+                                showSeasonOption
+                                isSeasonSelected={isSeasonView}
                             />
                         </>
                     }
@@ -90,8 +87,6 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                 <TeamViewTabs
                     activeTab={activeTab}
                     onTabChange={handleTabChange}
-                    viewMode={viewMode}
-                    setViewMode={handleViewModeChange}
                     playerCount={data.allTeamsData?.totalPlayers}
                 />
             </>
@@ -120,8 +115,10 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                         />
                         <GameweekSelector
                             currentGameweekData={data.currentGameweekData}
-                            selectedGameweekData={data.selectedGameweekData}
+                            selectedGameweekData={isSeasonView ? data.currentGameweekData : data.selectedGameweekData}
                             availableGameweeks={data.availableGameweeks}
+                            showSeasonOption
+                            isSeasonSelected={isSeasonView}
                         />
                     </>
                 }
@@ -134,14 +131,12 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
             <TeamViewTabs
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
-                viewMode={viewMode}
-                setViewMode={handleViewModeChange}
                 playerCount={data.allTeamsData?.totalPlayers}
             />
 
             {/*/!* Tab Content *!/*/}
             {activeTab === 'my-team' && (
-                <MyTeamView viewMode={viewMode} handleViewModeChange={handleViewModeChange} data={data} />
+                <MyTeamView viewMode={viewMode} data={data} />
             )}
             {activeTab === 'all-teams' && (
                 <AllTeamsView

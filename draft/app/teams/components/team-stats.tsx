@@ -6,7 +6,6 @@ import { calculateRosterTotalPoints, getRosterTopScorer } from '../../_shared/li
 import { calculateContributingStats } from '../lib/team-stats-utils';
 import type { StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
 import { ContributingStats } from './contributing-stats';
-import { StatsViewToggle } from './stats-view-toggle';
 import styles from './team-stats.module.css';
 
 // Get position display name
@@ -26,8 +25,6 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
     teamData,
     gameweek,
     viewMode,
-    onViewModeChange,
-    hideToggle = false,
 }) => {
     // State for contributing stats expansion
     const [isStatsExpanded, setIsStatsExpanded] = useState(false);
@@ -90,13 +87,7 @@ export const TeamStats: React.FC<TeamStatsProps> = ({
 
     return (
         <div className={styles.teamStats}>
-            {hideToggle ? (
-                <h3 className={styles.sectionTitle}>Team Statistics</h3>
-            ) : (
-                <div className={styles.sectionHeader}>
-                    <h3 className={styles.sectionTitle}>Team Statistics</h3>
-                </div>
-            )}
+            <h3 className={styles.sectionTitle}>Team Statistics</h3>
 
             {/* Main Stats Grid */}
             <div className={styles.mainStatsGrid}>

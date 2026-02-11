@@ -37,7 +37,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
 
     const handleSeasonSelect = () => {
         const newParams = new URLSearchParams(searchParams);
-        newParams.delete('gameweek');
+        newParams.set('gameweek', 'season');
         setIsOpen(false);
         setSearchParams(newParams, { replace: true });
     };

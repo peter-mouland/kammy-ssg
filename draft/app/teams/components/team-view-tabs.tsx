@@ -1,14 +1,11 @@
 // app/teams/components/team-view-tabs.tsx
 import type React from 'react';
 import type { TeamViewTabsProps } from '../types/team-view-types';
-import { StatsViewToggle } from './stats-view-toggle';
 import styles from './team-view-tabs.module.css';
 
 export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({
     activeTab,
     onTabChange,
-    setViewMode,
-    viewMode,
     playerCount,
 }) => {
     return (
@@ -46,10 +43,6 @@ export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({
                     <span className={styles.tabIcon}>🏆</span>
                     <span className={styles.tabLabel}>TOTW</span>
                 </button>
-
-                <div className={styles.viewModeToggle}>
-                    <StatsViewToggle viewMode={viewMode} onToggle={setViewMode} />
-                </div>
             </div>
 
             <div className={styles.tabIndicator} data-active-tab={activeTab} />

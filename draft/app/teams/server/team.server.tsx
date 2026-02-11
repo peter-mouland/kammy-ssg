@@ -23,8 +23,9 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
         const currentUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
         const currentGameweek = currentGameweekData.fplEvent.id;
         const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
-        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
-        const targetGameweek = selectedGameweek ?? currentGameweek;
+        const gameweekParam = url.searchParams.get('gameweek');
+        const parsedGameweek = gameweekParam ? Number.parseInt(gameweekParam, 10) : currentGameweek;
+        const targetGameweek = Number.isNaN(parsedGameweek) ? currentGameweek : parsedGameweek;
         const selectedGameweekData = events.find((e) => e.fplEvent.id === targetGameweek) || currentGameweekData;
 
         if (!currentUser) {
