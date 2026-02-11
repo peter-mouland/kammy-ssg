@@ -3,6 +3,7 @@
 import type { CustomPosition } from '../../players/types/player-types';
 import { convertToPlayerGameweekStats } from '../../scoring/lib/data-conversion';
 import { calculateGameweekPoints } from '../../scoring/lib/calculations';
+import type { DivisionTeamsDocument, UserTeamsSheetData } from '../../teams/types/team-types';
 import type { TeamOfTheWeekData, TeamOfTheWeekPlayer } from '../types/league-standings-types';
 
 const POSITION_COUNTS: Record<CustomPosition, number> = {
@@ -14,7 +15,10 @@ const POSITION_COUNTS: Record<CustomPosition, number> = {
     ca: 2,
 };
 
-export async function getTeamOfTheWeek(gameweek: number): Promise<TeamOfTheWeekData | null> {
+export async function getTeamOfTheWeek(
+    gameweek: number,
+    ownership?: { divisionDoc: DivisionTeamsDocument; userTeams: UserTeamsSheetData[] },
+): Promise<TeamOfTheWeekData | null> {
     try {
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
         const { readPlayers } = await import('../../_shared/lib/sheets/players');
@@ -43,6 +47,21 @@ export async function getTeamOfTheWeek(gameweek: number): Promise<TeamOfTheWeekD
             teamsByCode[team.code] = { short_name: team.short_name };
         }
 
+        // Build playerCode -> managerName map if ownership data is provided
+        const managerByPlayerCode = new Map<number, string>();
+        if (ownership) {
+            const userMap = new Map(ownership.userTeams.map((u) => [u.userId, u.userName]));
+            for (const [userId, teamData] of Object.entries(ownership.divisionDoc.teams)) {
+                const managerName = userMap.get(userId);
+                if (!managerName) continue;
+                for (const slot of Object.values(teamData.roster)) {
+                    if (slot?.player?.playerCode) {
+                        managerByPlayerCode.set(slot.player.playerCode, managerName);
+                    }
+                }
+            }
+        }
+
         // Calculate custom points for each player with a sheet position
         const playerScores: TeamOfTheWeekPlayer[] = [];
 
@@ -62,6 +81,7 @@ export async function getTeamOfTheWeek(gameweek: number): Promise<TeamOfTheWeekD
                 team_code: fplPlayer.team_code,
                 position,
                 points: points.total,
+                manager_name: managerByPlayerCode.get(fplPlayer.code),
             });
         }
 

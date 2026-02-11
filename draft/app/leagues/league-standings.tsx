@@ -9,7 +9,6 @@ import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { PositionRankChange } from './components/position-rank-change';
-import { TeamOfTheWeek } from './components/team-of-the-week';
 import styles from './league-standings.module.css';
 import { calculatePositionRankings } from './lib/simple-position-rankings';
 import type {
@@ -304,7 +303,6 @@ const LeagueStandingsComp = ({
     availableGameweeks,
     standingsData,
     persistedUser,
-    teamOfTheWeek,
 }: EnhancedLeagueStandingsLoaderData) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -378,7 +376,6 @@ const LeagueStandingsComp = ({
                 </div>
             )}
 
-            {teamOfTheWeek && <TeamOfTheWeek data={teamOfTheWeek} />}
         </>
     );
 };

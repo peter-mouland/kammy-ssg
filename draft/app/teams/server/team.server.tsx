@@ -56,6 +56,13 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
         // Check if we need to load all teams data (for 'all-teams' tab)
         const allTeamsData = transformToTeamRows(currentTeams.divisionDoc, userTeams);
 
+        // Get Team of the Week with manager ownership data
+        const { getTeamOfTheWeek } = await import('../../leagues/server/team-of-the-week.server');
+        const teamOfTheWeek = await getTeamOfTheWeek(targetGameweek, {
+            divisionDoc: currentTeams.divisionDoc,
+            userTeams,
+        });
+
         return {
             persistedUser,
             currentUser,
@@ -69,6 +76,7 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
             teamsByCode,
             fplPlayersByCode,
             userTeams: userTeams.sort((a, b) => (a.userId < b.userId ? -1 : 1)),
+            teamOfTheWeek: teamOfTheWeek ?? undefined,
         };
     } catch (error) {
         console.error('Load team data error:', error);

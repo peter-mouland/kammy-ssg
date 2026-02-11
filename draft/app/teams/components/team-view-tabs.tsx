@@ -36,6 +36,17 @@ export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({
                     <span className={styles.tabLabel}>All Teams</span>
                 </button>
 
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'totw'}
+                    onClick={() => onTabChange('totw')}
+                    className={`${styles.tab} ${activeTab === 'totw' ? styles.active : ''}`}
+                >
+                    <span className={styles.tabIcon}>🏆</span>
+                    <span className={styles.tabLabel}>TOTW</span>
+                </button>
+
                 <div className={styles.viewModeToggle}>
                     <StatsViewToggle viewMode={viewMode} onToggle={setViewMode} />
                 </div>

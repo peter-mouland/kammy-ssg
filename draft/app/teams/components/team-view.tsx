@@ -12,6 +12,7 @@ import type { StatsViewMode, TeamViewData, UserTeamsSheetData } from '../types/t
 import type { TeamViewTab } from '../types/team-view-types';
 import { GameweekSelector } from './gameweek-selector';
 import styles from './team-view.module.css';
+import { TeamOfTheWeek } from './team-of-the-week';
 import { AllTeamsView } from './team-view-all-teams';
 import { MyTeamView } from './team-view-my-team';
 import { TeamViewTabs } from './team-view-tabs';
@@ -139,9 +140,10 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
             />
 
             {/*/!* Tab Content *!/*/}
-            {activeTab === 'my-team' ? (
+            {activeTab === 'my-team' && (
                 <MyTeamView viewMode={viewMode} handleViewModeChange={handleViewModeChange} data={data} />
-            ) : (
+            )}
+            {activeTab === 'all-teams' && (
                 <AllTeamsView
                     teamsByCode={data.teamsByCode}
                     fplPlayersByCode={data.fplPlayersByCode}
@@ -153,6 +155,9 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                     isCurrentGameweek={isCurrentGameweek}
                     viewMode={viewMode}
                 />
+            )}
+            {activeTab === 'totw' && data.teamOfTheWeek && (
+                <TeamOfTheWeek data={data.teamOfTheWeek} />
             )}
         </>
     );

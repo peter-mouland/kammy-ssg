@@ -5,7 +5,6 @@ import { Link, useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { RankBadge, Table, type TableColumn } from '../_shared/components/table';
 import { PositionRankChange } from '../leagues/components/position-rank-change';
-import { TeamOfTheWeek } from '../leagues/components/team-of-the-week';
 import styles from '../leagues/league-standings.module.css';
 import { calculatePositionRankings } from '../leagues/lib/simple-position-rankings';
 import type {
@@ -192,7 +191,7 @@ function PositionPointsTable({
 }
 
 export const LeagueStandings = () => {
-    const { divisions, selectedGameweek, standingsData, teamOfTheWeek } =
+    const { divisions, selectedGameweek, standingsData } =
         useLoaderData<EnhancedLeagueStandingsLoaderData>();
 
     return (
@@ -216,7 +215,6 @@ export const LeagueStandings = () => {
                     );
                 })}
 
-            {teamOfTheWeek && <TeamOfTheWeek data={teamOfTheWeek} />}
         </div>
     );
 };

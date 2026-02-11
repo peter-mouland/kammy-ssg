@@ -4,6 +4,7 @@
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { EnhancedPlayerData, Points } from '../../scoring/types/scoring-types';
+import type { TeamOfTheWeekData } from '../../leagues/types/league-standings-types';
 import type { AllTeamsData } from './team-view-types';
 
 export type ManagerId = string;
@@ -172,6 +173,7 @@ export interface TeamViewData {
     teamsByCode: Record<number, FplTeam>;
     fplPlayersByCode: Record<number, EnhancedPlayerData>;
     userTeams: UserTeamsSheetData[];
+    teamOfTheWeek?: TeamOfTheWeekData;
 }
 
 /**

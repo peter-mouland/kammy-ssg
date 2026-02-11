@@ -5,7 +5,7 @@ import type { ManagerId, StatsViewMode, TeamPositionSlot, UserTeamsSheetData } f
 /**
  * Tab management types
  */
-export type TeamViewTab = 'my-team' | 'all-teams';
+export type TeamViewTab = 'my-team' | 'all-teams' | 'totw';
 
 /**
  * All teams view data

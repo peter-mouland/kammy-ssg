@@ -39,6 +39,7 @@ export interface TeamOfTheWeekPlayer {
     team_code: number;
     position: CustomPosition;
     points: number;
+    manager_name?: string;
 }
 
 export interface TeamOfTheWeekData {
@@ -64,7 +65,6 @@ export interface EnhancedLeagueStandingsLoaderData {
     availableGameweeks: number[];
     standingsData: Record<string, LeagueStandingsTeamData[]>;
     persistedUser: { selectedUserId: ManagerId | null; requiresSelection: boolean };
-    teamOfTheWeek?: TeamOfTheWeekData;
 }
 
 export interface PositionColumnConfig {

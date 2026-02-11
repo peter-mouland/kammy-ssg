@@ -77,6 +77,11 @@
     width: 160px; /* Approximate width of "All Teams" tab */
 }
 
+.tabIndicator[data-active-tab="totw"] {
+    left: 280px; /* Start after "All Teams" tab */
+    width: 100px; /* Approximate width of "TOTW" tab */
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .tab {
@@ -91,5 +96,10 @@
     .tabIndicator[data-active-tab="all-teams"] {
         left: 100px;
         width: 120px;
+    }
+
+    .tabIndicator[data-active-tab="totw"] {
+        left: 220px;
+        width: 80px;
     }
 }
