@@ -24,7 +24,7 @@ export function simulateTransferOnRoster(currentRoster: TeamRoster, transfer: Pr
                     ...simulatedRoster[outgoingSlot.slotKey],
                     player: {
                         ...simulatedRoster[outgoingSlot.slotKey].player,
-                        playerId: transfer.playerIn.code,
+                        playerId: transfer.playerIn.id,
                         playerCode: transfer.playerIn.code,
                         playerName: transfer.playerIn.web_name,
                         playerPosition: transfer.playerIn.draft.position,

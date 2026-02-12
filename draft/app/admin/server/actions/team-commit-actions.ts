@@ -48,7 +48,9 @@ export async function handleCommitTeamsToFirestore(
             const legacyPlayers = userPicks.map((pick) => {
                 const fplPlayer = fplPlayersMap.get(pick.playerCode);
                 if (!fplPlayer) {
-                    console.warn(`🚨 FPL player not found for ${userId} code ${pick.playerCode}`);
+                    throw new Error(
+                        `FPL player not found for user '${userId}' code ${pick.playerCode} — cannot create roster`,
+                    );
                 }
 
                 return {

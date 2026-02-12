@@ -30,6 +30,11 @@ export async function calculateSingleTeamPoints({
     previousDivisionDoc,
 }: CalcProps) {
     try {
+        for (const [slotKey, { player }] of Object.entries(teamData.roster)) {
+            if (!player?.playerId) {
+                throw new Error(`Missing playerId in slot '${slotKey}' for user '${userId}' in division '${divisionDoc.divisionId}' GW${gameweek}`);
+            }
+        }
         const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
         const rosteredPlayerIds = Object.values(teamData.roster).map(({ player }) => player.playerId);
         const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(rosteredPlayerIds);

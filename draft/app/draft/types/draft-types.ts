@@ -17,8 +17,8 @@ export interface DraftPickData {
     pickNumber: number;
     round: number;
     userId: string;
-    playerId: string;
-    playerCode: string;
+    playerId: number;
+    playerCode: number;
     playerName: string;
     teamCode: string;
     teamName: string;
@@ -61,8 +61,8 @@ export interface FirebaseDraftPick {
     pickNumber: number;
     round: number;
     userId: string;
-    playerId: string;
-    playerCode: string;
+    playerId: number;
+    playerCode: number;
     playerName: string;
     teamCode: string;
     teamName: string;

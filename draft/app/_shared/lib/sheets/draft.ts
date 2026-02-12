@@ -44,6 +44,8 @@ const DRAFT_PICKS_HEADERS: Record<string, keyof DraftPickData> = {
 const DRAFT_PICKS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickData, (value: any) => any>> = {
     pickNumber: parseSheetNumber,
     round: parseSheetNumber,
+    playerId: parseSheetNumber,
+    playerCode: parseSheetNumber,
     teamCode: parseSheetNumber,
     pickedAt: parseSheetDate,
 };

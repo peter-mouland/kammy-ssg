@@ -186,7 +186,7 @@ export function PlayerInSelector({
             eligibility: getPlayerEligibility(player),
             ownership: getPlayerOwnership(player, ownedPlayersByCode),
         }));
-    }, [availablePlayers, filters.positions, filters.search, filters.status, transferType, playerOut]);
+    }, [availablePlayers, filters.positions, filters.search, filters.status, filters.teams, transferType, playerOut]);
 
     // Define table columns using the EXACT same pattern as league-standings
     const columns: TableColumn<EnhancedPlayerData>[] = [

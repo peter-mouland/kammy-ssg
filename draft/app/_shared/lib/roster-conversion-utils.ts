@@ -34,6 +34,10 @@ export function convertLegacyPlayersToRoster(legacyPlayers: any[]): TeamRoster {
             continue;
         }
 
+        if (!player.playerId || isNaN(Number(player.playerId))) {
+            throw new Error(`Invalid playerId for ${player.player} (code: ${player.playerCode}) in slot ${slot}`);
+        }
+
         const { position, index } = parsePositionSlot(slot);
         roster[slot] = {
             player: {

@@ -141,7 +141,7 @@ export async function makeDraftPick(formData: FormData): Promise<{ success?: boo
         }
 
         // Check if player is already drafted in this division
-        const isDrafted = draftPicks.some((pick) => pick.playerCode === String(playerCode));
+        const isDrafted = draftPicks.some((pick) => pick.playerCode === playerCode);
         if (isDrafted) {
             return { error: 'Player already drafted in this division' };
         }

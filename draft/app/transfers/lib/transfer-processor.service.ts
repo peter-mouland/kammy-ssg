@@ -318,6 +318,9 @@ type LoanInfo = {
     onLoanFrom: string | null;
 };
 const movePlayer = ({ player, slot }, loanInfo?: LoanInfo) => {
+    if (!player.id) {
+        throw new Error(`Cannot move player without id: ${player.web_name} (code: ${player.code})`);
+    }
     return {
         player: {
             playerId: player.id,

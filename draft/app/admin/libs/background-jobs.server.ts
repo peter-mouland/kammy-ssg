@@ -127,6 +127,7 @@ async function processGameweekWithProgress(
 
             if (!divisionDoc) {
                 console.error('no divisionDoc', division.id, gameweekId, options);
+                // continue;
             }
 
             completedOperations = await processDivisionWithProgress(
