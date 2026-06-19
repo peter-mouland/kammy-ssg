@@ -1,46 +1,55 @@
-name: build
+name: CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
-  build:
+  lint:
+    name: lint
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [22.16.0]
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22.16.0'
+          cache: 'yarn'
 
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        id: yarn-cache
-        with:
-            path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-            restore-keys: |
-                ${{ runner.os }}-yarn-
-
-      - name: Install Dependencies
+      - name: Install dependencies
         run: yarn install --immutable
         env:
           CI: true
-#
-#      - name: Run Build
-#        run: |
-#          yarn build:prod
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Type check
+        run: yarn type-check
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: 'yarn'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        env:
+          CI: true
+
+      - name: Test
+        run: yarn test
