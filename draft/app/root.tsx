@@ -1,5 +1,6 @@
 /* Location: app/root.tsx */
 
+import './_shared/lib/ssr-gaxios-fix';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
