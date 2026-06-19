@@ -32,7 +32,8 @@
         "local": "firebase emulators:start",
         "functions:build": "yarn workspace functions build",
         "functions:dev": "yarn workspace functions serve",
-        "functions:deploy": "yarn workspace functions build && firebase deploy --only functions"
+        "functions:deploy": "yarn workspace functions build && firebase deploy --only functions",
+        "test": "yarn workspace draft vitest run"
     },
     "workspaces": [
         "draft",
