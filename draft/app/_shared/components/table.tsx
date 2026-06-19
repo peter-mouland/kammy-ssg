@@ -202,6 +202,8 @@ export function Table<T = any>({
 
         const key = column.sortKey || column.key;
         if (sortKey !== key) {
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML entities needed — Safari renders ↕ as emoji without the variation selector, so we can't use the character directly
+            // biome-ignore lint/style/useNamingConvention: __html is the required React API for dangerouslySetInnerHTML
             return <span className={styles.sortIcon} dangerouslySetInnerHTML={{ __html: '&#8597;&#xFE0E;' }} />;
         }
 
@@ -211,6 +213,8 @@ export function Table<T = any>({
             return <span className={styles.sortIcon}>↓</span>;
         }
 
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML entities needed — Safari renders ↕ as emoji without the variation selector, so we can't use the character directly
+        // biome-ignore lint/style/useNamingConvention: __html is the required React API for dangerouslySetInnerHTML
         return <span className={styles.sortIcon} dangerouslySetInnerHTML={{ __html: '&#8597;&#xFE0E;' }} />;
     };
 

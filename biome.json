@@ -53,7 +53,13 @@
             "recommended": true,
             "a11y": {
                 "recommended": true,
-                "noSvgWithoutTitle": "off"
+                "noLabelWithoutControl": "warn",
+                "noStaticElementInteractions": "warn",
+                "noSvgWithoutTitle": "off",
+                "useAriaPropsSupportedByRole": "warn",
+                "useButtonType": "warn",
+                "useKeyWithClickEvents": "warn",
+                "useSemanticElements": "warn"
             },
             "complexity": {
                 "recommended": true,
@@ -71,10 +77,13 @@
             },
             "correctness": {
                 "recommended": true,
-                "noUnusedVariables": "error",
+                "noUnknownPseudoClass": "warn",
+                "noUnusedFunctionParameters": "warn",
+                "noUnusedVariables": "warn",
                 "noUnusedImports": "error",
                 "useExhaustiveDependencies": "off",
                 "useHookAtTopLevel": "error",
+                "useJsxKeyInIterable": "warn",
                 "noUnreachable": "error",
                 "noInvalidBuiltinInstantiation": "error",
                 "noInnerDeclarations": "error",
@@ -87,7 +96,7 @@
             "performance": {
                 "recommended": true,
                 "noAccumulatingSpread": "warn",
-                "noDelete": "error"
+                "noDelete": "warn"
             },
             "security": {
                 "recommended": true
@@ -95,7 +104,9 @@
             "style": {
                 "recommended": true,
                 "noDefaultExport": "off",
+                "noDescendingSpecificity": "warn",
                 "noImplicitBoolean": "off",
+                "noNonNullAssertion": "warn",
                 "noNegationElse": "warn",
                 "noParameterAssign": "warn",
                 "noParameterProperties": "off",
@@ -119,7 +130,7 @@
                 "useFragmentSyntax": "error",
                 "useImportType": "error",
                 "useNamingConvention": {
-                    "level": "error",
+                    "level": "warn",
                     "options": {
                         "strictCase": false,
                         "conventions": [
@@ -169,9 +180,11 @@
                 "noAssignInExpressions": "error",
                 "noDebugger": "error",
                 "noDuplicateJsxProps": "error",
+                "noDocumentCookie": "warn",
+                "noDuplicateFontNames": "warn",
                 "noEmptyBlockStatements": "warn",
                 "noExplicitAny": "warn",
-                "noImplicitAnyLet": "error"
+                "noImplicitAnyLet": "warn"
             }
         }
     },

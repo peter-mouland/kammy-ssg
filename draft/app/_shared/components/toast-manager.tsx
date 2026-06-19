@@ -2,6 +2,13 @@
 
 // components/toast-manager/toast-manager.tsx
 import { useCallback, useEffect, useState } from 'react';
+
+declare global {
+    interface Window {
+        showToast?: (toast: Omit<Toast, 'id'>) => void;
+        dismissAllToasts?: () => void;
+    }
+}
 import styles from './toast-manager.module.css';
 
 interface Toast {
@@ -51,12 +58,12 @@ export function ToastManager({ maxToasts = 3 }: ToastManagerProps) {
 
     // Expose methods via global function for easy access
     useEffect(() => {
-        (window as any).showToast = addToast;
-        (window as any).dismissAllToasts = dismissAll;
+        window.showToast = addToast;
+        window.dismissAllToasts = dismissAll;
 
         return () => {
-            (window as any).showToast = undefined;
-            (window as any).dismissAllToasts = undefined;
+            window.showToast = undefined;
+            window.dismissAllToasts = undefined;
         };
     }, [addToast, dismissAll]);
 
@@ -115,14 +122,14 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
 // Hook for easy toast usage
 export function useToast() {
     const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
-        if ((window as any).showToast) {
-            (window as any).showToast(toast);
+        if (window.showToast) {
+            window.showToast(toast);
         }
     }, []);
 
     const dismissAll = useCallback(() => {
-        if ((window as any).dismissAllToasts) {
-            (window as any).dismissAllToasts();
+        if (window.dismissAllToasts) {
+            window.dismissAllToasts();
         }
     }, []);
 

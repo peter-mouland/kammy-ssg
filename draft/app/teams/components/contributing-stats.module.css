@@ -132,7 +132,6 @@
     color: var(--color-primary);
 }
 
-.statItem:has(.pointsValue:contains('-')) .pointsValue,
 .statItem .pointsValue[data-negative="true"] {
     background: #fee2e2;
     color: #dc2626;

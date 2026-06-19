@@ -68,7 +68,8 @@
 
 /* Wide rows spread to edges */
 .rowWide {
-    composes: row;
+    display: flex;
+    gap: 8px;
     justify-content: space-between;
     padding: 0 4px;
 }

@@ -1,3 +1,4 @@
+// biome-ignore-all lint/style/useNamingConvention: object keys are the non-ASCII characters being normalized — they cannot be renamed
 export function fuzzyStringMatch(
     str1: string,
     str2: string,
