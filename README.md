@@ -231,23 +231,88 @@ The points system is fully integrated with player detail pages, showing:
 - Season aggregations
 - Visual indicators for positive/negative points
 
-## Deployment
+## Environment Variables
 
-### Environment Variables
-Ensure these are set in production:
+There are two env files in play. Both are gitignored — never commit them.
+
+| File | Purpose |
+|---|---|
+| `draft/.env` | Local development. Used by Vite dev server and the SSR process when running locally. |
+| `.env.local` | Alternative local override (same variables, takes precedence if present). |
+
+Copy `.env.example` to `draft/.env` to get started:
+
 ```bash
-GOOGLE_SHEETS_ID=your_production_spreadsheet_id
-GOOGLE_SHEETS_CREDENTIALS=your_base64_service_account_credentials
-NODE_ENV=production
+cp .env.example draft/.env
 ```
+
+### Variable reference
+
+#### Google Sheets (server-side only)
+
+| Variable | Description |
+|---|---|
+| `GOOGLE_SHEETS_ID` | The spreadsheet ID from the Google Sheets URL (`/spreadsheets/d/<ID>/edit`) |
+| `GOOGLE_SERVICE_ACCOUNT_KEY` | Base64-encoded service account JSON for the Google Sheets API. Used to read/write all league data (transfers, draft picks, rosters). |
+
+To encode a service account key file:
+```bash
+base64 -i ./path/to/service-account.json
+```
+
+The service account email (inside the JSON) must have **Editor** access to the spreadsheet.
+
+#### Firebase Admin (server-side only)
+
+| Variable | Description |
+|---|---|
+| `MY_FIREBASE_SERVICE_ACCOUNT_KEY` | Base64-encoded Firebase Admin SDK service account JSON. Used server-side to read/write Firestore (persistent cache) and interact with Firebase Auth. |
+| `MY_FIREBASE_DATABASE_URL` | Firebase Realtime Database URL (e.g. `https://<project>-default-rtdb.europe-west1.firebasedatabase.app/`). Used server-side for draft sync. |
+
+#### Firebase Client (exposed to browser via Vite)
+
+These are prefixed `VITE_` so Vite bundles them into the client. They are not secret — they identify the Firebase project for the client SDK.
+
+| Variable | Description |
+|---|---|
+| `VITE_FIREBASE_API_KEY` | Firebase web API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | Firebase app ID |
+| `VITE_FIREBASE_DATABASE_URL` | Realtime Database URL — also needed client-side for the live draft room |
+
+#### Optional
+
+| Variable | Default | Description |
+|---|---|---|
+| `FPL_API_DELAY` | `1000` | Milliseconds to wait between FPL API requests when batching player stats. Increase if hitting rate limits. |
+| `FIRESTORE_DATABASE_ID` | `draft` | Firestore database ID. The project uses a named database called `draft`, not the Firebase default. |
+
+### Security notes
+
+- `GOOGLE_SERVICE_ACCOUNT_KEY` and `MY_FIREBASE_SERVICE_ACCOUNT_KEY` are full private keys. Treat them like passwords.
+- The `VITE_FIREBASE_*` variables are intentionally public — Firebase security rules on the project control what the client can actually access.
+- All env files (`draft/.env`, `.env.local`, `.env.prod`) are in `.gitignore`. Verify before committing.
+
+---
+
+## Deployment
 
 ### Build & Deploy
 ```bash
-npm run build
-npm run preview
+yarn build          # builds draft app + copies to functions + compiles functions
+firebase deploy     # deploys hosting + Cloud Functions
 ```
 
-The application is ready for deployment to platforms like Vercel, Netlify, or any Node.js hosting service.
+Or individually:
+```bash
+firebase deploy --only hosting
+firebase deploy --only functions
+```
+
+Production environment variables are set in the Firebase project settings (or via `firebase functions:config:set` for legacy config).
 
 ## Contributing
 

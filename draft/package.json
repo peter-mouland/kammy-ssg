@@ -14,7 +14,8 @@
     "typecheck": "react-router typegen && tsc",
     "check-unused-css": "check-unused-css app",
     "knip": "knip --fix",
-    "remove-unused-vars": "biome lint --only correctness/noUnusedVariables --reporter json | remove-unused-vars"
+    "remove-unused-vars": "biome lint --only correctness/noUnusedVariables --reporter json | remove-unused-vars",
+    "test": "vitest run"
   },
   "dependencies": {
     "@firebase/database": "^1.1.0",
@@ -46,6 +47,7 @@
     "remove-unused-vars": "^0.0.11",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "vite": "^7.2.6",
+    "vitest": "3.2.4"
   }
 }
