@@ -90,11 +90,9 @@ app/
 ### 3. Environment Configuration
 ```bash
 # Copy environment template
-cp .env.example .env
+cp .env.example .env.local
 
-# Edit .env with your values
-GOOGLE_SHEETS_ID=your_spreadsheet_id
-GOOGLE_SHEETS_CREDENTIALS=your_base64_encoded_credentials
+# Edit .env.local with your values
 ```
 
 ### 4. Installation & Development
@@ -233,18 +231,13 @@ The points system is fully integrated with player detail pages, showing:
 
 ## Environment Variables
 
-There are two env files in play. Both are gitignored — never commit them.
-
-| File | Purpose |
-|---|---|
-| `draft/.env` | Local development. Used by Vite dev server and the SSR process when running locally. |
-| `.env.local` | Alternative local override (same variables, takes precedence if present). |
-
-Copy `.env.example` to `draft/.env` to get started:
+`.env.local` at the repo root is the single source of truth. It is gitignored — never commit it.
 
 ```bash
-cp .env.example draft/.env
+cp .env.example .env.local
 ```
+
+`draft/.env` and `functions/.env` are auto-generated from it by `yarn sync-env`, which runs automatically as part of `yarn dev` and `yarn local`. Do not edit them directly.
 
 ### Variable reference
 
@@ -294,7 +287,7 @@ These are prefixed `VITE_` so Vite bundles them into the client. They are not se
 
 - `GOOGLE_SERVICE_ACCOUNT_KEY` and `MY_FIREBASE_SERVICE_ACCOUNT_KEY` are full private keys. Treat them like passwords.
 - The `VITE_FIREBASE_*` variables are intentionally public — Firebase security rules on the project control what the client can actually access.
-- All env files (`draft/.env`, `.env.local`, `.env.prod`) are in `.gitignore`. Verify before committing.
+- `.env.local` and all derived env files are in `.gitignore`. Verify before committing.
 
 ---
 
