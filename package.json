@@ -4,8 +4,7 @@
     "type": "module",
     "packageManager": "yarn@4.13.0",
     "engines": {
-        "node": "20.x",
-        "npm": "10.2.0"
+        "node": "22.x"
     },
     "scripts": {
         "dev": "yarn workspace draft dev",
