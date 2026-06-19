@@ -8,10 +8,10 @@
     "npm": "10.9.x"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production react-router build",
-    "dev": "react-router dev",
-    "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc",
+    "build": "cross-env NODE_ENV=production node ../node_modules/@react-router/dev/bin.js build",
+    "dev": "node ../node_modules/@react-router/dev/bin.js dev",
+    "start": "cross-env NODE_ENV=production node ../node_modules/@react-router/serve/bin.js ./build/server/index.js",
+    "typecheck": "node ../node_modules/@react-router/dev/bin.js typegen && tsc",
     "check-unused-css": "check-unused-css app",
     "knip": "knip --fix",
     "remove-unused-vars": "biome lint --only correctness/noUnusedVariables --reporter json | remove-unused-vars",

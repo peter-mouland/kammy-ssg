@@ -1,10 +1,33 @@
 /* Location: app/_shared/lib/sheets/utils/common.ts */
 
-import { google } from 'googleapis';
 import type { AppError } from '../../../types';
 
 export const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID as string;
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+
+let gaxiosUsesNativeFetch = false;
+
+/** gaxios defaults to node-fetch, which fails on some networks; use undici fetch instead. */
+async function ensureGaxiosUsesNativeFetch() {
+    if (gaxiosUsesNativeFetch) return;
+
+    const [{ Gaxios }, { fetch: undiciFetch }] = await Promise.all([import('gaxios'), import('undici')]);
+
+    const originalRequest = Gaxios.prototype.request;
+    Gaxios.prototype.request = function requestWithNativeFetch(opts) {
+        return originalRequest.call(this, {
+            ...opts,
+            fetchImplementation: opts?.fetchImplementation ?? undiciFetch,
+        });
+    };
+
+    gaxiosUsesNativeFetch = true;
+}
+
+async function importGoogleApisForNode() {
+    await ensureGaxiosUsesNativeFetch();
+    return import('googleapis');
+}
 
 export interface SheetRange {
     spreadsheetId: string;
@@ -49,6 +72,8 @@ async function createSheetsClient() {
             console.error('Failed to parse service account credentials:', parseError);
             throw new Error("Invalid GOOGLE_SERVICE_ACCOUNT_KEY format. Ensure it's base64 encoded JSON.");
         }
+
+        const { google } = await importGoogleApisForNode();
 
         const auth = new google.auth.GoogleAuth({
             credentials: {

@@ -32,32 +32,12 @@
 
 .positionRank {
     font-size: var(--font-xs);
-    font-weight: 500;
-}
-.positionRank + .points {
-    padding-left: 0.25rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
 }
 
-.positionRank.gk {
-    color: var(--color-position-gk);
-}
-.positionRank.cb {
-    color: var(--color-position-cb);
-}
-.positionRank.fb {
-    color: var(--color-position-fb);
-}
-.positionRank.mid {
-    color: var(--color-position-mid);
-}
-.positionRank.wa {
-    color: var(--color-position-wa);
-}
-.positionRank.ca {
-    color: var(--color-position-ca);
-}
-.positionRank.points-0 {
-    color: var(--color-gray-400);
+.positionRank + .points {
+    padding-left: 0.25rem;
 }
 
 .mobileLabel {
@@ -85,4 +65,67 @@
     .label {
         display: block;
     }
+}
+
+.secondPlacePrizeRow td {
+    border-bottom: 1px dashed var(--color-yellow-700);
+}
+
+.promotionRow td {
+    border-bottom: 1px dashed var(--color-green-500);
+}
+
+.relegationRow td {
+    border-bottom: 1px dashed var(--color-red-500);
+}
+
+:global(.table tbody tr.secondPlacePrizeRow:last-child td) {
+    border-bottom: 1px dashed var(--color-yellow-700);
+}
+
+:global(.table tbody tr.promotionRow:last-child td) {
+    border-bottom: 1px dashed var(--color-green-500);
+}
+
+:global(.table tbody tr.relegationRow:last-child td) {
+    border-bottom: 1px dashed var(--color-red-500);
+}
+
+.secondPlacePrizeRow td:last-child,
+.promotionRow td:last-child,
+.relegationRow td:last-child {
+    position: relative;
+}
+
+.secondPlacePrizeRow td:last-child::after,
+.promotionRow td:last-child::after,
+.relegationRow td:last-child::after {
+    position: absolute;
+    right: 1px;
+    bottom: 0;
+    transform: translateY(calc(50% + 1px));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    font-size: 0.625rem;
+    background: var(--color-white);
+}
+
+.secondPlacePrizeRow td:last-child::after {
+    content: '💰';
+}
+
+.promotionRow td:last-child::after {
+    content: '▲';
+    color: var(--color-green-500);
+    font-weight: var(--font-weight-bold);
+}
+
+.relegationRow td:last-child::after {
+    content: '▼';
+    color: var(--color-red-500);
+    font-weight: var(--font-weight-bold);
 }
