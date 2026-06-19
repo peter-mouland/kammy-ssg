@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validatePositionLimits } from './position-limits-validator';
 import {
-    MGR1,
     PLAYER_CB1, PLAYER_FREE_CB, PLAYER_FREE_MID,
     PLAYER_MID1,
     makeContext, makeDivisionRosters, makeStandardRoster, makeTransfer,

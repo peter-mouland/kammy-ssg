@@ -1,6 +1,5 @@
 /* Location: app/transfers/components/current-transfers.tsx */
 
-import type React from 'react';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { PlayerSummary } from '../../players/components/player';

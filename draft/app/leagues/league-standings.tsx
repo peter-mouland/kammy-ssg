@@ -84,7 +84,7 @@ function PositionPointsTable({
             hideOnMobile: true,
             width: 60,
             sortable: false,
-            render: (_, team, index) => <RankBadge rank={index + 1} />,
+            render: (_, _team, index) => <RankBadge rank={index + 1} />,
         },
         {
             key: 'manager',
@@ -170,12 +170,12 @@ function PositionPointsTable({
                     return (a[pointsSource].total - b[pointsSource].total) * dir;
                 });
             },
-            render: (value, team) => {
+            render: (_value, team) => {
                 if (showRankChange) {
                     // For gameweek table, show points with rank change
                     return (
                         <PositionRankChange
-                            points={team[pointsSource]['total']}
+                            points={team[pointsSource].total}
                             rankChange={team.positionRankChanges?.total ?? null}
                             isFirstGameweek={isFirstGameweek}
                         />
@@ -205,7 +205,7 @@ function PositionPointsTable({
                 columns={columns}
                 defaultSort={{ key: 'total', direction: 'desc' }}
                 className="table-compact"
-                getCellProps={(team, index, column) => ({
+                getCellProps={(_team, index, _column) => ({
                     style: showRankChange
                         ? {}
                         : {

@@ -70,7 +70,7 @@ export async function calculateSingleTeamPoints({
         }
     } catch (e) {
         console.error(e);
-        throw new Error('calculateSingleTeamPoints: ' + e.message);
+        throw new Error(`calculateSingleTeamPoints: ${e.message}`);
     }
 }
 

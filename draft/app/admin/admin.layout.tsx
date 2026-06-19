@@ -2,7 +2,7 @@
 
 // /admin/admin-dashboard-layout.tsx
 import type React from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, } from 'react-router';
 import * as Icons from './components/icons/admin-icons';
 import { ActionBar } from './components/layout/action-bar';
 import { AdminSection } from './components/layout/admin-section';

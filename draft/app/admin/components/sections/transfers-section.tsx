@@ -79,7 +79,7 @@ function RecommendationTooltip({ validation, children }: RecommendationTooltipPr
                         <div className={styles.tooltip_section}>
                             <strong>Warnings:</strong>
                             <ul>
-                                {validation.warnings.map((warning, idx) => (
+                                {validation.warnings.map((warning, _idx) => (
                                     <li key={warning.message}>{warning.message}</li>
                                 ))}
                             </ul>

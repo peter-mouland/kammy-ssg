@@ -29,7 +29,7 @@ export function transformToTeamRows(
         managerSet.add(managerId);
 
         // Process each position slot in the roster
-        Object.entries(teamData.roster).forEach(([slotKey, positionSlot]) => {
+        Object.entries(teamData.roster).forEach(([_slotKey, positionSlot]) => {
             if (!positionSlot?.player) return;
 
             const { player } = positionSlot;

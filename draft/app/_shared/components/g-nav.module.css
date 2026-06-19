@@ -70,6 +70,10 @@
 
 /* Overlay */
 .overlay {
+    appearance: none;
+    border: none;
+    padding: 0;
+    cursor: default;
     position: fixed;
     top: 0;
     left: 0;

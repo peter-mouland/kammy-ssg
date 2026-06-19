@@ -57,7 +57,7 @@ class ProgressStore {
         if (!this.subscribers.has(jobId)) {
             this.subscribers.set(jobId, new Set());
         }
-        this.subscribers.get(jobId)!.add(subscriber);
+        this.subscribers.get(jobId)?.add(subscriber);
 
         // This should send current progress, but let's debug it
         const currentProgress = this.jobs.get(jobId);

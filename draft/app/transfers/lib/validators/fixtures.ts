@@ -92,26 +92,6 @@ function makeSlot(player: EnhancedPlayerData, teamPosition: string, slotIndex: n
     };
 }
 
-function makeLoanSlot(loanedInPlayer: EnhancedPlayerData, fromManagerId: string): TeamPositionSlot {
-    return {
-        player: {
-            playerId: loanedInPlayer.id,
-            playerCode: loanedInPlayer.code,
-            playerName: loanedInPlayer.web_name,
-            playerPosition: loanedInPlayer.draft.position,
-            teamPosition: 'on_loan',
-            teamSlotIndex: 0,
-            isSub: false,
-            onLoanTo: null,
-            onLoanFrom: fromManagerId,
-            onLoanStart: new Date().toISOString(),
-            assignedAt: new Date().toISOString(),
-        },
-        gameweek: { stats: createEmptyStats(), points: createEmptyPoints() },
-        season: { stats: createEmptyStats(), points: createEmptyPoints(), seasonUpToGameweek: 0, seasonGeneratedOn: '' },
-    };
-}
-
 /**
  * A standard full roster for manager "mgr1".
  * Uses 12 distinct players across all slots.

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { teamCountLimit } from './team-count-validator';
 import {
-    MGR1,
     PLAYER_CB1, PLAYER_CB2, PLAYER_FREE_CB, PLAYER_MID1, PLAYER_FREE_MID,
     makeContext, makeDivisionRosters, makePlayer, makeStandardRoster, makeTransfer,
 } from './fixtures';

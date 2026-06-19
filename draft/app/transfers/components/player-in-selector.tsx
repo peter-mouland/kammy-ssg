@@ -1,6 +1,6 @@
 // app/transfers/components/player-in-selector.tsx
 
-import { useMemo, useState } from 'react';
+import { useMemo, } from 'react';
 import { MultiSelect } from '../../_shared/components/multi-select';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
@@ -217,7 +217,7 @@ export function PlayerInSelector({
             accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
             sortable: true,
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'goals',
@@ -226,7 +226,7 @@ export function PlayerInSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'assists',
@@ -235,7 +235,7 @@ export function PlayerInSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'cleanSheets',
@@ -290,7 +290,7 @@ export function PlayerInSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'redCards',
@@ -299,7 +299,7 @@ export function PlayerInSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'bonus',
@@ -308,7 +308,7 @@ export function PlayerInSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'defensiveContribution',

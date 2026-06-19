@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { MultiSelect, type MultiSelectOption } from '../../_shared/components/multi-select';
 import { SearchInput } from '../../_shared/components/search-input';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';

@@ -66,7 +66,7 @@ interface TableProps<T = any> {
         onPageChange: (page: number) => void;
         onPageSizeChange?: (pageSize: number) => void;
     };
-    getRowProps?: (item: T, row: number) => React.HTMLAttributes<HTMLTableRowElement>;
+    getRowProps?: (item: T, row: number, sortKey: string) => React.HTMLAttributes<HTMLTableRowElement>;
     getCellProps?: (item: T, row: number, column: number) => React.HTMLAttributes<HTMLTableRowElement>;
     className?: string;
     containerClassName?: string;

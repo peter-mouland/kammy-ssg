@@ -74,7 +74,7 @@ export function calculatePositionRankings(
         const rankSum = positions.reduce((sum, position) => {
             return sum + rankings[team.userId][position];
         }, 0);
-        rankings[team.userId]['total'] = rankSum;
+        rankings[team.userId].total = rankSum;
     });
 
     return rankings;

@@ -73,7 +73,7 @@ function PositionPointsTable({
             header: 'Rank',
             width: 60,
             hideOnMobile: true,
-            render: (_, team, index) => <RankBadge rank={index + 1} />,
+            render: (_, _team, index) => <RankBadge rank={index + 1} />,
         },
         {
             key: 'manager',
@@ -173,7 +173,7 @@ function PositionPointsTable({
                 columns={columns}
                 defaultSort={{ key: 'total', direction: 'desc' }}
                 className="table-compact"
-                getCellProps={(team, index, column) => ({
+                getCellProps={(_team, index, _column) => ({
                     style: showRankChange
                         ? {}
                         : {

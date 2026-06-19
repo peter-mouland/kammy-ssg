@@ -222,9 +222,9 @@ export class FplFirestore {
         // console.log("sheetsPlayersByCode['485711']");
         // console.log(sheetsPlayersByCode['485711']);
         const availablePlayers = bootstrapData.elements.filter((player) => sheetsPlayersByCode[player.code]);
-        const p = availablePlayers.find((p) => p.code === 485711);
+        const _p = availablePlayers.find((p) => p.code === 485711);
         // console.log('pppppppppppppppppp');
-        // console.log(p);
+        // console.log(_p);
 
         const teams = await this.populateTeams(bootstrapData.teams);
         const events = await this.populateEvents(bootstrapData.events);

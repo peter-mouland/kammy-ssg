@@ -3,7 +3,7 @@
 import { getInvalidationKeys } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { FirebaseDraftSync } from '../../../_shared/lib/firestore-cache/firebase-draft-sync';
-import { readDraftState, readDraftStateByDivision, updateDraftState } from '../../../_shared/lib/sheets/draft';
+import { readDraftStateByDivision, updateDraftState } from '../../../_shared/lib/sheets/draft';
 import {
     clearDraftOrder,
     draftOrderExists,

@@ -1,7 +1,5 @@
 /* Location: app/draft/lib/draft-rules.ts */
 
-// lib/draft/draft-rules.ts - Clean version with ONLY fixed existing functions
-import { useMemo } from 'react';
 import type { CustomPosition, PositionNameMap } from '../../players/types/player-types';
 import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 

@@ -2,7 +2,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../players/types/player-types';
-import type { DivisionId, DivisionSheetData, ManagerId, PositionSlotKey } from '../../teams/types/team-types';
+import type { DivisionSheetData, ManagerId, PositionSlotKey } from '../../teams/types/team-types';
 
 export interface PositionPointsBreakdown {
     gk: number; // gk_0 + sub_0 total

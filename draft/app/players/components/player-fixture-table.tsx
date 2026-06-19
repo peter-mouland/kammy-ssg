@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-fixxture-table.tsx */
 
-import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
+import { Table, type TableColumn } from '../../_shared/components/table';
 import type { EventData, FplTeam } from '../../_shared/lib/fpl/fpl-types';
 
 interface FixtureData {
@@ -24,8 +24,7 @@ export function PlayerFixtureTable({ fixtureData }) {
             accessor: 'eventId',
             width: 80,
             fixed: true,
-            render: (gameweek, fixture) =>
-                console.log(fixture) || (
+            render: (_gameweek, fixture) => (
                     <div
                         style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', flexDirection: 'row' }}
                     >

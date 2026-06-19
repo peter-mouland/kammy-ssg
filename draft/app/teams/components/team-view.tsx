@@ -1,6 +1,5 @@
 // app/teams/components/team-view.tsx
 
-import type * as React from 'react';
 import { Link, useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../../_shared/components/page-header';
 import { SelectUser } from '../../_shared/components/select-user';

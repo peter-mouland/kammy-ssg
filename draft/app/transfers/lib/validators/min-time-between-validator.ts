@@ -5,7 +5,7 @@ import type { RuleValidationResult, TransferRuleContext } from '../../types/tran
 /**
  * Validate minimum gap between transfers
  */
-export function validateMinimumGap(context: TransferRuleContext): RuleValidationResult {
+export function validateMinimumGap(_context: TransferRuleContext): RuleValidationResult {
     // This would need access to previous transfers for the manager
     // For now, return a placeholder implementation
     return {

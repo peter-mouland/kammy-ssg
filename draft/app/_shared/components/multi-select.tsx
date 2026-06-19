@@ -85,17 +85,19 @@ export function MultiSelect({
                         }`;
 
                         return (
-                            <div
+                            <button
                                 key={option.id}
+                                type="button"
                                 className={itemClass}
-                                onClick={() => !isDisabled && handleToggle(option.id)}
+                                disabled={isDisabled}
+                                onClick={() => handleToggle(option.id)}
                             >
                                 <div className={styles.checkbox}>
                                     {isSelected && <span className={styles.checkmark}>✓</span>}
                                 </div>
                                 <span className={styles.itemLabel}>{option.label}</span>
                                 <span className={styles.itemCount}>{option.count}</span>
-                            </div>
+                            </button>
                         );
                     })}
                 </div>

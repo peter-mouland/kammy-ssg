@@ -47,7 +47,6 @@
 
 /* Header styles */
 .table thead {
-    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -60,7 +59,6 @@
     color: var(--color-gray-700);
     border-bottom: var(--table-border);
     white-space: nowrap;
-    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 10;

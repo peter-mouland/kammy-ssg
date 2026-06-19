@@ -3,14 +3,13 @@ import { useMemo } from 'react';
 import { extractLoanStatus } from '../../_shared/lib/roster-conversion-utils';
 import { FootballPitch } from './football-pitch';
 import { LoanStatus } from './loan-status';
-import { PositionSlotCard } from './position-slot-card';
 import { TeamStats } from './team-stats';
 import styles from './team-view.module.css';
 
 export const MyTeamView = ({ data, viewMode }) => {
     const selectedGameweek = data.selectedGameweekData.fplEvent.id;
     const teamData = data.currentTeam;
-    const substitute = teamData.roster.sub_0;
+    const _substitute = teamData.roster.sub_0;
 
     // Extract loan status
     const loanStatus = useMemo(() => {

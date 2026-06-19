@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validatePositionCompatibility } from './position-compatibility-validator';
 import {
-    MGR1,
     PLAYER_CB1, PLAYER_FREE_CB, PLAYER_FREE_GK, PLAYER_FREE_MID,
     PLAYER_MID1, PLAYER_MID2, PLAYER_SUB,
     makeContext, makeTransfer,

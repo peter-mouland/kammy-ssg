@@ -1,7 +1,5 @@
 // app/transfers/lib/validators/loan-limit-validator.ts
 
-import type { PositionSlotKey } from '../../../teams/types/team-types';
-import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 
 /**

@@ -29,7 +29,7 @@ export function UserSelectionProvider({
     redirectOnSelection = false,
     initialSelection,
 }: UserSelectionProviderProps) {
-    const { selectedUserId, selectedUser, requiresSelection, showModal, setShowModal, handleUserSelect, isLoading } =
+    const { requiresSelection, showModal, setShowModal, handleUserSelect, isLoading } =
         useUserSelection({
             users,
             autoShowModal: true,

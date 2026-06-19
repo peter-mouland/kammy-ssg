@@ -211,7 +211,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'bonus',
             align: 'center',
             width: 60,
-            title: (stat) => calculateBonus(stat.bonus, position) + ' points',
+            title: (stat) => `${calculateBonus(stat.bonus, position)} points`,
             render: (bonus) => getStatDisplay(bonus, 'bonus', position),
         });
     }
@@ -235,7 +235,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
         align: 'center',
         width: 60,
         title: () => 'Rolling average over last 5 played games',
-        render: (_, gw, index) => {
+        render: (_, _gw, index) => {
             const form = calculateRollingForm(gameweekStats, index);
             const color =
                 form >= 4 ? 'var(--color-success)' : form <= 2 ? 'var(--color-error)' : 'var(--color-gray-600)';

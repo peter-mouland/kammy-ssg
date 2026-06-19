@@ -1,4 +1,4 @@
-import type React from 'react';
+
 import { Link } from 'react-router';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';

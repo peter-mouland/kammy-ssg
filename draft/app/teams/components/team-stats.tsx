@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { getScoringSlots } from '../../_shared/lib/position-slot-utils';
 import { calculateRosterTotalPoints, getRosterTopScorer } from '../../_shared/lib/roster-conversion-utils';
 import { calculateContributingStats } from '../lib/team-stats-utils';
-import type { StatsViewMode, TeamStatsData, TeamStatsProps } from '../types/team-types';
+import type { TeamStatsData, TeamStatsProps } from '../types/team-types';
 import { ContributingStats } from './contributing-stats';
 import styles from './team-stats.module.css';
 

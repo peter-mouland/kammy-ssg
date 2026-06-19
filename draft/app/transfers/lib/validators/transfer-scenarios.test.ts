@@ -39,10 +39,10 @@ describe('valid transfers', () => {
         const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1 });
         const results = validate(makeContext(transfer));
 
-        expect(results['ownership'].passed).toBe(true);
+        expect(results.ownership.passed).toBe(true);
         expect(results['position-compatibility'].passed).toBe(true);
         expect(results['transfer-limit-per-gameweek'].passed).toBe(true);
-        expect(results['teamCountLimit'].passed).toBe(true);
+        expect(results.teamCountLimit.passed).toBe(true);
     });
 
     it('SWAP: sub mid and main mid swap positions within the same roster', () => {
@@ -53,7 +53,7 @@ describe('valid transfers', () => {
         const transfer = makeTransfer({ transferType: 'SWAP', playerIn: PLAYER_MID1, playerOut: PLAYER_MID2 });
         const results = validate(makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } } }));
 
-        expect(results['ownership'].passed).toBe(true);
+        expect(results.ownership.passed).toBe(true);
         expect(results['position-compatibility'].passed).toBe(true);
     });
 
@@ -61,7 +61,7 @@ describe('valid transfers', () => {
         const transfer = makeTransfer({ transferType: 'LOAN_START', managerId: MGR2, playerIn: PLAYER_CB1, playerOut: PLAYER_FREE_CB, onLoanTo: MGR2 });
         const results = validate(makeContext(transfer));
 
-        expect(results['ownership'].passed).toBe(true);
+        expect(results.ownership.passed).toBe(true);
         expect(results['loan-limit'].passed).toBe(true);
     });
 
@@ -71,7 +71,7 @@ describe('valid transfers', () => {
         const transfer = makeTransfer({ transferType: 'TRADE', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1 });
         const results = validate(makeContext(transfer));
 
-        expect(results['ownership'].passed).toBe(true);
+        expect(results.ownership.passed).toBe(true);
         expect(results['position-compatibility'].passed).toBe(true);
     });
 });
@@ -85,7 +85,7 @@ describe('invalid transfers', () => {
         const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: MGR2_MID1, playerOut: PLAYER_MID1 });
         const results = validate(makeContext(transfer));
 
-        expect(results['ownership'].passed).toBe(false);
+        expect(results.ownership.passed).toBe(false);
         expect(results['position-compatibility'].passed).toBe(true); // same position, so this still passes
     });
 
@@ -94,7 +94,7 @@ describe('invalid transfers', () => {
         const results = validate(makeContext(transfer));
 
         expect(results['position-compatibility'].passed).toBe(false);
-        expect(results['ownership'].passed).toBe(true); // free agent, so ownership is fine
+        expect(results.ownership.passed).toBe(true); // free agent, so ownership is fine
     });
 
     it('TRANSFER: third transfer in the same gameweek blocks on transfer-limit-per-gameweek', () => {
@@ -116,7 +116,7 @@ describe('invalid transfers', () => {
         const results = validate(makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } } }));
 
         expect(results['loan-limit'].passed).toBe(false);
-        expect(results['ownership'].passed).toBe(true);
+        expect(results.ownership.passed).toBe(true);
     });
 
     it('SWAP: two main-squad players (neither is sub) blocks on position-compatibility', () => {
@@ -125,14 +125,14 @@ describe('invalid transfers', () => {
         const results = validate(makeContext(transfer));
 
         expect(results['position-compatibility'].passed).toBe(false);
-        expect(results['ownership'].passed).toBe(true); // SWAP always passes ownership
+        expect(results.ownership.passed).toBe(true); // SWAP always passes ownership
     });
 
     it('LOAN_END: blocks on ownership when playerIn is not in the on_loan_0 slot', () => {
         const transfer = makeTransfer({ transferType: 'LOAN_END', playerIn: PLAYER_MID1, playerOut: PLAYER_MID1 });
         const results = validate(makeContext(transfer));
 
-        expect(results['ownership'].passed).toBe(false);
+        expect(results.ownership.passed).toBe(false);
     });
 
     it('TRANSFER: blocks on teamCountLimit when playerIn would be a third player from the same real-world team', () => {
@@ -147,8 +147,8 @@ describe('invalid transfers', () => {
         const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_CB1 });
         const results = validate(makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } }, fplPlayersByCode }));
 
-        expect(results['teamCountLimit'].passed).toBe(false);
-        expect(results['ownership'].passed).toBe(true); // player is a free agent
+        expect(results.teamCountLimit.passed).toBe(false);
+        expect(results.ownership.passed).toBe(true); // player is a free agent
     });
 });
 
@@ -193,7 +193,7 @@ describe('cross-validator edge cases', () => {
         const results = validate(makeContext(transfer));
 
         expect(results['position-compatibility'].passed).toBe(false);
-        expect(results['ownership'].passed).toBe(true); // playerIn is a free agent
+        expect(results.ownership.passed).toBe(true); // playerIn is a free agent
     });
 
     it('player-availability is informational only: it does not independently block owned players', () => {
@@ -203,7 +203,7 @@ describe('cross-validator edge cases', () => {
         const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: MGR2_MID1, playerOut: PLAYER_MID1 });
         const results = validate(makeContext(transfer));
 
-        expect(results['ownership'].passed).toBe(false);
+        expect(results.ownership.passed).toBe(false);
         expect(results['player-availability'].passed).toBe(true);
     });
 });

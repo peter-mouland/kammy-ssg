@@ -1,5 +1,5 @@
 /* Location: app/_shared/lib/firestore-cache/clear-service.ts */
-/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
+// biome-ignore-all lint/style/useNamingConvention: external API shape uses snake_case
 
 // lib/firestore-cache/clear-service.ts
 import { FirestoreClient } from './firestore-client';

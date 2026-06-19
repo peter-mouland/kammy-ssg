@@ -13,7 +13,7 @@ export function teamCountLimit(context: TransferRuleContext): RuleValidationResu
     Object.values(roster).forEach((slot) => {
         const player = fplPlayersByCode[slot.player.playerCode];
         if (!player) {
-            console.error('No FPL Player Match: ' + slot.player.playerCode);
+            console.error(`No FPL Player Match: ${slot.player.playerCode}`);
             console.error(slot.player);
         }
         teams.set(player.team_code, (teams.get(player.team_code) || 0) + 1);

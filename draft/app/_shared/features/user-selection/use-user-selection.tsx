@@ -35,7 +35,7 @@ export function useUserSelection({
     redirectOnSelection = false,
     initialSelection, // Add this to pass server-side selection
 }: UseUserSelectionOptions): UseUserSelectionReturn {
-    const navigate = useNavigate();
+    const _navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
     // Initialize state with server data if available, otherwise use client detection

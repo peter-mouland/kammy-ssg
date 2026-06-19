@@ -34,7 +34,7 @@ export function convertLegacyPlayersToRoster(legacyPlayers: any[]): TeamRoster {
             continue;
         }
 
-        if (!player.playerId || isNaN(Number(player.playerId))) {
+        if (!player.playerId || Number.isNaN(Number(player.playerId))) {
             throw new Error(`Invalid playerId for ${player.player} (code: ${player.playerCode}) in slot ${slot}`);
         }
 
@@ -115,7 +115,7 @@ export function getRosterTopScorer(
 
     for (const [sotKey, positionSlot] of Object.entries(roster)) {
         if (!positionSlot.season) {
-            console.log('🚨 no points for ' + sotKey);
+            console.log(`🚨 no points for ${sotKey}`);
         }
         const points = useSeasonPoints ? positionSlot.season?.points.total : positionSlot.gameweek?.points.total;
 

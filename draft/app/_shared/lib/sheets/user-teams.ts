@@ -1,10 +1,9 @@
 /* Location: app/_shared/lib/sheets/user-teams.ts */
 
-import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../../teams/types/team-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { createAppError, parseHeaderBasedData, parseSheetDate, readSheetRange, type SheetRange } from './utils/common';
-import type { DraftOrderData } from '../../../draft/types/draft-types';
 
 // Sheet configuration
 const USER_TEAMS_SHEET_NAME = 'UserTeams';

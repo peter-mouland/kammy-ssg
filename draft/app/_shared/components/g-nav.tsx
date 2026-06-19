@@ -69,6 +69,7 @@ export function MobileNav({ items, logo, statusBadge }: MobileNavProps) {
                 )}
 
                 <button
+                    type="button"
                     className={`${styles.hamburger} ${isOpen ? styles.hamburgerOpen : ''}`}
                     onClick={toggleMenu}
                     aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -81,7 +82,14 @@ export function MobileNav({ items, logo, statusBadge }: MobileNavProps) {
             </div>
 
             {/* Overlay */}
-            {isOpen && <div className={styles.overlay} onClick={closeMenu} />}
+            {isOpen && (
+                <button
+                    type="button"
+                    className={styles.overlay}
+                    aria-label="Close menu"
+                    onClick={closeMenu}
+                />
+            )}
 
             {/* Mobile menu */}
             <nav className={`${styles.mobileMenu} ${isOpen ? styles.mobileMenuOpen : ''}`} aria-hidden={!isOpen}>

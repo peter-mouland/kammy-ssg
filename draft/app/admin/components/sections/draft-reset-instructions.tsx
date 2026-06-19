@@ -1,7 +1,6 @@
 // app/admin/components/sections/draft-reset-instructions.tsx
 
 import * as Icons from '../icons/admin-icons';
-import { AdminContainer } from '../layout/admin-container';
 import { AdminSection } from '../layout/admin-section';
 import styles from './draft-reset-instructions.module.css';
 

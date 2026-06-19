@@ -16,11 +16,9 @@ import type { GameWeekData } from '../fpl/fpl-types';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
 import {
     appendToSheet,
-    convertToSheetRows,
     createAppError,
     readSheetRange,
     type SheetRange,
-    writeSheetRange,
 } from './utils/common';
 import { readDataFromSheet } from './utils/read-data-from-sheets';
 
@@ -67,7 +65,7 @@ const TRANSFER_TRANSFORM_FUNCTIONS = {
 
         if (typeof value === 'string') {
             const parsed = new Date(value);
-            if (isNaN(parsed.getTime())) {
+            if (Number.isNaN(parsed.getTime())) {
                 throw new Error(`Invalid timestamp format: ${value}`);
             }
             return parsed;
@@ -144,7 +142,7 @@ async function originalReadTransfers(divisionId: DivisionId): Promise<ProcessedT
             transferIn: row['Transfer In'],
             codeIn: row['Code In'],
             transferType: row['Transfer Type'],
-            comment: row['Comment'],
+            comment: row.Comment,
             loanTo: row['Loan To'],
             loanFrom: row['Loan From'],
         }));

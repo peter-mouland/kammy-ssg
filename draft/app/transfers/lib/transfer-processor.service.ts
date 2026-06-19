@@ -261,8 +261,7 @@ function applyLoanFinish(managerRoster: TeamRoster, transfer: ProcessedTransfer)
 
     // if the loan to someone is ending, then remove player from loan slot
     if (transfer.onLoanTo) {
-        // managerRoster.on_loan_0 = null;
-        // managerRoster.on_loan_0 = { player: { playerCode: 0 } };
+        // biome-ignore lint/performance/noDelete: = undefined keeps the key in Object.values(), causing teamCountLimit to crash on undefined.player.playerCode
         delete managerRoster.on_loan_0;
     }
 

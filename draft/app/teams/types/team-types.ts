@@ -96,7 +96,7 @@ export type TeamRoster = {
     gk_0: TeamPositionSlot;
     mid_0: TeamPositionSlot;
     mid_1: TeamPositionSlot;
-    on_loan_0: TeamPositionSlot;
+    on_loan_0?: TeamPositionSlot;
     sub_0: TeamPositionSlot;
     wa_0: TeamPositionSlot;
     wa_1: TeamPositionSlot;

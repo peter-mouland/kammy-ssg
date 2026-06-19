@@ -12,7 +12,7 @@ import type { TransferValidationResult } from '../../types/transfer-rule-types';
  * Get transfers data for a specific division using enhanced validation
  * Fixed version that properly handles gameweek data structure
  */
-export async function getTransfersDataForDivision(divisionId: DivisionId, gameweek: GameWeekData, opts) {
+export async function getTransfersDataForDivision(divisionId: DivisionId, gameweek: GameWeekData, _opts) {
     try {
         const [{ readTransferDataForDivision }, { fplApiCache }] = await Promise.all([
             import('../../../_shared/lib/sheets/transfers'),

@@ -68,7 +68,7 @@ export function PlayerOutSelector({
             accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
             sortable: true,
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'goals',
@@ -77,7 +77,7 @@ export function PlayerOutSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'assists',
@@ -86,7 +86,7 @@ export function PlayerOutSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'cleanSheets',
@@ -141,7 +141,7 @@ export function PlayerOutSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'redCards',
@@ -150,7 +150,7 @@ export function PlayerOutSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'bonus',
@@ -159,7 +159,7 @@ export function PlayerOutSelector({
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'defensiveContribution',

@@ -10,7 +10,6 @@ import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
 import type { FplBootstrapData, FplFixtureData, FplLiveData, FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
-import { getGameweekData } from './gameweeks';
 
 /**
  * Updated FPL Data Orchestrator - Uses Individual Player Caching

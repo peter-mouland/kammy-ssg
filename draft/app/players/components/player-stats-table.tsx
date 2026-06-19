@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-stats-table.tsx */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
@@ -149,7 +149,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
             sortable: true,
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'goals',
@@ -163,7 +163,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'assists',
@@ -177,7 +177,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'cleanSheets',
@@ -271,7 +271,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'redCards',
@@ -291,7 +291,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'bonus',
@@ -307,7 +307,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'defensiveContribution',
@@ -327,7 +327,7 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => stat,
+            render: (stat, _player) => stat,
         },
         {
             key: 'wishlists',

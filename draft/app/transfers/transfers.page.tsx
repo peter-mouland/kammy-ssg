@@ -1,6 +1,5 @@
 /* Location: app/transfers/transfers.page.tsx */
 
-import type * as React from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectUser } from '../_shared/components/select-user';

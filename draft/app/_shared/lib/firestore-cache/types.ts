@@ -1,5 +1,5 @@
 /* Location: app/_shared/lib/firestore-cache/types.ts */
-/** biome-ignore-all lint/style/useNamingConvention: <explanation> */
+// biome-ignore-all lint/style/useNamingConvention: external API shape uses snake_case
 
 // src/lib/firestore-cache/types.ts
 export interface CacheDocument {

@@ -55,8 +55,8 @@ export function ToastManager({ maxToasts = 3 }: ToastManagerProps) {
         (window as any).dismissAllToasts = dismissAll;
 
         return () => {
-            delete (window as any).showToast;
-            delete (window as any).dismissAllToasts;
+            (window as any).showToast = undefined;
+            (window as any).dismissAllToasts = undefined;
         };
     }, [addToast, dismissAll]);
 
@@ -104,7 +104,7 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
         >
             <div className={styles.toastContent}>
                 <span className={styles.toastMessage}>{toast.message}</span>
-                <button onClick={handleDismiss} className={styles.dismissButton} aria-label="Dismiss notification">
+                <button type="button" onClick={handleDismiss} className={styles.dismissButton} aria-label="Dismiss notification">
                     ×
                 </button>
             </div>
