@@ -40,6 +40,28 @@
     padding-left: 0.25rem;
 }
 
+.positionRank.gk {
+    color: var(--color-position-gk);
+}
+.positionRank.cb {
+    color: var(--color-position-cb);
+}
+.positionRank.fb {
+    color: var(--color-position-fb);
+}
+.positionRank.mid {
+    color: var(--color-position-mid);
+}
+.positionRank.wa {
+    color: var(--color-position-wa);
+}
+.positionRank.ca {
+    color: var(--color-position-ca);
+}
+.positionRank.points-0 {
+    color: var(--color-gray-400);
+}
+
 .mobileLabel {
     display: block;
 }
@@ -76,18 +98,6 @@
 }
 
 .relegationRow td {
-    border-bottom: 1px dashed var(--color-red-500);
-}
-
-:global(.table tbody tr.secondPlacePrizeRow:last-child td) {
-    border-bottom: 1px dashed var(--color-yellow-700);
-}
-
-:global(.table tbody tr.promotionRow:last-child td) {
-    border-bottom: 1px dashed var(--color-green-500);
-}
-
-:global(.table tbody tr.relegationRow:last-child td) {
     border-bottom: 1px dashed var(--color-red-500);
 }
 

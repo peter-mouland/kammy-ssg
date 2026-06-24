@@ -92,7 +92,9 @@ export function PositionPointsTable({
                         const rank = positionRankings[team.userId]?.[col.key];
                         return (
                             <div>
-                                {rank != null && <span className={styles.positionRank}>{rank}</span>}
+                                {rank != null && (
+                                    <span className={`${styles.positionRank} ${col.key} points-${points}`}>{rank}</span>
+                                )}
                                 <span className={styles.points}>{points}</span>
                             </div>
                         );
