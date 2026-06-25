@@ -4,7 +4,7 @@
     "type": "module",
     "packageManager": "yarn@4.13.0",
     "engines": {
-        "node": "22.x"
+        "node": "24.x"
     },
     "scripts": {
         "sync-env": "cp .env.local draft/.env && cp .env.local functions/.env",

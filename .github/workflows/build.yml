@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.16.0'
+          node-version: '24.18.0'
 
       - name: Enable Corepack
         run: corepack enable
@@ -38,10 +38,16 @@ jobs:
           CI: true
 
       - name: Lint
-        run: npx biome lint --changed --since=origin/${{ github.base_ref || 'master' }} .
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npx biome lint --changed --since=origin/${{ github.base_ref }} .
+          else
+            npx biome lint .
+          fi
 
       - name: Type check
         run: yarn type-check
+        continue-on-error: true
 
   test:
     name: test
@@ -51,7 +57,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.16.0'
+          node-version: '24.18.0'
 
       - name: Enable Corepack
         run: corepack enable

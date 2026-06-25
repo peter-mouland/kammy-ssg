@@ -1,6 +1,6 @@
 /* Location: app/leagues/league-standings.tsx */
 
-import { Link, useLoaderData, useNavigate, useSearchParams } from 'react-router';
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';

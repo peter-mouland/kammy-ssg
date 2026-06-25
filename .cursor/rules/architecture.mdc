@@ -1,0 +1,6 @@
+---
+description: Project architecture — tech stack, data sources, domain structure, routes, deployment
+alwaysApply: true
+---
+
+@.kiro/steering/architecture.md

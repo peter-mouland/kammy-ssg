@@ -1,0 +1,6 @@
+---
+description: Testing philosophy, rules, what to test per domain, test structure and framework
+alwaysApply: true
+---
+
+@.kiro/steering/testing-conventions.md
