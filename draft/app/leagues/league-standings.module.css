@@ -89,15 +89,15 @@
     }
 }
 
-.secondPlacePrizeRow td {
+tr.secondPlacePrizeRow td {
     border-bottom: 1px dashed var(--color-yellow-700);
 }
 
-.promotionRow td {
+tr.promotionRow td {
     border-bottom: 1px dashed var(--color-green-500);
 }
 
-.relegationRow td {
+tr.relegationRow td {
     border-bottom: 1px dashed var(--color-red-500);
 }
 
