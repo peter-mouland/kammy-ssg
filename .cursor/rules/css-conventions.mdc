@@ -1,0 +1,6 @@
+---
+description: CSS Modules, BEM naming, design tokens, specificity, transitions, vendor prefixes
+alwaysApply: true
+---
+
+@.kiro/steering/css-conventions.md
