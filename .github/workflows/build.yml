@@ -38,7 +38,12 @@ jobs:
           CI: true
 
       - name: Lint
-        run: npx biome lint --changed --since=origin/${{ github.base_ref || 'master' }} .
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npx biome lint --changed --since=origin/${{ github.base_ref }} .
+          else
+            npx biome lint .
+          fi
 
       - name: Type check
         run: yarn type-check
