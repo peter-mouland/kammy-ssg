@@ -2,11 +2,12 @@
 
 import type * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useFetcher, useSearchParams } from 'react-router';
+import { useFetcher } from 'react-router';
 import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
 import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import { PlayerSummary } from '../../players/components/player';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
     DivisionId,
@@ -28,6 +29,10 @@ import { PlayerOutSelector } from './player-out-selector';
 import styles from './transfer-form.module.css';
 import { TransferTypeSelector } from './transfer-type-selector';
 
+export type JourneyPath = 'team-first' | 'player-list-first';
+
+type JourneyStep = 'first-selector' | 'transaction-type' | 'second-selector' | 'review';
+
 interface TransferFormProps {
     divisions: DivisionSheetData[];
     managers: UserTeamsSheetData[];
@@ -42,6 +47,8 @@ interface TransferFormProps {
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
+    journeyPath: JourneyPath;
+    onExit: () => void;
 }
 
 interface LoanSelectionState {
@@ -68,6 +75,42 @@ const INITIAL_VALIDATION: TransferValidationResult = {
     blockingIssues: [],
 };
 
+const STEP_TITLES: Record<JourneyStep, Record<JourneyPath, string>> = {
+    'first-selector': {
+        'team-first': 'Select player from your team',
+        'player-list-first': 'Select player from list',
+    },
+    'transaction-type': {
+        'team-first': 'Choose transaction type',
+        'player-list-first': 'Choose transaction type',
+    },
+    'second-selector': {
+        'team-first': 'Select player to bring in',
+        'player-list-first': 'Select player to remove',
+    },
+    review: {
+        'team-first': 'Review and submit',
+        'player-list-first': 'Review and submit',
+    },
+};
+
+function canContinue(step: JourneyStep, journeyPath: JourneyPath, playerSelection: PlayerSelectionState): boolean {
+    switch (step) {
+        case 'first-selector':
+            return journeyPath === 'team-first'
+                ? playerSelection.playerOut !== null
+                : playerSelection.playerIn !== null;
+        case 'transaction-type':
+            return true;
+        case 'second-selector':
+            return journeyPath === 'team-first'
+                ? playerSelection.playerIn !== null
+                : playerSelection.playerOut !== null;
+        case 'review':
+            return false;
+    }
+}
+
 export function TransferForm({
     managers,
     selectedDivision,
@@ -78,12 +121,14 @@ export function TransferForm({
     divisionRosters,
     teamsByCode,
     validationContext,
+    journeyPath,
+    onExit,
 }: TransferFormProps) {
-    const [searchParams, setSearchParams] = useSearchParams();
     const fetcher = useFetcher();
     const { showToast } = useToast();
-    const TransferType: TransferType = (searchParams.get('transferType') as TransferType) || 'TRANSFER';
 
+    const [step, setStep] = useState<JourneyStep>('first-selector');
+    const [transferType, setTransferType] = useState<TransferType>('TRANSFER');
     const [playerSelection, setPlayerSelection] = useState<PlayerSelectionState>(INITIAL_PLAYER_SELECTION);
     const [loanSelection, setLoanSelection] = useState<LoanSelectionState>(INITIAL_LOAN_SELECTION);
     const [comment, setComment] = useState('');
@@ -104,22 +149,22 @@ export function TransferForm({
         return acc;
     }, {});
 
-    // Clear form after successful submission
     const clearForm = () => {
+        setStep('first-selector');
+        setTransferType('TRANSFER');
         setPlayerSelection(INITIAL_PLAYER_SELECTION);
         setLoanSelection(INITIAL_LOAN_SELECTION);
         setComment('');
         setValidation(INITIAL_VALIDATION);
     };
 
-    // Handle form submission response
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data) {
             const result = fetcher.data;
 
             if (result.success) {
-                // Success: Clear form, show toast with sound
                 clearForm();
+                onExit();
                 playCelebrationSound();
                 showToast({
                     type: 'success',
@@ -127,7 +172,6 @@ export function TransferForm({
                     duration: 5000,
                 });
             } else if (result.error) {
-                // Error: Show error toast
                 showToast({
                     type: 'error',
                     message: result.error,
@@ -135,17 +179,7 @@ export function TransferForm({
                 });
             }
         }
-    }, [fetcher.state, fetcher.data, showToast]);
-
-    // const handleManagerChange = (managerId: ManagerId) => {
-    //     const newParams = new URLSearchParams(searchParams);
-    //     newParams.set('manager', managerId);
-    //     setSearchParams(newParams);
-    //
-    //     // Reset player selection when manager changes
-    //     setPlayerSelection(INITIAL_PLAYER_SELECTION);
-    //     setLoanSelection(INITIAL_LOAN_SELECTION);
-    // };
+    }, [fetcher.state, fetcher.data, showToast, onExit]);
 
     const handleBorrowingManagerChange = (managerId: ManagerId) => {
         setLoanSelection((curr) => ({
@@ -167,32 +201,28 @@ export function TransferForm({
             playerIn,
         }));
 
-        // Auto-determine loan relationships for owned players
-        if (playerIn && TransferType === 'LOAN_START') {
+        if (playerIn && transferType === 'LOAN_START') {
             const ownership = getPlayerOwnership(playerIn, ownedPlayersByCode);
             if (ownership.ownerId && ownership.ownerId !== selectedManager) {
                 setLoanSelection({
                     loanPlayer: playerIn,
-                    loanToManager: null, // loan to is to be only used for playerOut
+                    loanToManager: null,
                     loanFromManager: ownership.ownerId,
                 });
             } else if (!ownership.ownerId) {
                 setLoanSelection({
                     loanPlayer: playerSelection.playerOut,
-                    loanToManager: null, // loan to is to be only used for playerOut
+                    loanToManager: null,
                     loanFromManager: null,
                 });
             }
         }
     };
 
-    const handleTransferTypeChange = (transferType: TransferType) => {
-        const newParams = new URLSearchParams(searchParams);
-        newParams.set('transferType', transferType);
-        setSearchParams(newParams);
+    const handleTransferTypeChange = (nextTransferType: TransferType) => {
+        setTransferType(nextTransferType);
 
-        // Reset loan selection when changing transfer type
-        if (transferType !== 'LOAN_START' && transferType !== 'LOAN_END') {
+        if (nextTransferType !== 'LOAN_START' && nextTransferType !== 'LOAN_END') {
             setLoanSelection(INITIAL_LOAN_SELECTION);
         }
     };
@@ -208,18 +238,16 @@ export function TransferForm({
         formData.append('actionType', 'submitTransfer');
         formData.append('divisionId', selectedDivision);
         formData.append('managerId', selectedManager);
-        formData.append('transferType', TransferType || 'Transfer');
+        formData.append('transferType', transferType || 'Transfer');
         formData.append('playerOutCode', playerSelection.playerOut?.playerCode.toString() || '');
         formData.append('playerInCode', playerSelection.playerIn?.code.toString() || '');
         formData.append('comment', comment);
 
-        // Add loan fields for loan transfers
-        if (TransferType === 'LOAN_START') {
+        if (transferType === 'LOAN_START') {
             formData.append('onLoanTo', loanSelection.loanToManager || '');
             formData.append('onLoanFrom', loanSelection.loanFromManager || '');
         }
 
-        // Optimistic update: immediately add to transfer list
         if (playerSelection.playerOut && playerSelection.playerIn) {
             showToast({
                 type: 'info',
@@ -231,58 +259,140 @@ export function TransferForm({
         fetcher.submit(formData, { method: 'post' });
     };
 
-    // Determine if this is a loan transfer type
-    const isLoanTransfer = TransferType === 'LOAN_START' || TransferType === 'LOAN_END';
-    const canSubmit =
-        // playerSelection.playerIn?.eligibility.isEligible ||
-        // !isBeforeDeadline ||
-        fetcher.state === 'submitting' || !playerSelection.playerOut || !playerSelection.playerIn;
+    const goBack = () => {
+        if (step === 'first-selector') {
+            onExit();
+            return;
+        }
+        if (step === 'transaction-type') {
+            setStep('first-selector');
+            return;
+        }
+        if (step === 'second-selector') {
+            setStep('transaction-type');
+            return;
+        }
+        setStep('second-selector');
+    };
 
-    return (
-        <div>
-            <ToastManager maxToasts={3} />
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.section}>
-                    <TransferTypeSelector selectedType={TransferType} onTypeChange={handleTransferTypeChange} />
+    const goForward = () => {
+        if (step === 'first-selector') {
+            setStep('transaction-type');
+            return;
+        }
+        if (step === 'transaction-type') {
+            setStep('second-selector');
+            return;
+        }
+        if (step === 'second-selector') {
+            setStep('review');
+        }
+    };
+
+    const isLoanTransfer = transferType === 'LOAN_START' || transferType === 'LOAN_END';
+    const canSubmit = fetcher.state === 'submitting' || !playerSelection.playerOut || !playerSelection.playerIn;
+    const showContinue = step !== 'review' && canContinue(step, journeyPath, playerSelection);
+
+    const renderFirstSelector = () => {
+        if (!selectedManager || !managerRoster) {
+            return null;
+        }
+
+        if (journeyPath === 'team-first') {
+            return (
+                <PlayerOutSelector
+                    playersByCode={playersByCode}
+                    teamsByCode={teamsByCode}
+                    roster={managerRoster}
+                    selectedPlayer={playerSelection.playerOut}
+                    onPlayerChange={handlePlayerOutChange}
+                    transferType={transferType}
+                />
+            );
+        }
+
+        return (
+            <PlayerInSelector
+                availablePlayers={availablePlayers}
+                selectedPlayer={playerSelection.playerIn}
+                onPlayerChange={handlePlayerInChange}
+                transferType={transferType}
+                playerOut={playerSelection.playerOut}
+                ownedPlayersByCode={ownedPlayersByCode}
+                teamsByCode={teamsByCode}
+                managerId={selectedManager}
+                validationContext={validationContext}
+            />
+        );
+    };
+
+    const renderSecondSelector = () => {
+        if (!selectedManager || !managerRoster) {
+            return null;
+        }
+
+        if (journeyPath === 'team-first') {
+            return (
+                <PlayerInSelector
+                    availablePlayers={availablePlayers}
+                    selectedPlayer={playerSelection.playerIn}
+                    onPlayerChange={handlePlayerInChange}
+                    transferType={transferType}
+                    playerOut={playerSelection.playerOut}
+                    ownedPlayersByCode={ownedPlayersByCode}
+                    teamsByCode={teamsByCode}
+                    managerId={selectedManager}
+                    validationContext={validationContext}
+                />
+            );
+        }
+
+        return (
+            <PlayerOutSelector
+                playersByCode={playersByCode}
+                teamsByCode={teamsByCode}
+                roster={managerRoster}
+                selectedPlayer={playerSelection.playerOut}
+                onPlayerChange={handlePlayerOutChange}
+                transferType={transferType}
+            />
+        );
+    };
+
+    const renderReview = () => {
+        const playerOutFpl = playerSelection.playerOut ? playersByCode[playerSelection.playerOut.playerCode] : null;
+        const playerIn = playerSelection.playerIn;
+
+        return (
+            <>
+                <div className={styles.reviewSummary}>
+                    <div className={styles.reviewRow}>
+                        <span className={styles.reviewLabel}>Type</span>
+                        <span className={styles.reviewValue}>{transferType}</span>
+                    </div>
+                    {playerOutFpl && playerSelection.playerOut ? (
+                        <div className={styles.reviewRow}>
+                            <span className={styles.reviewLabel}>Player out</span>
+                            <PlayerSummary
+                                player={{ ...playerOutFpl, ...playerSelection.playerOut }}
+                                teamsByCode={teamsByCode}
+                            />
+                        </div>
+                    ) : null}
+                    {playerIn ? (
+                        <div className={styles.reviewRow}>
+                            <span className={styles.reviewLabel}>Player in</span>
+                            <PlayerSummary player={playerIn} teamsByCode={teamsByCode} />
+                        </div>
+                    ) : null}
                 </div>
 
-                {/* Player Selection */}
-                {selectedManager && managerRoster && (
-                    <>
-                        <div className={styles.section}>
-                            <PlayerOutSelector
-                                playersByCode={playersByCode}
-                                teamsByCode={teamsByCode}
-                                roster={managerRoster}
-                                selectedPlayer={playerSelection.playerOut}
-                                onPlayerChange={handlePlayerOutChange}
-                                transferType={TransferType}
-                            />
-                        </div>
-                        <hr />
-                        <div className={styles.section}>
-                            <PlayerInSelector
-                                availablePlayers={availablePlayers}
-                                selectedPlayer={playerSelection.playerIn}
-                                onPlayerChange={handlePlayerInChange}
-                                transferType={TransferType}
-                                playerOut={playerSelection.playerOut}
-                                ownedPlayersByCode={ownedPlayersByCode}
-                                teamsByCode={teamsByCode}
-                                managerId={selectedManager}
-                                validationContext={validationContext}
-                            />
-                        </div>
-                    </>
-                )}
-
-                {/* Comment */}
                 <div className={styles.section}>
-                    <label className={styles.label} htmlFor={'comment'}>
+                    <label className={styles.label} htmlFor="comment">
                         Comment
                     </label>
                     <textarea
-                        id={'comment'}
+                        id="comment"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         className={styles.textarea}
@@ -291,10 +401,9 @@ export function TransferForm({
                     />
                 </div>
 
-                {/* Loan Information Panel */}
-                {isLoanTransfer && (
+                {isLoanTransfer ? (
                     <LoanInfoPanel
-                        transferType={TransferType}
+                        transferType={transferType}
                         currentManager={currentManager}
                         loanSelection={loanSelection}
                         managers={divisionsManagers}
@@ -306,22 +415,17 @@ export function TransferForm({
                             />
                         }
                     />
-                )}
+                ) : null}
 
-                {/* Validation Messages */}
-                {((playerSelection.playerIn && !playerSelection.playerIn?.eligibility.isEligible) ||
-                    !isBeforeDeadline) && (
+                {(playerIn && !playerIn.eligibility.isEligible) || !isBeforeDeadline ? (
                     <div className={styles.validationErrors}>
-                        {!isBeforeDeadline && <div className={styles.blockingIssue}>🚫 Missed the Deadline</div>}
-                        {!playerSelection.playerIn?.eligibility.isEligible && (
-                            <div className={styles.blockingIssue}>
-                                🚫 {playerSelection.playerIn?.eligibility.reason}
-                            </div>
-                        )}
+                        {isBeforeDeadline ? null : <div className={styles.blockingIssue}>🚫 Missed the Deadline</div>}
+                        {playerIn && !playerIn.eligibility.isEligible ? (
+                            <div className={styles.blockingIssue}>🚫 {playerIn.eligibility.reason}</div>
+                        ) : null}
                     </div>
-                )}
+                ) : null}
 
-                {/* Submit Button */}
                 <div className={styles.section}>
                     <button
                         type="submit"
@@ -331,6 +435,37 @@ export function TransferForm({
                         {fetcher.state === 'submitting' ? 'Submitting...' : 'Submit Transfer'}
                     </button>
                 </div>
+            </>
+        );
+    };
+
+    return (
+        <div className={styles.journey}>
+            <ToastManager maxToasts={3} />
+            <div className={styles.journeyHeader}>
+                <button type="button" className={styles.backButton} onClick={goBack}>
+                    ← {step === 'first-selector' ? 'Back to hub' : 'Back'}
+                </button>
+                <h2 className={styles.journeyTitle}>{STEP_TITLES[step][journeyPath]}</h2>
+            </div>
+
+            <form onSubmit={handleSubmit} className={styles.form}>
+                {step === 'first-selector' ? <div className={styles.stepContent}>{renderFirstSelector()}</div> : null}
+                {step === 'transaction-type' ? (
+                    <div className={styles.stepContent}>
+                        <TransferTypeSelector selectedType={transferType} onTypeChange={handleTransferTypeChange} />
+                    </div>
+                ) : null}
+                {step === 'second-selector' ? <div className={styles.stepContent}>{renderSecondSelector()}</div> : null}
+                {step === 'review' ? <div className={styles.stepContent}>{renderReview()}</div> : null}
+
+                {showContinue ? (
+                    <div className={styles.journeyFooter}>
+                        <button type="button" className={styles.continueButton} onClick={goForward}>
+                            Continue
+                        </button>
+                    </div>
+                ) : null}
             </form>
         </div>
     );
