@@ -131,6 +131,6 @@ jobs:
           MY_FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.MY_FIREBASE_SERVICE_ACCOUNT_KEY }}
 
       - name: Deploy to Firebase
-        run: firebase deploy --force
+        run: ./node_modules/.bin/firebase deploy --force
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
