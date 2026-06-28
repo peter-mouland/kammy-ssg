@@ -42,6 +42,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.22",
     "check-unused-css": "^0.2.3",
+    "cross-env": "^10.1.0",
     "firebase-tools": "^14.27.0",
     "knip": "^5.71.0",
     "remove-unused-vars": "^0.0.11",
