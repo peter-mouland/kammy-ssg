@@ -110,10 +110,9 @@ jobs:
         env:
           CI: true
 
-      - name: Deploy to Firebase
-        run: yarn firebase:deploy
+      - name: Build
+        run: yarn build
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
           MY_FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.MY_FIREBASE_SERVICE_ACCOUNT_KEY }}
@@ -125,3 +124,13 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           FIRESTORE_DATABASE_ID: ${{ secrets.FIRESTORE_DATABASE_ID }}
+
+      - name: Write Firebase service account credentials
+        run: echo "$MY_FIREBASE_SERVICE_ACCOUNT_KEY" | base64 --decode > /tmp/firebase-sa.json
+        env:
+          MY_FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.MY_FIREBASE_SERVICE_ACCOUNT_KEY }}
+
+      - name: Deploy to Firebase
+        run: firebase deploy --force
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
