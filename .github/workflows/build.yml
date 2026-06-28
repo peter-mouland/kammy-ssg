@@ -111,7 +111,7 @@ jobs:
           CI: true
 
       - name: Deploy to Firebase
-        run: firebase deploy
+        run: yarn firebase:deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
