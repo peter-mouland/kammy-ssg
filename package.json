@@ -40,7 +40,8 @@
         "functions"
     ],
     "devDependencies": {
-        "@biomejs/biome": "^2.0.0"
+        "@biomejs/biome": "^2.0.0",
+        "firebase-tools": "^14.27.0"
     },
     "dependencies": {
         "init": "^0.1.2"

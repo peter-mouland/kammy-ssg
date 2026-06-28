@@ -6072,6 +6072,7 @@ __metadata:
   resolution: "fantasy-football-draft@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^2.0.0"
+    firebase-tools: "npm:^14.27.0"
     init: "npm:^0.1.2"
   languageName: unknown
   linkType: soft
