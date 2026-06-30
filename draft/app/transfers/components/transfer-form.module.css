@@ -48,10 +48,16 @@
 .journeyFooter {
     position: sticky;
     bottom: 0;
+    z-index: 20;
     padding: var(--spacing-4) 0;
     background: var(--color-white);
     border-top: 1px solid var(--color-gray-200);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
     margin-top: var(--spacing-4);
+}
+
+.inlineTransferType {
+    margin-bottom: var(--spacing-4);
 }
 
 .continueButton {

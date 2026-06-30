@@ -31,7 +31,7 @@ import { TransferTypeSelector } from './transfer-type-selector';
 
 export type JourneyPath = 'team-first' | 'player-list-first';
 
-type JourneyStep = 'first-selector' | 'transaction-type' | 'second-selector' | 'review';
+type JourneyStep = 'first-selector' | 'second-selector' | 'review';
 
 interface TransferFormProps {
     divisions: DivisionSheetData[];
@@ -80,10 +80,6 @@ const STEP_TITLES: Record<JourneyStep, Record<JourneyPath, string>> = {
         'team-first': 'Select player from your team',
         'player-list-first': 'Select player from list',
     },
-    'transaction-type': {
-        'team-first': 'Choose transaction type',
-        'player-list-first': 'Choose transaction type',
-    },
     'second-selector': {
         'team-first': 'Select player to bring in',
         'player-list-first': 'Select player to remove',
@@ -100,8 +96,6 @@ function canContinue(step: JourneyStep, journeyPath: JourneyPath, playerSelectio
             return journeyPath === 'team-first'
                 ? playerSelection.playerOut !== null
                 : playerSelection.playerIn !== null;
-        case 'transaction-type':
-            return true;
         case 'second-selector':
             return journeyPath === 'team-first'
                 ? playerSelection.playerIn !== null
@@ -149,6 +143,39 @@ export function TransferForm({
         return acc;
     }, {});
 
+    const getLoanSelectionForTransfer = (
+        nextTransferType: TransferType,
+        nextPlayerSelection: PlayerSelectionState,
+    ): LoanSelectionState => {
+        if (nextTransferType !== 'LOAN_START') {
+            return INITIAL_LOAN_SELECTION;
+        }
+
+        const playerIn = nextPlayerSelection.playerIn;
+        if (!playerIn) {
+            return INITIAL_LOAN_SELECTION;
+        }
+
+        const ownership = getPlayerOwnership(playerIn, ownedPlayersByCode);
+        if (ownership.ownerId && ownership.ownerId !== selectedManager) {
+            return {
+                loanPlayer: playerIn,
+                loanToManager: null,
+                loanFromManager: ownership.ownerId,
+            };
+        }
+
+        if (!ownership.ownerId && nextPlayerSelection.playerOut) {
+            return {
+                loanPlayer: nextPlayerSelection.playerOut,
+                loanToManager: null,
+                loanFromManager: null,
+            };
+        }
+
+        return INITIAL_LOAN_SELECTION;
+    };
+
     const clearForm = () => {
         setStep('first-selector');
         setTransferType('TRANSFER');
@@ -189,42 +216,28 @@ export function TransferForm({
     };
 
     const handlePlayerOutChange = (playerOut: RosterPlayer | null) => {
-        setPlayerSelection((prev) => ({
-            ...prev,
+        const nextPlayerSelection = {
+            ...playerSelection,
             playerOut,
-        }));
+        };
+
+        setPlayerSelection(nextPlayerSelection);
+        setLoanSelection(getLoanSelectionForTransfer(transferType, nextPlayerSelection));
     };
 
     const handlePlayerInChange = (playerIn: EnhancedPlayerData | null) => {
-        setPlayerSelection((prev) => ({
-            ...prev,
+        const nextPlayerSelection = {
+            ...playerSelection,
             playerIn,
-        }));
+        };
 
-        if (playerIn && transferType === 'LOAN_START') {
-            const ownership = getPlayerOwnership(playerIn, ownedPlayersByCode);
-            if (ownership.ownerId && ownership.ownerId !== selectedManager) {
-                setLoanSelection({
-                    loanPlayer: playerIn,
-                    loanToManager: null,
-                    loanFromManager: ownership.ownerId,
-                });
-            } else if (!ownership.ownerId) {
-                setLoanSelection({
-                    loanPlayer: playerSelection.playerOut,
-                    loanToManager: null,
-                    loanFromManager: null,
-                });
-            }
-        }
+        setPlayerSelection(nextPlayerSelection);
+        setLoanSelection(getLoanSelectionForTransfer(transferType, nextPlayerSelection));
     };
 
     const handleTransferTypeChange = (nextTransferType: TransferType) => {
         setTransferType(nextTransferType);
-
-        if (nextTransferType !== 'LOAN_START' && nextTransferType !== 'LOAN_END') {
-            setLoanSelection(INITIAL_LOAN_SELECTION);
-        }
+        setLoanSelection(getLoanSelectionForTransfer(nextTransferType, playerSelection));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -264,12 +277,8 @@ export function TransferForm({
             onExit();
             return;
         }
-        if (step === 'transaction-type') {
-            setStep('first-selector');
-            return;
-        }
         if (step === 'second-selector') {
-            setStep('transaction-type');
+            setStep('first-selector');
             return;
         }
         setStep('second-selector');
@@ -277,10 +286,6 @@ export function TransferForm({
 
     const goForward = () => {
         if (step === 'first-selector') {
-            setStep('transaction-type');
-            return;
-        }
-        if (step === 'transaction-type') {
             setStep('second-selector');
             return;
         }
@@ -292,6 +297,7 @@ export function TransferForm({
     const isLoanTransfer = transferType === 'LOAN_START' || transferType === 'LOAN_END';
     const canSubmit = fetcher.state === 'submitting' || !playerSelection.playerOut || !playerSelection.playerIn;
     const showContinue = step !== 'review' && canContinue(step, journeyPath, playerSelection);
+    const showTransferTypeSelector = step === 'first-selector' && canContinue(step, journeyPath, playerSelection);
 
     const renderFirstSelector = () => {
         if (!selectedManager || !managerRoster) {
@@ -451,16 +457,19 @@ export function TransferForm({
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 {step === 'first-selector' ? <div className={styles.stepContent}>{renderFirstSelector()}</div> : null}
-                {step === 'transaction-type' ? (
-                    <div className={styles.stepContent}>
-                        <TransferTypeSelector selectedType={transferType} onTypeChange={handleTransferTypeChange} />
-                    </div>
-                ) : null}
                 {step === 'second-selector' ? <div className={styles.stepContent}>{renderSecondSelector()}</div> : null}
                 {step === 'review' ? <div className={styles.stepContent}>{renderReview()}</div> : null}
 
                 {showContinue ? (
                     <div className={styles.journeyFooter}>
+                        {showTransferTypeSelector ? (
+                            <div className={styles.inlineTransferType}>
+                                <TransferTypeSelector
+                                    selectedType={transferType}
+                                    onTypeChange={handleTransferTypeChange}
+                                />
+                            </div>
+                        ) : null}
                         <button type="button" className={styles.continueButton} onClick={goForward}>
                             Continue
                         </button>
