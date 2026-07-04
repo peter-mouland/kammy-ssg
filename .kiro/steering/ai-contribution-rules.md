@@ -83,6 +83,14 @@ Run `yarn check:fix` before committing. The pre-commit hook runs Biome automatic
 
 All component styles use CSS Modules (`.module.css`). No inline styles, no global class names, no Tailwind. Shared design tokens live in `design-tokens.css`.
 
+### React component structure
+
+Do not define `renderSomething()` helpers inside React components. If a JSX section is large enough to name, extract it into a real component so React can treat it as part of the component tree and future memoization remains possible.
+
+Pure or near-pure helpers should live outside components and receive their dependencies as arguments. Keep component bodies focused on state, effects, event handlers, and composition.
+
+Use named constants for repeated string comparisons, especially UI state values such as steps, modes, and tabs. Avoid scattering magic strings through branch logic.
+
 ### React Router loaders own data fetching
 
 All server-side data fetching happens in React Router loader functions (`.route.tsx` files). Components do not fetch data directly on the server. Client-side re-fetching uses TanStack Query.
