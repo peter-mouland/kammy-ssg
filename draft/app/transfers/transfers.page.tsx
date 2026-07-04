@@ -1,6 +1,6 @@
 /* Location: app/transfers/transfers.page.tsx */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectUser } from '../_shared/components/select-user';
@@ -44,6 +44,11 @@ export const TransfersPageComp = (data: TransfersPageData) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [activeJourney, setActiveJourney] = useState<JourneyPath | null>(null);
     const handleExitJourney = useCallback(() => setActiveJourney(null), []);
+    const gameweekParam = searchParams.get('gameweek') ?? '';
+
+    useEffect(() => {
+        setActiveJourney(null);
+    }, [data.selectedUser, gameweekParam]);
 
     const isCurrentGameweek =
         !searchParams.get('gameweek') || searchParams.get('gameweek') === String(data.currentGameweek);
