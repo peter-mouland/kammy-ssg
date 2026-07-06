@@ -2,10 +2,12 @@
 
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
+import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { readCupBracket, readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupPage } from './cup.page';
+import { buildCupFixtures } from './lib/cup-fixtures';
 import { getCupPageData } from './server/cup.server';
 import type { CupPageData } from './types/cup-page-types';
 
@@ -27,15 +29,21 @@ const EMPTY: CupPageData = {
     bracket: [],
     selectedGameweek: 0,
     gameweekOptions: [],
+    fixtures: [],
+    userTeams: [],
+    selectedUserId: null,
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, events, userTeams] = await Promise.all([
+    const [currentGameweekData, events, userTeams, fixtures, teams] = await Promise.all([
         fplApiCache.getCurrentGameweekData(),
         fplApiCache.getFplEvents(),
         readUserTeams(),
+        fplApiCache.getFplFixtures(),
+        fplApiCache.getFplTeams(),
     ]);
+    const selectedUserId = getUserSelection(request).selectedUserId;
 
     // The cup config/sheet may not be set up yet — degrade gracefully rather than 500.
     try {
@@ -60,10 +68,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? currentGameweekData;
 
         const pageData = getCupPageData({ userTeams, gameweekData, cupConfig, submissions, pointsRows });
-        return data<CupPageData>({ ...pageData, bracket });
+        const cupFixtures = buildCupFixtures(fixtures, teams, selectedGameweek);
+        return data<CupPageData>({ ...pageData, bracket, fixtures: cupFixtures, userTeams, selectedUserId });
     } catch (error) {
         console.error('Cup loader (config/submissions) error:', error);
-        return data<CupPageData>({ ...EMPTY, gameweek: currentGameweekData.fplEvent.id });
+        return data<CupPageData>({ ...EMPTY, gameweek: currentGameweekData.fplEvent.id, userTeams, selectedUserId });
     }
 }
 

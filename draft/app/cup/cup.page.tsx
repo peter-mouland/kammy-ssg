@@ -1,9 +1,31 @@
 /* Location: app/cup/cup.page.tsx */
 
 import { Link, useLoaderData, useSearchParams } from 'react-router';
+import { SelectUser } from '../_shared/components/select-user';
+import { setUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import styles from './cup.module.css';
 import { CUP_STAGES } from './lib/cup-rules';
 import type { CupOverviewRow, CupPageData } from './types/cup-page-types';
+
+function CupFixtures({ data }: { data: CupPageData }) {
+    if (data.fixtures.length === 0) return null;
+    return (
+        <section className={styles.fixtures}>
+            <h2 className={styles.sectionTitle}>Fixtures · GW{data.selectedGameweek}</h2>
+            <ul className={styles.fixtureList}>
+                {data.fixtures.map((fixture) => (
+                    <li key={`${fixture.home}-${fixture.away}`} className={styles.fixture}>
+                        <span className={styles.fixtureTeam}>{fixture.home}</span>
+                        <span className={styles.fixtureScore}>
+                            {fixture.started ? `${fixture.homeScore}–${fixture.awayScore}` : 'v'}
+                        </span>
+                        <span className={styles.fixtureTeam}>{fixture.away}</span>
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
+}
 
 function GameweekSelector({ data }: { data: CupPageData }) {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -77,7 +99,15 @@ function QualifiersTable({ data }: { data: CupPageData }) {
 
 export function CupPage() {
     const data = useLoaderData<CupPageData>();
+    const [searchParams, setSearchParams] = useSearchParams();
     const stageLabel = data.round ? CUP_STAGES[data.round.stage].label : null;
+
+    function handleUserChange(userId: string) {
+        setUserSelection(userId, false); // persist to the cookie so /cup/submit sees it
+        const next = new URLSearchParams(searchParams);
+        next.set('userId', userId);
+        setSearchParams(next);
+    }
 
     return (
         <div className={styles.page}>
@@ -92,12 +122,19 @@ export function CupPage() {
                     )}
                 </div>
                 <div className={styles.headerActions}>
+                    <SelectUser
+                        users={data.userTeams}
+                        selectedUser={data.selectedUserId}
+                        handleUserChange={handleUserChange}
+                    />
                     <GameweekSelector data={data} />
                     <Link to="/cup/submit" className={styles.submitLink}>
                         Submit my team
                     </Link>
                 </div>
             </div>
+
+            <CupFixtures data={data} />
 
             {data.hasConfig ? (
                 <table className={styles.table}>

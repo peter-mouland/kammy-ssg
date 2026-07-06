@@ -1,7 +1,9 @@
 /* Location: app/cup/cup-submit.page.tsx */
 
 import { useState } from 'react';
-import { Form, Link, useActionData, useLoaderData, useNavigation } from 'react-router';
+import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from 'react-router';
+import { SelectUser } from '../_shared/components/select-user';
+import { setUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import styles from './cup-submit.module.css';
 import { CUP_STAGES } from './lib/cup-rules';
 import type { CupSubmitPageData } from './types/cup-page-types';
@@ -16,6 +18,7 @@ export function CupSubmitPage() {
     const data = useLoaderData<CupSubmitPageData>();
     const actionData = useActionData<CupActionData>();
     const navigation = useNavigation();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [selected, setSelected] = useState<number[]>(data.existingPlayers);
 
     const required = data.round?.playersRequired ?? 0;
@@ -30,11 +33,23 @@ export function CupSubmitPage() {
         });
     }
 
+    function handleUserChange(userId: string) {
+        setUserSelection(userId, false);
+        const next = new URLSearchParams(searchParams);
+        next.set('userId', userId);
+        setSearchParams(next);
+    }
+
+    const managerPicker = (
+        <SelectUser users={data.userTeams} selectedUser={data.selectedUserId} handleUserChange={handleUserChange} />
+    );
+
     if (!data.selectedUserId) {
         return (
             <div className={styles.page}>
                 <h1 className={styles.title}>Submit Cup Team</h1>
-                <p className={styles.notice}>Pick your manager from the menu first, then come back to submit.</p>
+                <p className={styles.notice}>Pick your manager to load your squad:</p>
+                {managerPicker}
                 <Link to="/cup" className={styles.backLink}>
                     Back to cup
                 </Link>
@@ -59,11 +74,14 @@ export function CupSubmitPage() {
     return (
         <div className={styles.page}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Submit Cup Team</h1>
-                <span className={styles.roundLabel}>
-                    {stageLabel}
-                    {data.round.twoLegged ? ` · Leg ${data.round.leg}` : ''}
-                </span>
+                <div>
+                    <h1 className={styles.title}>Submit Cup Team</h1>
+                    <span className={styles.roundLabel}>
+                        {stageLabel}
+                        {data.round.twoLegged ? ` · Leg ${data.round.leg}` : ''}
+                    </span>
+                </div>
+                {managerPicker}
             </div>
 
             <div className={styles.deadline}>

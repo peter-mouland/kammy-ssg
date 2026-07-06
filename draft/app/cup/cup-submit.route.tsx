@@ -29,13 +29,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     try {
         const [cupConfig, submissions] = await Promise.all([readCupConfig(), readCupSubmissions()]);
-        const pageData = await getCupSubmitData({ selectedUser, currentGameweekData, cupConfig, submissions });
+        const pageData = await getCupSubmitData({
+            userTeams,
+            selectedUser,
+            currentGameweekData,
+            cupConfig,
+            submissions,
+        });
         return data<CupSubmitPageData>(pageData);
     } catch (error) {
         console.error('Cup submit loader error:', error);
         return data<CupSubmitPageData>({
             hasConfig: false,
             round: null,
+            userTeams,
             selectedUserId: selectedUser?.userId ?? null,
             selectedUserName: selectedUser?.userName ?? null,
             division: selectedUser?.divisionId ?? null,
