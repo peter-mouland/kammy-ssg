@@ -20,16 +20,15 @@ const baselineStats: Points = {
     total: 0,
 };
 
-// Positions that count recoveries towards their defensive-contribution total (CBIRT),
-// mirroring FPL's midfielder/forward rule. Defenders (cb/fb) use CBIT only.
-const RECOVERIES_COUNT_FOR: CustomPosition[] = ['mid', 'wa', 'ca'];
-
 /**
  * Calculate defensive-contribution points from the raw components, using OUR custom
- * position to decide the metric — CBIT (clearances+blocks+interceptions+tackles) for
- * defenders, CBIRT (+ recoveries) for midfielders/attackers. We do NOT use FPL's
- * aggregate `defensive_contribution`, which bakes in FPL's own position and is wrong
- * whenever our position disagrees with FPL's (e.g. Matheus Nunes).
+ * position to decide the metric: CBIT (clearances+blocks+interceptions+tackles) for
+ * defenders, CBIRT (+ recoveries) for midfielders. We do NOT use FPL's aggregate
+ * `defensive_contribution`, which bakes in FPL's own position and is wrong whenever
+ * our position disagrees with FPL's (e.g. Matheus Nunes).
+ *
+ * Only cb, fb and mid have a defensive-contribution rule, so mid is the only position
+ * that counts recoveries. If wa/ca ever gain a rule, revisit whether they should too.
  */
 export function calculateDefensiveContribution(
     stats: Pick<PlayerGameweekStatsData, 'clearancesBlocksInterceptions' | 'tackles' | 'recoveries'>,
@@ -39,7 +38,7 @@ export function calculateDefensiveContribution(
     if (!('defensiveContribution' in rule)) return 0;
 
     const cbit = (stats.clearancesBlocksInterceptions || 0) + (stats.tackles || 0);
-    const total = RECOVERIES_COUNT_FOR.includes(position) ? cbit + (stats.recoveries || 0) : cbit;
+    const total = position === 'mid' ? cbit + (stats.recoveries || 0) : cbit;
 
     if (total < rule.defensiveContribution.threshold) return 0;
     return rule.defensiveContribution.points;
