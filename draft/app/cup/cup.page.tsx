@@ -1,6 +1,7 @@
 /* Location: app/cup/cup.page.tsx */
 
 import { Link, useLoaderData, useSearchParams } from 'react-router';
+import { PageHeader } from '../_shared/components/page-header';
 import { SelectUser } from '../_shared/components/select-user';
 import { setUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { CupFixtures } from './components/cup-fixtures';
@@ -114,30 +115,29 @@ export function CupPage() {
         setSearchParams(next);
     }
 
+    const subTitle = stageLabel
+        ? `${stageLabel}${data.round?.twoLegged ? ` · Leg ${data.round.leg}` : ''} · GW${data.gameweek}`
+        : undefined;
+
     return (
         <div className={styles.page}>
-            <div className={styles.header}>
-                <div>
-                    <h1 className={styles.title}>Cup</h1>
-                    {stageLabel && (
-                        <span className={styles.roundLabel}>
-                            {stageLabel}
-                            {data.round?.twoLegged ? ` · Leg ${data.round.leg}` : ''} · GW{data.gameweek}
-                        </span>
-                    )}
-                </div>
-                <div className={styles.headerActions}>
-                    <SelectUser
-                        users={data.userTeams}
-                        selectedUser={data.selectedUserId}
-                        handleUserChange={handleUserChange}
-                    />
-                    <GameweekSelector data={data} />
-                    <Link to={`/cup/submit?gameweek=${data.selectedGameweek}`} className={styles.submitLink}>
-                        Submit my team
-                    </Link>
-                </div>
-            </div>
+            <PageHeader
+                title="Cup"
+                subTitle={subTitle}
+                actions={
+                    <>
+                        <SelectUser
+                            users={data.userTeams}
+                            selectedUser={data.selectedUserId}
+                            handleUserChange={handleUserChange}
+                        />
+                        <GameweekSelector data={data} />
+                        <Link to={`/cup/submit?gameweek=${data.selectedGameweek}`} className={styles.submitLink}>
+                            Submit my team
+                        </Link>
+                    </>
+                }
+            />
 
             <CupFixtures fixtures={data.fixtures} gameweek={data.selectedGameweek} />
 

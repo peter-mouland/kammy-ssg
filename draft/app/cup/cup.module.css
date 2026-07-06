@@ -6,34 +6,6 @@
     padding: var(--spacing-4);
 }
 
-.header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--spacing-2);
-    margin-bottom: var(--spacing-4);
-}
-
-.title {
-    margin: 0;
-    font-size: var(--font-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-gray-900);
-}
-
-.roundLabel {
-    font-size: var(--font-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-primary);
-}
-
-.headerActions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-3);
-}
-
 .selector {
     display: flex;
     align-items: center;
