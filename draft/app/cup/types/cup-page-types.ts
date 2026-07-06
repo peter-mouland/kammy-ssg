@@ -70,4 +70,7 @@ export interface CupSubmitPageData {
     usedPlayers: number[];
     submissionOpen: boolean;
     deadline: string | null;
+    /** The gameweek being submitted for, and all selectable cup gameweeks. */
+    selectedGameweek: number;
+    gameweekOptions: CupGameweekOption[];
 }

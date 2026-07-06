@@ -44,6 +44,30 @@ export function CupSubmitPage() {
         <SelectUser users={data.userTeams} selectedUser={data.selectedUserId} handleUserChange={handleUserChange} />
     );
 
+    function handleGameweekChange(gameweek: string) {
+        const next = new URLSearchParams(searchParams);
+        next.set('gameweek', gameweek);
+        setSearchParams(next);
+    }
+
+    const gameweekPicker =
+        data.gameweekOptions.length > 0 ? (
+            <label className={styles.selector}>
+                <span className={styles.label}>Round</span>
+                <select
+                    className={styles.select}
+                    value={data.selectedGameweek}
+                    onChange={(event) => handleGameweekChange(event.target.value)}
+                >
+                    {data.gameweekOptions.map((option) => (
+                        <option key={option.gameweek} value={option.gameweek}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            </label>
+        ) : null;
+
     if (!data.selectedUserId) {
         return (
             <div className={styles.page}>
@@ -61,7 +85,11 @@ export function CupSubmitPage() {
         return (
             <div className={styles.page}>
                 <h1 className={styles.title}>Submit Cup Team</h1>
-                <p className={styles.notice}>There's no cup round open this gameweek.</p>
+                <p className={styles.notice}>No cup round in that gameweek — pick a round to submit for:</p>
+                <div className={styles.pickers}>
+                    {gameweekPicker}
+                    {managerPicker}
+                </div>
                 <Link to="/cup" className={styles.backLink}>
                     Back to cup
                 </Link>
@@ -81,7 +109,10 @@ export function CupSubmitPage() {
                         {data.round.twoLegged ? ` · Leg ${data.round.leg}` : ''}
                     </span>
                 </div>
-                {managerPicker}
+                <div className={styles.pickers}>
+                    {gameweekPicker}
+                    {managerPicker}
+                </div>
             </div>
 
             <div className={styles.deadline}>

@@ -128,7 +128,7 @@ export function CupPage() {
                         handleUserChange={handleUserChange}
                     />
                     <GameweekSelector data={data} />
-                    <Link to="/cup/submit" className={styles.submitLink}>
+                    <Link to={`/cup/submit?gameweek=${data.selectedGameweek}`} className={styles.submitLink}>
                         Submit my team
                     </Link>
                 </div>

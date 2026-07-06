@@ -129,18 +129,23 @@ export function getCupStandings(input: {
 export async function getCupSubmitData(input: {
     userTeams: UserTeamsSheetData[];
     selectedUser: UserTeamsSheetData | undefined;
-    currentGameweekData: GameWeekData;
+    gameweekData: GameWeekData;
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
     now?: Date;
 }): Promise<CupSubmitPageData> {
-    const { userTeams, selectedUser, currentGameweekData, cupConfig, submissions } = input;
+    const { userTeams, selectedUser, gameweekData, cupConfig, submissions } = input;
     const now = input.now ?? new Date();
-    const gameweek = currentGameweekData.fplEvent.id;
+    const gameweek = gameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
-    const submissionOpen = isSubmissionOpen(currentGameweekData, now);
-    const rawDeadline = currentGameweekData.fplEvent.deadline_time;
+    const submissionOpen = isSubmissionOpen(gameweekData, now);
+    const rawDeadline = gameweekData.fplEvent.deadline_time;
     const deadline = typeof rawDeadline === 'string' ? rawDeadline : rawDeadline.toISOString();
+
+    const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
+        gameweek: r.gameweek,
+        label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+    }));
 
     const empty: CupSubmitPageData = {
         hasConfig: !!round,
@@ -154,6 +159,8 @@ export async function getCupSubmitData(input: {
         usedPlayers: [],
         submissionOpen,
         deadline,
+        selectedGameweek: gameweek,
+        gameweekOptions,
     };
 
     if (!selectedUser || !round) return empty;

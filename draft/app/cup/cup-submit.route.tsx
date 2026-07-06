@@ -23,16 +23,33 @@ interface CupActionData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, userTeams] = await Promise.all([fplApiCache.getCurrentGameweekData(), readUserTeams()]);
+    const [currentGameweekData, events, userTeams] = await Promise.all([
+        fplApiCache.getCurrentGameweekData(),
+        fplApiCache.getFplEvents(),
+        readUserTeams(),
+    ]);
     const persistedUser = getUserSelection(request);
     const selectedUser = userTeams.find((team) => team.userId === persistedUser.selectedUserId);
 
     try {
         const [cupConfig, submissions] = await Promise.all([readCupConfig(), readCupSubmissions()]);
+
+        // Same gameweek resolution as /cup: ?gameweek wins, else current-if-cup, else first cup gameweek.
+        const { resolveCupRounds } = await import('./lib/cup-config');
+        const cupGameweeks = resolveCupRounds(cupConfig).map((round) => round.gameweek);
+        const requested = Number.parseInt(new URL(request.url).searchParams.get('gameweek') ?? '', 10);
+        const currentId = currentGameweekData.fplEvent.id;
+        const selectedGameweek = Number.isNaN(requested)
+            ? cupGameweeks.includes(currentId)
+                ? currentId
+                : (cupGameweeks[0] ?? currentId)
+            : requested;
+        const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? currentGameweekData;
+
         const pageData = await getCupSubmitData({
             userTeams,
             selectedUser,
-            currentGameweekData,
+            gameweekData,
             cupConfig,
             submissions,
         });
@@ -51,6 +68,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
             usedPlayers: [],
             submissionOpen: false,
             deadline: String(currentGameweekData.fplEvent.deadline_time),
+            selectedGameweek: currentGameweekData.fplEvent.id,
+            gameweekOptions: [],
         });
     }
 }
