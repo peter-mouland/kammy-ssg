@@ -26,6 +26,8 @@ const CACHE_TTL = {
     SHEETS_DRAFT: 2 * 60 * 1000, // 2 minutes - draft picks change during drafts (reduced from 5 min)
     SHEETS_TRANSFERS: 30 * 1000, // 30s - can change during drafts
     SHEETS_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player positions might be updated
+    SHEETS_CUP: 30 * 1000, // 30s - cup submissions change up to the deadline
+    SHEETS_CUP_CONFIG: 5 * 60 * 1000, // 5 min - stage->gameweek map, changed rarely by admin
 
     // Firebase/Firestore Data - real-time or frequently changing
     FIREBASE_DRAFT_STATE: 150 * 1000, // 150 seconds - changes rapidly during draft
@@ -72,6 +74,9 @@ export const CACHE_KEYS = {
         DRAFT: 'sheets:draft-picks',
         TRANSFERS: (divisionId: string) => `sheets:transfers:${divisionId}`,
         PLAYERS: 'sheets:players',
+        // Cup is cross-division, so a single (non-division-scoped) key.
+        CUP: 'sheets:cup',
+        CUP_CONFIG: 'sheets:cup-config',
     },
 
     // Firebase keys
@@ -108,6 +113,12 @@ export const CACHE_INVALIDATION_RULES = {
 
     // When transfers add submitted by managers
     TRANSFERS_UPDATED: (divisionId: string) => [CACHE_KEYS.SHEETS.TRANSFERS(divisionId)],
+
+    // When a cup team is submitted (by a manager or admin)
+    CUP_SUBMITTED: [CACHE_KEYS.SHEETS.CUP],
+
+    // When an admin changes the stage->gameweek mapping
+    CUP_CONFIG_CHANGED: [CACHE_KEYS.SHEETS.CUP_CONFIG, CACHE_KEYS.SHEETS.CUP],
 
     // When transfers + points are processed
     TRANSFERS_PROCESSED: (divisionId: string, gameWeek: number) => [
@@ -168,6 +179,8 @@ export function getCacheTTL(key: string): number {
     if (key.includes('sheets:user-teams')) return CACHE_TTL.SHEETS_USER_TEAMS;
     if (key.includes('sheets:players')) return CACHE_TTL.SHEETS_PLAYERS;
     if (key.includes('sheets:transfers')) return CACHE_TTL.SHEETS_TRANSFERS;
+    if (key.includes('sheets:cup-config')) return CACHE_TTL.SHEETS_CUP_CONFIG;
+    if (key.includes('sheets:cup')) return CACHE_TTL.SHEETS_CUP;
     if (key.includes('sheets:draft-state')) return CACHE_TTL.SHEETS_DRAFT_STATE;
     if (key.includes('sheets:draft-picks')) return CACHE_TTL.SHEETS_DRAFT;
     if (key.includes('sheets:draft-orders')) return CACHE_TTL.SHEETS_DRAFT_ORDERS;
