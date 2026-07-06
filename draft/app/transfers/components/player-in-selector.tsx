@@ -1,20 +1,19 @@
 // app/transfers/components/player-in-selector.tsx
 
-import { useMemo, } from 'react';
+import { useMemo } from 'react';
 import { MultiSelect } from '../../_shared/components/multi-select';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
-import { PlayerSummary } from '../../players/components/player';
-import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
-import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
+import { getPositionDisplayName } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { sortPositions } from '../../teams/lib/sorting-utils';
-import type { ManagerId, RosterPlayer } from '../../teams/types/team-types';
+import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
-import { getPlayerEligibilityFromValidators } from '../lib/player-eligibility-from-validators';
+import { getPlayerStatusDisplay } from '../lib/get-player-status-display';
+import { getTransferSelectorStatColumns } from '../lib/transfer-selector-stat-columns';
 import type { OwnedPlayersByCode } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
@@ -30,6 +29,8 @@ interface PlayerInSelectorProps {
     teamsByCode: Record<FplTeam['code'], FplTeam>;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
     managerId: ManagerId;
+    managers: UserTeamsSheetData[];
+    embeddedInJourney?: boolean;
 }
 
 export function PlayerInSelector({
@@ -42,6 +43,8 @@ export function PlayerInSelector({
     teamsByCode,
     managerId,
     validationContext,
+    managers,
+    embeddedInJourney = false,
 }: PlayerInSelectorProps) {
     // URL-synced filters for persistence - updated to handle arrays
     const { filters, setFilter, resetFilters, isUpdating } = useTableFilters({
@@ -131,7 +134,7 @@ export function PlayerInSelector({
             onLoanTo: undefined,
             onLoanFrom: undefined,
         };
-        return getPlayerEligibilityFromValidators({ ...validationContext, transfer: mockTransfer });
+        return getPlayerStatusDisplay({ ...validationContext, transfer: mockTransfer }, managers, managerId);
     };
 
     // NEW: Status filter options
@@ -186,159 +189,47 @@ export function PlayerInSelector({
             eligibility: getPlayerEligibility(player),
             ownership: getPlayerOwnership(player, ownedPlayersByCode),
         }));
-    }, [availablePlayers, filters.positions, filters.search, filters.status, filters.teams, transferType, playerOut]);
+    }, [
+        availablePlayers,
+        filters.positions,
+        filters.search,
+        filters.status,
+        filters.teams,
+        transferType,
+        playerOut,
+        managers,
+        managerId,
+        validationContext,
+    ]);
 
-    // Define table columns using the EXACT same pattern as league-standings
-    const columns: TableColumn<EnhancedPlayerData>[] = [
-        {
-            key: 'name',
-            header: 'Player',
-            accessor: (player) => player.web_name,
-            sortable: true,
-            fixed: true,
-            render: (_, player) => {
-                return <PlayerSummary player={player} teamsByCode={teamsByCode} />;
-            },
-        },
-        {
-            key: 'points',
-            header: 'Pts',
-            accessor: (player) => player.draft?.pointsTotal || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (_, player) => (
-                <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
-            ),
-        },
-        {
-            key: 'apps',
-            header: 'Mins',
-            accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
-            sortable: true,
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
-            key: 'goals',
-            header: <span title={'Goals'}>Gls</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.goals.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
-            key: 'assists',
-            header: <span title={'Assists'}>Asts</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.assists.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
-            key: 'cleanSheets',
-            header: <span title={'Clean Sheets'}>CS</span>,
-            accessor: (player) =>
-                isStatRelevant('cleanSheets', player.draft.position)
-                    ? player.draft?.pointsBreakdown.cleanSheets.stat || 0
-                    : -1,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('cleanSheets', player.draft.position) ? stat : '-'),
-        },
-        {
-            key: 'penaltiesSaved',
-            header: <span title={'Penalties Saved'}>PS</span>,
-            accessor: (player) =>
-                isStatRelevant('penaltiesSaved', player.draft.position)
-                    ? player.draft?.pointsBreakdown.penaltiesSaved.stat || 0
-                    : -1,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('penaltiesSaved', player.draft.position) ? stat : '-'),
-        },
-        {
-            key: 'saves',
-            header: 'Saves',
-            accessor: (player) =>
-                isStatRelevant('saves', player.draft.position) ? player.draft?.pointsBreakdown.saves.stat || 0 : -1,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('saves', player.draft.position) ? stat : '-'),
-        },
-        {
-            key: 'goalsConceded',
-            header: <div title={'Goals Conceded'}>GC</div>,
-            accessor: (player) =>
-                isStatRelevant('goalsConceded', player.draft.position)
-                    ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
-                    : -1,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
-        },
-        {
-            key: 'yellowCards',
-            header: <span title={'Yellow Cards'}>YC</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.yellowCards.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
-            key: 'redCards',
-            header: <span title={'Red Cards'}>RC</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.redCards.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
-            key: 'bonus',
-            header: <span title={'Bonus'}>B</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.bonus.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
-            key: 'defensiveContribution',
-            header: <span title={'Defensive Contribution'}>DC</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.defensiveContribution?.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat) => stat,
-        },
-        {
-            key: 'status',
-            header: 'Status',
-            align: 'right',
-            render: (_, player) => (
-                <div className={styles.playerStats} style={{ float: 'right' }}>
-                    <div className={styles.playerStatus}>
-                        <span className={styles.eligibilityIcon}>{player.eligibility.icon}</span>
-                        <div className={styles.statusText}>
-                            <div className={styles.eligibilityReason}>{player.eligibility.reason}</div>
+    const columns: TableColumn<EnhancedPlayerData>[] = useMemo(
+        () => [
+            ...getTransferSelectorStatColumns(teamsByCode),
+            {
+                key: 'status',
+                header: 'Status',
+                align: 'left',
+                minWidth: '4.5rem',
+                render: (_, player) => (
+                    <div className={styles.playerStats}>
+                        <div className={styles.playerStatus}>
+                            <span className={styles.eligibilityIcon}>{player.eligibility.icon}</span>
+                            <div className={styles.statusText}>
+                                <div className={styles.eligibilityReason} title={player.eligibility.fullMessage}>
+                                    {player.eligibility.reason}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ),
-        },
-    ];
+                ),
+            },
+        ],
+        [teamsByCode],
+    );
 
     return (
-        <div className={styles.playerSelector}>
-            <label className={styles.label}>Player In</label>
+        <div className={`${styles.playerSelector} ${embeddedInJourney ? styles.embeddedInJourney : ''}`}>
+            {embeddedInJourney ? null : <label className={styles.label}>Player In</label>}
 
             {/* Transfer Type Context */}
             {transferType === 'LOAN_START' && (

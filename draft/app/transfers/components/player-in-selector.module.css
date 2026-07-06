@@ -91,6 +91,21 @@
     background: var(--color-white);
 }
 
+.embeddedInJourney {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 0;
+    height: 100%;
+}
+
+.embeddedInJourney .playerList {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+}
+
 .playerCard {
     border-bottom: 1px solid var(--color-gray-100);
     cursor: pointer;
@@ -126,12 +141,15 @@
 .playerStatus {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
-    text-align: right;
+    gap: var(--spacing-1);
+    text-align: left;
+    max-width: 5rem;
 }
 
 .eligibilityIcon {
     font-size: var(--font-lg);
+    flex-shrink: 0;
+    line-height: 1;
 }
 
 .statusText {
@@ -140,6 +158,9 @@
 
 .eligibilityReason {
     color: var(--color-gray-600);
+    white-space: normal;
+    line-height: 1.2;
+    word-break: break-word;
 }
 
 .noPlayers {
@@ -199,7 +220,11 @@
 }
 
 .playerStats {
-    text-align: right;
+    text-align: left;
+}
+
+.playerSelector :global(td.cellCenter.cellNumeric) {
+    text-align: center;
 }
 
 .statValue {

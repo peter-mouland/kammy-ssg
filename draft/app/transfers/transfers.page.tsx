@@ -74,7 +74,7 @@ export const TransfersPageComp = (data: TransfersPageData) => {
 
     if (activeJourney && data.selectedUser) {
         return (
-            <div className={styles.pageContainer}>
+            <div className={`${styles.pageContainer} ${styles.journeyPage}`}>
                 <TransferForm
                     divisions={data.divisions}
                     managers={data.managers}

@@ -62,6 +62,7 @@ export interface PlayerEligibility {
     isEligible: boolean;
     reason?: string;
     icon?: string;
+    fullMessage?: string;
     // Loan-specific eligibility (NEW)
     loanInfo?: {
         currentOwner?: string;
