@@ -16,6 +16,10 @@ export default [
     route('transfers/:divisionId?', 'transfers/transfers.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),
 
+    // Cup (cross-division knockout)
+    route('cup', 'cup/cup.route.tsx'),
+    route('cup/submit', 'cup/cup-submit.route.tsx'),
+
     route('scoring/api/gw-points', 'scoring/api/api.gw-points.ts'),
 
     // NEW: Fresh transfers API for client-side fetching

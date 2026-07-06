@@ -1,0 +1,179 @@
+/* Location: app/cup/cup-submit.module.css */
+
+.page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--spacing-4);
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-2);
+}
+
+.title {
+    margin: 0;
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
+}
+
+.roundLabel {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
+.deadline {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin: var(--spacing-3) 0;
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
+}
+
+.deadlineLabel {
+    font-weight: var(--font-weight-semibold);
+}
+
+.deadlineValue {
+    color: var(--color-gray-900);
+}
+
+.open {
+    color: var(--color-success-text);
+    font-weight: var(--font-weight-semibold);
+}
+
+.closed {
+    color: var(--color-error-text);
+    font-weight: var(--font-weight-semibold);
+}
+
+.notice {
+    padding: var(--spacing-4);
+    border-radius: var(--radius-md);
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+    font-size: var(--font-sm);
+}
+
+.error {
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    background-color: var(--color-error-light);
+    color: var(--color-error-text);
+    font-size: var(--font-sm);
+}
+
+.success {
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    background-color: var(--color-success-light);
+    color: var(--color-success-text);
+    font-size: var(--font-sm);
+}
+
+.counter {
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+}
+
+.squad {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.player:hover {
+    border-color: var(--color-primary);
+}
+
+.player:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.player.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-light);
+}
+
+.player.used {
+    background-color: var(--color-gray-100);
+}
+
+.playerName {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+}
+
+.playerPosition {
+    font-size: var(--font-xs);
+    text-transform: uppercase;
+    color: var(--color-gray-500);
+}
+
+.pendingBadge {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-info);
+}
+
+.usedBadge {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+.submit {
+    padding: var(--spacing-3) var(--spacing-6);
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.submit:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.submit:disabled {
+    background-color: var(--color-gray-300);
+    cursor: not-allowed;
+}
+
+.backLink {
+    display: inline-block;
+    margin-top: var(--spacing-4);
+    color: var(--color-primary);
+    font-size: var(--font-sm);
+    text-decoration: none;
+}
+
+.backLink:hover {
+    text-decoration: underline;
+}
