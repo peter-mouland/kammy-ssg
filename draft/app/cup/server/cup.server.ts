@@ -4,9 +4,11 @@ import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { UserTeamsSheetData } from '../../teams/types/team-types';
 import { getGameweekForStage, getRoundForGameweek } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
+import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
+import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
 import { getTeamVisibility } from '../lib/cup-visibility';
-import type { CupOverviewRow, CupPageData, CupSubmitPageData } from '../types/cup-page-types';
+import type { CupOverviewRow, CupPageData, CupQualifier, CupSubmitPageData } from '../types/cup-page-types';
 import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
 
 /** A submission's subs count as confirmed once an admin has approved it (Status = 'Y'). */
@@ -31,13 +33,15 @@ export function getCupPageData(input: {
     currentGameweekData: GameWeekData;
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
+    pointsRows: PlayerPointsRow[];
     now?: Date;
 }): CupPageData {
-    const { userTeams, currentGameweekData, cupConfig, submissions } = input;
+    const { userTeams, currentGameweekData, cupConfig, submissions, pointsRows } = input;
     const now = input.now ?? new Date();
     const gameweek = currentGameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
     const deadlinePassed = isDeadlinePassed(currentGameweekData, now);
+    const currentPoints = buildGameweekPointsMap(pointsRows, gameweek);
 
     const rows: CupOverviewRow[] = userTeams.map((team) => {
         const submission = findSubmission(submissions, team.userId, gameweek);
@@ -54,11 +58,29 @@ export function getCupPageData(input: {
             division: team.divisionId,
             visibility,
             players: revealed ? submission.players : null,
-            points: null,
+            points: revealed ? scoreSubmission(submission.players, currentPoints) : null,
         };
     });
 
-    return { hasConfig: !!round, round, gameweek, deadlinePassed, rows };
+    // League-stage standings across every configured league gameweek, using the
+    // site's existing per-player league points (no double counting).
+    const scored: ScoredSubmission[] = submissions
+        .filter((submission) => cupConfig.league.includes(submission.gameweek))
+        .map((submission) => ({
+            manager: submission.manager,
+            gameweek: submission.gameweek,
+            points: scoreSubmission(submission.players, buildGameweekPointsMap(pointsRows, submission.gameweek)),
+            isAutopick: submission.adminReason === 'autopick',
+        }));
+
+    const standings = computeLeagueStandings(scored, cupConfig.league);
+    const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
+    const qualifiers: CupQualifier[] = getQualifiers(standings).map((manager) => {
+        const standing = standings.find((s) => s.manager === manager);
+        return { manager, userName: userNameById.get(manager) ?? manager, rank: standing?.rank ?? 0 };
+    });
+
+    return { hasConfig: !!round, round, gameweek, deadlinePassed, rows, standings, qualifiers };
 }
 
 /**

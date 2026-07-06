@@ -2,6 +2,7 @@
 
 import type { DivisionId, ManagerId } from '../../teams/types/team-types';
 import type { CupSquadPlayer } from '../lib/cup-squad';
+import type { CupStanding } from '../lib/cup-standings';
 import type { CupTeamVisibility } from '../lib/cup-visibility';
 import type { CupRound } from './cup-types';
 
@@ -17,12 +18,21 @@ export interface CupOverviewRow {
     points: number | null;
 }
 
+/** A qualifier for the knockout stage — a manager and their league rank. */
+export interface CupQualifier {
+    manager: ManagerId;
+    userName: string;
+    rank: number;
+}
+
 export interface CupPageData {
     hasConfig: boolean;
     round: CupRound | null;
     gameweek: number;
     deadlinePassed: boolean;
     rows: CupOverviewRow[];
+    standings: CupStanding[];
+    qualifiers: CupQualifier[];
 }
 
 export interface CupSubmitPageData {
