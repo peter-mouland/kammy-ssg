@@ -77,6 +77,7 @@ export const CACHE_KEYS = {
         // Cup is cross-division, so a single (non-division-scoped) key.
         CUP: 'sheets:cup',
         CUP_CONFIG: 'sheets:cup-config',
+        CUP_BRACKET: 'sheets:cup-bracket',
     },
 
     // Firebase keys
@@ -180,6 +181,7 @@ export function getCacheTTL(key: string): number {
     if (key.includes('sheets:players')) return CACHE_TTL.SHEETS_PLAYERS;
     if (key.includes('sheets:transfers')) return CACHE_TTL.SHEETS_TRANSFERS;
     if (key.includes('sheets:cup-config')) return CACHE_TTL.SHEETS_CUP_CONFIG;
+    if (key.includes('sheets:cup-bracket')) return CACHE_TTL.SHEETS_CUP_CONFIG;
     if (key.includes('sheets:cup')) return CACHE_TTL.SHEETS_CUP;
     if (key.includes('sheets:draft-state')) return CACHE_TTL.SHEETS_DRAFT_STATE;
     if (key.includes('sheets:draft-picks')) return CACHE_TTL.SHEETS_DRAFT;

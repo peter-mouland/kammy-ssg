@@ -1,17 +1,24 @@
 /* Location: app/_shared/lib/sheets/cup.ts */
 
 import { parseCupConfig, serializeCupConfig } from '../../../cup/lib/cup-config';
-import type { CupConfig, CupSheetData, CupStageId, ProcessedCupSheetData } from '../../../cup/types/cup-types';
-import type { DivisionId } from '../../../teams/types/team-types';
+import type {
+    CupConfig,
+    CupMatchup,
+    CupSheetData,
+    CupStageId,
+    ProcessedCupSheetData,
+} from '../../../cup/types/cup-types';
+import type { DivisionId, ManagerId } from '../../../teams/types/team-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
-import { appendToSheet, createAppError, readSheetRange, type SheetRange } from './utils/common';
+import { appendToSheet, createAppError, readSheetRange, type SheetRange, writeSheetRange } from './utils/common';
 import { readDataFromSheet } from './utils/read-data-from-sheets';
 
 // The cup is cross-division, so submissions live in a single tab (not per-division).
 const CUP_SHEET_NAME = 'Cup';
 const CUP_CONFIG_SHEET_NAME = 'CupConfig';
+const CUP_BRACKET_SHEET_NAME = 'CupBracket';
 
 const CUP_HEADERS: Record<keyof CupSheetData, keyof ProcessedCupSheetData> = {
     Status: 'status',
@@ -189,11 +196,77 @@ export async function writeCupConfig(config: CupConfig): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const rows = [['Key', 'Value'], ...serializeCupConfig(config).map((r) => [r.key, r.value])];
+        // Overwrite (not append) so the config is a single authoritative block.
         const range: SheetRange = { spreadsheetId, range: `'${CUP_CONFIG_SHEET_NAME}'!A:B` };
-        await appendToSheet(range, rows);
+        await writeSheetRange(range, rows);
         dataCache.invalidate(CACHE_KEYS.SHEETS.CUP_CONFIG);
         dataCache.invalidate(CACHE_KEYS.SHEETS.CUP);
     } catch (error) {
         throw createAppError('CUP_CONFIG_WRITE_ERROR', 'Failed to write cup config to sheet', error);
+    }
+}
+
+const CUP_BRACKET_HEADERS = ['Stage', 'Tie', 'Home', 'Away', 'HomeAggregate', 'AwayAggregate', 'Winner'] as const;
+
+function toManagerId(value: unknown): ManagerId | null {
+    const str = value === undefined || value === null ? '' : String(value).trim();
+    return str === '' ? null : str;
+}
+
+function toOptionalNumber(value: unknown): number | undefined {
+    if (value === undefined || value === null || value === '') return undefined;
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+async function originalReadCupBracket(): Promise<CupMatchup[]> {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:G` };
+        const rows = await readSheetRange(range);
+
+        return rows
+            .slice(1)
+            .filter((row) => row.length > 0 && String(row[0]).trim() !== '')
+            .map((row) => ({
+                stage: String(row[0]).trim() as CupStageId,
+                tie: Number(row[1]) || 0,
+                home: toManagerId(row[2]),
+                away: toManagerId(row[3]),
+                homeAggregate: toOptionalNumber(row[4]),
+                awayAggregate: toOptionalNumber(row[5]),
+                winner: toManagerId(row[6]) ?? undefined,
+            }));
+    } catch (error) {
+        throw createAppError('CUP_BRACKET_READ_ERROR', 'Failed to read cup bracket from sheet', error);
+    }
+}
+
+export async function readCupBracket(): Promise<CupMatchup[]> {
+    return await dataCache.get(CACHE_KEYS.SHEETS.CUP_BRACKET, () => originalReadCupBracket(), {
+        ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.CUP_BRACKET),
+    });
+}
+
+export async function writeCupBracket(matchups: CupMatchup[]): Promise<void> {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
+        const rows = [
+            [...CUP_BRACKET_HEADERS],
+            ...matchups.map((m) => [
+                m.stage,
+                m.tie,
+                m.home ?? '',
+                m.away ?? '',
+                m.homeAggregate ?? '',
+                m.awayAggregate ?? '',
+                m.winner ?? '',
+            ]),
+        ];
+        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:G` };
+        await writeSheetRange(range, rows);
+        dataCache.invalidate(CACHE_KEYS.SHEETS.CUP_BRACKET);
+    } catch (error) {
+        throw createAppError('CUP_BRACKET_WRITE_ERROR', 'Failed to write cup bracket to sheet', error);
     }
 }

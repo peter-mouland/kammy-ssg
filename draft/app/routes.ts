@@ -19,6 +19,7 @@ export default [
     // Cup (cross-division knockout)
     route('cup', 'cup/cup.route.tsx'),
     route('cup/submit', 'cup/cup-submit.route.tsx'),
+    route('cup/admin', 'cup/cup-admin.route.tsx'),
 
     route('scoring/api/gw-points', 'scoring/api/api.gw-points.ts'),
 

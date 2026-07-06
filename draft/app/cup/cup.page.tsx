@@ -15,6 +15,24 @@ function StatusCell({ row }: { row: CupOverviewRow }) {
     return <span className={styles.pending}>Not submitted</span>;
 }
 
+function Bracket({ data }: { data: CupPageData }) {
+    if (data.bracket.length === 0) return null;
+    return (
+        <section className={styles.qualifiers}>
+            <h2 className={styles.sectionTitle}>Knockout bracket</h2>
+            <ul className={styles.qualifierList}>
+                {data.bracket.map((matchup) => (
+                    <li key={`${matchup.stage}-${matchup.tie}`} className={styles.qualifierItem}>
+                        <span className={styles.qualifierName}>{matchup.home ?? 'TBC'}</span>
+                        <span className={styles.pending}>v</span>
+                        <span className={styles.qualifierName}>{matchup.away ?? 'BYE'}</span>
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
+}
+
 function QualifiersTable({ data }: { data: CupPageData }) {
     if (data.qualifiers.length === 0) return null;
     return (
@@ -83,6 +101,7 @@ export function CupPage() {
                 </p>
             )}
 
+            <Bracket data={data} />
             <QualifiersTable data={data} />
         </div>
     );
