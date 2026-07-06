@@ -21,28 +21,37 @@ const raw = (clearancesBlocksInterceptions: number, tackles: number, recoveries:
 });
 
 describe('calculateDefensiveContribution', () => {
-    it('awards a defender (cb/fb) +1 when CBIT reaches 10, excluding recoveries', () => {
-        expect(calculateDefensiveContribution(raw(6, 4, 0), 'cb')).toBe(1); // 10 CBIT
-        expect(calculateDefensiveContribution(raw(6, 4, 9), 'fb')).toBe(1); // recoveries irrelevant
+    // Same input, only the position changes: isolates that CB/FB use CBIT vs a
+    // threshold of 10 while MID uses CBIRT vs 12. raw(6,4,0) is 10 CBIT / 10 CBIRT.
+    it('scores the same input differently by position (10 CBIT/CBIRT, no recoveries)', () => {
+        expect(calculateDefensiveContribution(raw(6, 4, 0), 'cb')).toBe(1); // 10 >= 10
+        expect(calculateDefensiveContribution(raw(6, 4, 0), 'fb')).toBe(1); // 10 >= 10
+        expect(calculateDefensiveContribution(raw(6, 4, 0), 'mid')).toBe(0); // 10 < 12
+        expect(calculateDefensiveContribution(raw(6, 4, 0), 'gk')).toBe(0); // no rule
     });
 
-    it('does NOT count recoveries for a defender (CBIT below 10 stays 0 despite recoveries)', () => {
-        // 8 CBIT + 5 recoveries — recoveries must be ignored for defenders, so still < 10
-        expect(calculateDefensiveContribution(raw(4, 4, 5), 'cb')).toBe(0);
+    // Defender boundary: only CBIT changes (recoveries fixed at 0).
+    it('awards a defender +1 exactly at the CBIT threshold of 10, not below', () => {
+        expect(calculateDefensiveContribution(raw(5, 4, 0), 'fb')).toBe(0); // 9
+        expect(calculateDefensiveContribution(raw(5, 5, 0), 'fb')).toBe(1); // 10
+        expect(calculateDefensiveContribution(raw(5, 5, 0), 'cb')).toBe(1); // 10
     });
 
-    it('awards a midfielder +2 when CBIRT reaches 12, including recoveries', () => {
-        expect(calculateDefensiveContribution(raw(5, 3, 4), 'mid')).toBe(2); // 8 CBIT + 4 rec = 12
+    // Counter-case: recoveries must NOT lift a defender over the line.
+    it('ignores recoveries for a defender (9 CBIT + 9 recoveries stays 0)', () => {
+        expect(calculateDefensiveContribution(raw(5, 4, 9), 'fb')).toBe(0); // CBIT 9, recoveries ignored
     });
 
-    it('the Matheus Nunes case: mid-by-us gets recoveries counted (FPL would treat him as a defender)', () => {
-        // 8 CBIT + 5 recoveries = 13 CBIRT >= 12 → +2. FPL's aggregate (CBIT only, no recoveries)
-        // would be 8 and wrongly miss the threshold.
-        expect(calculateDefensiveContribution(raw(5, 3, 5), 'mid')).toBe(2);
+    // Midfielder boundary: only CBIRT changes.
+    it('awards a midfielder +2 exactly at the CBIRT threshold of 12, not below', () => {
+        expect(calculateDefensiveContribution(raw(6, 5, 0), 'mid')).toBe(0); // 11
+        expect(calculateDefensiveContribution(raw(6, 5, 1), 'mid')).toBe(2); // 12
     });
 
-    it('returns 0 for a midfielder below the CBIRT threshold', () => {
-        expect(calculateDefensiveContribution(raw(4, 3, 2), 'mid')).toBe(0); // 9 CBIRT < 12
+    // Counter-case: for a midfielder ONLY recoveries change, proving they count.
+    it('counts recoveries for a midfielder (the Matheus Nunes case)', () => {
+        expect(calculateDefensiveContribution(raw(6, 4, 1), 'mid')).toBe(0); // 10 CBIT + 1 = 11 < 12
+        expect(calculateDefensiveContribution(raw(6, 4, 2), 'mid')).toBe(2); // 10 CBIT + 2 = 12
     });
 
     it('returns 0 for positions with no defensive-contribution rule (gk, wa, ca)', () => {
