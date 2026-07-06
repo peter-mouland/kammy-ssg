@@ -1,5 +1,56 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBonus, calculateGoalsConcededPenalty, calculateSavesBonus } from './calculations';
+import {
+    calculateBonus,
+    calculateDefensiveContribution,
+    calculateGoalsConcededPenalty,
+    calculateSavesBonus,
+} from './calculations';
+
+// ---------------------------------------------------------------------------
+// calculateDefensiveContribution
+// ---------------------------------------------------------------------------
+
+// We compute CBIT/CBIRT ourselves from the raw components and key the metric off OUR
+// custom position: defenders (cb/fb) use CBIT (10+ = +1, recoveries excluded);
+// midfielders (mid) use CBIRT (12+ = +2, recoveries included). This must NOT rely on
+// FPL's aggregate, which bakes in FPL's own position.
+const raw = (clearancesBlocksInterceptions: number, tackles: number, recoveries: number) => ({
+    clearancesBlocksInterceptions,
+    tackles,
+    recoveries,
+});
+
+describe('calculateDefensiveContribution', () => {
+    it('awards a defender (cb/fb) +1 when CBIT reaches 10, excluding recoveries', () => {
+        expect(calculateDefensiveContribution(raw(6, 4, 0), 'cb')).toBe(1); // 10 CBIT
+        expect(calculateDefensiveContribution(raw(6, 4, 9), 'fb')).toBe(1); // recoveries irrelevant
+    });
+
+    it('does NOT count recoveries for a defender (CBIT below 10 stays 0 despite recoveries)', () => {
+        // 8 CBIT + 5 recoveries — recoveries must be ignored for defenders, so still < 10
+        expect(calculateDefensiveContribution(raw(4, 4, 5), 'cb')).toBe(0);
+    });
+
+    it('awards a midfielder +2 when CBIRT reaches 12, including recoveries', () => {
+        expect(calculateDefensiveContribution(raw(5, 3, 4), 'mid')).toBe(2); // 8 CBIT + 4 rec = 12
+    });
+
+    it('the Matheus Nunes case: mid-by-us gets recoveries counted (FPL would treat him as a defender)', () => {
+        // 8 CBIT + 5 recoveries = 13 CBIRT >= 12 → +2. FPL's aggregate (CBIT only, no recoveries)
+        // would be 8 and wrongly miss the threshold.
+        expect(calculateDefensiveContribution(raw(5, 3, 5), 'mid')).toBe(2);
+    });
+
+    it('returns 0 for a midfielder below the CBIRT threshold', () => {
+        expect(calculateDefensiveContribution(raw(4, 3, 2), 'mid')).toBe(0); // 9 CBIRT < 12
+    });
+
+    it('returns 0 for positions with no defensive-contribution rule (gk, wa, ca)', () => {
+        expect(calculateDefensiveContribution(raw(20, 20, 20), 'gk')).toBe(0);
+        expect(calculateDefensiveContribution(raw(20, 20, 20), 'wa')).toBe(0);
+        expect(calculateDefensiveContribution(raw(20, 20, 20), 'ca')).toBe(0);
+    });
+});
 
 // ---------------------------------------------------------------------------
 // calculateGoalsConcededPenalty

@@ -20,14 +20,28 @@ const baselineStats: Points = {
     total: 0,
 };
 
+// Positions that count recoveries towards their defensive-contribution total (CBIRT),
+// mirroring FPL's midfielder/forward rule. Defenders (cb/fb) use CBIT only.
+const RECOVERIES_COUNT_FOR: CustomPosition[] = ['mid', 'wa', 'ca'];
+
 /**
- * Calculate appearance points based on minutes played
+ * Calculate defensive-contribution points from the raw components, using OUR custom
+ * position to decide the metric — CBIT (clearances+blocks+interceptions+tackles) for
+ * defenders, CBIRT (+ recoveries) for midfielders/attackers. We do NOT use FPL's
+ * aggregate `defensive_contribution`, which bakes in FPL's own position and is wrong
+ * whenever our position disagrees with FPL's (e.g. Matheus Nunes).
  */
-export function calculateDefensiveContribution(defensiveContribution: number, position: CustomPosition): number {
+export function calculateDefensiveContribution(
+    stats: Pick<PlayerGameweekStatsData, 'clearancesBlocksInterceptions' | 'tackles' | 'recoveries'>,
+    position: CustomPosition,
+): number {
     const rule = POSITION_RULES[position];
     if (!('defensiveContribution' in rule)) return 0;
 
-    if ((defensiveContribution || 0) < rule.defensiveContribution.threshold) return 0;
+    const cbit = (stats.clearancesBlocksInterceptions || 0) + (stats.tackles || 0);
+    const total = RECOVERIES_COUNT_FOR.includes(position) ? cbit + (stats.recoveries || 0) : cbit;
+
+    if (total < rule.defensiveContribution.threshold) return 0;
     return rule.defensiveContribution.points;
 }
 /**
@@ -141,8 +155,7 @@ export function calculateGameweekPoints(gws: PlayerGameweekStatsData[], position
                 penaltiesSaved: acc.penaltiesSaved + calculatePenaltiesSaved(stats.penaltiesSaved, position),
                 goalsConceded: acc.goalsConceded + calculateGoalsConcededPenalty(stats.goalsConceded, position),
                 bonus: acc.bonus + calculateBonus(stats.bonus, position),
-                defensiveContribution:
-                    acc.defensiveContribution + calculateDefensiveContribution(stats.defensiveContribution, position),
+                defensiveContribution: acc.defensiveContribution + calculateDefensiveContribution(stats, position),
                 total: 0,
             };
 

@@ -28,6 +28,12 @@ export interface PlayerGameweekStatsData {
     saves: number;
     bonus: number;
     defensiveContribution: number;
+    // Raw components behind the defensive-contribution metric. We compute CBIT/CBIRT
+    // ourselves (by custom position) rather than trusting FPL's aggregate, which is
+    // baked to FPL's own position.
+    clearancesBlocksInterceptions: number;
+    tackles: number;
+    recoveries: number;
 }
 
 export interface PlayerDetailData {
