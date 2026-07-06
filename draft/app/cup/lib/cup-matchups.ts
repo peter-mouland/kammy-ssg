@@ -43,13 +43,20 @@ export function buildStageMatchups(input: {
         ? [getGameweekForStage(cupConfig, round.stage, 1), getGameweekForStage(cupConfig, round.stage, 2)]
         : [getGameweekForStage(cupConfig, round.stage, 1)];
 
+    // One points map per leg gameweek, built once rather than per submission lookup.
+    const pointsMaps = new Map(
+        legGameweeks
+            .filter((gameweek): gameweek is number => gameweek !== null)
+            .map((gameweek) => [gameweek, buildGameweekPointsMap(pointsRows, gameweek)]),
+    );
+
     const pointsFor = (manager: ManagerId | null, gameweek: number | null): number | null => {
         if (!manager || gameweek === null) return null;
         const submission = submissions.find((s) => s.manager === manager && s.gameweek === gameweek);
         if (!submission) return null;
         const revealed = deadlinePassedFor(gameweek) && submission.status === 'Y';
         if (!revealed) return null;
-        return scoreSubmission(submission.players, buildGameweekPointsMap(pointsRows, gameweek));
+        return scoreSubmission(submission.players, pointsMaps.get(gameweek) ?? new Map());
     };
 
     const aggregateFor = (manager: ManagerId | null): number | null => {

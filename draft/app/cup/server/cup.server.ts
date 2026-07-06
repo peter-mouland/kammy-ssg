@@ -103,12 +103,18 @@ export function getCupStandings(input: {
 }) {
     const { userTeams, cupConfig, submissions, pointsRows } = input;
 
+    // Build one points map per league gameweek up front rather than rebuilding it (an
+    // O(players) pass) for every submission — scoring is on the app's hot path.
+    const leaguePointsMaps = new Map(
+        cupConfig.league.map((gameweek) => [gameweek, buildGameweekPointsMap(pointsRows, gameweek)]),
+    );
+
     const scored: ScoredSubmission[] = submissions
         .filter((submission) => cupConfig.league.includes(submission.gameweek))
         .map((submission) => ({
             manager: submission.manager,
             gameweek: submission.gameweek,
-            points: scoreSubmission(submission.players, buildGameweekPointsMap(pointsRows, submission.gameweek)),
+            points: scoreSubmission(submission.players, leaguePointsMaps.get(submission.gameweek) ?? new Map()),
             isAutopick: submission.adminReason === 'autopick',
         }));
 
