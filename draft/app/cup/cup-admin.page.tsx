@@ -1,6 +1,7 @@
 /* Location: app/cup/cup-admin.page.tsx */
 
 import { Form, useActionData, useLoaderData, useNavigation } from 'react-router';
+import { PageHeader } from '../_shared/components/page-header';
 import styles from './cup-admin.module.css';
 import type { CupAdminPageData } from './types/cup-page-types';
 
@@ -19,7 +20,7 @@ export function CupAdminPage() {
 
     return (
         <div className={styles.page}>
-            <h1 className={styles.title}>Cup Admin</h1>
+            <PageHeader title="Cup Admin" />
 
             {actionData?.error && <p className={styles.error}>{actionData.error}</p>}
             {actionData?.success && <p className={styles.success}>{actionData.message}</p>}

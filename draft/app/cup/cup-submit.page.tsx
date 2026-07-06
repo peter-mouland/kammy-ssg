@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from 'react-router';
+import { PageHeader } from '../_shared/components/page-header';
 import { SelectUser } from '../_shared/components/select-user';
 import { setUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { CupFixtures } from './components/cup-fixtures';
@@ -72,7 +73,7 @@ export function CupSubmitPage() {
     if (!data.selectedUserId) {
         return (
             <div className={styles.page}>
-                <h1 className={styles.title}>Submit Cup Team</h1>
+                <PageHeader title="Submit Cup Team" />
                 <p className={styles.notice}>Pick your manager to load your squad:</p>
                 {managerPicker}
                 <Link to="/cup" className={styles.backLink}>
@@ -85,7 +86,7 @@ export function CupSubmitPage() {
     if (!data.hasConfig || !data.round) {
         return (
             <div className={styles.page}>
-                <h1 className={styles.title}>Submit Cup Team</h1>
+                <PageHeader title="Submit Cup Team" />
                 <p className={styles.notice}>No cup round in that gameweek — pick a round to submit for:</p>
                 <div className={styles.pickers}>
                     {gameweekPicker}
@@ -99,22 +100,20 @@ export function CupSubmitPage() {
     }
 
     const stageLabel = CUP_STAGES[data.round.stage].label;
+    const subTitle = `${stageLabel}${data.round.twoLegged ? ` · Leg ${data.round.leg}` : ''}`;
 
     return (
         <div className={styles.page}>
-            <div className={styles.header}>
-                <div>
-                    <h1 className={styles.title}>Submit Cup Team</h1>
-                    <span className={styles.roundLabel}>
-                        {stageLabel}
-                        {data.round.twoLegged ? ` · Leg ${data.round.leg}` : ''}
-                    </span>
-                </div>
-                <div className={styles.pickers}>
-                    {gameweekPicker}
-                    {managerPicker}
-                </div>
-            </div>
+            <PageHeader
+                title="Submit Cup Team"
+                subTitle={subTitle}
+                actions={
+                    <>
+                        {gameweekPicker}
+                        {managerPicker}
+                    </>
+                }
+            />
 
             <div className={styles.deadline}>
                 <span className={styles.deadlineLabel}>Deadline:</span>
