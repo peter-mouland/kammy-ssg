@@ -7,7 +7,9 @@ import { readCupBracket, readCupConfig, readCupSubmissions } from '../_shared/li
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupPage } from './cup.page';
+import { isDeadlinePassed } from './lib/cup-deadlines';
 import { buildCupFixtures } from './lib/cup-fixtures';
+import { buildStageMatchups } from './lib/cup-matchups';
 import { getCupPageData } from './server/cup.server';
 import type { CupPageData } from './types/cup-page-types';
 
@@ -30,6 +32,7 @@ const EMPTY: CupPageData = {
     selectedGameweek: 0,
     gameweekOptions: [],
     fixtures: [],
+    stageMatchups: [],
     userTeams: [],
     selectedUserId: null,
 };
@@ -69,7 +72,34 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
         const pageData = getCupPageData({ userTeams, gameweekData, cupConfig, submissions, pointsRows });
         const cupFixtures = buildCupFixtures(fixtures, teams, selectedGameweek);
-        return data<CupPageData>({ ...pageData, bracket, fixtures: cupFixtures, userTeams, selectedUserId });
+
+        // For a knockout stage, pair the drawn bracket into head-to-head matchups with scores.
+        const eventsById = new Map(events.map((event) => [event.fplEvent.id, event]));
+        const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
+        const stageMatchups =
+            pageData.round && pageData.round.stage !== 'league'
+                ? buildStageMatchups({
+                      bracket,
+                      round: pageData.round,
+                      cupConfig,
+                      submissions,
+                      pointsRows,
+                      userNameById,
+                      deadlinePassedFor: (gameweek) => {
+                          const event = eventsById.get(gameweek);
+                          return event ? isDeadlinePassed(event) : false;
+                      },
+                  })
+                : [];
+
+        return data<CupPageData>({
+            ...pageData,
+            bracket,
+            fixtures: cupFixtures,
+            stageMatchups,
+            userTeams,
+            selectedUserId,
+        });
     } catch (error) {
         console.error('Cup loader (config/submissions) error:', error);
         return data<CupPageData>({ ...EMPTY, gameweek: currentGameweekData.fplEvent.id, userTeams, selectedUserId });

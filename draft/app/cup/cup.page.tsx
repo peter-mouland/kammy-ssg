@@ -43,21 +43,44 @@ function StatusCell({ row }: { row: CupOverviewRow }) {
     return <span className={styles.pending}>Not submitted</span>;
 }
 
-function Bracket({ data }: { data: CupPageData }) {
-    if (data.bracket.length === 0) return null;
+function sideScore(points: number | null, aggregate: number | null): string {
+    if (aggregate !== null) return `${points ?? 0} (agg ${aggregate})`;
+    return points === null ? '–' : String(points);
+}
+
+function StageMatchups({ data }: { data: CupPageData }) {
+    const label = data.round ? CUP_STAGES[data.round.stage].label : '';
+    if (data.stageMatchups.length === 0) {
+        return (
+            <p className={styles.notice}>
+                The {label} draw hasn't been generated yet — an admin can create it from the cup admin page.
+            </p>
+        );
+    }
     return (
-        <section className={styles.qualifiers}>
-            <h2 className={styles.sectionTitle}>Knockout bracket</h2>
-            <ul className={styles.qualifierList}>
-                {data.bracket.map((matchup) => (
-                    <li key={`${matchup.stage}-${matchup.tie}`} className={styles.qualifierItem}>
-                        <span className={styles.qualifierName}>{matchup.home ?? 'TBC'}</span>
-                        <span className={styles.pending}>v</span>
-                        <span className={styles.qualifierName}>{matchup.away ?? 'BYE'}</span>
-                    </li>
-                ))}
-            </ul>
-        </section>
+        <ul className={styles.matchupList}>
+            {data.stageMatchups.map((matchup) => (
+                <li key={matchup.tie} className={styles.matchup}>
+                    <span
+                        className={`${styles.matchupName} ${matchup.winner && matchup.winner === matchup.home.manager ? styles.matchupWinner : ''}`}
+                    >
+                        {matchup.home.name}
+                    </span>
+                    <span className={styles.matchupScore}>
+                        {sideScore(matchup.home.points, matchup.home.aggregate)}
+                    </span>
+                    <span className={styles.vs}>v</span>
+                    <span className={styles.matchupScore}>
+                        {sideScore(matchup.away.points, matchup.away.aggregate)}
+                    </span>
+                    <span
+                        className={`${styles.matchupName} ${matchup.winner && matchup.winner === matchup.away.manager ? styles.matchupWinner : ''}`}
+                    >
+                        {matchup.away.name}
+                    </span>
+                </li>
+            ))}
+        </ul>
     );
 }
 
@@ -82,6 +105,7 @@ export function CupPage() {
     const data = useLoaderData<CupPageData>();
     const [searchParams, setSearchParams] = useSearchParams();
     const stageLabel = data.round ? CUP_STAGES[data.round.stage].label : null;
+    const isKnockout = !!data.round && data.round.stage !== 'league';
 
     function handleUserChange(userId: string) {
         setUserSelection(userId, false); // persist to the cookie so /cup/submit sees it
@@ -118,37 +142,40 @@ export function CupPage() {
             <CupFixtures fixtures={data.fixtures} gameweek={data.selectedGameweek} />
 
             {data.hasConfig ? (
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th className={styles.headerCell}>Manager</th>
-                            <th className={styles.headerCell}>Division</th>
-                            <th className={styles.headerCell}>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.rows.map((row) => (
-                            <tr key={row.manager}>
-                                <td className={styles.cell}>
-                                    <span className={styles.managerName}>{row.userName}</span>
-                                    <span className={styles.teamName}>{row.teamName}</span>
-                                </td>
-                                <td className={styles.cell}>{row.division}</td>
-                                <td className={styles.cell}>
-                                    <StatusCell row={row} />
-                                </td>
+                isKnockout ? (
+                    <StageMatchups data={data} />
+                ) : (
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th className={styles.headerCell}>Manager</th>
+                                <th className={styles.headerCell}>Division</th>
+                                <th className={styles.headerCell}>Status</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {data.rows.map((row) => (
+                                <tr key={row.manager}>
+                                    <td className={styles.cell}>
+                                        <span className={styles.managerName}>{row.userName}</span>
+                                        <span className={styles.teamName}>{row.teamName}</span>
+                                    </td>
+                                    <td className={styles.cell}>{row.division}</td>
+                                    <td className={styles.cell}>
+                                        <StatusCell row={row} />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )
             ) : (
                 <p className={styles.notice}>
                     The cup isn't set up for this gameweek yet. An admin needs to map the cup stages to gameweeks.
                 </p>
             )}
 
-            <Bracket data={data} />
-            <QualifiersTable data={data} />
+            {!isKnockout && <QualifiersTable data={data} />}
         </div>
     );
 }

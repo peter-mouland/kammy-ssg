@@ -2,6 +2,7 @@
 
 import type { DivisionId, ManagerId, UserTeamsSheetData } from '../../teams/types/team-types';
 import type { CupFixture } from '../lib/cup-fixtures';
+import type { CupMatchupView } from '../lib/cup-matchups';
 import type { CupSquadPlayer } from '../lib/cup-squad';
 import type { CupStanding } from '../lib/cup-standings';
 import type { CupTeamVisibility } from '../lib/cup-visibility';
@@ -46,6 +47,8 @@ export interface CupPageData {
     gameweekOptions: CupGameweekOption[];
     /** Real-world fixtures for the viewed gameweek. */
     fixtures: CupFixture[];
+    /** Head-to-head matchups for the viewed knockout stage (empty for the league stage). */
+    stageMatchups: CupMatchupView[];
     /** Manager selection (shared cup header). */
     userTeams: UserTeamsSheetData[];
     selectedUserId: string | null;

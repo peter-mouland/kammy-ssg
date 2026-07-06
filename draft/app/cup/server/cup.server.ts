@@ -43,7 +43,7 @@ export function getCupPageData(input: {
     submissions: ProcessedCupSheetData[];
     pointsRows: PlayerPointsRow[];
     now?: Date;
-}): Omit<CupPageData, 'bracket' | 'fixtures' | 'userTeams' | 'selectedUserId'> {
+}): Omit<CupPageData, 'bracket' | 'fixtures' | 'stageMatchups' | 'userTeams' | 'selectedUserId'> {
     const { userTeams, gameweekData, cupConfig, submissions, pointsRows } = input;
     const now = input.now ?? new Date();
     const gameweek = gameweekData.fplEvent.id;
