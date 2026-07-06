@@ -5,6 +5,12 @@
     margin: 0 auto;
 }
 
+.journeyPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
 .hub {
     display: flex;
     flex-direction: column;

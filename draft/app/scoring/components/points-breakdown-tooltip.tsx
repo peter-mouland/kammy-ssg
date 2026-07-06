@@ -17,7 +17,9 @@ const BreakdownItem = (item: PointsBreakdownItem) => (
     >
         <div className={styles.statLabel}>{item.label}</div>
         <div className={styles.statFormula}>
-            {Array.isArray(item.formula) ? item.formula.map((i) => <div>{i}</div>) : item.formula}
+            {Array.isArray(item.formula)
+                ? item.formula.map((i, index) => <div key={`${item.label}-formula-${index}`}>{i}</div>)
+                : item.formula}
         </div>
         <div className={styles.statPoints}>
             {item.points > 0 ? '+' : ''}

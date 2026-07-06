@@ -56,10 +56,28 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.playersList {
+.playersList,
+.playerList {
     flex: 1;
     overflow-y: auto;
     max-height: 400px;
+    min-height: 0;
+}
+
+.embeddedInJourney {
+    flex: 1;
+    min-height: 0;
+    gap: var(--spacing-2);
+}
+
+.embeddedInJourney .playerList {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+}
+
+.playerOutSelector :global(td.cellCenter.cellNumeric) {
+    text-align: center;
 }
 
 .emptyState {

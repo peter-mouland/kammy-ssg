@@ -1,7 +1,7 @@
 // app/transfers/components/transfer-form.tsx
 
 import type * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFetcher } from 'react-router';
 import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
@@ -19,13 +19,10 @@ import type {
     TeamRoster,
     UserTeamsSheetData,
 } from '../../teams/types/team-types';
+import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
-import type {
-    OwnedPlayersByCode,
-    PlayerEligibility,
-    PlayerSelectionState,
-    TransferValidationResult,
-} from '../types/transfer-form-types';
+import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';
+import type { OwnedPlayersByCode, PlayerSelectionState, TransferValidationResult } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { TransferType } from '../types/transfer-types';
 import { LoanInfoPanel } from './loan-info-panel';
@@ -167,6 +164,7 @@ interface SelectorStepProps {
     transferType: TransferType;
     ownedPlayersByCode: OwnedPlayersByCode;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
+    divisionsManagers: UserTeamsSheetData[];
     onPlayerOutChange: (playerOut: RosterPlayer | null) => void;
     onPlayerInChange: (playerIn: EnhancedPlayerData | null) => void;
 }
@@ -182,6 +180,7 @@ function FirstSelector({
     transferType,
     ownedPlayersByCode,
     validationContext,
+    divisionsManagers,
     onPlayerOutChange,
     onPlayerInChange,
 }: SelectorStepProps) {
@@ -198,6 +197,7 @@ function FirstSelector({
                 selectedPlayer={playerSelection.playerOut}
                 onPlayerChange={onPlayerOutChange}
                 transferType={transferType}
+                embeddedInJourney
             />
         );
     }
@@ -212,7 +212,9 @@ function FirstSelector({
             ownedPlayersByCode={ownedPlayersByCode}
             teamsByCode={teamsByCode}
             managerId={selectedManager}
+            managers={divisionsManagers}
             validationContext={validationContext}
+            embeddedInJourney
         />
     );
 }
@@ -228,6 +230,7 @@ function SecondSelector({
     transferType,
     ownedPlayersByCode,
     validationContext,
+    divisionsManagers,
     onPlayerOutChange,
     onPlayerInChange,
 }: SelectorStepProps) {
@@ -246,7 +249,9 @@ function SecondSelector({
                 ownedPlayersByCode={ownedPlayersByCode}
                 teamsByCode={teamsByCode}
                 managerId={selectedManager}
+                managers={divisionsManagers}
                 validationContext={validationContext}
+                embeddedInJourney
             />
         );
     }
@@ -259,6 +264,7 @@ function SecondSelector({
             selectedPlayer={playerSelection.playerOut}
             onPlayerChange={onPlayerOutChange}
             transferType={transferType}
+            embeddedInJourney
         />
     );
 }
@@ -277,6 +283,7 @@ interface SelectorReviewProps {
     selectedManager: ManagerId;
     onBorrowingManagerChange: (managerId: ManagerId) => void;
     isBeforeDeadline: boolean;
+    validationContext: Omit<TransferRuleContext, 'transfer'>;
     canSubmit: boolean;
     isSubmitting: boolean;
 }
@@ -295,13 +302,50 @@ function SelectorReview({
     selectedManager,
     onBorrowingManagerChange,
     isBeforeDeadline,
+    validationContext,
     canSubmit,
     isSubmitting,
 }: SelectorReviewProps) {
     const playerOutFpl = playerSelection.playerOut ? playersByCode[playerSelection.playerOut.playerCode] : null;
     const playerIn = playerSelection.playerIn;
-    const playerInEligibility = (playerIn as (EnhancedPlayerData & { eligibility?: PlayerEligibility }) | null)
-        ?.eligibility;
+
+    const journeyIssues = useMemo(() => {
+        if (!playerSelection.playerOut || !playerIn || !playerOutFpl) {
+            return [];
+        }
+
+        const mockTransfer = {
+            playerOut: playerOutFpl,
+            playerIn,
+            managerId: selectedManager,
+            transferType,
+            gameweekData: validationContext.gameweekData,
+            id: 'review-journey-check',
+            timestamp: new Date(),
+            status: 'PENDING' as const,
+            comment: 'Review journey check',
+            onLoanTo: undefined,
+            onLoanFrom: undefined,
+        };
+
+        return getTransferJourneyIssues({
+            validationContext,
+            transfer: mockTransfer,
+            managers: divisionsManagers,
+            managerId: selectedManager,
+            isBeforeDeadline,
+            includeGameweekLimit: true,
+        });
+    }, [
+        divisionsManagers,
+        isBeforeDeadline,
+        playerIn,
+        playerOutFpl,
+        playerSelection.playerOut,
+        selectedManager,
+        transferType,
+        validationContext,
+    ]);
 
     return (
         <>
@@ -360,12 +404,17 @@ function SelectorReview({
                 />
             ) : null}
 
-            {(playerInEligibility && !playerInEligibility.isEligible) || !isBeforeDeadline ? (
+            {journeyIssues.length > 0 ? (
                 <div className={styles.validationErrors}>
-                    {isBeforeDeadline ? null : <div className={styles.blockingIssue}>🚫 Missed the Deadline</div>}
-                    {playerInEligibility && !playerInEligibility.isEligible ? (
-                        <div className={styles.blockingIssue}>🚫 {playerInEligibility.reason}</div>
-                    ) : null}
+                    {journeyIssues.map((issue, index) => (
+                        <div
+                            key={`${issue.icon}-${issue.text}-${index}`}
+                            className={issue.severity === 'warning' ? styles.warningIssue : styles.blockingIssue}
+                            title={issue.fullMessage}
+                        >
+                            {issue.icon} {issue.text}
+                        </div>
+                    ))}
                 </div>
             ) : null}
 
@@ -552,6 +601,11 @@ export function TransferForm({
     const showTransferTypeSelector =
         step === JOURNEY_STEPS.firstSelector && canContinue(step, journeyPath, playerSelection);
 
+    const gameweekLimitStatus = useMemo(
+        () => getGameweekLimitStatus(validationContext, selectedManager, transferType),
+        [validationContext, selectedManager, transferType],
+    );
+
     return (
         <div className={styles.journey}>
             <ToastManager maxToasts={3} />
@@ -576,6 +630,7 @@ export function TransferForm({
                             transferType={transferType}
                             ownedPlayersByCode={ownedPlayersByCode}
                             validationContext={validationContext}
+                            divisionsManagers={divisionsManagers}
                             onPlayerOutChange={handlePlayerOutChange}
                             onPlayerInChange={handlePlayerInChange}
                         />
@@ -594,6 +649,7 @@ export function TransferForm({
                             transferType={transferType}
                             ownedPlayersByCode={ownedPlayersByCode}
                             validationContext={validationContext}
+                            divisionsManagers={divisionsManagers}
                             onPlayerOutChange={handlePlayerOutChange}
                             onPlayerInChange={handlePlayerInChange}
                         />
@@ -615,6 +671,7 @@ export function TransferForm({
                             selectedManager={selectedManager}
                             onBorrowingManagerChange={handleBorrowingManagerChange}
                             isBeforeDeadline={isBeforeDeadline}
+                            validationContext={validationContext}
                             canSubmit={canSubmit}
                             isSubmitting={fetcher.state === 'submitting'}
                         />
@@ -623,6 +680,11 @@ export function TransferForm({
 
                 {showContinue ? (
                     <div className={styles.journeyFooter}>
+                        {gameweekLimitStatus ? (
+                            <div className={styles.journeyWarning} title={gameweekLimitStatus.message}>
+                                ⏱️ {gameweekLimitStatus.displayText}
+                            </div>
+                        ) : null}
                         {showTransferTypeSelector ? (
                             <div className={styles.inlineTransferType}>
                                 <TransferTypeSelector
