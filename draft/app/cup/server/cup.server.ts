@@ -35,7 +35,7 @@ export function getCupPageData(input: {
     submissions: ProcessedCupSheetData[];
     pointsRows: PlayerPointsRow[];
     now?: Date;
-}): CupPageData {
+}): Omit<CupPageData, 'bracket'> {
     const { userTeams, currentGameweekData, cupConfig, submissions, pointsRows } = input;
     const now = input.now ?? new Date();
     const gameweek = currentGameweekData.fplEvent.id;
@@ -62,8 +62,24 @@ export function getCupPageData(input: {
         };
     });
 
-    // League-stage standings across every configured league gameweek, using the
-    // site's existing per-player league points (no double counting).
+    const { standings, qualifiers } = getCupStandings({ userTeams, cupConfig, submissions, pointsRows });
+
+    return { hasConfig: !!round, round, gameweek, deadlinePassed, rows, standings, qualifiers };
+}
+
+/**
+ * League-stage standings + qualifiers across every configured league gameweek,
+ * using the site's existing per-player league points (no double counting).
+ * Shared by the overview and the admin draw generation.
+ */
+export function getCupStandings(input: {
+    userTeams: UserTeamsSheetData[];
+    cupConfig: CupConfig;
+    submissions: ProcessedCupSheetData[];
+    pointsRows: PlayerPointsRow[];
+}) {
+    const { userTeams, cupConfig, submissions, pointsRows } = input;
+
     const scored: ScoredSubmission[] = submissions
         .filter((submission) => cupConfig.league.includes(submission.gameweek))
         .map((submission) => ({
@@ -80,7 +96,7 @@ export function getCupPageData(input: {
         return { manager, userName: userNameById.get(manager) ?? manager, rank: standing?.rank ?? 0 };
     });
 
-    return { hasConfig: !!round, round, gameweek, deadlinePassed, rows, standings, qualifiers };
+    return { standings, qualifiers };
 }
 
 /**

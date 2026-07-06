@@ -4,7 +4,7 @@ import type { DivisionId, ManagerId } from '../../teams/types/team-types';
 import type { CupSquadPlayer } from '../lib/cup-squad';
 import type { CupStanding } from '../lib/cup-standings';
 import type { CupTeamVisibility } from '../lib/cup-visibility';
-import type { CupRound } from './cup-types';
+import type { CupConfig, CupMatchup, CupRound } from './cup-types';
 
 /** One manager's row in the cup overview for the current round. */
 export interface CupOverviewRow {
@@ -33,6 +33,13 @@ export interface CupPageData {
     rows: CupOverviewRow[];
     standings: CupStanding[];
     qualifiers: CupQualifier[];
+    bracket: CupMatchup[];
+}
+
+export interface CupAdminPageData {
+    config: CupConfig | null;
+    qualifiers: CupQualifier[];
+    bracket: CupMatchup[];
 }
 
 export interface CupSubmitPageData {

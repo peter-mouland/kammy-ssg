@@ -2,7 +2,7 @@
 
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
-import { readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
+import { readCupBracket, readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupPage } from './cup.page';
@@ -24,6 +24,7 @@ const EMPTY: CupPageData = {
     rows: [],
     standings: [],
     qualifiers: [],
+    bracket: [],
 };
 
 export async function loader(_args: LoaderFunctionArgs) {
@@ -32,13 +33,14 @@ export async function loader(_args: LoaderFunctionArgs) {
 
     // The cup config/sheet may not be set up yet — degrade gracefully rather than 500.
     try {
-        const [cupConfig, submissions, pointsRows] = await Promise.all([
+        const [cupConfig, submissions, pointsRows, bracket] = await Promise.all([
             readCupConfig(),
             readCupSubmissions(),
             readPlayerGameweekPointsFromSheet(),
+            readCupBracket().catch(() => []),
         ]);
         const pageData = getCupPageData({ userTeams, currentGameweekData, cupConfig, submissions, pointsRows });
-        return data<CupPageData>(pageData);
+        return data<CupPageData>({ ...pageData, bracket });
     } catch (error) {
         console.error('Cup loader (config/submissions) error:', error);
         return data<CupPageData>({ ...EMPTY, gameweek: currentGameweekData.fplEvent.id });
