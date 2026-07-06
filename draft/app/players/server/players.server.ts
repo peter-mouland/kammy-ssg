@@ -101,6 +101,9 @@ export async function getPlayerStatsForGameweek(gameweek: number): Promise<Playe
                     saves: 0,
                     bonus: 0,
                     defensiveContribution: 0,
+                    clearancesBlocksInterceptions: 0,
+                    tackles: 0,
+                    recoveries: 0,
                 };
                 const { points, stats } = calculateSeasonPoints([zeroStats], position);
                 const fullBreakdown = getFullBreakdown([zeroStats], position, { points, stats });

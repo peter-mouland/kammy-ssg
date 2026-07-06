@@ -32,7 +32,9 @@ export async function calculateSingleTeamPoints({
     try {
         for (const [slotKey, { player }] of Object.entries(teamData.roster)) {
             if (!player?.playerId) {
-                throw new Error(`Missing playerId in slot '${slotKey}' for user '${userId}' in division '${divisionDoc.divisionId}' GW${gameweek}`);
+                throw new Error(
+                    `Missing playerId in slot '${slotKey}' for user '${userId}' in division '${divisionDoc.divisionId}' GW${gameweek}`,
+                );
             }
         }
         const rosterPlayers = Object.values(teamData.roster).map(({ player }) => player);
@@ -294,6 +296,10 @@ function addStatsToSeason(
         saves: seasonStats.saves + gameweekStats.saves,
         bonus: seasonStats.bonus + gameweekStats.bonus,
         defensiveContribution: seasonStats.defensiveContribution + gameweekStats.defensiveContribution,
+        clearancesBlocksInterceptions:
+            seasonStats.clearancesBlocksInterceptions + gameweekStats.clearancesBlocksInterceptions,
+        tackles: seasonStats.tackles + gameweekStats.tackles,
+        recoveries: seasonStats.recoveries + gameweekStats.recoveries,
     };
 }
 
@@ -339,6 +345,9 @@ function createEmptyStats(): PlayerGameweekStatsData {
         redCards: 0,
         saves: 0,
         defensiveContribution: 0,
+        clearancesBlocksInterceptions: 0,
+        tackles: 0,
+        recoveries: 0,
         bonus: 0,
     };
 }

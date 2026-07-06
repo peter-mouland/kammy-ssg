@@ -35,6 +35,9 @@ export interface GameweekStatWithPoints {
     penaltiesSaved: number;
     bonus: number;
     defensiveContribution: number;
+    clearancesBlocksInterceptions: number;
+    tackles: number;
+    recoveries: number;
 
     // Match info
     opponent: number;

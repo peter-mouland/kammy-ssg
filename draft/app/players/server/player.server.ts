@@ -129,6 +129,9 @@ function processGameweekData(fplHistory: any[], teamLookup: Record<number, any>)
             // FPL points
             fplPoints: gwData.total_points,
             defensiveContribution: gwData.defensive_contribution,
+            clearancesBlocksInterceptions: gwData.clearances_blocks_interceptions ?? 0,
+            tackles: gwData.tackles ?? 0,
+            recoveries: gwData.recoveries ?? 0,
 
             // Metadata
             generatedAt: null,

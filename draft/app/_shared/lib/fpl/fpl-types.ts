@@ -48,6 +48,9 @@ export interface FplPlayerData {
     red_cards: number;
     saves: number;
     bonus: number;
+    clearances_blocks_interceptions: number;
+    tackles: number;
+    recoveries: number;
     defensive_contribution: number;
     bps: number;
     starts: number;
@@ -79,6 +82,9 @@ export interface FplPlayerGameweekData {
     red_cards: number;
     saves: number;
     bonus: number;
+    clearances_blocks_interceptions: number;
+    tackles: number;
+    recoveries: number;
     defensive_contribution: number;
     bps: number;
     influence: string;
