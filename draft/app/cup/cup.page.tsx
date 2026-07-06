@@ -3,29 +3,10 @@
 import { Link, useLoaderData, useSearchParams } from 'react-router';
 import { SelectUser } from '../_shared/components/select-user';
 import { setUserSelection } from '../_shared/features/user-selection/user-selection.utils';
+import { CupFixtures } from './components/cup-fixtures';
 import styles from './cup.module.css';
 import { CUP_STAGES } from './lib/cup-rules';
 import type { CupOverviewRow, CupPageData } from './types/cup-page-types';
-
-function CupFixtures({ data }: { data: CupPageData }) {
-    if (data.fixtures.length === 0) return null;
-    return (
-        <section className={styles.fixtures}>
-            <h2 className={styles.sectionTitle}>Fixtures · GW{data.selectedGameweek}</h2>
-            <ul className={styles.fixtureList}>
-                {data.fixtures.map((fixture) => (
-                    <li key={`${fixture.home}-${fixture.away}`} className={styles.fixture}>
-                        <span className={styles.fixtureTeam}>{fixture.home}</span>
-                        <span className={styles.fixtureScore}>
-                            {fixture.started ? `${fixture.homeScore}–${fixture.awayScore}` : 'v'}
-                        </span>
-                        <span className={styles.fixtureTeam}>{fixture.away}</span>
-                    </li>
-                ))}
-            </ul>
-        </section>
-    );
-}
 
 function GameweekSelector({ data }: { data: CupPageData }) {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -134,7 +115,7 @@ export function CupPage() {
                 </div>
             </div>
 
-            <CupFixtures data={data} />
+            <CupFixtures fixtures={data.fixtures} gameweek={data.selectedGameweek} />
 
             {data.hasConfig ? (
                 <table className={styles.table}>

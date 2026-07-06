@@ -4,6 +4,7 @@ import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { UserTeamsSheetData } from '../../teams/types/team-types';
 import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
+import type { CupFixture } from '../lib/cup-fixtures';
 import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
@@ -132,9 +133,10 @@ export async function getCupSubmitData(input: {
     gameweekData: GameWeekData;
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
+    fixtures: CupFixture[];
     now?: Date;
 }): Promise<CupSubmitPageData> {
-    const { userTeams, selectedUser, gameweekData, cupConfig, submissions } = input;
+    const { userTeams, selectedUser, gameweekData, cupConfig, submissions, fixtures } = input;
     const now = input.now ?? new Date();
     const gameweek = gameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
@@ -161,6 +163,7 @@ export async function getCupSubmitData(input: {
         deadline,
         selectedGameweek: gameweek,
         gameweekOptions,
+        fixtures,
     };
 
     if (!selectedUser || !round) return empty;

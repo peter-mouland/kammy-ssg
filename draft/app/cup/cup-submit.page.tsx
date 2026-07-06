@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Form, Link, useActionData, useLoaderData, useNavigation, useSearchParams } from 'react-router';
 import { SelectUser } from '../_shared/components/select-user';
 import { setUserSelection } from '../_shared/features/user-selection/user-selection.utils';
+import { CupFixtures } from './components/cup-fixtures';
 import styles from './cup-submit.module.css';
 import { CUP_STAGES } from './lib/cup-rules';
 import type { CupSubmitPageData } from './types/cup-page-types';
@@ -124,6 +125,8 @@ export function CupSubmitPage() {
                     <span className={styles.closed}>✗ Closed</span>
                 )}
             </div>
+
+            <CupFixtures fixtures={data.fixtures} gameweek={data.selectedGameweek} />
 
             {actionData?.error && <p className={styles.error}>{actionData.error}</p>}
             {actionData?.success && <p className={styles.success}>{actionData.message}</p>}

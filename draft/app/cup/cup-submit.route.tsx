@@ -8,6 +8,7 @@ import { readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../teams/types/team-types';
 import { CupSubmitPage } from './cup-submit.page';
+import { buildCupFixtures } from './lib/cup-fixtures';
 import { getCupSubmitData } from './server/cup.server';
 import type { CupSubmitPageData } from './types/cup-page-types';
 
@@ -23,10 +24,12 @@ interface CupActionData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, events, userTeams] = await Promise.all([
+    const [currentGameweekData, events, userTeams, fplFixtures, teams] = await Promise.all([
         fplApiCache.getCurrentGameweekData(),
         fplApiCache.getFplEvents(),
         readUserTeams(),
+        fplApiCache.getFplFixtures(),
+        fplApiCache.getFplTeams(),
     ]);
     const persistedUser = getUserSelection(request);
     const selectedUser = userTeams.find((team) => team.userId === persistedUser.selectedUserId);
@@ -45,6 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
                 : (cupGameweeks[0] ?? currentId)
             : requested;
         const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? currentGameweekData;
+        const fixtures = buildCupFixtures(fplFixtures, teams, selectedGameweek);
 
         const pageData = await getCupSubmitData({
             userTeams,
@@ -52,6 +56,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             gameweekData,
             cupConfig,
             submissions,
+            fixtures,
         });
         return data<CupSubmitPageData>(pageData);
     } catch (error) {
@@ -70,6 +75,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             deadline: String(currentGameweekData.fplEvent.deadline_time),
             selectedGameweek: currentGameweekData.fplEvent.id,
             gameweekOptions: [],
+            fixtures: [],
         });
     }
 }
