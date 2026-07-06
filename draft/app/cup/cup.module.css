@@ -93,3 +93,43 @@
 .pending {
     color: var(--color-gray-400);
 }
+
+.qualifiers {
+    margin-top: var(--spacing-8);
+}
+
+.sectionTitle {
+    margin: 0 0 var(--spacing-3) 0;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.qualifierList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-1);
+}
+
+.qualifierItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-gray-50);
+}
+
+.qualifierRank {
+    min-width: var(--spacing-6);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+.qualifierName {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+}

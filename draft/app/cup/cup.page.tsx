@@ -7,12 +7,29 @@ import type { CupOverviewRow, CupPageData } from './types/cup-page-types';
 
 function StatusCell({ row }: { row: CupOverviewRow }) {
     if (row.visibility === 'revealed') {
-        return <span className={styles.revealed}>{row.players?.length ?? 0} players submitted</span>;
+        return <span className={styles.revealed}>{row.points ?? 0} pts</span>;
     }
     if (row.visibility === 'submitted_hidden') {
         return <span className={styles.hidden}>🔒 Hidden until deadline</span>;
     }
     return <span className={styles.pending}>Not submitted</span>;
+}
+
+function QualifiersTable({ data }: { data: CupPageData }) {
+    if (data.qualifiers.length === 0) return null;
+    return (
+        <section className={styles.qualifiers}>
+            <h2 className={styles.sectionTitle}>Qualifiers (Round of 16)</h2>
+            <ol className={styles.qualifierList}>
+                {data.qualifiers.map((qualifier) => (
+                    <li key={qualifier.manager} className={styles.qualifierItem}>
+                        <span className={styles.qualifierRank}>{qualifier.rank}</span>
+                        <span className={styles.qualifierName}>{qualifier.userName}</span>
+                    </li>
+                ))}
+            </ol>
+        </section>
+    );
 }
 
 export function CupPage() {
@@ -65,6 +82,8 @@ export function CupPage() {
                     The cup isn't set up for this gameweek yet. An admin needs to map the cup stages to gameweeks.
                 </p>
             )}
+
+            <QualifiersTable data={data} />
         </div>
     );
 }
