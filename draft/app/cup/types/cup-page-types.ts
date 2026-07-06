@@ -25,6 +25,12 @@ export interface CupQualifier {
     rank: number;
 }
 
+/** An option in the cup gameweek selector. */
+export interface CupGameweekOption {
+    gameweek: number;
+    label: string;
+}
+
 export interface CupPageData {
     hasConfig: boolean;
     round: CupRound | null;
@@ -34,6 +40,9 @@ export interface CupPageData {
     standings: CupStanding[];
     qualifiers: CupQualifier[];
     bracket: CupMatchup[];
+    /** The gameweek being viewed, and all selectable cup gameweeks. */
+    selectedGameweek: number;
+    gameweekOptions: CupGameweekOption[];
 }
 
 export interface CupAdminPageData {

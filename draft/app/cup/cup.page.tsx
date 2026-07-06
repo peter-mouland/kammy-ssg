@@ -1,9 +1,34 @@
 /* Location: app/cup/cup.page.tsx */
 
-import { Link, useLoaderData } from 'react-router';
+import { Link, useLoaderData, useSearchParams } from 'react-router';
 import styles from './cup.module.css';
 import { CUP_STAGES } from './lib/cup-rules';
 import type { CupOverviewRow, CupPageData } from './types/cup-page-types';
+
+function GameweekSelector({ data }: { data: CupPageData }) {
+    const [searchParams, setSearchParams] = useSearchParams();
+    if (data.gameweekOptions.length === 0) return null;
+    return (
+        <label className={styles.selector}>
+            <span className={styles.selectorLabel}>Round</span>
+            <select
+                className={styles.select}
+                value={data.selectedGameweek}
+                onChange={(event) => {
+                    const next = new URLSearchParams(searchParams);
+                    next.set('gameweek', event.target.value);
+                    setSearchParams(next);
+                }}
+            >
+                {data.gameweekOptions.map((option) => (
+                    <option key={option.gameweek} value={option.gameweek}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </label>
+    );
+}
 
 function StatusCell({ row }: { row: CupOverviewRow }) {
     if (row.visibility === 'revealed') {
@@ -66,9 +91,12 @@ export function CupPage() {
                         </span>
                     )}
                 </div>
-                <Link to="/cup/submit" className={styles.submitLink}>
-                    Submit my team
-                </Link>
+                <div className={styles.headerActions}>
+                    <GameweekSelector data={data} />
+                    <Link to="/cup/submit" className={styles.submitLink}>
+                        Submit my team
+                    </Link>
+                </div>
             </div>
 
             {data.hasConfig ? (

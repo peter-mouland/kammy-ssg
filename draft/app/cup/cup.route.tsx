@@ -25,11 +25,17 @@ const EMPTY: CupPageData = {
     standings: [],
     qualifiers: [],
     bracket: [],
+    selectedGameweek: 0,
+    gameweekOptions: [],
 };
 
-export async function loader(_args: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, userTeams] = await Promise.all([fplApiCache.getCurrentGameweekData(), readUserTeams()]);
+    const [currentGameweekData, events, userTeams] = await Promise.all([
+        fplApiCache.getCurrentGameweekData(),
+        fplApiCache.getFplEvents(),
+        readUserTeams(),
+    ]);
 
     // The cup config/sheet may not be set up yet — degrade gracefully rather than 500.
     try {
@@ -39,7 +45,21 @@ export async function loader(_args: LoaderFunctionArgs) {
             readPlayerGameweekPointsFromSheet(),
             readCupBracket().catch(() => []),
         ]);
-        const pageData = getCupPageData({ userTeams, currentGameweekData, cupConfig, submissions, pointsRows });
+
+        // Which gameweek to view: an explicit ?gameweek wins; otherwise the current
+        // gameweek if it's a cup gameweek, else the first configured cup gameweek.
+        const { resolveCupRounds } = await import('./lib/cup-config');
+        const cupGameweeks = resolveCupRounds(cupConfig).map((round) => round.gameweek);
+        const requested = Number.parseInt(new URL(request.url).searchParams.get('gameweek') ?? '', 10);
+        const currentId = currentGameweekData.fplEvent.id;
+        const selectedGameweek = Number.isNaN(requested)
+            ? cupGameweeks.includes(currentId)
+                ? currentId
+                : (cupGameweeks[0] ?? currentId)
+            : requested;
+        const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? currentGameweekData;
+
+        const pageData = getCupPageData({ userTeams, gameweekData, cupConfig, submissions, pointsRows });
         return data<CupPageData>({ ...pageData, bracket });
     } catch (error) {
         console.error('Cup loader (config/submissions) error:', error);
