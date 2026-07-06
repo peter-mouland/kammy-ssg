@@ -1,6 +1,7 @@
 /* Location: app/cup/types/cup-page-types.ts */
 
-import type { DivisionId, ManagerId } from '../../teams/types/team-types';
+import type { DivisionId, ManagerId, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { CupFixture } from '../lib/cup-fixtures';
 import type { CupSquadPlayer } from '../lib/cup-squad';
 import type { CupStanding } from '../lib/cup-standings';
 import type { CupTeamVisibility } from '../lib/cup-visibility';
@@ -43,6 +44,11 @@ export interface CupPageData {
     /** The gameweek being viewed, and all selectable cup gameweeks. */
     selectedGameweek: number;
     gameweekOptions: CupGameweekOption[];
+    /** Real-world fixtures for the viewed gameweek. */
+    fixtures: CupFixture[];
+    /** Manager selection (shared cup header). */
+    userTeams: UserTeamsSheetData[];
+    selectedUserId: string | null;
 }
 
 export interface CupAdminPageData {
@@ -54,6 +60,7 @@ export interface CupAdminPageData {
 export interface CupSubmitPageData {
     hasConfig: boolean;
     round: CupRound | null;
+    userTeams: UserTeamsSheetData[];
     selectedUserId: string | null;
     selectedUserName: string | null;
     division: DivisionId | null;

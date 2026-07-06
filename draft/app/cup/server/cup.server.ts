@@ -42,7 +42,7 @@ export function getCupPageData(input: {
     submissions: ProcessedCupSheetData[];
     pointsRows: PlayerPointsRow[];
     now?: Date;
-}): Omit<CupPageData, 'bracket'> {
+}): Omit<CupPageData, 'bracket' | 'fixtures' | 'userTeams' | 'selectedUserId'> {
     const { userTeams, gameweekData, cupConfig, submissions, pointsRows } = input;
     const now = input.now ?? new Date();
     const gameweek = gameweekData.fplEvent.id;
@@ -127,13 +127,14 @@ export function getCupStandings(input: {
  * leg of this round (which they cannot reuse).
  */
 export async function getCupSubmitData(input: {
+    userTeams: UserTeamsSheetData[];
     selectedUser: UserTeamsSheetData | undefined;
     currentGameweekData: GameWeekData;
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
     now?: Date;
 }): Promise<CupSubmitPageData> {
-    const { selectedUser, currentGameweekData, cupConfig, submissions } = input;
+    const { userTeams, selectedUser, currentGameweekData, cupConfig, submissions } = input;
     const now = input.now ?? new Date();
     const gameweek = currentGameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
@@ -144,6 +145,7 @@ export async function getCupSubmitData(input: {
     const empty: CupSubmitPageData = {
         hasConfig: !!round,
         round,
+        userTeams,
         selectedUserId: selectedUser?.userId ?? null,
         selectedUserName: selectedUser?.userName ?? null,
         division: selectedUser?.divisionId ?? null,
