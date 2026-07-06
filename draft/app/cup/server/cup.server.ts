@@ -2,13 +2,20 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { UserTeamsSheetData } from '../../teams/types/team-types';
-import { getGameweekForStage, getRoundForGameweek } from '../lib/cup-config';
+import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
+import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
 import { getTeamVisibility } from '../lib/cup-visibility';
-import type { CupOverviewRow, CupPageData, CupQualifier, CupSubmitPageData } from '../types/cup-page-types';
+import type {
+    CupGameweekOption,
+    CupOverviewRow,
+    CupPageData,
+    CupQualifier,
+    CupSubmitPageData,
+} from '../types/cup-page-types';
 import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
 
 /** A submission's subs count as confirmed once an admin has approved it (Status = 'Y'). */
@@ -30,17 +37,17 @@ function findSubmission(
  */
 export function getCupPageData(input: {
     userTeams: UserTeamsSheetData[];
-    currentGameweekData: GameWeekData;
+    gameweekData: GameWeekData;
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
     pointsRows: PlayerPointsRow[];
     now?: Date;
 }): Omit<CupPageData, 'bracket'> {
-    const { userTeams, currentGameweekData, cupConfig, submissions, pointsRows } = input;
+    const { userTeams, gameweekData, cupConfig, submissions, pointsRows } = input;
     const now = input.now ?? new Date();
-    const gameweek = currentGameweekData.fplEvent.id;
+    const gameweek = gameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
-    const deadlinePassed = isDeadlinePassed(currentGameweekData, now);
+    const deadlinePassed = isDeadlinePassed(gameweekData, now);
     const currentPoints = buildGameweekPointsMap(pointsRows, gameweek);
 
     const rows: CupOverviewRow[] = userTeams.map((team) => {
@@ -64,7 +71,22 @@ export function getCupPageData(input: {
 
     const { standings, qualifiers } = getCupStandings({ userTeams, cupConfig, submissions, pointsRows });
 
-    return { hasConfig: !!round, round, gameweek, deadlinePassed, rows, standings, qualifiers };
+    const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
+        gameweek: r.gameweek,
+        label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+    }));
+
+    return {
+        hasConfig: !!round,
+        round,
+        gameweek,
+        deadlinePassed,
+        rows,
+        standings,
+        qualifiers,
+        selectedGameweek: gameweek,
+        gameweekOptions,
+    };
 }
 
 /**
