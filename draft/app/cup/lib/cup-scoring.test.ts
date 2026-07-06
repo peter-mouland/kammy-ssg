@@ -28,6 +28,13 @@ describe('scoreSubmission', () => {
         expect(scoreSubmission([10, 11], map)).toBe(13); // 6 + 7
     });
 
+    it('matches numeric submission codes even when the sheet returns string playerCodes', () => {
+        // The sheet delivers playerCode as a string; submission codes are numbers.
+        const stringRows = [{ playerCode: '10' as unknown as number, 'gw-24': 6 }];
+        const map = buildGameweekPointsMap(stringRows, 24);
+        expect(scoreSubmission([10], map)).toBe(6);
+    });
+
     it('treats missing players as zero', () => {
         const map = buildGameweekPointsMap(ROWS, 24);
         expect(scoreSubmission([10, 999], map)).toBe(6);

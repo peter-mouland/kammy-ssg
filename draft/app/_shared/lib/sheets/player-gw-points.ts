@@ -131,34 +131,26 @@ export async function writePlayerGameweekPointsToSheet(): Promise<void> {
  */
 export async function readPlayerGameweekPointsFromSheet(): Promise<PlayerGameweekPointsRow[]> {
     try {
-        const { headers, data: dataRows } = await readDataFromSheetWithHeaders(PLAYER_GW_POINTS_SHEET_NAME);
+        // readDataFromSheetWithHeaders already returns objects keyed by header name.
+        const { data: dataRows } =
+            await readDataFromSheetWithHeaders<Record<string, unknown>>(PLAYER_GW_POINTS_SHEET_NAME);
         if (dataRows.length === 0) return [];
 
-        // Parse data into objects
         return dataRows.map((row) => {
             const rowData: PlayerGameweekPointsRow = {
-                playerCode: 0,
-                webName: '',
-                teamName: '',
-                position: '',
+                playerCode: Number(row.playerCode) || 0,
+                webName: String(row.webName ?? ''),
+                teamName: String(row.teamName ?? ''),
+                position: String(row.position ?? ''),
             };
 
-            headers.forEach((header: string, index: number) => {
-                const value = row[index] || '';
-
-                if (header === 'playerCode') {
-                    rowData.playerCode = value;
-                } else if (header === 'webName') {
-                    rowData.webName = value.toString();
-                } else if (header === 'teamName') {
-                    rowData.team = value.toString();
-                } else if (header === 'position') {
-                    rowData.position = value.toString();
-                } else if (header.startsWith('gw-')) {
-                    // Parse round points columns
-                    rowData[header] = typeof value === 'number' ? value : Number.parseFloat(value.toString()) || 0;
+            // Copy every gameweek points column (gw-1, gw-2, …) as a number.
+            for (const key of Object.keys(row)) {
+                if (key.startsWith('gw-')) {
+                    const value = row[key];
+                    rowData[key] = typeof value === 'number' ? value : Number.parseFloat(String(value)) || 0;
                 }
-            });
+            }
 
             return rowData;
         });

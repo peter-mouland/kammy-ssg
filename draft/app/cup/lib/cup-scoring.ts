@@ -29,7 +29,9 @@ export function buildGameweekPointsMap(rows: PlayerPointsRow[], gameweek: number
     const second = `gw-${gameweek}-b`;
     const map = new Map<number, number>();
     for (const row of rows) {
-        map.set(row.playerCode, toNumber(row[base]) + toNumber(row[second]));
+        // playerCode may arrive as a string from the sheet; submission codes are
+        // numbers, so key the map by Number to keep lookups matching.
+        map.set(Number(row.playerCode), toNumber(row[base]) + toNumber(row[second]));
     }
     return map;
 }
