@@ -1,4 +1,4 @@
-// app/transfers/lib/transfer-selector-stat-columns.tsx
+// app/transfers/components/transfer-selector-stat-columns.tsx
 
 import type { TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';

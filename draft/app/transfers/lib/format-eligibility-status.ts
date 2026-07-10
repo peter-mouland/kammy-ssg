@@ -17,10 +17,8 @@ export function getManagerDisplayName(managers: UserTeamsSheetData[], managerId:
     return managers.find((manager) => manager.userId === managerId)?.userName ?? managerId;
 }
 
-export function isGameweekLimitMessage(ruleId?: string, message?: string): boolean {
-    return (
-        ruleId === GAMEWEEK_RULE_ID || (message?.includes('Would exceed') && message.includes('this gameweek')) === true
-    );
+export function isGameweekLimitMessage(ruleId?: string): boolean {
+    return ruleId === GAMEWEEK_RULE_ID;
 }
 
 export function formatEligibilityStatus({
@@ -49,10 +47,11 @@ export function formatEligibilityStatus({
     }
 
     if (normalizedMessage === 'Already own 2 players from this team') {
+        const teamCountSeverity: EligibilitySeverity = severity === 'warning' ? 'warning' : 'blocking';
         return {
             text: 'Max 2 per club',
-            icon: '⚠️',
-            severity: 'warning',
+            icon: teamCountSeverity === 'warning' ? '⚠️' : '🚫',
+            severity: teamCountSeverity,
             fullMessage: normalizedMessage,
         };
     }
@@ -85,11 +84,12 @@ export function formatEligibilityStatus({
         };
     }
 
-    if (isGameweekLimitMessage(ruleId, normalizedMessage)) {
+    if (isGameweekLimitMessage(ruleId)) {
+        const limitSeverity: EligibilitySeverity = severity === 'warning' ? 'warning' : 'blocking';
         return {
             text: formatGameweekLimitDisplay(normalizedMessage),
             icon: '⏱️',
-            severity: 'blocking',
+            severity: limitSeverity,
             fullMessage: normalizedMessage,
         };
     }

@@ -60,7 +60,7 @@ export function getTransferJourneyIssues({
     const failedResults = validationResults.filter((result) => !result.passed);
 
     for (const result of failedResults) {
-        if (includeGameweekLimit && isGameweekLimitMessage(result.ruleId, result.message)) {
+        if (includeGameweekLimit && isGameweekLimitMessage(result.ruleId)) {
             continue;
         }
 

@@ -15,10 +15,7 @@ export function getPlayerStatusDisplay(
         const validationResults = getTransferValidationResults(validationContext);
 
         const blockingFailures = validationResults.filter(
-            (result) =>
-                !result.passed &&
-                result.severity === 'blocking' &&
-                !isGameweekLimitMessage(result.ruleId, result.message),
+            (result) => !result.passed && result.severity === 'blocking' && !isGameweekLimitMessage(result.ruleId),
         );
 
         if (blockingFailures.length > 0) {

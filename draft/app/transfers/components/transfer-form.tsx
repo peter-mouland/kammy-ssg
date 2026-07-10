@@ -1,7 +1,7 @@
 // app/transfers/components/transfer-form.tsx
 
 import type * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFetcher } from 'react-router';
 import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
@@ -309,43 +309,29 @@ function SelectorReview({
     const playerOutFpl = playerSelection.playerOut ? playersByCode[playerSelection.playerOut.playerCode] : null;
     const playerIn = playerSelection.playerIn;
 
-    const journeyIssues = useMemo(() => {
-        if (!playerSelection.playerOut || !playerIn || !playerOutFpl) {
-            return [];
-        }
-
-        const mockTransfer = {
-            playerOut: playerOutFpl,
-            playerIn,
-            managerId: selectedManager,
-            transferType,
-            gameweekData: validationContext.gameweekData,
-            id: 'review-journey-check',
-            timestamp: new Date(),
-            status: 'PENDING' as const,
-            comment: 'Review journey check',
-            onLoanTo: undefined,
-            onLoanFrom: undefined,
-        };
-
-        return getTransferJourneyIssues({
-            validationContext,
-            transfer: mockTransfer,
-            managers: divisionsManagers,
-            managerId: selectedManager,
-            isBeforeDeadline,
-            includeGameweekLimit: true,
-        });
-    }, [
-        divisionsManagers,
-        isBeforeDeadline,
-        playerIn,
-        playerOutFpl,
-        playerSelection.playerOut,
-        selectedManager,
-        transferType,
-        validationContext,
-    ]);
+    const journeyIssues =
+        playerSelection.playerOut && playerIn && playerOutFpl
+            ? getTransferJourneyIssues({
+                  validationContext,
+                  transfer: {
+                      playerOut: playerOutFpl,
+                      playerIn,
+                      managerId: selectedManager,
+                      transferType,
+                      gameweekData: validationContext.gameweekData,
+                      id: 'review-journey-check',
+                      timestamp: new Date(),
+                      status: 'PENDING',
+                      comment: 'Review journey check',
+                      onLoanTo: undefined,
+                      onLoanFrom: undefined,
+                  },
+                  managers: divisionsManagers,
+                  managerId: selectedManager,
+                  isBeforeDeadline,
+                  includeGameweekLimit: true,
+              })
+            : [];
 
     return (
         <>
@@ -601,10 +587,7 @@ export function TransferForm({
     const showTransferTypeSelector =
         step === JOURNEY_STEPS.firstSelector && canContinue(step, journeyPath, playerSelection);
 
-    const gameweekLimitStatus = useMemo(
-        () => getGameweekLimitStatus(validationContext, selectedManager, transferType),
-        [validationContext, selectedManager, transferType],
-    );
+    const gameweekLimitStatus = getGameweekLimitStatus(validationContext, selectedManager, transferType);
 
     return (
         <div className={styles.journey}>
@@ -680,6 +663,7 @@ export function TransferForm({
 
                 {showContinue ? (
                     <div className={styles.journeyFooter}>
+                        {/* displayText: short footer label; message (title): full validator copy */}
                         {gameweekLimitStatus ? (
                             <div className={styles.journeyWarning} title={gameweekLimitStatus.message}>
                                 ⏱️ {gameweekLimitStatus.displayText}

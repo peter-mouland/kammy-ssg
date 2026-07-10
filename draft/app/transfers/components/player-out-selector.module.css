@@ -76,10 +76,6 @@
     max-height: none;
 }
 
-.playerOutSelector :global(td.cellCenter.cellNumeric) {
-    text-align: center;
-}
-
 .emptyState {
     display: flex;
     flex-direction: column;
