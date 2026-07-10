@@ -1,5 +1,6 @@
 // app/transfers/lib/get-gameweek-limit-status.ts
 
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { ManagerId } from '../../teams/types/team-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
@@ -7,7 +8,9 @@ import { formatGameweekLimitDisplay, isGameweekLimitMessage } from './format-eli
 import { validateGameweekTransferLimit } from './validators/gameweek-transfer-limit-validator';
 
 export interface GameweekLimitStatus {
+    /** Full validator message shown in title/tooltip */
     message: string;
+    /** Short label for the sticky footer banner */
     displayText: string;
 }
 
@@ -20,16 +23,12 @@ export function getGameweekLimitStatus(
         return null;
     }
 
-    const firstPlayer = Object.values(validationContext.fplPlayersByCode)[0];
-    if (!firstPlayer) {
-        return null;
-    }
-
+    // validateGameweekTransferLimit only reads managerId, transferType, gameweekData, and timestamp — not playerIn
     const mockTransfer: ProcessedTransfer = {
         id: 'gameweek-limit-check',
         managerId,
         transferType,
-        playerIn: firstPlayer,
+        playerIn: {} as EnhancedPlayerData,
         playerOut: null,
         gameweekData: validationContext.gameweekData,
         timestamp: new Date(),
@@ -44,7 +43,7 @@ export function getGameweekLimitStatus(
         transfer: mockTransfer,
     });
 
-    if (result.passed || !isGameweekLimitMessage(result.ruleId, result.message)) {
+    if (result.passed || !isGameweekLimitMessage(result.ruleId)) {
         return null;
     }
 

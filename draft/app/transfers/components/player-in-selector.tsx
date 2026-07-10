@@ -13,11 +13,11 @@ import { sortPositions } from '../../teams/lib/sorting-utils';
 import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getPlayerStatusDisplay } from '../lib/get-player-status-display';
-import { getTransferSelectorStatColumns } from '../lib/transfer-selector-stat-columns';
 import type { OwnedPlayersByCode } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
 import styles from './player-in-selector.module.css';
+import { getTransferSelectorStatColumns } from './transfer-selector-stat-columns';
 
 interface PlayerInSelectorProps {
     availablePlayers: EnhancedPlayerData[];

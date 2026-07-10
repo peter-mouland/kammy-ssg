@@ -4,9 +4,9 @@ import { Table } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { RosterPlayer, TeamRoster } from '../../teams/types/team-types';
-import { getTransferSelectorStatColumns } from '../lib/transfer-selector-stat-columns';
 import type { TransferType } from '../types/transfer-types';
 import styles from './player-out-selector.module.css';
+import { getTransferSelectorStatColumns } from './transfer-selector-stat-columns';
 
 interface PlayerOutSelectorProps {
     roster: TeamRoster;

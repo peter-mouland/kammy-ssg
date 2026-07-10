@@ -223,10 +223,6 @@
     text-align: left;
 }
 
-.playerSelector :global(td.cellCenter.cellNumeric) {
-    text-align: center;
-}
-
 .statValue {
     font-size: var(--font-base);
     font-weight: var(--font-weight-semibold);
