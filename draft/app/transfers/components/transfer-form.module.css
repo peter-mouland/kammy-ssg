@@ -25,6 +25,15 @@
     margin: 0;
 }
 
+.journeyTitle:focus {
+    outline: none;
+}
+
+.journeyTitle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .backButton {
     align-self: flex-start;
     background: none;
@@ -62,6 +71,8 @@
     background: var(--color-white);
     border-top: 1px solid var(--color-gray-200);
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+    /* Allow transfer-type menu to paint above the footer without clipping */
+    overflow: visible;
 }
 
 .inlineTransferType {

@@ -292,6 +292,7 @@ export function PlayerInSelector({
                             selectedValues={selectedStatuses}
                             onSelectionChange={onStatusChange}
                             placeholder="Player Status"
+                            className={styles.multiSelect}
                         />
                     </div>
                 )}
