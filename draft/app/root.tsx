@@ -129,7 +129,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const navigationItems = [
     { href: '/leagues', label: 'League Standings' },
     { href: '/teams?tab=all-teams', label: 'Teams' },
-    { href: '/players', label: 'Players' },
     { href: '/transfers', label: 'Transfers' },
     { href: '/cup', label: 'Cup' },
     { href: '/wishlists', label: 'Wishlists' },
