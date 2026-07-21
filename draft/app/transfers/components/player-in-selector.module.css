@@ -21,28 +21,52 @@
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-4);
     border: 1px solid var(--color-info-border);
+    flex-shrink: 0;
 }
 
 .contextIcon {
     font-size: var(--font-lg);
+    flex-shrink: 0;
+    line-height: 1;
 }
 
 .contextText {
     color: var(--color-info);
     font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
+    line-height: 1.3;
 }
 
 .filters {
     display: flex;
     gap: var(--spacing-3);
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-3);
     flex-wrap: wrap;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    flex: 1 1 8rem;
+    min-width: 8rem;
+}
+
+.filterLabel {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+}
+
+.multiSelect {
+    width: 100%;
 }
 
 .searchInput {
-    flex: 1;
-    min-width: 200px;
+    flex: 1 1 12rem;
+    min-width: 12rem;
     padding: var(--spacing-2) var(--spacing-3);
     border: 1px solid var(--color-gray-300);
     border-radius: var(--radius-md);
@@ -83,9 +107,23 @@
     height: 16px;
 }
 
+.resultsCount {
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-2);
+    flex-shrink: 0;
+}
+
+.filterInfo {
+    color: var(--color-gray-500);
+}
+
 .playerList {
-    max-height: 400px;
+    flex: 1;
+    overflow-x: hidden;
     overflow-y: auto;
+    max-height: min(60dvh, 28rem);
+    min-height: 0;
     border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-md);
     background: var(--color-white);
@@ -98,6 +136,20 @@
     min-height: 0;
     margin-bottom: 0;
     height: 100%;
+    gap: var(--spacing-2);
+}
+
+.embeddedInJourney .transferContext {
+    margin-bottom: 0;
+    padding: var(--spacing-2) var(--spacing-3);
+}
+
+.embeddedInJourney .filters {
+    margin-bottom: 0;
+}
+
+.embeddedInJourney .resultsCount {
+    margin-bottom: 0;
 }
 
 .embeddedInJourney .playerList {
@@ -110,18 +162,29 @@
     border-bottom: 1px solid var(--color-gray-100);
     cursor: pointer;
     transition: background-color var(--transition-normal);
+    background-color: var(--color-white);
 }
 
 .playerCard:last-child {
     border-bottom: none;
 }
 
-.playerCard:hover {
-    background: var(--color-gray-50);
+.playerCard:nth-child(even) {
+    background-color: var(--color-gray-50);
 }
 
-.playerCard.selected {
-    background: var(--color-primary-light);
+.playerCard:nth-child(even) td {
+    background-color: var(--color-gray-50);
+}
+
+.playerCard:hover,
+.playerCard:hover td {
+    background-color: var(--color-gray-100);
+}
+
+.playerCard.selected,
+.playerCard.selected td {
+    background-color: var(--color-primary-light);
     border-color: var(--color-primary);
 }
 
@@ -130,8 +193,14 @@
     cursor: not-allowed;
 }
 
-.playerCard.ineligible:hover {
-    background: var(--color-white);
+.playerCard.ineligible:hover,
+.playerCard.ineligible:hover td {
+    background-color: var(--color-white);
+}
+
+.playerCard.ineligible:nth-child(even):hover,
+.playerCard.ineligible:nth-child(even):hover td {
+    background-color: var(--color-gray-50);
 }
 
 .playerInfo {
@@ -198,24 +267,37 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: var(--breakpoint-md)) {
-    .filters {
-        flex-direction: column;
-    }
-
-    .searchInput {
-        min-width: auto;
-    }
-
-    .playerCard {
-        flex-direction: column;
-        align-items: flex-start;
+@media (max-width: 768px) {
+    .transferContext {
+        padding: var(--spacing-2);
+        margin-bottom: var(--spacing-2);
         gap: var(--spacing-2);
     }
 
-    .playerStatus {
-        align-self: flex-end;
-        text-align: left;
+    .contextIcon {
+        font-size: var(--font-base);
+    }
+
+    .contextText {
+        font-size: var(--font-xs);
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-2);
+    }
+
+    .searchInput,
+    .filterGroup {
+        width: 100%;
+        min-width: 0;
+        flex: none;
+    }
+
+    .selectedSummary {
+        padding: var(--spacing-3);
     }
 }
 
@@ -249,7 +331,9 @@
         display: unset;
     }
 }
+
 .selectedSummary {
+    flex-shrink: 0;
     padding: var(--spacing-3) var(--spacing-4);
     background: var(--color-primary-bg);
     border-top: 1px solid var(--color-primary);
@@ -259,6 +343,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
+    flex-wrap: wrap;
 }
 
 .summaryLabel {

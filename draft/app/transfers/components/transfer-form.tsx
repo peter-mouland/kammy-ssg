@@ -1,7 +1,7 @@
 // app/transfers/components/transfer-form.tsx
 
 import type * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
 import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
@@ -410,7 +410,7 @@ function SelectorReview({
                     disabled={canSubmit}
                     className={`${styles.submitButton} ${isSubmitting ? styles.loading : ''}`}
                 >
-                    {isSubmitting ? 'Submitting...' : 'Submit Transfer'}
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
                 </button>
             </div>
         </>
@@ -439,6 +439,16 @@ export function TransferForm({
     const [loanSelection, setLoanSelection] = useState<LoanSelectionState>(INITIAL_LOAN_SELECTION);
     const [comment, setComment] = useState('');
     const [validation, setValidation] = useState<TransferValidationResult>(INITIAL_VALIDATION);
+    const stepContentRef = useRef<HTMLDivElement>(null);
+    const journeyTitleRef = useRef<HTMLHeadingElement>(null);
+
+    // Keep each step starting at the top after Continue/Back (window + step panel scroll;
+    // also moves focus off the footer button so the browser does not keep it in view).
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        stepContentRef.current?.scrollTo(0, 0);
+        journeyTitleRef.current?.focus({ preventScroll: true });
+    }, [step]);
 
     const playersByCode: Record<number, EnhancedPlayerData> = Object.fromEntries(
         availablePlayers.map((player) => [player.code, player]),
@@ -596,12 +606,14 @@ export function TransferForm({
                 <button type="button" className={styles.backButton} onClick={goBack}>
                     ← {step === JOURNEY_STEPS.firstSelector ? 'Back to hub' : 'Back'}
                 </button>
-                <h2 className={styles.journeyTitle}>{STEP_TITLES[step][journeyPath]}</h2>
+                <h2 className={styles.journeyTitle} ref={journeyTitleRef} tabIndex={-1}>
+                    {STEP_TITLES[step][journeyPath]}
+                </h2>
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
                 {step === JOURNEY_STEPS.firstSelector ? (
-                    <div className={styles.stepContent}>
+                    <div className={styles.stepContent} ref={stepContentRef}>
                         <FirstSelector
                             availablePlayers={availablePlayers}
                             selectedManager={selectedManager}
@@ -620,7 +632,7 @@ export function TransferForm({
                     </div>
                 ) : null}
                 {step === JOURNEY_STEPS.secondSelector ? (
-                    <div className={styles.stepContent}>
+                    <div className={styles.stepContent} ref={stepContentRef}>
                         <SecondSelector
                             availablePlayers={availablePlayers}
                             selectedManager={selectedManager}
@@ -639,7 +651,7 @@ export function TransferForm({
                     </div>
                 ) : null}
                 {step === JOURNEY_STEPS.review ? (
-                    <div className={styles.stepContent}>
+                    <div className={styles.stepContent} ref={stepContentRef}>
                         <SelectorReview
                             transferType={transferType}
                             playerSelection={playerSelection}

@@ -419,25 +419,27 @@
 }
 
 .tableWrapper::-webkit-scrollbar-thumb {
-    background: var(--color-gray-300);
+    background: var(--color-gray-400);
     border-radius: var(--radius-sm);
 }
 
 .tableWrapper::-webkit-scrollbar-thumb:hover {
-    background: var(--color-gray-400);
+    background: var(--color-gray-500);
 }
 
 /* Fixed column support */
 .fixedColumn {
     position: sticky;
     left: 0;
-    background-color: inherit;
-    z-index: 5; /* Ensure fixed column has shadow to show it's floating */
+    /* Opaque bg so scrolled cells don't show through sticky identity column */
+    background-color: var(--color-white);
+    z-index: 5;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 }
 
 th.fixedColumn {
     z-index: 15;
+    background-color: var(--table-header-bg);
 }
 
 .fixedColumn::after {
