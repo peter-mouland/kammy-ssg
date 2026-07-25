@@ -39,15 +39,22 @@ export class AdminOrchestrator {
             this.loadCacheStatus(),
         ]);
 
-        // Load draft sync comparisons for all divisions
-        let draftSyncComparisons = null;
+        // Load draft sync comparisons for all divisions (bounded — Firebase Admin
+        // OAuth can hang on node-fetch "Premature close" and stall the whole admin page)
+        let draftSyncComparisons: Awaited<
+            ReturnType<typeof import('./draft-sync-comparison.service').getAllDraftSyncComparisons>
+        > = [];
         try {
             const { getAllDraftSyncComparisons } = await import('./draft-sync-comparison.service');
-            draftSyncComparisons = await getAllDraftSyncComparisons();
+            draftSyncComparisons = await Promise.race([
+                getAllDraftSyncComparisons(),
+                new Promise<never>((_, reject) =>
+                    setTimeout(() => reject(new Error('Draft sync comparisons timed out')), 12_000),
+                ),
+            ]);
             console.log(`✅ Loaded draft sync comparisons for ${draftSyncComparisons.length} divisions`);
         } catch (error) {
             console.error('❌ Failed to load draft sync comparisons:', error);
-            // Don't fail the whole context load if sync comparisons fail
             draftSyncComparisons = [];
         }
 
