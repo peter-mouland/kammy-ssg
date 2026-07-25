@@ -1,0 +1,36 @@
+/* Location: app/admin/components/ui/copy-player-stats.module.css */
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.controlsRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--spacing-3);
+}
+
+.scopeLabel {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.scopeLabelText {
+    font-size: var(--font-sm);
+    font-weight: 500;
+    color: var(--color-gray-700);
+}
+
+.scopeSelect {
+    min-width: 10rem;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    font-size: var(--font-sm);
+    color: var(--color-gray-900);
+}
