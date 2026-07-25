@@ -25,56 +25,200 @@ export interface SheetWriteOptions {
     responseDateTimeRenderOption?: 'SERIAL_NUMBER' | 'FORMATTED_STRING';
 }
 
-// Initialize Google Sheets API client
-async function createSheetsClient() {
-    try {
-        if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
-            throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY environment variable is not set');
-        }
+let sheetsClientPromise: Promise<ReturnType<typeof google.sheets>> | null = null;
 
-        if (!SPREADSHEET_ID) {
-            throw new Error('GOOGLE_SHEETS_ID environment variable is not set');
-        }
+type GaxiosLikeRequest = {
+    method?: string;
+    url?: string;
+    data?: unknown;
+    body?: unknown;
+    headers?: Record<string, string>;
+    responseType?: string;
+    params?: Record<string, string | number | boolean | undefined>;
+    [key: string]: unknown;
+};
 
-        let credentials;
-        try {
-            const credentialsString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-            const decodedCredentials = atob(credentialsString);
-            credentials = JSON.parse(decodedCredentials);
+/**
+ * gaxios/node-fetch is failing with ERR_STREAM_PREMATURE_CLOSE against Google APIs
+ * in this environment. Native fetch (undici) works, so use that as the transporter.
+ */
+async function fetchTransporterRequest(opts: GaxiosLikeRequest) {
+    const method = (opts.method || 'GET').toUpperCase();
+    let url = opts.url || '';
 
-            if (!credentials.client_email || !credentials.private_key || !credentials.project_id) {
-                throw new Error('Invalid service account credentials - missing required fields');
+    if (opts.params && Object.keys(opts.params).length > 0) {
+        const qs = new URLSearchParams();
+        for (const [key, value] of Object.entries(opts.params)) {
+            if (value !== undefined && value !== null) {
+                qs.set(key, String(value));
             }
-        } catch (parseError) {
-            console.error('Failed to parse service account credentials:', parseError);
-            throw new Error("Invalid GOOGLE_SERVICE_ACCOUNT_KEY format. Ensure it's base64 encoded JSON.");
         }
+        url += (url.includes('?') ? '&' : '?') + qs.toString();
+    }
 
-        const auth = new google.auth.GoogleAuth({
-            credentials: {
-                type: credentials.type,
-                project_id: credentials.project_id,
-                private_key_id: credentials.private_key_id,
-                private_key: credentials.private_key,
-                client_email: credentials.client_email,
-                client_id: credentials.client_id,
-                auth_uri: credentials.auth_uri || 'https://accounts.google.com/o/oauth2/auth',
-                token_uri: credentials.token_uri || 'https://oauth2.googleapis.com/token',
-                auth_provider_x509_cert_url:
-                    credentials.auth_provider_x509_cert_url || 'https://www.googleapis.com/oauth2/v1/certs',
-                client_x509_cert_url: credentials.client_x509_cert_url,
-            },
-            scopes: SCOPES,
-        });
+    const headers = { ...(opts.headers || {}) };
+    let body: BodyInit | undefined;
 
-        const authClient = await auth.getClient();
-        const sheets = google.sheets({ version: 'v4', auth: authClient });
+    if (opts.data !== undefined && opts.data !== null && method !== 'GET' && method !== 'HEAD') {
+        if (typeof opts.data === 'string' || opts.data instanceof URLSearchParams) {
+            body = opts.data as BodyInit;
+            if (!headers['Content-Type'] && !headers['content-type']) {
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+        } else if (Buffer.isBuffer(opts.data)) {
+            body = opts.data;
+        } else {
+            body = JSON.stringify(opts.data);
+            if (!headers['Content-Type'] && !headers['content-type']) {
+                headers['Content-Type'] = 'application/json';
+            }
+        }
+    } else if (opts.body !== undefined) {
+        body = opts.body as BodyInit;
+    }
 
-        return sheets;
-    } catch (error) {
-        console.error('Failed to initialize Google Sheets client:', error);
+    const response = await fetch(url, { method, headers, body });
+    const contentType = response.headers.get('content-type') || '';
+    let data: unknown;
+
+    if (opts.responseType === 'stream') {
+        data = response.body;
+    } else if (contentType.includes('application/json')) {
+        data = await response.json();
+    } else {
+        data = await response.text();
+    }
+
+    const headersObj: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+        headersObj[key] = value;
+    });
+
+    const result = {
+        data,
+        status: response.status,
+        statusText: response.statusText,
+        headers: headersObj,
+        config: opts,
+        request: { responseURL: response.url },
+    };
+
+    if (!response.ok) {
+        const error = new Error(
+            `Request failed with status ${response.status}: ${
+                typeof data === 'object' && data && 'error' in data
+                    ? JSON.stringify((data as { error: unknown }).error)
+                    : response.statusText
+            }`,
+        ) as Error & { response: typeof result; config: GaxiosLikeRequest; code?: number };
+        error.response = result;
+        error.config = opts;
+        error.code = response.status;
         throw error;
     }
+
+    return result;
+}
+
+function isRetryableAuthError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false;
+    const err = error as {
+        code?: string | number;
+        message?: string;
+        error?: { code?: string; message?: string };
+        details?: { code?: string; message?: string; error?: { code?: string; message?: string } };
+    };
+    const candidates = [
+        String(err.code ?? ''),
+        err.message,
+        err.error?.code,
+        err.error?.message,
+        err.details?.code,
+        err.details?.message,
+        err.details?.error?.code,
+        err.details?.error?.message,
+    ].filter(Boolean) as string[];
+
+    return candidates.some(
+        (value) =>
+            value === 'ERR_STREAM_PREMATURE_CLOSE' ||
+            value.includes('Premature close') ||
+            value.includes('ECONNRESET') ||
+            value.includes('socket hang up'),
+    );
+}
+
+async function withRetry<T>(operation: () => Promise<T>, label: string, attempts = 3): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            lastError = error;
+            if (!isRetryableAuthError(error) || attempt === attempts) {
+                throw error;
+            }
+            const delayMs = 200 * attempt;
+            console.warn(`⚠️ ${label} failed (attempt ${attempt}/${attempts}), retrying in ${delayMs}ms…`, error);
+            sheetsClientPromise = null;
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+    }
+    throw lastError;
+}
+
+// Initialize Google Sheets API client (shared across requests to avoid OAuth stampedes)
+async function createSheetsClient() {
+    if (!sheetsClientPromise) {
+        sheetsClientPromise = (async () => {
+            try {
+                if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+                    throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY environment variable is not set');
+                }
+
+                if (!SPREADSHEET_ID) {
+                    throw new Error('GOOGLE_SHEETS_ID environment variable is not set');
+                }
+
+                let credentials;
+                try {
+                    const credentialsString = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+                    const decodedCredentials = atob(credentialsString);
+                    credentials = JSON.parse(decodedCredentials);
+
+                    if (!credentials.client_email || !credentials.private_key || !credentials.project_id) {
+                        throw new Error('Invalid service account credentials - missing required fields');
+                    }
+                } catch (parseError) {
+                    console.error('Failed to parse service account credentials:', parseError);
+                    throw new Error("Invalid GOOGLE_SERVICE_ACCOUNT_KEY format. Ensure it's base64 encoded JSON.");
+                }
+
+                const transporter = {
+                    request: fetchTransporterRequest,
+                };
+
+                const auth = new google.auth.JWT({
+                    email: credentials.client_email,
+                    key: credentials.private_key,
+                    scopes: SCOPES,
+                    transporter,
+                } as ConstructorParameters<typeof google.auth.JWT>[0]);
+
+                // Prefer self-signed JWT access tokens (no token-endpoint round trip)
+                auth.useJWTAccessWithScope = true;
+                auth.transporter = transporter as typeof auth.transporter;
+
+                return google.sheets({ version: 'v4', auth });
+            } catch (error) {
+                sheetsClientPromise = null;
+                console.error('Failed to initialize Google Sheets client:', error);
+                throw error;
+            }
+        })();
+    }
+
+    return sheetsClientPromise;
 }
 
 // Test connection function
@@ -115,16 +259,18 @@ export function createAppError(code: string, message: string, details?: unknown)
  */
 export async function readSheetRange(sheetRange: SheetRange, options: SheetReadOptions = {}): Promise<any[][]> {
     try {
-        const sheetsClient = await createSheetsClient();
-        const response = await sheetsClient.spreadsheets.values.get({
-            spreadsheetId: sheetRange.spreadsheetId,
-            range: sheetRange.range,
-            valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
-            dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
-            majorDimension: options.majorDimension || 'ROWS',
-        });
+        return await withRetry(async () => {
+            const sheetsClient = await createSheetsClient();
+            const response = await sheetsClient.spreadsheets.values.get({
+                spreadsheetId: sheetRange.spreadsheetId,
+                range: sheetRange.range,
+                valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
+                dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
+                majorDimension: options.majorDimension || 'ROWS',
+            });
 
-        return response.data.values || [];
+            return response.data.values || [];
+        }, `readSheetRange(${sheetRange.range})`);
     } catch (error) {
         throw createAppError('SHEET_READ_ERROR', `Failed to read sheet range: ${sheetRange.range}`, error);
     }
@@ -139,19 +285,21 @@ export async function writeSheetRange(
     options: SheetWriteOptions = {},
 ): Promise<void> {
     try {
-        const sheetsClient = await createSheetsClient();
-        await sheetsClient.spreadsheets.values.update({
-            spreadsheetId: sheetRange.spreadsheetId,
-            range: sheetRange.range,
-            valueInputOption: options.valueInputOption || 'RAW',
-            includeValuesInResponse: options.includeValuesInResponse || false,
-            responseValueRenderOption: options.responseValueRenderOption || 'FORMATTED_VALUE',
-            responseDateTimeRenderOption: options.responseDateTimeRenderOption || 'FORMATTED_STRING',
-            requestBody: {
-                values,
-                majorDimension: 'ROWS',
-            },
-        });
+        await withRetry(async () => {
+            const sheetsClient = await createSheetsClient();
+            await sheetsClient.spreadsheets.values.update({
+                spreadsheetId: sheetRange.spreadsheetId,
+                range: sheetRange.range,
+                valueInputOption: options.valueInputOption || 'RAW',
+                includeValuesInResponse: options.includeValuesInResponse || false,
+                responseValueRenderOption: options.responseValueRenderOption || 'FORMATTED_VALUE',
+                responseDateTimeRenderOption: options.responseDateTimeRenderOption || 'FORMATTED_STRING',
+                requestBody: {
+                    values,
+                    majorDimension: 'ROWS',
+                },
+            });
+        }, `writeSheetRange(${sheetRange.range})`);
     } catch (error) {
         throw createAppError('SHEET_WRITE_ERROR', `Failed to write to sheet range: ${sheetRange.range}`, error);
     }
@@ -166,20 +314,22 @@ export async function appendToSheet(
     options: SheetWriteOptions = {},
 ): Promise<void> {
     try {
-        const sheetsClient = await createSheetsClient();
-        await sheetsClient.spreadsheets.values.append({
-            spreadsheetId: sheetRange.spreadsheetId,
-            range: sheetRange.range,
-            valueInputOption: options.valueInputOption || 'RAW',
-            insertDataOption: options.insertDataOption || 'INSERT_ROWS',
-            includeValuesInResponse: options.includeValuesInResponse || false,
-            responseValueRenderOption: options.responseValueRenderOption || 'FORMATTED_VALUE',
-            responseDateTimeRenderOption: options.responseDateTimeRenderOption || 'FORMATTED_STRING',
-            requestBody: {
-                values,
-                majorDimension: 'ROWS',
-            },
-        });
+        await withRetry(async () => {
+            const sheetsClient = await createSheetsClient();
+            await sheetsClient.spreadsheets.values.append({
+                spreadsheetId: sheetRange.spreadsheetId,
+                range: sheetRange.range,
+                valueInputOption: options.valueInputOption || 'RAW',
+                insertDataOption: options.insertDataOption || 'INSERT_ROWS',
+                includeValuesInResponse: options.includeValuesInResponse || false,
+                responseValueRenderOption: options.responseValueRenderOption || 'FORMATTED_VALUE',
+                responseDateTimeRenderOption: options.responseDateTimeRenderOption || 'FORMATTED_STRING',
+                requestBody: {
+                    values,
+                    majorDimension: 'ROWS',
+                },
+            });
+        }, `appendToSheet(${sheetRange.range})`);
     } catch (error) {
         throw createAppError('SHEET_APPEND_ERROR', `Failed to append to sheet range: ${sheetRange.range}`, error);
     }
@@ -327,20 +477,22 @@ export async function readSheetWithHeaders(
     options: SheetReadOptions = {},
 ): Promise<{ headers: string[]; data: any[][]; rawData: any[][] }> {
     try {
-        const sheetsClient = await createSheetsClient();
-        const response = await sheetsClient.spreadsheets.values.get({
-            spreadsheetId: sheetRange.spreadsheetId,
-            range: sheetRange.range,
-            valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
-            dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
-            majorDimension: options.majorDimension || 'ROWS',
-        });
+        return await withRetry(async () => {
+            const sheetsClient = await createSheetsClient();
+            const response = await sheetsClient.spreadsheets.values.get({
+                spreadsheetId: sheetRange.spreadsheetId,
+                range: sheetRange.range,
+                valueRenderOption: options.valueRenderOption || 'UNFORMATTED_VALUE',
+                dateTimeRenderOption: options.dateTimeRenderOption || 'FORMATTED_STRING',
+                majorDimension: options.majorDimension || 'ROWS',
+            });
 
-        const rawData = response.data.values || [];
-        const headers = rawData.length > 0 ? rawData[0] : [];
-        const data = rawData.slice(1);
+            const rawData = response.data.values || [];
+            const headers = rawData.length > 0 ? rawData[0] : [];
+            const data = rawData.slice(1);
 
-        return { headers, data, rawData };
+            return { headers, data, rawData };
+        }, `readSheetWithHeaders(${sheetRange.range})`);
     } catch (error) {
         throw createAppError(
             'SHEET_READ_WITH_HEADERS_ERROR',

@@ -49,10 +49,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
         orchestrator.getSharedContext(),
     ]);
 
-    // Load transfer-specific data if we're on a transfer route or need comprehensive data
+    // Load transfer-specific data only on the transfers admin page (heavy validation)
     let transfersData: Record<string, TransferAdminOverviewData> | null = null;
 
-    const isTransferRoute = url.pathname.includes('/admin/transfers') || url.pathname === '/admin';
+    const isTransferRoute = url.pathname.includes('/admin/transfers');
 
     if (isTransferRoute) {
         const { getTransfersAdminData } = await import('./server/transfers-admin.server');

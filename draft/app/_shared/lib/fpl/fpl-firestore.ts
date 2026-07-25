@@ -58,7 +58,19 @@ export class FplFirestore {
         const doc = await this.client.getDocument<GameWeekData[]>(this.client.collections.FPL_BOOTSTRAP, 'events');
         this.lastUpdated.events = doc?.lastUpdated || '';
 
-        return doc ? doc.data.map((gw) => ({ ...gw, start: gw.start.toDate(), end: gw.end.toDate() })) : [];
+        if (!doc) return [];
+
+        return doc.data.map((gw) => ({
+            ...gw,
+            start:
+                typeof (gw.start as { toDate?: () => Date })?.toDate === 'function'
+                    ? (gw.start as { toDate: () => Date }).toDate()
+                    : new Date(gw.start as unknown as string | number | Date),
+            end:
+                typeof (gw.end as { toDate?: () => Date })?.toDate === 'function'
+                    ? (gw.end as { toDate: () => Date }).toDate()
+                    : new Date(gw.end as unknown as string | number | Date),
+        }));
     }
 
     /**

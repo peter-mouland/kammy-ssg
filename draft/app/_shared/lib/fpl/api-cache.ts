@@ -9,7 +9,14 @@ import { dataCache } from '../cache/data-cache.service';
 import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
-import type { FplBootstrapData, FplFixtureData, FplLiveData, FplPlayerSeasonData, FplTeam, GameWeekData } from './fpl-types';
+import type {
+    FplBootstrapData,
+    FplFixtureData,
+    FplLiveData,
+    FplPlayerSeasonData,
+    FplTeam,
+    GameWeekData,
+} from './fpl-types';
 
 /**
  * Updated FPL Data Orchestrator - Uses Individual Player Caching
@@ -355,16 +362,38 @@ class FplApiCache {
     async getCacheStatus() {
         console.log('🔄 getCacheStatus() - Getting fresh status');
 
-        // This should always be fresh to get accurate cache status
-        const [elements, elementsCount, eventsCount, teamsCount, elementDetailedStatsCount] = await Promise.all([
-            this.fplFirestore.getElements(),
-            this.fplFirestore.getElementsCount(),
-            this.fplFirestore.getEventsCount(),
-            this.fplFirestore.getTeamsCount(),
-            this.fplFirestore.getElementDetailedStatsCount(),
-        ]);
+        const timeoutMs = 15_000;
 
-        const hasDraftData = elements?.some((player) => player.draft) || false;
+        const withTimeout = async <T>(promise: Promise<T>, fallback: T, label: string): Promise<T> => {
+            let timeoutId: ReturnType<typeof setTimeout> | undefined;
+            try {
+                const result = await Promise.race([
+                    promise.then((value) => ({ ok: true as const, value })),
+                    new Promise<{ ok: false }>((resolve) => {
+                        timeoutId = setTimeout(() => resolve({ ok: false }), timeoutMs);
+                    }),
+                ]);
+
+                if (!result.ok) {
+                    console.warn(`⚠️ getCacheStatus() - ${label} timed out after ${timeoutMs}ms`);
+                    return fallback;
+                }
+                return result.value;
+            } finally {
+                if (timeoutId) clearTimeout(timeoutId);
+            }
+        };
+
+        // Load elements once — getElementsCount() previously re-read the same large document
+        const elements = await withTimeout(this.fplFirestore.getElements(), [], 'getElements');
+        const elementsCount = elements.length;
+        const hasDraftData = elements.some((player) => Boolean(player.draft));
+
+        const [eventsCount, teamsCount, elementDetailedStatsCount] = await Promise.all([
+            withTimeout(this.fplFirestore.getEventsCount(), 0, 'getEventsCount'),
+            withTimeout(this.fplFirestore.getTeamsCount(), 0, 'getTeamsCount'),
+            withTimeout(this.fplFirestore.getElementDetailedStatsCount(), 0, 'getElementDetailedStatsCount'),
+        ]);
 
         return {
             completionPercentage: elementsCount > 0 ? Math.round((elementDetailedStatsCount / elementsCount) * 100) : 0,
