@@ -9,6 +9,7 @@ import { AdminContainer } from '../layout/admin-container';
 import { AdminGrid } from '../layout/admin-grid';
 import { AdminSection } from '../layout/admin-section';
 import { AdminMessage } from '../ui/admin-message';
+import { CopyPlayerStats } from '../ui/copy-player-stats';
 import { StatusCard } from '../ui/status-card';
 import styles from './overview-section.module.css';
 
@@ -104,6 +105,8 @@ export function OverviewSection({ systemStatus }: OverviewSectionProps) {
                     ))}
                 </ul>
             </AdminSection>
+
+            <CopyPlayerStats currentGameweekId={systemStatus.currentGameweek.fplEvent.id} />
 
             {/* Action Messages */}
             {actionData?.success && actionData.message && (
