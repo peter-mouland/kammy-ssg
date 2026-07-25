@@ -5,6 +5,7 @@ import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { PlayerStatsData } from '../types/player-types';
 
 export const PLAYER_STATS_TSV_HEADERS = [
+    'Code',
     'Player',
     'Team',
     'Position',
@@ -28,7 +29,7 @@ function escapeTsvCell(value: string | number): string {
 
 function formatStatCell(player: EnhancedPlayerData, statKey: string, value: number | undefined): string {
     if (!isStatRelevant(statKey, player.draft.position)) {
-        return '-';
+        return '0';
     }
     return escapeTsvCell(value ?? 0);
 }
@@ -37,6 +38,7 @@ function playerToTsvRow(player: EnhancedPlayerData, teamShortName: string): stri
     const breakdown = player.draft.pointsBreakdown;
 
     return [
+        escapeTsvCell(player.code),
         escapeTsvCell(player.web_name),
         escapeTsvCell(teamShortName),
         escapeTsvCell(player.draft.position.toUpperCase()),

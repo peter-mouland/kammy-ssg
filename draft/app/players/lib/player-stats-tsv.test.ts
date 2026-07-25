@@ -14,12 +14,13 @@ function makePlayer(overrides: {
     team_code: number;
     position: EnhancedPlayerData['draft']['position'];
     pointsTotal: number;
+    code?: number;
     stats?: Partial<Record<keyof EnhancedPlayerData['draft']['pointsBreakdown'], number>>;
 }): EnhancedPlayerData {
     const stats = overrides.stats ?? {};
     return {
         id: 1,
-        code: 1,
+        code: overrides.code ?? 1,
         first_name: 'Test',
         second_name: 'Player',
         web_name: overrides.web_name,
@@ -67,6 +68,7 @@ describe('buildPlayerStatsTsv', () => {
             makeData([
                 makePlayer({
                     web_name: 'Salah',
+                    code: 118748,
                     team_code: 1,
                     position: 'wa',
                     pointsTotal: 42,
@@ -78,16 +80,17 @@ describe('buildPlayerStatsTsv', () => {
         const [, row] = tsv.split('\n');
         const cells = row.split('\t');
 
-        expect(cells[0]).toBe('Salah');
-        expect(cells[1]).toBe('ARS');
-        expect(cells[2]).toBe('WA');
-        expect(cells[3]).toBe('42');
-        expect(cells[4]).toBe('180');
-        expect(cells[5]).toBe('3');
-        expect(cells[6]).toBe('1');
+        expect(cells[0]).toBe('118748');
+        expect(cells[1]).toBe('Salah');
+        expect(cells[2]).toBe('ARS');
+        expect(cells[3]).toBe('WA');
+        expect(cells[4]).toBe('42');
+        expect(cells[5]).toBe('180');
+        expect(cells[6]).toBe('3');
+        expect(cells[7]).toBe('1');
     });
 
-    it('leaves irrelevant position stats blank', () => {
+    it('fills irrelevant position stats with 0 for formula-friendly export', () => {
         const tsv = buildPlayerStatsTsv(
             makeData([
                 makePlayer({
@@ -109,12 +112,12 @@ describe('buildPlayerStatsTsv', () => {
 
         const cells = tsv.split('\n')[1].split('\t');
         // Clean Sheets, Pens Saved, Saves, Goals Con., Bonus, Def. Con.
-        expect(cells[7]).toBe('-');
-        expect(cells[8]).toBe('-');
-        expect(cells[9]).toBe('-');
-        expect(cells[10]).toBe('-');
-        expect(cells[13]).toBe('-');
-        expect(cells[14]).toBe('-');
+        expect(cells[8]).toBe('0');
+        expect(cells[9]).toBe('0');
+        expect(cells[10]).toBe('0');
+        expect(cells[11]).toBe('0');
+        expect(cells[14]).toBe('0');
+        expect(cells[15]).toBe('0');
     });
 
     it('includes relevant GK defensive stats', () => {
@@ -136,12 +139,12 @@ describe('buildPlayerStatsTsv', () => {
         );
 
         const cells = tsv.split('\n')[1].split('\t');
-        expect(cells[7]).toBe('2');
-        expect(cells[8]).toBe('1');
-        expect(cells[9]).toBe('12');
-        expect(cells[10]).toBe('3');
-        expect(cells[13]).toBe('-'); // bonus not relevant for GK
-        expect(cells[14]).toBe('-'); // def con not relevant for GK
+        expect(cells[8]).toBe('2');
+        expect(cells[9]).toBe('1');
+        expect(cells[10]).toBe('12');
+        expect(cells[11]).toBe('3');
+        expect(cells[14]).toBe('0'); // bonus not relevant for GK
+        expect(cells[15]).toBe('0'); // def con not relevant for GK
     });
 
     it('sorts players by points descending', () => {
@@ -153,7 +156,7 @@ describe('buildPlayerStatsTsv', () => {
         );
 
         const rows = tsv.split('\n').slice(1);
-        expect(rows[0].split('\t')[0]).toBe('High');
-        expect(rows[1].split('\t')[0]).toBe('Low');
+        expect(rows[0].split('\t')[1]).toBe('High');
+        expect(rows[1].split('\t')[1]).toBe('Low');
     });
 });
