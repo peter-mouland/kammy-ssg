@@ -71,6 +71,10 @@ Every data read is cached. If you change what a loader fetches, or add a new dat
 
 ## Coding Standards
 
+### Do not nest medium, large, or pure helpers
+
+Where possible, medium-to-large functions — and any function that is pure or can easily be made pure — must not be nested inside another function. Define them at module scope (or extract to a util) and pass dependencies as arguments. Nested one-liners and tiny closures that only close over adjacent locals are fine; anything substantial enough to name or reuse is not.
+
 ### TypeScript is non-negotiable
 
 All new files are TypeScript. No `any` unless there is an explicit comment explaining why. Prefer narrow types over wide ones.
