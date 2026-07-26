@@ -6,7 +6,7 @@ import type { CustomPosition } from '../../players/types/player-types';
 import { getPositionDisplayName } from '../../scoring/lib';
 import { useWishlists } from '../../wishlist/lib/use-wishlists';
 import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';
-import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
+import type { PositionAvailabilityCounts, SquadComposition, TeamAvailabilityCounts } from '../types/draft-types';
 import styles from './draft-filters.module.css';
 
 interface DraftFiltersProps {
@@ -52,11 +52,13 @@ export function DraftFilters({
     // Calculate counts and options
     const { positionOptions, teamOptions, wishlistOptions, eligibleCount, filteredCount } = useMemo(() => {
         // Calculate position and team counts for eligible players
-        const positionCounts: PositionCounts = {};
-        const teamCounts: TeamCounts = {};
+        const positionCounts: PositionAvailabilityCounts = {};
+        const teamCounts: TeamAvailabilityCounts = {};
 
-        Object.keys(DRAFT_RULES.positions).forEach((position) => {
-            positionCounts[position as CustomPosition] = { total: 0, eligible: 0 };
+        const draftablePositions = Object.keys(DRAFT_RULES.positions) as CustomPosition[];
+
+        draftablePositions.forEach((position) => {
+            positionCounts[position] = { total: 0, eligible: 0 };
         });
 
         allTeams.forEach((team) => {
@@ -78,7 +80,7 @@ export function DraftFilters({
             }
         });
 
-        const positionOptions: MultiSelectOption[] = Object.keys(DRAFT_RULES.positions).map((position) => ({
+        const positionOptions: MultiSelectOption[] = draftablePositions.map((position) => ({
             id: position,
             label: getPositionDisplayName(position),
             count: positionCounts[position]?.eligible || 0,

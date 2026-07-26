@@ -1,7 +1,7 @@
 /* Location: app/admin/components/ui/draft-card.tsx */
 
 import { useFetcher } from 'react-router';
-import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../../draft/types/draft-types';
+import type { DraftAction, DraftOrderData, DraftStateData, DraftStatusData } from '../../../draft/types/draft-types';
 import type { DivisionSheetData, UserTeamsSheetData } from '../../../teams/types/team-types';
 import styles from './draft-card.module.css';
 
@@ -14,7 +14,6 @@ interface DraftCardProps {
 }
 
 type DraftVariant = 'generate' | 'start' | 'stop' | 'disabled';
-type DraftAction = 'generateOrder' | 'startDraft' | 'stopDraft' | 'commitTeamsToFirestore';
 
 interface DivisionStatus {
     status: string;

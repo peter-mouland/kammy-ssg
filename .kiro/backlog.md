@@ -63,23 +63,24 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 
 | Metric | At start (2026-07-26) | Now |
 |---|---|---|
-| Type errors | 275 | **273** |
+| Type errors | 275 | **242** |
 | CSS convention violations | not measurable (stylelint not installed) | **603** |
-| Tests | 149 passing, 24 files | **168 passing, 25 files** |
+| Tests | 149 passing, 24 files | **176 passing, 26 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | 34 — Phase 2 |
+| `_shared` → domain imports | 34, across 6 domains | 34 — allowlisted and capped by P1.2 |
+| Architecture rules enforced | 0 | **4** (P1.2) |
 
 ### Type errors by domain
 
 ```
-admin      63     _shared    26     api         7
+admin      58     _shared    22     api         7
 transfers  51     scoring    15     wishlist    1
-draft      36     leagues    10     cup         0  ← the target
-players    34     root        2
-teams      30
+players    34     draft      12     cup         0  ← the target
+teams      30     leagues    10     root        2
 ```
+*(`draft` was 36 before P1.3a.)*
 
 ### CSS violations by rule
 
@@ -139,24 +140,36 @@ The highest-leverage phase. Nothing after this is safe without it.
   Verified both directions: passes at baseline, and a deliberately-added `!important` was caught.
   *Note:* counts are repo-wide, not per-domain. Per-domain granularity for types can be added when P1.3 makes it useful.
 
-- [ ] **P1.2 — `architecture.test.ts` — make the steering rules executable**
-  A single test that walks the import graph and asserts:
-  - `_shared/` may not import from any domain folder *(34 current violations — start with an explicit allowlist and shrink it as Phase 2 lands)*
-  - no domain may import another domain's `server/` or `components/` — `types/` and `lib/` only
-  - no import cycles between domains
-  - every `*.route.tsx` either has a sibling `*.page.tsx` or is under a documented line threshold *(add after P4.1)*
+- [x] **P1.2 — `architecture.test.ts` — make the steering rules executable**
+  *Done:* [architecture.test.ts](../draft/app/architecture.test.ts), 8 tests, no new dependency. Walks every relative import in `app/` (including dynamic `import()`) and enforces four rules:
 
-  This turns our best architectural rules into something an AI physically cannot violate. The allowlist doubles as the Phase 2 worklist.
-  *Acceptance:* test exists and passes with an allowlist; each Phase 2 item shrinks the allowlist; the test fails if a new violation is introduced.
+  | Rule | Current debt |
+  |---|---|
+  | `_shared/` may not import from a domain | **34** allowlisted |
+  | A domain may only use another domain's `types/` and `lib/` | **34** allowlisted |
+  | No new circular dependencies between domains | **15** pairs, capped |
+  | No exported type name declared in two files | **2** allowlisted (P1.3b) |
+
+  Two design choices worth keeping:
+  - **Every allowlist has a paired "no stale entries" test.** When a Phase 2 item lands, the corresponding line *must* be deleted or the suite fails. The allowlist cannot quietly become permanent.
+  - **The cycle count fails if it goes *down* too**, telling you to lower `KNOWN_CYCLIC_PAIRS`. Same ratchet mentality as `.ratchet.json`.
+
+  Failure messages name the file, the rule, and what to do about it. Verified in both directions: a probe import into `_shared/` was caught, and a fake allowlist entry was reported as stale.
+  *Still to add after P4.1:* every `*.route.tsx` has a sibling `*.page.tsx`.
+
+  **The two allowlists are now the Phase 2 worklist.** Note how concentrated they are — `players/components/player` (7 importers), `teams/components/gameweek-selector` (5) and `scoring/server/services/division-teams.service` (6) account for 18 of the 34 internal-reach violations.
 
 - [ ] **P1.3 — Burn down type errors, one PR per domain, ascending cost**
   Order: `leagues` (10) → `api` (7) + `wishlist` (1) → `scoring` (15) → `_shared` (26) → `teams` (30) → `players` (34) → `draft` (36) → `transfers` (51) → `admin` (63).
   *Acceptance:* baseline reaches 0 for each domain as its PR lands.
 
-  - [ ] **P1.3a — Restore the missing `draft-types` exports (do this first)**
-    [draft-types.ts](../draft/app/draft/types/draft-types.ts) exports 6 types, but 12 files across `draft/`, `admin/` and `_shared/` import 8 types from it that do not exist: `DraftOrderData`, `DraftAction`, `DraftLoaderData`, `DraftActionData`, `PositionCounts`, `SquadComposition`, `TeamCounts`, `DraftSequence`. Those files are running on implicit `any`.
-    22 of the 275 errors are this one root cause.
-    *Acceptance:* all 8 types defined and exported; `draft` and `admin` error counts drop accordingly.
+  - [x] **P1.3a — Restore the missing `draft-types` exports**
+    [draft-types.ts](../draft/app/draft/types/draft-types.ts) exported 6 types while 12 files across `draft/`, `admin/` and `_shared/` imported 8 that did not exist. Those files were running on implicit `any`.
+    *Done:* **273 → 242 errors**; every `TS2305 (has no exported member)` gone; `draft` 36 → 12, `admin` 63 → 58, `_shared` 26 → 22. Shapes were inferred from the code that builds each value — sheet headers for `DraftOrderData`, the loader's return for `DraftLoaderData`, `makeDraftPick`'s result for `DraftActionData` — not guessed.
+
+    **`PositionCounts` and `TeamCounts` turned out to be two different concepts sharing one name**: a manager's drafted squad in `draft-rules.ts`, versus how many players are available and eligible per position in `draft-filters.tsx`. No single type could serve both, which is part of why the exports were lost. Split into `PositionCounts`/`TeamCounts` (squad) and `PositionAvailabilityCounts`/`TeamAvailabilityCounts` (filters), each commented with the distinction.
+
+    Also collapsed a duplicate: `admin/components/ui/draft-card.tsx` declared its own local `DraftAction` listing only 4 of the 6 real actions — it now imports the canonical one.
 
   - [ ] **P1.3b — De-duplicate colliding type names**
     `TransferValidationResult` and `TransferFormData` are each declared in two files, and are actively causing errors where the two versions meet.
@@ -289,6 +302,9 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-26 | **[Polish]** | `dataCache.delete()` is an alias for `dataCache.invalidate()`. Two names for one operation invites picking the wrong one. | [data-cache.service.ts](../draft/app/_shared/lib/cache/data-cache.service.ts) |
 | 2026-07-26 | **[Separate problem found]** | `functions/` workspace is not type-checked by `yarn type-check` or the ratchet — only by `yarn build`. Its error count is unmeasured. | root `package.json` |
 | 2026-07-26 | **[Will slow down future work]** | `keyframes-name-pattern` ×14 — keyframe names are not kebab-case. Cosmetic, but it is 14 of the 603 and trivially fixable in one pass. | various `.module.css` |
+| 2026-07-26 | **[Separate problem found]** | `draft/server/draft.server.ts` imports `admin/server/actions/team-commit-actions`. A feature domain reaching into **admin's** server actions inverts the intended direction — admin orchestrates domains, not the reverse. Found by P1.2. | [draft.server.ts](../draft/app/draft/server/draft.server.ts) |
+| 2026-07-26 | **[Separate problem found]** | `DraftPickData.teamCode` and `FirebaseDraftPick.teamCode` are typed `string`, but callers assign a number (`FplTeam.code`). Surfaced by P1.3a once the surrounding code stopped being implicit `any`. Causes 3 of the 12 remaining `draft` errors, including a `number === string` comparison in [draft.tsx:202](../draft/app/draft/draft.tsx) that can never be true. Fix during the `draft` burn-down. | [draft-types.ts](../draft/app/draft/types/draft-types.ts) |
+| 2026-07-26 | **[Will slow down future work]** | `scoring/server/services/division-teams.service` has 6 importers across admin, cup, leagues, teams and transfers. It is a de-facto shared service living in a feature domain — the server-side twin of the `gameweek-selector` problem. Decide its home during P2.3. | [division-teams.service.ts](../draft/app/scoring/server/services/division-teams.service.ts) |
 
 ---
 
@@ -298,4 +314,4 @@ Add new issues here as they surface. Do not fix them in the task that found them
 |---|---|
 | Fix all 275 type errors before resuming feature work | Blocks everything for weeks. The ratchet (P1.1) gets the same protection immediately. |
 | Component-level React tests | Contrary to [testing-conventions.md](steering/testing-conventions.md) — test at the boundaries, not React internals. Would also need a jsdom environment we do not currently have. |
-| Adopt a dependency-graph library (dependency-cruiser, madge) for P1.2 | A ~40-line import walker in a Vitest file has no new dependency, no config file, and fails with a message a non-engineer can read. Revisit only if the rules outgrow it. |
+| Adopt a dependency-graph library (dependency-cruiser, madge) for P1.2 | The import walker in [architecture.test.ts](../draft/app/architecture.test.ts) is ~60 lines, needs no new dependency or config file, and fails with a message a non-engineer can read. Revisit only if the rules outgrow it. |
