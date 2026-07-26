@@ -1,8 +1,8 @@
 // app/teams/components/team-stats.tsx
 import type React from 'react';
 import { useMemo, useState } from 'react';
-import { getScoringSlots } from '../../_shared/lib/position-slot-utils';
-import { calculateRosterTotalPoints, getRosterTopScorer } from '../../_shared/lib/roster-conversion-utils';
+import { getScoringSlots } from '../lib/position-slot-utils';
+import { calculateRosterTotalPoints, getRosterTopScorer } from '../lib/roster-conversion-utils';
 import { calculateContributingStats } from '../lib/team-stats-utils';
 import type { TeamStatsData, TeamStatsProps } from '../types/team-types';
 import { ContributingStats } from './contributing-stats';

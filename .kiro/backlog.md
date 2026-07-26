@@ -69,8 +69,9 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **17** — half cleared by P2.1 |
+| `_shared` → domain imports | 34, across 6 domains | **12** — P2.1 + P2.4 |
 | Architecture rules enforced | 0 | **4** (P1.2) |
+| Domain dependency cycles | 15 | **13** — P2.4 dissolved two |
 
 ### Type errors by domain
 
@@ -258,10 +259,27 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   While moving, give each a narrow interface so a fake can be injected at the boundary — this is the seam that makes P3.4 possible.
   *Acceptance:* `_shared/lib/sheets/` contains only the generic client with zero domain imports; each domain owns its own reads/writes; loaders still return identical data (proved by the characterisation tests).
 
-- [ ] **P2.4 — Move domain logic out of `_shared/lib`**
-  `roster-conversion-utils.ts`, `position-slot-utils.ts`, `group-by-id.ts` → `teams/lib/`. `standings-table-markers.ts` → `leagues/lib/`.
-  These are directly contrary to our own rule: *"Team roster logic does not [belong in `_shared`]"*. Move their co-located tests with them.
-  *Acceptance:* `_shared/lib/` has zero domain imports; `architecture.test.ts` allowlist is empty for `_shared`.
+- [x] **P2.4 — Move domain logic out of `_shared/lib`**
+  *Done:* five files moved with `git mv`, so history follows them. **`_shared` violations 17 → 12**, and **two domain cycles dissolved (15 → 13)**.
+
+  | Module | New home | Why |
+  |---|---|---|
+  | `roster-conversion-utils.ts` + test | `teams/lib/` | operates on `TeamRoster`, `RosterPlayer`, `LoanStatus` |
+  | `position-slot-utils.ts` | `teams/lib/` | operates on `TeamRoster` and slot keys |
+  | `standings-table-markers.ts` + test | `leagues/lib/` | promotion/relegation/prize rows; one importer, in `leagues` |
+
+  **`group-by-id.ts` was left in `_shared/lib` — this item's original plan was wrong.** `groupByDivision<T extends { divisionId }>` is a generic helper over a kernel type with no domain imports, and both its callers are in `admin`. Moving it to `teams/lib` would have made it *harder* to reach for no gain.
+
+  `_shared/lib/` top level is now five genuinely generic modules — `batch-processor`, `form-data`, `fuzzy-string-match`, `group-by-id`, `query-client` — none of which import a domain.
+
+  *Verification:* type errors unchanged at 200, 176 tests pass. The two tests that moved carried their coverage with them, which is the point of co-locating them.
+
+  **All 12 remaining `_shared` violations are now in two folders**, both with a named owner:
+
+  | Folder | Entries | Cleared by |
+  |---|---|---|
+  | `_shared/lib/sheets/` | 9 | P2.3 |
+  | `_shared/lib/fpl/` | 3 | P2.1b |
 
 - [ ] **P2.5 — Promote genuinely shared components**
   `teams/components/gameweek-selector` is used by transfers, leagues, players and admin. `players/components/player` is used by teams, transfers, admin and wishlist. Both belong in `_shared/components/`.

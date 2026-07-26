@@ -3,8 +3,8 @@
  * Kept in this file so each validator test imports from one place.
  */
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
-import { createEmptyPoints, createEmptyStats } from '../../../_shared/lib/roster-conversion-utils';
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import { createEmptyPoints, createEmptyStats } from '../../../teams/lib/roster-conversion-utils';
 import type { RosterByManagerId, TeamPositionSlot, TeamRoster } from '../../../teams/types/team-types';
 import type { TransferRuleContext } from '../../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../../types/transfer-types';

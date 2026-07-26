@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractLoanStatus } from '../../_shared/lib/roster-conversion-utils';
+import { extractLoanStatus } from '../../teams/lib/roster-conversion-utils';
 import { applyIndividualTransfer } from './transfer-processor.service';
 import {
     MGR1,
