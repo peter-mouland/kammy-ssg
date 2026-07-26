@@ -77,6 +77,21 @@ interface AdminActionParams {
     rules?: unknown[];
 }
 
+/**
+ * What the /admin route's action returns to the browser.
+ *
+ * Wider than AdminActionResult, which is what an individual service returns: the route
+ * also fronts long-running jobs, which reply with a jobId to poll instead of a message.
+ */
+export interface AdminActionData {
+    success: boolean;
+    message?: string;
+    error?: string;
+    data?: unknown;
+    /** Present when the action started a background job the client should poll. */
+    jobId?: string;
+}
+
 export interface AdminActionResult {
     success: boolean;
     error?: string;
@@ -91,25 +106,46 @@ export interface AdminActionResult {
 // Keep these for backward compatibility with existing code
 export type DraftActionParams = AdminActionParams;
 
+export type HealthLevel = 'healthy' | 'warning' | 'critical';
+
+/** A connection check: can we reach Firebase / Google Sheets, and the overall roll-up. */
 export interface SystemHealthStatus {
-    status: 'healthy' | 'warning' | 'critical';
+    status: HealthLevel;
     message: string;
 }
 
-type DraftDivisionStatus = {
-    doesDraftOrderExists: boolean;
-    pickCount: number;
-    picksRemaining: number;
-    isCommitted: boolean;
-};
-
-export type DraftStatusByDivisionId = Record<DivisionId, DraftDivisionStatus>;
+/**
+ * How complete the FPL cache is.
+ *
+ * NOT a SystemHealthStatus, though it was typed as one. A connection check reports a
+ * message; this reports which datasets are missing and how far through we are. The two
+ * only share `status`, which is why the roll-up takes just that field.
+ */
+export interface FplCacheHealth {
+    status: HealthLevel;
+    data: {
+        completionPercentage: number;
+        counts: {
+            elements: number;
+            events: number;
+            teams: number;
+            elementDetailedStats: number;
+        };
+        missing: {
+            elements: boolean;
+            events: boolean;
+            teams: boolean;
+            elementDetailedStats: boolean;
+            draftData: boolean;
+        };
+    };
+}
 
 export interface SystemStatusSummary {
     currentGameweek: GameWeekData;
     bootstrapLastUpdated: string | null;
     systemHealth: {
-        fplCache: SystemHealthStatus;
+        fplCache: FplCacheHealth;
         firebase: SystemHealthStatus;
         googleSheets: SystemHealthStatus;
         overall: SystemHealthStatus;

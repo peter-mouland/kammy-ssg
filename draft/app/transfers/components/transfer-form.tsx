@@ -22,7 +22,7 @@ import type {
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';
-import type { OwnedPlayersByCode, PlayerSelectionState, TransferValidationResult } from '../types/transfer-form-types';
+import type { OwnedPlayersByCode, PlayerSelectionState, TransferFormValidation } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { TransferType } from '../types/transfer-types';
 import { LoanInfoPanel } from './loan-info-panel';
@@ -81,7 +81,7 @@ const INITIAL_LOAN_SELECTION: LoanSelectionState = {
     loanFromManager: null,
 };
 
-const INITIAL_VALIDATION: TransferValidationResult = {
+const INITIAL_VALIDATION: TransferFormValidation = {
     isValid: true,
     warnings: [],
     errors: [],
@@ -352,10 +352,7 @@ function SelectorReview({
                 {playerIn ? (
                     <div className={styles.reviewRow}>
                         <span className={styles.reviewLabel}>Player in</span>
-                        <PlayerSummary
-                            player={playerIn as EnhancedPlayerData & RosterPlayer}
-                            teamsByCode={teamsByCode}
-                        />
+                        <PlayerSummary player={playerIn} teamsByCode={teamsByCode} />
                     </div>
                 ) : null}
             </div>
@@ -438,7 +435,7 @@ export function TransferForm({
     const [playerSelection, setPlayerSelection] = useState<PlayerSelectionState>(INITIAL_PLAYER_SELECTION);
     const [loanSelection, setLoanSelection] = useState<LoanSelectionState>(INITIAL_LOAN_SELECTION);
     const [comment, setComment] = useState('');
-    const [validation, setValidation] = useState<TransferValidationResult>(INITIAL_VALIDATION);
+    const [validation, setValidation] = useState<TransferFormValidation>(INITIAL_VALIDATION);
     const stepContentRef = useRef<HTMLDivElement>(null);
     const journeyTitleRef = useRef<HTMLHeadingElement>(null);
 

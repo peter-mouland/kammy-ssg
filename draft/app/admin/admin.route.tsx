@@ -17,7 +17,7 @@ import type { DivisionId } from '../teams/types/team-types';
 import type { TransferAdminOverviewData } from '../transfers/types/transfer-rule-types';
 import { AdminLayout } from './admin.layout';
 import type { AdminDataContext } from './types/admin-orchestrator-types';
-import type { SystemStatusSummary } from './types/admin-types';
+import type { AdminActionData, SystemStatusSummary } from './types/admin-types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -76,7 +76,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 /**
  * Unified action handler for all admin operations using the orchestrator
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<AdminActionData> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const formData = await requestFormData({ request, context });
     const actionType = formData.get('actionType')?.trim();
     const divisionId = formData.get('divisionId')?.trim() as DivisionId;

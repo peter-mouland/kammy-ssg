@@ -6,9 +6,34 @@ import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
-import type { DraftStatusData } from '../../../draft/types/draft-types';
+import type { DraftStatusByDivisionId, DraftStatusData } from '../../../draft/types/draft-types';
 import { divisionDocumentExists } from '../../../scoring/server/services/division-teams.service';
-import type { DraftStatusByDivisionId, SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
+import type { FplCacheHealth, HealthLevel, SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
+
+/** Reported when the FPL cache status could not be read at all. */
+const FPL_CACHE_HEALTH_UNKNOWN: FplCacheHealth = {
+    status: 'critical',
+    data: {
+        completionPercentage: 0,
+        counts: { elements: 0, events: 0, teams: 0, elementDetailedStats: 0 },
+        missing: { elements: true, events: true, teams: true, elementDetailedStats: true, draftData: true },
+    },
+};
+
+/** Reported when the draft status could not be derived. */
+const DRAFT_STATUS_UNKNOWN: DraftStatusData = {
+    stage: 'unknown',
+    isComplete: false,
+    isActive: false,
+    divisionId: null,
+    currentUserId: null,
+    currentPick: null,
+    totalPicks: 0,
+    startedAt: null,
+    completedAt: null,
+    picksPerTeam: 0,
+    byDivision: {},
+};
 
 /**
  * Get comprehensive system status with all real data
@@ -74,13 +99,13 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
             currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
             bootstrapLastUpdated: null,
             systemHealth: {
-                fplCache: { status: 'critical', message: 'Failed to load FPL cache status' },
+                fplCache: FPL_CACHE_HEALTH_UNKNOWN,
                 firebase: { status: 'critical', message: 'Failed to connect to Firebase' },
                 googleSheets: { status: 'critical', message: 'Failed to connect to Google Sheets' },
                 overall: { status: 'critical', message: 'System status check failed' },
             },
             transfers: { pending: 0, approved: 0, rejected: 0, total: 0, byDivision: {} },
-            draft: { isActive: false, divisionId: null, currentUserId: null, currentPick: null, byDivision: {} },
+            draft: DRAFT_STATUS_UNKNOWN,
             gameweekProcessing: {
                 currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
                 lastProcessedGameweek: 0,
@@ -288,13 +313,7 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
         };
     } catch (error) {
         console.error('Failed to load draft status:', error);
-        return {
-            isActive: false,
-            divisionId: null,
-            currentUserId: null,
-            currentPick: null,
-            byDivision: {},
-        };
+        return DRAFT_STATUS_UNKNOWN;
     }
 }
 
@@ -358,7 +377,7 @@ async function getGameweekProcessingStatusReal() {
 /**
  * Determine overall system health from individual components
  */
-function determineOverallHealth(healthStatuses: SystemHealthStatus[]): SystemHealthStatus {
+function determineOverallHealth(healthStatuses: Array<{ status: HealthLevel }>): SystemHealthStatus {
     const criticalCount = healthStatuses.filter((h) => h.status === 'critical').length;
     const warningCount = healthStatuses.filter((h) => h.status === 'warning').length;
 
@@ -382,7 +401,7 @@ function generateRecommendations({
     draftStatus,
     gameweekProcessingStatus,
 }: {
-    fplHealth: SystemHealthStatus;
+    fplHealth: FplCacheHealth;
     firebaseHealth: SystemHealthStatus;
     googleSheetsHealth: SystemHealthStatus;
     transferStatus: any;

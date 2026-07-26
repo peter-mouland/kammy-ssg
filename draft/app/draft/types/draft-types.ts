@@ -99,6 +99,49 @@ export interface DraftSequenceEntry {
 
 export type DraftSequence = DraftSequenceEntry[];
 
+/** Where a division's draft has got to. Drives which admin action is offered next. */
+export type DraftStage =
+    | 'order' // the draft order has not been generated yet
+    | 'start' // order exists, draft not started
+    | 'running' // picks are being made
+    | 'stop' // all picks in, draft not stopped yet
+    | 'commit' // stopped, squads not yet written to Firestore
+    | 'complete'
+    // The status could not be derived (Sheets or Firestore unreachable). Deliberately
+    // its own stage: defaulting a failure to 'order' would tell an admin to regenerate
+    // a draft order that may already exist.
+    | 'unknown';
+
+export interface DraftDivisionStatus {
+    doesDraftOrderExists: boolean;
+    pickCount: number;
+    picksRemaining: number;
+    isCommitted: boolean;
+}
+
+export type DraftStatusByDivisionId = Partial<Record<DivisionId, DraftDivisionStatus>>;
+
+/**
+ * The whole draft's progress, across every division.
+ *
+ * Distinct from DraftStateData, which is the raw row in the DraftState sheet. This is
+ * the derived view the admin dashboard reads -- note `stage`, which exists nowhere in
+ * the sheets and is computed from the picks and the commit state.
+ */
+export interface DraftStatusData {
+    stage: DraftStage;
+    isComplete: boolean;
+    isActive: boolean;
+    divisionId: DivisionId | null;
+    currentUserId: string | null;
+    currentPick: number | null;
+    totalPicks: number;
+    startedAt: Date | null;
+    completedAt: Date | null;
+    picksPerTeam: number;
+    byDivision: DraftStatusByDivisionId;
+}
+
 /** Every draft operation an admin can trigger. */
 export type DraftAction =
     | 'generateOrder'

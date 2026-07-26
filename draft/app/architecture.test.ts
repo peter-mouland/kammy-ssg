@@ -280,8 +280,12 @@ describe('the domain dependency graph', () => {
 
 // Two files exporting the same type name is how you end up assigning a
 // TransferValidationResult to a TransferValidationResult and being told they are
-// incompatible. See P1.3b in .kiro/backlog.md.
-const DUPLICATE_TYPE_NAMES: ReadonlySet<string> = new Set(['TransferValidationResult', 'TransferFormData']);
+// incompatible.
+//
+// This list is empty as of P1.3b and should stay that way. If you are about to add a
+// name here, the fix is almost always to rename one of the two -- they are different
+// concepts, or they would not both need to exist.
+const DUPLICATE_TYPE_NAMES: ReadonlySet<string> = new Set([]);
 
 describe('exported type names', () => {
     const declarations = new Map<string, string[]>();

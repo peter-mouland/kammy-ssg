@@ -2,6 +2,23 @@
 
 import type { FplPlayerSeasonFixture, FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData, GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
+import type { RosterPlayer } from '../../teams/types/team-types';
+
+/**
+ * A player as the shared player components render it.
+ *
+ * The same components display players from both sides of the app: an FPL player
+ * (EnhancedPlayerData, from the player list, transfers and the wishlist) and a drafted
+ * squad member (RosterPlayer, from a team sheet). They read every field with a fallback
+ * -- `playerCode || code`, `playerName || web_name`, `playerPosition || draft.position`
+ * -- so one of the two shapes is required and the other's fields are optional.
+ *
+ * This was previously typed as `EnhancedPlayerData & RosterPlayer`, requiring BOTH,
+ * which no caller could ever satisfy -- hence the casts and the errors at every use.
+ */
+export type DisplayablePlayer =
+    | (EnhancedPlayerData & Partial<RosterPlayer>)
+    | (RosterPlayer & Partial<EnhancedPlayerData>);
 
 export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
 // Map position codes to their full names

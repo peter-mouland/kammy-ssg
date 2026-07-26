@@ -63,7 +63,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 
 | Metric | At start (2026-07-26) | Now |
 |---|---|---|
-| Type errors | 275 | **242** |
+| Type errors | 275 | **200** |
 | CSS convention violations | not measurable (stylelint not installed) | **603** |
 | Tests | 149 passing, 24 files | **176 passing, 26 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
@@ -75,12 +75,11 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 ### Type errors by domain
 
 ```
-admin      58     _shared    22     api         7
-transfers  51     scoring    15     wishlist    1
-players    34     draft      12     cup         0  ← the target
-teams      30     leagues    10     root        2
+transfers  41     _shared    22     api         7
+admin      32     scoring    15     wishlist    0
+players    31     draft      12     cup         0  ← the target
+teams      28     leagues    10     root        2
 ```
-*(`draft` was 36 before P1.3a.)*
 
 ### CSS violations by rule
 
@@ -148,7 +147,7 @@ The highest-leverage phase. Nothing after this is safe without it.
   | `_shared/` may not import from a domain | **34** allowlisted |
   | A domain may only use another domain's `types/` and `lib/` | **34** allowlisted |
   | No new circular dependencies between domains | **15** pairs, capped |
-  | No exported type name declared in two files | **2** allowlisted (P1.3b) |
+  | No exported type name declared in two files | **0** — fully enforcing since P1.3b |
 
   Two design choices worth keeping:
   - **Every allowlist has a paired "no stale entries" test.** When a Phase 2 item lands, the corresponding line *must* be deleted or the suite fails. The allowlist cannot quietly become permanent.
@@ -171,9 +170,39 @@ The highest-leverage phase. Nothing after this is safe without it.
 
     Also collapsed a duplicate: `admin/components/ui/draft-card.tsx` declared its own local `DraftAction` listing only 4 of the 6 real actions — it now imports the canonical one.
 
-  - [ ] **P1.3b — De-duplicate colliding type names**
-    `TransferValidationResult` and `TransferFormData` are each declared in two files, and are actively causing errors where the two versions meet.
-    *Acceptance:* one declaration each; no exported type name appears twice across the codebase; a check in `architecture.test.ts` asserts it.
+  - [x] **P1.3b — De-duplicate colliding type names**
+    *Done:* **242 → 240**; `transfers.server.ts` and `transfers.page.tsx` went from 10 errors to 0, and no self-referential `Type 'X' is not assignable to type 'X'` error remains anywhere.
+    `TransferFormData` was declared **twice in the same file** (`transfer-form-types.ts` lines 31 and 136); TypeScript's declaration merging combined them silently and the second was a strict subset, so it was invisible dead weight. Deleted.
+    `TransferValidationResult` was two genuinely different concepts — the rules engine's admin-facing result (`transfer-rule-types.ts`) versus the form's live display state (`transfer-form-types.ts`), with `warnings` typed `RuleValidationResult[]` in one and `string[]` in the other. The form's is now `TransferFormValidation`; `TransfersPageData.currentTransfers[].validation` points at the rules-engine type, which is what the server always produced.
+    The `architecture.test.ts` stale-entry check then failed and forced `DUPLICATE_TYPE_NAMES` to be emptied — so duplicate type names are now permanently blocked.
+
+  - [x] **P1.3c — Two shared root causes across five domains**
+    Investigated instead of grinding domain-by-domain, because the same two errors repeated everywhere. **240 → 224**; every domain improved, `wishlist` reached 0.
+
+    **`EnhancedPlayerData & RosterPlayer` (10 sites, 5 domains).** `PlayerSummary`/`PlayerLayout` in [player.tsx](../draft/app/players/components/player.tsx) demanded a value that was *both* an FPL player and a roster player — which no caller could ever produce, hence the casts. But the component body reads every field with a fallback (`playerCode || code`, `playerName || web_name`, `playerPosition || draft.position`), so it always meant **either**. Replaced with `DisplayablePlayer` in [player-types.ts](../draft/app/players/types/player-types.ts): one shape required, the other's fields optional.
+
+    **`Property 'eligibility' does not exist` (4 sites).** [player-in-selector.tsx](../draft/app/transfers/components/player-in-selector.tsx) decorates each player with `eligibility` and `ownership`, then typed its table columns as bare `EnhancedPlayerData`, discarding the decoration. Added `SelectablePlayer` and `PlayerOwnership`, and made `getTransferSelectorStatColumns` generic over `T extends EnhancedPlayerData` so the shared stat columns work for both.
+
+    **A latent React crash, exposed by the honest union.** With `team_code` correctly optional, `teamsByCode[player.team_code].name || teamsByCode[player.team_code]` stopped type-checking. Two real defects: an unguarded index that throws when a club is missing, and a fallback that renders an entire `FplTeam` **object** as a React child ("Objects are not valid as a React child"). Replaced both copies with a guarded module-scope `resolveTeamName` helper, per the pure-helpers-outside-components rule.
+
+
+  - [x] **P1.3d — Six root causes in `admin`**
+    `admin` had barely moved through P1.3a–c, so it was investigated rather than ground through. **224 → 200; admin 56 → 32**, and it is no longer the largest domain.
+
+    | Cause | Errors |
+    |---|---|
+    | `AdminActionData` used 8 times in `admin.route.tsx`, never declared anywhere | 8 |
+    | `DraftStatusData` imported by 3 files, never declared (TS suggested `DraftStateData`) | 3 |
+    | `data()` returns `DataWithResponseInit<T>`, but the action was annotated `Promise<AdminActionData>` | 6 |
+    | `StatusCardProps.children` / `ActionBarProps.children` required, but no caller passes them | 7 |
+    | `SystemHealthStatus` covering two different concepts | 3 |
+    | Error paths returning incomplete status objects | 2 |
+
+    **`SystemHealthStatus` was the `PositionCounts` pattern again.** Firebase and Sheets checks return `{status, message}` — a connection check. But `fplCache` was assigned `getCacheHealth()`, which returns `{status, data: {completionPercentage, counts, missing}}` — a cache-completeness report with no `message` at all. Split into `SystemHealthStatus` and `FplCacheHealth`; `determineOverallHealth` now takes only `{status}`, which is all it ever read.
+
+    **Two error paths were returning objects missing most of their fields** — `getDraftStatusReal`'s catch omitted `stage`, `isComplete`, `totalPicks` and three more. Consumers read `draftStatus.stage`, so on failure they compared against `undefined` and silently produced no recommendations. Replaced with named `DRAFT_STATUS_UNKNOWN` / `FPL_CACHE_HEALTH_UNKNOWN` constants, and added an explicit `'unknown'` to `DraftStage` — defaulting a failure to `'order'` would have told an admin to regenerate a draft order that already exists.
+
+    **Ownership fix:** `DraftDivisionStatus` and `DraftStatusByDivisionId` were declared in `admin/types/` despite being draft concepts. Moved to `draft/types/` alongside the new `DraftStatusData`, so admin consumes them rather than owning them.
 
 ---
 

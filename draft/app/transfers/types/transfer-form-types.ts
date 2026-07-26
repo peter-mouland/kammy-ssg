@@ -13,7 +13,7 @@ import type {
     TeamRoster,
     UserTeamsSheetData,
 } from '../../teams/types/team-types';
-import type { TransferRecommendation, TransferRuleContext } from './transfer-rule-types';
+import type { TransferRecommendation, TransferRuleContext, TransferValidationResult } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
 
 export type OwnedPlayersByCode = Record<
@@ -69,6 +69,24 @@ export interface PlayerEligibility {
         canLoan: boolean;
         loanRestictions?: string[];
     };
+}
+
+/** Who currently owns a player, if anyone. */
+export interface PlayerOwnership {
+    isOwned: boolean;
+    ownerId?: string;
+    ownerName?: string;
+}
+
+/**
+ * An available player, decorated with the transfer-specific columns the "player in"
+ * selector renders. The selector builds these by mapping over availablePlayers, so the
+ * table's columns must be typed against this rather than plain EnhancedPlayerData --
+ * otherwise `player.eligibility` is invisible to the type checker.
+ */
+export interface SelectablePlayer extends EnhancedPlayerData {
+    eligibility: PlayerEligibility;
+    ownership: PlayerOwnership;
 }
 
 /**
@@ -131,21 +149,15 @@ interface ActiveLoanAgreement {
 }
 
 /**
- * Transfer form submission data
+ * Live validation state shown in the transfer form as the manager fills it in.
+ *
+ * NOT the same as TransferValidationResult in transfer-rule-types.ts, which is what the
+ * rules engine produces for an admin to act on. This one is plain strings for display;
+ * that one carries the rule results, severities and a recommendation. They were both
+ * called TransferValidationResult, which produced "Type 'TransferValidationResult' is
+ * not assignable to type 'TransferValidationResult'" wherever the two met.
  */
-export interface TransferFormData {
-    divisionId: DivisionId;
-    managerId: ManagerId;
-    transferType: TransferType;
-    playerOutCode: number;
-    playerInCode: number;
-    comment: string;
-}
-
-/**
- * Transfer validation result
- */
-export interface TransferValidationResult {
+export interface TransferFormValidation {
     isValid: boolean;
     warnings: string[];
     errors: string[];

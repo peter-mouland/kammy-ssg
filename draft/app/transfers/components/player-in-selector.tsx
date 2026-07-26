@@ -13,7 +13,7 @@ import { sortPositions } from '../../teams/lib/sorting-utils';
 import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getPlayerStatusDisplay } from '../lib/get-player-status-display';
-import type { OwnedPlayersByCode } from '../types/transfer-form-types';
+import type { OwnedPlayersByCode, SelectablePlayer } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
 import styles from './player-in-selector.module.css';
@@ -202,9 +202,9 @@ export function PlayerInSelector({
         validationContext,
     ]);
 
-    const columns: TableColumn<EnhancedPlayerData>[] = useMemo(
+    const columns: TableColumn<SelectablePlayer>[] = useMemo(
         () => [
-            ...getTransferSelectorStatColumns(teamsByCode),
+            ...getTransferSelectorStatColumns<SelectablePlayer>(teamsByCode),
             {
                 key: 'status',
                 header: 'Status',
