@@ -69,9 +69,9 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **12** — P2.1 + P2.4 |
+| `_shared` → domain imports | 34, across 6 domains | **10** — P2.1 + P2.4 + P2.3a |
 | Architecture rules enforced | 0 | **4** (P1.2) |
-| Domain dependency cycles | 15 | **13** — P2.4 dissolved two |
+| Domain dependency cycles | 15 | **12** — P2.4 and P2.3a dissolved three |
 
 ### Type errors by domain
 
@@ -243,21 +243,39 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   Kernel types → `_shared/types/` (P2.1). View-models → `teams/types/team-view-types.ts`. Component props → next to their components.
   *Acceptance:* `teams/types/team-types.ts` contains only teams-domain entities; the 28 `transfers → teams` and 13 `admin → teams` import edges mostly resolve to kernel imports.
 
-- [ ] **P2.3 — Move each sheets module into its owning domain's `server/`**
-  `_shared/lib/sheets/*` imports from `teams`, `players`, `scoring`, `draft`, `cup` and `transfers`. These are not shared infrastructure — they are each domain's persistence layer parked in a shared folder.
+- [~] **P2.3 — Move each sheets module into its owning domain** — *replanned; see below*
 
-  | Module | New home |
-  |---|---|
-  | `divisions.ts`, `user-teams.ts` | `teams/server/` |
-  | `draft.ts`, `draft-order.ts` | `draft/server/` |
-  | `transfers.ts` | `transfers/server/` |
-  | `cup.ts` | `cup/server/` |
-  | `players.ts` | `players/server/` |
-  | `player-gw-points.ts` | `scoring/server/` |
-  | `utils/*` (the generic Google client) | **stays** in `_shared/lib/sheets/` |
+  **The original plan does not survive contact, and the table in it was wrong.** It assumed each sheet belongs to one domain. Most do not:
 
-  While moving, give each a narrow interface so a fake can be injected at the boundary — this is the seam that makes P3.4 possible.
-  *Acceptance:* `_shared/lib/sheets/` contains only the generic client with zero domain imports; each domain owns its own reads/writes; loaders still return identical data (proved by the characterisation tests).
+  ```
+  divisions     read by admin, draft, leagues, teams, transfers
+  user-teams    read by admin, cup, draft, leagues, teams, transfers
+  transfers     read by admin, api, scoring, transfers
+  draft         read by admin, draft, _shared
+  ```
+
+  Moving those into a domain's `server/` would fix Rule 1 (`_shared` must not depend on a domain) while **breaking Rule 2** (a domain may only use another domain's `types/` and `lib/`) for every other reader. Net architecture: worse.
+
+  It also turns out **P2.1 already fixed three of them**. `divisions.ts`, `user-teams.ts` and `players.ts` now have zero domain imports — they deal only in kernel types, which is exactly what shared infrastructure should do. **They stay in `_shared`.** That is the right answer, not a compromise: a sheet reader is infrastructure, and infrastructure that speaks only kernel vocabulary is reusable by everyone without coupling.
+
+  **The revised rule for this item:**
+  > A sheets module belongs in a domain if that domain is its only reader. Otherwise it stays in `_shared`, and the fix is to remove its *domain* dependency — promote the type to the kernel, or return raw rows and let the domain interpret them.
+
+  - [x] **P2.3a — `cup.ts` → `cup/server/cup.sheet.ts`**
+    The only sheet with a single-domain readership (all 4 importers in `cup`). Clears 2 entries and dissolved another cycle (13 → 12). Type errors unchanged at 200.
+
+  - [ ] **P2.3b — Break the remaining 4 modules' domain dependencies**
+    These stay in `_shared`; the *dependency* is what moves.
+
+    | Module | Depends on | Fix |
+    |---|---|---|
+    | `player-gw-points.ts` | `scoring/types`, **`scoring/lib`** | type → kernel (P2.1b); the `scoring/lib` **value** import is scoring logic in a reader — move the calculation to the caller |
+    | `transfers.ts` | `scoring/types`, `transfers/types` | return raw rows typed in `_shared/types/sheets-types.ts`; let `transfers` map rows → `ProcessedTransfer` |
+    | `draft.ts` | `draft/types`, **`draft/lib/draft-pick-calculator`** | same: return raw picks, let `draft` derive state |
+    | `draft-order.ts` | `draft/types` | `DraftOrderData` is a plain sheet row — move it to `_shared/types/sheets-types.ts` |
+
+    The two **value** imports are the real leak: a sheet reader that computes draft state or scoring is doing domain work in the persistence layer. Returning raw rows and interpreting them in the domain is the correct layering, and it is what creates the injection seam P3.4 needs.
+    *Acceptance:* `_shared/lib/sheets/` has zero domain imports; loaders still return identical data.
 
 - [x] **P2.4 — Move domain logic out of `_shared/lib`**
   *Done:* five files moved with `git mv`, so history follows them. **`_shared` violations 17 → 12**, and **two domain cycles dissolved (15 → 13)**.

@@ -1,19 +1,19 @@
 /* Location: app/_shared/lib/sheets/cup.ts */
 
-import { parseCupConfig, serializeCupConfig } from '../../../cup/lib/cup-config';
-import type {
-    CupConfig,
-    CupMatchup,
-    CupSheetData,
-    CupStageId,
-    ProcessedCupSheetData,
-} from '../../../cup/types/cup-types';
-import type { DivisionId, ManagerId } from '../../types/league-types';
-import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
-import { dataCache } from '../cache/data-cache.service';
-import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
-import { appendToSheet, createAppError, readSheetRange, type SheetRange, writeSheetRange } from './utils/common';
-import { readDataFromSheet } from './utils/read-data-from-sheets';
+import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../../_shared/lib/cache/cache-config';
+import { dataCache } from '../../_shared/lib/cache/data-cache.service';
+import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from '../../_shared/lib/sheets/cache/utils';
+import {
+    appendToSheet,
+    createAppError,
+    readSheetRange,
+    type SheetRange,
+    writeSheetRange,
+} from '../../_shared/lib/sheets/utils/common';
+import { readDataFromSheet } from '../../_shared/lib/sheets/utils/read-data-from-sheets';
+import type { DivisionId, ManagerId } from '../../_shared/types/league-types';
+import { parseCupConfig, serializeCupConfig } from '../lib/cup-config';
+import type { CupConfig, CupMatchup, CupSheetData, CupStageId, ProcessedCupSheetData } from '../types/cup-types';
 
 // The cup is cross-division, so submissions live in a single tab (not per-division).
 const CUP_SHEET_NAME = 'Cup';
