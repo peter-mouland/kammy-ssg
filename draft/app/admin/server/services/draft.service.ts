@@ -10,8 +10,8 @@ import {
     generateRandomDraftOrder,
     getDraftOrderByDivision,
 } from '../../../_shared/lib/sheets/draft-order';
+import type { DivisionId, UserTeamsSheetData } from '../../../_shared/types/league-types';
 import type { DraftStateData } from '../../../draft/types/draft-types';
-import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
 import type { DraftResult } from '../../types/admin-orchestrator-types';
 import type { AdminActionResult } from '../../types/admin-types';
 import { handleCommitTeamsToFirestore } from '../actions/team-commit-actions';

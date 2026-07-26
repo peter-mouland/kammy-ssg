@@ -1,8 +1,7 @@
 /* Location: app/leagues/types/league-standings-types.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { CustomPosition } from '../../players/types/player-types';
-import type { DivisionSheetData, ManagerId, PositionSlotKey } from '../../teams/types/team-types';
+import type { CustomPosition, DivisionSheetData, ManagerId, PositionSlotKey } from '../../_shared/types/league-types';
 
 export interface PositionPointsBreakdown {
     gk: number; // gk_0 + sub_0 total

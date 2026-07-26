@@ -1,10 +1,10 @@
 // app/admin/types/admin-orchestrator-types.ts
 
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
 import type { DraftOrderData, DraftStateData } from '../../draft/types/draft-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 import type { ProcessedTransferSheetData } from '../../transfers/types/transfer-types';
 
 // ================================

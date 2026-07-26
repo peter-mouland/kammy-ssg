@@ -1,7 +1,8 @@
 // components/draft-players.tsx - Optimized version
+
 import { useEffect, useMemo, useState } from 'react';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
-import type { CustomPosition } from '../../players/types/player-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import { getPositionDisplayName } from '../../scoring/lib';
 import { useWishlists } from '../../wishlist/lib/use-wishlists';
 import { DRAFT_RULES, getPlayerPosition, getSquadComposition, validateDraftEligibility } from '../lib/draft-rules';

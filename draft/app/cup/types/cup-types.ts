@@ -1,12 +1,11 @@
 /* Location: app/cup/types/cup-types.ts */
 /** biome-ignore-all lint/style/useNamingConvention: sheet-header property names mirror the Cup sheet columns */
 
-import type { DivisionId, ManagerId } from '../../teams/types/team-types';
-
 /**
  * The cup runs a league stage that seeds a two-legged knockout.
  * Stage ids are stable keys used across config, submissions and the bracket.
  */
+import type { DivisionId, ManagerId } from '../../_shared/types/league-types';
 export type CupStageId = 'league' | 'r16' | 'qf' | 'sf' | 'final';
 
 /**

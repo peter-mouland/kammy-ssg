@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { MultiSelect, type MultiSelectOption } from '../../_shared/components/multi-select';
 import { SearchInput } from '../../_shared/components/search-input';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
-import type { CustomPosition } from '../../players/types/player-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import { getPositionDisplayName } from '../../scoring/lib';
 import { useWishlists } from '../../wishlist/lib/use-wishlists';
 import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';

@@ -1,6 +1,6 @@
 /* Location: app/cup/types/cup-page-types.ts */
 
-import type { DivisionId, ManagerId, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { DivisionId, ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { CupFixture } from '../lib/cup-fixtures';
 import type { CupMatchupView } from '../lib/cup-matchups';
 import type { CupSquadPlayer } from '../lib/cup-squad';

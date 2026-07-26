@@ -9,13 +9,13 @@ import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import {
     addDraftPick,
     getDraftPicksByDivision,
-    readDraftStateByDivision,
     readAllDraftStates,
+    readDraftStateByDivision,
     updateDraftState,
 } from '../../_shared/lib/sheets/draft';
 import { getDraftOrderByDivision } from '../../_shared/lib/sheets/draft-order';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
-import type { DivisionId } from '../../teams/types/team-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import { calculateCurrentPick, calculateCurrentUserId } from '../lib/draft-pick-calculator'; // NEW: Use calculator
 import { generateDraftSequence } from '../lib/generate-draft-sequence';
 import type { DraftLoaderData, DraftOrderData, DraftPickData } from '../types/draft-types';

@@ -1,8 +1,9 @@
 /* Location: app/transfers/types/transfer-rule-types.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import type { PlayersByCode } from '../../scoring/types/scoring-types';
-import type { DivisionId, RosterByManagerId } from '../../teams/types/team-types';
+import type { RosterByManagerId } from '../../teams/types/team-types';
 import type { ProcessedTransfer } from './transfer-types'; // Business/league rules
 
 /**

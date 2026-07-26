@@ -1,7 +1,7 @@
 // app/draft/lib/draft-pick-calculator.ts
 // Helper functions to calculate draft state from actual picks data
 
-import type { DivisionId } from '../../teams/types/team-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import type { DraftPickData } from '../types/draft-types';
 
 /**

@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/draft.ts */
 
 import type { DraftPickData, DraftStateData } from '../../../draft/types/draft-types';
-import type { DivisionId } from '../../../teams/types/team-types';
+import type { DivisionId } from '../../types/league-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import {

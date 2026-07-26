@@ -69,7 +69,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | 34 — allowlisted and capped by P1.2 |
+| `_shared` → domain imports | 34, across 6 domains | **17** — half cleared by P2.1 |
 | Architecture rules enforced | 0 | **4** (P1.2) |
 
 ### Type errors by domain
@@ -212,11 +212,30 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
 **Write the characterisation tests first.** Before moving anything, each affected loader needs a consumer-based test asserting the data it returns for a given URL and division. Those tests are the proof the refactor changed nothing.
 
-- [ ] **P2.1 — Name the shared kernel**
-  Move league vocabulary into `_shared/types/`: `DivisionId`, `ManagerId`, `CustomPosition`, `PositionSlotKey`, `RosterPosition`, `RosterPlayer`, `TeamRoster`, `Points`.
-  Currently `DivisionId` — the most fundamental concept in the app — lives in `teams/types/team-types.ts` and is imported by 8 domains plus `_shared`.
-  Document in [architecture.md](steering/architecture.md) that this is *the* vocabulary every domain may depend on, and that adding to it requires justification.
-  *Acceptance:* no domain imports another domain's types for kernel concepts; `architecture.test.ts` allowlist shrinks.
+- [x] **P2.1 — Name the shared kernel**
+  *Done:* [_shared/types/league-types.ts](../draft/app/_shared/types/league-types.ts). Seven types moved out of `teams/` and `players/`: `DivisionId`, `ManagerId`, `DivisionSheetData`, `UserTeamsSheetData`, `CustomPosition`, `RosterPosition`, `PositionSlotKey`. 88 files rewritten.
+
+  **`_shared` → domain imports: 34 → 17.** Exactly half, from one change. `DivisionId` alone accounted for 7 of them — the most fundamental concept in the app was living in a feature domain, so `_shared` had to reach into `teams` to say anything at all.
+
+  Scoped deliberately to the *identity* kernel: every type moved is a string union or a plain record with no dependency on domain logic. `RosterPlayer`, `TeamRoster`, `Points` and `EnhancedPlayerData` are left for **P2.1b** — they drag a dependency chain behind them and deserve their own reviewable change.
+
+  The file carries a warning that it is a shared kernel and not a second dumping ground, and that additions need a note here. That is the failure mode we are moving away from, not toward.
+
+  *Verification:* type errors unchanged at exactly **200** before and after — the correct result for a type-only move, since none of it survives compilation. 176 tests pass, no new lint warnings.
+
+  *Note:* the first attempt was reverted. The migration script located the insertion point by finding where the import block *ended*, which a trailing `// comment` after an import defeats — it silently inserted an import mid-interface in 11 files. Redone anchoring on the *first* import instead. The pre-existing commit made the revert clean; this is a good argument for committing before any scripted mass edit.
+
+  **The remaining 17 entries now map cleanly onto the rest of Phase 2:**
+
+  | Cleared by | Entries |
+  |---|---|
+  | P2.3 — move sheets modules into their domains | 9 |
+  | P2.4 — move domain logic out of `_shared/lib` | 5 |
+  | P2.1b — `EnhancedPlayerData` into the kernel | 3 |
+
+- [ ] **P2.1b — Move the data kernel**
+  `EnhancedPlayerData`, `PlayersByCode`, `Points`, `PlayerGameweekStatsData`, `RosterPlayer`, `TeamPositionSlot`, `TeamRoster`. Larger than P2.1: `EnhancedPlayerData` alone appears in 37 files, and `TeamRoster` pulls in `TeamPositionSlot` → `Points` + `PlayerGameweekStatsData`.
+  *Acceptance:* the 3 remaining `_shared/lib/fpl/*` allowlist entries are gone.
 
 - [ ] **P2.2 — Split `team-types.ts` three ways**
   It currently does three jobs: domain entities, page view-models (`TeamViewData`), and React component props (`FormationDisplayProps`, `PositionSlotCardProps`, `TeamStatsProps`, `ContributingStatsProps`). That is why every domain has to import it.

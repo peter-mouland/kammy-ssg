@@ -1,18 +1,15 @@
 // app/transfers/types/transfer-form-types.ts
 
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
     DivisionId,
     DivisionSheetData,
     ManagerId,
     PositionSlotKey,
-    RosterByManagerId,
-    RosterPlayer,
-    TeamPositionSlot,
-    TeamRoster,
     UserTeamsSheetData,
-} from '../../teams/types/team-types';
+} from '../../_shared/types/league-types';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { RosterByManagerId, RosterPlayer, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
 import type { TransferRecommendation, TransferRuleContext, TransferValidationResult } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
 

@@ -1,8 +1,8 @@
 /* Location: app/_shared/lib/firestore-cache/firebase-draft-sync.ts */
 // biome-ignore-all lint/complexity/noStaticOnlyClass: class pattern used for Firebase service grouping
 
-import type { DivisionId } from '../../../teams/types/team-types';
 // /_shared/lib/firestore-cache/firebase-draft-sync.ts - ENHANCED WITH RESET CAPABILITY
+import type { DivisionId } from '../../types/league-types';
 import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
 
 interface DraftEvent {

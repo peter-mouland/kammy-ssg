@@ -1,4 +1,5 @@
-import type { PositionSlotKey, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
+import type { PositionSlotKey } from '../../_shared/types/league-types';
+import type { TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
 
 /**
  * Find a player in a roster by player code

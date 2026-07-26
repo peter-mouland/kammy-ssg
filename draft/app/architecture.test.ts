@@ -80,18 +80,9 @@ const report = (violations: Import[], guidance: string) =>
 // the vocabulary of every feature. Phase 2 fixes it by naming a shared kernel (P2.1)
 // and moving each sheets module into the domain that owns it (P2.3, P2.4).
 const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([
-    '_shared/components/select-division.tsx -> teams/types/team-types',
-    '_shared/components/select-user.tsx -> teams/types/team-types',
-    '_shared/features/user-selection/use-user-selection.tsx -> teams/types/team-types',
-    '_shared/features/user-selection/user-selection-modal.tsx -> teams/types/team-types',
-    '_shared/features/user-selection/user-selection-provider.tsx -> teams/types/team-types',
-    '_shared/features/user-selection/user-selection.utils.ts -> teams/types/team-types',
-    '_shared/lib/firestore-cache/firebase-draft-sync.ts -> teams/types/team-types',
     '_shared/lib/fpl/api-cache.ts -> scoring/types/scoring-types',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/lib',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/types/scoring-types',
-    '_shared/lib/group-by-id.ts -> teams/types/team-types',
-    '_shared/lib/position-slot-utils.ts -> players/types/player-types',
     '_shared/lib/position-slot-utils.ts -> teams/types/team-types',
     '_shared/lib/roster-conversion-utils.test.ts -> teams/types/team-types',
     '_shared/lib/roster-conversion-utils.ts -> players/types/player-types',
@@ -99,21 +90,13 @@ const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([
     '_shared/lib/roster-conversion-utils.ts -> teams/types/team-types',
     '_shared/lib/sheets/cup.ts -> cup/lib/cup-config',
     '_shared/lib/sheets/cup.ts -> cup/types/cup-types',
-    '_shared/lib/sheets/cup.ts -> teams/types/team-types',
-    '_shared/lib/sheets/divisions.ts -> teams/types/team-types',
     '_shared/lib/sheets/draft-order.ts -> draft/types/draft-types',
-    '_shared/lib/sheets/draft-order.ts -> teams/types/team-types',
     '_shared/lib/sheets/draft.ts -> draft/lib/draft-pick-calculator',
     '_shared/lib/sheets/draft.ts -> draft/types/draft-types',
-    '_shared/lib/sheets/draft.ts -> teams/types/team-types',
-    '_shared/lib/sheets/player-gw-points.ts -> players/types/player-types',
     '_shared/lib/sheets/player-gw-points.ts -> scoring/lib',
     '_shared/lib/sheets/player-gw-points.ts -> scoring/types/scoring-types',
     '_shared/lib/sheets/transfers.ts -> scoring/types/scoring-types',
-    '_shared/lib/sheets/transfers.ts -> teams/types/team-types',
     '_shared/lib/sheets/transfers.ts -> transfers/types/transfer-types',
-    '_shared/lib/sheets/user-teams.ts -> teams/types/team-types',
-    '_shared/lib/standings-table-markers.ts -> teams/types/team-types',
 ]);
 
 describe('_shared must not depend on a domain', () => {

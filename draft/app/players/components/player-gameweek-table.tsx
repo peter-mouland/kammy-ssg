@@ -1,6 +1,7 @@
 /* Location: app/players/components/player-gameweek-table.tsx */
 
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import {
     calculateAppearancePoints,
     calculateAssistPoints,
@@ -19,7 +20,6 @@ import {
 import { calculateDefensiveContribution } from '../../scoring/lib/calculations';
 import { convertToGameweekStats } from '../../scoring/lib/data-conversion';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
-import type { CustomPosition } from '../types/player-types';
 
 // import { PointsBreakdownTooltip } from './points-breakdown-tooltip'
 

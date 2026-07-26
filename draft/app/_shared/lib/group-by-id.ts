@@ -1,5 +1,4 @@
-import type { DivisionId } from '../../teams/types/team-types';
-
+import type { DivisionId } from '../types/league-types';
 export function groupByDivision<TItem extends { divisionId: DivisionId }, TResult = TItem[]>(
     divisions: { id: DivisionId }[],
     items: TItem[],

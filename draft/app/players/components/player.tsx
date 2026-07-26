@@ -1,7 +1,8 @@
 import { Link } from 'react-router';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { CustomPosition, DisplayablePlayer } from '../types/player-types';
+import type { DisplayablePlayer } from '../types/player-types';
 import styles from './player.module.css';
 
 /**

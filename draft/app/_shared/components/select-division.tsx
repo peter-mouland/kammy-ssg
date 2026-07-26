@@ -1,6 +1,6 @@
 /* Location: app/_shared/components/select-division.tsx */
 
-import type { DivisionId, DivisionSheetData } from '../../teams/types/team-types';
+import type { DivisionId, DivisionSheetData } from '../types/league-types';
 import styles from './select-division.module.css';
 
 interface SelectDivisionProps {

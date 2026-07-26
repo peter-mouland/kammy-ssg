@@ -1,6 +1,7 @@
 /* Location: app/scoring/lib/calculations.ts */
 
-import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../types/scoring-types';
 import { POSITION_RULES } from './rules';
 import { isStatRelevant } from './utils';

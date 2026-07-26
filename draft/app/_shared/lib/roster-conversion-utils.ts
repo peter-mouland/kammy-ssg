@@ -2,13 +2,8 @@
 
 import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../../scoring/types/scoring-types';
-import type {
-    LoanStatus,
-    PositionSlotKey,
-    RosterPlayer,
-    TeamPositionSlot,
-    TeamRoster,
-} from '../../teams/types/team-types';
+import type { LoanStatus, RosterPlayer, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
+import type { PositionSlotKey } from '../types/league-types';
 import { getNextAvailableSlot, parsePositionSlot } from './position-slot-utils';
 
 /**

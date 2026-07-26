@@ -6,7 +6,7 @@ import { getUserSelection } from '../_shared/features/user-selection/user-select
 import { requestFormData } from '../_shared/lib/form-data';
 import { readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
-import type { DivisionId } from '../teams/types/team-types';
+import type { DivisionId } from '../_shared/types/league-types';
 import { CupSubmitPage } from './cup-submit.page';
 import { buildCupFixtures } from './lib/cup-fixtures';
 import { getCupSubmitData } from './server/cup.server';

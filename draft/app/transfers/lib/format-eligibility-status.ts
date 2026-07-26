@@ -1,7 +1,6 @@
 // app/transfers/lib/format-eligibility-status.ts
 
-import type { ManagerId, UserTeamsSheetData } from '../../teams/types/team-types';
-
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 export type EligibilitySeverity = 'blocking' | 'warning' | 'success' | 'info';
 
 export interface FormattedEligibilityStatus {

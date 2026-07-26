@@ -1,6 +1,7 @@
 /* Location: app/draft/lib/draft-rules.ts */
 
-import type { CustomPosition, PositionNameMap } from '../../players/types/player-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
+import type { PositionNameMap } from '../../players/types/player-types';
 import type { PositionCounts, SquadComposition, TeamCounts } from '../types/draft-types';
 
 // Positions configuration type using mapped type

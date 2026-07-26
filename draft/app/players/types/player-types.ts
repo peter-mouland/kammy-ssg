@@ -1,6 +1,7 @@
 // app/players/types/player-types.ts
 
 import type { FplPlayerSeasonFixture, FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData, GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
 import type { RosterPlayer } from '../../teams/types/team-types';
 
@@ -20,7 +21,6 @@ export type DisplayablePlayer =
     | (EnhancedPlayerData & Partial<RosterPlayer>)
     | (RosterPlayer & Partial<EnhancedPlayerData>);
 
-export type CustomPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca';
 // Map position codes to their full names
 export type PositionNameMap = {
     gk: 'Goalkeeper';

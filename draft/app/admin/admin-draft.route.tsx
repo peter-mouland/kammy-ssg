@@ -1,10 +1,10 @@
 /* Location: app/admin/admin-draft.route.tsx */
 
 import { useOutletContext } from 'react-router';
+import { ErrorBoundary } from '../_shared/components/error-boundary';
 import { DraftSection } from './components/sections/draft-section';
 import type { AdminDataContext } from './types/admin-orchestrator-types';
 import type { SystemStatusSummary } from './types/admin-types';
-import { ErrorBoundary } from '../_shared/components/error-boundary';
 
 interface AdminOutletContext {
     systemStatus: SystemStatusSummary;

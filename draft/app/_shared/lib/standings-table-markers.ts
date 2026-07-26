@@ -1,5 +1,4 @@
-import type { DivisionId } from '../../teams/types/team-types';
-
+import type { DivisionId } from '../types/league-types';
 export type StandingsRowMarker = 'prize' | 'promotion' | 'relegation';
 
 /** Row index for the 2nd-place team when sorted by total points descending. */

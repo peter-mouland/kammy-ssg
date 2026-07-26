@@ -1,7 +1,7 @@
 /* Location: app/scoring/lib/utils.ts */
 
+import type { CustomPosition } from '../../_shared/types/league-types';
 import { DRAFT_RULES } from '../../draft/lib/draft-rules';
-import type { CustomPosition } from '../../players/types/player-types';
 
 // Helper function to determine if a stat is relevant for a position
 export const isStatRelevant = (stat: string, position: string): boolean => {

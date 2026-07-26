@@ -1,6 +1,6 @@
 /* Location: app/cup/lib/cup-matchups.ts */
 
-import type { ManagerId } from '../../teams/types/team-types';
+import type { ManagerId } from '../../_shared/types/league-types';
 import type { CupConfig, CupMatchup, CupRound, ProcessedCupSheetData } from '../types/cup-types';
 import { getGameweekForStage } from './cup-config';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from './cup-scoring';

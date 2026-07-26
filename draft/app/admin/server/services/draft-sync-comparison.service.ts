@@ -3,13 +3,13 @@
 
 import { CACHE_KEYS, getCacheTTL } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
+import type { DivisionId } from '../../../_shared/types/league-types';
 import type {
     DraftSyncComparison,
     DraftSyncDifference,
     FirebaseDraftPick,
     FirebaseDraftState,
 } from '../../../draft/types/draft-types';
-import type { DivisionId } from '../../../teams/types/team-types';
 
 /**
  * Get all draft sync comparisons for all divisions

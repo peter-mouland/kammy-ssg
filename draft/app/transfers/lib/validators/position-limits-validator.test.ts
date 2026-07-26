@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { validatePositionLimits } from './position-limits-validator';
 import {
-    PLAYER_CB1,
-    PLAYER_FREE_CB,
-    PLAYER_FREE_MID,
-    PLAYER_MID1,
     makeContext,
     makeDivisionRosters,
     makeStandardRoster,
     makeTransfer,
+    PLAYER_CB1,
+    PLAYER_FREE_CB,
+    PLAYER_FREE_MID,
+    PLAYER_MID1,
 } from './fixtures';
+import { validatePositionLimits } from './position-limits-validator';
 
 describe('validatePositionLimits', () => {
     it('passes for a straightforward same-position transfer', () => {

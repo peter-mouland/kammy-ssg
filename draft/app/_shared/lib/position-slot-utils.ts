@@ -1,7 +1,7 @@
 // app/_shared/lib/position-slot-utils.ts
 
-import type { CustomPosition } from '../../players/types/player-types';
-import type { PositionSlotKey, TeamRoster } from '../../teams/types/team-types';
+import type { TeamRoster } from '../../teams/types/team-types';
+import type { CustomPosition, PositionSlotKey } from '../types/league-types';
 
 /**
  * Position slot configuration

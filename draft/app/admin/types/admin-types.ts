@@ -1,8 +1,8 @@
 /* Location: app/admin/types/admin-types.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../draft/types/draft-types';
-import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
 // ==========================================
 // ADMIN DASHBOARD DATA TYPES

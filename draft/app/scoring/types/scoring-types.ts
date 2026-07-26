@@ -1,7 +1,6 @@
 // app/scoring/types/scoring-types.ts
 
-import type { CustomPosition } from '../../players/types/player-types';
-
+import type { CustomPosition } from '../../_shared/types/league-types';
 export interface Points {
     appearance: number;
     goals: number;

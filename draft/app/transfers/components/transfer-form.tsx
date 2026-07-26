@@ -7,18 +7,16 @@ import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
 import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import { PlayerSummary } from '../../players/components/player';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type {
     DivisionId,
     DivisionSheetData,
     ManagerId,
     PositionSlotKey,
-    RosterByManagerId,
-    RosterPlayer,
-    TeamRoster,
     UserTeamsSheetData,
-} from '../../teams/types/team-types';
+} from '../../_shared/types/league-types';
+import { PlayerSummary } from '../../players/components/player';
+import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { RosterByManagerId, RosterPlayer, TeamRoster } from '../../teams/types/team-types';
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';

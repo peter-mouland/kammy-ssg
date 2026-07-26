@@ -2,9 +2,13 @@
 // Updated to support multiple divisions
 
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
-import type { CustomPosition } from '../../players/types/player-types';
+import type {
+    CustomPosition,
+    DivisionId,
+    DivisionSheetData,
+    UserTeamsSheetData,
+} from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 
 export interface DraftStateData {
     divisionId: DivisionId; // Division identifier

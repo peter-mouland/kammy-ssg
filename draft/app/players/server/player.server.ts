@@ -1,8 +1,9 @@
 /* Location: app/players/server/player.server.ts */
 
 import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData, GameweekStatWithPoints } from '../../scoring/types/scoring-types';
-import type { CustomPosition, DataSource, PlayerDetailData } from '../types/player-types';
+import type { DataSource, PlayerDetailData } from '../types/player-types';
 
 export async function getPlayerDetailData(
     playerCode: number,

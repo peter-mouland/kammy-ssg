@@ -1,9 +1,9 @@
 /* Location: app/_shared/lib/sheets/player-gw-points.ts */
 
-// app/routes/server/sheets/player-gw-points.ts
-import type { CustomPosition } from '../../../players/types/player-types';
 import { calculateGameweekPoints, convertToPlayerGameweekStats } from '../../../scoring/lib'; // todo: should sheets have domains in it?
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+// app/routes/server/sheets/player-gw-points.ts
+import type { CustomPosition } from '../../types/league-types';
 import { createAppError } from './utils/common';
 import { readDataFromSheetWithHeaders } from './utils/read-data-from-sheets';
 import { saveDataToSheet } from './utils/write-data-to-sheets';

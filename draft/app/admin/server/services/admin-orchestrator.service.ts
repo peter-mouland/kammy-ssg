@@ -6,8 +6,8 @@ import { FirestoreClearService } from '../../../_shared/lib/firestore-cache/clea
 import { FplFirestore } from '../../../_shared/lib/fpl/fpl-firestore';
 import { readPlayers } from '../../../_shared/lib/sheets/players';
 import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
+import type { DivisionId } from '../../../_shared/types/league-types';
 import type { DraftAction } from '../../../draft/types/draft-types';
-import type { DivisionId } from '../../../teams/types/team-types';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import { getSystemStatus } from './system-status.service';
 

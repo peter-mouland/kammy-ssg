@@ -1,7 +1,7 @@
 /* Location: app/transfers/hooks/use-transfers.ts */
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { DivisionId } from '../../teams/types/team-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import type { ProcessedTransferSheetData } from '../types/transfer-types';
 
 interface UseTransfersOptions {

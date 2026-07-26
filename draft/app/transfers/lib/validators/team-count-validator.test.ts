@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { teamCountLimit } from './team-count-validator';
 import {
-    PLAYER_CB1,
-    PLAYER_CB2,
-    PLAYER_FREE_CB,
-    PLAYER_MID1,
-    PLAYER_FREE_MID,
     makeContext,
     makeDivisionRosters,
     makePlayer,
     makeStandardRoster,
     makeTransfer,
+    PLAYER_CB1,
+    PLAYER_CB2,
+    PLAYER_FREE_CB,
+    PLAYER_FREE_MID,
+    PLAYER_MID1,
 } from './fixtures';
+import { teamCountLimit } from './team-count-validator';
 
 describe('teamCountLimit', () => {
     it('passes when playerIn is from a team not yet in the roster', () => {

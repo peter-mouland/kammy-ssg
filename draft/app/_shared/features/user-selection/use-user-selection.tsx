@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../types/league-types';
 import { clearUserSelection, getClientUserSelection, setUserSelection } from './user-selection.utils';
 
 interface UseUserSelectionOptions {
