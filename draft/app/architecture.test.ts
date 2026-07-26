@@ -131,17 +131,29 @@ describe('_shared must not depend on a domain', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Rule 2 — a domain may only reach another domain's types/ and lib/
+// Rule 2 — a domain may only use another domain's PUBLIC API
 // ---------------------------------------------------------------------------
 
-// From .kiro/steering/ai-contribution-rules.md: "Types defined there can be imported by
-// other domains, but the definition stays with the owning domain." Types and pure lib
-// helpers are a domain's public surface. Its components and server code are not: reaching
-// into them couples page structure and data loading across domain boundaries.
+// A domain's public API is what it deliberately exports for others. Everything else --
+// components, server code, internal helpers -- is private, because reaching into it
+// couples page structure and data loading across domain boundaries.
 //
-// Most entries below resolve by promoting a genuinely shared component (P2.5) -- note how
-// often players/components/player and teams/components/gameweek-selector appear.
-const PUBLIC_SEGMENTS = ['types', 'lib'];
+// TARGET (P2.7): `<domain>/index.ts` is the only public surface. A domain decides what
+// to expose; everything else is private, including types and lib.
+//
+// TODAY: `types/` and `lib/` are also accepted, because that is the existing convention
+// and flipping to index-only in one go would turn ~60 working imports into violations.
+// They are listed here as TRANSITIONAL and come out as P2.7 lands, one domain at a time.
+//
+// Why an index at all: three separate items have now stalled because `admin` orchestrates
+// other domains -- that is its job -- and had no legal way to reach their server logic.
+// Ten of the entries below are exactly that. An index gives a domain a way to say "this
+// operation is for other domains to call" without exposing everything behind it. See the
+// orchestrator discussion under P2.3 in .kiro/backlog.md.
+const PUBLIC_API_ENTRYPOINTS = ['index.ts', 'index.tsx'];
+const TRANSITIONAL_PUBLIC_SEGMENTS = ['types', 'lib'];
+
+const PUBLIC_SEGMENTS = [...PUBLIC_API_ENTRYPOINTS, ...TRANSITIONAL_PUBLIC_SEGMENTS];
 
 const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
     'admin/components/sections/transfers-section.tsx -> players/components/player',
@@ -180,7 +192,7 @@ const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
     'wishlist/components/wishlist-details.tsx -> players/components/player',
 ]);
 
-describe('a domain may only use another domain’s types and lib', () => {
+describe('a domain may only use another domain’s public API', () => {
     const reachesInside = crossDomainImports.filter(
         (i) => i.fromDomain !== SHARED && i.toDomain !== SHARED && !PUBLIC_SEGMENTS.includes(i.toSegment),
     );
@@ -192,10 +204,14 @@ describe('a domain may only use another domain’s types and lib', () => {
             unexpected,
             report(
                 unexpected,
-                `A domain's ${PUBLIC_SEGMENTS.join('/ and ')}/ are its public surface. Everything else is internal.\n` +
-                    'If a component is genuinely needed by several domains, promote it to\n' +
-                    '_shared/components/ (P2.5). If it is server logic, the caller probably wants a\n' +
-                    "function exported from the owning domain's lib/ instead.",
+                'A domain is reachable through its public API only:\n' +
+                    `  ${PUBLIC_API_ENTRYPOINTS.join(' / ')}   (the target -- see P2.7)\n` +
+                    `  ${TRANSITIONAL_PUBLIC_SEGMENTS.map((s) => `${s}/`).join(', ')}   (transitional, being phased out)\n\n` +
+                    'Everything else -- components/, server/, internal helpers -- is private.\n\n' +
+                    'To fix, in order of preference:\n' +
+                    "  1. Export what you need from the owning domain's index.ts, and import that.\n" +
+                    '  2. If it is a component several domains need, promote it to _shared/components/ (P2.5).\n' +
+                    '  3. If it is genuinely shared infrastructure, it does not belong in a domain at all.',
             ),
         ).toEqual([]);
     });

@@ -54,6 +54,7 @@ Newest domain, 13 test files, zero type errors. When in doubt about how somethin
 | 2026-07-26 | Keep `stylelint-config-standard` rather than hand-enumerating rules | Its "noise" was a one-time `--fix` (1228 → 550, no judgement needed), and it caught the best bug of the exercise (`media-query-no-invalid`) which a hand-written list missed. Verified it does not fight Biome: count unchanged after `biome format --write`. |
 | 2026-07-26 | Override `media-feature-range-notation` to `"prefix"` | Its autofix rewrote 75 media queries to `(width <= 768px)`, which silently defeated the mobile-first check (63 violations → 5). The one genuine Biome/stylelint-adjacent conflict. |
 | 2026-07-26 | One shared **ratchet** mechanism for both type errors and CSS | Same mental model for both backlogs, one script, one baseline file (`.ratchet.json`) |
+| 2026-07-26 | **Each domain gets a public API (`index.ts`); `server/` and `components/` become private** | Three items stalled because `admin` orchestrates other domains — its actual job — with no legal way to reach their logic, which is why 10 `admin -> X/server` entries sit allowlisted. An index lets a domain expose an operation without exposing everything behind it. Chosen over exempting `admin` from Rule 2, which would have been the same debt without admitting it. |
 | 2026-07-26 | **Sheets access is a cross-cutting concern. Every sheet reader lives in `_shared/lib/sheets/`, with no exceptions** | One spreadsheet, one client, one auth, one cache strategy — it is the app's persistence layer. Splitting a reader out because of who happens to read it today is arbitrary and reverses the moment a second domain needs that data. An exception costs every future contributor the question "where do we read sheets?" |
 
 ---
@@ -284,21 +285,15 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
   **Net 12 → 10, but it moved one dependency rather than removing it.** Taking the derivation out of the reader pushed it onto `_shared/lib/firestore-cache/firebase-draft-sync.ts`, which needs `currentPick` and now imports `draft/lib/draft-pick-calculator`. That is allowlisted with a comment, not hidden.
 
-  ### ⚠️ Blocked: the orchestrator question
+  ### ✅ Resolved: the orchestrator question → P2.7
 
-  `firebase-draft-sync.ts` is draft **orchestration** (sync the draft between Sheets and Firebase) sitting in `_shared`. It should move into `draft/`. But its callers are `draft` **and `admin`** — and moving it to `draft/server/` just converts a Rule 1 violation into a Rule 2 one.
+  `firebase-draft-sync.ts` is draft orchestration living in `_shared`, needed by both
+  `draft` and `admin`. Moving it to `draft/server/` would only convert a Rule 1 violation
+  into a Rule 2 one — the wall three items have now hit.
 
-  This is the same wall three items have now hit. **Rule 2 has no concept of an orchestrator**, yet `admin`'s job is precisely to drive other domains — which is why 8 `admin -> X/server` entries sit in `MAY_REACH_INSIDE` already. Options, needing a decision:
-
-  1. **Exempt `admin` from Rule 2.** Honest about what admin is; weakens the rule for one domain.
-  2. **Give each domain a public API** (`domain/index.ts`) that Rule 2 permits, keeping `server/` private. More ceremony, but the boundary becomes explicit rather than assumed.
-  3. **Leave admin's entries allowlisted forever**, which is really option 1 without saying so.
-
-  Until this is settled, `firebase-draft-sync.ts` stays where it is.
-
-  **The two value imports are the real leak.** A reader that computes draft state or scoring points is doing domain work in the persistence layer; the type imports are cosmetic by comparison. Start there.
-
-  *Acceptance:* `_shared/lib/sheets/` and `_shared/lib/fpl/` have zero domain imports; the `SHARED_MAY_IMPORT` allowlist is empty; loaders return identical data.
+  **Decision: each domain gets a public API (`index.ts`).** See P2.7. Once `draft` exposes
+  one, `firebase-draft-sync.ts` can move into the draft domain and `admin` can keep calling
+  it legally. Its allowlist entry comes out then.
 
 - [x] **P2.4 — Move domain logic out of `_shared/lib`**
   *Done:* five files moved with `git mv`, so history follows them. **`_shared` violations 17 → 12**, and **two domain cycles dissolved (15 → 13)**.
@@ -321,6 +316,32 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   |---|---|---|
   | `_shared/lib/sheets/` | 9 | P2.3 |
   | `_shared/lib/fpl/` | 3 | P2.1b |
+
+- [ ] **P2.7 — Give each domain a public API**
+  Every domain gets an `index.ts` that re-exports what other domains are allowed to use. `components/`, `server/` and internal helpers become private.
+
+  **Why this and not the alternatives.** Three items stalled on the same wall: `admin` orchestrates other domains — that is its entire purpose — and Rule 2 gave it no legal way to do so, which is why 10 `admin -> X/server` entries sit in the allowlist. The options were:
+
+  | Option | Verdict |
+  |---|---|
+  | Exempt `admin` from Rule 2 | Honest about admin, but weakens the rule for the domain that reaches furthest |
+  | Leave admin allowlisted forever | The same thing without admitting it |
+  | **Public API per domain** | ✅ The boundary becomes explicit rather than assumed, and it works for every domain, not just admin |
+
+  An index lets a domain say *"this operation is for others to call"* without exposing everything behind it. It also gives a natural home for the orchestration entry points admin needs.
+
+  **Rule 2 is already updated** in [architecture.test.ts](../draft/app/architecture.test.ts) and [ai-contribution-rules.md](steering/ai-contribution-rules.md): `index.ts` is now a legal import target. `types/` and `lib/` remain accepted as **transitional**, because flipping to index-only in one go would turn ~60 working imports into violations. They are marked `TRANSITIONAL_PUBLIC_SEGMENTS` in the test and come out one domain at a time.
+
+  **Order — start where the pain is:**
+
+  | Domain | First job |
+  |---|---|
+  | `draft` | expose draft state + sync so `firebase-draft-sync.ts` can move into the domain and `admin` can still call it |
+  | `scoring` | `division-teams.service` has 6 importers across 5 domains — the single worst offender |
+  | `transfers` | `transfers-data.service`, used by admin |
+  | rest | as their allowlist entries come up |
+
+  *Acceptance:* each domain has an `index.ts`; `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making `index.ts` the only cross-domain entry point.
 
 - [ ] **P2.5 — Promote genuinely shared components**
   `teams/components/gameweek-selector` is used by transfers, leagues, players and admin. `players/components/player` is used by teams, transfers, admin and wishlist. Both belong in `_shared/components/`.
