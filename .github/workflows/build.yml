@@ -45,9 +45,11 @@ jobs:
             npx biome lint .
           fi
 
-      - name: Type check
-        run: yarn type-check
-        continue-on-error: true
+      # Ratchet, not a gate: the repo carries a backlog of type errors and CSS
+      # convention violations recorded in .ratchet.json. This fails only if a change
+      # ADDS to either backlog, so the counts can only go down over time.
+      - name: Ratchet (type errors + CSS conventions)
+        run: yarn ratchet
 
   test:
     name: test
