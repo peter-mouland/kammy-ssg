@@ -343,8 +343,10 @@ export class FirebaseDraftSync {
                 throw new Error(`No draft order found for division ${divisionId}`);
             }
 
-            // Use the currentPick from draftState (now calculated in sheets)
-            const currentPick = draftState.currentPick; // This is now calculated!
+            // currentPick is derived, not stored: the sheets reader returns rows only,
+            // so it is computed here from the picks this division has already made.
+            const { calculateCurrentPick } = await import('../../../draft/lib/draft-pick-calculator');
+            const currentPick = calculateCurrentPick(divisionId, draftPicks);
             const currentUserId = draftState.currentUserId;
             const isActive = draftState.isActive;
             const picksCount = draftPicks.length;

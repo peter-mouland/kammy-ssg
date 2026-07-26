@@ -70,7 +70,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **12** — P2.1 + P2.4 |
+| `_shared` → domain imports | 34, across 6 domains | **10** — P2.1 + P2.4 + P2.3 (draft) |
 | Architecture rules enforced | 0 | **4** (P1.2) |
 | Domain dependency cycles | 15 | **13** — P2.4 dissolved two |
 
@@ -260,12 +260,41 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
   | Module | Depends on | Fix |
   |---|---|---|
-  | `draft-order.ts` | `draft/types` | `DraftOrderData` is a plain sheet row → `_shared/types/sheets-types.ts` |
+  | ~~`draft.ts`, `draft-order.ts`~~ | — | ✅ **done**, see below |
   | `transfers.ts` | `scoring/types`, `transfers/types` | return raw rows; `transfers` maps rows → `ProcessedTransfer` |
   | `cup.ts` | `cup/lib/cup-config`, `cup/types` | same shape as transfers |
   | `player-gw-points.ts` | `scoring/types`, **`scoring/lib`** | value import — scoring maths in a reader; move the calculation to the caller |
   | `draft.ts` | `draft/types`, **`draft/lib/draft-pick-calculator`** | value import — draft state derivation in a reader; return raw picks, let `draft` derive |
   | `fpl/api-cache.ts`, `fpl/fpl-firestore.ts` | `scoring/types`, **`scoring/lib`** | same treatment; `EnhancedPlayerData` to the kernel is P2.1b |
+
+  ### ✅ `draft.ts` and `draft-order.ts` — done
+
+  `currentPick` was the whole problem. It is **not a column in the sheet** (that column was
+  removed) — it is derived from how many picks a division has made. The sheets reader was
+  computing it, which is why `_shared` imported `draft/lib/draft-pick-calculator`.
+
+  - Row shapes `DraftPickRow`, `DraftStateRow`, `DraftOrderRow` now live in `_shared/types/sheets-types.ts`. `DraftStateRow` deliberately has **no** `currentPick`.
+  - `DraftStateData` in the draft domain is now `DraftStateRow & { currentPick }` — the relationship is expressed in the type rather than by two parallel declarations.
+  - Derivation moved to [draft/lib/draft-state.ts](../draft/app/draft/lib/draft-state.ts). In `lib/`, not `server/`, so `admin` can orchestrate the draft without reaching into draft's server code.
+  - `_shared/lib/sheets/draft.ts` and `draft-order.ts` now have **zero** domain imports.
+
+  Two things fell out of it:
+  - **A tautological check deleted.** `draft.server.ts` compared the state's stored `currentPick` against a recalculation and warned on mismatch. With one source they cannot disagree.
+  - **`DraftPickRow.divisionId` was typed `string`**, not `DivisionId`. Tightening it was required to pass the row to `groupByDivision`.
+
+  **Net 12 → 10, but it moved one dependency rather than removing it.** Taking the derivation out of the reader pushed it onto `_shared/lib/firestore-cache/firebase-draft-sync.ts`, which needs `currentPick` and now imports `draft/lib/draft-pick-calculator`. That is allowlisted with a comment, not hidden.
+
+  ### ⚠️ Blocked: the orchestrator question
+
+  `firebase-draft-sync.ts` is draft **orchestration** (sync the draft between Sheets and Firebase) sitting in `_shared`. It should move into `draft/`. But its callers are `draft` **and `admin`** — and moving it to `draft/server/` just converts a Rule 1 violation into a Rule 2 one.
+
+  This is the same wall three items have now hit. **Rule 2 has no concept of an orchestrator**, yet `admin`'s job is precisely to drive other domains — which is why 8 `admin -> X/server` entries sit in `MAY_REACH_INSIDE` already. Options, needing a decision:
+
+  1. **Exempt `admin` from Rule 2.** Honest about what admin is; weakens the rule for one domain.
+  2. **Give each domain a public API** (`domain/index.ts`) that Rule 2 permits, keeping `server/` private. More ceremony, but the boundary becomes explicit rather than assumed.
+  3. **Leave admin's entries allowlisted forever**, which is really option 1 without saying so.
+
+  Until this is settled, `firebase-draft-sync.ts` stays where it is.
 
   **The two value imports are the real leak.** A reader that computes draft state or scoring points is doing domain work in the persistence layer; the type imports are cosmetic by comparison. Start there.
 

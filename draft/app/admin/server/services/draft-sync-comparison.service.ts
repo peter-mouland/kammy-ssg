@@ -39,11 +39,17 @@ async function generateDraftSyncComparison(divisionId: DivisionId): Promise<Draf
         ]);
 
         // Compare the data and find differences
-        const differences = compareData(sheetsState, firebaseState, sheetsPicks, firebasePicks);
+        // currentPick is derived, not stored -- compare the derived value.
+        const { toDraftStateForDivision } = await import('../../../draft/lib/draft-state');
+        const sheetsStateWithPick = sheetsState
+            ? toDraftStateForDivision([sheetsState], sheetsPicks, divisionId)
+            : null;
+
+        const differences = compareData(sheetsStateWithPick, firebaseState, sheetsPicks, firebasePicks);
 
         const comparison: DraftSyncComparison = {
             divisionId,
-            sheetsState,
+            sheetsState: sheetsStateWithPick,
             firebaseState,
             sheetsPicks,
             firebasePicks,

@@ -261,8 +261,11 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
         const { draftOrderExists } = await import('../../../_shared/lib/sheets/draft-order');
         const userTeams = await readUserTeams();
         const divisionSheetData = await readDivisions();
-        const draftState = await readDraftState();
         const draftPicks = await readDraftPicks();
+        // The sheet stores rows; currentPick is derived by the draft domain.
+        const { toDraftStateForDivision } = await import('../../../draft/lib/draft-state');
+        const draftStateRow = await readDraftState();
+        const draftState = toDraftStateForDivision([draftStateRow], draftPicks, draftStateRow.divisionId);
 
         const byDivisionId: DraftStatusByDivisionId = {};
         const totalPicks = userTeams.length * draftState.picksPerTeam;

@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/draft-order.ts */
 
-import type { DraftOrderData } from '../../../draft/types/draft-types';
 import type { DivisionId } from '../../types/league-types';
+import type { DraftOrderRow } from '../../types/sheets-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import {
@@ -17,7 +17,7 @@ import {
 
 // Sheet configuration
 const DRAFT_ORDER_SHEET_NAME = 'DraftOrder';
-const DRAFT_ORDER_HEADERS: Record<string, keyof DraftOrderData> = {
+const DRAFT_ORDER_HEADERS: Record<string, keyof DraftOrderRow> = {
     'Division ID': 'divisionId',
     Position: 'position',
     'User ID': 'userId',
@@ -26,7 +26,7 @@ const DRAFT_ORDER_HEADERS: Record<string, keyof DraftOrderData> = {
 };
 
 // Transform functions for parsing
-const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderData, (value: any) => any>> = {
+const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderRow, (value: any) => any>> = {
     position: parseSheetNumber,
     generatedAt: parseSheetDate,
 };
@@ -34,9 +34,9 @@ const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderData, (val
 /**
  * Read all draft orders from the sheet
  */
-async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderData[]>> {
+async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderRow[]>> {
     try {
-        const draftOrders: Record<DivisionId, DraftOrderData[]> = {
+        const draftOrders: Record<DivisionId, DraftOrderRow[]> = {
             premierLeague: [],
             championship: [],
             leagueOne: [],
@@ -53,7 +53,7 @@ async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderD
             return draftOrders;
         }
 
-        const draftOrder = parseHeaderBasedData<DraftOrderData>(
+        const draftOrder = parseHeaderBasedData<DraftOrderRow>(
             rawData,
             DRAFT_ORDER_HEADERS,
             DRAFT_ORDER_TRANSFORM_FUNCTIONS,
@@ -75,7 +75,7 @@ export async function readDraftOrders() {
 /**
  * Write draft orders to the sheet (overwrites existing data)
  */
-async function writeDraftOrders(draftOrders: DraftOrderData[]): Promise<void> {
+async function writeDraftOrders(draftOrders: DraftOrderRow[]): Promise<void> {
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
     try {
         // Transform dates to ISO strings for sheet storage
@@ -100,7 +100,7 @@ async function writeDraftOrders(draftOrders: DraftOrderData[]): Promise<void> {
 /**
  * Get draft order for a specific division
  */
-export async function getDraftOrderByDivision(divisionId: DivisionId): Promise<DraftOrderData[]> {
+export async function getDraftOrderByDivision(divisionId: DivisionId): Promise<DraftOrderRow[]> {
     try {
         const allOrders = await readDraftOrders();
         return allOrders[divisionId].sort((a, b) => a.position - b.position);
@@ -119,7 +119,7 @@ export async function getDraftOrderByDivision(divisionId: DivisionId): Promise<D
 export async function generateRandomDraftOrder(
     divisionId: DivisionId,
     userTeams: Array<{ userId: string; userName: string }>,
-): Promise<DraftOrderData[]> {
+): Promise<DraftOrderRow[]> {
     try {
         // Shuffle the user teams array
         const shuffledTeams = [...userTeams];
@@ -129,7 +129,7 @@ export async function generateRandomDraftOrder(
         }
 
         // Create draft order entries
-        const draftOrder: DraftOrderData[] = shuffledTeams.map((team, index) => ({
+        const draftOrder: DraftOrderRow[] = shuffledTeams.map((team, index) => ({
             divisionId,
             position: index + 1,
             userId: team.userId,

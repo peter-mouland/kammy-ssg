@@ -8,31 +8,22 @@ import type {
     DivisionSheetData,
     UserTeamsSheetData,
 } from '../../_shared/types/league-types';
+import type { DraftOrderRow, DraftPickRow, DraftStateRow } from '../../_shared/types/sheets-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 
-export interface DraftStateData {
-    divisionId: DivisionId; // Division identifier
-    isActive: boolean;
-    currentPick: number; // CALCULATED: Computed from picks data, not stored in sheets
-    currentUserId: string;
-    picksPerTeam: number;
-    startedAt: Date | null;
-    completedAt: Date | null;
+/**
+ * The draft state as the app uses it: the sheet row, plus `currentPick`.
+ *
+ * `currentPick` is NOT in the sheet -- that column was removed. It is derived from the
+ * picks by calculateCurrentPick(), which is why this type lives in the draft domain
+ * while DraftStateRow lives with the other sheet shapes.
+ */
+export interface DraftStateData extends DraftStateRow {
+    currentPick: number;
 }
 
-export interface DraftPickData {
-    pickNumber: number;
-    round: number;
-    userId: string;
-    playerId: number;
-    playerCode: number;
-    playerName: string;
-    teamCode: string;
-    teamName: string;
-    position: string;
-    pickedAt: Date;
-    divisionId: string;
-}
+/** A pick is exactly a row of the Draft sheet; nothing is derived. */
+export type DraftPickData = DraftPickRow;
 
 // NEW: Interface for comparing Firebase vs Sheets data
 export interface DraftSyncComparison {
@@ -79,17 +70,8 @@ export interface FirebaseDraftPick {
     timestamp: number;
 }
 
-/**
- * One manager's slot in a division's draft order, as stored in the DraftOrder sheet.
- * `position` is 1-based; the snake reverses it on even rounds.
- */
-export interface DraftOrderData {
-    divisionId: DivisionId;
-    position: number;
-    userId: string;
-    userName: string;
-    generatedAt: Date;
-}
+/** A draft order slot is exactly a row of the DraftOrder sheet. */
+export type DraftOrderData = DraftOrderRow;
 
 /** A single pick slot in the expanded snake order, before anyone has picked. */
 export interface DraftSequenceEntry {

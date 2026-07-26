@@ -80,14 +80,17 @@ const report = (violations: Import[], guidance: string) =>
 // the vocabulary of every feature. Phase 2 fixes it by naming a shared kernel (P2.1)
 // and moving each sheets module into the domain that owns it (P2.3, P2.4).
 const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([
+    // NEW in P2.3. firebase-draft-sync.ts is draft ORCHESTRATION (sync the draft
+    // between Sheets and Firebase) that happens to live in _shared. It needs the
+    // derived currentPick, so taking the derivation out of the sheets reader moved
+    // the dependency here rather than removing it. The real fix is to move that file
+    // into the draft domain -- blocked on the orchestrator question in the backlog.
+    '_shared/lib/firestore-cache/firebase-draft-sync.ts -> draft/lib/draft-pick-calculator',
     '_shared/lib/fpl/api-cache.ts -> scoring/types/scoring-types',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/lib',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/types/scoring-types',
     '_shared/lib/sheets/cup.ts -> cup/lib/cup-config',
     '_shared/lib/sheets/cup.ts -> cup/types/cup-types',
-    '_shared/lib/sheets/draft-order.ts -> draft/types/draft-types',
-    '_shared/lib/sheets/draft.ts -> draft/lib/draft-pick-calculator',
-    '_shared/lib/sheets/draft.ts -> draft/types/draft-types',
     '_shared/lib/sheets/player-gw-points.ts -> scoring/lib',
     '_shared/lib/sheets/player-gw-points.ts -> scoring/types/scoring-types',
     '_shared/lib/sheets/transfers.ts -> scoring/types/scoring-types',
