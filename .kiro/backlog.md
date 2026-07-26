@@ -54,6 +54,7 @@ Newest domain, 13 test files, zero type errors. When in doubt about how somethin
 | 2026-07-26 | Keep `stylelint-config-standard` rather than hand-enumerating rules | Its "noise" was a one-time `--fix` (1228 → 550, no judgement needed), and it caught the best bug of the exercise (`media-query-no-invalid`) which a hand-written list missed. Verified it does not fight Biome: count unchanged after `biome format --write`. |
 | 2026-07-26 | Override `media-feature-range-notation` to `"prefix"` | Its autofix rewrote 75 media queries to `(width <= 768px)`, which silently defeated the mobile-first check (63 violations → 5). The one genuine Biome/stylelint-adjacent conflict. |
 | 2026-07-26 | One shared **ratchet** mechanism for both type errors and CSS | Same mental model for both backlogs, one script, one baseline file (`.ratchet.json`) |
+| 2026-07-26 | **Sheets access is a cross-cutting concern. Every sheet reader lives in `_shared/lib/sheets/`, with no exceptions** | One spreadsheet, one client, one auth, one cache strategy — it is the app's persistence layer. Splitting a reader out because of who happens to read it today is arbitrary and reverses the moment a second domain needs that data. An exception costs every future contributor the question "where do we read sheets?" |
 
 ---
 
@@ -69,9 +70,9 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **10** — P2.1 + P2.4 + P2.3a |
+| `_shared` → domain imports | 34, across 6 domains | **12** — P2.1 + P2.4 |
 | Architecture rules enforced | 0 | **4** (P1.2) |
-| Domain dependency cycles | 15 | **12** — P2.4 and P2.3a dissolved three |
+| Domain dependency cycles | 15 | **13** — P2.4 dissolved two |
 
 ### Type errors by domain
 
@@ -243,39 +244,32 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   Kernel types → `_shared/types/` (P2.1). View-models → `teams/types/team-view-types.ts`. Component props → next to their components.
   *Acceptance:* `teams/types/team-types.ts` contains only teams-domain entities; the 28 `transfers → teams` and 13 `admin → teams` import edges mostly resolve to kernel imports.
 
-- [~] **P2.3 — Move each sheets module into its owning domain** — *replanned; see below*
+- [ ] **P2.3 — Make every sheets reader domain-free** — *replanned twice; the rule below is the settled one*
 
-  **The original plan does not survive contact, and the table in it was wrong.** It assumed each sheet belongs to one domain. Most do not:
+  **Original plan (moving each sheet into "its" domain) is abandoned.** Two problems killed it:
 
-  ```
-  divisions     read by admin, draft, leagues, teams, transfers
-  user-teams    read by admin, cup, draft, leagues, teams, transfers
-  transfers     read by admin, api, scoring, transfers
-  draft         read by admin, draft, _shared
-  ```
+  1. **Most sheets have no single owner.** `user-teams` is read by six domains, `divisions` by five, `transfers` by four. Moving those into a domain's `server/` fixes Rule 1 while **breaking Rule 2** for every other reader — net worse.
+  2. **Even where one domain is the sole reader today, moving it is wrong.** `cup.ts` was moved on that basis and then moved back. Sheets access is a cross-cutting concern: one spreadsheet, one client, one auth, one cache strategy. An exception to "sheet readers live in `_shared/lib/sheets/`" costs every future contributor the question *"where do we read sheets?"*, and it flips back the moment a second domain needs that data.
 
-  Moving those into a domain's `server/` would fix Rule 1 (`_shared` must not depend on a domain) while **breaking Rule 2** (a domain may only use another domain's `types/` and `lib/`) for every other reader. Net architecture: worse.
+  **The settled rule:**
+  > Every sheets reader lives in `_shared/lib/sheets/`. None of them import a domain. They return **raw row types** declared in `_shared/types/sheets-types.ts`; each domain interprets its own rows into its own model.
 
-  It also turns out **P2.1 already fixed three of them**. `divisions.ts`, `user-teams.ts` and `players.ts` now have zero domain imports — they deal only in kernel types, which is exactly what shared infrastructure should do. **They stay in `_shared`.** That is the right answer, not a compromise: a sheet reader is infrastructure, and infrastructure that speaks only kernel vocabulary is reusable by everyone without coupling.
+  That is one rule with no exceptions, and it fixes all 12 remaining violations by the same mechanism. It is also what creates the injection seam P3.4 needs — a reader that only returns rows is trivial to fake.
 
-  **The revised rule for this item:**
-  > A sheets module belongs in a domain if that domain is its only reader. Otherwise it stays in `_shared`, and the fix is to remove its *domain* dependency — promote the type to the kernel, or return raw rows and let the domain interpret them.
+  **P2.1 already did three of them for free.** `divisions.ts`, `user-teams.ts` and `players.ts` have zero domain imports because their types moved to the kernel. They are the model for the rest.
 
-  - [x] **P2.3a — `cup.ts` → `cup/server/cup.sheet.ts`**
-    The only sheet with a single-domain readership (all 4 importers in `cup`). Clears 2 entries and dissolved another cycle (13 → 12). Type errors unchanged at 200.
+  | Module | Depends on | Fix |
+  |---|---|---|
+  | `draft-order.ts` | `draft/types` | `DraftOrderData` is a plain sheet row → `_shared/types/sheets-types.ts` |
+  | `transfers.ts` | `scoring/types`, `transfers/types` | return raw rows; `transfers` maps rows → `ProcessedTransfer` |
+  | `cup.ts` | `cup/lib/cup-config`, `cup/types` | same shape as transfers |
+  | `player-gw-points.ts` | `scoring/types`, **`scoring/lib`** | value import — scoring maths in a reader; move the calculation to the caller |
+  | `draft.ts` | `draft/types`, **`draft/lib/draft-pick-calculator`** | value import — draft state derivation in a reader; return raw picks, let `draft` derive |
+  | `fpl/api-cache.ts`, `fpl/fpl-firestore.ts` | `scoring/types`, **`scoring/lib`** | same treatment; `EnhancedPlayerData` to the kernel is P2.1b |
 
-  - [ ] **P2.3b — Break the remaining 4 modules' domain dependencies**
-    These stay in `_shared`; the *dependency* is what moves.
+  **The two value imports are the real leak.** A reader that computes draft state or scoring points is doing domain work in the persistence layer; the type imports are cosmetic by comparison. Start there.
 
-    | Module | Depends on | Fix |
-    |---|---|---|
-    | `player-gw-points.ts` | `scoring/types`, **`scoring/lib`** | type → kernel (P2.1b); the `scoring/lib` **value** import is scoring logic in a reader — move the calculation to the caller |
-    | `transfers.ts` | `scoring/types`, `transfers/types` | return raw rows typed in `_shared/types/sheets-types.ts`; let `transfers` map rows → `ProcessedTransfer` |
-    | `draft.ts` | `draft/types`, **`draft/lib/draft-pick-calculator`** | same: return raw picks, let `draft` derive state |
-    | `draft-order.ts` | `draft/types` | `DraftOrderData` is a plain sheet row — move it to `_shared/types/sheets-types.ts` |
-
-    The two **value** imports are the real leak: a sheet reader that computes draft state or scoring is doing domain work in the persistence layer. Returning raw rows and interpreting them in the domain is the correct layering, and it is what creates the injection seam P3.4 needs.
-    *Acceptance:* `_shared/lib/sheets/` has zero domain imports; loaders still return identical data.
+  *Acceptance:* `_shared/lib/sheets/` and `_shared/lib/fpl/` have zero domain imports; the `SHARED_MAY_IMPORT` allowlist is empty; loaders return identical data.
 
 - [x] **P2.4 — Move domain logic out of `_shared/lib`**
   *Done:* five files moved with `git mv`, so history follows them. **`_shared` violations 17 → 12**, and **two domain cycles dissolved (15 → 13)**.

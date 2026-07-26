@@ -3,11 +3,17 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
+import {
+    readCupBracket,
+    readCupConfig,
+    readCupSubmissions,
+    writeCupBracket,
+    writeCupConfig,
+} from '../_shared/lib/sheets/cup';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupAdminPage } from './cup-admin.page';
 import { fisherYatesShuffle, pairIntoMatchups } from './lib/knockout';
-import { readCupBracket, readCupConfig, readCupSubmissions, writeCupBracket, writeCupConfig } from './server/cup.sheet';
 import type { CupAdminPageData } from './types/cup-page-types';
 import type { CupConfig } from './types/cup-types';
 
