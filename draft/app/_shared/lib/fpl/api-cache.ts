@@ -4,7 +4,7 @@
 /* - common helper functions e.g. data-transfers should live here */
 
 import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
-import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
@@ -177,7 +177,7 @@ class FplApiCache {
      */
     async getTeamsByCode(): Promise<Record<FplTeam['code'], FplTeam>> {
         return await dataCache.get(
-            'fpl:teams-by-code',
+            CACHE_KEYS.FPL.TEAMS_BY_CODE,
             async () => {
                 console.log('🔄 getTeamsByCode() - Building lookup from teams');
                 const elements = await this.getFplTeams(); // This will use cache
@@ -363,7 +363,7 @@ class FplApiCache {
      */
     async getCacheHealth() {
         return await dataCache.get(
-            'fpl:cache-health',
+            CACHE_KEYS.FPL.CACHE_HEALTH,
             async () => {
                 const data = await this.getCacheStatus();
                 let status = 'healthy' as 'healthy' | 'warning' | 'critical';
@@ -383,7 +383,7 @@ class FplApiCache {
                     data: data,
                 };
             },
-            { ttlMs: getCacheTTL('fpl:cache-health') },
+            { ttlMs: getCacheTTL(CACHE_KEYS.FPL.CACHE_HEALTH) },
         );
     }
 
@@ -423,30 +423,11 @@ class FplApiCache {
     }
 
     /**
-     * Clear all FPL-related caches
-     */
-    clearAllCaches(): void {
-        console.log('🧹 FplApiCache: Clearing all FPL caches');
-        dataCache.invalidatePattern('fpl:');
-    }
-
-    /**
      * Clear all FPL related caches
      */
-    async clearFplCaches(): Promise<void> {
-        console.log('🗑️ Clearing all FPL caches');
-
-        // Clear main FPL data caches
-        dataCache.invalidate(CACHE_KEYS.FPL.FIXTURES);
-        dataCache.invalidate(CACHE_KEYS.FPL.PLAYERS);
-        dataCache.invalidate(CACHE_KEYS.FPL.TEAMS);
-        dataCache.invalidate(CACHE_KEYS.FPL.EVENTS);
-        dataCache.invalidate('fpl:cache-health');
-
-        // Clear all individual player stats caches
-        dataCache.invalidatePattern('fpl:player-stats:');
-
-        console.log('✅ FPL caches cleared');
+    clearFplCaches(): void {
+        const cleared = dataCache.invalidateMultiple(getInvalidationKeys('FPL_DATA_UPDATED'));
+        console.log(`✅ FPL caches cleared (${cleared} entries)`);
     }
 
     /**

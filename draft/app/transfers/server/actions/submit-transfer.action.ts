@@ -1,6 +1,6 @@
 /* Location: app/transfers/server/actions/submit-transfer.action.ts */
 
-import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
+import { getInvalidationKeys } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { addTransfer } from '../../../_shared/lib/sheets/transfers';
 import type { TransferFormData } from '../../types/transfer-form-types';
@@ -112,7 +112,7 @@ async function submitTransfer(formData: URLSearchParams): Promise<SubmitTransfer
 
         // Submit to Google Sheets
         await addTransfer(transferData.divisionId, sheetData);
-        dataCache.invalidate(CACHE_KEYS.SHEETS.TRANSFERS(transferData.divisionId));
+        dataCache.invalidateMultiple(getInvalidationKeys('TRANSFERS_UPDATED', transferData.divisionId));
 
         console.log(`✅ Transfer submitted successfully for ${transferData.managerId}`);
 

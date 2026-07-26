@@ -38,9 +38,6 @@ const CACHE_TTL = {
     DRAFT_SYNC_COMPARISON: 2 * 60 * 1000, // 2 minutes
     DRAFT_SYNC_ALL_COMPARISONS: 2 * 60 * 1000, // 2 minutes
 
-    // Transfer & Scoring Data - changes with admin actions
-    DIVISION_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team rosters change with transfers/draft
-
     // Default fallbacks
     DEFAULT: 1 * 60 * 1000, // 1 minute default
     SHORT: 30 * 1000, // 30 seconds for frequently changing data
@@ -59,6 +56,8 @@ export const CACHE_KEYS = {
         PLAYERS: 'fpl:players',
         TEAMS: 'fpl:teams',
         EVENTS: 'fpl:events',
+        CACHE_HEALTH: 'fpl:cache-health',
+        TEAMS_BY_CODE: 'fpl:teams-by-code',
         PLAYER_STATS: (playerId: string) => `fpl:player-stats:${playerId}`,
         BATCH_PLAYER_STATS: (playerIds: string[]) => `fpl:batch-stats:${playerIds.sort().join(',')}`,
         GAMEWEEK_LIVE: (gw: number) => `fpl:gameweek-live:${gw}`,
@@ -92,10 +91,6 @@ export const CACHE_KEYS = {
         COMPARISON: (divisionId: string) => `draft-sync:comparison:${divisionId}`,
         ALL_COMPARISONS: 'draft-sync:all-comparisons',
     },
-
-    SCORING: {
-        DIVISION_TEAMS: (divisionId: string, gameWeek: number) => `scoring:teams:${divisionId}:gw${gameWeek}`,
-    },
 } as const;
 
 /**
@@ -109,7 +104,10 @@ export const CACHE_INVALIDATION_RULES = {
         CACHE_KEYS.FPL.PLAYERS,
         CACHE_KEYS.FPL.TEAMS,
         CACHE_KEYS.FPL.EVENTS,
+        CACHE_KEYS.FPL.CACHE_HEALTH,
+        CACHE_KEYS.FPL.TEAMS_BY_CODE,
         'fpl:player-stats:', // Pattern - invalidates all player stats
+        'fpl:gameweek-live:', // Pattern - invalidates all live gameweek scores
     ],
 
     // When transfers add submitted by managers
@@ -119,12 +117,11 @@ export const CACHE_INVALIDATION_RULES = {
     CUP_SUBMITTED: [CACHE_KEYS.SHEETS.CUP],
 
     // When an admin changes the stage->gameweek mapping
+    // Submissions are read against that mapping, so they have to go too
     CUP_CONFIG_CHANGED: [CACHE_KEYS.SHEETS.CUP_CONFIG, CACHE_KEYS.SHEETS.CUP],
 
-    // When transfers + points are processed
-    TRANSFERS_PROCESSED: (divisionId: string, gameWeek: number) => [
-        CACHE_KEYS.SCORING.DIVISION_TEAMS(divisionId, gameWeek),
-    ],
+    // When an admin edits the knockout bracket
+    CUP_BRACKET_UPDATED: [CACHE_KEYS.SHEETS.CUP_BRACKET],
 
     // When draft actions happen - UPDATED for multi-division
     DRAFT_ACTION: (divisionId: string) => [
@@ -167,6 +164,7 @@ export const CACHE_INVALIDATION_RULES = {
  */
 export function getCacheTTL(key: string): number {
     // FPL keys
+    if (key.includes('fpl:cache-health')) return CACHE_TTL.FIRESTORE_CACHE_STATUS;
     if (key.includes('fpl:bootstrap')) return CACHE_TTL.FPL_BOOTSTRAP;
     if (key.includes('fpl:fixtures')) return CACHE_TTL.FPL_FIXTURES;
     if (key.includes('fpl:players')) return CACHE_TTL.FPL_PLAYERS;
@@ -196,20 +194,30 @@ export function getCacheTTL(key: string): number {
     if (key.includes('draft-sync:comparison')) return CACHE_TTL.DRAFT_SYNC_COMPARISON;
     if (key.includes('draft-sync:all-comparisons')) return CACHE_TTL.DRAFT_SYNC_ALL_COMPARISONS;
 
-    // Scoring keys
-    if (key.includes('scoring:teams')) return CACHE_TTL.DIVISION_TEAMS;
-
     // Default
     return CACHE_TTL.DEFAULT;
 }
 
+type InvalidationRules = typeof CACHE_INVALIDATION_RULES;
+
+/** The arguments a rule needs, or none for the rules that are a fixed key list. */
+type RuleParams<K extends keyof InvalidationRules> = InvalidationRules[K] extends (...args: infer P) => unknown
+    ? P
+    : [];
+
 /**
- * Helper to invalidate caches based on action type
+ * Resolve an action to the cache keys it invalidates
+ *
+ * Typed against the rules themselves, so a call site cannot name a rule that does not
+ * exist, nor forget the divisionId that a division-scoped rule needs.
  */
-export function getInvalidationKeys(action: keyof typeof CACHE_INVALIDATION_RULES, ...params: any[]): string[] {
-    const rule = CACHE_INVALIDATION_RULES[action];
+export function getInvalidationKeys<K extends keyof InvalidationRules>(
+    action: K,
+    ...params: RuleParams<K>
+): string[] {
+    const rule: unknown = CACHE_INVALIDATION_RULES[action];
     if (typeof rule === 'function') {
-        return rule(...params);
+        return [...(rule as (...args: RuleParams<K>) => readonly string[])(...params)];
     }
-    return rule || [];
+    return [...(rule as readonly string[])];
 }

@@ -9,7 +9,7 @@ import type {
     ProcessedCupSheetData,
 } from '../../../cup/types/cup-types';
 import type { DivisionId, ManagerId } from '../../../teams/types/team-types';
-import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
+import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
 import { appendToSheet, createAppError, readSheetRange, type SheetRange, writeSheetRange } from './utils/common';
@@ -157,7 +157,7 @@ export async function addCupSubmission(submission: ProcessedCupSheetData): Promi
         };
 
         await appendToSheet(sheetRange, rows);
-        dataCache.invalidate(CACHE_KEYS.SHEETS.CUP);
+        dataCache.invalidateMultiple(getInvalidationKeys('CUP_SUBMITTED'));
     } catch (error) {
         throw createAppError('CUP_ADD_ERROR', 'Failed to add cup submission to sheet', error);
     }
@@ -199,8 +199,7 @@ export async function writeCupConfig(config: CupConfig): Promise<void> {
         // Overwrite (not append) so the config is a single authoritative block.
         const range: SheetRange = { spreadsheetId, range: `'${CUP_CONFIG_SHEET_NAME}'!A:B` };
         await writeSheetRange(range, rows);
-        dataCache.invalidate(CACHE_KEYS.SHEETS.CUP_CONFIG);
-        dataCache.invalidate(CACHE_KEYS.SHEETS.CUP);
+        dataCache.invalidateMultiple(getInvalidationKeys('CUP_CONFIG_CHANGED'));
     } catch (error) {
         throw createAppError('CUP_CONFIG_WRITE_ERROR', 'Failed to write cup config to sheet', error);
     }
@@ -265,7 +264,7 @@ export async function writeCupBracket(matchups: CupMatchup[]): Promise<void> {
         ];
         const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:G` };
         await writeSheetRange(range, rows);
-        dataCache.invalidate(CACHE_KEYS.SHEETS.CUP_BRACKET);
+        dataCache.invalidateMultiple(getInvalidationKeys('CUP_BRACKET_UPDATED'));
     } catch (error) {
         throw createAppError('CUP_BRACKET_WRITE_ERROR', 'Failed to write cup bracket to sheet', error);
     }

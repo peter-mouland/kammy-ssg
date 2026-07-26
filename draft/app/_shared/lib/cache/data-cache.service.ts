@@ -142,11 +142,12 @@ export class DataCacheService {
 
     /**
      * Invalidate all cache entries matching a pattern
+     * See matchesPattern for the supported forms
      */
     invalidatePattern(pattern: string): number {
         let deletedCount = 0;
-        for (const key of this.cache.keys()) {
-            if (key.includes(pattern)) {
+        for (const key of Array.from(this.cache.keys())) {
+            if (this.matchesPattern(key, pattern)) {
                 this.cache.delete(key);
                 deletedCount++;
             }
@@ -160,13 +161,13 @@ export class DataCacheService {
 
     /**
      * Invalidate multiple cache keys
+     * Entries may be exact keys or patterns, so an invalidation rule can cover a whole
+     * family of keys (e.g. 'fpl:player-stats:') without listing every player id
      */
-    invalidateMultiple(keys: string[]): number {
+    invalidateMultiple(patterns: string[]): number {
         let deletedCount = 0;
-        for (const key of keys) {
-            if (this.cache.delete(key)) {
-                deletedCount++;
-            }
+        for (const pattern of patterns) {
+            deletedCount += this.invalidatePattern(pattern);
         }
 
         if (deletedCount > 0) {
@@ -254,29 +255,16 @@ export class DataCacheService {
     }
 
     /**
-     * Delete all cache entries matching a pattern
-     * Used for clearing individual player stats caches
-     */
-    deletePattern(pattern: string): number {
-        let deletedCount = 0;
-        const keys = Array.from(this.cache.keys());
-
-        for (const key of keys) {
-            if (this.matchesPattern(key, pattern)) {
-                this.cache.delete(key);
-                deletedCount++;
-            }
-        }
-
-        if (deletedCount > 0) {
-            console.log(`🗑️ CACHE PATTERN DELETE: ${pattern} (${deletedCount} entries)`);
-        }
-        return deletedCount;
-    }
-
-    /**
      * Check if a key matches a pattern
-     * Supports patterns like 'fpl:player-stats:*' or 'fpl:player-stats:'
+     *
+     * Three forms, all anchored at the start of the key:
+     *   'fpl:player-stats:*'  trailing star  -> every key under that prefix
+     *   'fpl:player-stats:'   trailing colon -> every key under that prefix
+     *   'fpl:bootstrap'       anything else  -> that key exactly
+     *
+     * Anchoring matters: an unanchored match would let a pattern of 'transfers:'
+     * silently clear 'sheets:transfers:leagueOne', hiding call sites that are using
+     * the wrong prefix instead of failing loudly.
      */
     private matchesPattern(key: string, pattern: string): boolean {
         if (pattern.endsWith('*')) {

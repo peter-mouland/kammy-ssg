@@ -1,6 +1,6 @@
 // app/admin/server/services/admin-orchestrator.service.ts
 
-import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
+import { getInvalidationKeys } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { FirestoreClearService } from '../../../_shared/lib/firestore-cache/clear-service';
 import { FplFirestore } from '../../../_shared/lib/fpl/fpl-firestore';
@@ -86,31 +86,26 @@ export class AdminOrchestrator {
                     break;
                 case 'startDraft':
                     result = await draftService.startDraft(params.divisionId);
-                    this.invalidateCachesForAction('processDraft');
                     break;
                 case 'stopDraft':
                     result = await draftService.stopDraft(params.divisionId);
-                    this.invalidateCachesForAction('processDraft');
                     break;
                 case 'syncDraft':
                     result = await draftService.syncDraft(params.divisionId);
-                    // Invalidate sync comparison cache after sync
-                    this.invalidateSyncComparisonCache(params.divisionId);
                     break;
                 case 'commitTeamsToFirestore':
                     result = await draftService.commitDraft(params.divisionId);
                     break;
                 case 'reset':
                     result = await draftService.resetDraft(params.divisionId);
-                    this.invalidateCachesForAction('processDraft');
-                    this.invalidateSyncComparisonCache(params.divisionId);
                     break;
                 default:
                     throw new Error(`Unknown draft action: ${params.type}`);
             }
 
-            // Invalidate caches after draft processing
-            this.invalidateCachesForAction('processDraft');
+            // Every draft action invalidates the same set, including the sync comparison
+            // caches, so one call after the switch covers all of them
+            dataCache.invalidateMultiple(getInvalidationKeys('DRAFT_ACTION', params.divisionId));
 
             return {
                 success: result.success,
@@ -122,69 +117,6 @@ export class AdminOrchestrator {
                 success: false,
                 message: error instanceof Error ? error.message : 'Draft processing failed',
             };
-        }
-    }
-
-    /**
-     * Invalidate sync comparison cache for a specific division
-     */
-    private invalidateSyncComparisonCache(divisionId?: DivisionId): void {
-        try {
-            // Invalidate the comparison cache for this division and all comparisons
-            if (divisionId) {
-                dataCache.invalidate(`${CACHE_KEYS.DRAFT_SYNC?.COMPARISON?.(divisionId)}`);
-            }
-            dataCache.invalidate(`${CACHE_KEYS.DRAFT_SYNC?.ALL_COMPARISONS}`);
-            console.log(`🗑️ Draft sync comparison cache invalidated for division: ${divisionId || 'all'}`);
-        } catch (error) {
-            console.warn('Failed to invalidate sync comparison cache:', error);
-        }
-    }
-
-    /**
-     * Invalidate relevant caches after actions
-     */
-    private invalidateCachesForAction(action: string): void {
-        const cacheKeysToInvalidate = [];
-
-        switch (action) {
-            case 'populateBootstrapData': {
-                cacheKeysToInvalidate.push(CACHE_KEYS.FPL.PLAYERS, CACHE_KEYS.FPL.TEAMS, CACHE_KEYS.FPL.EVENTS);
-                break;
-            }
-
-            case 'processTransfers':
-            case 'processDraft': {
-                cacheKeysToInvalidate.push(
-                    'transfers:*', // Pattern to invalidate all transfer caches
-                    'draft:*', // Pattern to invalidate all draft caches
-                );
-                break;
-            }
-
-            case 'updateGameweekPoints':
-            case 'processGameweek': {
-                cacheKeysToInvalidate.push(
-                    'gameweek:*', // Pattern to invalidate all gameweek caches
-                    'scoring:*', // Pattern to invalidate all scoring caches
-                );
-                break;
-            }
-
-            default: {
-                break;
-            }
-        }
-
-        // Invalidate the cache keys
-        for (const key of cacheKeysToInvalidate) {
-            if (key.includes('*')) {
-                console.log(`🗑️ Cache pattern invalidation needed: ${key}`);
-                dataCache.invalidatePattern(key);
-            } else {
-                dataCache.invalidate(key);
-                console.log(`🗑️ Cache invalidated: ${key}`);
-            }
         }
     }
 
@@ -283,7 +215,7 @@ export class AdminOrchestrator {
 
     public async preloadCommonData() {
         const result = await firestore.preloadCommonData();
-        this.invalidateCachesForAction('populateBootstrapData');
+        dataCache.invalidateMultiple(getInvalidationKeys('FPL_DATA_UPDATED'));
         return result;
     }
 
