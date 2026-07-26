@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { ownershipLimit } from './ownership-validator';
 import {
-    MGR1, MGR2,
-    PLAYER_CB1, PLAYER_FREE_CB, PLAYER_MID1, PLAYER_FREE_MID,
+    MGR1,
+    MGR2,
+    PLAYER_CB1,
+    PLAYER_FREE_CB,
+    PLAYER_MID1,
+    PLAYER_FREE_MID,
     MGR2_CB1,
-    makeContext, makeDivisionRosters, makeRosterWithLoanOut, makeTransfer,
+    makeContext,
+    makeDivisionRosters,
+    makeRosterWithLoanOut,
+    makeTransfer,
 } from './fixtures';
 
 describe('ownershipLimit — TRANSFER', () => {
@@ -22,7 +29,7 @@ describe('ownershipLimit — TRANSFER', () => {
         expect(result.message).toMatch(/Owned by/);
     });
 
-    it('blocks when playerIn is already in the requesting manager\'s own team', () => {
+    it("blocks when playerIn is already in the requesting manager's own team", () => {
         const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_MID1, playerOut: PLAYER_MID1 });
         const result = ownershipLimit(makeContext(transfer));
         expect(result.passed).toBe(false);
@@ -44,7 +51,7 @@ describe('ownershipLimit — LOAN_START', () => {
         const transfer = makeTransfer({
             transferType: 'LOAN_START',
             managerId: MGR2,
-            playerIn: PLAYER_CB1,   // owned by MGR1
+            playerIn: PLAYER_CB1, // owned by MGR1
             playerOut: PLAYER_FREE_CB,
         });
         const result = ownershipLimit(makeContext(transfer));

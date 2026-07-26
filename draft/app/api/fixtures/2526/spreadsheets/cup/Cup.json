@@ -1,29 +1,29 @@
 {
-  "range": "Cup!A1:Z1009",
-  "majorDimension": "ROWS",
-  "values": [
-    [
-      "Status",
-      "Timestamp",
-      "Manager",
-      "Division",
-      "Gameweek",
-      "Stage",
-      "Leg",
-      "Players",
-      "SubmittedByAdmin",
-      "AdminReason"
-    ],
-    [
-      "",
-      "2026-07-06T12:40:48.243Z",
-      "Tim",
-      "championship",
-      "21",
-      "league",
-      "1",
-      "215059,180736,204480,232928",
-      "FALSE"
+    "range": "Cup!A1:Z1009",
+    "majorDimension": "ROWS",
+    "values": [
+        [
+            "Status",
+            "Timestamp",
+            "Manager",
+            "Division",
+            "Gameweek",
+            "Stage",
+            "Leg",
+            "Players",
+            "SubmittedByAdmin",
+            "AdminReason"
+        ],
+        [
+            "",
+            "2026-07-06T12:40:48.243Z",
+            "Tim",
+            "championship",
+            "21",
+            "league",
+            "1",
+            "215059,180736,204480,232928",
+            "FALSE"
+        ]
     ]
-  ]
 }

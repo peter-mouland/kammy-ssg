@@ -1,136 +1,32 @@
 {
-  "range": "'FPL Team Codes'!A1:Z1000",
-  "majorDimension": "ROWS",
-  "values": [
-    [
-      3,
-      "Arsenal",
-      "ARS"
-    ],
-    [
-      7,
-      "Aston Villa",
-      "AVL"
-    ],
-    [
-      91,
-      "Bournemouth",
-      "BOU"
-    ],
-    [
-      94,
-      "Brentford",
-      "BRE"
-    ],
-    [
-      36,
-      "Brighton",
-      "BHA"
-    ],
-    [
-      8,
-      "Chelsea",
-      "CHE"
-    ],
-    [
-      31,
-      "Crystal Palace",
-      "CRY"
-    ],
-    [
-      11,
-      "Everton",
-      "EVE"
-    ],
-    [
-      54,
-      "Fulham",
-      "FUL"
-    ],
-    [
-      13,
-      "Leicester",
-      "LEI"
-    ],
-    [
-      2,
-      "Leeds",
-      "LEE"
-    ],
-    [
-      14,
-      "Liverpool",
-      "LIV"
-    ],
-    [
-      43,
-      "Man City",
-      "MCY"
-    ],
-    [
-      1,
-      "Man Utd",
-      "MNU"
-    ],
-    [
-      4,
-      "Newcastle",
-      "NEW"
-    ],
-    [
-      17,
-      "Nott'm Forest",
-      "NTG"
-    ],
-    [
-      20,
-      "Southampton",
-      "SOU"
-    ],
-    [
-      6,
-      "Spurs",
-      "TOT"
-    ],
-    [
-      21,
-      "West Ham",
-      "WHM"
-    ],
-    [
-      39,
-      "Wolves",
-      "WOL"
-    ],
-    [
-      90,
-      "Burnley",
-      "BUR"
-    ],
-    [
-      102,
-      "Luton Town",
-      "LUT"
-    ],
-    [
-      49,
-      "Sheff United",
-      "SHU"
-    ],
-    [
-      40,
-      "Ipswich",
-      "IPS"
-    ],
-    [
-      56,
-      "Sunderland",
-      "SUN"
-    ],
-    [
-      90,
-      "Burnley",
-      "BUR"
+    "range": "'FPL Team Codes'!A1:Z1000",
+    "majorDimension": "ROWS",
+    "values": [
+        [3, "Arsenal", "ARS"],
+        [7, "Aston Villa", "AVL"],
+        [91, "Bournemouth", "BOU"],
+        [94, "Brentford", "BRE"],
+        [36, "Brighton", "BHA"],
+        [8, "Chelsea", "CHE"],
+        [31, "Crystal Palace", "CRY"],
+        [11, "Everton", "EVE"],
+        [54, "Fulham", "FUL"],
+        [13, "Leicester", "LEI"],
+        [2, "Leeds", "LEE"],
+        [14, "Liverpool", "LIV"],
+        [43, "Man City", "MCY"],
+        [1, "Man Utd", "MNU"],
+        [4, "Newcastle", "NEW"],
+        [17, "Nott'm Forest", "NTG"],
+        [20, "Southampton", "SOU"],
+        [6, "Spurs", "TOT"],
+        [21, "West Ham", "WHM"],
+        [39, "Wolves", "WOL"],
+        [90, "Burnley", "BUR"],
+        [102, "Luton Town", "LUT"],
+        [49, "Sheff United", "SHU"],
+        [40, "Ipswich", "IPS"],
+        [56, "Sunderland", "SUN"],
+        [90, "Burnley", "BUR"]
     ]
-  ]
 }

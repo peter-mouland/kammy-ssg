@@ -1,15 +1,5 @@
 {
-  "range": "CupBracket!A1:Z1000",
-  "majorDimension": "ROWS",
-  "values": [
-    [
-      "Stage",
-      "Tie",
-      "Home",
-      "Away",
-      "HomeAggregate",
-      "AwayAggregate",
-      "Winner"
-    ]
-  ]
+    "range": "CupBracket!A1:Z1000",
+    "majorDimension": "ROWS",
+    "values": [["Stage", "Tie", "Home", "Away", "HomeAggregate", "AwayAggregate", "Winner"]]
 }

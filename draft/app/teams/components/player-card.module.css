@@ -9,14 +9,14 @@
     border-radius: var(--radius-lg);
     padding: var(--space-2);
     min-width: 80px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
     transition: all 0.2s ease;
     cursor: pointer;
 }
 
 .playerCard:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 20%);
 }
 
 .playerCard:hover .playerHover {
@@ -76,7 +76,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: var(--space-1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .onPitch .playerJersey {
@@ -93,7 +93,7 @@
     color: var(--color-white);
     font-size: var(--text-sm);
     font-weight: var(--font-bold);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
 }
 
 .onPitch .jerseyNumber {
@@ -187,7 +187,7 @@
     transition: all 0.2s ease;
     z-index: 10;
     margin-bottom: var(--space-1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 .playerHover::after {

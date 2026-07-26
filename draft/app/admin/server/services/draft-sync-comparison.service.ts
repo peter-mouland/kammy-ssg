@@ -200,7 +200,7 @@ function compareData(
     for (let i = 0; i < maxPicks; i++) {
         const sheetsPick = sheetsPicks[i];
         if (!firebasePicks?.find) {
-            throw new Error('draft sync comparison service "firebasePicks?.find" error')
+            throw new Error('draft sync comparison service "firebasePicks?.find" error');
         }
         const firebasePick = firebasePicks?.find((pick) => pick.pickNumber === i + 1);
 

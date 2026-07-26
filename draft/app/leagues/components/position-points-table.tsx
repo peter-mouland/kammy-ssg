@@ -117,9 +117,7 @@ export function PositionPointsTable({
             align: 'center',
             sortable: true,
             accessor: (team) =>
-                showRankChange
-                    ? (team.positionRankChanges?.total ?? 0)
-                    : (positionRankings[team.userId]?.total ?? 0),
+                showRankChange ? (team.positionRankChanges?.total ?? 0) : (positionRankings[team.userId]?.total ?? 0),
             onSort: (data, direction) => {
                 const dir = direction === 'asc' ? 1 : -1;
                 return [...data].sort((a, b) => {

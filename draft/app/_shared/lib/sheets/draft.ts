@@ -308,9 +308,7 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
 
             // Skip header row (index 0) and look for existing row with matching divisionId
             const dataRows = allData.slice(1);
-            const divisionIdColumnIndex = headers.findIndex(header =>
-                DRAFT_STATE_HEADERS[header] === 'divisionId'
-            );
+            const divisionIdColumnIndex = headers.findIndex((header) => DRAFT_STATE_HEADERS[header] === 'divisionId');
 
             if (divisionIdColumnIndex === -1) {
                 throw new Error('divisionId column not found in draft state sheet');
@@ -343,7 +341,7 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
 
                 await writeSheetRange(updateRange, newDataRows);
                 console.log(
-                    `✅ Successfully updated draft state for division ${draftState.divisionId}: Pick #${draftState.currentPick}, User: ${draftState.currentUserId} (Row ${targetRowNumber})`
+                    `✅ Successfully updated draft state for division ${draftState.divisionId}: Pick #${draftState.currentPick}, User: ${draftState.currentUserId} (Row ${targetRowNumber})`,
                 );
             } else {
                 // Append new row for this division
@@ -354,22 +352,18 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
 
                 await appendToSheet(appendRange, newDataRows);
                 console.log(
-                    `✅ Successfully added new draft state for division ${draftState.divisionId}: Pick #${draftState.currentPick}, User: ${draftState.currentUserId}`
+                    `✅ Successfully added new draft state for division ${draftState.divisionId}: Pick #${draftState.currentPick}, User: ${draftState.currentUserId}`,
                 );
             }
         }
 
         // Invalidate cache since we've updated the data
         dataCache.delete(CACHE_KEYS.SHEETS.DRAFT_STATE);
-
     } catch (error) {
         console.error('❌ Failed to update draft state:', error);
         throw createAppError('DRAFT_STATE_UPDATE_ERROR', 'Failed to update draft state', error);
     }
 }
-
-
-
 
 /**
  * Read ALL draft states for all divisions and calculate currentPick

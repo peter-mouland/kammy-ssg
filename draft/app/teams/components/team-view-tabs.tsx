@@ -3,11 +3,7 @@ import type React from 'react';
 import type { TeamViewTabsProps } from '../types/team-view-types';
 import styles from './team-view-tabs.module.css';
 
-export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({
-    activeTab,
-    onTabChange,
-    playerCount,
-}) => {
+export const TeamViewTabs: React.FC<TeamViewTabsProps> = ({ activeTab, onTabChange, playerCount }) => {
     return (
         <div className={styles.tabsContainer}>
             <div className={styles.tabsList} role="tablist">

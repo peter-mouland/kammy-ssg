@@ -72,7 +72,9 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                             />
                             <GameweekSelector
                                 currentGameweekData={data.currentGameweekData}
-                                selectedGameweekData={isSeasonView ? data.currentGameweekData : data.selectedGameweekData}
+                                selectedGameweekData={
+                                    isSeasonView ? data.currentGameweekData : data.selectedGameweekData
+                                }
                                 availableGameweeks={data.availableGameweeks}
                                 showSeasonOption
                                 isSeasonSelected={isSeasonView}
@@ -134,9 +136,7 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
             />
 
             {/*/!* Tab Content *!/*/}
-            {activeTab === 'my-team' && (
-                <MyTeamView viewMode={viewMode} data={data} />
-            )}
+            {activeTab === 'my-team' && <MyTeamView viewMode={viewMode} data={data} />}
             {activeTab === 'all-teams' && (
                 <AllTeamsView
                     teamsByCode={data.teamsByCode}
@@ -150,9 +150,7 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                     viewMode={viewMode}
                 />
             )}
-            {activeTab === 'totw' && data.teamOfTheWeek && (
-                <TeamOfTheWeek data={data.teamOfTheWeek} />
-            )}
+            {activeTab === 'totw' && data.teamOfTheWeek && <TeamOfTheWeek data={data.teamOfTheWeek} />}
         </>
     );
 };

@@ -68,7 +68,7 @@
 }
 
 .step:not(:last-child)::after {
-    content: '';
+    content: "";
     position: absolute;
     left: 19px;
     top: calc(100% + 0.5rem);
@@ -96,14 +96,14 @@
 }
 
 .stepTitle {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.5rem;
     font-size: 1.125rem;
     font-weight: 600;
     color: #111827;
 }
 
 .stepDescription {
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.75rem;
     color: #4b5563;
     line-height: 1.5;
 }

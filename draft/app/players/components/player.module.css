@@ -64,15 +64,18 @@
         min-width: 35px;
         align-self: center;
     }
+
     &.player_cell_col {
         display: block;
         position: relative;
         text-align: center;
         align-items: center;
     }
+
     &.player_cell_col img {
         margin-top: -35px;
     }
+
     &.player_cell_col .player_cell_details {
         flex: 1;
         align-items: center;
@@ -95,6 +98,7 @@
 .player_details {
     gap: var(--spacing-2);
 }
+
 @media (min-width: 1024px) {
     .player_details {
         gap: var(--spacing-3);
@@ -279,7 +283,7 @@
 .loanIndicator {
     border-radius: var(--radius-sm);
     background: var(--color-warning);
-    color: #ffffff;
+    color: #fff;
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
     padding: 2px 6px;
@@ -343,19 +347,20 @@ NEW LAYOUT
     grid-area: position;
     text-align: center;
 }
+
 .layoutPlayerName {
     grid-area: player-name;
     text-align: center;
-    justify-self: center;
-    align-self: end;
+    place-self: end center;
     padding: 2px;
 }
+
 .layoutTeam {
     grid-area: team;
     text-align: center;
-    justify-self: center;
-    align-self: start;
+    place-self: start center;
 }
+
 .layoutOwner {
     grid-area: owner;
     text-align: center;

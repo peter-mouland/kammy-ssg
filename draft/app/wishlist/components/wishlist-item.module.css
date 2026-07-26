@@ -57,7 +57,7 @@
 .description {
     font-size: 12px;
     color: var(--color-gray-500, #6b7280);
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -129,7 +129,7 @@
     font-size: 12px;
     border: 1px solid var(--color-gray-300, #d1d5db);
     border-radius: 6px;
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     color: var(--color-gray-900, #111827);
     transition:
         border-color 0.2s ease,
@@ -139,7 +139,7 @@
 .editInput:focus {
     outline: none;
     border-color: var(--color-primary-500, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .editInput::placeholder {
@@ -169,7 +169,7 @@
 
 .saveButton {
     background-color: var(--color-primary-600, #2563eb);
-    color: var(--color-white, #ffffff);
+    color: var(--color-white, #fff);
 }
 
 .saveButton:hover:not(:disabled) {
@@ -187,11 +187,11 @@
 
 /* WishlistDetails styles */
 .details {
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     border-radius: 8px;
     box-shadow:
-        0 1px 3px 0 rgba(0, 0, 0, 0.1),
-        0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        0 1px 3px 0 rgb(0 0 0 / 10%),
+        0 1px 2px 0 rgb(0 0 0 / 6%);
     border: 1px solid var(--color-gray-200, #e5e7eb);
     overflow: hidden;
 }
@@ -224,7 +224,7 @@
 .detailsDescription {
     font-size: 14px;
     color: var(--color-gray-600, #4b5563);
-    margin: 0 0 12px 0;
+    margin: 0 0 12px;
 }
 
 .detailsMeta {
@@ -254,7 +254,7 @@
     font-size: 14px;
     border: 1px solid var(--color-gray-300, #d1d5db);
     border-radius: 6px;
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     color: var(--color-gray-900, #111827);
     transition:
         border-color 0.2s ease,
@@ -264,7 +264,7 @@
 .searchInput:focus {
     outline: none;
     border-color: var(--color-primary-500, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .searchInput::placeholder {
@@ -292,13 +292,13 @@
     font-size: 14px;
     font-weight: 500;
     color: var(--color-gray-900, #111827);
-    margin: 0 0 4px 0;
+    margin: 0 0 4px;
 }
 
 .emptyPlayersMessage {
     font-size: 14px;
     color: var(--color-gray-500, #6b7280);
-    margin: 0 0 16px 0;
+    margin: 0 0 16px;
 }
 
 .browseButton {
@@ -310,7 +310,7 @@
     font-weight: 500;
     border-radius: 6px;
     color: var(--color-gray-700, #374151);
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     text-decoration: none;
     transition: background-color 0.2s ease;
 }
@@ -371,7 +371,7 @@
     font-size: 14px;
     font-weight: 500;
     color: var(--color-gray-900, #111827);
-    margin: 0 0 2px 0;
+    margin: 0 0 2px;
 }
 
 .playerMeta {

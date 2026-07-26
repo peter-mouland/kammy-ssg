@@ -70,7 +70,8 @@
     padding-bottom: calc(var(--spacing-3) + env(safe-area-inset-bottom, 0px));
     background: var(--color-white);
     border-top: 1px solid var(--color-gray-200);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 -4px 12px rgb(0 0 0 / 6%);
+
     /* Allow transfer-type menu to paint above the footer without clipping */
     overflow: visible;
 }
@@ -174,7 +175,7 @@
 .textarea:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .textarea::placeholder {
@@ -274,7 +275,7 @@
 
 .submitButton:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
 }
 
 /* Loading state */
@@ -293,7 +294,7 @@
     margin-left: -8px;
     margin-top: -8px;
     border: 2px solid transparent;
-    border-top: 2px solid currentColor;
+    border-top: 2px solid currentcolor;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -302,6 +303,7 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -338,7 +340,7 @@
     }
 }
 
-@media (max-width: var(--breakpoint-sm)) {
+@media (max-width: 640px) {
     .transferForm {
         padding: var(--spacing-3);
         border-radius: var(--radius-md);

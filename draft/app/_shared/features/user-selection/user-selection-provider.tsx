@@ -29,14 +29,13 @@ export function UserSelectionProvider({
     redirectOnSelection = false,
     initialSelection,
 }: UserSelectionProviderProps) {
-    const { requiresSelection, showModal, setShowModal, handleUserSelect, isLoading } =
-        useUserSelection({
-            users,
-            autoShowModal: true,
-            onUserSelected,
-            redirectOnSelection,
-            initialSelection,
-        });
+    const { requiresSelection, showModal, setShowModal, handleUserSelect, isLoading } = useUserSelection({
+        users,
+        autoShowModal: true,
+        onUserSelected,
+        redirectOnSelection,
+        initialSelection,
+    });
 
     console.log({ requiresSelection, showModal });
     // Show loading state while determining user selection

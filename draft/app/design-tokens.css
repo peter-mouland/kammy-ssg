@@ -6,36 +6,31 @@
     --color-primary: #3b82f6;
     --color-primary-hover: #2563eb;
     --color-primary-light: #dbeafe;
-
     --color-secondary: #6b7280;
     --color-secondary-hover: #4b5563;
     --color-secondary-light: var(--color-gray-100);
-
     --color-success: #10b981;
     --color-success-hover: #059669;
     --color-success-text: #059669;
     --color-success-light: #d1fae5;
     --color-success-border: #86efac;
-
     --color-warning: #f59e0b;
     --color-warning-hover: #d97706;
     --color-warning-light: #fef3c7;
     --color-warning-border: #fbbf24;
     --color-warning-text: #92400e;
-
     --color-error: #ef4444;
     --color-error-hover: #dc2626;
     --color-error-text: #dc2626;
     --color-error-light: #fef2f2;
     --color-error-border: #fca5a5;
-
     --color-info: #0ea5e9;
     --color-info-hover: #0284c7;
     --color-info-light: #f0f9ff;
     --color-info-border: #0ea5e9;
 
     /* Colors - Neutral Scale */
-    --color-white: #ffffff;
+    --color-white: #fff;
     --color-gray-50: var(--color-gray-50);
     --color-gray-100: var(--color-gray-100);
     --color-gray-200: #e5e7eb;
@@ -127,10 +122,10 @@
     --line-height-relaxed: 1.75;
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 10px 10px -5px rgb(0 0 0 / 4%);
 
     /* Transitions */
     --transition-fast: 0.15s ease-out;
@@ -172,7 +167,7 @@
     --input-border: 1px solid var(--color-gray-300);
     --input-border-radius: var(--radius-md);
     --input-focus-border: var(--color-primary);
-    --input-focus-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    --input-focus-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 
     /* Status Indicators */
     --status-size: 8px;
@@ -208,6 +203,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -219,6 +215,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -230,6 +227,7 @@
     100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.7;
     }
@@ -239,6 +237,7 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -272,6 +271,7 @@
 }
 
 /* additional. probably not needed */
+
 /* Location: app/_shared/styles/missing-tokens.css */
 
 /* Add these to your existing design-tokens.css file */
@@ -287,7 +287,7 @@
     --space-8: 2rem; /* 32px */
 
     /* Additional Color Tokens */
-    --color-white: #ffffff;
+    --color-white: #fff;
     --color-gray-50: #f9fafb;
     --color-gray-100: #f3f4f6;
     --color-gray-200: #e5e7eb;
@@ -298,7 +298,6 @@
     --color-gray-700: #374151;
     --color-gray-800: #1f2937;
     --color-gray-900: #111827;
-
     --color-green-50: #f0fdf4;
     --color-green-200: #bbf7d0;
     --color-green-300: #86efac;
@@ -306,18 +305,15 @@
     --color-green-600: #16a34a;
     --color-green-700: #15803d;
     --color-green-800: #166534;
-
     --color-blue-50: #eff6ff;
     --color-blue-500: #3b82f6;
     --color-blue-600: #2563eb;
     --color-blue-700: #1d4ed8;
-
     --color-yellow-300: #fde047;
     --color-yellow-500: #eab308;
     --color-yellow-600: #ca8a04;
     --color-yellow-700: #a16207;
     --color-yellow-800: #854d0e;
-
     --color-red-500: #ef4444;
     --color-red-600: #dc2626;
     --color-red-700: #b91c1c;

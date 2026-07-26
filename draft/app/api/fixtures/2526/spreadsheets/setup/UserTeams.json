@@ -1,159 +1,31 @@
 {
-  "range": "UserTeams!A1:V1000",
-  "majorDimension": "ROWS",
-  "values": [
-    [
-      "User ID",
-      "User Name",
-      "Team Name",
-      "Division ID",
-      "Last Updated"
-    ],
-    [
-      "Andy",
-      "Andy",
-      "Andy",
-      "premierLeague",
-      "2025-05-26T19:46:08.017Z"
-    ],
-    [
-      "Chris S",
-      "Chris S",
-      "Chris S",
-      "premierLeague",
-      "2025-05-26T19:46:08.344Z"
-    ],
-    [
-      "Fitch",
-      "Fitch",
-      "Fitch",
-      "premierLeague"
-    ],
-    [
-      "Johnny",
-      "Johnny",
-      "Johnny",
-      "premierLeague"
-    ],
-    [
-      "Nick",
-      "Nick",
-      "Nick",
-      "premierLeague"
-    ],
-    [
-      "Sav",
-      "Sav",
-      "Sav",
-      "premierLeague"
-    ],
-    [
-      "Stuart",
-      "Stuart",
-      "Stuart",
-      "premierLeague"
-    ],
-    [
-      "Tom S",
-      "Tom S",
-      "Tom S",
-      "premierLeague"
-    ],
-    [
-      "Chris C",
-      "Chris C",
-      "Chris C",
-      "championship"
-    ],
-    [
-      "Howie",
-      "Howie",
-      "Howie",
-      "championship"
-    ],
-    [
-      "Luke",
-      "Luke",
-      "Luke",
-      "championship"
-    ],
-    [
-      "Paul",
-      "Paul",
-      "Paul",
-      "championship"
-    ],
-    [
-      "Phil",
-      "Phil",
-      "Phil",
-      "championship"
-    ],
-    [
-      "Tim",
-      "Tim",
-      "Tim",
-      "championship"
-    ],
-    [
-      "Tom F",
-      "Tom F",
-      "Tom F",
-      "championship"
-    ],
-    [
-      "Tony",
-      "Tony",
-      "Tony",
-      "championship"
-    ],
-    [
-      "Chris D",
-      "Chris D",
-      "Chris D",
-      "leagueOne"
-    ],
-    [
-      "Dan",
-      "Dan",
-      "Dan",
-      "leagueOne"
-    ],
-    [
-      "Dave G",
-      "Dave G",
-      "Dave G",
-      "leagueOne"
-    ],
-    [
-      "Flan",
-      "Flan",
-      "Flan",
-      "leagueOne"
-    ],
-    [
-      "Jim Bob",
-      "Jim Bob",
-      "Jim Bob",
-      "leagueOne"
-    ],
-    [
-      "Matt",
-      "Matt",
-      "Matt",
-      "leagueOne"
-    ],
-    [
-      "Max",
-      "Max",
-      "Max",
-      "leagueOne"
-    ],
-    [
-      "Naked",
-      "Naked",
-      "Naked",
-      "leagueOne"
+    "range": "UserTeams!A1:V1000",
+    "majorDimension": "ROWS",
+    "values": [
+        ["User ID", "User Name", "Team Name", "Division ID", "Last Updated"],
+        ["Andy", "Andy", "Andy", "premierLeague", "2025-05-26T19:46:08.017Z"],
+        ["Chris S", "Chris S", "Chris S", "premierLeague", "2025-05-26T19:46:08.344Z"],
+        ["Fitch", "Fitch", "Fitch", "premierLeague"],
+        ["Johnny", "Johnny", "Johnny", "premierLeague"],
+        ["Nick", "Nick", "Nick", "premierLeague"],
+        ["Sav", "Sav", "Sav", "premierLeague"],
+        ["Stuart", "Stuart", "Stuart", "premierLeague"],
+        ["Tom S", "Tom S", "Tom S", "premierLeague"],
+        ["Chris C", "Chris C", "Chris C", "championship"],
+        ["Howie", "Howie", "Howie", "championship"],
+        ["Luke", "Luke", "Luke", "championship"],
+        ["Paul", "Paul", "Paul", "championship"],
+        ["Phil", "Phil", "Phil", "championship"],
+        ["Tim", "Tim", "Tim", "championship"],
+        ["Tom F", "Tom F", "Tom F", "championship"],
+        ["Tony", "Tony", "Tony", "championship"],
+        ["Chris D", "Chris D", "Chris D", "leagueOne"],
+        ["Dan", "Dan", "Dan", "leagueOne"],
+        ["Dave G", "Dave G", "Dave G", "leagueOne"],
+        ["Flan", "Flan", "Flan", "leagueOne"],
+        ["Jim Bob", "Jim Bob", "Jim Bob", "leagueOne"],
+        ["Matt", "Matt", "Matt", "leagueOne"],
+        ["Max", "Max", "Max", "leagueOne"],
+        ["Naked", "Naked", "Naked", "leagueOne"]
     ]
-  ]
 }

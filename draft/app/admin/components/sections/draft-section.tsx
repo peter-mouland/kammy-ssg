@@ -24,13 +24,13 @@ interface DraftSectionProps {
 }
 
 export const DraftSection = ({
-                                 divisions,
-                                 draftOrders,
-                                 managers,
-                                 draftStates,
-                                 draftStatus,
-                                 draftSyncComparisons
-                             }: DraftSectionProps) => {
+    divisions,
+    draftOrders,
+    managers,
+    draftStates,
+    draftStatus,
+    draftSyncComparisons,
+}: DraftSectionProps) => {
     const userTeamsByDivision = groupByDivision(divisions, managers);
     const actionData = useActionData();
 

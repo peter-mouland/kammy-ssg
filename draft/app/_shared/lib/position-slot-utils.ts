@@ -46,9 +46,7 @@ function createPositionSlot(
 /**
  * Get all position slots for a specific position
  */
-function getPositionSlots(
-    position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca' | 'sub' | 'on_loan',
-): PositionSlotKey[] {
+function getPositionSlots(position: 'gk' | 'cb' | 'fb' | 'mid' | 'wa' | 'ca' | 'sub' | 'on_loan'): PositionSlotKey[] {
     const config = POSITION_SLOT_CONFIG[position];
     return Array.from({ length: config.max }, (_, i) => createPositionSlot(position, i));
 }

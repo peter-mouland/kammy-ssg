@@ -20,9 +20,7 @@ type NavProps = NavLinkProps | NavButtonProps;
 
 export const NavButton = (props: NavProps) => {
     const Tag = 'href' in props ? 'a' : 'button';
-    const tagProps = 'href' in props ?
-        { href: props.href } :
-        { onClick: props.onClick }
+    const tagProps = 'href' in props ? { href: props.href } : { onClick: props.onClick };
 
     return (
         <Tag {...tagProps} className={`${styles.navButton} ${props.active ? styles.active : ''}`}>

@@ -211,10 +211,7 @@ type RuleParams<K extends keyof InvalidationRules> = InvalidationRules[K] extend
  * Typed against the rules themselves, so a call site cannot name a rule that does not
  * exist, nor forget the divisionId that a division-scoped rule needs.
  */
-export function getInvalidationKeys<K extends keyof InvalidationRules>(
-    action: K,
-    ...params: RuleParams<K>
-): string[] {
+export function getInvalidationKeys<K extends keyof InvalidationRules>(action: K, ...params: RuleParams<K>): string[] {
     const rule: unknown = CACHE_INVALIDATION_RULES[action];
     if (typeof rule === 'function') {
         return [...(rule as (...args: RuleParams<K>) => readonly string[])(...params)];

@@ -41,8 +41,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
                 isHome: f.is_home,
                 difficulty: f.difficulty,
                 opponent: f.is_home
-                    ? fplTeamsById[f.team_a]?.short_name ?? String(f.team_a)
-                    : fplTeamsById[f.team_h]?.short_name ?? String(f.team_h),
+                    ? (fplTeamsById[f.team_a]?.short_name ?? String(f.team_a))
+                    : (fplTeamsById[f.team_h]?.short_name ?? String(f.team_h)),
             })),
         };
 

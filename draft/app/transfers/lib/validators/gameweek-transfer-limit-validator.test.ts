@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { validateGameweekTransferLimit } from './gameweek-transfer-limit-validator';
 import {
-    PLAYER_FREE_MID, PLAYER_FREE_CB, PLAYER_MID1, PLAYER_MID2,
-    makeContext, makeGameweek, makeTransfer,
+    PLAYER_FREE_MID,
+    PLAYER_FREE_CB,
+    PLAYER_MID1,
+    PLAYER_MID2,
+    makeContext,
+    makeGameweek,
+    makeTransfer,
 } from './fixtures';
 import type { ProcessedTransfer } from '../../types/transfer-types';
 
@@ -22,8 +27,17 @@ describe('validateGameweekTransferLimit', () => {
     it('always passes in gameweek 1 regardless of existing transfers', () => {
         const gw1 = makeGameweek(1);
         const prior = makeApprovedTransfer({ gameweekData: gw1, timestamp: new Date('2024-01-15T08:00:00Z') });
-        const prior2 = makeApprovedTransfer({ id: 'transfer-2', gameweekData: gw1, timestamp: new Date('2024-01-15T09:00:00Z') });
-        const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB, playerOut: PLAYER_MID2, gameweekData: gw1 });
+        const prior2 = makeApprovedTransfer({
+            id: 'transfer-2',
+            gameweekData: gw1,
+            timestamp: new Date('2024-01-15T09:00:00Z'),
+        });
+        const transfer = makeTransfer({
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_MID2,
+            gameweekData: gw1,
+        });
 
         const result = validateGameweekTransferLimit(makeContext(transfer, { allGameweekTransfers: [prior, prior2] }));
         expect(result.passed).toBe(true);
@@ -45,7 +59,12 @@ describe('validateGameweekTransferLimit', () => {
     it('blocks the third TRANSFER in a gameweek (limit is 2)', () => {
         const prior1 = makeApprovedTransfer({ id: 'prior-1', timestamp: new Date('2024-01-15T07:00:00Z') });
         const prior2 = makeApprovedTransfer({ id: 'prior-2', timestamp: new Date('2024-01-15T08:00:00Z') });
-        const transfer = makeTransfer({ id: 'transfer-3', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB, playerOut: PLAYER_MID2 });
+        const transfer = makeTransfer({
+            id: 'transfer-3',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_MID2,
+        });
 
         const result = validateGameweekTransferLimit(makeContext(transfer, { allGameweekTransfers: [prior1, prior2] }));
         expect(result.passed).toBe(false);
@@ -104,9 +123,17 @@ describe('validateGameweekTransferLimit', () => {
 
     it('LOAN_START and LOAN_END have no gameweek limit', () => {
         const many = Array.from({ length: 5 }, (_, i) =>
-            makeApprovedTransfer({ id: `loan-${i}`, transferType: 'LOAN_START', timestamp: new Date(`2024-01-15T${String(i).padStart(2, '0')}:00:00Z`) }),
+            makeApprovedTransfer({
+                id: `loan-${i}`,
+                transferType: 'LOAN_START',
+                timestamp: new Date(`2024-01-15T${String(i).padStart(2, '0')}:00:00Z`),
+            }),
         );
-        const transfer = makeTransfer({ transferType: 'LOAN_START', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1 });
+        const transfer = makeTransfer({
+            transferType: 'LOAN_START',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_MID1,
+        });
 
         const result = validateGameweekTransferLimit(makeContext(transfer, { allGameweekTransfers: many }));
         expect(result.passed).toBe(true);

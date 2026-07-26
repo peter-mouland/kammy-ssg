@@ -30,6 +30,7 @@
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -45,7 +46,7 @@
     align-items: center;
     padding: 8px 16px;
     background-color: var(--color-primary-600, #2563eb);
-    color: var(--color-white, #ffffff);
+    color: var(--color-white, #fff);
     font-size: 14px;
     font-weight: 500;
     border-radius: 6px;
@@ -60,7 +61,7 @@
 
 .createButton:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 10%);
 }
 
 .createIcon {
@@ -86,11 +87,11 @@
 }
 
 .sidebarCard {
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     border-radius: 8px;
     box-shadow:
-        0 1px 3px 0 rgba(0, 0, 0, 0.1),
-        0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        0 1px 3px 0 rgb(0 0 0 / 10%),
+        0 1px 2px 0 rgb(0 0 0 / 6%);
     border: 1px solid var(--color-gray-200, #e5e7eb);
     overflow: hidden;
 }
@@ -133,13 +134,13 @@
     font-size: 14px;
     font-weight: 500;
     color: var(--color-gray-900, #111827);
-    margin: 0 0 4px 0;
+    margin: 0 0 4px;
 }
 
 .emptyMessage {
     font-size: 12px;
     color: var(--color-gray-500, #6b7280);
-    margin: 0 0 16px 0;
+    margin: 0 0 16px;
 }
 
 .emptyButton {
@@ -151,7 +152,7 @@
     font-weight: 500;
     border-radius: 6px;
     color: var(--color-gray-700, #374151);
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
@@ -165,11 +166,11 @@
 }
 
 .placeholder {
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     border-radius: 8px;
     box-shadow:
-        0 1px 3px 0 rgba(0, 0, 0, 0.1),
-        0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        0 1px 3px 0 rgb(0 0 0 / 10%),
+        0 1px 2px 0 rgb(0 0 0 / 6%);
     border: 1px solid var(--color-gray-200, #e5e7eb);
     height: 384px;
     display: flex;
@@ -192,7 +193,7 @@
     font-size: 16px;
     font-weight: 500;
     color: var(--color-gray-900, #111827);
-    margin: 0 0 4px 0;
+    margin: 0 0 4px;
 }
 
 .placeholderMessage {

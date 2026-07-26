@@ -57,12 +57,7 @@ export function PendingGamesModal({ games, onClose }: PendingGamesModalProps) {
                     <h2 id="pending-games-title" className={styles.title}>
                         Pending Games
                     </h2>
-                    <button
-                        type="button"
-                        className={styles.closeButton}
-                        onClick={onClose}
-                        aria-label="Close modal"
-                    >
+                    <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close modal">
                         ×
                     </button>
                 </div>

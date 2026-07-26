@@ -5,11 +5,7 @@ import { type RefObject, useEffect } from 'react';
 /**
  * Calls `onOutside` when a mousedown happens outside `ref`, while `enabled` is true.
  */
-export function useClickOutside(
-    ref: RefObject<HTMLElement | null>,
-    onOutside: () => void,
-    enabled: boolean,
-): void {
+export function useClickOutside(ref: RefObject<HTMLElement | null>, onOutside: () => void, enabled: boolean): void {
     useEffect(() => {
         if (!enabled) {
             return;

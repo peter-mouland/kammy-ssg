@@ -40,7 +40,7 @@
 }
 
 .navButton {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     cursor: pointer;
@@ -70,7 +70,7 @@
 
 .gameweekButton {
     width: 100%;
-    background: #ffffff;
+    background: #fff;
     border: 2px solid var(--color-primary);
     border-radius: 6px;
     padding: 4px 6px;
@@ -112,10 +112,10 @@
 }
 
 .dropdownContent {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
     max-height: 200px;
     overflow-y: auto;
 }
@@ -175,10 +175,10 @@
     width: 12px;
     height: 12px;
     background: var(--color-primary);
-    border: 2px solid #ffffff;
+    border: 2px solid #fff;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
     transition: left 0.3s ease;
 }
 

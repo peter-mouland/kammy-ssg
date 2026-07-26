@@ -82,14 +82,7 @@ export function MobileNav({ items, logo, statusBadge }: MobileNavProps) {
             </div>
 
             {/* Overlay */}
-            {isOpen && (
-                <button
-                    type="button"
-                    className={styles.overlay}
-                    aria-label="Close menu"
-                    onClick={closeMenu}
-                />
-            )}
+            {isOpen && <button type="button" className={styles.overlay} aria-label="Close menu" onClick={closeMenu} />}
 
             {/* Mobile menu */}
             <nav className={`${styles.mobileMenu} ${isOpen ? styles.mobileMenuOpen : ''}`} aria-hidden={!isOpen}>

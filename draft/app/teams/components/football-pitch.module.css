@@ -3,23 +3,24 @@
 .footballPitch {
     background: linear-gradient(90deg, #2d5a2d 0%, #4a7c4a 25%, #2d5a2d 50%, #4a7c4a 75%, #2d5a2d 100%);
 
-    /*aspect-ratio: 2/3;*/
-    /*background-size: 20px 20px;*/
+    /* aspect-ratio: 2/3; */
+
+    /* background-size: 20px 20px; */
     border-radius: var(--radius-lg);
     padding: 24px;
     min-height: 500px;
     position: relative;
-    border: 3px solid #ffffff;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 3px solid #fff;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
 }
 
 .pitchBackground {
     position: relative;
     height: 100%;
     min-height: 450px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgb(255 255 255 / 30%);
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(255 255 255 / 10%);
 }
 
 .centralAttackerLine,
@@ -80,14 +81,14 @@
     left: 30%;
     right: 30%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 80%);
     border-radius: 3px;
 }
 
 .goalLine {
     width: 100%;
     height: 2px;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgb(255 255 255 / 60%);
     margin-top: 2px;
 }
 
@@ -98,23 +99,23 @@
     left: 25%;
     right: 25%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 80%);
     border-radius: 3px;
 }
 
 .penaltyLine {
     width: 100%;
     height: 2px;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgb(255 255 255 / 60%);
 }
 
 /* Empty slot styling */
 .emptySlot {
     width: 80px;
     height: 60px;
-    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border: 2px dashed rgb(255 255 255 / 40%);
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(255 255 255 / 10%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -123,7 +124,7 @@
 
 .emptySlotLabel {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.7);
+    color: rgb(255 255 255 / 70%);
     font-weight: var(--font-weight-semibold);
     text-align: center;
 }
@@ -133,11 +134,12 @@
 .formation {
     padding: 8px;
 }
+
 .formationInfo {
     position: absolute;
     bottom: 12px;
     right: 12px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgb(0 0 0 / 70%);
     color: white;
     padding: 6px 12px;
     border-radius: var(--radius-md);
@@ -146,7 +148,7 @@
 
 .gameweekInfo {
     font-size: var(--font-xs);
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(255 255 255 / 80%);
     margin-top: 2px;
 }
 

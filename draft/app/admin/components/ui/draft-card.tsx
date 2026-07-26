@@ -86,7 +86,6 @@ const getDivisionStatus = ({ teams, orders, draftState, draftStatus, division }:
             action: 'stopDraft',
             variant: 'stop',
         });
-
     }
     if (draftStatus?.byDivision?.[division.id].isCommitted || draftState?.isActive) {
         actions.push({
@@ -140,22 +139,22 @@ export const DraftCard = ({ division, teams, orders, draftStates, draftStatus }:
                     </div>
                 </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1em'}}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1em' }}>
                 {divisionStati.map((divisionStatus, idx) => {
                     return (
                         <div>
                             <button
-                            key={idx}
-                            type={'button'}
-                            onClick={() => divisionStatus.action && handleAction(divisionStatus.action)}
-                            className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}
-                            disabled={divisionStatus.disabled || isLoading}
-                        >
-                            {isLoading ? 'Loading...' : divisionStatus.status}
-                        </button>
-                        {divisionStatus.message && <div className={styles.orderInfo}>{divisionStatus.message}</div>}
-                    </div>
-                    )
+                                key={idx}
+                                type={'button'}
+                                onClick={() => divisionStatus.action && handleAction(divisionStatus.action)}
+                                className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}
+                                disabled={divisionStatus.disabled || isLoading}
+                            >
+                                {isLoading ? 'Loading...' : divisionStatus.status}
+                            </button>
+                            {divisionStatus.message && <div className={styles.orderInfo}>{divisionStatus.message}</div>}
+                        </div>
+                    );
                 })}
             </div>
         </div>

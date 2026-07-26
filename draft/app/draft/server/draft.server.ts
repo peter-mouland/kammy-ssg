@@ -39,7 +39,7 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     const divisionId: DivisionId = divisionIdParam || currentUserInfo?.divisionId;
 
     // Get division-specific draft state
-    const draftStates = await readAllDraftStates()
+    const draftStates = await readAllDraftStates();
     const draftState = draftStates.find((ds) => ds.divisionId === divisionId) || draftStates[0];
 
     let draftPicks: DraftPickData[] = [];
@@ -104,7 +104,9 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
 /**
  * Make a draft pick for a specific division
  */
-export async function makeDraftPick(formData: FormData): Promise<{ success?: boolean; error?: string; pick?: DraftPickData }> {
+export async function makeDraftPick(
+    formData: FormData,
+): Promise<{ success?: boolean; error?: string; pick?: DraftPickData }> {
     try {
         const playerCode = Number.parseInt(formData.get('playerCode') as string, 10);
         const divisionIdParam = formData.get('divisionId') as DivisionId;
@@ -200,7 +202,7 @@ export async function makeDraftPick(formData: FormData): Promise<{ success?: boo
             isActive: !isComplete,
         });
 
-        autoCommitDraft({ draftState, nextState: updatedDraftState, totalPicks, pick })
+        autoCommitDraft({ draftState, nextState: updatedDraftState, totalPicks, pick });
 
         // Invalidate caches
         const keysToInvalidate = getInvalidationKeys('DRAFT_ACTION', divisionId);
@@ -241,8 +243,7 @@ const autoCommitDraft = async ({ draftState, nextState, totalPicks, pick }) => {
             await FirebaseDraftSync.broadcastDraftEvent(divisionId, {
                 type: 'draft-ended',
                 data: {
-                    message:
-                        'Draft completed! Auto-commit failed - please commit teams manually from the admin panel.',
+                    message: 'Draft completed! Auto-commit failed - please commit teams manually from the admin panel.',
                     completedAt: nextState.completedAt,
                     totalPicks: totalPicks + 1,
                     autoCommitted: false,
@@ -269,4 +270,4 @@ const autoCommitDraft = async ({ draftState, nextState, totalPicks, pick }) => {
         console.warn('Firebase sync or SSE broadcast failed after pick:', syncError);
         // Don't fail the pick if sync fails
     }
-}
+};

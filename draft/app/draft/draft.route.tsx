@@ -4,7 +4,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react
 import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
 import { Draft } from './draft';
-import type { DraftActionData, } from './types/draft-types';
+import type { DraftActionData } from './types/draft-types';
 import { ErrorBoundary } from '../_shared/components/error-boundary';
 
 export const meta: MetaFunction = () => {

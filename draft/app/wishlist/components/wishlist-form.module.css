@@ -27,7 +27,7 @@
     font-size: 12px;
     border: 1px solid var(--color-gray-300, #d1d5db);
     border-radius: 6px;
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     color: var(--color-gray-900, #111827);
     transition:
         border-color 0.2s ease,
@@ -37,7 +37,7 @@
 .input:focus {
     outline: none;
     border-color: var(--color-primary-500, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .input::placeholder {
@@ -100,7 +100,7 @@
 
 .primaryButton {
     background-color: var(--color-primary-600, #2563eb);
-    color: var(--color-white, #ffffff);
+    color: var(--color-white, #fff);
 }
 
 .primaryButton:hover:not(:disabled) {

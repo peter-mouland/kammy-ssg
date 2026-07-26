@@ -101,7 +101,7 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
                 </div>
 
                 <div className={styles.modalBody}>
-                    {connectionState.status === "error" && (
+                    {connectionState.status === 'error' && (
                         <div className={styles.connectionError}>
                             <span>⚠️ Connection lost</span>
                             <button className={styles.reconnectButton} onClick={reconnect}>
@@ -110,12 +110,12 @@ export function ProgressModal({ isOpen, jobId, onClose, onComplete, onError }: P
                         </div>
                     )}
 
-                    {connectionState.status === "connecting" && <div className={styles.connecting}>🔄 Connecting...</div>}
+                    {connectionState.status === 'connecting' && (
+                        <div className={styles.connecting}>🔄 Connecting...</div>
+                    )}
 
-                    {connectionState.status === "polling" && (
-                        <div className={styles.pollingMode}>
-                            📊 Using polling mode (live updates unavailable)
-                        </div>
+                    {connectionState.status === 'polling' && (
+                        <div className={styles.pollingMode}>📊 Using polling mode (live updates unavailable)</div>
                     )}
 
                     {progress && (

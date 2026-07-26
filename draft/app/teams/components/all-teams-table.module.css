@@ -70,7 +70,7 @@
 .selectInput:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .searchInput::placeholder {
@@ -130,6 +130,7 @@
 .points.negative {
     color: var(--color-red-600);
 }
+
 .points.neutral {
     color: var(--color-gray-500);
 }
@@ -152,6 +153,7 @@
         grid-template-columns: 1fr;
     }
 }
+
 @media (min-width: 1024px) {
     .points {
         font-size: var(--font-xs);
@@ -161,6 +163,7 @@
 .smallScreen {
     display: unset;
 }
+
 .largeScreen {
     display: none;
 }
@@ -169,6 +172,7 @@
     .smallScreen {
         display: none;
     }
+
     .largeScreen {
         display: unset;
     }

@@ -377,7 +377,7 @@
     width: 16px;
     height: 16px;
     border: 2px solid transparent;
-    border-top: 2px solid currentColor;
+    border-top: 2px solid currentcolor;
     border-radius: 50%;
     animation: spin var(--duration-normal) linear infinite;
 }
@@ -386,6 +386,7 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -541,6 +542,7 @@
         background-color: var(--color-primary);
         transform: scale(1.05);
     }
+
     100% {
         background-color: transparent;
         transform: scale(1);

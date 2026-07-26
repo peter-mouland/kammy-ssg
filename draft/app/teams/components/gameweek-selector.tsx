@@ -93,9 +93,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                 {/* Current Gameweek Display */}
                 <div className={styles.gameweekDisplay}>
                     <button type={'button'} onClick={() => setIsOpen(!isOpen)} className={styles.gameweekButton}>
-                        <span className={styles.gameweekNumber}>
-                            {isSeasonSelected ? 'Season' : selectedGameweek}
-                        </span>
+                        <span className={styles.gameweekNumber}>{isSeasonSelected ? 'Season' : selectedGameweek}</span>
                         <span className={styles.dropdownIcon}>▼</span>
                     </button>
 

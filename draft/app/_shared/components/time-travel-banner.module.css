@@ -4,12 +4,12 @@
     align-items: center;
     gap: 12px;
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #ffffff;
+    color: #fff;
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 16px;
     font-weight: 500;
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+    box-shadow: 0 2px 8px rgb(251 191 36 / 30%);
 }
 
 .timeTravelIcon {
@@ -17,7 +17,7 @@
 }
 
 .backToCurrentButton {
-    background: #ffffff;
+    background: #fff;
     color: #111827;
     border: none;
     padding: 8px 12px;

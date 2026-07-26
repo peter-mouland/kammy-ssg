@@ -21,11 +21,7 @@ const getPositionDisplayName = (position: string) => {
     return names[position] || position.toUpperCase();
 };
 
-export const TeamStats: React.FC<TeamStatsProps> = ({
-    teamData,
-    gameweek,
-    viewMode,
-}) => {
+export const TeamStats: React.FC<TeamStatsProps> = ({ teamData, gameweek, viewMode }) => {
     // State for contributing stats expansion
     const [isStatsExpanded, setIsStatsExpanded] = useState(false);
 

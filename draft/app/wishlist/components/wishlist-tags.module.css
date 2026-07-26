@@ -16,7 +16,7 @@
     padding: 4px 8px;
     font-size: 11px;
     font-weight: 500;
-    color: var(--color-white, #ffffff);
+    color: var(--color-white, #fff);
     border-radius: 12px;
     line-height: 1;
 }
@@ -24,7 +24,7 @@
 .dot {
     width: 6px;
     height: 6px;
-    background-color: var(--color-white, #ffffff);
+    background-color: var(--color-white, #fff);
     border-radius: 50%;
     opacity: 0.8;
 }

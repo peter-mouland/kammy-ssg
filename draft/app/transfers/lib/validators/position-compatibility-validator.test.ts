@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { validatePositionCompatibility } from './position-compatibility-validator';
 import {
-    PLAYER_CB1, PLAYER_FREE_CB, PLAYER_FREE_GK, PLAYER_FREE_MID,
-    PLAYER_MID1, PLAYER_MID2, PLAYER_SUB,
-    makeContext, makeTransfer,
+    PLAYER_CB1,
+    PLAYER_FREE_CB,
+    PLAYER_FREE_GK,
+    PLAYER_FREE_MID,
+    PLAYER_MID1,
+    PLAYER_MID2,
+    PLAYER_SUB,
+    makeContext,
+    makeTransfer,
 } from './fixtures';
 
 describe('validatePositionCompatibility — TRANSFER', () => {
@@ -30,7 +36,11 @@ describe('validatePositionCompatibility — TRANSFER', () => {
     });
 
     it('blocks when outgoing player is not found in manager roster', () => {
-        const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_FREE_CB });
+        const transfer = makeTransfer({
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_FREE_CB,
+        });
         const result = validatePositionCompatibility(makeContext(transfer));
         expect(result.passed).toBe(false);
         expect(result.message).toMatch(/not found in roster/);

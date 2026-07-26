@@ -1,5 +1,5 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
+# Formats and auto-fixes only the files you staged, then runs the tests (~2s).
+# The slower checks -- type errors and the CSS convention backlog -- run in CI via
+# `yarn ratchet`, so they do not sit between you and a commit.
+yarn lint-staged
 yarn test
-yarn run check:up-to-date-types

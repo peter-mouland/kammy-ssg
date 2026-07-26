@@ -1,9 +1,0 @@
-node_modules
-dist
-docs
-public
-compiled
-/node_modules/*
-src/**/*.spec.js
-src/**/*-copy.js
-object.assign.js

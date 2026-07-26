@@ -8,18 +8,19 @@
 
 .toggleTrack {
     --padding: var(--spacing-1); /* reused for width calcs below */
+
     position: relative;
     display: flex;
     background-color: var(--color-gray-100);
     border-radius: var(--radius-lg);
     padding: var(--padding);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 10%);
     transition: all var(--transition-normal);
 }
 
 .toggleTrack:hover {
     box-shadow:
-        inset 0 1px 3px rgba(0, 0, 0, 0.15),
+        inset 0 1px 3px rgb(0 0 0 / 15%),
         0 0 0 1px var(--color-gray-300);
 }
 
@@ -29,9 +30,12 @@
     top: var(--spacing-1);
     left: var(--spacing-1);
     height: calc(100% - var(--spacing-2));
-    /* take full with of container, minus padding-left and padding-right, divided by option-count*/
-    /* e.g. 2options = 50% (minus padding)*/
-    /* e.g. 3options = 33% (minus padding)*/
+
+    /* take full with of container, minus padding-left and padding-right, divided by option-count */
+
+    /* e.g. 2options = 50% (minus padding) */
+
+    /* e.g. 3options = 33% (minus padding) */
     width: calc(calc(100% - calc(var(--padding) * 2)) / calc(var(--options, 1)));
     background-color: var(--color-primary);
     border-radius: var(--radius-md);
@@ -45,6 +49,7 @@
 .toggleTrack:has(.toggleOption:nth-child(3):last-child) .toggleSlider {
     --options: 2;
 }
+
 .toggleTrack:has(.toggleOption:nth-child(4):last-child) .toggleSlider {
     --options: 3;
 }
@@ -53,6 +58,7 @@
 .toggleTrack:has(.toggleOption:nth-child(3).active) .toggleSlider {
     transform: translateX(100%);
 }
+
 .toggleTrack:has(.toggleOption:nth-child(4).active) .toggleSlider {
     transform: translateX(200%);
 }

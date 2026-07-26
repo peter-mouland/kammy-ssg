@@ -60,7 +60,10 @@ export async function getEnhancedLeagueStandingsData({
 
     const standingsData: Record<string, LeagueStandingsTeamData[]> = {};
 
-    standingsData[selectedDivision] = await getDivisionStandingsWithPositionRankChanges(selectedDivision, targetGameweek);
+    standingsData[selectedDivision] = await getDivisionStandingsWithPositionRankChanges(
+        selectedDivision,
+        targetGameweek,
+    );
 
     return {
         divisions,

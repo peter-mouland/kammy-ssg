@@ -43,21 +43,27 @@
 .positionRank.gk {
     color: var(--color-position-gk);
 }
+
 .positionRank.cb {
     color: var(--color-position-cb);
 }
+
 .positionRank.fb {
     color: var(--color-position-fb);
 }
+
 .positionRank.mid {
     color: var(--color-position-mid);
 }
+
 .positionRank.wa {
     color: var(--color-position-wa);
 }
+
 .positionRank.ca {
     color: var(--color-position-ca);
 }
+
 .positionRank.points-0 {
     color: var(--color-gray-400);
 }
@@ -65,6 +71,7 @@
 .mobileLabel {
     display: block;
 }
+
 .label {
     display: none;
 }
@@ -73,6 +80,7 @@
     .positionRank {
         font-size: var(--font-base);
     }
+
     .points {
         font-size: var(--font-sm);
     }
@@ -84,6 +92,7 @@
     .mobileLabel {
         display: none;
     }
+
     .label {
         display: block;
     }
@@ -125,17 +134,17 @@ tr.relegationRow td {
 }
 
 .secondPlacePrizeRow td:last-child::after {
-    content: '💰';
+    content: "💰";
 }
 
 .promotionRow td:last-child::after {
-    content: '▲';
+    content: "▲";
     color: var(--color-green-500);
     font-weight: var(--font-weight-bold);
 }
 
 .relegationRow td:last-child::after {
-    content: '▼';
+    content: "▼";
     color: var(--color-red-500);
     font-weight: var(--font-weight-bold);
 }

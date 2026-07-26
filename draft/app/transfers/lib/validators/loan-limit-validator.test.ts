@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { validateLoanLimit } from './loan-limit-validator';
-import {MGR2,
-    PLAYER_FREE_CB, PLAYER_MID1,
-    makeContext, makeDivisionRosters, makeRosterWithLoanOut, makeTransfer,
+import {
+    MGR2,
+    PLAYER_FREE_CB,
+    PLAYER_MID1,
+    makeContext,
+    makeDivisionRosters,
+    makeRosterWithLoanOut,
+    makeTransfer,
 } from './fixtures';
 
 describe('validateLoanLimit', () => {

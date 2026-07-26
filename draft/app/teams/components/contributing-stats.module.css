@@ -32,7 +32,7 @@
 }
 
 .expandButton {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #d1d5db;
     border-radius: var(--radius-sm);
     padding: 4px 8px;
@@ -58,7 +58,7 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: var(--radius-sm);
     padding: 12px;
@@ -67,7 +67,7 @@
 
 .statItem:hover {
     border-color: #d1d5db;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }
 
 .statItem.notRelevant {

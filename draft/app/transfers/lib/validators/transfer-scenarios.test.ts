@@ -11,13 +11,24 @@ import { describe, expect, it } from 'vitest';
 import type { ProcessedTransfer } from '../../types/transfer-types';
 import { getRuleValidationFunctions } from './index';
 import {
-    MGR1, MGR2,
+    MGR1,
+    MGR2,
     MGR2_MID1,
-    PLAYER_CB1, PLAYER_CB2,
-    PLAYER_FREE_CB, PLAYER_FREE_GK, PLAYER_FREE_MID,
-    PLAYER_GK, PLAYER_MID1, PLAYER_MID2, PLAYER_WA1,
-    makeContext, makeGameweek, makeMgr2Roster,
-    makeRosterWithLoanOut, makeStandardRoster, makeTransfer,
+    PLAYER_CB1,
+    PLAYER_CB2,
+    PLAYER_FREE_CB,
+    PLAYER_FREE_GK,
+    PLAYER_FREE_MID,
+    PLAYER_GK,
+    PLAYER_MID1,
+    PLAYER_MID2,
+    PLAYER_WA1,
+    makeContext,
+    makeGameweek,
+    makeMgr2Roster,
+    makeRosterWithLoanOut,
+    makeStandardRoster,
+    makeTransfer,
 } from './fixtures';
 
 // ---------------------------------------------------------------------------
@@ -25,9 +36,7 @@ import {
 // ---------------------------------------------------------------------------
 
 function validate(context: ReturnType<typeof makeContext>) {
-    return Object.fromEntries(
-        getRuleValidationFunctions(context).map((r) => [r.ruleId, r]),
-    );
+    return Object.fromEntries(getRuleValidationFunctions(context).map((r) => [r.ruleId, r]));
 }
 
 // ---------------------------------------------------------------------------
@@ -47,18 +56,38 @@ describe('valid transfers', () => {
 
     it('SWAP: sub mid and main mid swap positions within the same roster', () => {
         const roster = makeStandardRoster();
-        roster.sub_0 = { ...roster.sub_0, player: { ...roster.sub_0.player, playerCode: PLAYER_MID2.code, playerName: PLAYER_MID2.web_name, playerPosition: 'mid', isSub: true } };
-        roster.mid_1 = { ...roster.mid_1, player: { ...roster.mid_1.player, playerCode: PLAYER_MID1.code, playerName: PLAYER_MID1.web_name } };
+        roster.sub_0 = {
+            ...roster.sub_0,
+            player: {
+                ...roster.sub_0.player,
+                playerCode: PLAYER_MID2.code,
+                playerName: PLAYER_MID2.web_name,
+                playerPosition: 'mid',
+                isSub: true,
+            },
+        };
+        roster.mid_1 = {
+            ...roster.mid_1,
+            player: { ...roster.mid_1.player, playerCode: PLAYER_MID1.code, playerName: PLAYER_MID1.web_name },
+        };
 
         const transfer = makeTransfer({ transferType: 'SWAP', playerIn: PLAYER_MID1, playerOut: PLAYER_MID2 });
-        const results = validate(makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } } }));
+        const results = validate(
+            makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } } }),
+        );
 
         expect(results.ownership.passed).toBe(true);
         expect(results['position-compatibility'].passed).toBe(true);
     });
 
     it('LOAN_START: MGR2 loans in a player owned by MGR1, MGR2 loan slot is empty', () => {
-        const transfer = makeTransfer({ transferType: 'LOAN_START', managerId: MGR2, playerIn: PLAYER_CB1, playerOut: PLAYER_FREE_CB, onLoanTo: MGR2 });
+        const transfer = makeTransfer({
+            transferType: 'LOAN_START',
+            managerId: MGR2,
+            playerIn: PLAYER_CB1,
+            playerOut: PLAYER_FREE_CB,
+            onLoanTo: MGR2,
+        });
         const results = validate(makeContext(transfer));
 
         expect(results.ownership.passed).toBe(true);
@@ -99,9 +128,31 @@ describe('invalid transfers', () => {
 
     it('TRANSFER: third transfer in the same gameweek blocks on transfer-limit-per-gameweek', () => {
         const gw = makeGameweek(5);
-        const prior1: ProcessedTransfer = makeTransfer({ id: 'prior-1', transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1, status: 'APPROVED', timestamp: new Date('2024-01-15T07:00:00Z'), gameweekData: gw });
-        const prior2: ProcessedTransfer = makeTransfer({ id: 'prior-2', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB,  playerOut: PLAYER_CB1,  status: 'APPROVED', timestamp: new Date('2024-01-15T08:00:00Z'), gameweekData: gw });
-        const transfer = makeTransfer({ id: 'transfer-3', transferType: 'TRANSFER', playerIn: PLAYER_FREE_GK, playerOut: PLAYER_GK, gameweekData: gw });
+        const prior1: ProcessedTransfer = makeTransfer({
+            id: 'prior-1',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_MID1,
+            status: 'APPROVED',
+            timestamp: new Date('2024-01-15T07:00:00Z'),
+            gameweekData: gw,
+        });
+        const prior2: ProcessedTransfer = makeTransfer({
+            id: 'prior-2',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_CB1,
+            status: 'APPROVED',
+            timestamp: new Date('2024-01-15T08:00:00Z'),
+            gameweekData: gw,
+        });
+        const transfer = makeTransfer({
+            id: 'transfer-3',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_GK,
+            playerOut: PLAYER_GK,
+            gameweekData: gw,
+        });
         const results = validate(makeContext(transfer, { allGameweekTransfers: [prior1, prior2] }));
 
         expect(results['transfer-limit-per-gameweek'].passed).toBe(false);
@@ -112,8 +163,16 @@ describe('invalid transfers', () => {
         // MGR1's slot is occupied; MGR1 tries to loan in MGR2_MID1 (owned by MGR2).
         // playerIn is owned by another manager so ownership passes — only loan-limit fires.
         const roster = makeRosterWithLoanOut(PLAYER_WA1, MGR2);
-        const transfer = makeTransfer({ transferType: 'LOAN_START', managerId: MGR1, playerIn: MGR2_MID1, playerOut: PLAYER_FREE_CB, onLoanTo: MGR1 });
-        const results = validate(makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } } }));
+        const transfer = makeTransfer({
+            transferType: 'LOAN_START',
+            managerId: MGR1,
+            playerIn: MGR2_MID1,
+            playerOut: PLAYER_FREE_CB,
+            onLoanTo: MGR1,
+        });
+        const results = validate(
+            makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } } }),
+        );
 
         expect(results['loan-limit'].passed).toBe(false);
         expect(results.ownership.passed).toBe(true);
@@ -141,11 +200,22 @@ describe('invalid transfers', () => {
         const sameTeam2 = { ...PLAYER_FREE_MID, id: 99, code: 299, web_name: 'SameTeam2' };
         roster.mid_0 = { ...roster.mid_0, player: { ...roster.mid_0.player, playerCode: sameTeam1.code } };
         roster.mid_1 = { ...roster.mid_1, player: { ...roster.mid_1.player, playerCode: sameTeam2.code } };
-        const baseCtx = makeContext(makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_CB1 }));
-        const fplPlayersByCode = { ...baseCtx.fplPlayersByCode, [sameTeam1.code]: sameTeam1, [sameTeam2.code]: sameTeam2 };
+        const baseCtx = makeContext(
+            makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_CB1 }),
+        );
+        const fplPlayersByCode = {
+            ...baseCtx.fplPlayersByCode,
+            [sameTeam1.code]: sameTeam1,
+            [sameTeam2.code]: sameTeam2,
+        };
 
         const transfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_CB1 });
-        const results = validate(makeContext(transfer, { divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } }, fplPlayersByCode }));
+        const results = validate(
+            makeContext(transfer, {
+                divisionRosters: { [MGR1]: { roster }, [MGR2]: { roster: makeMgr2Roster() } },
+                fplPlayersByCode,
+            }),
+        );
 
         expect(results.teamCountLimit.passed).toBe(false);
         expect(results.ownership.passed).toBe(true); // player is a free agent
@@ -159,9 +229,31 @@ describe('invalid transfers', () => {
 describe('cross-validator edge cases', () => {
     it('gameweek 1 bypasses the transfer limit regardless of how many prior transfers exist', () => {
         const gw1 = makeGameweek(1);
-        const prior1: ProcessedTransfer = makeTransfer({ id: 'prior-1', transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1, status: 'APPROVED', timestamp: new Date('2024-01-15T07:00:00Z'), gameweekData: gw1 });
-        const prior2: ProcessedTransfer = makeTransfer({ id: 'prior-2', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB,  playerOut: PLAYER_CB1,  status: 'APPROVED', timestamp: new Date('2024-01-15T08:00:00Z'), gameweekData: gw1 });
-        const transfer = makeTransfer({ id: 'transfer-3', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB, playerOut: PLAYER_CB2, gameweekData: gw1 });
+        const prior1: ProcessedTransfer = makeTransfer({
+            id: 'prior-1',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_MID1,
+            status: 'APPROVED',
+            timestamp: new Date('2024-01-15T07:00:00Z'),
+            gameweekData: gw1,
+        });
+        const prior2: ProcessedTransfer = makeTransfer({
+            id: 'prior-2',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_CB1,
+            status: 'APPROVED',
+            timestamp: new Date('2024-01-15T08:00:00Z'),
+            gameweekData: gw1,
+        });
+        const transfer = makeTransfer({
+            id: 'transfer-3',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_CB2,
+            gameweekData: gw1,
+        });
         const results = validate(makeContext(transfer, { allGameweekTransfers: [prior1, prior2] }));
 
         expect(results['transfer-limit-per-gameweek'].passed).toBe(true);
@@ -169,9 +261,31 @@ describe('cross-validator edge cases', () => {
 
     it('REJECTED transfers do not count toward the gameweek limit', () => {
         const gw = makeGameweek(5);
-        const rejected1: ProcessedTransfer = makeTransfer({ id: 'rej-1', transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1, status: 'REJECTED', timestamp: new Date('2024-01-15T07:00:00Z'), gameweekData: gw });
-        const rejected2: ProcessedTransfer = makeTransfer({ id: 'rej-2', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB,  playerOut: PLAYER_CB1,  status: 'REJECTED', timestamp: new Date('2024-01-15T08:00:00Z'), gameweekData: gw });
-        const transfer = makeTransfer({ id: 'transfer-1', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB, playerOut: PLAYER_CB2, gameweekData: gw });
+        const rejected1: ProcessedTransfer = makeTransfer({
+            id: 'rej-1',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_MID1,
+            status: 'REJECTED',
+            timestamp: new Date('2024-01-15T07:00:00Z'),
+            gameweekData: gw,
+        });
+        const rejected2: ProcessedTransfer = makeTransfer({
+            id: 'rej-2',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_CB1,
+            status: 'REJECTED',
+            timestamp: new Date('2024-01-15T08:00:00Z'),
+            gameweekData: gw,
+        });
+        const transfer = makeTransfer({
+            id: 'transfer-1',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_CB2,
+            gameweekData: gw,
+        });
         const results = validate(makeContext(transfer, { allGameweekTransfers: [rejected1, rejected2] }));
 
         expect(results['transfer-limit-per-gameweek'].passed).toBe(true);
@@ -179,9 +293,31 @@ describe('cross-validator edge cases', () => {
 
     it('PENDING transfers DO count toward the gameweek limit — managers cannot queue past the limit', () => {
         const gw = makeGameweek(5);
-        const pending1: ProcessedTransfer = makeTransfer({ id: 'pend-1', transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1, status: 'PENDING', timestamp: new Date('2024-01-15T07:00:00Z'), gameweekData: gw });
-        const pending2: ProcessedTransfer = makeTransfer({ id: 'pend-2', transferType: 'TRANSFER', playerIn: PLAYER_FREE_CB,  playerOut: PLAYER_CB1,  status: 'PENDING', timestamp: new Date('2024-01-15T08:00:00Z'), gameweekData: gw });
-        const transfer = makeTransfer({ id: 'transfer-3', transferType: 'TRANSFER', playerIn: PLAYER_FREE_GK, playerOut: PLAYER_GK, gameweekData: gw });
+        const pending1: ProcessedTransfer = makeTransfer({
+            id: 'pend-1',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_MID1,
+            status: 'PENDING',
+            timestamp: new Date('2024-01-15T07:00:00Z'),
+            gameweekData: gw,
+        });
+        const pending2: ProcessedTransfer = makeTransfer({
+            id: 'pend-2',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_CB,
+            playerOut: PLAYER_CB1,
+            status: 'PENDING',
+            timestamp: new Date('2024-01-15T08:00:00Z'),
+            gameweekData: gw,
+        });
+        const transfer = makeTransfer({
+            id: 'transfer-3',
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_GK,
+            playerOut: PLAYER_GK,
+            gameweekData: gw,
+        });
         const results = validate(makeContext(transfer, { allGameweekTransfers: [pending1, pending2] }));
 
         expect(results['transfer-limit-per-gameweek'].passed).toBe(false);

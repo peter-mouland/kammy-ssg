@@ -25,18 +25,16 @@ export function PlayerFixtureTable({ fixtureData }) {
             width: 80,
             fixed: true,
             render: (_gameweek, fixture) => (
-                    <div
-                        style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', flexDirection: 'row' }}
-                    >
-                        <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{fixture.event_name}</span>
-                        <span>
-                            {new Date(fixture.kickoff_time).toLocaleDateString('en-GB', {
-                                day: 'numeric',
-                                month: 'short',
-                            })}
-                        </span>
-                    </div>
-                ),
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', flexDirection: 'row' }}>
+                    <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>{fixture.event_name}</span>
+                    <span>
+                        {new Date(fixture.kickoff_time).toLocaleDateString('en-GB', {
+                            day: 'numeric',
+                            month: 'short',
+                        })}
+                    </span>
+                </div>
+            ),
         },
         {
             key: 'opponent',

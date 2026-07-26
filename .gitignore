@@ -30,6 +30,11 @@ aws
 /.env.development
 .npmrc
 
+# Service account credentials - never commit these
+*adminsdk*.json
+*service-account*.json
+*serviceAccount*.json
+
 # Local Netlify folder
 .netlify
 

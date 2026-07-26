@@ -14,12 +14,7 @@ import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import type { GameWeekData } from '../fpl/fpl-types';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
-import {
-    appendToSheet,
-    createAppError,
-    readSheetRange,
-    type SheetRange,
-} from './utils/common';
+import { appendToSheet, createAppError, readSheetRange, type SheetRange } from './utils/common';
 import { readDataFromSheet } from './utils/read-data-from-sheets';
 
 const TRANSFERS_HEADERS: Record<keyof TransferSheetData, keyof ProcessedTransferSheetData> = {

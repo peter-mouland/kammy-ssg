@@ -8,7 +8,7 @@
 }
 
 .title {
-    margin: 0 0 1rem 0;
+    margin: 0 0 1rem;
     font-size: var(--font-lg);
     font-weight: var(--font-weight-semibold);
 }
@@ -18,17 +18,16 @@
     border-radius: var(--radius-lg);
     padding: 20px;
     position: relative;
-    border: 3px solid #ffffff;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 3px solid #fff;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
     width: clamp(min(100%, 768px), 325px, max(100%, 768px));
-
 }
 
 .pitchInner {
     position: relative;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgb(255 255 255 / 30%);
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgb(255 255 255 / 5%);
     padding: 16px 8px;
 }
 
@@ -39,7 +38,7 @@
     left: 30%;
     right: 30%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 80%);
     border-radius: 3px;
 }
 
@@ -49,7 +48,7 @@
     left: 25%;
     right: 25%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(255 255 255 / 80%);
     border-radius: 3px;
 }
 
@@ -95,8 +94,8 @@
     height: 56px;
     border-radius: 50%;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: rgb(255 255 255 / 15%);
+    border: 2px solid rgb(255 255 255 / 50%);
     margin-bottom: 4px;
 }
 
@@ -112,7 +111,7 @@
     font-weight: var(--font-weight-semibold);
     text-align: center;
     line-height: 1.2;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 3px rgb(0 0 0 / 60%);
     max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -121,16 +120,16 @@
 
 .team {
     font-size: 9px;
-    color: rgba(255, 255, 255, 0.7);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    color: rgb(255 255 255 / 70%);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .manager {
     font-size: 9px;
-    color: rgba(255, 255, 255, 0.85);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    color: rgb(255 255 255 / 85%);
+    text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
     font-weight: var(--font-weight-medium);
     max-width: 90px;
     overflow: hidden;
@@ -139,7 +138,7 @@
 }
 
 .pointsBadge {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgb(0 0 0 / 70%);
     color: #fbbf24;
     font-size: 11px;
     font-weight: var(--font-weight-bold);

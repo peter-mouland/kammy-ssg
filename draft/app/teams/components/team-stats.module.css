@@ -1,7 +1,7 @@
 /* app/teams/components/team-stats.module.css */
 
 .teamStats {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: var(--radius-lg);
     padding: 24px;
@@ -9,7 +9,7 @@
     flex-direction: column;
     gap: 24px;
     height: fit-content;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 /* Section Header with Toggle */
@@ -32,7 +32,7 @@
     font-size: 16px;
     font-weight: var(--font-weight-semibold);
     color: #111827;
-    margin: 0 0 12px 0;
+    margin: 0 0 12px;
 }
 
 /* Main Stats Grid */
@@ -53,7 +53,7 @@
 
 .statCard:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .statValue {
@@ -79,7 +79,7 @@
 
 .topScorerCard {
     background: linear-gradient(135deg, #dbeafe, var(--color-primary));
-    color: #ffffff;
+    color: #fff;
     border-radius: var(--radius-md);
     padding: 16px;
     display: flex;

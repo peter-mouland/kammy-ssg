@@ -70,11 +70,8 @@
 /* Optimistic Overlay */
 .optimisticOverlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255, 255, 255, 0.8);
+    inset: 0;
+    background-color: rgb(255 255 255 / 80%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -165,9 +162,11 @@
         transform: scale(0.8);
         opacity: 0;
     }
+
     50% {
         transform: scale(1.1);
     }
+
     100% {
         transform: scale(1);
         opacity: 1;

@@ -50,29 +50,34 @@ export const PLAYER_CA2 = makePlayer({ id: 11, code: 111, web_name: 'CentreAtt2'
 export const PLAYER_SUB = makePlayer({ id: 12, code: 112, web_name: 'Sub', position: 'mid', team_code: 21 });
 
 // MGR2's distinct players — different codes to prevent ownership map collisions
-export const MGR2_GK   = makePlayer({ id: 51, code: 151, web_name: 'Keeper2',      position: 'gk',  team_code: 50 });
-export const MGR2_CB1  = makePlayer({ id: 52, code: 152, web_name: 'CB2_1',        position: 'cb',  team_code: 51 });
-export const MGR2_CB2  = makePlayer({ id: 53, code: 153, web_name: 'CB2_2',        position: 'cb',  team_code: 52 });
-export const MGR2_FB1  = makePlayer({ id: 54, code: 154, web_name: 'FB2_1',        position: 'fb',  team_code: 53 });
-export const MGR2_FB2  = makePlayer({ id: 55, code: 155, web_name: 'FB2_2',        position: 'fb',  team_code: 54 });
-export const MGR2_MID1 = makePlayer({ id: 56, code: 156, web_name: 'Mid2_1',       position: 'mid', team_code: 55 });
-export const MGR2_MID2 = makePlayer({ id: 57, code: 157, web_name: 'Mid2_2',       position: 'mid', team_code: 56 });
-export const MGR2_WA1  = makePlayer({ id: 58, code: 158, web_name: 'WideAtt2_1',   position: 'wa',  team_code: 57 });
-export const MGR2_WA2  = makePlayer({ id: 59, code: 159, web_name: 'WideAtt2_2',   position: 'wa',  team_code: 58 });
-export const MGR2_CA1  = makePlayer({ id: 60, code: 160, web_name: 'CentreAtt2_1', position: 'ca',  team_code: 59 });
-export const MGR2_CA2  = makePlayer({ id: 61, code: 161, web_name: 'CentreAtt2_2', position: 'ca',  team_code: 60 });
-export const MGR2_SUB  = makePlayer({ id: 62, code: 162, web_name: 'Sub2',         position: 'mid', team_code: 61 });
+export const MGR2_GK = makePlayer({ id: 51, code: 151, web_name: 'Keeper2', position: 'gk', team_code: 50 });
+export const MGR2_CB1 = makePlayer({ id: 52, code: 152, web_name: 'CB2_1', position: 'cb', team_code: 51 });
+export const MGR2_CB2 = makePlayer({ id: 53, code: 153, web_name: 'CB2_2', position: 'cb', team_code: 52 });
+export const MGR2_FB1 = makePlayer({ id: 54, code: 154, web_name: 'FB2_1', position: 'fb', team_code: 53 });
+export const MGR2_FB2 = makePlayer({ id: 55, code: 155, web_name: 'FB2_2', position: 'fb', team_code: 54 });
+export const MGR2_MID1 = makePlayer({ id: 56, code: 156, web_name: 'Mid2_1', position: 'mid', team_code: 55 });
+export const MGR2_MID2 = makePlayer({ id: 57, code: 157, web_name: 'Mid2_2', position: 'mid', team_code: 56 });
+export const MGR2_WA1 = makePlayer({ id: 58, code: 158, web_name: 'WideAtt2_1', position: 'wa', team_code: 57 });
+export const MGR2_WA2 = makePlayer({ id: 59, code: 159, web_name: 'WideAtt2_2', position: 'wa', team_code: 58 });
+export const MGR2_CA1 = makePlayer({ id: 60, code: 160, web_name: 'CentreAtt2_1', position: 'ca', team_code: 59 });
+export const MGR2_CA2 = makePlayer({ id: 61, code: 161, web_name: 'CentreAtt2_2', position: 'ca', team_code: 60 });
+export const MGR2_SUB = makePlayer({ id: 62, code: 162, web_name: 'Sub2', position: 'mid', team_code: 61 });
 
 // Free agents — unowned by anyone
 export const PLAYER_FREE_MID = makePlayer({ id: 20, code: 200, web_name: 'FreeMid', position: 'mid', team_code: 22 });
-export const PLAYER_FREE_CB  = makePlayer({ id: 21, code: 201, web_name: 'FreeCB',  position: 'cb',  team_code: 23 });
-export const PLAYER_FREE_GK  = makePlayer({ id: 22, code: 202, web_name: 'FreeGK',  position: 'gk',  team_code: 24 });
+export const PLAYER_FREE_CB = makePlayer({ id: 21, code: 201, web_name: 'FreeCB', position: 'cb', team_code: 23 });
+export const PLAYER_FREE_GK = makePlayer({ id: 22, code: 202, web_name: 'FreeGK', position: 'gk', team_code: 24 });
 
 // ---------------------------------------------------------------------------
 // Roster helpers
 // ---------------------------------------------------------------------------
 
-function makeSlot(player: EnhancedPlayerData, teamPosition: string, slotIndex: number, isSub = false): TeamPositionSlot {
+function makeSlot(
+    player: EnhancedPlayerData,
+    teamPosition: string,
+    slotIndex: number,
+    isSub = false,
+): TeamPositionSlot {
     return {
         player: {
             playerId: player.id,
@@ -88,7 +93,12 @@ function makeSlot(player: EnhancedPlayerData, teamPosition: string, slotIndex: n
             assignedAt: new Date().toISOString(),
         },
         gameweek: { stats: createEmptyStats(), points: createEmptyPoints() },
-        season: { stats: createEmptyStats(), points: createEmptyPoints(), seasonUpToGameweek: 0, seasonGeneratedOn: '' },
+        season: {
+            stats: createEmptyStats(),
+            points: createEmptyPoints(),
+            seasonUpToGameweek: 0,
+            seasonGeneratedOn: '',
+        },
     };
 }
 
@@ -110,26 +120,32 @@ export function makeStandardRoster(): TeamRoster {
         ca_0: makeSlot(PLAYER_CA1, 'ca', 0),
         ca_1: makeSlot(PLAYER_CA2, 'ca', 1),
         sub_0: makeSlot(PLAYER_SUB, 'sub', 0, true),
-        on_loan_0: { ...makeSlot(PLAYER_GK, 'on_loan', 0), player: { ...makeSlot(PLAYER_GK, 'on_loan', 0).player, playerCode: 0 } },
+        on_loan_0: {
+            ...makeSlot(PLAYER_GK, 'on_loan', 0),
+            player: { ...makeSlot(PLAYER_GK, 'on_loan', 0).player, playerCode: 0 },
+        },
     };
 }
 
 /** Distinct roster for MGR2 — no shared player codes with MGR1 */
 export function makeMgr2Roster(): TeamRoster {
     return {
-        gk_0: makeSlot(MGR2_GK,   'gk',  0),
-        cb_0: makeSlot(MGR2_CB1,  'cb',  0),
-        cb_1: makeSlot(MGR2_CB2,  'cb',  1),
-        fb_0: makeSlot(MGR2_FB1,  'fb',  0),
-        fb_1: makeSlot(MGR2_FB2,  'fb',  1),
+        gk_0: makeSlot(MGR2_GK, 'gk', 0),
+        cb_0: makeSlot(MGR2_CB1, 'cb', 0),
+        cb_1: makeSlot(MGR2_CB2, 'cb', 1),
+        fb_0: makeSlot(MGR2_FB1, 'fb', 0),
+        fb_1: makeSlot(MGR2_FB2, 'fb', 1),
         mid_0: makeSlot(MGR2_MID1, 'mid', 0),
         mid_1: makeSlot(MGR2_MID2, 'mid', 1),
-        wa_0: makeSlot(MGR2_WA1,  'wa',  0),
-        wa_1: makeSlot(MGR2_WA2,  'wa',  1),
-        ca_0: makeSlot(MGR2_CA1,  'ca',  0),
-        ca_1: makeSlot(MGR2_CA2,  'ca',  1),
-        sub_0: makeSlot(MGR2_SUB,  'sub', 0, true),
-        on_loan_0: { ...makeSlot(MGR2_GK, 'on_loan', 0), player: { ...makeSlot(MGR2_GK, 'on_loan', 0).player, playerCode: 0 } },
+        wa_0: makeSlot(MGR2_WA1, 'wa', 0),
+        wa_1: makeSlot(MGR2_WA2, 'wa', 1),
+        ca_0: makeSlot(MGR2_CA1, 'ca', 0),
+        ca_1: makeSlot(MGR2_CA2, 'ca', 1),
+        sub_0: makeSlot(MGR2_SUB, 'sub', 0, true),
+        on_loan_0: {
+            ...makeSlot(MGR2_GK, 'on_loan', 0),
+            player: { ...makeSlot(MGR2_GK, 'on_loan', 0).player, playerCode: 0 },
+        },
     };
 }
 
@@ -216,13 +232,33 @@ export function makeContext(
 ): TransferRuleContext {
     const fplPlayersByCode: Record<number, EnhancedPlayerData> = {};
     const allPlayers = [
-        PLAYER_GK, PLAYER_CB1, PLAYER_CB2, PLAYER_FB1, PLAYER_FB2,
-        PLAYER_MID1, PLAYER_MID2, PLAYER_WA1, PLAYER_WA2, PLAYER_CA1,
-        PLAYER_CA2, PLAYER_SUB,
-        MGR2_GK, MGR2_CB1, MGR2_CB2, MGR2_FB1, MGR2_FB2,
-        MGR2_MID1, MGR2_MID2, MGR2_WA1, MGR2_WA2, MGR2_CA1,
-        MGR2_CA2, MGR2_SUB,
-        PLAYER_FREE_MID, PLAYER_FREE_CB, PLAYER_FREE_GK,
+        PLAYER_GK,
+        PLAYER_CB1,
+        PLAYER_CB2,
+        PLAYER_FB1,
+        PLAYER_FB2,
+        PLAYER_MID1,
+        PLAYER_MID2,
+        PLAYER_WA1,
+        PLAYER_WA2,
+        PLAYER_CA1,
+        PLAYER_CA2,
+        PLAYER_SUB,
+        MGR2_GK,
+        MGR2_CB1,
+        MGR2_CB2,
+        MGR2_FB1,
+        MGR2_FB2,
+        MGR2_MID1,
+        MGR2_MID2,
+        MGR2_WA1,
+        MGR2_WA2,
+        MGR2_CA1,
+        MGR2_CA2,
+        MGR2_SUB,
+        PLAYER_FREE_MID,
+        PLAYER_FREE_CB,
+        PLAYER_FREE_GK,
     ];
     for (const p of allPlayers) fplPlayersByCode[p.code] = p;
     // code=0 is the "empty loan slot" sentinel used by makeStandardRoster — map it so validators

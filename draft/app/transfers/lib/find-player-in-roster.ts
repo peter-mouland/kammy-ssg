@@ -1,6 +1,5 @@
 import type { PositionSlotKey, TeamPositionSlot, TeamRoster } from '../../teams/types/team-types';
 
-
 /**
  * Find a player in a roster by player code
  */

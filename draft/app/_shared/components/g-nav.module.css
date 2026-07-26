@@ -75,11 +75,8 @@
     padding: 0;
     cursor: default;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    background: rgb(0 0 0 / 50%);
     z-index: 998;
     animation: fadeIn var(--transition-fast) ease-out;
 }
@@ -209,6 +206,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }

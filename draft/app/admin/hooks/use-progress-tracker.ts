@@ -43,26 +43,30 @@ interface ConnectionStateUpdaters {
 }
 
 function createConnectionStateUpdaters(
-    setConnectionState: React.Dispatch<React.SetStateAction<ConnectionState>>
+    setConnectionState: React.Dispatch<React.SetStateAction<ConnectionState>>,
 ): ConnectionStateUpdaters {
     return {
-        setConnecting: () => setConnectionState(prev => ({
-            status: 'connecting' as const,
-            attempts: prev.attempts
-        })),
-        setConnected: () => setConnectionState( () => ({
-            status: 'connected' as const,
-            attempts: 0 // Reset on success
-        })),
-        setError: (maxReached = false) => setConnectionState(prev => ({
-            status: 'error' as const,
-            attempts: prev.attempts + 1,
-            maxReached
-        })),
-        setDisconnected: () => setConnectionState(prev => ({
-            status: 'disconnected' as const,
-            attempts: prev.attempts
-        })),
+        setConnecting: () =>
+            setConnectionState((prev) => ({
+                status: 'connecting' as const,
+                attempts: prev.attempts,
+            })),
+        setConnected: () =>
+            setConnectionState(() => ({
+                status: 'connected' as const,
+                attempts: 0, // Reset on success
+            })),
+        setError: (maxReached = false) =>
+            setConnectionState((prev) => ({
+                status: 'error' as const,
+                attempts: prev.attempts + 1,
+                maxReached,
+            })),
+        setDisconnected: () =>
+            setConnectionState((prev) => ({
+                status: 'disconnected' as const,
+                attempts: prev.attempts,
+            })),
     };
 }
 
@@ -71,10 +75,7 @@ function handleEventSourceOpen(updaters: ConnectionStateUpdaters): void {
     updaters.setConnected();
 }
 
-function handleEventSourceError(
-    updaters: ConnectionStateUpdaters,
-    currentAttempts: number
-): void {
+function handleEventSourceError(updaters: ConnectionStateUpdaters, currentAttempts: number): void {
     console.log('❌ EventSource error occurred');
     const maxReached = currentAttempts >= MAX_RECONNECT_ATTEMPTS - 1;
     updaters.setError(maxReached);
@@ -92,10 +93,7 @@ interface ProgressCallbacks {
     onConnectionConfirmed?: () => void;
 }
 
-function handleProgressMessage(
-    event: MessageEvent,
-    callbacks: ProgressCallbacks
-): void {
+function handleProgressMessage(event: MessageEvent, callbacks: ProgressCallbacks): void {
     try {
         const data = JSON.parse(event.data);
 
@@ -146,10 +144,7 @@ function createProgressEventSource(config: EventSourceConfig): EventSource {
 
     eventSource.onmessage = (event) => handleProgressMessage(event, config.progressCallbacks);
 
-    eventSource.onerror = () => handleEventSourceError(
-        config.connectionUpdaters,
-        config.currentAttempts
-    );
+    eventSource.onerror = () => handleEventSourceError(config.connectionUpdaters, config.currentAttempts);
 
     return eventSource;
 }
@@ -159,14 +154,14 @@ function createProgressEventSource(config: EventSourceConfig): EventSource {
 // ============================================================================
 
 export function useProgressTracker({
-                                       jobId,
-                                       onComplete = () => {},
-                                       onError = () => {}
-                                   }: UseProgressTrackerProps): UseProgressTrackerReturn {
+    jobId,
+    onComplete = () => {},
+    onError = () => {},
+}: UseProgressTrackerProps): UseProgressTrackerReturn {
     const [progress, setProgress] = useState<ProgressUpdate | null>(null);
     const [connectionState, setConnectionState] = useState<ConnectionState>({
         status: 'disconnected',
-        attempts: 0
+        attempts: 0,
     });
 
     const eventSourceRef = useRef<EventSource | null>(null);
@@ -236,7 +231,9 @@ export function useProgressTracker({
                 },
                 onComplete,
                 onError,
-                onJobFinished: () => { isJobFinishedRef.current = true; },
+                onJobFinished: () => {
+                    isJobFinishedRef.current = true;
+                },
                 onConnectionConfirmed: () => {
                     hasReceivedDataRef.current = true;
                     if (connectionTimeoutRef.current) {
@@ -257,23 +254,19 @@ export function useProgressTracker({
             hasReceivedDataRef.current = false;
         } catch (error) {
             console.error('❌ Error creating EventSource:', error);
-            setConnectionState(prev => ({
+            setConnectionState((prev) => ({
                 status: 'error',
                 attempts: prev.attempts + 1,
-                maxReached: prev.attempts >= MAX_RECONNECT_ATTEMPTS - 1
+                maxReached: prev.attempts >= MAX_RECONNECT_ATTEMPTS - 1,
             }));
         }
     }, [jobId, connectionState.attempts, connectionState.status, onComplete, onError]); // Removed cleanup
 
     // Auto-reconnect logic
     useEffect(() => {
-        if (connectionState.status === 'error' &&
-            !connectionState.maxReached &&
-            !isJobFinishedRef.current &&
-            jobId) {
-
+        if (connectionState.status === 'error' && !connectionState.maxReached && !isJobFinishedRef.current && jobId) {
             console.log(
-                `🔄 Will retry connection in ${RECONNECT_DELAY}ms (attempt ${connectionState.attempts + 1}/${MAX_RECONNECT_ATTEMPTS})`
+                `🔄 Will retry connection in ${RECONNECT_DELAY}ms (attempt ${connectionState.attempts + 1}/${MAX_RECONNECT_ATTEMPTS})`,
             );
 
             reconnectTimeoutRef.current = setTimeout(() => {
@@ -371,10 +364,11 @@ export function useProgressTracker({
 
     // Connection timeout - switch to polling if no data received
     useEffect(() => {
-        if ((connectionState.status === 'connecting' || connectionState.status === 'connected') &&
+        if (
+            (connectionState.status === 'connecting' || connectionState.status === 'connected') &&
             jobId &&
-            !isJobFinishedRef.current) {
-
+            !isJobFinishedRef.current
+        ) {
             // Start timeout when connecting
             console.log('⏱️ Starting connection timeout...');
             connectionTimeoutRef.current = setTimeout(() => {
@@ -395,11 +389,7 @@ export function useProgressTracker({
 
     // Switch to polling when SSE fails after max attempts
     useEffect(() => {
-        if (connectionState.status === 'error' &&
-            connectionState.maxReached &&
-            jobId &&
-            !isJobFinishedRef.current) {
-
+        if (connectionState.status === 'error' && connectionState.maxReached && jobId && !isJobFinishedRef.current) {
             console.log('🔄 SSE failed after max attempts, switching to polling mode');
             switchToPolling();
         }

@@ -20,7 +20,8 @@
 .tableWrapper {
     overflow-x: auto;
     max-height: var(--table-max-height, none);
-    /*overflow-y: auto;*/
+
+    /* overflow-y: auto; */
 }
 
 @media (min-width: 768px) {
@@ -51,6 +52,7 @@
     top: 0;
     z-index: 10;
 }
+
 .table th {
     background-color: var(--table-header-bg);
     padding: var(--table-padding-cell);
@@ -99,7 +101,7 @@
 .sortIcon {
     font-family: monospace, -apple-system, BlinkMacSystemFont, sans-serif;
     font-variant-emoji: text;
-    -webkit-font-feature-settings: "liga" off;
+    font-feature-settings: "liga" off;
     font-feature-settings: "liga" off;
     font-size: var(--font-xs);
     color: var(--color-gray-400);
@@ -431,10 +433,11 @@
 .fixedColumn {
     position: sticky;
     left: 0;
+
     /* Opaque bg so scrolled cells don't show through sticky identity column */
     background-color: var(--color-white);
     z-index: 5;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 4px rgb(0 0 0 / 10%);
 }
 
 th.fixedColumn {
@@ -456,6 +459,7 @@ th.fixedColumn {
     .fixedColumn {
         box-shadow: none;
     }
+
     .fixedColumn::after {
         display: none;
     }

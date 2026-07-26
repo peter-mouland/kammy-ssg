@@ -85,9 +85,11 @@
     0% {
         transform: scaleX(0);
     }
+
     50% {
         transform: scaleX(0.5);
     }
+
     100% {
         transform: scaleX(1);
     }

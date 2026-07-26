@@ -11,7 +11,7 @@
 }
 
 .cacheActionGroup h4 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.5rem;
     color: #111827;
     font-size: 1rem;
     font-weight: 600;
@@ -40,7 +40,7 @@
 }
 
 .debugSection h4 {
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.75rem;
     color: #111827;
     font-size: 1rem;
     font-weight: 600;
@@ -54,7 +54,7 @@
     font-size: 0.75rem;
     overflow-x: auto;
     margin: 0;
-    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
 }
 
 .debugSection ul {

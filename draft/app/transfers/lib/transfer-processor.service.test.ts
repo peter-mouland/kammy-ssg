@@ -26,7 +26,12 @@ describe('loan lifecycle', () => {
         // LOAN_START: MGR1 lends PLAYER_MID1 to MGR2; PLAYER_FREE_MID fills the vacated mid_0 slot
         await applyIndividualTransfer(
             rosters,
-            makeTransfer({ transferType: 'LOAN_START', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1, onLoanTo: MGR2 }),
+            makeTransfer({
+                transferType: 'LOAN_START',
+                playerIn: PLAYER_FREE_MID,
+                playerOut: PLAYER_MID1,
+                onLoanTo: MGR2,
+            }),
         );
 
         const duringLoan = extractLoanStatus(rosters[MGR1].roster, MGR1);
@@ -37,7 +42,12 @@ describe('loan lifecycle', () => {
         // LOAN_END: fill-in leaves, PLAYER_MID1 returns
         await applyIndividualTransfer(
             rosters,
-            makeTransfer({ transferType: 'LOAN_END', playerIn: PLAYER_MID1, playerOut: PLAYER_FREE_MID, onLoanTo: MGR2 }),
+            makeTransfer({
+                transferType: 'LOAN_END',
+                playerIn: PLAYER_MID1,
+                playerOut: PLAYER_FREE_MID,
+                onLoanTo: MGR2,
+            }),
         );
 
         expect(extractLoanStatus(rosters[MGR1].roster, MGR1)).toEqual({ loanedOut: [], loanedIn: [] });
@@ -45,7 +55,11 @@ describe('loan lifecycle', () => {
         // After the loan cycle, MGR1 should be able to make a normal transfer without the roster
         // iterators crashing — teamCountLimit walks Object.values(roster) without optional chaining,
         // so it would throw if the loan slot were left as undefined rather than deleted
-        const nextTransfer = makeTransfer({ transferType: 'TRANSFER', playerIn: PLAYER_FREE_MID, playerOut: PLAYER_MID1 });
+        const nextTransfer = makeTransfer({
+            transferType: 'TRANSFER',
+            playerIn: PLAYER_FREE_MID,
+            playerOut: PLAYER_MID1,
+        });
         expect(() => teamCountLimit(makeContext(nextTransfer, { divisionRosters: rosters }))).not.toThrow();
     });
 });

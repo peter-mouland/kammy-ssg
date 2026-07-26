@@ -111,7 +111,12 @@ function ToastItem({ toast, onDismiss, index }: ToastItemProps) {
         >
             <div className={styles.toastContent}>
                 <span className={styles.toastMessage}>{toast.message}</span>
-                <button type="button" onClick={handleDismiss} className={styles.dismissButton} aria-label="Dismiss notification">
+                <button
+                    type="button"
+                    onClick={handleDismiss}
+                    className={styles.dismissButton}
+                    aria-label="Dismiss notification"
+                >
                     ×
                 </button>
             </div>

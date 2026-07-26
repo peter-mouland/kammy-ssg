@@ -18,7 +18,8 @@ export const DraftResetInstructions = () => {
                         <span>⚠️ Complete Draft Reset Procedure</span>
                     </div>
                     <p className={styles.warningText}>
-                        Use this procedure when you need to completely restart a draft. This will clear all picks and reset the draft state.
+                        Use this procedure when you need to completely restart a draft. This will clear all picks and
+                        reset the draft state.
                     </p>
                 </div>
 
@@ -32,7 +33,8 @@ export const DraftResetInstructions = () => {
                             </p>
                             <ul className={styles.stepList}>
                                 <li>
-                                    <strong>DraftState sheet:</strong> Set "active: false" with no start/end dates and no current user
+                                    <strong>DraftState sheet:</strong> Set "active: false" with no start/end dates and
+                                    no current user
                                 </li>
                                 <li>
                                     <strong>Draft sheet:</strong> Delete all player rows (keep headers)
@@ -46,7 +48,8 @@ export const DraftResetInstructions = () => {
                         <div className={styles.stepContent}>
                             <h3 className={styles.stepTitle}>Invalidate Caches</h3>
                             <p className={styles.stepDescription}>
-                                Go to <strong>Cache + Data</strong> section and click <strong>"Invalidate All Caches"</strong>
+                                Go to <strong>Cache + Data</strong> section and click{' '}
+                                <strong>"Invalidate All Caches"</strong>
                             </p>
                             <div className={styles.stepNote}>
                                 This ensures the system picks up the fresh Google Sheets data
@@ -59,7 +62,8 @@ export const DraftResetInstructions = () => {
                         <div className={styles.stepContent}>
                             <h3 className={styles.stepTitle}>Sync Draft Status</h3>
                             <p className={styles.stepDescription}>
-                                In the <strong>Firebase ↔ Sheets Sync Status</strong> section above, click <strong>"Sync"</strong> for the relevant division
+                                In the <strong>Firebase ↔ Sheets Sync Status</strong> section above, click{' '}
+                                <strong>"Sync"</strong> for the relevant division
                             </p>
                             <div className={styles.stepNote}>
                                 This synchronizes Firebase with the cleared Google Sheets data
@@ -74,9 +78,7 @@ export const DraftResetInstructions = () => {
                             <p className={styles.stepDescription}>
                                 Click <strong>"🟢️ Start Draft"</strong> button for the division you want to restart
                             </p>
-                            <div className={styles.stepNote}>
-                                This will initialize a new draft with pick #1
-                            </div>
+                            <div className={styles.stepNote}>This will initialize a new draft with pick #1</div>
                         </div>
                     </div>
 
@@ -85,7 +87,8 @@ export const DraftResetInstructions = () => {
                         <div className={styles.stepContent}>
                             <h3 className={styles.stepTitle}>Final Cache Invalidation</h3>
                             <p className={styles.stepDescription}>
-                                Go to <strong>Cache + Data</strong> section again and click <strong>"Invalidate All Caches"</strong> one more time
+                                Go to <strong>Cache + Data</strong> section again and click{' '}
+                                <strong>"Invalidate All Caches"</strong> one more time
                             </p>
                             <div className={styles.stepNote}>
                                 This ensures all users see the fresh draft state immediately
@@ -100,7 +103,8 @@ export const DraftResetInstructions = () => {
                         <span>✅ Draft Reset Complete</span>
                     </div>
                     <p className={styles.successText}>
-                        The draft should now be reset and ready for a fresh start. All users will see the new draft state within 30 seconds.
+                        The draft should now be reset and ready for a fresh start. All users will see the new draft
+                        state within 30 seconds.
                     </p>
                 </div>
             </div>

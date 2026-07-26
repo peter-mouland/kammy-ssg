@@ -15,17 +15,19 @@
         "deploy": "yarn build && firebase deploy",
         "copy-build": "cp -r draft/build functions/",
         "clean": "rm -rf functions/build draft/build functions/lib",
-        "typecheck": "tsc --noEmit",
-        "biome:all": "yarn lint:fix && yarn format:fix && check:fix",
+        "biome:all": "yarn lint:fix && yarn format:fix && yarn check:fix",
         "lint": "biome lint .",
         "lint:fix": "biome lint --write",
         "format": "biome format .",
         "format:fix": "biome format --write",
         "check": "biome check .",
         "check:fix": "biome check --write",
-        "type-check": "tsc --noEmit",
-        "prepare": "husky install",
-        "--lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "css:lint": "stylelint \"draft/app/**/*.css\"",
+        "css:fix": "stylelint \"draft/app/**/*.css\" --fix",
+        "ratchet": "node scripts/ratchet.mjs --all",
+        "ratchet:update": "node scripts/ratchet.mjs --all --update",
+        "type-check": "yarn workspace draft typecheck",
+        "prepare": "husky",
         "firebase:login": "firebase login",
         "firebase:init": "firebase init",
         "firebase:deploy": "firebase deploy",
@@ -41,7 +43,11 @@
     ],
     "devDependencies": {
         "@biomejs/biome": "^2.0.0",
-        "firebase-tools": "^14.27.0"
+        "firebase-tools": "^14.27.0",
+        "husky": "9.1.7",
+        "lint-staged": "17.2.0",
+        "stylelint": "17.14.1",
+        "stylelint-config-standard": "40.0.0"
     },
     "dependencies": {
         "init": "^0.1.2"

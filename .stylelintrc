@@ -1,7 +1,76 @@
 {
-  "extends": "stylelint-config-standard",
-  "rules": {
-    "number-leading-zero": "never",
-    "at-rule-no-unknown": null
-  }
+    "extends": "stylelint-config-standard",
+    "ignoreFiles": ["**/node_modules/**", "**/build/**", "**/lib/**", "**/.react-router/**"],
+    "rules": {
+        "at-rule-no-unknown": null,
+        "custom-property-pattern": null,
+        "selector-class-pattern": null,
+        "media-feature-range-notation": "prefix",
+        "declaration-no-important": [
+            true,
+            {
+                "message": "No !important. A specificity conflict means a class is in the wrong place - fix the source rule. See .kiro/steering/css-conventions.md"
+            }
+        ],
+        "declaration-property-value-disallowed-list": [
+            { "transition": ["/(^|\\s|,)all(\\s|$)/"] },
+            {
+                "message": "Name the property being transitioned, e.g. 'transition: transform var(--transition-normal)'. 'all' transitions non-animatable properties and hides what is changing."
+            }
+        ],
+        "property-no-vendor-prefix": [
+            true,
+            {
+                "message": "Write the standard property - PostCSS/Autoprefixer adds prefixes from the browserslist targets."
+            }
+        ],
+        "value-no-vendor-prefix": [
+            true,
+            {
+                "message": "Write the standard value - PostCSS/Autoprefixer adds prefixes from the browserslist targets."
+            }
+        ],
+        "color-no-hex": [
+            true,
+            {
+                "message": "Use a design token, e.g. var(--color-gray-200). If no token fits, propose adding one to design-tokens.css."
+            }
+        ],
+        "selector-max-type": [
+            0,
+            {
+                "message": "Do not style tags in a module file - they bleed into child components. Give the element its own class."
+            }
+        ],
+        "selector-max-compound-selectors": [
+            2,
+            {
+                "message": "Keep specificity flat. Two levels is the maximum, and only when an element reacts to a parent modifier."
+            }
+        ],
+        "media-feature-name-disallowed-list": [
+            ["max-width"],
+            {
+                "message": "Write mobile-first: use min-width breakpoints (461px, 768px, 1024px)."
+            }
+        ],
+        "no-duplicate-selectors": true,
+        "declaration-block-no-duplicate-properties": [true, { "ignore": ["consecutive-duplicates-with-different-values"] }]
+    },
+    "overrides": [
+        {
+            "files": ["draft/app/design-tokens.css"],
+            "rules": {
+                "color-no-hex": null
+            }
+        },
+        {
+            "files": ["draft/app/root.css"],
+            "rules": {
+                "selector-max-type": null,
+                "color-no-hex": null,
+                "property-no-vendor-prefix": null
+            }
+        }
+    ]
 }

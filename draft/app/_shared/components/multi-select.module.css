@@ -129,7 +129,7 @@
 }
 
 .dropdownItem.selected .itemCount {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(255 255 255 / 20%);
     color: var(--color-primary);
 }
 

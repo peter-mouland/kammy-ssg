@@ -115,7 +115,7 @@ export function DraftOrder({ draftOrder, draftPicks, draftSequence, draftState }
                                 </div>
                             )}
                         </li>
-                    )
+                    );
                 })}
             </ul>
 

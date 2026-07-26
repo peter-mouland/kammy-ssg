@@ -1,38 +1,10 @@
 {
-  "range": "DraftState!A1:Y1000",
-  "majorDimension": "ROWS",
-  "values": [
-    [
-      "Is Active",
-      "Current User ID",
-      "Division ID",
-      "Picks Per Team",
-      "Started At",
-      "Completed At"
-    ],
-    [
-      false,
-      "Dave G",
-      "leagueOne",
-      12,
-      "2026-02-12T10:24:07.150Z",
-      "2026-02-12T10:24:11.663Z"
-    ],
-    [
-      false,
-      "Chris C",
-      "championship",
-      12,
-      "2025-08-11T15:23:28.234Z",
-      "2025-08-11T15:23:33.310Z"
-    ],
-    [
-      false,
-      "Andy",
-      "premierLeague",
-      12,
-      "2025-08-11T15:23:18.688Z",
-      "2025-08-11T15:23:34.502Z"
+    "range": "DraftState!A1:Y1000",
+    "majorDimension": "ROWS",
+    "values": [
+        ["Is Active", "Current User ID", "Division ID", "Picks Per Team", "Started At", "Completed At"],
+        [false, "Dave G", "leagueOne", 12, "2026-02-12T10:24:07.150Z", "2026-02-12T10:24:11.663Z"],
+        [false, "Chris C", "championship", 12, "2025-08-11T15:23:28.234Z", "2025-08-11T15:23:33.310Z"],
+        [false, "Andy", "premierLeague", 12, "2025-08-11T15:23:18.688Z", "2025-08-11T15:23:34.502Z"]
     ]
-  ]
 }
