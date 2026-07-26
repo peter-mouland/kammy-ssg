@@ -1,10 +1,9 @@
 /* Location: app/admin/debug.route.tsx */
 
-import type { LoaderFunctionArgs } from 'react-router';
 import { useLoaderData } from 'react-router';
 import { testConnection } from '../_shared/lib/sheets/utils/common';
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader() {
     const tests = [];
 
     // Test 1: Environment variables

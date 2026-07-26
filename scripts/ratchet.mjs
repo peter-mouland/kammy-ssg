@@ -53,6 +53,27 @@ const CHECKS = {
             }
         },
     },
+    lint: {
+        label: 'Biome lint warnings',
+        fix: 'npx biome check draft/app --max-diagnostics=400',
+        // biome.json sets rules like noUnusedFunctionParameters and noUnusedVariables to
+        // "warn", and Biome exits 0 on warnings -- so `biome lint` in CI passed with 280
+        // of them outstanding. They were detected and then ignored. Counting them here
+        // makes them behave like the other two backlogs: they can only go down.
+        //
+        // Errors are NOT ratcheted: `biome lint` already fails CI on those, as it should.
+        count: () => {
+            const report = run('npx biome check draft/app --max-diagnostics=400 --reporter=summary');
+            const match = report.match(/Found (\d+) warnings?\./);
+            if (!match) {
+                // No warnings at all is a legitimate result; a missing count is not.
+                if (/Found 0 warnings|Checked \d+ files/.test(report)) return 0;
+                console.error('Could not read a warning count from Biome:\n', report.slice(-400));
+                process.exit(2);
+            }
+            return Number(match[1]);
+        },
+    },
 };
 
 const readBaseline = () => {

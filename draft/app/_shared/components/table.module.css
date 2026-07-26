@@ -102,7 +102,6 @@
     font-family: monospace, -apple-system, BlinkMacSystemFont, sans-serif;
     font-variant-emoji: text;
     font-feature-settings: "liga" off;
-    font-feature-settings: "liga" off;
     font-size: var(--font-xs);
     color: var(--color-gray-400);
     transition: var(--transition-fast);

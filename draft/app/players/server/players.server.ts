@@ -5,8 +5,8 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
+import { convertToPlayerGameweekStats } from '../../scoring/lib';
 import { calculateSeasonPoints, getFullBreakdown } from '../../scoring/lib/calculations';
-import { convertToPlayerGameweekStats } from '../../scoring/lib/data-conversion';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { PlayerGameweekStatsData, PlayerStatsData } from '../types/player-types';
 

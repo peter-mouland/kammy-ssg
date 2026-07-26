@@ -83,10 +83,7 @@ async function loadFixturesPlayerData(playerCode: number, season: string): Promi
     try {
         const bootstrap: FplBootstrapData = await import(`../../api/fixtures/${season}/fpl/bootstrap-static.json`);
         const playerId = bootstrap.elements.find((e) => e.code === playerCode)?.id;
-        const playerSeasonData: FplPlayerSeasonData = await import(
-            `../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`
-        );
-        return playerSeasonData;
+        return await import(`../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`);
     } catch (_error) {
         console.log(`⚠️ No 2425 data found for player code ${playerCode}, returning empty stats`);
         return null;

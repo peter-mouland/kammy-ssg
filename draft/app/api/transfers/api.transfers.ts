@@ -11,7 +11,7 @@ interface TransfersApiResponse {
     error?: string;
 }
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
     try {
         const divisionId = params.divisionId as DivisionId;
 
