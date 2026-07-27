@@ -124,9 +124,6 @@
     line-height: 1;
     min-width: 32px;
     text-align: center;
-}
-
-.pointsValue {
     background: #dbeafe;
     color: var(--color-primary);
 }

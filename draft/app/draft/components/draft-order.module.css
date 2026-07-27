@@ -14,7 +14,7 @@
     border-radius: var(--radius-lg);
     color: var(--color-white);
     text-align: center;
-    animation: celebrationPulse 2s ease-in-out infinite;
+    animation: celebration-pulse 2s ease-in-out infinite;
 }
 
 .completeIcon {
@@ -160,7 +160,7 @@
 }
 
 /* Animations */
-@keyframes celebrationPulse {
+@keyframes celebration-pulse {
     0%,
     100% {
         transform: scale(1);
