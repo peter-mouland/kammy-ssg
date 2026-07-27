@@ -27,8 +27,8 @@ export const meta: MetaFunction = () => {
 };
 
 interface AdminLoaderData {
-    systemStatus: SystemStatusSummary;
-    sharedContext: AdminDataContext;
+    systemStatus: SystemStatusSummary | null;
+    sharedContext: AdminDataContext | null;
     transfersData: Record<string, TransferAdminOverviewData> | null;
     teamsByCode: Record<number, FplTeam> | null;
     cacheStats: any | null;
@@ -37,6 +37,20 @@ interface AdminLoaderData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const url = new URL(request.url);
+
+    // Static checklist page — skip FPL/Sheets/Firebase bootstrap
+    if (url.pathname.includes('/admin/setup-new-season')) {
+        console.log('⚡ Lightweight admin load for setup-new-season');
+        return {
+            systemStatus: null,
+            sharedContext: null,
+            transfersData: null,
+            teamsByCode: null,
+            cacheStats: null,
+            loadedAt: new Date().toISOString(),
+        };
+    }
+
     console.log('🔄 Loading admin dashboard data...');
 
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
@@ -69,6 +83,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         sharedContext,
         transfersData,
         teamsByCode,
+        cacheStats: null,
         loadedAt: new Date().toISOString(),
     };
 }
