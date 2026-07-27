@@ -30,6 +30,7 @@
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
+    animation: none;
 }
 
 /* Primary variant */
@@ -78,11 +79,6 @@
     background: var(--color-gray-200, #e5e7eb);
     transform: none;
     box-shadow: none;
-}
-
-/* Loading animation */
-.actionButton svg {
-    animation: none;
 }
 
 .actionButton.loading svg {

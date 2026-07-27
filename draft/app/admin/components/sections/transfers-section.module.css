@@ -213,29 +213,6 @@
     font-weight: var(--font-weight-medium);
 }
 
-.status_badge {
-    font-size: var(--font-xs);
-    font-weight: var(--font-weight-medium);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-sm);
-    text-transform: uppercase;
-}
-
-.status_approved {
-    background: var(--color-success-light);
-    color: var(--color-success);
-}
-
-.status_rejected {
-    background: var(--color-error-light);
-    color: var(--color-error);
-}
-
-.status_pending {
-    background: var(--color-warning-light);
-    color: var(--color-warning);
-}
-
 .recommendation_badge {
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
@@ -325,51 +302,6 @@
 .tooltip_section li {
     margin-bottom: var(--spacing-1);
     font-size: var(--font-xs);
-}
-
-/* Action Buttons */
-.action_buttons {
-    display: flex;
-    gap: var(--spacing-1);
-    justify-content: center;
-}
-
-.action_btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: 1px solid;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition-normal);
-    background: transparent;
-}
-
-.action_btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.approve_btn {
-    color: var(--color-success);
-    border-color: var(--color-success);
-}
-
-.approve_btn:hover:not(:disabled) {
-    background: var(--color-success);
-    color: var(--color-white);
-}
-
-.reject_btn {
-    color: var(--color-error);
-    border-color: var(--color-error);
-}
-
-.reject_btn:hover:not(:disabled) {
-    background: var(--color-error);
-    color: var(--color-white);
 }
 
 /* Loading spinner for action buttons */
@@ -537,7 +469,7 @@
 }
 
 /* Animation for updated status */
-@keyframes updateFlash {
+@keyframes update-flash {
     0% {
         background-color: var(--color-primary);
         transform: scale(1.05);
@@ -550,7 +482,7 @@
 }
 
 .status_badge .updated_indicator {
-    animation: updateFlash var(--duration-slow) ease-out;
+    animation: update-flash var(--duration-slow) ease-out;
 }
 
 /* Responsive Design */

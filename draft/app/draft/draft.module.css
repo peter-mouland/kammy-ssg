@@ -157,7 +157,7 @@
     }
 }
 
-@keyframes pulseCount {
+@keyframes pulse-count {
     0% {
         transform: scale(0.8);
         opacity: 0;
