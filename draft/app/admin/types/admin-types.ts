@@ -20,7 +20,7 @@ export interface AdminDashboardData {
 // ADMIN NAVIGATION TYPES
 // ==========================================
 
-type AdminSectionKey = 'overview' | 'draft' | 'transfers' | 'points' | 'settings';
+type AdminSectionKey = 'overview' | 'draft' | 'transfers' | 'points' | 'settings' | 'setupNewSeason';
 
 export interface AdminNavItem {
     key: AdminSectionKey;

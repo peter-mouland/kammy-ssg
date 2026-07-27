@@ -160,6 +160,7 @@ Example rules:
 | `/admin/draft` | `admin/admin-draft.route.tsx` | Draft management |
 | `/admin/points` | `admin/admin-points.route.tsx` | Points processing |
 | `/admin/transfers` | `admin/admin-transfers.route.tsx` | Transfer approval |
+| `/admin/setup-new-season` | `admin/admin-setup-new-season.route.tsx` | Season rollover checklist |
 | `/scoring/api/gw-points` | `scoring/api/api.gw-points.ts` | Gameweek points API |
 | `/api/transfers/:divisionId` | `api/transfers/api.transfers.ts` | Transfers data API |
 | `/api/cache` | `api/cache/api.cache.ts` | Cache management API |
