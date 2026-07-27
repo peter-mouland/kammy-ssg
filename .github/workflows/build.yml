@@ -40,7 +40,7 @@ jobs:
       - name: Lint
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npx biome lint --changed --since=origin/${{ github.base_ref }} .
+            npx biome lint --changed --since=origin/${{ github.base_ref }} --no-errors-on-unmatched .
           else
             npx biome lint .
           fi
