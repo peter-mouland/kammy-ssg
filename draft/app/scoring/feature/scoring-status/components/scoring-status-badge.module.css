@@ -10,19 +10,19 @@
 }
 
 .statusDotGreen {
-    background-color: #22c55e;
+    background-color: var(--color-green-500);
     box-shadow: 0 0 0 0 rgb(34 197 94 / 40%);
     animation: pulse-green 2s ease-in-out infinite;
 }
 
 .statusDotOrange {
-    background-color: #f97316;
+    background-color: var(--color-orange-500);
     box-shadow: 0 0 0 0 rgb(249 115 22 / 40%);
     animation: pulse-orange 2s ease-in-out infinite;
 }
 
 .statusDotRed {
-    background-color: #ef4444;
+    background-color: var(--color-red-500);
     box-shadow: 0 0 0 0 rgb(239 68 68 / 40%);
     animation: pulse-red 2s ease-in-out infinite;
 }
@@ -40,18 +40,18 @@
 }
 
 .statusLabelGreen {
-    background-color: #dcfce7;
-    color: #166534;
+    background-color: var(--color-green-100);
+    color: var(--color-green-800);
 }
 
 .statusLabelOrange {
-    background-color: #fed7aa;
-    color: #9a3412;
+    background-color: var(--color-orange-200);
+    color: var(--color-orange-800);
 }
 
 .statusLabelRed {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: var(--color-error-light);
+    color: var(--color-red-700);
 }
 
 /* Pulse animations for each color */

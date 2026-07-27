@@ -12,7 +12,7 @@
 }
 
 .breadcrumbLink {
-    color: #2563eb;
+    color: var(--color-primary-hover);
     text-decoration: none;
     font-size: 14px;
     transition: opacity 0.2s ease;
@@ -34,7 +34,7 @@
     margin-bottom: 16px;
     font-size: 20px;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--color-gray-800);
 }
 
 .statsGrid {

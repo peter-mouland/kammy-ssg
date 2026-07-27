@@ -1,7 +1,14 @@
 /* app/teams/components/football-pitch.module.css */
 
 .footballPitch {
-    background: linear-gradient(90deg, #2d5a2d 0%, #4a7c4a 25%, #2d5a2d 50%, #4a7c4a 75%, #2d5a2d 100%);
+    background: linear-gradient(
+        90deg,
+        var(--color-pitch-dark) 0%,
+        var(--color-pitch-light) 25%,
+        var(--color-pitch-dark) 50%,
+        var(--color-pitch-light) 75%,
+        var(--color-pitch-dark) 100%
+    );
 
     /* aspect-ratio: 2/3; */
 
@@ -10,7 +17,7 @@
     padding: 24px;
     min-height: 500px;
     position: relative;
-    border: 3px solid #fff;
+    border: 3px solid var(--color-white);
     box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
 }
 

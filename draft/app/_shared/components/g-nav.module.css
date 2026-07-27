@@ -38,7 +38,7 @@
 }
 
 .hamburger:hover {
-    background-color: #334155; /* Darker slate for hover */
+    background-color: var(--color-gray-700);
 }
 
 .hamburger:focus-visible {

@@ -1,11 +1,9 @@
 /* Location: app/admin/components/ui/status-card.module.css */
 
-/* status-card.module.css */
-
 .statusCard {
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e2e8f0;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-200);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,33 +11,33 @@
 }
 
 .statusCard.healthy {
-    border-color: #68d391;
-    background-color: #f0fff4;
+    border-color: var(--color-success-border);
+    background-color: var(--color-success-light);
 }
 
 .statusCard.warning {
-    border-color: #f6ad55;
-    background-color: #fffaf0;
+    border-color: var(--color-warning-border);
+    background-color: var(--color-warning-light);
 }
 
 .statusCard.critical {
-    border-color: #fc8181;
-    background-color: #fff5f5;
+    border-color: var(--color-error-border);
+    background-color: var(--color-error-light);
 }
 
 .statusValue {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
     margin-bottom: 0.25rem;
 }
 
 .statusLabel {
-    font-size: 0.875rem;
-    color: #718096;
-    margin-bottom: 0.5rem;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-2);
 }
 
 .statusPercentage {
-    font-size: 0.75rem;
-    color: #4a5568;
+    font-size: var(--font-xs);
+    color: var(--color-gray-600);
 }

@@ -1,19 +1,19 @@
 /* Location: app/teams/components/loan-status.module.css */
 
 .loanStatus {
-    background: #fff;
-    padding: 16px;
-    border-radius: 8px;
+    background: var(--color-white);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
     box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-4);
 }
 
 .title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
     margin: 0;
     display: flex;
     align-items: center;
@@ -21,36 +21,36 @@
 }
 
 .loanCount {
-    font-size: 14px;
-    color: #6b7280;
-    font-weight: 400;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-normal);
 }
 
 /* Loan Sections */
 .loanSection {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-3);
 }
 
 .loanSection:not(:last-child) {
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding-bottom: var(--spacing-4);
 }
 
 .sectionHeader {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--spacing-1);
 }
 
 .sectionTitle {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1f2937;
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-800);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .loanIcon {
@@ -58,14 +58,14 @@
 }
 
 .playerCount {
-    font-size: 14px;
-    color: #6b7280;
-    font-weight: 400;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-normal);
 }
 
 .sectionDescription {
-    font-size: 14px;
-    color: #4b5563;
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
     margin-left: 26px;
 }
 
@@ -73,25 +73,25 @@
 .playersList {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-3);
 }
 
 .loanedPlayer {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: #f9fafb;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-gray-200);
     transition:
-        background-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        background-color var(--transition-normal),
+        transform var(--transition-normal),
+        box-shadow var(--transition-normal);
 }
 
 .loanedPlayer:hover {
-    background: #f3f4f6;
+    background: var(--color-gray-100);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
@@ -99,7 +99,7 @@
 .loanDetails {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--spacing-1);
     flex: 1;
 }
 
@@ -108,49 +108,49 @@
 .loanDate {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .loanLabel {
-    font-size: 12px;
-    color: #6b7280;
-    font-weight: 500;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-medium);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     min-width: 40px;
 }
 
 .loanTeam {
-    font-size: 14px;
-    color: #111827;
-    font-weight: 500;
-    background: #fff;
-    padding: 2px 6px;
-    border-radius: 2px;
-    border: 1px solid #d1d5db;
+    font-size: var(--font-sm);
+    color: var(--color-gray-900);
+    font-weight: var(--font-weight-medium);
+    background: var(--color-white);
+    padding: 2px var(--spacing-1);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-gray-300);
 }
 
 .loanTime {
-    font-size: 14px;
-    color: #374151;
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
 }
 
 /* Loan Info */
 .loanInfo {
-    background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #fde047;
+    background: linear-gradient(135deg, var(--color-warning-light) 0%, var(--color-warning-border) 100%);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-yellow-300);
 }
 
 .infoTitle {
-    font-size: 14px;
-    font-weight: 700;
-    color: #854d0e;
-    margin-bottom: 8px;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow-800);
+    margin-bottom: var(--spacing-2);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--spacing-1);
 }
 
 .infoTitle::before {
@@ -158,8 +158,8 @@
 }
 
 .infoText {
-    font-size: 14px;
-    color: #a16207;
+    font-size: var(--font-sm);
+    color: var(--color-yellow-700);
     line-height: 1.5;
 }
 
@@ -168,7 +168,7 @@
     .loanedPlayer {
         flex-direction: column;
         align-items: stretch;
-        gap: 8px;
+        gap: var(--spacing-2);
     }
 
     .loanDetails {
@@ -187,6 +187,6 @@
 
     .sectionDescription {
         margin-left: 0;
-        margin-top: 4px;
+        margin-top: var(--spacing-1);
     }
 }

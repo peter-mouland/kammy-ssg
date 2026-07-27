@@ -1,13 +1,11 @@
 /* Location: app/players/components/player-stats-table.module.css */
 
-/* components/player-stats-table.module.css */
-
 .container {
-    background-color: var(--color-white, #fff);
+    background-color: var(--color-white);
     box-shadow:
         0 1px 3px 0 rgb(0 0 0 / 10%),
         0 1px 2px 0 rgb(0 0 0 / 6%);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
 }
 
@@ -19,50 +17,50 @@
 
 /* Results count */
 .resultsCount {
-    padding: 12px 16px;
-    font-size: 14px;
-    color: var(--color-gray-600, #4b5563);
-    background-color: var(--color-gray-50, #f9fafb);
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+    background-color: var(--color-gray-50);
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .formExcellent {
-    color: var(--color-green-600, #16a34a);
-    background-color: var(--color-green-200, #dcfce7);
+    color: var(--color-green-600);
+    background-color: var(--color-green-100);
 }
 
 .formGood {
-    color: var(--color-green-600, #16a34a);
-    background-color: var(--color-green-50, #f0fdf4);
+    color: var(--color-green-600);
+    background-color: var(--color-green-50);
 }
 
 .formAverage {
-    color: var(--color-yellow-600, #ca8a04);
-    background-color: var(--color-yellow-300, #fefce8);
+    color: var(--color-yellow-600);
+    background-color: var(--color-warning-light);
 }
 
 .formPoor {
-    color: var(--color-error-text, #dc2626);
-    background-color: var(--color-error-light, #fef2f2);
+    color: var(--color-error-text);
+    background-color: var(--color-error-light);
 }
 
 /* Actions */
 .actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .viewLink {
-    color: var(--color-primary, #2563eb);
-    font-size: 14px;
-    font-weight: 500;
+    color: var(--color-primary);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color var(--transition-normal);
 }
 
 .viewLink:hover {
-    color: var(--color-primary-hover, #1d4ed8);
+    color: var(--color-primary-hover);
 }
 
 .smallScreen {

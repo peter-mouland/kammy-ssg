@@ -1,44 +1,44 @@
 /* app/teams/components/contributing-stats.module.css */
 
 .contributingStats {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-md);
-    padding: 16px;
-    margin-top: 16px;
+    padding: var(--spacing-4);
+    margin-top: var(--spacing-4);
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: var(--spacing-3);
 }
 
 .title {
     font-size: var(--font-base);
     font-weight: var(--font-weight-semibold);
-    color: #111827;
+    color: var(--color-gray-900);
     margin: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .viewMode {
     font-size: var(--font-xs);
-    color: #6b7280;
+    color: var(--color-gray-500);
     font-weight: var(--font-weight-normal);
 }
 
 .expandButton {
-    background: #fff;
-    border: 1px solid #d1d5db;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-300);
     border-radius: var(--radius-sm);
-    padding: 4px 8px;
+    padding: var(--spacing-1) var(--spacing-2);
     cursor: pointer;
     font-size: var(--font-xs);
-    color: #6b7280;
+    color: var(--color-gray-500);
     transition:
         background-color 0.2s ease,
         border-color 0.2s ease,
@@ -46,38 +46,38 @@
 }
 
 .expandButton:hover {
-    background: #f3f4f6;
-    border-color: #9ca3af;
-    color: #374151;
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-400);
+    color: var(--color-gray-700);
 }
 
 .statsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 12px;
+    gap: var(--spacing-3);
 }
 
 .statItem {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
+    gap: var(--spacing-3);
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-sm);
-    padding: 12px;
+    padding: var(--spacing-3);
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
 }
 
 .statItem:hover {
-    border-color: #d1d5db;
+    border-color: var(--color-gray-300);
     box-shadow: 0 2px 8px rgb(0 0 0 / 5%);
 }
 
 .statItem.notRelevant {
     opacity: 0.6;
-    background: #f9fafb;
+    background: var(--color-gray-50);
 }
 
 .statIcon {
@@ -92,13 +92,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--spacing-1);
 }
 
 .statLabel {
     font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
-    color: #374151;
+    color: var(--color-gray-700);
     line-height: 1.2;
 }
 
@@ -106,42 +106,42 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .statValue {
     font-size: var(--font-lg);
     font-weight: var(--font-weight-bold);
-    color: #111827;
+    color: var(--color-gray-900);
     line-height: 1;
 }
 
 .pointsValue {
     font-size: var(--font-sm);
     font-weight: var(--font-weight-semibold);
-    padding: 2px 6px;
+    padding: var(--spacing-1) var(--spacing-2);
     border-radius: var(--radius-sm);
     line-height: 1;
     min-width: 32px;
     text-align: center;
-    background: #dbeafe;
+    background: var(--color-primary-light);
     color: var(--color-primary);
 }
 
 /* Positive/negative point colors */
 .statItem .pointsValue {
-    background: #dbeafe;
+    background: var(--color-primary-light);
     color: var(--color-primary);
 }
 
 .statItem .pointsValue[data-negative="true"] {
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--color-error-light);
+    color: var(--color-red-600);
 }
 
 .statDescription {
     font-size: var(--font-xs);
-    color: #6b7280;
+    color: var(--color-gray-500);
     line-height: 1.3;
     font-style: italic;
 }
@@ -149,16 +149,16 @@
 .noStats {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 24px;
-    color: #6b7280;
+    padding: var(--spacing-6);
+    color: var(--color-gray-500);
     font-style: italic;
 }
 
 .expandHint {
-    margin-top: 12px;
+    margin-top: var(--spacing-3);
     text-align: center;
     font-size: var(--font-xs);
-    color: #6b7280;
+    color: var(--color-gray-500);
     font-style: italic;
 }
 
@@ -166,12 +166,12 @@
 @media (max-width: 768px) {
     .statsGrid {
         grid-template-columns: 1fr;
-        gap: 8px;
+        gap: var(--spacing-2);
     }
 
     .statItem {
-        padding: 10px;
-        gap: 10px;
+        padding: var(--spacing-2);
+        gap: var(--spacing-2);
     }
 
     .statIcon {
@@ -182,7 +182,7 @@
     .statValues {
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: var(--spacing-1);
     }
 
     .pointsValue {
