@@ -13,7 +13,10 @@
     flex-direction: column;
     gap: 2px;
     position: relative;
-    transition: all 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
     box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
     margin-top: 25px;
     text-decoration: none;
