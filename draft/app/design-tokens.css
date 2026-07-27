@@ -198,6 +198,7 @@
 
     /* Extended Color Scale */
     --color-green-50: #f0fdf4;
+    --color-green-100: #dcfce7;
     --color-green-200: #bbf7d0;
     --color-green-300: #86efac;
     --color-green-500: #22c55e;
@@ -205,9 +206,13 @@
     --color-green-700: #15803d;
     --color-green-800: #166534;
     --color-blue-50: #eff6ff;
+    --color-blue-200: #bfdbfe;
     --color-blue-500: #3b82f6;
     --color-blue-600: #2563eb;
     --color-blue-700: #1d4ed8;
+    --color-orange-200: #fed7aa;
+    --color-orange-500: #f97316;
+    --color-orange-800: #9a3412;
     --color-yellow-300: #fde047;
     --color-yellow-500: #eab308;
     --color-yellow-600: #ca8a04;
@@ -217,6 +222,8 @@
     --color-red-600: #dc2626;
     --color-red-700: #b91c1c;
     --color-primary-dark: #1e40af;
+    --color-pitch-dark: #2d5a2d;
+    --color-pitch-light: #4a7c4a;
 
     /* Alias Tokens (legacy — prefer canonical --spacing-*, --font-*, --font-weight-*) */
     --space-1: 0.25rem;

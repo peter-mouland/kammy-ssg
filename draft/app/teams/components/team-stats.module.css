@@ -1,13 +1,13 @@
 /* app/teams/components/team-stats.module.css */
 
 .teamStats {
-    background: #fff;
-    border: 1px solid #e5e7eb;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-lg);
-    padding: 24px;
+    padding: var(--spacing-6);
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--spacing-6);
     height: fit-content;
     box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
@@ -17,40 +17,40 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 12px;
+    padding-bottom: var(--spacing-3);
     border-bottom: 2px solid var(--color-primary);
 }
 
 .sectionTitle {
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
     margin: 0;
 }
 
 .subsectionTitle {
-    font-size: 16px;
+    font-size: var(--font-base);
     font-weight: var(--font-weight-semibold);
-    color: #111827;
-    margin: 0 0 12px;
+    color: var(--color-gray-900);
+    margin: 0 0 var(--spacing-3);
 }
 
 /* Main Stats Grid */
 .mainStatsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 16px;
+    gap: var(--spacing-4);
 }
 
 .statCard {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: var(--spacing-4);
     text-align: center;
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        transform var(--transition-normal),
+        box-shadow var(--transition-normal);
 }
 
 .statCard:hover {
@@ -60,14 +60,14 @@
 
 .statValue {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     color: var(--color-primary);
     line-height: 1;
 }
 
 .statLabel {
     font-size: var(--font-sm);
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin-top: 6px;
     line-height: 1.2;
 }
@@ -76,14 +76,14 @@
 .topScorer {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-3);
 }
 
 .topScorerCard {
-    background: linear-gradient(135deg, #dbeafe, var(--color-primary));
-    color: #fff;
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+    color: var(--color-white);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: var(--spacing-4);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -95,7 +95,7 @@
 
 .topScorerName {
     font-size: var(--font-base);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     line-height: 1.2;
 }
 
@@ -107,7 +107,7 @@
 
 .topScorerPoints {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-align: right;
 }
 
@@ -115,35 +115,35 @@
 .positionBreakdown {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-3);
 }
 
 .positionGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .positionCard {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-sm);
-    padding: 12px;
+    padding: var(--spacing-3);
     text-align: center;
     transition:
-        border-color 0.2s ease,
-        background-color 0.2s ease;
+        border-color var(--transition-normal),
+        background-color var(--transition-normal);
 }
 
 .positionCard:hover {
-    border-color: #cbd5e1;
-    background: #f1f5f9;
+    border-color: var(--color-gray-300);
+    background: var(--color-gray-100);
 }
 
 .positionName {
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
-    color: #6b7280;
+    color: var(--color-gray-500);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: 1;
@@ -152,25 +152,25 @@
 
 .positionPoints {
     font-size: var(--font-base);
-    font-weight: 700;
-    color: #111827;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
     line-height: 1;
 }
 
 .positionAverage {
     font-size: var(--font-xs);
-    color: #6b7280;
+    color: var(--color-gray-500);
     margin-top: 2px;
     line-height: 1;
 }
 
 /* Time Period Indicator */
 .timePeriodIndicator {
-    background: #f0f9ff;
+    background: var(--color-info-light);
     color: var(--color-info);
     border: 1px solid var(--color-info);
     border-radius: var(--radius-sm);
-    padding: 6px 12px;
+    padding: var(--spacing-1) var(--spacing-3);
     font-size: var(--font-xs);
     text-align: center;
     margin-top: auto;
@@ -183,14 +183,14 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .teamStats {
-        padding: 16px;
-        gap: 16px;
+        padding: var(--spacing-4);
+        gap: var(--spacing-4);
     }
 
     .sectionHeader {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
+        gap: var(--spacing-3);
     }
 
     .sectionTitle {
@@ -199,7 +199,7 @@
 
     .mainStatsGrid {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: var(--spacing-3);
     }
 
     .positionGrid {
@@ -210,6 +210,6 @@
     .topScorerCard {
         flex-direction: column;
         text-align: center;
-        gap: 12px;
+        gap: var(--spacing-3);
     }
 }

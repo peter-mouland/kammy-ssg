@@ -17,7 +17,7 @@
 
 .loadingDetails {
     text-align: center;
-    color: #6b7280;
+    color: var(--color-gray-500);
 }
 
 .loadingSubtext {
@@ -34,9 +34,9 @@
 
 /* Alerts */
 .navigationAlert {
-    background-color: #dbeafe;
-    border: 1px solid #93c5fd;
-    color: #1d4ed8;
+    background-color: var(--color-primary-light);
+    border: 1px solid var(--color-blue-200);
+    color: var(--color-blue-700);
     padding: 0.75rem;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
@@ -85,7 +85,7 @@
 
 .optimisticMessage {
     margin-top: 1rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
     font-weight: 500;
 }
 
@@ -93,7 +93,7 @@
 .draftInactive {
     text-align: center;
     padding: 4rem 2rem;
-    color: #6b7280;
+    color: var(--color-gray-500);
 }
 
 .inactiveIcon {

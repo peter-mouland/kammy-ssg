@@ -4,10 +4,10 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: #f9fafb;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    background: var(--color-gray-50);
+    padding: var(--spacing-2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-gray-200);
     min-width: 200px;
 }
 
@@ -19,34 +19,34 @@
 }
 
 .label {
-    font-size: 12px;
-    color: var(--color-gray-500, #374151);
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
 }
 
 .endData {
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-gray-700, #374151);
+    color: var(--color-gray-700);
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 /* Selector controls */
 .selectorControls {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--spacing-1);
 }
 
 .navButton {
-    background: #fff;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease;
+        background-color var(--transition-normal),
+        border-color var(--transition-normal);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,8 +55,8 @@
 }
 
 .navButton:hover:not(:disabled) {
-    background: #f3f4f6;
-    border-color: #9ca3af;
+    background: var(--color-gray-100);
+    border-color: var(--color-gray-400);
 }
 
 .navButton:disabled {
@@ -72,31 +72,31 @@
 
 .gameweekButton {
     width: 100%;
-    background: #fff;
+    background: var(--color-white);
     border: 2px solid var(--color-primary);
-    border-radius: 6px;
-    padding: 4px 6px;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-1) 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-weight: 500;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-normal);
 }
 
 .gameweekButton:hover {
-    background: #dbeafe;
+    background: var(--color-primary-light);
 }
 
 .gameweekNumber {
-    font-size: 16px;
+    font-size: var(--font-lg);
     color: var(--color-primary);
 }
 
 .dropdownIcon {
-    color: #6b7280;
+    color: var(--color-gray-500);
     font-size: 14px;
-    transition: transform 0.2s ease;
+    transition: transform var(--transition-normal);
 }
 
 .gameweekButton:hover .dropdownIcon {
@@ -110,13 +110,13 @@
     left: 0;
     right: 0;
     z-index: 10;
-    margin-top: 4px;
+    margin-top: var(--spacing-1);
 }
 
 .dropdownContent {
-    background: #fff;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
     box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
     max-height: 200px;
     overflow-y: auto;
@@ -124,7 +124,7 @@
 
 .gameweekOption {
     width: 100%;
-    padding: 8px 12px;
+    padding: var(--spacing-2) var(--spacing-3);
     border: none;
     background: none;
     text-align: left;
@@ -132,43 +132,43 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-normal);
 }
 
 .gameweekOption:hover {
-    background: #f3f4f6;
+    background: var(--color-gray-100);
 }
 
 .gameweekOption.selected {
-    background: #dbeafe;
+    background: var(--color-primary-light);
     color: var(--color-primary);
     font-weight: 500;
 }
 
 .gameweekOption.current {
-    border-left: 3px solid #22c55e;
+    border-left: 3px solid var(--color-green-500);
 }
 
 /* Timeline */
 .timeline {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--spacing-1);
 }
 
 .timelineTrack {
     position: relative;
     height: 4px;
-    background: #d1d5db;
-    border-radius: 9999px;
+    background: var(--color-gray-300);
+    border-radius: var(--radius-full);
     overflow: hidden;
 }
 
 .timelineProgress {
     height: 100%;
-    background: linear-gradient(90deg, var(--color-primary) 0%, #1e40af 100%);
-    border-radius: 9999px;
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
 }
 
 .timelineThumb {
@@ -177,18 +177,18 @@
     width: 12px;
     height: 12px;
     background: var(--color-primary);
-    border: 2px solid #fff;
+    border: 2px solid var(--color-white);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
-    transition: left 0.3s ease;
+    transition: left var(--transition-slow);
 }
 
 .timelineLabels {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    color: #6b7280;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
 }
 
 .timelineStart,
@@ -204,7 +204,7 @@
     }
 
     .selectorControls {
-        gap: 4px;
+        gap: var(--spacing-1);
     }
 
     .navButton {
@@ -214,6 +214,6 @@
     }
 
     .gameweekNumber {
-        font-size: 16px;
+        font-size: var(--font-lg);
     }
 }

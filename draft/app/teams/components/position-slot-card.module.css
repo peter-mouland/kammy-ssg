@@ -1,8 +1,8 @@
 /* app/teams/components/position-slot-card.module.css */
 
 .positionSlotCard {
-    background: #ffffff89;
-    border: 1px solid #e5e7eb;
+    background: rgb(255 255 255 / 54%);
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-md);
     padding: 2px;
     min-height: 90px;
@@ -29,7 +29,7 @@
 }
 
 .positionSlotCard.substitute {
-    background: #f9fafb;
+    background: var(--color-gray-50);
     border-style: dashed;
 }
 
@@ -44,7 +44,7 @@
 .playerName {
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
-    color: #111827;
+    color: var(--color-gray-900);
     line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -87,7 +87,7 @@
     top: 6px;
     right: 6px;
     background: var(--color-warning);
-    color: #fff;
+    color: var(--color-white);
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
     padding: 2px 6px;

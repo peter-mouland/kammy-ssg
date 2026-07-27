@@ -2,13 +2,13 @@
 .timeTravelBanner {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #fff;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-weight: 500;
+    gap: var(--spacing-3);
+    background: linear-gradient(135deg, var(--color-warning-border) 0%, var(--color-warning) 100%);
+    color: var(--color-white);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-4);
+    font-weight: var(--font-weight-medium);
     box-shadow: 0 2px 8px rgb(251 191 36 / 30%);
 }
 
@@ -17,21 +17,21 @@
 }
 
 .backToCurrentButton {
-    background: #fff;
-    color: #111827;
+    background: var(--color-white);
+    color: var(--color-gray-900);
     border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
     cursor: pointer;
     transition:
-        background-color 0.2s ease,
-        transform 0.2s ease;
+        background-color var(--transition-normal),
+        transform var(--transition-normal);
     margin-left: auto;
 }
 
 .backToCurrentButton:hover {
-    background: #f3f4f6;
+    background: var(--color-gray-100);
     transform: translateY(-1px);
 }
