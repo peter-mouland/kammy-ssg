@@ -311,7 +311,7 @@
     border: 2px solid transparent;
     border-top: 2px solid currentcolor;
     border-radius: 50%;
-    animation: spin var(--duration-normal) linear infinite;
+    animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -328,7 +328,7 @@
 .updated_indicator {
     margin-left: var(--spacing-1);
     font-size: var(--font-xs);
-    opacity: var(--opacity-muted);
+    opacity: 0.5;
 }
 
 /* Action status text for completed actions */
@@ -376,9 +376,14 @@
 }
 
 .action_btn:disabled {
-    opacity: var(--opacity-disabled);
+    opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+}
+
+.action_btn:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .action_btn:not(:disabled):hover {
@@ -415,7 +420,7 @@
     font-size: var(--font-xs);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
-    letter-spacing: var(--letter-spacing-wide);
+    letter-spacing: 0.05em;
 }
 
 .status_approved {
@@ -462,12 +467,6 @@
     border: 1px solid var(--color-error-border);
 }
 
-/* Improved visual feedback */
-.action_btn:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
 /* Animation for updated status */
 @keyframes update-flash {
     0% {
@@ -482,7 +481,7 @@
 }
 
 .status_badge .updated_indicator {
-    animation: update-flash var(--duration-slow) ease-out;
+    animation: update-flash 0.3s ease-out;
 }
 
 /* Responsive Design */
