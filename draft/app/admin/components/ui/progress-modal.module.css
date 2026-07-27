@@ -48,7 +48,9 @@
     padding: var(--spacing-2);
     line-height: 1;
     border-radius: var(--radius-sm);
-    transition: all var(--transition-normal);
+    transition:
+        background-color var(--transition-normal),
+        color var(--transition-normal);
 }
 
 .closeButton:hover {

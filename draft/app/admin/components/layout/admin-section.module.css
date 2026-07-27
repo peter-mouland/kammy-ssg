@@ -65,7 +65,9 @@
 
 .section_content {
     padding: 1.5rem;
-    transition: all 0.3s ease-in-out;
+    transition:
+        max-height 0.3s ease-in-out,
+        padding 0.3s ease-in-out;
 }
 
 .section_content.collapsed {

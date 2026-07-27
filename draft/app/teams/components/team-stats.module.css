@@ -48,7 +48,9 @@
     border-radius: var(--radius-md);
     padding: 16px;
     text-align: center;
-    transition: all 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .statCard:hover {
@@ -128,7 +130,9 @@
     border-radius: var(--radius-sm);
     padding: 12px;
     text-align: center;
-    transition: all 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .positionCard:hover {

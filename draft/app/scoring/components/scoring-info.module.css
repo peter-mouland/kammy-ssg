@@ -51,7 +51,9 @@
 
 .scoringContent {
     padding: 0 var(--spacing-6) var(--spacing-6) var(--spacing-6);
-    transition: all var(--transition-normal) ease-in-out;
+    transition:
+        max-height var(--transition-normal) ease-in-out,
+        padding var(--transition-normal) ease-in-out;
     max-height: 1000px;
     overflow: hidden;
 }
