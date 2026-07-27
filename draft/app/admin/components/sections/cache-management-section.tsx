@@ -87,6 +87,12 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                 </AdminGrid>
             </AdminSection>
 
+            {/* Action Messages — above debug so feedback is visible without scrolling */}
+            {actionData?.success && actionData.message && (
+                <AdminMessage type="success">{actionData.message}</AdminMessage>
+            )}
+            {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
+
             {/* Debug Information */}
             <AdminSection
                 title="Debug Information"
@@ -139,12 +145,6 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                     </div>
                 </div>
             </AdminSection>
-
-            {/* Action Messages */}
-            {actionData?.success && actionData.message && (
-                <AdminMessage type="success">{actionData.message}</AdminMessage>
-            )}
-            {actionData?.error && <AdminMessage type="error">{actionData.error}</AdminMessage>}
         </AdminContainer>
     );
 }
