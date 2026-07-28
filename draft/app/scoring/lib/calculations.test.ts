@@ -3,6 +3,7 @@ import type { FplPlayerGameweekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import {
     calculateBonus,
+    calculateDefensiveActions,
     calculateDefensiveContribution,
     calculateGameweekPoints,
     calculateGoalsConcededPenalty,
@@ -64,6 +65,37 @@ describe('calculateDefensiveContribution', () => {
         expect(calculateDefensiveContribution(raw(20, 20, 20), 'gk')).toBe(0);
         expect(calculateDefensiveContribution(raw(20, 20, 20), 'wa')).toBe(0);
         expect(calculateDefensiveContribution(raw(20, 20, 20), 'ca')).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// calculateDefensiveActions
+// ---------------------------------------------------------------------------
+
+// The DC *stat* -- the number the threshold is tested against, and the number the DC
+// column shows. It is position-dependent for exactly the same reason the points are:
+// a defender's metric excludes recoveries, a midfielder's includes them. FPL's
+// `defensive_contribution` aggregate is keyed to FPL's position and is not used.
+describe('calculateDefensiveActions', () => {
+    // The same match yields a different DC stat depending on our position, which is why
+    // the cell cannot just display a stored number.
+    it('counts CBIT for a defender and CBIRT for a midfielder', () => {
+        expect(calculateDefensiveActions(raw(6, 4, 5), 'cb')).toBe(10); // 6 + 4, recoveries excluded
+        expect(calculateDefensiveActions(raw(6, 4, 5), 'fb')).toBe(10); // 6 + 4, recoveries excluded
+        expect(calculateDefensiveActions(raw(6, 4, 5), 'mid')).toBe(15); // 6 + 4 + 5
+    });
+
+    // The property that matters: the stat and the points must agree about the threshold.
+    it('is the number the threshold is applied to', () => {
+        expect(calculateDefensiveActions(raw(5, 5, 0), 'cb')).toBe(10);
+        expect(calculateDefensiveContribution(raw(5, 5, 0), 'cb')).toBe(1); // 10 >= 10
+
+        expect(calculateDefensiveActions(raw(5, 4, 0), 'cb')).toBe(9);
+        expect(calculateDefensiveContribution(raw(5, 4, 0), 'cb')).toBe(0); // 9 < 10
+    });
+
+    it('counts nothing when the player did nothing defensive', () => {
+        expect(calculateDefensiveActions(raw(0, 0, 0), 'mid')).toBe(0);
     });
 });
 
