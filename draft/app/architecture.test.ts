@@ -37,6 +37,13 @@ type Import = {
     toSegment: string;
 };
 
+/** How an import specifier for a domain's index appears once the extension is dropped. */
+const INDEX_SPECIFIERS: Record<string, string> = {
+    '': 'index.ts', // "../../draft"
+    index: 'index.ts', // "../../draft/index"
+    'index.server': 'index.server.ts', // "../../draft/index.server"
+};
+
 const sourceFiles = readdirSync(appDir, { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile() && /\.tsx?$/.test(entry.name))
     .map((entry) => join(entry.parentPath, entry.name));
@@ -54,8 +61,13 @@ const crossDomainImports: Import[] = sourceFiles.flatMap((absolutePath) => {
         const toPath = relative(appDir, resolve(dirname(absolutePath), specifier));
         if (toPath.startsWith('..')) return [];
 
-        const [toDomain, toSegment = ''] = toPath.split(sep);
+        const [toDomain, rawSegment = ''] = toPath.split(sep);
         if (!domains.includes(toDomain) || toDomain === fromDomain) return [];
+
+        // Imports omit the extension, and a bare domain import ("../../draft") resolves
+        // to that domain's index. Normalise both so the public-API rule recognises them
+        // instead of seeing a segment-less reach inside.
+        const toSegment = INDEX_SPECIFIERS[rawSegment] ?? rawSegment;
 
         return [{ from: fromPath, to: toPath, fromDomain, toDomain, toSegment }];
     });
@@ -80,12 +92,6 @@ const report = (violations: Import[], guidance: string) =>
 // the vocabulary of every feature. Phase 2 fixes it by naming a shared kernel (P2.1)
 // and moving each sheets module into the domain that owns it (P2.3, P2.4).
 const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([
-    // NEW in P2.3. firebase-draft-sync.ts is draft ORCHESTRATION (sync the draft
-    // between Sheets and Firebase) that happens to live in _shared. It needs the
-    // derived currentPick, so taking the derivation out of the sheets reader moved
-    // the dependency here rather than removing it. The real fix is to move that file
-    // into the draft domain -- blocked on the orchestrator question in the backlog.
-    '_shared/lib/firestore-cache/firebase-draft-sync.ts -> draft/lib/draft-pick-calculator',
     '_shared/lib/fpl/api-cache.ts -> scoring/types/scoring-types',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/lib',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/types/scoring-types',
@@ -150,7 +156,11 @@ describe('_shared must not depend on a domain', () => {
 // Ten of the entries below are exactly that. An index gives a domain a way to say "this
 // operation is for other domains to call" without exposing everything behind it. See the
 // orchestrator discussion under P2.3 in .kiro/backlog.md.
-const PUBLIC_API_ENTRYPOINTS = ['index.ts', 'index.tsx'];
+// `index.server.ts` is a second, server-only entry point. It exists because a domain's
+// server operations reach modules that touch Firebase/Sheets/process.env at import time,
+// and re-exporting those from index.ts would make the whole public API unsafe to import
+// from a component. See the decisions log in .kiro/backlog.md (2026-07-28).
+const PUBLIC_API_ENTRYPOINTS = ['index.ts', 'index.tsx', 'index.server.ts'];
 const TRANSITIONAL_PUBLIC_SEGMENTS = ['types', 'lib'];
 
 const PUBLIC_SEGMENTS = [...PUBLIC_API_ENTRYPOINTS, ...TRANSITIONAL_PUBLIC_SEGMENTS];
@@ -237,7 +247,7 @@ describe('a domain may only use another domain’s public API', () => {
 // understand, test or move scoring without also holding players, teams and transfers in
 // your head. Most of the current ones dissolve once Rule 1 and Rule 2 are satisfied,
 // so this is measured as a count that may only go down (P2.6).
-const KNOWN_CYCLIC_PAIRS = 13;
+const KNOWN_CYCLIC_PAIRS = 12;
 
 describe('the domain dependency graph', () => {
     const graph = new Map<string, Set<string>>();

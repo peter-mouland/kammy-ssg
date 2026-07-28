@@ -28,11 +28,11 @@ git log --oneline -15
 
 | | Why |
 |---|---|
-| **P2.7 — public API for `draft`** | Unblocks moving `firebase-draft-sync.ts` into the domain and removes the allowlist entry P2.3 had to add. Makes Rule 2 real rather than aspirational. **`draft/lib/` is now covered by P3.3**, so the restructure has tests holding it in place — do it in that order. |
+| **P2.7 — public API for `scoring`** | `draft` is done and is the worked example to copy. `division-teams.service` has 6 importers across 5 domains — the worst offender, and it stands between P2.3 and its remaining readers. |
 | **P2.3 — remaining sheets readers** | `transfers.ts`, `cup.ts`, `player-gw-points.ts`. `draft.ts` is done and is the worked example to copy. |
 | **P3.4 — first loader test** | Blocked on P2.3 giving it an injection seam. Also inherits the duplicate-pick rule P3.3 could not reach. |
 
-*Recently done: P4.5 (steering doc back in line with reality, plus a drift check), P3.3 (draft/lib now has 47 tests).*
+*Recently done: P4.5 (steering doc realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first domain with a public API).*
 
 **Working agreements that are not obvious from the code:**
 - Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
@@ -91,6 +91,7 @@ Newest domain, 12 test files, zero type errors. When in doubt about how somethin
 | 2026-07-26 | One shared **ratchet** mechanism for both type errors and CSS | Same mental model for both backlogs, one script, one baseline file (`.ratchet.json`) |
 | 2026-07-26 | **Each domain gets a public API (`index.ts`); `server/` and `components/` become private** | Three items stalled because `admin` orchestrates other domains — its actual job — with no legal way to reach their logic, which is why 10 `admin -> X/server` entries sit allowlisted. An index lets a domain expose an operation without exposing everything behind it. Chosen over exempting `admin` from Rule 2, which would have been the same debt without admitting it. |
 | 2026-07-26 | **Sheets access is a cross-cutting concern. Every sheet reader lives in `_shared/lib/sheets/`, with no exceptions** | One spreadsheet, one client, one auth, one cache strategy — it is the app's persistence layer. Splitting a reader out because of who happens to read it today is arbitrary and reverses the moment a second domain needs that data. An exception costs every future contributor the question "where do we read sheets?" |
+| 2026-07-28 | **A domain gets TWO public entry points: `index.ts` (client-safe) and `index.server.ts`** | Found doing P2.7 for `draft`. `FirebaseDraftSync` reaches `firebase.realtime-admin`, which parses a service account from `process.env` **at module scope**. Re-exporting it from `index.ts` would make the entire public API unsafe to import from a component, and the failure mode is `process is not defined` in the browser rather than a build error. A single barrel per domain would have quietly forced every domain's public API to be server-only. Verified both ways with throwaway probes: `index.ts` imports clean with no credentials, `index.server.ts` throws. |
 
 ---
 
@@ -107,9 +108,9 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **10** — P2.1 + P2.4 + P2.3 (draft) |
+| `_shared` → domain imports | 34, across 6 domains | **9** — P2.1 + P2.4 + P2.3 (draft) + P2.7 (draft) |
 | Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
-| Domain dependency cycles | 15 | **13** — P2.4 dissolved two |
+| Domain dependency cycles | 15 | **12** — P2.4 dissolved two, P2.7 (draft) a third |
 
 ### Type errors by domain
 
@@ -371,14 +372,29 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
   **Order — start where the pain is:**
 
-  | Domain | First job |
-  |---|---|
-  | `draft` | expose draft state + sync so `firebase-draft-sync.ts` can move into the domain and `admin` can still call it |
-  | `scoring` | `division-teams.service` has 6 importers across 5 domains — the single worst offender |
-  | `transfers` | `transfers-data.service`, used by admin |
-  | rest | as their allowlist entries come up |
+  | Domain | First job | |
+  |---|---|---|
+  | `draft` | expose draft state + sync so `firebase-draft-sync.ts` can move into the domain and `admin` can still call it | ✅ **done** |
+  | `scoring` | `division-teams.service` has 6 importers across 5 domains — the single worst offender | next |
+  | `transfers` | `transfers-data.service`, used by admin | |
+  | rest | as their allowlist entries come up | |
 
-  *Acceptance:* each domain has an `index.ts`; `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making `index.ts` the only cross-domain entry point.
+  ### ✅ `draft` — done
+
+  `firebase-draft-sync.ts` moved from `_shared/lib/firestore-cache/` to `draft/server/` with `git mv`, so history follows it. Its only draft dependency (`calculateCurrentPick`) became internal, which is what made the move possible at all.
+
+  - **`_shared` → domain imports 10 → 9**, and the allowlist entry P2.3 was forced to add is gone.
+  - **A dependency cycle dissolved, 13 → 12.**
+  - `admin` now calls draft orchestration through the public API instead of reaching into `_shared`.
+
+  **Two things fell out of it, both worth knowing before doing the next domain:**
+
+  **1. The rule did not recognise its own target.** A bare `import … from '../../draft'` resolves to `draft/index.ts`, but the parser recorded a segment-less path and reported it as reaching inside. Nobody had noticed, because no domain had an index yet. Fixed by normalising bare and extensionless index specifiers.
+
+  **2. One barrel per domain would have been wrong.** See the decisions log — `index.ts` is client-safe, `index.server.ts` is for anything touching Firebase, Sheets or `process.env`. Without the split, `draft/index.ts` would have dragged the Firebase admin SDK into every component importing it, failing at runtime in the browser rather than at build time.
+
+  *Acceptance (whole item):* each domain has an `index.ts`; `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
+  *Note:* `TRANSITIONAL_PUBLIC_SEGMENTS` is global, so it cannot come out until every domain has an index. `draft`'s own `types/` and `lib/` are still imported directly by `admin`, `players`, `transfers` and `scoring` — legal for now, and a tidy-up for when the flag goes.
 
 - [ ] **P2.5 — Promote genuinely shared components**
   `teams/components/gameweek-selector` is used by transfers, leagues, players and admin. `players/components/player` is used by teams, transfers, admin and wishlist. Both belong in `_shared/components/`.
