@@ -53,7 +53,7 @@
     "remove-unused-vars": "^0.0.11",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vite": "^7.3.5",
+    "vite": "^8.0.16",
     "vitest": "3.2.6"
   }
 }
