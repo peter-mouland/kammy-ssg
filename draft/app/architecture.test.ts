@@ -318,3 +318,46 @@ describe('exported type names', () => {
         ).toEqual([]);
     });
 });
+
+// ---------------------------------------------------------------------------
+// Rule 5: the documented route table matches the real one
+// ---------------------------------------------------------------------------
+
+// architecture.md is loaded into every AI session via CLAUDE.md, so a stale route
+// table produces confidently wrong output rather than a visible error. It had drifted
+// to 20 of 27 routes and was missing the cup domain entirely before this check existed.
+const ARCHITECTURE_DOC = resolve(appDir, '../../.kiro/steering/architecture.md');
+
+const routeFiles = readFileSync(resolve(appDir, 'routes.ts'), 'utf8')
+    .split('\n')
+    .filter((line) => !line.trim().startsWith('//')) // commented-out routes are not routes
+    .flatMap((line) => Array.from(line.matchAll(/['"]([\w\-./]+\.tsx?)['"]/g), (m) => m[1]));
+
+describe('the route table in architecture.md', () => {
+    it('lists every route in routes.ts', () => {
+        const doc = readFileSync(ARCHITECTURE_DOC, 'utf8');
+        const undocumented = routeFiles.filter((file) => !doc.includes(file));
+
+        expect(
+            undocumented,
+            `\nThese routes are missing from the route table in .kiro/steering/architecture.md:\n${undocumented
+                .map((f) => `  ${f}`)
+                .join('\n')}\n\n` +
+                'That file is loaded into every AI session, so anything missing from it is\n' +
+                'invisible to the next contributor. Add a row for each route above.\n',
+        ).toEqual([]);
+    });
+
+    it('does not list routes that no longer exist', () => {
+        const doc = readFileSync(ARCHITECTURE_DOC, 'utf8');
+        const documented = Array.from(doc.matchAll(/`([\w\-./]+\.route\.tsx?)`/g), (m) => m[1]);
+        const stale = documented.filter((file) => !routeFiles.includes(file));
+
+        expect(
+            stale,
+            `\nThese routes are documented in .kiro/steering/architecture.md but are not in routes.ts:\n${stale
+                .map((f) => `  ${f}`)
+                .join('\n')}\n\nDelete their rows, or restore the route.\n`,
+        ).toEqual([]);
+    });
+});

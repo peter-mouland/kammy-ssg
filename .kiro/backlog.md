@@ -71,7 +71,7 @@ Before changing behaviour, write an integration-style test that exercises the re
 Contributors will be short-term; we are the architecture guardians. When a fix has a cheap version and a correct version, we take the correct version. This is the one place we deliberately override "make the smallest change" — that rule governs *feature* work, not the structural work in this document.
 
 **4. `cup/` is the reference implementation.**
-Newest domain, 13 test files, zero type errors. When in doubt about how something should look, copy `cup/`.
+Newest domain, 12 test files, zero type errors. When in doubt about how something should look, copy `cup/`.
 
 ---
 
@@ -101,12 +101,12 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Type errors | 275 | **177** |
 | CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
 | Biome lint warnings | 280, none enforced | **266**, ratcheted |
-| Tests | 149 passing, 24 files | **241 passing, 28 files** |
+| Tests | 149 passing, 24 files | **249 passing, 28 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
 | `_shared` → domain imports | 34, across 6 domains | **10** — P2.1 + P2.4 + P2.3 (draft) |
-| Architecture rules enforced | 0 | **4** (P1.2) |
+| Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
 | Domain dependency cycles | 15 | **13** — P2.4 dissolved two |
 
 ### Type errors by domain
@@ -178,7 +178,7 @@ The highest-leverage phase. Nothing after this is safe without it.
   *Note:* counts are repo-wide, not per-domain. Per-domain granularity for types can be added when P1.3 makes it useful.
 
 - [x] **P1.2 — `architecture.test.ts` — make the steering rules executable**
-  *Done:* [architecture.test.ts](../draft/app/architecture.test.ts), 8 tests, no new dependency. Walks every relative import in `app/` (including dynamic `import()`) and enforces four rules:
+  *Done:* [architecture.test.ts](../draft/app/architecture.test.ts), 8 tests, no new dependency. (Now 10 — P4.5 added the route-table drift check as Rule 5.) Walks every relative import in `app/` (including dynamic `import()`) and enforces four rules:
 
   | Rule | Current debt |
   |---|---|
@@ -456,10 +456,19 @@ Lowest risk, highest daily friction for new contributors.
   Three patterns in use: `.server.ts` (10), `.service.ts` (13), `.server.tsx` (2). Document what each means, or collapse them.
   *Acceptance:* the convention is written down and the outliers are renamed.
 
-- [ ] **P4.5 — Bring `architecture.md` back in line with reality**
-  It does not mention the `cup/` domain at all (35 files) and its route table is missing 8 routes. This file is loaded into **every** AI session — stale steering produces confidently wrong output. Cheapest high-impact fix on the list; do it early if there is a spare hour.
-  Add a "read this first" pointer to `cup/` as the reference implementation.
-  *Acceptance:* domain list and route table match `routes.ts`; `cup/` documented.
+- [x] **P4.5 — Bring `architecture.md` back in line with reality**
+  *Done:* the route table listed **20 of 27** routes and the `cup/` domain (35 files, 12 test files — the best-tested in the app) was absent entirely. Since this file is loaded into every AI session via `CLAUDE.md`, every session was being told `cup/` did not exist while the backlog named it the reference implementation.
+
+  | Fixed | |
+  |---|---|
+  | Route table | all 27 routes, grouped Pages / Cup / Admin / APIs, with the two traps called out — `admin-progress*` is **not** nested under `/admin`, and `cup/` and `admin/` own API routes inside their own folders rather than in `api/` |
+  | Domain list | `cup/` added, plus a "read `cup/` first" pointer explaining *why* it is the reference (route convention, 12 test files, zero type errors) |
+  | Domain model | a `Cup` section, sourced from `cup/lib/cup-rules.ts` rather than guessed: stages, 16 qualifiers, 4-player squads (6 in the final), two-legged middle rounds, the player-reuse ban and autopick DQ |
+  | Sheets table | `Cup`, `CupConfig`, `CupBracket` added. Also corrected `PlayerGwPoints` → `player-gw-points`, which is the actual sheet name |
+
+  **Went beyond the acceptance criteria, deliberately** — per principle 1, a doc that drifted once will drift again. Added **Rule 5** to [architecture.test.ts](../draft/app/architecture.test.ts): the route table must list every route in `routes.ts`, and must not list routes that no longer exist. Verified in both directions; it caught a real error in the prose during writing (a bare `cup.route.tsx` instead of the full path). P4.5 now cannot silently regress.
+
+  *Acceptance:* ✅ domain list and route table match `routes.ts`; `cup/` documented; drift is now enforced rather than trusted.
 
 ---
 
@@ -478,7 +487,7 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-26 | **[Separate problem found]** | `draft/server/draft.server.ts` imports `admin/server/actions/team-commit-actions`. A feature domain reaching into **admin's** server actions inverts the intended direction — admin orchestrates domains, not the reverse. Found by P1.2. | [draft.server.ts](../draft/app/draft/server/draft.server.ts) |
 | 2026-07-26 | **[Fixed + tested]** | `formatPointsDisplay` rendered a negative total as `--3`: the negative branch built `` `-${points}` `` while `points` already carried its own sign. Visible in the Points column whenever a player scored negatively in a gameweek. Found by the subagent writing the table tests, which correctly declined to encode it. Reproduced with a failing test, then fixed. | [utils.ts](../draft/app/scoring/lib/utils.ts) |
 | 2026-07-26 | **[Separate problem found]** | `formatPointsDisplay`'s docstring promised a `+` prefix on positive totals that was never implemented. Adding one changes every points figure in the UI, so it is a product decision rather than a bug fix. Deliberately left alone. | [utils.ts](../draft/app/scoring/lib/utils.ts) |
-| 2026-07-26 | **[Separate problem found]** | The DC column *displays* FPL's `defensiveContribution` aggregate while its tooltip computes points from the raw CBIT/CBIRT components against our custom position. For a player whose position disagrees with FPL's (the Matheus Nunes case named in `calculations.ts`), the cell and the tooltip tell different stories. The tooltip is the correct half; the displayed stat is the questionable one. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
+| 2026-07-26 | **[Partly fixed — decision open]** | The DC column displayed FPL's `defensive_contribution` aggregate while its tooltip computed points from the raw components against our custom position. **A regression from 6fca9d7**, which fixed the points and left the display behind. Wider than first logged: FPL's aggregate was the only DC stat in the app, shown in five places. **Gameweek half fixed in 3ed52bc**; the season columns still sum per-match counts (Gabriel reads 277 against a per-match threshold) and need a stored-shape change plus a data migration. Open decision in [#99](https://github.com/peter-mouland/kammy-ssg/issues/99). | [calculations.ts](../draft/app/scoring/lib/calculations.ts) |
 | 2026-07-26 | **[Polish]** | Tooltips read `"1 points"` / `"-1 points"` — no singular form. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
 | 2026-07-26 | **[Fixed + tested]** | The defensive-contribution tooltip on the player gameweek table always read **"0 points"** for every player. It passed `stat.defensiveContribution` (a number) where `calculateDefensiveContribution` expects the raw components object, so every field read came back `undefined`, the total was 0, and 0 is below every threshold. Invisible because it was a plausible-looking value. Surfaced only once `TableColumn.title` was declared and the compiler could finally see the call site. Now covered by rendering tests. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
 | 2026-07-26 | **[Separate problem found]** | `DraftPickData.teamCode` and `FirebaseDraftPick.teamCode` are typed `string`, but callers assign a number (`FplTeam.code`). Surfaced by P1.3a once the surrounding code stopped being implicit `any`. Causes 3 of the 12 remaining `draft` errors, including a `number === string` comparison in [draft.tsx:202](../draft/app/draft/draft.tsx) that can never be true. Fix during the `draft` burn-down. | [draft-types.ts](../draft/app/draft/types/draft-types.ts) |
