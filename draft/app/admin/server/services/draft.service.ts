@@ -2,7 +2,6 @@
 
 import { getInvalidationKeys } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
-import { FirebaseDraftSync } from '../../../_shared/lib/firestore-cache/firebase-draft-sync';
 import { readDraftStateByDivision, updateDraftState } from '../../../_shared/lib/sheets/draft';
 import {
     clearDraftOrder,
@@ -12,6 +11,7 @@ import {
 } from '../../../_shared/lib/sheets/draft-order';
 import type { DivisionId, UserTeamsSheetData } from '../../../_shared/types/league-types';
 import type { DraftStateRow } from '../../../_shared/types/sheets-types';
+import { FirebaseDraftSync } from '../../../draft/index.server';
 import type { DraftResult } from '../../types/admin-orchestrator-types';
 import type { AdminActionResult } from '../../types/admin-types';
 import { handleCommitTeamsToFirestore } from '../actions/team-commit-actions';

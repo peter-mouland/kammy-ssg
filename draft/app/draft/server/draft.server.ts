@@ -3,7 +3,6 @@
 
 import { getInvalidationKeys } from '../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../_shared/lib/cache/data-cache.service';
-import { FirebaseDraftSync } from '../../_shared/lib/firestore-cache/firebase-draft-sync';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import {
@@ -20,6 +19,7 @@ import { calculateCurrentPick, calculateCurrentUserId } from '../lib/draft-pick-
 import { toDraftStateForDivision, toDraftStates } from '../lib/draft-state';
 import { generateDraftSequence } from '../lib/generate-draft-sequence';
 import type { DraftLoaderData, DraftOrderData, DraftPickData } from '../types/draft-types';
+import { FirebaseDraftSync } from './firebase-draft-sync';
 
 export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     const selectedUser = url.searchParams.get('user') || '';

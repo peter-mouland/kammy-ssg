@@ -79,6 +79,17 @@ import { getDraftStates } from '../draft';
 import { readDraftState } from '../draft/server/draft.server';
 ```
 
+**A domain has two entry points, and the split matters.**
+
+| File | For | Safe to import from a component? |
+|---|---|---|
+| `index.ts` | types, rules, pure logic | ✅ yes |
+| `index.server.ts` | operations touching Firebase, Sheets or `process.env` | ❌ no |
+
+They are separate because several server modules do work **at import time** — `firebase.realtime-admin` parses a service account from `process.env` at module scope. Re-exporting anything that reaches it from `index.ts` would make the whole public API unsafe to import from a component, and the failure would be a `process is not defined` crash in the browser rather than a build error.
+
+So: if it touches Firebase, Google Sheets or `process.env`, it goes in `index.server.ts`. If a component could reasonably import it, it goes in `index.ts`. `draft/` is the worked example.
+
 This exists because **`admin` orchestrates other domains** — that is its job — and previously had no legal way to do it, so it reached into their server code. An index lets a domain say *"this operation is for others to call"* without exposing everything behind it.
 
 **Transitional:** importing another domain's `types/` and `lib/` is still accepted while indexes are introduced (see P2.7 in the backlog). Prefer the index for anything new.

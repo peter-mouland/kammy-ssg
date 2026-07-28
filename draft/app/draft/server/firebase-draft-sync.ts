@@ -1,9 +1,9 @@
-/* Location: app/_shared/lib/firestore-cache/firebase-draft-sync.ts */
+/* Location: app/draft/server/firebase-draft-sync.ts */
 // biome-ignore-all lint/complexity/noStaticOnlyClass: class pattern used for Firebase service grouping
 
-// /_shared/lib/firestore-cache/firebase-draft-sync.ts - ENHANCED WITH RESET CAPABILITY
-import type { DivisionId } from '../../types/league-types';
-import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
+import { getRealtimeAdminDbInstance } from '../../_shared/lib/firestore-cache/firebase.realtime-admin';
+// draft/server/firebase-draft-sync.ts - ENHANCED WITH RESET CAPABILITY
+import type { DivisionId } from '../../_shared/types/league-types';
 
 interface DraftEvent {
     type: 'pick-made' | 'turn-change' | 'draft-started' | 'draft-ended' | 'draft-synced' | 'draft-reset';
@@ -324,9 +324,9 @@ export class FirebaseDraftSync {
 
         try {
             // Import sheets functions dynamically
-            const { readDraftStateByDivision } = await import('../../lib/sheets/draft');
-            const { getDraftPicksByDivision } = await import('../../lib/sheets/draft');
-            const { getDraftOrderByDivision } = await import('../../lib/sheets/draft-order');
+            const { readDraftStateByDivision } = await import('../../_shared/lib/sheets/draft');
+            const { getDraftPicksByDivision } = await import('../../_shared/lib/sheets/draft');
+            const { getDraftOrderByDivision } = await import('../../_shared/lib/sheets/draft-order');
 
             // Get data from sheets (source of truth)
             const [draftState, draftPicks, draftOrder] = await Promise.all([
@@ -345,7 +345,7 @@ export class FirebaseDraftSync {
 
             // currentPick is derived, not stored: the sheets reader returns rows only,
             // so it is computed here from the picks this division has already made.
-            const { calculateCurrentPick } = await import('../../../draft/lib/draft-pick-calculator');
+            const { calculateCurrentPick } = await import('../lib/draft-pick-calculator');
             const currentPick = calculateCurrentPick(divisionId, draftPicks);
             const currentUserId = draftState.currentUserId;
             const isActive = draftState.isActive;

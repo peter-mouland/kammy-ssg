@@ -94,7 +94,7 @@ async function generateAllDraftSyncComparisons(): Promise<DraftSyncComparison[]>
  */
 async function getFirebaseDraftState(divisionId: DivisionId): Promise<FirebaseDraftState | null> {
     try {
-        const { FirebaseDraftSync } = await import('../../../_shared/lib/firestore-cache/firebase-draft-sync');
+        const { FirebaseDraftSync } = await import('../../../draft/index.server');
         return await FirebaseDraftSync.getDraftState(divisionId);
     } catch (error) {
         console.error(`❌ Failed to get Firebase draft state for ${divisionId}:`, error);
