@@ -66,8 +66,8 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Metric | At start (2026-07-26) | Now |
 |---|---|---|
 | Type errors | 275 | **200** |
-| CSS convention violations | not measurable (stylelint not installed) | **603** |
-| Tests | 149 passing, 24 files | **176 passing, 26 files** |
+| CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
+| Tests | 149 passing, 24 files | **192 passing, 26 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
@@ -357,10 +357,22 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
 Ordered by risk. The existing tests are good — this is a coverage-placement problem, not a testing-culture problem.
 
-- [ ] **P3.1 — Scoring aggregation functions**
-  [calculations.ts](../draft/app/scoring/lib/calculations.ts) has 15 exported functions; only 4 leaves are tested. `calculateGameweekPoints`, `calculateSeasonPoints` and `getFullBreakdown` are untested — and they are what every user sees on every page. Highest-value missing test in the repo.
-  Include: that `calculateSeasonPoints` and `calculateGameweekPoints` agree over the same input, and that `total` equals the sum of the breakdown.
-  *Acceptance:* all three covered with stat-line-in / points-out tests, per [testing-conventions.md](steering/testing-conventions.md).
+- [x] **P3.1 — Scoring aggregation functions**
+  *Done:* 16 tests added to [calculations.test.ts](../draft/app/scoring/lib/calculations.test.ts); suite 176 → 192.
+
+  `calculateGameweekPoints`, `calculateSeasonPoints` and `getFullBreakdown` produce every number a manager sees, and had no test. They do now, written **before** the Phase 2 refactoring that will move code around them — which was the point of principle 2, and which we had been quietly violating.
+
+  Written at the consumer boundary: each test starts from **FPL-shaped gameweek data**, the same shape the live API returns, runs it through the real conversion and the real `POSITION_RULES`, and asserts the points that come out. Nothing reaches into how a total is assembled, so internals can be split, renamed or moved and these still hold.
+
+  Coverage:
+  - **Whole-match scenarios** per position — a centre back who scored and kept a clean sheet, a keeper who conceded and saved a penalty, a substitute wide attacker who was booked, red cards punished differently by position, an unused sub scoring nothing.
+  - **A season equals the sum of its gameweeks.** If these ever disagree, a manager's season total stops matching the gameweeks it is made of — drift nobody notices until the table looks wrong.
+  - **`total` equals the sum of its parts**, checked for all six positions. `total` is stored alongside the breakdown rather than derived on read, so the two can drift.
+  - **The player-page breakdown reports the points it was given**, so a page cannot show a breakdown that fails to add up to the figure beside it.
+
+  Every expected value was worked out by hand from `rules.ts` and is shown in the comments, so a failure says which rule broke rather than just which number moved. **All of them matched the implementation first time** — independent evidence the scoring engine is correct, not just self-consistent.
+
+  *The ratchet earned its keep here:* the new fixture omitted 9 unused `FplPlayerGameweekData` fields, which `yarn ratchet` caught as +1 type error before commit.
 
 - [ ] **P3.2 — Cache TTL resolution and invalidation rules**
   Named explicitly in the testing conventions, and P0.2 is exactly the bug a test would have caught.
