@@ -28,9 +28,11 @@ git log --oneline -15
 
 | | Why |
 |---|---|
-| **P2.7 — public API for `draft`** | Unblocks moving `firebase-draft-sync.ts` into the domain and removes the allowlist entry P2.3 had to add. Makes Rule 2 real rather than aspirational. |
+| **P2.7 — public API for `draft`** | Unblocks moving `firebase-draft-sync.ts` into the domain and removes the allowlist entry P2.3 had to add. Makes Rule 2 real rather than aspirational. **`draft/lib/` is now covered by P3.3**, so the restructure has tests holding it in place — do it in that order. |
 | **P2.3 — remaining sheets readers** | `transfers.ts`, `cup.ts`, `player-gw-points.ts`. `draft.ts` is done and is the worked example to copy. |
-| **P3.3 / P3.4 — draft order + loader tests** | P3.4 is blocked on P2.3 giving it an injection seam. |
+| **P3.4 — first loader test** | Blocked on P2.3 giving it an injection seam. Also inherits the duplicate-pick rule P3.3 could not reach. |
+
+*Recently done: P4.5 (steering doc back in line with reality, plus a drift check), P3.3 (draft/lib now has 47 tests).*
 
 **Working agreements that are not obvious from the code:**
 - Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
@@ -101,7 +103,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Type errors | 275 | **177** |
 | CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
 | Biome lint warnings | 280, none enforced | **266**, ratcheted |
-| Tests | 149 passing, 24 files | **249 passing, 28 files** |
+| Tests | 149 passing, 24 files | **296 passing, 32 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
@@ -412,12 +414,26 @@ Ordered by risk. The existing tests are good — this is a coverage-placement pr
 - [x] **P3.2 — Cache TTL resolution and invalidation rules**
   *Done during P0.2/P0.3* — 19 tests in [cache-invalidation.test.ts](../draft/app/_shared/lib/cache/cache-invalidation.test.ts). Covers `getCacheTTL` for every key shape (including the `sheets:cup-config` / `sheets:cup` ordering trap and a check that no live key silently falls through to the default), every invalidation rule, and two structural tests asserting no rule is declared without a caller and none is called without being declared.
 
-- [ ] **P3.3 — Draft snake order and next-picker**
-  `draft/lib/` has zero tests. Named explicitly in the testing conventions: snake order generation, and that the same player cannot be picked twice in a division.
-  *Acceptance:* `generate-draft-sequence`, `calculate-next-picker` and `draft-rules` covered, including the even-round reversal.
+- [x] **P3.3 — Draft snake order and next-picker**
+  *Done:* 4 test files, 47 tests; suite **249 → 296**. `draft/lib/` had zero tests despite holding the rule that decides whose turn it is.
+
+  | File | Covers |
+  |---|---|
+  | `generate-draft-sequence.test.ts` | the reversal, the double pick at the turn of a round, continuous pick numbering, equal picks per manager, two-manager and empty edge cases |
+  | `calculate-next-picker.test.ts` | who is "on deck", including the turn where the current picker is also next; end-of-draft; inactive/absent state |
+  | `draft-pick-calculator.test.ts` | division scoping, the snake as the server records it, the empty-string "nobody" signal |
+  | `draft-rules.test.ts` | position maximums, bench overflow, the 2-per-club hard block, unknown positions, full squad |
+
+  **The snake rule is implemented three times** — `generateDraftSequence` (what the draft room shows), `calculateCurrentUserId` (what the server records) and `calculateNextPicker` (the "on deck" badge). If they drift, the room shows one manager's turn while the server accepts a pick from another. There is now a test asserting the first two produce identical picking orders across 2-, 3- and 5-manager drafts.
+
+  **`calculateNextPicker` is deliberately one pick ahead.** It reads `currentPick + 1`, which looks like an off-by-one. It is not: the draft room renders it as "Get Ready..." with an `onDeck` class, i.e. the manager *after* the one currently picking. Confirmed against the component before writing the test, per the rule that a test must never encode a bug.
+
+  *Acceptance:* ✅ all three named modules covered, even-round reversal included.
+  *Not covered:* "the same player cannot be picked twice in a division". That guard is in `draft.server.ts:150`, not `lib/`, and needs the injection seam P3.4 is waiting on. Carried into P3.4.
 
 - [ ] **P3.4 — First route-loader test**
   Named as the priority boundary in the testing conventions, currently impossible because sheets modules are imported directly with no injection seam. **Blocked on P2.3.**
+  *Also carries from P3.3:* the "same player cannot be picked twice in a division" rule, which lives in `draft.server.ts:150` and needs the same seam.
   Establish the pattern once — inject a fake sheets client returning fixtures, assert the loader's returned shape for a given URL and division — then replicate across loaders.
   *Acceptance:* one loader test exists and the pattern is documented in the testing conventions.
 
@@ -489,6 +505,7 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-26 | **[Separate problem found]** | `formatPointsDisplay`'s docstring promised a `+` prefix on positive totals that was never implemented. Adding one changes every points figure in the UI, so it is a product decision rather than a bug fix. Deliberately left alone. | [utils.ts](../draft/app/scoring/lib/utils.ts) |
 | 2026-07-26 | **[Partly fixed — decision open]** | The DC column displayed FPL's `defensive_contribution` aggregate while its tooltip computed points from the raw components against our custom position. **A regression from 6fca9d7**, which fixed the points and left the display behind. Wider than first logged: FPL's aggregate was the only DC stat in the app, shown in five places. **Gameweek half fixed in 3ed52bc**; the season columns still sum per-match counts (Gabriel reads 277 against a per-match threshold) and need a stored-shape change plus a data migration. Open decision in [#99](https://github.com/peter-mouland/kammy-ssg/issues/99). | [calculations.ts](../draft/app/scoring/lib/calculations.ts) |
 | 2026-07-26 | **[Polish]** | Tooltips read `"1 points"` / `"-1 points"` — no singular form. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
+| 2026-07-28 | **[Polish]** | `validateDraftEligibility` has an unreachable branch. The guard at `draft-rules.ts:158` requires `positionCount >= max && subCount >= 1`, which is exactly the condition the branch above it already returned on. Dead while `maxSubstitutes >= 1`. Found by P3.3 while working out which cases were reachable. | [draft-rules.ts](../draft/app/draft/lib/draft-rules.ts) |
 | 2026-07-26 | **[Fixed + tested]** | The defensive-contribution tooltip on the player gameweek table always read **"0 points"** for every player. It passed `stat.defensiveContribution` (a number) where `calculateDefensiveContribution` expects the raw components object, so every field read came back `undefined`, the total was 0, and 0 is below every threshold. Invisible because it was a plausible-looking value. Surfaced only once `TableColumn.title` was declared and the compiler could finally see the call site. Now covered by rendering tests. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
 | 2026-07-26 | **[Separate problem found]** | `DraftPickData.teamCode` and `FirebaseDraftPick.teamCode` are typed `string`, but callers assign a number (`FplTeam.code`). Surfaced by P1.3a once the surrounding code stopped being implicit `any`. Causes 3 of the 12 remaining `draft` errors, including a `number === string` comparison in [draft.tsx:202](../draft/app/draft/draft.tsx) that can never be true. Fix during the `draft` burn-down. | [draft-types.ts](../draft/app/draft/types/draft-types.ts) |
 | 2026-07-26 | **[Will slow down future work]** | `scoring/server/services/division-teams.service` has 6 importers across admin, cup, leagues, teams and transfers. It is a de-facto shared service living in a feature domain — the server-side twin of the `gameweek-selector` problem. Decide its home during P2.3. | [division-teams.service.ts](../draft/app/scoring/server/services/division-teams.service.ts) |
