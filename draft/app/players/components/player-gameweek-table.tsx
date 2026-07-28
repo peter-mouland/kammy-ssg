@@ -3,6 +3,7 @@
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import { calculateGameweekPoints, formatPointsDisplay, isStatRelevant } from '../../scoring/lib';
+import { calculateDefensiveActions } from '../../scoring/lib/calculations';
 import { convertToGameweekStats } from '../../scoring/lib/data-conversion';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 
@@ -206,16 +207,19 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             render: (bonus) => getStatDisplay(bonus, 'bonus', position),
         });
     }
-    // Add bonus if relevant
+    // The cell counts the defensive actions OUR position cares about -- CBIT for
+    // defenders, CBIRT for midfielders -- so the number shown is the one the threshold in
+    // the tooltip was applied to. It deliberately ignores `stat.defensiveContribution`,
+    // which is FPL's aggregate, keyed to FPL's position rather than ours.
     if (isStatRelevant('defensiveContribution', position)) {
         columns.push({
             key: 'defensiveContribution',
             header: 'DC',
-            accessor: 'defensiveContribution',
             align: 'center',
             width: 60,
             title: (stat) => `${pointsFor(stat).defensiveContribution} points`,
-            render: (dc) => getStatDisplay(dc, 'defensiveContribution', position),
+            render: (_, stat) =>
+                getStatDisplay(calculateDefensiveActions(stat, position), 'defensiveContribution', position),
         });
     }
 
