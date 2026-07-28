@@ -30,7 +30,7 @@ git log --oneline -15
 |---|---|
 | **P2.7 — public API for `scoring`** | `draft` is done and is the worked example to copy. `division-teams.service` has 6 importers across 5 domains — the worst offender, and it stands between P2.3 and its remaining readers. |
 | **P2.3 — remaining sheets readers** | `transfers.ts`, `cup.ts`, `player-gw-points.ts`. `draft.ts` is done and is the worked example to copy. |
-| **P3.4 — first loader test** | Blocked on P2.3 giving it an injection seam. Also inherits the duplicate-pick rule P3.3 could not reach. |
+| **P3.4 — first loader test** | **No longer blocked** — MSW substitutes at the network boundary, so it needs no injection seam. Costs one fixture-service-account helper, then every loader test reuses it. |
 
 *Recently done: P4.5 (steering doc realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first domain with a public API).*
 
@@ -91,6 +91,7 @@ Newest domain, 12 test files, zero type errors. When in doubt about how somethin
 | 2026-07-26 | One shared **ratchet** mechanism for both type errors and CSS | Same mental model for both backlogs, one script, one baseline file (`.ratchet.json`) |
 | 2026-07-26 | **Each domain gets a public API (`index.ts`); `server/` and `components/` become private** | Three items stalled because `admin` orchestrates other domains — its actual job — with no legal way to reach their logic, which is why 10 `admin -> X/server` entries sit allowlisted. An index lets a domain expose an operation without exposing everything behind it. Chosen over exempting `admin` from Rule 2, which would have been the same debt without admitting it. |
 | 2026-07-26 | **Sheets access is a cross-cutting concern. Every sheet reader lives in `_shared/lib/sheets/`, with no exceptions** | One spreadsheet, one client, one auth, one cache strategy — it is the app's persistence layer. Splitting a reader out because of who happens to read it today is arbitrary and reverses the moment a second domain needs that data. An exception costs every future contributor the question "where do we read sheets?" |
+| 2026-07-28 | **MSW is the standard for anything crossing the network; it is not a "mock"** | `testing-conventions.md` banned mocks and named injecting a fake Sheets client as the alternative, which read as ruling MSW out. That conflated two different things. Replacing a *module* is a fiction about how the code is assembled and goes stale on any refactor. Replacing a *network response* is not — the network is a boundary the app genuinely crosses. MSW intercepts there, so the real FPL client, the real `googleapis` client, its auth and its parsing all still run. That is **more** real coverage than a fake client, which only proves the interpretation code works when handed a perfect object. Rule reworded to "no module mocks — substitute at a real boundary". |
 | 2026-07-28 | **A domain gets TWO public entry points: `index.ts` (client-safe) and `index.server.ts`** | Found doing P2.7 for `draft`. `FirebaseDraftSync` reaches `firebase.realtime-admin`, which parses a service account from `process.env` **at module scope**. Re-exporting it from `index.ts` would make the entire public API unsafe to import from a component, and the failure mode is `process is not defined` in the browser rather than a build error. A single barrel per domain would have quietly forced every domain's public API to be server-only. Verified both ways with throwaway probes: `index.ts` imports clean with no credentials, `index.server.ts` throws. |
 
 ---
@@ -293,7 +294,9 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   **The settled rule:**
   > Every sheets reader lives in `_shared/lib/sheets/`. None of them import a domain. They return **raw row types** declared in `_shared/types/sheets-types.ts`; each domain interprets its own rows into its own model.
 
-  That is one rule with no exceptions, and it fixes all 12 remaining violations by the same mechanism. It is also what creates the injection seam P3.4 needs — a reader that only returns rows is trivial to fake.
+  That is one rule with no exceptions, and it fixes all 12 remaining violations by the same mechanism.
+
+  *Rationale corrected 2026-07-28:* this item used to claim it was **what unblocks P3.4**, on the basis that a row-returning reader is trivial to fake. That is no longer the argument — MSW substitutes at the network boundary, so P3.4 does not need the seam. P2.3 still stands on its own terms (Rule 1: `_shared` must not import a domain), but it is no longer a prerequisite for loader tests, and the two can be done in either order.
 
   **P2.1 already did three of them for free.** `divisions.ts`, `user-teams.ts` and `players.ts` have zero domain imports because their types moved to the kernel. They are the model for the rest.
 
@@ -448,8 +451,17 @@ Ordered by risk. The existing tests are good — this is a coverage-placement pr
   *Not covered:* "the same player cannot be picked twice in a division". That guard is in `draft.server.ts:150`, not `lib/`, and needs the injection seam P3.4 is waiting on. Carried into P3.4.
 
 - [ ] **P3.4 — First route-loader test**
-  Named as the priority boundary in the testing conventions, currently impossible because sheets modules are imported directly with no injection seam. **Blocked on P2.3.**
-  *Also carries from P3.3:* the "same player cannot be picked twice in a division" rule, which lives in `draft.server.ts:150` and needs the same seam.
+  Named as the priority boundary in the testing conventions, and there is still not one test there.
+
+  **No longer hard-blocked on P2.3.** That block assumed the only way in was an injection seam. With MSW the substitution happens at the network boundary instead, so the sheets modules can be imported exactly as they are — and the real `googleapis` client, its auth and its parsing all run for real, which is better coverage than a fake client would give.
+
+  *One-off setup cost, not a blocker:* `_shared/lib/sheets/utils/common.ts` uses `google.auth.JWT`, which signs a JWT **locally** with `credentials.private_key` before exchanging it at `oauth2.googleapis.com/token`. So a test needs a fixture service account (throwaway RSA key — the signature is never verified by anything in the test) plus MSW handlers for the token endpoint and `sheets.googleapis.com`. Write that helper once and every loader test reuses it.
+
+  *Watch out:* `common.ts` memoises the client in a module-scope `sheetsClientPromise`, so it survives between tests in a file — the same singleton problem already logged against `DataCacheService`.
+
+  *Also carries from P3.3:* the "same player cannot be picked twice in a division" rule, which lives in `draft.server.ts:150`.
+
+  *Acceptance:* one loader test exists and the pattern is documented in the testing conventions.
   Establish the pattern once — inject a fake sheets client returning fixtures, assert the loader's returned shape for a given URL and division — then replicate across loaders.
   *Acceptance:* one loader test exists and the pattern is documented in the testing conventions.
 

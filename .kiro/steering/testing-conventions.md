@@ -29,14 +29,47 @@ Tests must never be written to make a known bug pass. A test that asserts broken
 
 Test what the feature does, not how it does it. For a server loader, test what data it returns for a given input. For a scoring function, test what points it produces for a given stat line. For a transfer validation, test which transfers are accepted and rejected.
 
-### No mocks — use real implementations
+### No module mocks — substitute at a real boundary
 
-Do not mock modules, functions, or data layers in tests unless it is physically impossible to avoid (e.g. a third-party HTTP call). Instead:
+Do not mock modules or functions. No `vi.mock('../some-module')`, no stubbing individual exports, no replacing a data layer with a jest-style double.
+
 - Use real scoring logic with real inputs
 - Use real validation functions with real transfer data
-- Use real loader logic with in-memory or fixture data substituted at the boundary (e.g. inject a fake Sheets client that returns fixture data, rather than mocking `fetch` or individual functions)
+- Use real loader logic, with the substitution made at a boundary the system genuinely has
 
-The goal is that a passing test means the real behaviour works, not just that the wiring is correct.
+The goal is that a passing test means the real behaviour works, not just that the wiring is correct. Every module mock you write is a claim about how the code is assembled, and it goes stale the moment someone rearranges it.
+
+**The distinction that matters is not "mock vs no mock" — it is *where* you substitute.**
+
+Replacing a module is a fiction: you are asserting that some internal function exists and behaves a certain way. Replacing a **network response** is not a fiction — the network is a real boundary the app crosses, and something on the other side really does return bytes. Substituting there leaves all of your own code running.
+
+### MSW is the standard for anything crossing the network
+
+**Any test involving an HTTP request or response uses [MSW](https://mswjs.io/) (`msw/node`, `setupServer`).** This is the gold standard for this codebase, not a fallback.
+
+MSW intercepts at the network layer rather than patching `fetch`, so everything between your code and the wire still executes for real:
+
+- the real FPL client, including its URL building, headers and retry behaviour
+- the real `googleapis` Sheets client, including auth and its response parsing
+- the real error handling for a 500, a timeout, or a malformed payload
+
+That is strictly *more* real coverage than injecting a fake client, because a fake client skips all of the above and only proves that your interpretation code works when handed a perfect object.
+
+```ts
+// Good — substitute the network, run everything else for real
+const server = setupServer(
+    http.get('https://fantasy.premierleague.com/api/bootstrap-static/', () =>
+        HttpResponse.json(bootstrapFixture),
+    ),
+);
+
+// Bad — a fiction about how the module is built, stale after any refactor
+vi.mock('../../_shared/lib/fpl/api-cache');
+```
+
+**Test the unhappy paths too.** MSW makes them cheap and they are where real bugs live: a non-200, a payload missing a field, a network error. If a loader has never been tested against a 500 from FPL, nobody knows what a manager sees when FPL is down.
+
+**What MSW does not replace.** Passing fixture data straight into a pure function is still the right thing for scoring, validators and rules — there is no network there to intercept. Reach for MSW when the code under test genuinely makes a request.
 
 ### What to test
 
@@ -45,8 +78,9 @@ The goal is that a passing test means the real behaviour works, not just that th
 | `scoring/` | That given a stat line and a position, the correct points are calculated. Test edge cases in `POSITION_RULES` (e.g. saves threshold, goals conceded penalty). |
 | `transfers/` | That valid transfers are accepted and invalid ones are rejected. Test all `TransferType` variants. |
 | `draft/` | That snake draft order is generated correctly. That the same player cannot be picked twice in the same division. |
-| Route loaders | That the loader returns the correct shape of data for a given URL and division. |
+| Route loaders | That the loader returns the correct shape of data for a given URL and division. Use MSW for the Sheets/FPL calls underneath. |
 | `_shared/lib/` | Only the cache invalidation logic and TTL config — these have real business impact. |
+| FPL + Sheets clients | Behaviour against real payloads via MSW: a good response, a 500, a timeout, and a payload missing a field. These are the app's only external dependencies and the only place it can be broken by someone else. |
 
 ### Where tests live
 
@@ -133,3 +167,15 @@ Run tests with:
 ```bash
 yarn test
 ```
+
+**MSW** (`msw/node`) is the network boundary — see *MSW is the standard for anything crossing the network* above. A test that needs it starts a server per file and asserts every request was accounted for:
+
+```ts
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+`onUnhandledRequest: 'error'` is not optional. Without it a request you forgot to handle escapes to the real internet, and the test either hits live FPL or fails slowly and confusingly. With it, an unhandled request fails immediately and tells you which URL it was.
