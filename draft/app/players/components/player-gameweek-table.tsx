@@ -223,7 +223,10 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'defensiveContribution',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculateDefensiveContribution(stat.defensiveContribution, position)} points`,
+            // Takes the whole row, not stat.defensiveContribution: the points come from the
+            // raw components (clearances/blocks/interceptions, tackles, recoveries) scored
+            // against OUR position, not from FPL's pre-baked aggregate.
+            title: (stat) => `${calculateDefensiveContribution(stat, position)} points`,
             render: (dc) => getStatDisplay(dc, 'defensiveContribution', position),
         });
     }

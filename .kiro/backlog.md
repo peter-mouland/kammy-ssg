@@ -65,7 +65,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 
 | Metric | At start (2026-07-26) | Now |
 |---|---|---|
-| Type errors | 275 | **200** |
+| Type errors | 275 | **177** |
 | CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
 | Tests | 149 passing, 24 files | **192 passing, 26 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
@@ -443,6 +443,7 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-26 | **[Separate problem found]** | `functions/` workspace is not type-checked by `yarn type-check` or the ratchet — only by `yarn build`. Its error count is unmeasured. | root `package.json` |
 | 2026-07-26 | **[Will slow down future work]** | `keyframes-name-pattern` ×14 — keyframe names are not kebab-case. Cosmetic, but it is 14 of the 603 and trivially fixable in one pass. | various `.module.css` |
 | 2026-07-26 | **[Separate problem found]** | `draft/server/draft.server.ts` imports `admin/server/actions/team-commit-actions`. A feature domain reaching into **admin's** server actions inverts the intended direction — admin orchestrates domains, not the reverse. Found by P1.2. | [draft.server.ts](../draft/app/draft/server/draft.server.ts) |
+| 2026-07-26 | **[Fixed]** | The defensive-contribution tooltip on the player gameweek table always read **"0 points"** for every player. It passed `stat.defensiveContribution` (a number) where `calculateDefensiveContribution` expects the raw components object, so every field read came back `undefined`, the total was 0, and 0 is below every threshold. Invisible because it was a plausible-looking value. Surfaced only once `TableColumn.title` was declared and the compiler could finally see the call site. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
 | 2026-07-26 | **[Separate problem found]** | `DraftPickData.teamCode` and `FirebaseDraftPick.teamCode` are typed `string`, but callers assign a number (`FplTeam.code`). Surfaced by P1.3a once the surrounding code stopped being implicit `any`. Causes 3 of the 12 remaining `draft` errors, including a `number === string` comparison in [draft.tsx:202](../draft/app/draft/draft.tsx) that can never be true. Fix during the `draft` burn-down. | [draft-types.ts](../draft/app/draft/types/draft-types.ts) |
 | 2026-07-26 | **[Will slow down future work]** | `scoring/server/services/division-teams.service` has 6 importers across admin, cup, leagues, teams and transfers. It is a de-facto shared service living in a feature domain — the server-side twin of the `gameweek-selector` problem. Decide its home during P2.3. | [division-teams.service.ts](../draft/app/scoring/server/services/division-teams.service.ts) |
 
