@@ -83,7 +83,7 @@
 }
 
 .step:not(:last-child)::after {
-    content: '';
+    content: "";
     position: absolute;
     left: 1.2rem;
     top: calc(100% + var(--spacing-2));

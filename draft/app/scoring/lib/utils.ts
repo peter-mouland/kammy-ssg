@@ -40,9 +40,15 @@ export function getPositionDisplayName(position: CustomPosition): string | Custo
 }
 
 /**
- * Format points for display (with + prefix for positive points)
+ * Format a points total for display.
+ *
+ * The negative branch used to build the string as `-${points}`, but `points` already
+ * carries its own sign, so -3 rendered as "--3" in the Points column.
+ *
+ * NOTE: this used to be documented as adding a "+" prefix to positive totals. It never
+ * did. Adding one now would change every points figure in the UI, so it is left alone
+ * as a product decision rather than folded into a bug fix.
  */
 export function formatPointsDisplay(points: number): string {
-    if (points < 0) return `-${points}`;
     return points.toString();
 }

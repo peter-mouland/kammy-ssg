@@ -2,22 +2,7 @@
 
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import type { CustomPosition } from '../../_shared/types/league-types';
-import {
-    calculateAppearancePoints,
-    calculateAssistPoints,
-    calculateBonus,
-    calculateCleanSheetPoints,
-    calculateGameweekPoints,
-    calculateGoalPoints,
-    calculateGoalsConcededPenalty,
-    calculatePenaltiesSaved,
-    calculateRedCardPenalty,
-    calculateSavesBonus,
-    calculateYellowCardPenalty,
-    formatPointsDisplay,
-    isStatRelevant,
-} from '../../scoring/lib';
-import { calculateDefensiveContribution } from '../../scoring/lib/calculations';
+import { calculateGameweekPoints, formatPointsDisplay, isStatRelevant } from '../../scoring/lib';
 import { convertToGameweekStats } from '../../scoring/lib/data-conversion';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
 
@@ -84,6 +69,12 @@ const calculateRollingForm = (gameweekStats: GameweekStatWithPoints[], currentIn
 };
 
 export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }: PlayerGameweekTableProps) {
+    // Every stat tooltip shows what that stat was worth, which is exactly a field of the
+    // gameweek breakdown. Reading it straight off means a tooltip cannot disagree with
+    // the points column beside it, and there is only one argument to get wrong.
+    const pointsFor = (stat: GameweekStatWithPoints) =>
+        calculateGameweekPoints([convertToGameweekStats(stat)], position);
+
     const columns: TableColumn<GameweekStatWithPoints>[] = [
         {
             key: 'gameweek',
@@ -104,7 +95,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'minutes',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculateAppearancePoints(stat.minutes, position)} points`,
+            title: (stat) => `${pointsFor(stat).appearance} points`,
             render: (minutes) =>
                 minutes === 0 ? (
                     <span style={{ color: 'var(--color-gray-400)', fontStyle: 'italic' }}>0</span>
@@ -118,7 +109,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'goals',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculateGoalPoints(stat.goals, position)} points`,
+            title: (stat) => `${pointsFor(stat).goals} points`,
             render: (goals) => getStatDisplay(goals, 'goals', position),
         },
         {
@@ -127,7 +118,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'assists',
             align: 'center',
             width: 70,
-            title: (stat) => `${calculateAssistPoints(stat.assists, position)} points`,
+            title: (stat) => `${pointsFor(stat).assists} points`,
             render: (assists) => getStatDisplay(assists, 'assists', position),
         },
     ];
@@ -140,7 +131,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'cleanSheets',
             align: 'center',
             width: 50,
-            title: (stats) => `${calculateCleanSheetPoints(stats.cleanSheets, position)} points`,
+            title: (stat) => `${pointsFor(stat).cleanSheets} points`,
             render: (cs) => getStatDisplay(cs, 'cleanSheets', position),
         });
     }
@@ -152,7 +143,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'goalsConceded',
             align: 'center',
             width: 50,
-            title: (stat) => `${calculateGoalsConcededPenalty(stat.goalsConceded, position)} points`,
+            title: (stat) => `${pointsFor(stat).goalsConceded} points`,
             render: (gc) => getStatDisplay(gc, 'goalsConceded', position),
         });
     }
@@ -164,7 +155,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'saves',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculateSavesBonus(stat.saves, position)} points`,
+            title: (stat) => `${pointsFor(stat).saves} points`,
             render: (saves) => getStatDisplay(saves, 'saves', position),
         });
     }
@@ -176,7 +167,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'penaltiesSaved',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculatePenaltiesSaved(stat.penaltiesSaved, position)} points`,
+            title: (stat) => `${pointsFor(stat).penaltiesSaved} points`,
             render: (ps) => getStatDisplay(ps, 'penaltiesSaved', position),
         });
     }
@@ -189,7 +180,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'yellowCards',
             align: 'center',
             width: 50,
-            title: (stat) => `${calculateYellowCardPenalty(stat.yellowCards, position)} points`,
+            title: (stat) => `${pointsFor(stat).yellowCards} points`,
             render: (yc) => getStatDisplay(yc, 'yellowCards', position),
         },
         {
@@ -198,7 +189,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'redCards',
             align: 'center',
             width: 50,
-            title: (stat) => `${calculateRedCardPenalty(stat.redCards, position)} points`,
+            title: (stat) => `${pointsFor(stat).redCards} points`,
             render: (rc) => getStatDisplay(rc, 'redCards', position),
         },
     );
@@ -211,7 +202,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'bonus',
             align: 'center',
             width: 60,
-            title: (stat) => `${calculateBonus(stat.bonus, position)} points`,
+            title: (stat) => `${pointsFor(stat).bonus} points`,
             render: (bonus) => getStatDisplay(bonus, 'bonus', position),
         });
     }
@@ -223,10 +214,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             accessor: 'defensiveContribution',
             align: 'center',
             width: 60,
-            // Takes the whole row, not stat.defensiveContribution: the points come from the
-            // raw components (clearances/blocks/interceptions, tackles, recoveries) scored
-            // against OUR position, not from FPL's pre-baked aggregate.
-            title: (stat) => `${calculateDefensiveContribution(stat, position)} points`,
+            title: (stat) => `${pointsFor(stat).defensiveContribution} points`,
             render: (dc) => getStatDisplay(dc, 'defensiveContribution', position),
         });
     }
@@ -260,7 +248,7 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
             width: 90,
             variant: 'bold',
             render: (_, gw) => {
-                const { total } = calculateGameweekPoints([convertToGameweekStats(gw)], position);
+                const { total } = pointsFor(gw);
                 const color =
                     total > 0 ? 'var(--color-success)' : total < 0 ? 'var(--color-error)' : 'var(--color-gray-500)';
 
