@@ -68,8 +68,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
             case 'generateGameweekPoints': {
                 console.log('🔄 API: Generating gw points...');
 
-                const { writePlayerGameweekPointsToSheet } = await import('../../_shared/lib/sheets/player-gw-points');
-                await writePlayerGameweekPointsToSheet();
+                // The scoring domain computes the table; the sheets module only stores it.
+                const { generatePlayerGameweekPointsTable } = await import(
+                    '../server/services/player-gw-points.service'
+                );
+                const { writePlayerGameweekPoints } = await import('../../_shared/lib/sheets/player-gw-points');
+
+                const { dataRows, headerRows } = await generatePlayerGameweekPointsTable();
+                await writePlayerGameweekPoints(dataRows, headerRows);
 
                 return data({
                     success: true,

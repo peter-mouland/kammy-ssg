@@ -1,9 +1,6 @@
 /* Location: app/_shared/lib/sheets/player-gw-points.ts */
 
-import { calculateGameweekPoints, convertToPlayerGameweekStats } from '../../../scoring/lib'; // todo: should sheets have domains in it?
-import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
-// app/routes/server/sheets/player-gw-points.ts
-import type { CustomPosition } from '../../types/league-types';
+import type { PlayerGameweekPointsRow } from '../../types/sheets-types';
 import { createAppError } from './utils/common';
 import { readDataFromSheetWithHeaders } from './utils/read-data-from-sheets';
 import { saveDataToSheet } from './utils/write-data-to-sheets';
@@ -11,95 +8,19 @@ import { saveDataToSheet } from './utils/write-data-to-sheets';
 // Sheet configuration
 const PLAYER_GW_POINTS_SHEET_NAME = 'player-gw-points';
 
-interface PlayerGameweekPointsRow {
-    playerCode: number;
-    webName: string;
-    position: string;
-    teamName: string;
-    [key: string]: string | number; // For Gameweek points columns like "gw-1", "gw-2", etc.
-}
-
 /**
- * Generate Gameweek points data by reusing existing gameweek points logic
+ * Store a pre-computed gameweek points table.
+ *
+ * This module used to compute the points itself, which meant a sheets reader ran the
+ * scoring engine and `_shared` depended on the `scoring` domain. The computation now
+ * lives in `scoring/server/services/player-gw-points.service.ts` and this only stores
+ * what it is given. See P2.3 in `.kiro/backlog.md`.
  */
-async function generateGameweekPointsData(): Promise<{ dataRows: PlayerGameweekPointsRow[]; headerRows: string[] }> {
-    console.log('🔄 Generating Gameweek points data...');
-
-    // Import required modules
-    const { fplApiCache } = await import('../fpl/api-cache');
-    const { readPlayers } = await import('./players');
-    const baseHeaders = ['playerCode', 'webName', 'position', 'teamName'];
-    const colHeaders = new Set<string>();
-
+export async function writePlayerGameweekPoints(
+    dataRows: PlayerGameweekPointsRow[],
+    headerRows: string[],
+): Promise<void> {
     try {
-        // Get required data (reusing existing logic)
-        const [sheetsPlayers, fplPlayers] = await Promise.all([readPlayers(), fplApiCache.getFplPlayers()]);
-
-        // Create sheets players lookup
-        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, any>, player) => {
-            acc[player.code] = player;
-            return acc;
-        }, {});
-        // Filter FPL players to only include those in sheets
-        const filteredFplPlayers = fplPlayers.filter((player) => sheetsPlayersByCode[player.code]);
-
-        if (filteredFplPlayers.length === 0) {
-            throw new Error('No players found that exist in both FPL data and sheets');
-        }
-
-        // Get detailed stats for filtered players (reusing existing method)
-        const playerIds = filteredFplPlayers.map((p) => p.id);
-        const fplPlayerGameweeksById = await fplApiCache.getBatchPlayerDetailedStats(playerIds);
-
-        // Process each player to generate Gameweek points
-        const dataRows: PlayerGameweekPointsRow[] = [];
-        filteredFplPlayers.forEach((fplPlayer: EnhancedPlayerData) => {
-            const playerSheet = sheetsPlayersByCode[fplPlayer.code];
-            if (!playerSheet) return;
-
-            const position = playerSheet.position.toLowerCase() as CustomPosition;
-            const playerGameweekData = fplPlayerGameweeksById[fplPlayer.id]?.history || [];
-            const gameweekPoints = new Map<string, number>(); // we need an ordered object
-            playerGameweekData.forEach((historyEntry: any, _index: number) => {
-                const singleGameStats = convertToPlayerGameweekStats(historyEntry);
-                const gameweekPointsBreakdown = calculateGameweekPoints([singleGameStats], position);
-                let colKey = `gw-${historyEntry.round}`;
-                if (gameweekPoints.has(colKey)) colKey += '-b';
-                gameweekPoints.set(colKey, gameweekPointsBreakdown.total);
-                colHeaders.add(colKey);
-            });
-
-            dataRows.push({
-                playerCode: fplPlayer.code,
-                webName: fplPlayer.web_name,
-                teamName: fplPlayer.team_name, // todo map to name
-                position,
-                ...Object.fromEntries(gameweekPoints),
-            });
-        });
-
-        console.log(`✅ Generated Gameweek points for ${dataRows.length} players`);
-        const headerRows = [
-            ...baseHeaders,
-            ...[...colHeaders].sort((a, b) =>
-                Number.parseInt(a.replace(/\D/g, ''), 10) > Number.parseInt(b.replace(/\D/g, ''), 10) ? 1 : -1,
-            ),
-        ];
-        return { headerRows, dataRows };
-    } catch (error) {
-        console.error('❌ Failed to generate Gameweek points data:', error);
-        throw error;
-    }
-}
-
-/**
- * Write Gameweek points data to Google Sheets
- */
-export async function writePlayerGameweekPointsToSheet(): Promise<void> {
-    try {
-        console.log('🔄 Writing player Gameweek points to sheet...');
-
-        const { dataRows, headerRows } = await generateGameweekPointsData();
         if (dataRows.length === 0) {
             throw new Error('No Gameweek points data to write');
         }
@@ -114,12 +35,8 @@ export async function writePlayerGameweekPointsToSheet(): Promise<void> {
     } catch (error) {
         console.error('❌ Failed to write player Gameweek points to sheet:', error);
 
-        // Add more detailed error logging
         if (error instanceof Error) {
-            console.error('Error details:', {
-                message: error.message,
-                stack: error.stack,
-            });
+            console.error('Error details:', { message: error.message, stack: error.stack });
         }
 
         throw createAppError('PLAYER_ROUND_POINTS_WRITE_ERROR', 'Failed to write player round points to sheet', error);

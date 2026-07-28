@@ -1,3 +1,4 @@
+import type { CupConfigRow } from '../../_shared/types/sheets-types';
 /* Location: app/cup/lib/cup-config.ts */
 
 import type { CupConfig, CupRound, CupStageId } from '../types/cup-types';
@@ -68,10 +69,7 @@ export function getGameweekForStage(config: CupConfig, stage: CupStageId, leg = 
  * it by hand if needed. These pure helpers convert between that flat form and
  * the typed CupConfig, and are unit-tested independently of the sheet client.
  */
-export interface CupConfigRow {
-    key: string;
-    value: string;
-}
+export type { CupConfigRow };
 
 function parseGameweekList(value: string): number[] {
     return value

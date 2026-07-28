@@ -50,6 +50,7 @@
     "firebase-tools": "^14.27.0",
     "happy-dom": "20.11.1",
     "knip": "^5.71.0",
+    "msw": "2.15.0",
     "remove-unused-vars": "^0.0.11",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

@@ -3,7 +3,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
-import { readCupBracket, readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupPage } from './cup.page';
@@ -11,6 +10,7 @@ import { isDeadlinePassed } from './lib/cup-deadlines';
 import { buildCupFixtures } from './lib/cup-fixtures';
 import { buildStageMatchups } from './lib/cup-matchups';
 import { getCupPageData } from './server/cup.server';
+import { readCupBracket, readCupConfig, readCupSubmissions } from './server/cup-sheets';
 import type { CupPageData } from './types/cup-page-types';
 
 export const meta: MetaFunction = () => {

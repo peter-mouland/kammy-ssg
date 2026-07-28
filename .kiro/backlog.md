@@ -29,10 +29,9 @@ git log --oneline -15
 | | Why |
 |---|---|
 | **P2.7 — public API for `scoring`** | `draft` is done and is the worked example to copy. `division-teams.service` has 6 importers across 5 domains — the worst offender, and it stands between P2.3 and its remaining readers. |
-| **P2.3 — remaining sheets readers** | `transfers.ts`, `cup.ts`, `player-gw-points.ts`. `draft.ts` is done and is the worked example to copy. |
 | **P3.4 — first loader test** | **No longer blocked** — MSW substitutes at the network boundary, so it needs no injection seam. Costs one fixture-service-account helper, then every loader test reuses it. |
 
-*Recently done: P4.5 (steering doc realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first domain with a public API).*
+*Recently done: P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
 
 **Working agreements that are not obvious from the code:**
 - Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
@@ -102,16 +101,16 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 
 | Metric | At start (2026-07-26) | Now |
 |---|---|---|
-| Type errors | 275 | **177** |
+| Type errors | 275 | **176** |
 | CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
 | Biome lint warnings | 280, none enforced | **266**, ratcheted |
-| Tests | 149 passing, 24 files | **296 passing, 32 files** |
+| Tests | 149 passing, 24 files | **333 passing, 36 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **9** — P2.1 + P2.4 + P2.3 (draft) + P2.7 (draft) |
+| `_shared` → domain imports | 34, across 6 domains | **3** — P2.1 + P2.4 + P2.7 (draft) + P2.3 complete; the rest is P2.1b |
 | Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
-| Domain dependency cycles | 15 | **12** — P2.4 dissolved two, P2.7 (draft) a third |
+| Domain dependency cycles | 15 | **10** — P2.4 two, P2.7 (draft) one, P2.3 two |
 
 ### Type errors by domain
 
@@ -284,7 +283,7 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   Kernel types → `_shared/types/` (P2.1). View-models → `teams/types/team-view-types.ts`. Component props → next to their components.
   *Acceptance:* `teams/types/team-types.ts` contains only teams-domain entities; the 28 `transfers → teams` and 13 `admin → teams` import edges mostly resolve to kernel imports.
 
-- [ ] **P2.3 — Make every sheets reader domain-free** — *replanned twice; the rule below is the settled one*
+- [x] **P2.3 — Make every sheets reader domain-free** — *replanned twice; the rule below is the settled one*
 
   **Original plan (moving each sheet into "its" domain) is abandoned.** Two problems killed it:
 
@@ -325,6 +324,33 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   - **`DraftPickRow.divisionId` was typed `string`**, not `DivisionId`. Tightening it was required to pass the row to `groupByDivision`.
 
   **Net 12 → 10, but it moved one dependency rather than removing it.** Taking the derivation out of the reader pushed it onto `_shared/lib/firestore-cache/firebase-draft-sync.ts`, which needs `currentPick` and now imports `draft/lib/draft-pick-calculator`. That is allowlisted with a comment, not hidden.
+
+  ### ✅ Done — all three remaining readers
+
+  | Reader | Was | Now |
+  |---|---|---|
+  | `player-gw-points.ts` | ran the scoring engine to decide what to write (the file carried a `// todo: should sheets have domains in it?`) | computation moved to `scoring/server/services/player-gw-points.service.ts`; the reader is handed rows and stores them |
+  | `transfers.ts` | 389 lines; `readTransferDataForDivision` read **and** interpreted, which is why a sheets reader needed `PlayersByCode` and `GameWeekData` passed in | interpretation moved to `transfers/lib/transfer-rows.ts`; reader is 190 lines of I/O |
+  | `cup.ts` | parsed the config and built `CupMatchup`s inside the reader | returns raw rows; `cup/server/cup-sheets.ts` parses. All four callers were already inside `cup/`, so no other domain moved |
+
+  Row shapes moved to `_shared/types/sheets-types.ts`: `PlayerGameweekPointsRow`, `TransferSheetData`, `ProcessedTransferSheetData`, `CupSheetData`, `CupSubmissionRow`, `CupConfigRow`, `CupBracketRow`. Where a domain still wants the name, it re-exports from the kernel rather than redeclaring — the duplicate-type-name rule is enforcing, so redeclaring would fail the suite.
+
+  **`_shared` → domain imports 9 → 3.** The three left are all `_shared/lib/fpl/*` and belong to **P2.1b**, not here. **Two more dependency cycles dissolved, 12 → 10.**
+
+  **`CupSubmissionRow.stage` is deliberately `string`.** Narrowing it to `CupStageId` is what made `_shared` import `cup` in the first place; the cup domain does that narrowing now. Same shape as the `DraftStateRow.currentPick` decision from `draft.ts`.
+
+  **Covered by tests, not just moved.** 37 new tests; suite **296 → 333**. This is the first use of MSW as the network boundary, per the convention agreed the same day — `msw` 2.15.0 installed pinned, with a reusable harness at `_shared/test/google-sheets-msw.ts`.
+
+  | New/changed module | Tests |
+  |---|---|
+  | `scoring/server/services/player-gw-points.service.ts` | 8 — including the `teamName` regression, verified red against the old code before the fix was kept |
+  | `transfers/lib/transfer-rows.ts` | 15 — status vocabulary, all six transfer types, gameweek derivation, loan fields, bad rows |
+  | `cup/server/cup-sheets.ts` | 7 — config and bracket reads, plus a write round-trip proving what we write reads back unchanged |
+  | `_shared/lib/sheets/player-gw-points.ts` | 7 — numeric coercion, summary maths, and that it refuses to write an empty table over a season of points |
+
+  Two things about the harness are worth knowing before writing the next sheets test, and are documented in the steering doc: `google.auth.JWT` signs **locally**, so a throwaway RSA key is required; and the module under test must be imported **dynamically inside `beforeAll`**, because the sheets client memoises itself at module scope. Where MSW cannot reach — `fplApiCache` reads Firestore over gRPC — the app's own in-memory cache is seeded through its real API instead.
+
+  **Found and fixed en route:** the `player-gw-points` sheet was writing `teamName: undefined` for every player. `EnhancedPlayerData` has `team_code`, not `team_name`, and the original carried a `// todo map to name`. It surfaced as a type error the moment the code moved into a file that was actually being checked. Fixed by mapping through `getFplTeams()` — type errors **177 → 176**.
 
   ### ✅ Resolved: the orchestrator question → P2.7
 

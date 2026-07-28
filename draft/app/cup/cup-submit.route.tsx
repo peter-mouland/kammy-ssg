@@ -4,12 +4,12 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { requestFormData } from '../_shared/lib/form-data';
-import { readCupConfig, readCupSubmissions } from '../_shared/lib/sheets/cup';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
 import { CupSubmitPage } from './cup-submit.page';
 import { buildCupFixtures } from './lib/cup-fixtures';
 import { getCupSubmitData } from './server/cup.server';
+import { readCupConfig, readCupSubmissions } from './server/cup-sheets';
 import type { CupSubmitPageData } from './types/cup-page-types';
 
 export const meta: MetaFunction = () => {
