@@ -6,6 +6,39 @@ A living plan to make this codebase safe for non-engineers and AI assistants to 
 
 ---
 
+## Start here (new session)
+
+**What this is:** a plan to make this codebase safe for non-engineers and AI assistants to contribute to. Phases 0 and 1 are largely done; Phase 2 (the DDD work) is mid-flight.
+
+**Check where things stand — three commands, thirty seconds:**
+
+```bash
+yarn ratchet   # types / css / lint backlogs. These may only go DOWN.
+yarn test      # the suite, including the executable architecture rules
+git log --oneline -15
+```
+
+**The three things that will bite you if nobody tells you:**
+
+1. **`yarn ratchet` fails when a count goes DOWN, not just up.** That is deliberate — it makes you run `yarn ratchet:update` and commit the lower number, so a win is locked in rather than leaving room for a new problem.
+2. **`architecture.test.ts` allowlists are debt registers, not config.** Every one has a paired "no stale entries" test: fix a violation and the suite *fails* until you delete its line. Never add an entry without recording why in the decisions log below.
+3. **Commit before any scripted mass edit.** A migration script silently corrupted 11 files once; the clean revert was only possible because of an existing commit.
+
+**Next up**, in the order I would take them:
+
+| | Why |
+|---|---|
+| **P2.7 — public API for `draft`** | Unblocks moving `firebase-draft-sync.ts` into the domain and removes the allowlist entry P2.3 had to add. Makes Rule 2 real rather than aspirational. |
+| **P2.3 — remaining sheets readers** | `transfers.ts`, `cup.ts`, `player-gw-points.ts`. `draft.ts` is done and is the worked example to copy. |
+| **P3.3 / P3.4 — draft order + loader tests** | P3.4 is blocked on P2.3 giving it an injection seam. |
+
+**Working agreements that are not obvious from the code:**
+- Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
+- Look for one root cause before grinding a list. Six times now, a domain's errors turned out to be one missing type or one name doing two jobs.
+- When a plan meets reality and loses, **replan in writing** — P2.3 has been rewritten twice and P2.4's premise was wrong. Both are recorded, with the reasoning.
+
+---
+
 ## How to use this document
 
 - Work top-down. Phases are ordered by dependency, not by preference.
@@ -67,6 +100,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 |---|---|---|
 | Type errors | 275 | **177** |
 | CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
+| Biome lint warnings | 280, none enforced | **266**, ratcheted |
 | Tests | 149 passing, 24 files | **241 passing, 28 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
@@ -78,11 +112,12 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 ### Type errors by domain
 
 ```
-transfers  41     _shared    22     api         7
-admin      32     scoring    15     wishlist    0
-players    31     draft      12     cup         0  ← the target
-teams      28     leagues    10     root        2
+transfers  41     scoring    15     players     9
+admin      32     draft      12     api         7
+teams      28     leagues    10     cup         0  ← the target
+_shared    21                       wishlist    0
 ```
+*Re-measure with `yarn ratchet`. `players` dropped 31 → 9 when `TableColumn.title` was declared.*
 
 ### CSS violations by rule
 
@@ -374,10 +409,8 @@ Ordered by risk. The existing tests are good — this is a coverage-placement pr
 
   *The ratchet earned its keep here:* the new fixture omitted 9 unused `FplPlayerGameweekData` fields, which `yarn ratchet` caught as +1 type error before commit.
 
-- [ ] **P3.2 — Cache TTL resolution and invalidation rules**
-  Named explicitly in the testing conventions, and P0.2 is exactly the bug a test would have caught.
-  Cover: `getCacheTTL` returns the right TTL for each key shape (including the `sheets:cup-config` / `sheets:cup` ordering trap), and each invalidation rule clears what it claims to and nothing else.
-  *Acceptance:* both covered; P0.2's regression test lives here.
+- [x] **P3.2 — Cache TTL resolution and invalidation rules**
+  *Done during P0.2/P0.3* — 19 tests in [cache-invalidation.test.ts](../draft/app/_shared/lib/cache/cache-invalidation.test.ts). Covers `getCacheTTL` for every key shape (including the `sheets:cup-config` / `sheets:cup` ordering trap and a check that no live key silently falls through to the default), every invalidation rule, and two structural tests asserting no rule is declared without a caller and none is called without being declared.
 
 - [ ] **P3.3 — Draft snake order and next-picker**
   `draft/lib/` has zero tests. Named explicitly in the testing conventions: snake order generation, and that the same player cannot be picked twice in a division.
@@ -458,5 +491,6 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | Idea | Why not |
 |---|---|
 | Fix all 275 type errors before resuming feature work | Blocks everything for weeks. The ratchet (P1.1) gets the same protection immediately. |
-| Component-level React tests | Contrary to [testing-conventions.md](steering/testing-conventions.md) — test at the boundaries, not React internals. Would also need a jsdom environment we do not currently have. |
+| ~~Component-level React tests~~ | **Reversed 2026-07-26.** This entry was wrong: `testing-conventions.md` warns against testing component *internals*, not against rendering, and it cites the Testing Trophy, which puts integration tests at the top. happy-dom + Testing Library are now installed and 46 rendering tests exist. See "Testing components" in the steering doc. |
+| Testing component internals (props plumbing, state, the shape of a `columns` array) | Still off-limits. Render the component and assert what a user sees. |
 | Adopt a dependency-graph library (dependency-cruiser, madge) for P1.2 | The import walker in [architecture.test.ts](../draft/app/architecture.test.ts) is ~60 lines, needs no new dependency or config file, and fails with a message a non-engineer can read. Revisit only if the rules outgrow it. |
