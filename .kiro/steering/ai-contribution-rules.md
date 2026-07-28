@@ -63,6 +63,28 @@ import type { TransferType } from '../transfers/types/transfer-types'
 # Bad — duplicating the type in another domain's types folder
 ```
 
+Concepts the **whole league** shares — `DivisionId`, `ManagerId`, `CustomPosition`, `PositionSlotKey` — are not owned by any one domain. They live in `_shared/types/league-types.ts`, the shared kernel. That file explains what earns a place in it; adding to it needs a note in `.kiro/backlog.md`.
+
+### A domain is reached only through its public API
+
+Each domain exposes an `index.ts`. That is what other domains import.
+
+Everything else — `components/`, `server/`, internal helpers — is **private**. Reaching past the index couples one domain's page structure and data loading to another's, and it is what makes a feature impossible to change without breaking something unrelated.
+
+```ts
+// Good — the draft domain decided to expose this
+import { getDraftStates } from '../draft';
+
+// Bad — reaching into another domain's internals
+import { readDraftState } from '../draft/server/draft.server';
+```
+
+This exists because **`admin` orchestrates other domains** — that is its job — and previously had no legal way to do it, so it reached into their server code. An index lets a domain say *"this operation is for others to call"* without exposing everything behind it.
+
+**Transitional:** importing another domain's `types/` and `lib/` is still accepted while indexes are introduced (see P2.7 in the backlog). Prefer the index for anything new.
+
+This rule is enforced by `draft/app/architecture.test.ts`, not by good intentions. If you need to break it, the failure message tells you the three ways to fix it properly.
+
 ### Do not change the data layer without documenting the cache impact
 
 Every data read is cached. If you change what a loader fetches, or add a new data source, update `cache-config.ts` with the appropriate TTL and invalidation rule. Undocumented cache behaviour causes stale data bugs.

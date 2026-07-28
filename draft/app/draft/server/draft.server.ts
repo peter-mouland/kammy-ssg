@@ -9,14 +9,15 @@ import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import {
     addDraftPick,
     getDraftPicksByDivision,
-    readDraftStateByDivision,
     readAllDraftStates,
+    readDraftPicks,
     updateDraftState,
 } from '../../_shared/lib/sheets/draft';
 import { getDraftOrderByDivision } from '../../_shared/lib/sheets/draft-order';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
-import type { DivisionId } from '../../teams/types/team-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import { calculateCurrentPick, calculateCurrentUserId } from '../lib/draft-pick-calculator'; // NEW: Use calculator
+import { toDraftStateForDivision, toDraftStates } from '../lib/draft-state';
 import { generateDraftSequence } from '../lib/generate-draft-sequence';
 import type { DraftLoaderData, DraftOrderData, DraftPickData } from '../types/draft-types';
 
@@ -38,8 +39,9 @@ export async function loadDraftData(url: URL): Promise<DraftLoaderData> {
     const currentUserInfo = userTeams.find((team) => team.userId === selectedUser);
     const divisionId: DivisionId = divisionIdParam || currentUserInfo?.divisionId;
 
-    // Get division-specific draft state
-    const draftStates = await readAllDraftStates();
+    // The sheet stores rows only; currentPick is derived here, in the draft domain.
+    const [draftStateRows, allPicks] = await Promise.all([readAllDraftStates(), readDraftPicks()]);
+    const draftStates = toDraftStates(draftStateRows, allPicks);
     const draftState = draftStates.find((ds) => ds.divisionId === divisionId) || draftStates[0];
 
     let draftPicks: DraftPickData[] = [];
@@ -117,7 +119,9 @@ export async function makeDraftPick(
         }
 
         // Get division-specific draft state
-        const draftState = divisionIdParam ? await readDraftStateByDivision(divisionIdParam) : null;
+        const draftState = divisionIdParam
+            ? toDraftStateForDivision(await readAllDraftStates(), await readDraftPicks(), divisionIdParam)
+            : null;
 
         if (!draftState?.isActive) {
             return { error: `No active draft found for division ${divisionIdParam}` };
@@ -150,12 +154,9 @@ export async function makeDraftPick(
 
         const team = teams.find((t) => t.code === player.team_code);
 
-        // Verify current pick matches expected pick
+        // currentPick is derived from these same picks, so it cannot disagree with them.
+        // (This used to compare the sheet's stored value against a recalculation.)
         const calculatedCurrentPick = calculateCurrentPick(divisionId, draftPicks);
-        if (draftState.currentPick !== calculatedCurrentPick) {
-            console.warn(`Pick number mismatch: State=${draftState.currentPick}, Calculated=${calculatedCurrentPick}`);
-            // Use calculated value as source of truth
-        }
 
         // Create pick data
         const pick: DraftPickData = {

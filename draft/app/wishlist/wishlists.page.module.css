@@ -19,7 +19,7 @@
 .loadingSpinner {
     width: 32px;
     height: 32px;
-    border: 2px solid var(--color-primary-600, #2563eb);
+    border: 2px solid var(--color-primary-hover);
     border-top: 2px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -37,7 +37,7 @@
 }
 
 .loadingText {
-    color: var(--color-gray-600, #4b5563);
+    color: var(--color-gray-600);
     margin: 0;
 }
 
@@ -45,8 +45,8 @@
     display: inline-flex;
     align-items: center;
     padding: 8px 16px;
-    background-color: var(--color-primary-600, #2563eb);
-    color: var(--color-white, #fff);
+    background-color: var(--color-primary-hover);
+    color: var(--color-white);
     font-size: 14px;
     font-weight: 500;
     border-radius: 6px;
@@ -56,7 +56,7 @@
 }
 
 .createButton:hover {
-    background-color: var(--color-primary-700, #1d4ed8);
+    background-color: var(--color-blue-700);
 }
 
 .createButton:focus {
@@ -87,31 +87,31 @@
 }
 
 .sidebarCard {
-    background-color: var(--color-white, #fff);
+    background-color: var(--color-white);
     border-radius: 8px;
     box-shadow:
         0 1px 3px 0 rgb(0 0 0 / 10%),
         0 1px 2px 0 rgb(0 0 0 / 6%);
-    border: 1px solid var(--color-gray-200, #e5e7eb);
+    border: 1px solid var(--color-gray-200);
     overflow: hidden;
 }
 
 .sidebarHeader {
     padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .sidebarTitle {
     font-size: 16px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0;
 }
 
 .createFormContainer {
     padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
-    background-color: var(--color-gray-50, #f9fafb);
+    border-bottom: 1px solid var(--color-gray-200);
+    background-color: var(--color-gray-50);
 }
 
 .wishlistsList {
@@ -127,19 +127,19 @@
     width: 48px;
     height: 48px;
     margin: 0 auto 12px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
 }
 
 .emptyTitle {
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0 0 4px;
 }
 
 .emptyMessage {
     font-size: 12px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
     margin: 0 0 16px;
 }
 
@@ -147,18 +147,18 @@
     display: inline-flex;
     align-items: center;
     padding: 8px 12px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
+    border: 1px solid var(--color-gray-300);
     font-size: 12px;
     font-weight: 500;
     border-radius: 6px;
-    color: var(--color-gray-700, #374151);
-    background-color: var(--color-white, #fff);
+    color: var(--color-gray-700);
+    background-color: var(--color-white);
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
 .emptyButton:hover {
-    background-color: var(--color-gray-50, #f9fafb);
+    background-color: var(--color-gray-50);
 }
 
 .main {
@@ -166,12 +166,12 @@
 }
 
 .placeholder {
-    background-color: var(--color-white, #fff);
+    background-color: var(--color-white);
     border-radius: 8px;
     box-shadow:
         0 1px 3px 0 rgb(0 0 0 / 10%),
         0 1px 2px 0 rgb(0 0 0 / 6%);
-    border: 1px solid var(--color-gray-200, #e5e7eb);
+    border: 1px solid var(--color-gray-200);
     height: 384px;
     display: flex;
     align-items: center;
@@ -186,17 +186,17 @@
     width: 64px;
     height: 64px;
     margin: 0 auto 12px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
 }
 
 .placeholderTitle {
     font-size: 16px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0 0 4px;
 }
 
 .placeholderMessage {
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
     margin: 0;
 }

@@ -1,9 +1,8 @@
 /* Location: app/leagues/server/team-of-the-week.server.ts */
 
-import type { CustomPosition } from '../../players/types/player-types';
-import { convertToPlayerGameweekStats } from '../../scoring/lib/data-conversion';
-import { calculateGameweekPoints } from '../../scoring/lib/calculations';
-import type { DivisionTeamsDocument, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { CustomPosition, UserTeamsSheetData } from '../../_shared/types/league-types';
+import { calculateGameweekPoints, convertToPlayerGameweekStats } from '../../scoring/lib';
+import type { DivisionTeamsDocument } from '../../teams/types/team-types';
 import type { TeamOfTheWeekData, TeamOfTheWeekPlayer } from '../types/league-standings-types';
 
 const POSITION_COUNTS: Record<CustomPosition, number> = {
@@ -96,11 +95,10 @@ export async function getTeamOfTheWeek(
         };
 
         for (const pos of Object.keys(POSITION_COUNTS) as CustomPosition[]) {
-            const posPlayers = playerScores
+            players[pos] = playerScores
                 .filter((p) => p.position === pos)
                 .sort((a, b) => b.points - a.points)
                 .slice(0, POSITION_COUNTS[pos]);
-            players[pos] = posPlayers;
         }
 
         return {

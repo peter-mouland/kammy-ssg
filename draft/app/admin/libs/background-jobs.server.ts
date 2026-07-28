@@ -1,5 +1,6 @@
 // app/admin/libs/background-jobs.server.ts
 
+import type { DivisionSheetData } from '../../_shared/types/league-types';
 import {
     getDivisionTeamsDocument,
     updateDivisionTeamsDocument,
@@ -8,7 +9,7 @@ import {
     calculateSingleTeamPoints,
     upsertDivisionTeamsDocument,
 } from '../../scoring/server/services/division-teams-points-population.service';
-import type { DivisionSheetData, DivisionTeamsDocument } from '../../teams/types/team-types';
+import type { DivisionTeamsDocument } from '../../teams/types/team-types';
 import { progressStore } from './progress-store.server';
 
 interface DivisionInfo {
@@ -239,8 +240,7 @@ async function getDivisionInfos(divisions: DivisionSheetData[], sampleGameweek: 
 
 async function getCurrentGameweekId(): Promise<number> {
     const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
-    const currentGameweek = await fplApiCache.getCurrentGameweek();
-    return currentGameweek;
+    return await fplApiCache.getCurrentGameweek();
 }
 
 async function getAllGameweekIds(): Promise<number[]> {

@@ -12,12 +12,12 @@ import { getInvalidationKeys } from '../_shared/lib/cache/cache-config';
 import { dataCache } from '../_shared/lib/cache/data-cache.service';
 import { requestFormData } from '../_shared/lib/form-data';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
+import type { DivisionId } from '../_shared/types/league-types';
 import type { DraftAction } from '../draft/types/draft-types';
-import type { DivisionId } from '../teams/types/team-types';
 import type { TransferAdminOverviewData } from '../transfers/types/transfer-rule-types';
 import { AdminLayout } from './admin.layout';
 import type { AdminDataContext } from './types/admin-orchestrator-types';
-import type { SystemStatusSummary } from './types/admin-types';
+import type { AdminActionData, SystemStatusSummary } from './types/admin-types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -27,8 +27,8 @@ export const meta: MetaFunction = () => {
 };
 
 interface AdminLoaderData {
-    systemStatus: SystemStatusSummary;
-    sharedContext: AdminDataContext;
+    systemStatus: SystemStatusSummary | null;
+    sharedContext: AdminDataContext | null;
     transfersData: Record<string, TransferAdminOverviewData> | null;
     teamsByCode: Record<number, FplTeam> | null;
     cacheStats: any | null;
@@ -37,6 +37,20 @@ interface AdminLoaderData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const url = new URL(request.url);
+
+    // Static checklist page — skip FPL/Sheets/Firebase bootstrap
+    if (url.pathname.includes('/admin/setup-new-season')) {
+        console.log('⚡ Lightweight admin load for setup-new-season');
+        return {
+            systemStatus: null,
+            sharedContext: null,
+            transfersData: null,
+            teamsByCode: null,
+            cacheStats: null,
+            loadedAt: new Date().toISOString(),
+        };
+    }
+
     console.log('🔄 Loading admin dashboard data...');
 
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
@@ -69,6 +83,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         sharedContext,
         transfersData,
         teamsByCode,
+        cacheStats: null,
         loadedAt: new Date().toISOString(),
     };
 }
@@ -76,7 +91,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 /**
  * Unified action handler for all admin operations using the orchestrator
  */
-export async function action({ request, context }: ActionFunctionArgs): Promise<AdminActionData> {
+export async function action({ request, context }: ActionFunctionArgs) {
     const formData = await requestFormData({ request, context });
     const actionType = formData.get('actionType')?.trim();
     const divisionId = formData.get('divisionId')?.trim() as DivisionId;

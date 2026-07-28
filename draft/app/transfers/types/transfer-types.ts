@@ -2,8 +2,9 @@
 /** biome-ignore-all lint/style/useNamingConvention: <init> */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { ManagerId } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { ManagerId, TeamRoster } from '../../teams/types/team-types';
+import type { TeamRoster } from '../../teams/types/team-types';
 
 /**
  * Raw transfer data from Google Sheets

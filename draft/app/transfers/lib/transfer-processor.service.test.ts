@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { extractLoanStatus } from '../../_shared/lib/roster-conversion-utils';
+import { extractLoanStatus } from '../../teams/lib/roster-conversion-utils';
 import { applyIndividualTransfer } from './transfer-processor.service';
-import { teamCountLimit } from './validators/team-count-validator';
 import {
     MGR1,
     MGR2,
-    PLAYER_FREE_MID,
-    PLAYER_MID1,
     makeContext,
     makeDivisionRosters,
     makeStandardRoster,
     makeTransfer,
+    PLAYER_FREE_MID,
+    PLAYER_MID1,
 } from './validators/fixtures';
+import { teamCountLimit } from './validators/team-count-validator';
 
 describe('loan lifecycle', () => {
     it('loan status is empty before, shows the loaned player mid-cycle, then clears when the loan ends', async () => {

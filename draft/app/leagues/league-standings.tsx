@@ -5,9 +5,9 @@ import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
+import type { DivisionId } from '../_shared/types/league-types';
 import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { PositionPointsTable } from './components/position-points-table';
-import type { DivisionId } from '../teams/types/team-types';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
 
 function DivisionStandingsTable({

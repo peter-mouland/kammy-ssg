@@ -1,6 +1,6 @@
 /* Location: app/transfers/lib/transfer-validation.service.ts */
 
-import type { ManagerId } from '../../teams/types/team-types';
+import type { ManagerId } from '../../_shared/types/league-types';
 import type {
     RuleValidationResult,
     TransferRecommendation,

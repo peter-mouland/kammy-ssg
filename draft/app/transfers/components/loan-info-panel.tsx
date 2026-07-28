@@ -1,8 +1,9 @@
 // app/transfers/components/loan-info-panel.tsx
 
 import type { ReactNode } from 'react';
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { RosterPlayer } from '../../teams/types/team-types';
 import type { TransferType } from '../types/transfer-types';
 import styles from './loan-info-panel.module.css';
 

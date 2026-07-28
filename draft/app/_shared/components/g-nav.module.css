@@ -38,7 +38,7 @@
 }
 
 .hamburger:hover {
-    background-color: #334155; /* Darker slate for hover */
+    background-color: var(--color-gray-700);
 }
 
 .hamburger:focus-visible {
@@ -51,7 +51,9 @@
     height: 2px;
     background-color: var(--color-white);
     margin: 2px 0;
-    transition: all var(--transition-normal);
+    transition:
+        transform var(--transition-normal),
+        opacity var(--transition-normal);
     transform-origin: center;
 }
 
@@ -78,7 +80,7 @@
     inset: 0;
     background: rgb(0 0 0 / 50%);
     z-index: 998;
-    animation: fadeIn var(--transition-fast) ease-out;
+    animation: fade-in var(--transition-fast) ease-out;
 }
 
 /* Mobile Menu */
@@ -117,7 +119,11 @@
     font-weight: var(--font-weight-medium);
     font-size: var(--font-lg);
     border-bottom: 1px solid var(--color-gray-200);
-    transition: all var(--transition-fast);
+    transition:
+        transform var(--transition-fast),
+        opacity var(--transition-fast),
+        background-color var(--transition-fast),
+        color var(--transition-fast);
     transform: translateX(20px);
     opacity: 0;
 }
@@ -165,7 +171,9 @@
     text-decoration: none;
     padding: var(--spacing-2) var(--spacing-4);
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast);
     font-weight: var(--font-weight-medium);
 }
 
@@ -202,7 +210,7 @@
 }
 
 /* Animations */
-@keyframes fadeIn {
+@keyframes fade-in {
     from {
         opacity: 0;
     }

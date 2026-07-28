@@ -1,6 +1,6 @@
 // app/transfers/lib/get-player-status-display.ts
 
-import type { ManagerId, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { PlayerEligibility } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import { formatEligibilityStatus, isGameweekLimitMessage } from './format-eligibility-status';

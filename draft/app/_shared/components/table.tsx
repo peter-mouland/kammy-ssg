@@ -25,6 +25,14 @@ export interface TableColumn<T = any> {
     hideOnMobile?: boolean;
     fixed?: boolean;
     render?: (value: any, item: T, index: number) => React.ReactNode;
+    /**
+     * Tooltip text for this column's cell, shown on hover as the `title` attribute.
+     * Used to explain a number without cluttering the table -- e.g. the player gameweek
+     * table shows the raw stat in the cell and how many points it earned on hover.
+     *
+     * Note the arguments differ from `render`, which takes the cell VALUE first.
+     */
+    title?: (item: T, column: TableColumn<T>, index: number) => string;
 }
 
 interface TableAction<T = any> {

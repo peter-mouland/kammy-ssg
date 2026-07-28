@@ -1,6 +1,7 @@
 /* Location: app/scoring/lib/calculations.ts */
 
-import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../types/scoring-types';
 import { POSITION_RULES } from './rules';
 import { isStatRelevant } from './utils';
@@ -20,27 +21,38 @@ const baselineStats: Points = {
     total: 0,
 };
 
+/** The raw components behind the defensive-contribution metric. */
+export type DefensiveComponents = Pick<
+    PlayerGameweekStatsData,
+    'clearancesBlocksInterceptions' | 'tackles' | 'recoveries'
+>;
+
 /**
- * Calculate defensive-contribution points from the raw components, using OUR custom
- * position to decide the metric: CBIT (clearances+blocks+interceptions+tackles) for
- * defenders, CBIRT (+ recoveries) for midfielders. We do NOT use FPL's aggregate
- * `defensive_contribution`, which bakes in FPL's own position and is wrong whenever
- * our position disagrees with FPL's (e.g. Matheus Nunes).
+ * Count a match's defensive actions, using OUR custom position to decide the metric:
+ * CBIT (clearances+blocks+interceptions+tackles) for defenders, CBIRT (+ recoveries)
+ * for midfielders.
+ *
+ * This is the number the threshold is applied to, so it is also the number the DC
+ * column should show. We do NOT use FPL's aggregate `defensive_contribution`, which
+ * bakes in FPL's own position and is wrong whenever our position disagrees with FPL's
+ * (e.g. Matheus Nunes).
  *
  * Only cb, fb and mid have a defensive-contribution rule, so mid is the only position
  * that counts recoveries. If wa/ca ever gain a rule, revisit whether they should too.
  */
-export function calculateDefensiveContribution(
-    stats: Pick<PlayerGameweekStatsData, 'clearancesBlocksInterceptions' | 'tackles' | 'recoveries'>,
-    position: CustomPosition,
-): number {
+export function calculateDefensiveActions(stats: DefensiveComponents, position: CustomPosition): number {
+    const cbit = (stats.clearancesBlocksInterceptions || 0) + (stats.tackles || 0);
+    return position === 'mid' ? cbit + (stats.recoveries || 0) : cbit;
+}
+
+/**
+ * Calculate defensive-contribution points for a single match.
+ */
+export function calculateDefensiveContribution(stats: DefensiveComponents, position: CustomPosition): number {
     const rule = POSITION_RULES[position];
     if (!('defensiveContribution' in rule)) return 0;
 
-    const cbit = (stats.clearancesBlocksInterceptions || 0) + (stats.tackles || 0);
-    const total = position === 'mid' ? cbit + (stats.recoveries || 0) : cbit;
-
-    if (total < rule.defensiveContribution.threshold) return 0;
+    if (calculateDefensiveActions(stats, position) < rule.defensiveContribution.threshold) return 0;
     return rule.defensiveContribution.points;
 }
 /**

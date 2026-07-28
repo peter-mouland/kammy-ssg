@@ -8,7 +8,7 @@ import type {
     CupStageId,
     ProcessedCupSheetData,
 } from '../../../cup/types/cup-types';
-import type { DivisionId, ManagerId } from '../../../teams/types/team-types';
+import type { DivisionId, ManagerId } from '../../types/league-types';
 import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';

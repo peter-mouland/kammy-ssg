@@ -9,9 +9,9 @@ import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 
 const STAT_COLUMN_WIDTH = '2rem';
 
-export function getTransferSelectorStatColumns(
+export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
     teamsByCode: Record<number, FplTeam>,
-): TableColumn<EnhancedPlayerData>[] {
+): TableColumn<T>[] {
     return [
         {
             key: 'name',

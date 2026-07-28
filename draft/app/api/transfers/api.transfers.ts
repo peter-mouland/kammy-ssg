@@ -1,7 +1,7 @@
 /* Location: app/api/transfers/api.transfers.ts */
 
 import type { LoaderFunctionArgs } from 'react-router';
-import type { DivisionId } from '../../teams/types/team-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 
 interface TransfersApiResponse {
     transfers: any[];
@@ -11,7 +11,7 @@ interface TransfersApiResponse {
     error?: string;
 }
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
     try {
         const divisionId = params.divisionId as DivisionId;
 

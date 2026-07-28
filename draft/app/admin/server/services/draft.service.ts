@@ -10,8 +10,8 @@ import {
     generateRandomDraftOrder,
     getDraftOrderByDivision,
 } from '../../../_shared/lib/sheets/draft-order';
-import type { DraftStateData } from '../../../draft/types/draft-types';
-import type { DivisionId, UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { DivisionId, UserTeamsSheetData } from '../../../_shared/types/league-types';
+import type { DraftStateRow } from '../../../_shared/types/sheets-types';
 import type { DraftResult } from '../../types/admin-orchestrator-types';
 import type { AdminActionResult } from '../../types/admin-types';
 import { handleCommitTeamsToFirestore } from '../actions/team-commit-actions';
@@ -42,7 +42,6 @@ export class DraftService {
             // Initialize draft state - currentPick will be calculated when read back
             await updateDraftState({
                 isActive: true,
-                currentPick: 1, // This will be calculated correctly when sheets are read
                 currentUserId: firstUser.userId,
                 divisionId: divisionId, // Keep existing field name
                 picksPerTeam: 12,
@@ -69,7 +68,7 @@ export class DraftService {
             throw new Error('No active draft to stop');
         }
 
-        const stoppedDraftState: DraftStateData = {
+        const stoppedDraftState: DraftStateRow = {
             ...currentDraftState,
             isActive: false,
             completedAt: new Date(),
@@ -149,7 +148,6 @@ export class DraftService {
             // Reset draft state
             await updateDraftState({
                 isActive: true,
-                currentPick: 0,
                 currentUserId: '',
                 divisionId: divisionId,
                 picksPerTeam: 12,

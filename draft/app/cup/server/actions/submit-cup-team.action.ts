@@ -1,8 +1,8 @@
 /* Location: app/cup/server/actions/submit-cup-team.action.ts */
 
 import { addCupSubmission, readCupConfig, readCupSubmissions } from '../../../_shared/lib/sheets/cup';
+import type { DivisionId } from '../../../_shared/types/league-types';
 import { getTeamsForGameweek } from '../../../scoring/server/services/division-teams.service';
-import type { DivisionId } from '../../../teams/types/team-types';
 import { getGameweekForStage, getRoundForGameweek } from '../../lib/cup-config';
 import { getCupSquad } from '../../lib/cup-squad';
 import { validateCupSubmission } from '../../lib/cup-submission';

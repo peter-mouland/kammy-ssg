@@ -1,6 +1,6 @@
 // app/teams/components/team-view.tsx
 import { useMemo } from 'react';
-import { extractLoanStatus } from '../../_shared/lib/roster-conversion-utils';
+import { extractLoanStatus } from '../lib/roster-conversion-utils';
 import { FootballPitch } from './football-pitch';
 import { LoanStatus } from './loan-status';
 import { TeamStats } from './team-stats';

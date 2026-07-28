@@ -7,7 +7,6 @@ import {
     isRouteErrorResponse,
     Links,
     type LinksFunction,
-    type LoaderFunctionArgs,
     Meta,
     type MetaFunction,
     Outlet,
@@ -47,7 +46,7 @@ export const links: LinksFunction = () => [
     { rel: 'stylesheet', href: designTokens },
 ];
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader() {
     try {
         const gameweekService = new GameweekPointsService();
 

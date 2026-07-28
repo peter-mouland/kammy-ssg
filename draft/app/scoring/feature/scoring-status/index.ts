@@ -1,6 +1,6 @@
 // Scoring Status Feature - Public API
 
-export { ScoringStatusBadge } from './components/scoring-status-badge';
 export { PendingGamesModal } from './components/pending-games-modal';
+export { ScoringStatusBadge } from './components/scoring-status-badge';
 export { calculateScoringStatus } from './lib/calculate-status';
-export type { ScoringStatus, ScoringStatusInput, ScoringStatusResult, PendingGame } from './types';
+export type { PendingGame, ScoringStatus, ScoringStatusInput, ScoringStatusResult } from './types';

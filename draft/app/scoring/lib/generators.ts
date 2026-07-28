@@ -1,8 +1,9 @@
 /* Location: app/scoring/lib/generators.ts */
 
 import type { FplPlayerData, FplPlayerSeasonData, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
-import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { TeamPositionSlot } from '../../teams/types/team-types';
 import type { EnhancedPlayerData, Points } from '../types/scoring-types';
 import { calculateGameweekPoints, calculateSeasonPoints, getFullBreakdown } from './calculations';

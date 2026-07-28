@@ -1,7 +1,7 @@
 /* Location: app/_shared/components/user-selection-modal.tsx */
 
 import { useCallback, useEffect, useState } from 'react';
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../types/league-types';
 import { setUserSelection } from './user-selection.utils';
 import styles from './user-selection-modal.module.css';
 

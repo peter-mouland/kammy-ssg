@@ -7,16 +7,16 @@
     padding: 16px;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .item:hover {
-    background-color: var(--color-gray-50, #f9fafb);
+    background-color: var(--color-gray-50);
 }
 
 .selected {
-    background-color: var(--color-primary-50, #eff6ff);
-    border-right: 2px solid var(--color-primary-500, #3b82f6);
+    background-color: var(--color-blue-50);
+    border-right: 2px solid var(--color-primary);
 }
 
 .content {
@@ -47,7 +47,7 @@
 .title {
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -56,7 +56,7 @@
 
 .description {
     font-size: 12px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
     margin: 0 0 8px;
     line-height: 1.4;
     display: -webkit-box;
@@ -73,12 +73,12 @@
 
 .playerCount {
     font-size: 12px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
 }
 
 .date {
     font-size: 11px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
 }
 
 .actions {
@@ -90,7 +90,7 @@
 
 .actionButton {
     padding: 4px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
     background: none;
     border: none;
     border-radius: 4px;
@@ -99,11 +99,11 @@
 }
 
 .actionButton:hover {
-    color: var(--color-gray-600, #4b5563);
+    color: var(--color-gray-600);
 }
 
 .deleteButton:hover {
-    color: var(--color-red-600, #dc2626);
+    color: var(--color-red-600);
 }
 
 .actionIcon {
@@ -114,7 +114,7 @@
 /* Edit form styles */
 .editContainer {
     padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .editFields {
@@ -127,10 +127,10 @@
     width: 100%;
     padding: 8px 12px;
     font-size: 12px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
+    border: 1px solid var(--color-gray-300);
     border-radius: 6px;
-    background-color: var(--color-white, #fff);
-    color: var(--color-gray-900, #111827);
+    background-color: var(--color-white);
+    color: var(--color-gray-900);
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -138,12 +138,12 @@
 
 .editInput:focus {
     outline: none;
-    border-color: var(--color-primary-500, #3b82f6);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .editInput::placeholder {
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
 }
 
 .editActions {
@@ -159,7 +159,10 @@
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        opacity 0.2s ease;
 }
 
 .editButton:disabled {
@@ -168,37 +171,37 @@
 }
 
 .saveButton {
-    background-color: var(--color-primary-600, #2563eb);
-    color: var(--color-white, #fff);
+    background-color: var(--color-primary-hover);
+    color: var(--color-white);
 }
 
 .saveButton:hover:not(:disabled) {
-    background-color: var(--color-primary-700, #1d4ed8);
+    background-color: var(--color-blue-700);
 }
 
 .cancelButton {
-    background-color: var(--color-gray-300, #d1d5db);
-    color: var(--color-gray-700, #374151);
+    background-color: var(--color-gray-300);
+    color: var(--color-gray-700);
 }
 
 .cancelButton:hover {
-    background-color: var(--color-gray-400, #9ca3af);
+    background-color: var(--color-gray-400);
 }
 
 /* WishlistDetails styles */
 .details {
-    background-color: var(--color-white, #fff);
+    background-color: var(--color-white);
     border-radius: 8px;
     box-shadow:
         0 1px 3px 0 rgb(0 0 0 / 10%),
         0 1px 2px 0 rgb(0 0 0 / 6%);
-    border: 1px solid var(--color-gray-200, #e5e7eb);
+    border: 1px solid var(--color-gray-200);
     overflow: hidden;
 }
 
 .detailsHeader {
     padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .detailsTitle {
@@ -217,13 +220,13 @@
 .detailsName {
     font-size: 16px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0;
 }
 
 .detailsDescription {
     font-size: 14px;
-    color: var(--color-gray-600, #4b5563);
+    color: var(--color-gray-600);
     margin: 0 0 12px;
 }
 
@@ -235,27 +238,27 @@
 
 .detailsCount {
     font-size: 14px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
 }
 
 .detailsDate {
     font-size: 12px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
 }
 
 .searchContainer {
     padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .searchInput {
     width: 100%;
     padding: 8px 12px;
     font-size: 14px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
+    border: 1px solid var(--color-gray-300);
     border-radius: 6px;
-    background-color: var(--color-white, #fff);
-    color: var(--color-gray-900, #111827);
+    background-color: var(--color-white);
+    color: var(--color-gray-900);
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -263,12 +266,12 @@
 
 .searchInput:focus {
     outline: none;
-    border-color: var(--color-primary-500, #3b82f6);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .searchInput::placeholder {
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
 }
 
 .playersContainer {
@@ -285,19 +288,19 @@
     width: 48px;
     height: 48px;
     margin: 0 auto 12px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
 }
 
 .emptyPlayersTitle {
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0 0 4px;
 }
 
 .emptyPlayersMessage {
     font-size: 14px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
     margin: 0 0 16px;
 }
 
@@ -305,18 +308,18 @@
     display: inline-flex;
     align-items: center;
     padding: 8px 12px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
+    border: 1px solid var(--color-gray-300);
     font-size: 14px;
     font-weight: 500;
     border-radius: 6px;
-    color: var(--color-gray-700, #374151);
-    background-color: var(--color-white, #fff);
+    color: var(--color-gray-700);
+    background-color: var(--color-white);
     text-decoration: none;
     transition: background-color 0.2s ease;
 }
 
 .browseButton:hover {
-    background-color: var(--color-gray-50, #f9fafb);
+    background-color: var(--color-gray-50);
 }
 
 .playersList {
@@ -329,12 +332,12 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--color-gray-200);
     transition: background-color 0.2s ease;
 }
 
 .playerRow:hover {
-    background-color: var(--color-gray-50, #f9fafb);
+    background-color: var(--color-gray-50);
 }
 
 .playerRow:last-child {
@@ -350,7 +353,7 @@
 .playerAvatar {
     width: 40px;
     height: 40px;
-    background-color: var(--color-gray-200, #e5e7eb);
+    background-color: var(--color-gray-200);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -360,7 +363,7 @@
 .playerPosition {
     font-size: 12px;
     font-weight: 500;
-    color: var(--color-gray-600, #4b5563);
+    color: var(--color-gray-600);
 }
 
 .playerDetails {
@@ -370,13 +373,13 @@
 .playerName {
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0 0 2px;
 }
 
 .playerMeta {
     font-size: 12px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
     margin: 0;
 }
 
@@ -388,19 +391,19 @@
 
 .viewLink {
     font-size: 12px;
-    color: var(--color-primary-600, #2563eb);
+    color: var(--color-primary-hover);
     font-weight: 500;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .viewLink:hover {
-    color: var(--color-primary-700, #1d4ed8);
+    color: var(--color-blue-700);
 }
 
 .removeButton {
     padding: 4px;
-    color: var(--color-gray-400, #9ca3af);
+    color: var(--color-gray-400);
     background: none;
     border: none;
     border-radius: 4px;
@@ -409,7 +412,7 @@
 }
 
 .removeButton:hover {
-    color: var(--color-red-600, #dc2626);
+    color: var(--color-red-600);
 }
 
 .removeIcon {

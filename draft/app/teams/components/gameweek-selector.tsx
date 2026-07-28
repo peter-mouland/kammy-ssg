@@ -13,7 +13,6 @@ interface GameweekSelectorProps {
     availableGameweeks: number[];
     showSeasonOption?: boolean;
     isSeasonSelected?: boolean;
-    onGameweekChange?: (gameweek: number) => void;
 }
 
 export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
@@ -22,7 +21,6 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     availableGameweeks,
     showSeasonOption = false,
     isSeasonSelected = false,
-    onGameweekChange,
 }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +30,6 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
         newParams.set('gameweek', gameweek.toString());
         setIsOpen(false);
         setSearchParams(newParams, { replace: true });
-        // onGameweekChange?.(gameweek);
     };
 
     const handleSeasonSelect = () => {

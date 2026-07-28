@@ -1,6 +1,7 @@
 // app/teams/lib/all-teams-utils.ts
 
-import type { DivisionTeamsDocument, UserTeamsSheetData } from '../types/team-types';
+import type { UserTeamsSheetData } from '../../_shared/types/league-types';
+import type { DivisionTeamsDocument } from '../types/team-types';
 import type { AllTeamsData, ManagerInfo, TeamRowData } from '../types/team-view-types';
 import { compareByManagerThenPosition, sortPositions } from './sorting-utils';
 

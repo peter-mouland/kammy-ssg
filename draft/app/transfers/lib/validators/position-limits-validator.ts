@@ -1,6 +1,7 @@
 /* Location: app/transfers/lib/position-limits-validator.ts */
 
-import type { RosterPosition, TeamRoster } from '../../../teams/types/team-types';
+import type { RosterPosition } from '../../../_shared/types/league-types';
+import type { TeamRoster } from '../../../teams/types/team-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import { simulateTransferOnRoster } from '../simulate-transfer-on-roster';
 

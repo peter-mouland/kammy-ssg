@@ -1,8 +1,9 @@
 /* Location: app/players/server/player.server.ts */
 
 import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData, GameweekStatWithPoints } from '../../scoring/types/scoring-types';
-import type { CustomPosition, DataSource, PlayerDetailData } from '../types/player-types';
+import type { DataSource, PlayerDetailData } from '../types/player-types';
 
 export async function getPlayerDetailData(
     playerCode: number,
@@ -82,10 +83,7 @@ async function loadFixturesPlayerData(playerCode: number, season: string): Promi
     try {
         const bootstrap: FplBootstrapData = await import(`../../api/fixtures/${season}/fpl/bootstrap-static.json`);
         const playerId = bootstrap.elements.find((e) => e.code === playerCode)?.id;
-        const playerSeasonData: FplPlayerSeasonData = await import(
-            `../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`
-        );
-        return playerSeasonData;
+        return await import(`../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`);
     } catch (_error) {
         console.log(`⚠️ No 2425 data found for player code ${playerCode}, returning empty stats`);
         return null;

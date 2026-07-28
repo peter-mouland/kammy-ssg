@@ -2,50 +2,19 @@
 /** biome-ignore-all lint/style/useNamingConvention: <explanation> */
 
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { EnhancedPlayerData, Points } from '../../scoring/types/scoring-types';
+import type {
+    CustomPosition,
+    DivisionId,
+    DivisionSheetData,
+    ManagerId,
+    PositionSlotKey,
+    RosterPosition,
+    UserTeamsSheetData,
+} from '../../_shared/types/league-types';
 import type { TeamOfTheWeekData } from '../../leagues/types/league-standings-types';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { EnhancedPlayerData, Points } from '../../scoring/types/scoring-types';
 import type { AllTeamsData } from './team-view-types';
-
-export type ManagerId = string;
-
-/**
- * Core team and division data structures
- */
-export interface DivisionSheetData {
-    id: DivisionId;
-    label: string;
-    order: number;
-}
-
-export interface UserTeamsSheetData {
-    userId: ManagerId;
-    userName: string;
-    teamName: string;
-    divisionId: DivisionId;
-    lastUpdated: Date;
-}
-
-/**
- * Position slot types for team formations
- * NOTE: Using underscore notation to match existing codebase (gk_0, cb_0, etc)
- */
-export type PositionSlotKey =
-    | 'gk_0'
-    | 'cb_0'
-    | 'cb_1'
-    | 'fb_0'
-    | 'fb_1'
-    | 'mid_0'
-    | 'mid_1'
-    | 'wa_0'
-    | 'wa_1'
-    | 'ca_0'
-    | 'ca_1'
-    | 'sub_0'
-    | 'on_loan_0';
-
-export type RosterPosition = 'gk' | 'fb' | 'cb' | 'mid' | 'wa' | 'ca' | 'sub' | 'on_loan';
 
 export type RosterPlayer = {
     playerId: number; // FPL player ID
@@ -144,8 +113,6 @@ export interface LoanStatus {
     loanedOut: RosterPlayer[];
     loanedIn: RosterPlayer[];
 }
-
-export type DivisionId = 'leagueOne' | 'championship' | 'premierLeague';
 
 /**
  * Current user info for team views

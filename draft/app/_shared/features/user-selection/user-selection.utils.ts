@@ -1,8 +1,8 @@
 /* Location: app/_shared/lib/user-selection.utils.ts */
 
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
-
 // Cookie configuration
+import type { UserTeamsSheetData } from '../../types/league-types';
+
 const USER_SELECTION_COOKIE_NAME = '__session'; // MUST BE __SESSION FOR FIREBASE!
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year in seconds
 

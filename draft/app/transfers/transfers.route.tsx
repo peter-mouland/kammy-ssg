@@ -23,7 +23,7 @@ interface ActionData {
     data?: any;
 }
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
         const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');

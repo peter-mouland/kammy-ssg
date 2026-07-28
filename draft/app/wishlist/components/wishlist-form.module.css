@@ -5,7 +5,7 @@
 .form {
     margin-bottom: 12px;
     padding: 12px;
-    background-color: var(--color-gray-50, #f9fafb);
+    background-color: var(--color-gray-50);
     border-radius: 8px;
 }
 
@@ -25,10 +25,10 @@
     width: 100%;
     padding: 8px 12px;
     font-size: 12px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
+    border: 1px solid var(--color-gray-300);
     border-radius: 6px;
-    background-color: var(--color-white, #fff);
-    color: var(--color-gray-900, #111827);
+    background-color: var(--color-white);
+    color: var(--color-gray-900);
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -36,18 +36,18 @@
 
 .input:focus {
     outline: none;
-    border-color: var(--color-primary-500, #3b82f6);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .input::placeholder {
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
 }
 
 .label {
     font-size: 11px;
     font-weight: 500;
-    color: var(--color-gray-700, #374151);
+    color: var(--color-gray-700);
     margin-bottom: 4px;
 }
 
@@ -61,7 +61,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2px solid var(--color-gray-300, #d1d5db);
+    border: 2px solid var(--color-gray-300);
     cursor: pointer;
     transition:
         border-color 0.2s ease,
@@ -73,7 +73,7 @@
 }
 
 .colorButtonSelected {
-    border-color: var(--color-gray-900, #111827);
+    border-color: var(--color-gray-900);
     transform: scale(1.1);
 }
 
@@ -90,7 +90,10 @@
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        opacity 0.2s ease;
 }
 
 .button:disabled {
@@ -99,19 +102,19 @@
 }
 
 .primaryButton {
-    background-color: var(--color-primary-600, #2563eb);
-    color: var(--color-white, #fff);
+    background-color: var(--color-primary-hover);
+    color: var(--color-white);
 }
 
 .primaryButton:hover:not(:disabled) {
-    background-color: var(--color-primary-700, #1d4ed8);
+    background-color: var(--color-blue-700);
 }
 
 .secondaryButton {
-    background-color: var(--color-gray-300, #d1d5db);
-    color: var(--color-gray-700, #374151);
+    background-color: var(--color-gray-300);
+    color: var(--color-gray-700);
 }
 
 .secondaryButton:hover {
-    background-color: var(--color-gray-400, #9ca3af);
+    background-color: var(--color-gray-400);
 }

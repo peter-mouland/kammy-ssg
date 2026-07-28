@@ -1,6 +1,6 @@
 // app/transfers/lib/validators/ownership-validator.ts
 
-import type { PositionSlotKey } from '../../../teams/types/team-types';
+import type { PositionSlotKey } from '../../../_shared/types/league-types';
 import type { OwnedPlayersByCode } from '../../types/transfer-form-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 

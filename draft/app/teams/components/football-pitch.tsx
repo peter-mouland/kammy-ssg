@@ -1,6 +1,6 @@
 // app/teams/components/football-pitch.tsx
 import type React from 'react';
-import { getFormationSlots } from '../../_shared/lib/position-slot-utils';
+import { getFormationSlots } from '../lib/position-slot-utils';
 import type { FormationDisplayProps } from '../types/team-types';
 import styles from './football-pitch.module.css';
 import { PositionSlotCard } from './position-slot-card';

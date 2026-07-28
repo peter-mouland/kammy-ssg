@@ -1,7 +1,7 @@
 /* Location: app/homepage/homepage.route.tsx */
 
 // app/routes/dashboard.tsx
-import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
+import type { MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { LeagueStandings } from './home.page';
 
@@ -12,7 +12,7 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader() {
     try {
         // Dynamic import to keep server code on server
         const { getAllLeagueStandingsData } = await import('../leagues/server/league-standings.server');

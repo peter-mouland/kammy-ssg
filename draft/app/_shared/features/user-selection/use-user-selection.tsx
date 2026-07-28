@@ -1,8 +1,7 @@
 /* Location: app/_shared/hooks/use-user-selection.hook.ts */
 
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../types/league-types';
 import { clearUserSelection, getClientUserSelection, setUserSelection } from './user-selection.utils';
 
 interface UseUserSelectionOptions {
@@ -35,7 +34,6 @@ export function useUserSelection({
     redirectOnSelection = false,
     initialSelection, // Add this to pass server-side selection
 }: UseUserSelectionOptions): UseUserSelectionReturn {
-    const _navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
     // Initialize state with server data if available, otherwise use client detection
