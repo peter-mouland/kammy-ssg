@@ -9,7 +9,7 @@ import styles from './setup-new-season-section.module.css';
 const CLEAR_TABS = [
     { tab: 'Draft', action: 'Delete all pick rows (keep headers)' },
     { tab: 'DraftState', action: 'Reset to inactive: no current user/pick; clear start/end dates' },
-    { tab: 'DraftOrder', action: 'Clear or replace with the new season\'s draft order once known' },
+    { tab: 'DraftOrder', action: "Clear or replace with the new season's draft order once known" },
     { tab: 'premierLeague-transfers', action: 'Delete all transfer rows' },
     { tab: 'championship-transfers', action: 'Delete all transfer rows' },
     { tab: 'leagueOne-transfers', action: 'Delete all transfer rows' },
@@ -95,8 +95,8 @@ export function SetupNewSeasonSection() {
                             <div className={styles.stepContent}>
                                 <h3 className={styles.stepTitle}>Clear transactional data on the live sheet</h3>
                                 <p className={styles.stepDescription}>
-                                    Delete <strong>data rows</strong> on these tabs. <strong>Keep the header row</strong>{' '}
-                                    on each.
+                                    Delete <strong>data rows</strong> on these tabs.{' '}
+                                    <strong>Keep the header row</strong> on each.
                                 </p>
                                 <div className={styles.tableWrap}>
                                     <table className={styles.table}>
@@ -232,9 +232,7 @@ export function SetupNewSeasonSection() {
                                     <li className={styles.checklistItem}>
                                         Spreadsheet URL/ID unchanged (still the live sheet, not the archive)
                                     </li>
-                                    <li className={styles.checklistItem}>
-                                        Transfer tabs are empty (headers only)
-                                    </li>
+                                    <li className={styles.checklistItem}>Transfer tabs are empty (headers only)</li>
                                     <li className={styles.checklistItem}>
                                         Draft empty; DraftState inactive until you start
                                     </li>
@@ -302,8 +300,8 @@ export function SetupNewSeasonSection() {
                         → <strong>Sync</strong> for the affected division.
                     </li>
                     <li className={styles.stepListItem}>
-                        If team pages still show last season, confirm <strong>Reset Database</strong> was run — sheet-only
-                        clears are not enough.
+                        If team pages still show last season, confirm <strong>Reset Database</strong> was run —
+                        sheet-only clears are not enough.
                     </li>
                 </ol>
             </AdminSection>
