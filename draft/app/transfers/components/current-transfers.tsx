@@ -2,8 +2,8 @@
 
 import { Table, type TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import { PlayerSummary } from '../../players/components/player';
-import type { DivisionId } from '../../teams/types/team-types';
 import type { TransferRecommendation, TransferValidationResult } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import styles from './current-transfers.module.css';

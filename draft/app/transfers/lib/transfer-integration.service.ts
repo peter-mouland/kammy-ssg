@@ -1,9 +1,10 @@
 /* Location: app/transfers/lib/transfer-integration.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import { isSlotScoringActive } from '../../_shared/lib/position-slot-utils';
-import { createEmptyPoints, createEmptyStats } from '../../_shared/lib/roster-conversion-utils';
-import type { DivisionTeamsDocument, PositionSlotKey, TeamRoster } from '../../teams/types/team-types';
+import type { PositionSlotKey } from '../../_shared/types/league-types';
+import { isSlotScoringActive } from '../../teams/lib/position-slot-utils';
+import { createEmptyPoints, createEmptyStats } from '../../teams/lib/roster-conversion-utils';
+import type { DivisionTeamsDocument, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import { applyTransfersToRosters, getGameweekTransfers } from './transfer-processor.service';
 

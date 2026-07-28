@@ -1,7 +1,7 @@
 /* Location: app/cup/server/cup.server.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { UserTeamsSheetData } from '../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../_shared/types/league-types';
 import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
 import type { CupFixture } from '../lib/cup-fixtures';

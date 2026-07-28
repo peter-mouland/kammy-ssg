@@ -20,7 +20,7 @@
     max-height: 80vh;
     overflow: hidden;
     border: 1px solid var(--color-gray-200);
-    animation: modalAppear 0.2s ease-out;
+    animation: modal-appear 0.2s ease-out;
 }
 
 .modalHeader {
@@ -48,7 +48,9 @@
     padding: var(--spacing-2);
     line-height: 1;
     border-radius: var(--radius-sm);
-    transition: all var(--transition-normal);
+    transition:
+        background-color var(--transition-normal),
+        color var(--transition-normal);
 }
 
 .closeButton:hover {
@@ -100,10 +102,10 @@
 .pollingMode {
     text-align: center;
     padding: var(--spacing-4);
-    background-color: var(--color-info-light, #e3f2fd);
-    border: 1px solid var(--color-info-border, #64b5f6);
+    background-color: var(--color-info-light);
+    border: 1px solid var(--color-info-border);
     border-radius: var(--radius-md);
-    color: var(--color-info-text, #1565c0);
+    color: var(--color-info-text);
     margin-bottom: var(--spacing-6);
     font-size: var(--font-sm);
 }
@@ -210,7 +212,7 @@
     outline-offset: 2px;
 }
 
-@keyframes modalAppear {
+@keyframes modal-appear {
     from {
         opacity: 0;
         transform: scale(0.9) translateY(-20px);

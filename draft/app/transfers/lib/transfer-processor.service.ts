@@ -1,7 +1,8 @@
 /* Location: app/transfers/lib/transfer-processor.service.ts */
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { CustomPosition, PlayerGameweekStatsData } from '../../players/types/player-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
+import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import type { Points } from '../../scoring/types/scoring-types';
 import type { RosterByManagerId, TeamRoster } from '../../teams/types/team-types';
 import type { ProcessedTransfer, TransferApplicationResult } from '../types/transfer-types';

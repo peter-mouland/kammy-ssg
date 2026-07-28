@@ -1,8 +1,8 @@
 /* Location: app/_shared/lib/firestore-cache/firebase-draft-sync.ts */
 // biome-ignore-all lint/complexity/noStaticOnlyClass: class pattern used for Firebase service grouping
 
-import type { DivisionId } from '../../../teams/types/team-types';
 // /_shared/lib/firestore-cache/firebase-draft-sync.ts - ENHANCED WITH RESET CAPABILITY
+import type { DivisionId } from '../../types/league-types';
 import { getRealtimeAdminDbInstance } from './firebase.realtime-admin';
 
 interface DraftEvent {
@@ -343,8 +343,10 @@ export class FirebaseDraftSync {
                 throw new Error(`No draft order found for division ${divisionId}`);
             }
 
-            // Use the currentPick from draftState (now calculated in sheets)
-            const currentPick = draftState.currentPick; // This is now calculated!
+            // currentPick is derived, not stored: the sheets reader returns rows only,
+            // so it is computed here from the picks this division has already made.
+            const { calculateCurrentPick } = await import('../../../draft/lib/draft-pick-calculator');
+            const currentPick = calculateCurrentPick(divisionId, draftPicks);
             const currentUserId = draftState.currentUserId;
             const isActive = draftState.isActive;
             const picksCount = draftPicks.length;

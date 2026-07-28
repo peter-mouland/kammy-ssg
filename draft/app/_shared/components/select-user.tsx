@@ -1,7 +1,7 @@
 /* Location: app/_shared/components/select-user.tsx */
 
-import type { UserTeamsSheetData } from '../../teams/types/team-types';
 import { setUserSelection } from '../features/user-selection/user-selection.utils';
+import type { UserTeamsSheetData } from '../types/league-types';
 import styles from './select-user.module.css';
 
 interface User {

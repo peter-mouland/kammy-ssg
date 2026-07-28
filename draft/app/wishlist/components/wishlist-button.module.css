@@ -14,7 +14,10 @@
     justify-content: center;
     border-radius: 50%;
     border: 2px solid;
-    transition: all 0.2s ease;
+    transition:
+        box-shadow 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease;
     font-weight: 500;
     cursor: pointer;
     background: none;
@@ -53,23 +56,23 @@
 
 /* State variants */
 .active {
-    background-color: var(--color-warning-light, #fef3c7);
-    border-color: var(--color-warning-border, #f59e0b);
-    color: var(--color-warning, #b45309);
+    background-color: var(--color-warning-light);
+    border-color: var(--color-warning-border);
+    color: var(--color-warning);
 }
 
 .active:hover {
-    background-color: var(--color-warning-hover, #fde68a);
+    background-color: var(--color-warning-hover);
 }
 
 .inactive {
-    background-color: var(--color-gray-50, #f9fafb);
-    border-color: var(--color-gray-300, #d1d5db);
-    color: var(--color-gray-600, #4b5563);
+    background-color: var(--color-gray-50);
+    border-color: var(--color-gray-300);
+    color: var(--color-gray-600);
 }
 
 .inactive:hover {
-    background-color: var(--color-gray-100, #f3f4f6);
+    background-color: var(--color-gray-100);
 }
 
 .icon {
@@ -107,12 +110,12 @@
     top: 100%;
     margin-top: 4px;
     width: 256px;
-    background-color: var(--color-white, #fff);
+    background-color: var(--color-white);
     border-radius: 8px;
     box-shadow:
         0 10px 15px -3px rgb(0 0 0 / 10%),
         0 4px 6px -2px rgb(0 0 0 / 5%);
-    border: 1px solid var(--color-gray-200, #e5e7eb);
+    border: 1px solid var(--color-gray-200);
     z-index: 50;
 }
 
@@ -129,13 +132,13 @@
 
 .dropdownTitle {
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
     margin: 0;
     font-size: 14px;
 }
 
 .createButton {
-    color: var(--color-primary, #2563eb);
+    color: var(--color-primary);
     font-size: 12px;
     font-weight: 500;
     background: none;
@@ -145,7 +148,7 @@
 }
 
 .createButton:hover {
-    color: var(--color-primary-hover, #1d4ed8);
+    color: var(--color-primary-hover);
 }
 
 .wishlistList {
@@ -157,7 +160,7 @@
 }
 
 .emptyMessage {
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
     font-size: 12px;
     padding: 8px 0;
     margin: 0;
@@ -174,15 +177,15 @@
 }
 
 .wishlistItem:hover {
-    background-color: var(--color-gray-50, #f9fafb);
+    background-color: var(--color-gray-50);
 }
 
 .checkbox {
     width: 16px;
     height: 16px;
     border-radius: 4px;
-    border: 1px solid var(--color-gray-300, #d1d5db);
-    accent-color: var(--color-primary-hover, #2563eb);
+    border: 1px solid var(--color-gray-300);
+    accent-color: var(--color-primary-hover);
 }
 
 .wishlistInfo {
@@ -201,10 +204,10 @@
 .wishlistLabel {
     font-size: 12px;
     font-weight: 500;
-    color: var(--color-gray-900, #111827);
+    color: var(--color-gray-900);
 }
 
 .playerCount {
     font-size: 11px;
-    color: var(--color-gray-500, #6b7280);
+    color: var(--color-gray-500);
 }

@@ -2,7 +2,7 @@
 
 import { type MetaFunction, useOutletContext, useSearchParams } from 'react-router';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
-import type { DivisionSheetData } from '../teams/types/team-types';
+import type { DivisionSheetData } from '../_shared/types/league-types';
 import type { TransferAdminOverviewData } from '../transfers/types/transfer-rule-types';
 import { TransfersSection } from './components/sections/transfers-section';
 import type { AdminDataContext } from './types/admin-orchestrator-types';

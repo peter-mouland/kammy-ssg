@@ -1,9 +1,10 @@
 // app/transfers/components/loan-status-display.tsx
 
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import { PlayerSummary } from '../../players/components/player';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { ManagerId, RosterPlayer, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { RosterPlayer } from '../../teams/types/team-types';
 import styles from './loan-status-display.module.css';
 
 type ActiveLoan = {

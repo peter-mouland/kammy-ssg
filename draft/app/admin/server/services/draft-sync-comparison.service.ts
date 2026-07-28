@@ -3,13 +3,13 @@
 
 import { CACHE_KEYS, getCacheTTL } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
+import type { DivisionId } from '../../../_shared/types/league-types';
 import type {
     DraftSyncComparison,
     DraftSyncDifference,
     FirebaseDraftPick,
     FirebaseDraftState,
 } from '../../../draft/types/draft-types';
-import type { DivisionId } from '../../../teams/types/team-types';
 
 /**
  * Get all draft sync comparisons for all divisions
@@ -39,11 +39,17 @@ async function generateDraftSyncComparison(divisionId: DivisionId): Promise<Draf
         ]);
 
         // Compare the data and find differences
-        const differences = compareData(sheetsState, firebaseState, sheetsPicks, firebasePicks);
+        // currentPick is derived, not stored -- compare the derived value.
+        const { toDraftStateForDivision } = await import('../../../draft/lib/draft-state');
+        const sheetsStateWithPick = sheetsState
+            ? toDraftStateForDivision([sheetsState], sheetsPicks, divisionId)
+            : null;
+
+        const differences = compareData(sheetsStateWithPick, firebaseState, sheetsPicks, firebasePicks);
 
         const comparison: DraftSyncComparison = {
             divisionId,
-            sheetsState,
+            sheetsState: sheetsStateWithPick,
             firebaseState,
             sheetsPicks,
             firebasePicks,

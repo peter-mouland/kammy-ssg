@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { ownershipLimit } from './ownership-validator';
 import {
     MGR1,
     MGR2,
-    PLAYER_CB1,
-    PLAYER_FREE_CB,
-    PLAYER_MID1,
-    PLAYER_FREE_MID,
     MGR2_CB1,
     makeContext,
     makeDivisionRosters,
     makeRosterWithLoanOut,
     makeTransfer,
+    PLAYER_CB1,
+    PLAYER_FREE_CB,
+    PLAYER_FREE_MID,
+    PLAYER_MID1,
 } from './fixtures';
+import { ownershipLimit } from './ownership-validator';
 
 describe('ownershipLimit — TRANSFER', () => {
     it('passes when playerIn is a free agent', () => {

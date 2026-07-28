@@ -10,7 +10,9 @@
     padding: var(--space-2);
     min-width: 80px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
-    transition: all 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
     cursor: pointer;
 }
 
@@ -26,7 +28,7 @@
 
 /* Card variants */
 .onPitch {
-    background: linear-gradient(135deg, var(--color-white) 0%, #f8fafc 100%);
+    background: linear-gradient(135deg, var(--color-white) 0%, var(--color-gray-50) 100%);
     border: 2px solid var(--position-color, var(--color-gray-300));
     min-height: 90px;
     width: 70px;
@@ -41,12 +43,12 @@
 }
 
 .onLoan {
-    background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+    background: linear-gradient(135deg, var(--color-warning-light) 0%, var(--color-warning-border) 100%);
     border: 2px solid var(--color-yellow-500);
 }
 
 .loanedIn {
-    background: linear-gradient(135deg, #dcfce7 0%, #22c55e 100%);
+    background: linear-gradient(135deg, var(--color-green-100) 0%, var(--color-green-500) 100%);
     border: 2px solid var(--color-green-500);
 }
 
@@ -70,7 +72,7 @@
     position: relative;
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--position-color, var(--color-primary)) 0%, #1e40af 100%);
+    background: linear-gradient(135deg, var(--position-color, var(--color-primary)) 0%, var(--color-primary-dark) 100%);
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
@@ -184,7 +186,9 @@
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
     z-index: 10;
     margin-bottom: var(--space-1);
     box-shadow: 0 4px 12px rgb(0 0 0 / 30%);

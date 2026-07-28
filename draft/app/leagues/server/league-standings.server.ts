@@ -3,8 +3,8 @@
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
+import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../_shared/types/league-types';
 import { getDivisionTeamsDocument } from '../../scoring/server/services/division-teams.service';
-import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../teams/types/team-types';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
 import type {
     EnhancedLeagueStandingsLoaderData,

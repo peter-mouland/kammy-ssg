@@ -1,75 +1,76 @@
 /* Location: app/admin/components/ui/draft-card.module.css */
 
-/* draft-card.module.css */
-
 .divisionCard {
-    padding: 1.5rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
-    background: white;
+    padding: var(--spacing-6);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
+    background: var(--color-white);
 }
 
 .divisionCard.active {
-    border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgb(66 153 225 / 10%);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }
 
 .divisionHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-4);
 }
 
 .divisionTitle {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
 }
 
 .divisionTitle.active {
-    color: #2b6cb0;
+    color: var(--color-primary-dark);
 }
 
 .divisionStats {
-    font-size: 0.875rem;
-    color: #718096;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
 }
 
 .draftButton {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-md);
     border: none;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
     cursor: pointer;
-    transition: all 0.2s;
+    transition:
+        background-color var(--transition-normal),
+        color var(--transition-normal),
+        opacity var(--transition-normal);
 }
 
 .draftButton.generate {
-    background-color: #f6ad55;
-    color: #744210;
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-text);
 }
 
 .draftButton.start {
-    background-color: #48bb78;
-    color: white;
+    background-color: var(--color-success);
+    color: var(--color-white);
 }
 
 .draftButton.stop {
-    background-color: #f56565;
-    color: white;
+    background-color: var(--color-error);
+    color: var(--color-white);
 }
 
 .draftButton[disabled],
 .draftButton.disabled {
-    background-color: #e2e8f0;
-    color: #a0aec0;
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-400);
     cursor: not-allowed;
 }
 
 .orderInfo {
-    font-size: 0.875rem;
-    color: #718096;
-    margin-top: 0.5rem;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-2);
 }

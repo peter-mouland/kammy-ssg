@@ -3,8 +3,8 @@
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
+import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
-import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../teams/types/team-types';
 import type { TransfersPageData } from '../types/transfer-form-types';
 import { getTransfersDataForDivision } from './services/transfers-data.service';
 

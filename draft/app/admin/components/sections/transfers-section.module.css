@@ -213,29 +213,6 @@
     font-weight: var(--font-weight-medium);
 }
 
-.status_badge {
-    font-size: var(--font-xs);
-    font-weight: var(--font-weight-medium);
-    padding: var(--spacing-1) var(--spacing-2);
-    border-radius: var(--radius-sm);
-    text-transform: uppercase;
-}
-
-.status_approved {
-    background: var(--color-success-light);
-    color: var(--color-success);
-}
-
-.status_rejected {
-    background: var(--color-error-light);
-    color: var(--color-error);
-}
-
-.status_pending {
-    background: var(--color-warning-light);
-    color: var(--color-warning);
-}
-
 .recommendation_badge {
     font-size: var(--font-xs);
     font-weight: var(--font-weight-semibold);
@@ -327,51 +304,6 @@
     font-size: var(--font-xs);
 }
 
-/* Action Buttons */
-.action_buttons {
-    display: flex;
-    gap: var(--spacing-1);
-    justify-content: center;
-}
-
-.action_btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: 1px solid;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition-normal);
-    background: transparent;
-}
-
-.action_btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.approve_btn {
-    color: var(--color-success);
-    border-color: var(--color-success);
-}
-
-.approve_btn:hover:not(:disabled) {
-    background: var(--color-success);
-    color: var(--color-white);
-}
-
-.reject_btn {
-    color: var(--color-error);
-    border-color: var(--color-error);
-}
-
-.reject_btn:hover:not(:disabled) {
-    background: var(--color-error);
-    color: var(--color-white);
-}
-
 /* Loading spinner for action buttons */
 .loading_spinner {
     width: 16px;
@@ -379,7 +311,7 @@
     border: 2px solid transparent;
     border-top: 2px solid currentcolor;
     border-radius: 50%;
-    animation: spin var(--duration-normal) linear infinite;
+    animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
@@ -396,7 +328,7 @@
 .updated_indicator {
     margin-left: var(--spacing-1);
     font-size: var(--font-xs);
-    opacity: var(--opacity-muted);
+    opacity: 0.5;
 }
 
 /* Action status text for completed actions */
@@ -444,9 +376,14 @@
 }
 
 .action_btn:disabled {
-    opacity: var(--opacity-disabled);
+    opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+}
+
+.action_btn:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .action_btn:not(:disabled):hover {
@@ -483,7 +420,7 @@
     font-size: var(--font-xs);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
-    letter-spacing: var(--letter-spacing-wide);
+    letter-spacing: 0.05em;
 }
 
 .status_approved {
@@ -530,14 +467,8 @@
     border: 1px solid var(--color-error-border);
 }
 
-/* Improved visual feedback */
-.action_btn:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
 /* Animation for updated status */
-@keyframes updateFlash {
+@keyframes update-flash {
     0% {
         background-color: var(--color-primary);
         transform: scale(1.05);
@@ -550,7 +481,7 @@
 }
 
 .status_badge .updated_indicator {
-    animation: updateFlash var(--duration-slow) ease-out;
+    animation: update-flash 0.3s ease-out;
 }
 
 /* Responsive Design */

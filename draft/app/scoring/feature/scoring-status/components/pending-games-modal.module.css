@@ -30,13 +30,13 @@
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--color-gray-800);
     margin: 0;
 }
 
@@ -45,16 +45,18 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #64748b;
+    color: var(--color-gray-500);
     padding: 0.25rem;
     line-height: 1;
     border-radius: 0.25rem;
-    transition: all 0.2s;
+    transition:
+        background-color var(--transition-normal),
+        color var(--transition-normal);
 }
 
 .closeButton:hover {
-    background-color: #f1f5f9;
-    color: #1e293b;
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-800);
 }
 
 .gamesList {
@@ -65,7 +67,7 @@
 
 .gameItem {
     padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--color-gray-200);
 }
 
 .gameItem:last-child {
@@ -74,19 +76,19 @@
 
 .teams {
     font-weight: 500;
-    color: #1e293b;
+    color: var(--color-gray-800);
     margin-bottom: 0.5rem;
 }
 
 .kickoffTime {
     font-size: 0.875rem;
-    color: #64748b;
+    color: var(--color-gray-500);
 }
 
 .emptyState {
     text-align: center;
     padding: 2rem 1rem;
-    color: #64748b;
+    color: var(--color-gray-500);
 }
 
 /* Accessibility: Reduce motion for users who prefer it */

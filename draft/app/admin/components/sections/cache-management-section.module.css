@@ -3,55 +3,55 @@
 .cacheActionGroup {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-lg);
 }
 
 .cacheActionGroup h4 {
-    margin: 0 0 0.5rem;
-    color: #111827;
-    font-size: 1rem;
-    font-weight: 600;
+    margin: 0 0 var(--spacing-2);
+    color: var(--color-gray-900);
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-semibold);
 }
 
 .cacheActionGroup.critical {
-    border-color: #fca5a5;
-    background: #fef2f2;
+    border-color: var(--color-error-border);
+    background: var(--color-error-light);
 }
 
 .cacheActionGroup.critical h4 {
-    color: #7f1d1d;
+    color: var(--color-red-700);
 }
 
 .debugInfo {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--spacing-4);
 }
 
 .debugSection {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    padding: 1rem;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-4);
 }
 
 .debugSection h4 {
-    margin: 0 0 0.75rem;
-    color: #111827;
-    font-size: 1rem;
-    font-weight: 600;
+    margin: 0 0 var(--spacing-3);
+    color: var(--color-gray-900);
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-semibold);
 }
 
 .debugSection pre {
-    background: #1f2937;
-    color: #10b981;
-    padding: 0.75rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
+    background: var(--color-gray-800);
+    color: var(--color-success);
+    padding: var(--spacing-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
     overflow-x: auto;
     margin: 0;
     font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
@@ -59,27 +59,27 @@
 
 .debugSection ul {
     margin: 0;
-    padding-left: 1.25rem;
-    color: #374151;
+    padding-left: var(--spacing-5);
+    color: var(--color-gray-700);
 }
 
 .debugSection li {
-    margin-bottom: 0.25rem;
-    font-size: 0.875rem;
+    margin-bottom: var(--spacing-1);
+    font-size: var(--font-sm);
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
     .cacheActionGroup {
-        padding: 0.75rem;
+        padding: var(--spacing-3);
     }
 
     .debugSection {
-        padding: 0.75rem;
+        padding: var(--spacing-3);
     }
 
     .debugSection pre {
         font-size: 0.625rem;
-        padding: 0.5rem;
+        padding: var(--spacing-2);
     }
 }

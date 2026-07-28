@@ -1,6 +1,6 @@
 /* Location: app/cup/lib/knockout.ts */
 
-import type { ManagerId } from '../../teams/types/team-types';
+import type { ManagerId } from '../../_shared/types/league-types';
 import type { CupMatchup, CupStageId } from '../types/cup-types';
 
 /**

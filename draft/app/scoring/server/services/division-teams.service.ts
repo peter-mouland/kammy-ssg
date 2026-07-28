@@ -1,7 +1,8 @@
 // app/scoring/server/services/division-teams.service.ts
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
-import type { DivisionId, DivisionTeamsDocument, ManagerId } from '../../../teams/types/team-types';
+import type { DivisionId, ManagerId } from '../../../_shared/types/league-types';
+import type { DivisionTeamsDocument } from '../../../teams/types/team-types';
 import { GameweekPointsService } from './gameweek-points.service';
 
 /**

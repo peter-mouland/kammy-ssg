@@ -5,7 +5,7 @@ import type React from 'react';
 import styles from './status-card.module.css';
 
 interface StatusCardProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     icon: React.ReactNode;
     label: string;
     percentage: string;

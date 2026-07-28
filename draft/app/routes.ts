@@ -42,6 +42,7 @@ export default [
         route('draft', 'admin/admin-draft.route.tsx'),
         route('points', 'admin/admin-points.route.tsx'),
         route('settings', 'admin/admin-settings.route.tsx'),
+        route('setup-new-season', 'admin/admin-setup-new-season.route.tsx'),
         route('transfers', 'admin/admin-transfers.route.tsx'),
     ]),
 

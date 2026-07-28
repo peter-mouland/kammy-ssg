@@ -47,6 +47,12 @@ const navigationItems: AdminNavItem[] = [
         icon: <Icons.CloudIcon />,
         path: '/admin/settings',
     },
+    {
+        key: 'setupNewSeason',
+        label: 'Setup New Season',
+        icon: <Icons.CalendarIcon />,
+        path: '/admin/setup-new-season',
+    },
 ];
 
 export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) => {
@@ -59,6 +65,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
         if (path.startsWith('/admin/transfers')) return 'transfers';
         if (path.startsWith('/admin/points')) return 'points';
         if (path.startsWith('/admin/settings')) return 'settings';
+        if (path.startsWith('/admin/setup-new-season')) return 'setupNewSeason';
         return 'overview';
     };
 

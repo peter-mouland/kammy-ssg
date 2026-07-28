@@ -4,7 +4,7 @@ import type React from 'react';
 import styles from './action-bar.module.css';
 
 interface ActionBarProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     align?: 'left' | 'center' | 'right';
     gap?: 'sm' | 'md' | 'lg';
 }

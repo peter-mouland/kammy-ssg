@@ -1,11 +1,11 @@
 /* Location: app/leagues/league-standings.route.tsx */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
+import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
-import type { DivisionId } from '../teams/types/team-types';
+import type { DivisionId } from '../_shared/types/league-types';
 import { LeagueStandings } from './league-standings';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
 
@@ -54,7 +54,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action() {
     try {
         return data<ActionData>();
     } catch (error) {

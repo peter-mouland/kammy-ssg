@@ -1,9 +1,28 @@
 import { Link } from 'react-router';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { RosterPlayer } from '../../teams/types/team-types';
-import type { CustomPosition } from '../types/player-types';
+import type { DisplayablePlayer } from '../types/player-types';
 import styles from './player.module.css';
+
+/**
+ * Resolve a player's club name.
+ *
+ * A roster player carries only the FPL player code, so its club has to be looked up
+ * through the FPL player list; an FPL player carries team_code directly. Either lookup
+ * can miss, so this returns undefined rather than indexing into teamsByCode blindly.
+ */
+const resolveTeamName = (
+    player: DisplayablePlayer,
+    teamsByCode: Record<number, FplTeam>,
+    fplPlayersByCode?: Record<number, EnhancedPlayerData>,
+): string | undefined => {
+    const playerCode = player.playerCode ?? player.code;
+    const teamCode =
+        fplPlayersByCode && playerCode !== undefined ? fplPlayersByCode[playerCode]?.team_code : player.team_code;
+
+    return teamCode === undefined ? undefined : teamsByCode[teamCode]?.name;
+};
 
 function PositionBadge({ position, isSub = false }: { position: CustomPosition; isSub?: boolean }) {
     return (
@@ -25,7 +44,7 @@ export const PlayerSummary = ({
 }: {
     teamsByCode: Record<number, FplTeam>;
     fplPlayersByCode?: Record<number, EnhancedPlayerData>;
-    player: EnhancedPlayerData & RosterPlayer;
+    player: DisplayablePlayer;
     view?: 'row' | 'column';
     onLoanTo?: string;
     onLoanFrom?: string;
@@ -46,11 +65,7 @@ export const PlayerSummary = ({
                 <div className={styles.player_cell_details}>
                     <div className={styles.player_name}>{player.playerName || player.web_name}</div>
                     <div className={styles.player_details}>
-                        <div className={styles.team}>
-                            {fplPlayersByCode
-                                ? teamsByCode[fplPlayersByCode[player.playerCode]?.team_code]?.name
-                                : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
-                        </div>
+                        <div className={styles.team}>{resolveTeamName(player, teamsByCode, fplPlayersByCode)}</div>
                         {manager ? (
                             <div className={styles.owner}>
                                 <span>{manager}</span>
@@ -73,7 +88,7 @@ export const PlayerSummaryPoints = ({
 }: {
     teamsByCode: Record<number, FplTeam>;
     fplPlayersByCode?: Record<number, EnhancedPlayerData>;
-    player: EnhancedPlayerData & RosterPlayer;
+    player: DisplayablePlayer;
     onLoanTo?: string;
     onLoanFrom?: string;
     manager?: string;
@@ -107,11 +122,7 @@ export const PlayerSummaryPoints = ({
             </div>
 
             <div className={styles.layoutTeam}>
-                <div className={styles.team}>
-                    {fplPlayersByCode
-                        ? teamsByCode[fplPlayersByCode[player.playerCode]?.team_code]?.name
-                        : teamsByCode[player.team_code].name || teamsByCode[player.team_code]}
-                </div>
+                <div className={styles.team}>{resolveTeamName(player, teamsByCode, fplPlayersByCode)}</div>
             </div>
 
             <div className={styles.layoutOwner}>

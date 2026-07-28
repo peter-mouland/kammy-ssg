@@ -1,6 +1,6 @@
 /* Location: app/cup/lib/cup-standings.ts */
 
-import type { ManagerId } from '../../teams/types/team-types';
+import type { ManagerId } from '../../_shared/types/league-types';
 import { isDisqualified, QUALIFYING_PLACES } from './cup-rules';
 
 /** A scored league-stage submission (points already computed). */

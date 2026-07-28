@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/draft.ts */
 
-import type { DraftPickData, DraftStateData } from '../../../draft/types/draft-types';
-import type { DivisionId } from '../../../teams/types/team-types';
+import type { DivisionId } from '../../types/league-types';
+import type { DraftPickRow, DraftStateRow } from '../../types/sheets-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import {
@@ -26,7 +26,7 @@ import {
 
 // Draft picks sheet configuration
 const DRAFT_PICKS_SHEET_NAME = 'Draft';
-const DRAFT_PICKS_HEADERS: Record<string, keyof DraftPickData> = {
+const DRAFT_PICKS_HEADERS: Record<string, keyof DraftPickRow> = {
     'Pick Number': 'pickNumber',
     Round: 'round',
     'User ID': 'userId',
@@ -41,7 +41,7 @@ const DRAFT_PICKS_HEADERS: Record<string, keyof DraftPickData> = {
 };
 
 // Transform functions for parsing and writing
-const DRAFT_PICKS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickData, (value: any) => any>> = {
+const DRAFT_PICKS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickRow, (value: any) => any>> = {
     pickNumber: parseSheetNumber,
     round: parseSheetNumber,
     playerId: parseSheetNumber,
@@ -50,13 +50,13 @@ const DRAFT_PICKS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickData, (valu
     pickedAt: parseSheetDate,
 };
 
-const DRAFT_PICKS_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickData, (value: any) => any>> = {
+const DRAFT_PICKS_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftPickRow, (value: any) => any>> = {
     pickedAt: (value: Date) => value.toISOString(),
 };
 
 // Draft state sheet configuration
 const DRAFT_STATE_SHEET_NAME = 'DraftState';
-const DRAFT_STATE_HEADERS: Record<string, keyof Omit<DraftStateData, 'currentPick'>> = {
+const DRAFT_STATE_HEADERS: Record<string, keyof Omit<DraftStateRow, 'currentPick'>> = {
     'Is Active': 'isActive',
     // 'Current Pick': 'currentPick', // REMOVE - now calculated
     'Current User ID': 'currentUserId',
@@ -66,7 +66,7 @@ const DRAFT_STATE_HEADERS: Record<string, keyof Omit<DraftStateData, 'currentPic
     'Completed At': 'completedAt',
 };
 
-const DRAFT_STATE_TRANSFORM_FUNCTIONS: Partial<Record<keyof Omit<DraftStateData, 'currentPick'>, (value: any) => any>> =
+const DRAFT_STATE_TRANSFORM_FUNCTIONS: Partial<Record<keyof Omit<DraftStateRow, 'currentPick'>, (value: any) => any>> =
     {
         isActive: parseSheetBoolean,
         // currentPick: parseSheetNumber, // REMOVE
@@ -75,7 +75,7 @@ const DRAFT_STATE_TRANSFORM_FUNCTIONS: Partial<Record<keyof Omit<DraftStateData,
         completedAt: (value: any) => (value ? parseSheetDate(value) : null),
     };
 
-const DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftStateData, (value: any) => any>> = {
+const DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftStateRow, (value: any) => any>> = {
     startedAt: (value: Date | null) => parseSheetDate(value),
     completedAt: (value: Date | null) => parseSheetDate(value),
 };
@@ -83,7 +83,7 @@ const DRAFT_STATE_WRITE_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftStateData
 /**
  * Read all draft picks from the sheet - SINGLE API CALL
  */
-async function originalReadDraftPicks(): Promise<DraftPickData[]> {
+async function originalReadDraftPicks(): Promise<DraftPickRow[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
@@ -128,7 +128,7 @@ export async function readDraftPicks() {
 /**
  * Add a new draft pick to the sheet - OPTIMIZED API CALLS
  */
-export async function addDraftPick(draftPick: DraftPickData): Promise<void> {
+export async function addDraftPick(draftPick: DraftPickRow): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const cacheKey = `${spreadsheetId}:${DRAFT_PICKS_SHEET_NAME}`;
@@ -177,7 +177,7 @@ export async function addDraftPick(draftPick: DraftPickData): Promise<void> {
 /**
  * Get draft picks by division ID - reuse cached data
  */
-export async function getDraftPicksByDivision(divisionId: DivisionId): Promise<DraftPickData[]> {
+export async function getDraftPicksByDivision(divisionId: DivisionId): Promise<DraftPickRow[]> {
     try {
         const allPicks = await readDraftPicks(); // Single API call (or uses cache)
         return allPicks.filter((pick) => pick.divisionId === divisionId).sort((a, b) => a.pickNumber - b.pickNumber);
@@ -193,7 +193,7 @@ export async function getDraftPicksByDivision(divisionId: DivisionId): Promise<D
 /**
  * Read current draft state - SINGLE API CALL
  */
-async function originalReadDraftState(): Promise<DraftStateData> {
+async function originalReadDraftState(): Promise<DraftStateRow> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
@@ -207,7 +207,6 @@ async function originalReadDraftState(): Promise<DraftStateData> {
         if (headers.length === 0 || data.length === 0) {
             return {
                 isActive: false,
-                currentPick: 1, // Default for empty state
                 currentUserId: '',
                 divisionId: 'premierLeague',
                 picksPerTeam: 12,
@@ -231,18 +230,7 @@ async function originalReadDraftState(): Promise<DraftStateData> {
             console.warn(`Draft state sheet missing headers: ${missing.join(', ')}`);
         }
 
-        const rawState = parsedData[0];
-
-        // Calculate currentPick from actual picks data
-        const allPicks = await readDraftPicks();
-        const divisionPicks = allPicks.filter((pick) => pick.divisionId === rawState.divisionId);
-        const calculatedCurrentPick = divisionPicks.length + 1;
-
-        // Return state with calculated currentPick
-        return {
-            ...rawState,
-            currentPick: calculatedCurrentPick,
-        };
+        return parsedData[0];
     } catch (error) {
         throw createAppError('DRAFT_STATE_READ_ERROR', 'Failed to read draft state from sheet', error);
     }
@@ -256,7 +244,7 @@ export async function readDraftState() {
 /**
  * Update draft state - OPTIMIZED API CALLS
  */
-export async function updateDraftState(draftState: DraftStateData): Promise<void> {
+export async function updateDraftState(draftState: DraftStateRow): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const cacheKey = `${spreadsheetId}:${DRAFT_STATE_SHEET_NAME}`;
@@ -341,7 +329,7 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
 
                 await writeSheetRange(updateRange, newDataRows);
                 console.log(
-                    `✅ Successfully updated draft state for division ${draftState.divisionId}: Pick #${draftState.currentPick}, User: ${draftState.currentUserId} (Row ${targetRowNumber})`,
+                    `✅ Successfully updated draft state for division ${draftState.divisionId}: User: ${draftState.currentUserId} (Row ${targetRowNumber})`,
                 );
             } else {
                 // Append new row for this division
@@ -352,7 +340,7 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
 
                 await appendToSheet(appendRange, newDataRows);
                 console.log(
-                    `✅ Successfully added new draft state for division ${draftState.divisionId}: Pick #${draftState.currentPick}, User: ${draftState.currentUserId}`,
+                    `✅ Successfully added new draft state for division ${draftState.divisionId}: User: ${draftState.currentUserId}`,
                 );
             }
         }
@@ -368,7 +356,7 @@ export async function updateDraftState(draftState: DraftStateData): Promise<void
 /**
  * Read ALL draft states for all divisions and calculate currentPick
  */
-async function originalReadAllDraftStates(): Promise<DraftStateData[]> {
+async function originalReadAllDraftStates(): Promise<DraftStateRow[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
@@ -396,18 +384,7 @@ async function originalReadAllDraftStates(): Promise<DraftStateData[]> {
             console.warn(`Draft state sheet missing headers: ${missing.join(', ')}`);
         }
 
-        // Calculate currentPick for each draft state
-        const allPicks = await readDraftPicks();
-        const { calculateCurrentPick } = await import('../../../draft/lib/draft-pick-calculator');
-
-        const enrichedData = parsedData.map(
-            (state: any): DraftStateData => ({
-                ...state,
-                currentPick: calculateCurrentPick(state.divisionId, allPicks), // CALCULATED from picks
-            }),
-        );
-
-        return enrichedData;
+        return parsedData;
     } catch (error) {
         throw createAppError('DRAFT_STATE_READ_ERROR', 'Failed to read draft states from sheet', error);
     }
@@ -422,7 +399,7 @@ export async function readAllDraftStates() {
 /**
  * Read draft state for a specific division
  */
-export async function readDraftStateByDivision(divisionId: DivisionId): Promise<DraftStateData | null> {
+export async function readDraftStateByDivision(divisionId: DivisionId): Promise<DraftStateRow | null> {
     try {
         const allStates = await readAllDraftStates();
         return allStates.find((state) => state.divisionId === divisionId) || null;

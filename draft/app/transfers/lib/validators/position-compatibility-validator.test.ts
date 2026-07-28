@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { validatePositionCompatibility } from './position-compatibility-validator';
 import {
+    makeContext,
+    makeTransfer,
     PLAYER_CB1,
     PLAYER_FREE_CB,
     PLAYER_FREE_GK,
@@ -8,9 +9,8 @@ import {
     PLAYER_MID1,
     PLAYER_MID2,
     PLAYER_SUB,
-    makeContext,
-    makeTransfer,
 } from './fixtures';
+import { validatePositionCompatibility } from './position-compatibility-validator';
 
 describe('validatePositionCompatibility — TRANSFER', () => {
     it('passes when playerIn matches the position of playerOut', () => {

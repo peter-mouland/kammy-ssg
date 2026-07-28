@@ -9,11 +9,16 @@
 
 import { describe, expect, it } from 'vitest';
 import type { ProcessedTransfer } from '../../types/transfer-types';
-import { getRuleValidationFunctions } from './index';
 import {
     MGR1,
     MGR2,
     MGR2_MID1,
+    makeContext,
+    makeGameweek,
+    makeMgr2Roster,
+    makeRosterWithLoanOut,
+    makeStandardRoster,
+    makeTransfer,
     PLAYER_CB1,
     PLAYER_CB2,
     PLAYER_FREE_CB,
@@ -23,13 +28,8 @@ import {
     PLAYER_MID1,
     PLAYER_MID2,
     PLAYER_WA1,
-    makeContext,
-    makeGameweek,
-    makeMgr2Roster,
-    makeRosterWithLoanOut,
-    makeStandardRoster,
-    makeTransfer,
 } from './fixtures';
+import { getRuleValidationFunctions } from './index';
 
 // ---------------------------------------------------------------------------
 // Helper

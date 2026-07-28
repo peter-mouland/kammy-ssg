@@ -1,6 +1,6 @@
 // app/transfers/lib/get-transfer-journey-issues.ts
 
-import type { ManagerId, UserTeamsSheetData } from '../../teams/types/team-types';
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import { type EligibilitySeverity, formatEligibilityStatus, isGameweekLimitMessage } from './format-eligibility-status';

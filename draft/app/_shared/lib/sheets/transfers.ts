@@ -1,7 +1,6 @@
 /* Location: app/_shared/lib/sheets/draft-order.ts */
 
 import type { EnhancedPlayerData, PlayersByCode } from '../../../scoring/types/scoring-types';
-import type { DivisionId } from '../../../teams/types/team-types';
 import type {
     ProcessedTransfer,
     ProcessedTransferSheetData,
@@ -10,6 +9,7 @@ import type {
     TransferStatus,
     TransferType,
 } from '../../../transfers/types/transfer-types';
+import type { DivisionId } from '../../types/league-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import type { GameWeekData } from '../fpl/fpl-types';

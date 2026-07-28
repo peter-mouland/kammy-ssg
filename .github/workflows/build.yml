@@ -40,14 +40,16 @@ jobs:
       - name: Lint
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npx biome lint --changed --since=origin/${{ github.base_ref }} .
+            npx biome lint --changed --since=origin/${{ github.base_ref }} --no-errors-on-unmatched .
           else
             npx biome lint .
           fi
 
-      - name: Type check
-        run: yarn type-check
-        continue-on-error: true
+      # Ratchet, not a gate: the repo carries a backlog of type errors and CSS
+      # convention violations recorded in .ratchet.json. This fails only if a change
+      # ADDS to either backlog, so the counts can only go down over time.
+      - name: Ratchet (type errors + CSS conventions)
+        run: yarn ratchet
 
   test:
     name: test
@@ -80,10 +82,44 @@ jobs:
       - name: Test
         run: yarn test
 
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install --immutable
+        env:
+          CI: true
+
+      # No secrets here on purpose. This job only proves the app compiles and
+      # bundles — every value the app reads from env is read at request time,
+      # not at build time, so a build with no env is a valid build.
+      - name: Build
+        run: yarn build
+
   deploy:
     name: deploy
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: [lint, test, build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4

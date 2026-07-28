@@ -90,15 +90,46 @@ For validators and services that share a common setup, put shared fixture factor
 
 ---
 
+## Testing components
+
+"Not React component internals" above means do not test *internals* — it does not mean do not render. Rendering a component and asserting what a user sees is exactly the integration-style testing principle 1 asks for, and it is where UI bugs actually live.
+
+A tooltip on the player table once reported "0 points" for every player for as long as it existed. Nothing rendered it in a test, so nothing noticed.
+
+**Test what a user sees, not how the component is built:**
+
+```tsx
+// Good — what a user would look at
+expect(screen.getByTitle('2 points')).toBeDefined();
+expect(screen.getByRole('row', { name: /Salah/ })).toBeDefined();
+
+// Bad — the component's internals
+expect(columns[7].title(stat, col, 0)).toBe('2 points');
+expect(wrapper.state.sortDirection).toBe('asc');
+```
+
+Good things to assert: which columns a position shows, what a cell displays for a given stat, what a tooltip says, what an empty list renders. Avoid asserting prop plumbing, internal state, or the order of a `columns` array.
+
+### Rendering tests opt in to a DOM
+
+The default environment is `node`, which keeps the logic tests fast. A test that renders declares a DOM at the top of the file:
+
+```tsx
+// @vitest-environment happy-dom
+import { render, screen } from '@testing-library/react';
+```
+
+happy-dom rather than jsdom because it is significantly faster and covers everything this app renders. If a file ever needs something happy-dom lacks (layout measurement, canvas), it can opt into `jsdom` the same way.
+
+`vitest.setup.ts` calls Testing Library's `cleanup()` after every test, so rendered output does not leak between them.
+
+---
+
 ## Framework
 
-Vitest is the standard choice for this project (Vite-native, fast, compatible with the existing build). Add it when writing the first test:
-
-```bash
-yarn workspace draft add -D vitest
-```
+Vitest is the standard choice for this project (Vite-native, fast, compatible with the existing build). Configuration lives in `draft/vitest.config.ts` — deliberately separate from `vite.config.ts`, because a test run has no use for the React Router route manifest.
 
 Run tests with:
 ```bash
-yarn workspace draft vitest run
+yarn test
 ```

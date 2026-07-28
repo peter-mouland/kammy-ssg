@@ -1,7 +1,7 @@
 /* Location: app/_shared/components/user-selection-provider.tsx */
 
 import type { ReactNode } from 'react';
-import type { UserTeamsSheetData } from '../../../teams/types/team-types';
+import type { UserTeamsSheetData } from '../../types/league-types';
 import { useUserSelection } from './use-user-selection';
 import { UserSelectionModal } from './user-selection-modal';
 

@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { RankBadge, Table, type TableColumn } from '../../_shared/components/table';
-import { getStandingsRowMarker, type StandingsRowMarker } from '../../_shared/lib/standings-table-markers';
-import type { DivisionId } from '../../teams/types/team-types';
+import type { DivisionId } from '../../_shared/types/league-types';
 import { POSITION_COLUMNS } from '../constants/position-columns';
+import styles from '../league-standings.module.css';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
+import { getStandingsRowMarker, type StandingsRowMarker } from '../lib/standings-table-markers';
 import type { LeagueStandingsTeamData } from '../types/league-standings-types';
 import { PositionRankChange } from './position-rank-change';
-import styles from '../league-standings.module.css';
 
 const MARKER_ROW_CLASS: Record<StandingsRowMarker, string> = {
     prize: styles.secondPlacePrizeRow,

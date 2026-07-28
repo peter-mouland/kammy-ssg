@@ -1,10 +1,11 @@
 // app/admin/server/actions/team-commit-actions.ts
 
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
-import { convertLegacyPlayersToRoster } from '../../../_shared/lib/roster-conversion-utils';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
+import type { PositionSlotKey } from '../../../_shared/types/league-types';
 import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
-import type { DivisionTeamsDocument, PositionSlotKey, TeamPositionSlot } from '../../../teams/types/team-types';
+import { convertLegacyPlayersToRoster } from '../../../teams/lib/roster-conversion-utils';
+import type { DivisionTeamsDocument, TeamPositionSlot } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
 
 export async function handleCommitTeamsToFirestore(

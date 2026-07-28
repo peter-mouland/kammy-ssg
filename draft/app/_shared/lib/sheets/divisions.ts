@@ -1,7 +1,7 @@
 /* Location: app/_shared/lib/sheets/divisions.ts */
 /** biome-ignore-all lint/style/useNamingConvention: <?> */
 
-import type { DivisionSheetData } from '../../../teams/types/team-types';
+import type { DivisionSheetData } from '../../types/league-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import {

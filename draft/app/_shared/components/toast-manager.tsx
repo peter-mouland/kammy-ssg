@@ -9,6 +9,7 @@ declare global {
         dismissAllToasts?: () => void;
     }
 }
+
 import styles from './toast-manager.module.css';
 
 interface Toast {

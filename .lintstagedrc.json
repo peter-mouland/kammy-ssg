@@ -2,6 +2,6 @@
     "*.{ts,tsx,js,jsx,json}": ["biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"],
     "*.css": [
         "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true",
-        "stylelint --fix --allow-empty-input"
+        "node scripts/stylelint-fix.mjs"
     ]
 }

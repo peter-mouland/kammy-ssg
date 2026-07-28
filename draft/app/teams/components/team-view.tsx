@@ -8,8 +8,8 @@ import { UserSelectionProvider } from '../../_shared/features/user-selection/use
 import type { StatsViewMode, TeamViewData } from '../types/team-types';
 import type { TeamViewTab } from '../types/team-view-types';
 import { GameweekSelector } from './gameweek-selector';
-import styles from './team-view.module.css';
 import { TeamOfTheWeek } from './team-of-the-week';
+import styles from './team-view.module.css';
 import { AllTeamsView } from './team-view-all-teams';
 import { MyTeamView } from './team-view-my-team';
 import { TeamViewTabs } from './team-view-tabs';
