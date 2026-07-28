@@ -54,7 +54,10 @@ All league configuration and management decisions live here — managed by admin
 | `DraftOrder` | The snake order for each division draft |
 | `Transfers` | All transfer requests (pending, approved, rejected) |
 | `Players` | Custom player overrides (position, hidden flag, new flag) |
-| `PlayerGwPoints` | Pre-computed per-player per-gameweek points |
+| `player-gw-points` | Pre-computed per-player per-gameweek points |
+| `Cup` | Cup squad submissions |
+| `CupConfig` | Cup rounds, deadlines and settings |
+| `CupBracket` | Knockout bracket state |
 
 Access: `googleapis` with a service account (base64 credentials in env). Each sheet has its own module in `draft/app/_shared/lib/sheets/`.
 
@@ -85,6 +88,7 @@ draft/app/
 ├── _shared/        # Horizontal: utilities, FPL client, Sheets client, cache, shared components
 ├── admin/          # Admin dashboard — draft management, points processing, transfer approval
 ├── api/            # Server-side API routes (cache, transfers, fixtures)
+├── cup/            # Cross-division knockout cup — squad submission, brackets, cup scoring
 ├── draft/          # Live draft room — snake logic, pick calculator, Firebase real-time
 ├── homepage/       # Main dashboard
 ├── leagues/        # Division standings tables, team of the week
@@ -94,6 +98,16 @@ draft/app/
 ├── transfers/      # Transfer submission form + validation
 └── wishlist/       # Local-storage-backed player wishlist
 ```
+
+### Read `cup/` first
+
+**`cup/` is the reference implementation.** It is the newest domain and the one to copy when you are unsure how something should look:
+
+- Routes follow the agreed convention — `cup/cup.route.tsx` owns the loader and action, `cup/cup.page.tsx` owns the UI.
+- It is the best-tested domain in the app: 12 test files, all consumer-focused.
+- Zero type errors, while the rest of the codebase still carries a backlog of them (`yarn ratchet`).
+
+If a pattern here disagrees with what you find elsewhere, `cup/` is more likely to be right.
 
 ---
 
@@ -131,6 +145,15 @@ Status: `APPROVED | REJECTED | PENDING`
 
 Submitted by managers, approved/rejected by admins via the Admin UI. Loans track `onLoanTo` and `onLoanFrom` fields on the roster player.
 
+### Cup
+A **cross-division** knockout — the one feature that ignores division boundaries. Rules live in `cup/lib/cup-rules.ts`.
+
+Stages run `league → r16 → qf → sf → final`. The top **16** managers across all divisions qualify from the league stage. Every stage needs a squad of **4** players except the Grand Final, which needs **6**. The middle rounds (`r16`, `qf`, `sf`) are **two-legged**; league stage and final are single-leg.
+
+Two rules drive most of the logic:
+- **Player-reuse ban** — a player used in one leg of a round cannot be reused in the other leg of that round.
+- **Autopick disqualification** — a missed deadline auto-picks a manager's squad; reaching `MAX_AUTOPICKS_BEFORE_DQ` (2) in a stage disqualifies them.
+
 ### Scoring
 Custom points per position, per stat. Rules live in `scoring/lib/rules.ts` as `POSITION_RULES`.
 
@@ -148,6 +171,12 @@ Example rules:
 
 | URL | File | Purpose |
 |---|---|---|
+Mirrors [routes.ts](../../draft/app/routes.ts). If you add a route, add it here.
+
+**Pages**
+
+| URL | File | Purpose |
+|---|---|---|
 | `/` | `homepage/homepage.route.tsx` | Dashboard |
 | `/teams/:userId?` | `teams/team.route.tsx` | Team roster view |
 | `/leagues/:divisionId?` | `leagues/league-standings.route.tsx` | Division standings |
@@ -156,14 +185,42 @@ Example rules:
 | `/players/:playerCode` | `players/player.route.tsx` | Player detail |
 | `/transfers/:divisionId?` | `transfers/transfers.route.tsx` | Transfer submission |
 | `/wishlists` | `wishlist/wishlists.route.tsx` | Personal wishlist |
-| `/admin` | `admin/admin.route.tsx` | Admin (nested) |
+
+**Cup** (cross-division knockout)
+
+| URL | File | Purpose |
+|---|---|---|
+| `/cup` | `cup/cup.route.tsx` | Bracket and standings |
+| `/cup/submit` | `cup/cup-submit.route.tsx` | Squad submission |
+| `/cup/admin` | `cup/cup-admin.route.tsx` | Cup administration |
+
+**Admin** (nested under `/admin`)
+
+| URL | File | Purpose |
+|---|---|---|
+| `/admin` | `admin/admin.route.tsx` | Admin shell (parent route) |
+| `/admin` (index) | `admin/admin-overview.route.tsx` | Admin overview |
 | `/admin/draft` | `admin/admin-draft.route.tsx` | Draft management |
 | `/admin/points` | `admin/admin-points.route.tsx` | Points processing |
-| `/admin/transfers` | `admin/admin-transfers.route.tsx` | Transfer approval |
+| `/admin/settings` | `admin/admin-settings.route.tsx` | Admin settings |
 | `/admin/setup-new-season` | `admin/admin-setup-new-season.route.tsx` | Season rollover checklist |
+| `/admin/transfers` | `admin/admin-transfers.route.tsx` | Transfer approval |
+| `/admin-progress/:jobId` | `admin/admin-progress.route.tsx` | Long-running job progress (legacy, top-level) |
+| `/admin-progress-poll/:jobId` | `admin/admin-progress-poll.route.tsx` | Job progress polling (legacy, top-level) |
+| `/debug` | `admin/debug.route.tsx` | Debug page |
+
+**APIs and data endpoints**
+
+| URL | File | Purpose |
+|---|---|---|
+| `/players.json` | `players/players-json.route.ts` | Player list as JSON |
+| `/players/:playerCode.json` | `players/player-json.route.ts` | Player detail as JSON |
 | `/scoring/api/gw-points` | `scoring/api/api.gw-points.ts` | Gameweek points API |
 | `/api/transfers/:divisionId` | `api/transfers/api.transfers.ts` | Transfers data API |
 | `/api/cache` | `api/cache/api.cache.ts` | Cache management API |
+| `/api/admin/draft-sync-comparisons` | `admin/api/api.admin.draft-sync-comparisons.ts` | Sheets/Firebase draft drift check |
+
+Note that `admin-progress` and `admin-progress-poll` are **not** nested under `/admin` despite the name, and that `cup/` and `admin/` both own API routes inside their own domain folder rather than in `api/`.
 
 ---
 
