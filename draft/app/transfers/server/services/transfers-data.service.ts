@@ -16,7 +16,7 @@ import type { TransferValidationResult } from '../../types/transfer-rule-types';
 export async function getTransfersDataForDivision(divisionId: DivisionId, gameweek: GameWeekData, _opts) {
     try {
         const [{ readTransferDataForDivision }, { fplApiCache }] = await Promise.all([
-            import('../../../_shared/lib/sheets/transfers'),
+            import('../../lib/transfer-rows'),
             import('../../../_shared/lib/fpl/api-cache'),
         ]);
 

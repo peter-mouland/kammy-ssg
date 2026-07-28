@@ -1,3 +1,4 @@
+import type { CupSheetData } from '../../_shared/types/sheets-types';
 /* Location: app/cup/types/cup-types.ts */
 /** biome-ignore-all lint/style/useNamingConvention: sheet-header property names mirror the Cup sheet columns */
 
@@ -55,20 +56,10 @@ export interface CupRound {
 export type CupSubmissionStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED';
 
 /** Raw Cup submissions sheet row (header text -> cell value). */
-export interface CupSheetData {
-    Status: string; // '' = pending, 'Y' = confirmed, 'N' = rejected
-    Timestamp: string | number | Date;
-    Manager: string;
-    Division: string;
-    Gameweek: string | number;
-    Stage: string;
-    Leg: string | number;
-    Players: string; // comma-separated player codes
-    SubmittedByAdmin: string | boolean;
-    AdminReason: string;
-}
 
 /** Normalised sheet row after parsing/transform. */
+export type { CupSheetData };
+
 export interface ProcessedCupSheetData {
     status: string;
     timestamp: Date;

@@ -1,14 +1,7 @@
 /* Location: app/_shared/lib/sheets/cup.ts */
 
-import { parseCupConfig, serializeCupConfig } from '../../../cup/lib/cup-config';
-import type {
-    CupConfig,
-    CupMatchup,
-    CupSheetData,
-    CupStageId,
-    ProcessedCupSheetData,
-} from '../../../cup/types/cup-types';
 import type { DivisionId, ManagerId } from '../../types/league-types';
+import type { CupBracketRow, CupConfigRow, CupSheetData, CupSubmissionRow } from '../../types/sheets-types';
 import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { convertToRowsWithHeaders, getCachedHeaders, setCachedHeaders } from './cache/utils';
@@ -20,7 +13,7 @@ const CUP_SHEET_NAME = 'Cup';
 const CUP_CONFIG_SHEET_NAME = 'CupConfig';
 const CUP_BRACKET_SHEET_NAME = 'CupBracket';
 
-const CUP_HEADERS: Record<keyof CupSheetData, keyof ProcessedCupSheetData> = {
+const CUP_HEADERS: Record<keyof CupSheetData, keyof CupSubmissionRow> = {
     Status: 'status',
     Timestamp: 'timestamp',
     Manager: 'manager',
@@ -98,7 +91,7 @@ const CUP_TRANSFORM_FUNCTIONS = {
     AdminReason: (value: any): string => (value ? String(value).trim() : ''),
 };
 
-async function originalReadCupSubmissions(): Promise<ProcessedCupSheetData[]> {
+async function originalReadCupSubmissions(): Promise<CupSubmissionRow[]> {
     try {
         const sheetResult = await readDataFromSheet<Record<string, any>>(CUP_SHEET_NAME, {
             headerOrder: [...CUP_SHEET_HEADERS],
@@ -113,7 +106,7 @@ async function originalReadCupSubmissions(): Promise<ProcessedCupSheetData[]> {
             manager: row.Manager,
             division: row.Division as DivisionId,
             gameweek: row.Gameweek,
-            stage: row.Stage as CupStageId,
+            stage: row.Stage,
             leg: row.Leg,
             players: row.Players,
             submittedByAdmin: row.SubmittedByAdmin,
@@ -124,13 +117,13 @@ async function originalReadCupSubmissions(): Promise<ProcessedCupSheetData[]> {
     }
 }
 
-export async function readCupSubmissions(): Promise<ProcessedCupSheetData[]> {
+export async function readCupSubmissionRows(): Promise<CupSubmissionRow[]> {
     return await dataCache.get(CACHE_KEYS.SHEETS.CUP, () => originalReadCupSubmissions(), {
         ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.CUP),
     });
 }
 
-export async function addCupSubmission(submission: ProcessedCupSheetData): Promise<void> {
+export async function addCupSubmissionRow(submission: CupSubmissionRow): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const cacheKey = `${spreadsheetId}:${CUP_SHEET_NAME}`;
@@ -168,7 +161,7 @@ export async function addCupSubmission(submission: ProcessedCupSheetData): Promi
  * Parsing/serialising lives in cup-config.ts (pure, unit-tested); this layer
  * only handles the sheet I/O and caching.
  */
-async function originalReadCupConfig(): Promise<CupConfig> {
+async function originalReadCupConfigRows(): Promise<CupConfigRow[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const range: SheetRange = { spreadsheetId, range: `'${CUP_CONFIG_SHEET_NAME}'!A:B` };
@@ -180,22 +173,22 @@ async function originalReadCupConfig(): Promise<CupConfig> {
             .filter((row) => row.length >= 2)
             .map((row) => ({ key: String(row[0]), value: String(row[1]) }));
 
-        return parseCupConfig(configRows);
+        return configRows;
     } catch (error) {
         throw createAppError('CUP_CONFIG_READ_ERROR', 'Failed to read cup config from sheet', error);
     }
 }
 
-export async function readCupConfig(): Promise<CupConfig> {
-    return await dataCache.get(CACHE_KEYS.SHEETS.CUP_CONFIG, () => originalReadCupConfig(), {
+export async function readCupConfigRows(): Promise<CupConfigRow[]> {
+    return await dataCache.get(CACHE_KEYS.SHEETS.CUP_CONFIG, () => originalReadCupConfigRows(), {
         ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.CUP_CONFIG),
     });
 }
 
-export async function writeCupConfig(config: CupConfig): Promise<void> {
+export async function writeCupConfigRows(configRows: CupConfigRow[]): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
-        const rows = [['Key', 'Value'], ...serializeCupConfig(config).map((r) => [r.key, r.value])];
+        const rows = [['Key', 'Value'], ...configRows.map((r) => [r.key, r.value])];
         // Overwrite (not append) so the config is a single authoritative block.
         const range: SheetRange = { spreadsheetId, range: `'${CUP_CONFIG_SHEET_NAME}'!A:B` };
         await writeSheetRange(range, rows);
@@ -218,7 +211,7 @@ function toOptionalNumber(value: unknown): number | undefined {
     return Number.isNaN(parsed) ? undefined : parsed;
 }
 
-async function originalReadCupBracket(): Promise<CupMatchup[]> {
+async function originalReadCupBracketRows(): Promise<CupBracketRow[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:G` };
@@ -228,7 +221,7 @@ async function originalReadCupBracket(): Promise<CupMatchup[]> {
             .slice(1)
             .filter((row) => row.length > 0 && String(row[0]).trim() !== '')
             .map((row) => ({
-                stage: String(row[0]).trim() as CupStageId,
+                stage: String(row[0]).trim(),
                 tie: Number(row[1]) || 0,
                 home: toManagerId(row[2]),
                 away: toManagerId(row[3]),
@@ -241,13 +234,13 @@ async function originalReadCupBracket(): Promise<CupMatchup[]> {
     }
 }
 
-export async function readCupBracket(): Promise<CupMatchup[]> {
-    return await dataCache.get(CACHE_KEYS.SHEETS.CUP_BRACKET, () => originalReadCupBracket(), {
+export async function readCupBracketRows(): Promise<CupBracketRow[]> {
+    return await dataCache.get(CACHE_KEYS.SHEETS.CUP_BRACKET, () => originalReadCupBracketRows(), {
         ttlMs: getCacheTTL(CACHE_KEYS.SHEETS.CUP_BRACKET),
     });
 }
 
-export async function writeCupBracket(matchups: CupMatchup[]): Promise<void> {
+export async function writeCupBracketRows(matchups: CupBracketRow[]): Promise<void> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const rows = [

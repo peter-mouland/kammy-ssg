@@ -1,11 +1,11 @@
 // app/_shared/services/division-teams-points-population.service.ts
 
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
-import { readTransferDataForDivision } from '../../../_shared/lib/sheets/transfers';
 import type { DivisionId, PositionSlotKey } from '../../../_shared/types/league-types';
 import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
 import type { DivisionTeamsDocument, TeamGameweekData, TeamPositionSlot } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
+import { readTransferDataForDivision } from '../../../transfers/lib/transfer-rows';
 import { generateGameweekData } from '../../lib/generators';
 import type { Points } from '../../types/scoring-types';
 import { getDivisionTeamsDocument } from './division-teams.service';

@@ -95,12 +95,6 @@ const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([
     '_shared/lib/fpl/api-cache.ts -> scoring/types/scoring-types',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/lib',
     '_shared/lib/fpl/fpl-firestore.ts -> scoring/types/scoring-types',
-    '_shared/lib/sheets/cup.ts -> cup/lib/cup-config',
-    '_shared/lib/sheets/cup.ts -> cup/types/cup-types',
-    '_shared/lib/sheets/player-gw-points.ts -> scoring/lib',
-    '_shared/lib/sheets/player-gw-points.ts -> scoring/types/scoring-types',
-    '_shared/lib/sheets/transfers.ts -> scoring/types/scoring-types',
-    '_shared/lib/sheets/transfers.ts -> transfers/types/transfer-types',
 ]);
 
 describe('_shared must not depend on a domain', () => {
@@ -247,7 +241,7 @@ describe('a domain may only use another domain’s public API', () => {
 // understand, test or move scoring without also holding players, teams and transfers in
 // your head. Most of the current ones dissolve once Rule 1 and Rule 2 are satisfied,
 // so this is measured as a count that may only go down (P2.6).
-const KNOWN_CYCLIC_PAIRS = 12;
+const KNOWN_CYCLIC_PAIRS = 10;
 
 describe('the domain dependency graph', () => {
     const graph = new Map<string, Set<string>>();

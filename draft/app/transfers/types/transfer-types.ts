@@ -1,3 +1,7 @@
+import type { ProcessedTransferSheetData, TransferSheetData } from '../../_shared/types/sheets-types';
+
+export type { ProcessedTransferSheetData, TransferSheetData };
+
 /* Location: app/transfers/types/transfer-types.ts */
 /** biome-ignore-all lint/style/useNamingConvention: <init> */
 
@@ -9,32 +13,6 @@ import type { TeamRoster } from '../../teams/types/team-types';
 /**
  * Raw transfer data from Google Sheets
  */
-export interface TransferSheetData {
-    Status: 'Y' | 'N' | null | string; // Y = approved, N = rejected, null/empty = pending
-    Timestamp: Date;
-    Manager: string; // userId
-    'Transfer Out': string; // player.web_name
-    'Code Out': number; // player.code
-    'Transfer In': string; // player.web_name
-    'Code In': number; // player.code
-    'Transfer Type': 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade' | 'new player';
-    Comment: string;
-    'Loan To': string; // userId of manager receiving the loan (NEW)
-    'Loan From': string; // userId of manager lending the player (NEW)
-}
-export interface ProcessedTransferSheetData {
-    status: 'Y' | 'N' | null | string; // Y = approved, N = rejected, null/empty = pending
-    timestamp: Date;
-    manager: string; // userId
-    transferOut: string; // player.web_name
-    codeOut: number; // player.code
-    transferIn: string; // player.web_name
-    codeIn: number; // player.code
-    transferType: 'Transfer' | 'swap' | 'loan start' | 'loan end' | 'trade' | 'new player';
-    comment: string;
-    loanTo: string; // userId of manager receiving the loan (NEW)
-    loanFrom: string; // userId of manager lending the player (NEW)
-}
 
 /**
  * Processed transfer data for application logic

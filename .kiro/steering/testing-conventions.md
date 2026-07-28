@@ -179,3 +179,26 @@ afterAll(() => server.close());
 ```
 
 `onUnhandledRequest: 'error'` is not optional. Without it a request you forgot to handle escapes to the real internet, and the test either hits live FPL or fails slowly and confusingly. With it, an unhandled request fails immediately and tells you which URL it was.
+
+### The Google Sheets harness
+
+Sheets tests use `_shared/test/google-sheets-msw.ts` rather than hand-rolling handlers. Two things about it are not guessable:
+
+1. **Auth signs locally.** `google.auth.JWT` signs a JWT with the service account's private key *before* exchanging it for a token, so a test needs a real (throwaway) RSA key — `fakeServiceAccount()` generates one per run. Nothing verifies the signature; the client just will not reach the network without one.
+2. **Import the module under test dynamically, inside `beforeAll`.** `sheets/utils/common.ts` builds its client on first use and memoises it at module scope, so a static import at the top of a test file can bind before the fake credentials exist.
+
+```ts
+let sheets: typeof import('./cup-sheets');
+
+beforeAll(async () => {
+    useFakeSheetsCredentials();
+    server.listen({ onUnhandledRequest: 'error' });
+    sheets = await import('./cup-sheets');
+});
+afterEach(() => {
+    server.resetHandlers();
+    dataCache.clear(); // every sheet read is cached, or test 2 sees test 1's rows
+});
+```
+
+**Where the network is not the boundary.** `fplApiCache` reads from Firestore over gRPC, which MSW cannot intercept. Seed the app's own in-memory cache instead — `dataCache.get(key, async () => fixture)` populates it through the real API, so the fetcher never runs and everything downstream still executes. Same idea one layer up, and still not a module mock.
