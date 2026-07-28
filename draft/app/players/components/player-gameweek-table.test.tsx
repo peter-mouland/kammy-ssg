@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 /* Location: app/players/components/player-gameweek-table.test.tsx */
 
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
@@ -239,6 +239,41 @@ describe('PlayerGameweekTable stat tooltips', () => {
         renderTable('mid', [makeGameweek({ bonus: 1 })]);
 
         expect(tooltipOf('Bonus')).toBe('1 points');
+    });
+});
+
+describe('PlayerGameweekTable defensive contribution cell', () => {
+    // The cell and the tooltip are two halves of one claim: "you did N actions, that was
+    // worth P points". They must be computed the same way, or the column contradicts
+    // itself. 6fca9d7 moved the points onto the raw components and left the cell showing
+    // FPL's aggregate, which is keyed to FPL's position rather than ours.
+    it('shows the actions the tooltip’s points were calculated from', () => {
+        renderTable('mid', [makeGameweek({ clearancesBlocksInterceptions: 7, tackles: 4, recoveries: 1 })]);
+
+        expect(cell('DC').textContent).toBe('12'); // 7 + 4 + 1, the number compared to the threshold
+        expect(tooltipOf('DC')).toBe('2 points');
+    });
+
+    // The same match read against two positions: a defender's metric excludes
+    // recoveries, so the cell itself must differ, not just the points.
+    it('counts recoveries for a midfielder but not a defender', () => {
+        const MATCH = { clearancesBlocksInterceptions: 6, tackles: 4, recoveries: 5 };
+
+        renderTable('mid', [makeGameweek(MATCH)]);
+        expect(cell('DC').textContent).toBe('15'); // 6 + 4 + 5
+        cleanup();
+
+        renderTable('cb', [makeGameweek(MATCH)]);
+        expect(cell('DC').textContent).toBe('10'); // 6 + 4, recoveries excluded
+    });
+
+    // FPL's aggregate is still carried on the stat object. Nothing may read it: here it
+    // is set to a value that contradicts the components, and the cell must ignore it.
+    it('ignores FPL’s aggregate when it disagrees with the raw components', () => {
+        renderTable('cb', [makeGameweek({ defensiveContribution: 99, clearancesBlocksInterceptions: 6, tackles: 4 })]);
+
+        expect(cell('DC').textContent).toBe('10'); // 6 + 4, not 99
+        expect(tooltipOf('DC')).toBe('1 points');
     });
 });
 
