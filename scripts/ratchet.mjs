@@ -35,9 +35,24 @@ const run = (command) => {
 
 const CHECKS = {
     types: {
-        label: 'TypeScript errors',
+        label: 'TypeScript errors (draft)',
         fix: 'yarn type-check',
         count: () => run('yarn workspace draft typecheck').split('\n').filter((l) => /error TS\d+/.test(l)).length,
+    },
+    // The `functions` workspace was checked by NOTHING except `yarn build`, so a change
+    // could be green on tests, types and lint and still break the deploy. It did: the
+    // dependabot batch in 16b4953 brought in tough-cookie 6, which stopped @types/request
+    // compiling, and only the build noticed.
+    //
+    // Unlike the others this baseline is 0 and must stay there. `functions` is four small
+    // files -- there is no backlog to burn down, so anything above zero is a regression.
+    functionsTypes: {
+        label: 'TypeScript errors (functions)',
+        fix: 'yarn workspace functions exec tsc --noEmit',
+        count: () =>
+            run('yarn workspace functions exec tsc --noEmit')
+                .split('\n')
+                .filter((l) => /error TS\d+/.test(l)).length,
     },
     css: {
         label: 'CSS convention violations',
