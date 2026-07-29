@@ -1,4 +1,6 @@
-import { execFileSync } from 'node:child_process';
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_INVALIDATION_RULES, CACHE_KEYS, getCacheTTL, getInvalidationKeys } from './cache-config';
 import { dataCache } from './data-cache.service';
@@ -167,57 +169,56 @@ describe('invalidatePattern', () => {
 });
 
 /**
- * Both structural checks below need the same scan of the app. It shells out to `grep -r`
- * over every source file, so it is by far the slowest thing in the suite -- it is done
- * ONCE and shared, rather than per test.
+ * Is a declared rule actually used anywhere?
  *
- * These have an explicit timeout because they are I/O bound, not compute bound: under a
- * loaded machine (the suite runs test files in parallel) the default 5s was marginal and
- * made the whole suite flaky.
+ * The compiler cannot answer this. `getInvalidationKeys` is generic over
+ * `keyof InvalidationRules`, so naming a rule that does not exist is already a type
+ * error — but a rule that exists and is never *called* is just an unused property of an
+ * exported object, which nothing flags. Four such rules were once declared here while
+ * the real invalidation happened via ad-hoc `dataCache.invalidate()` calls elsewhere,
+ * leaving the documented behaviour and the actual behaviour free to drift apart.
+ *
+ * Read in-process rather than shelling out to `grep`, matching `architecture.test.ts`.
+ * The subprocess version ran twice, took ~1.7s idle, and started timing out once the
+ * suite grew enough to load the machine.
  */
-let ruleCallSites: string[] | null = null;
+const appDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 
-const rulesCalledInApp = (): string[] => {
-    if (ruleCallSites === null) {
-        const source = execFileSync('grep', ['-rho', "getInvalidationKeys('[A-Z_]*'", 'app'], {
-            cwd: process.cwd(),
-            encoding: 'utf8',
-        });
-        ruleCallSites = Array.from(source.matchAll(/getInvalidationKeys\('([A-Z_]+)'/g), (m) => m[1]);
-    }
-    return ruleCallSites;
+const rulesCalledInApp = (): Set<string> => {
+    const files = readdirSync(appDir, { recursive: true, withFileTypes: true })
+        .filter((entry) => entry.isFile() && /\.tsx?$/.test(entry.name))
+        // A rule called only from a test is not called by the app.
+        .filter((entry) => !entry.name.includes('.test.'))
+        .map((entry) => join(entry.parentPath, entry.name));
+
+    const calls = files.flatMap((file) =>
+        Array.from(readFileSync(file, 'utf8').matchAll(/getInvalidationKeys\(\s*'([A-Z_]+)'/g), (m) => m[1]),
+    );
+
+    return new Set(calls);
 };
 
-const STRUCTURAL_SCAN_TIMEOUT_MS = 30_000;
-
 describe('the invalidation rules stay honest', () => {
-    // Four rules were declared here and never called, while the real invalidation
-    // happened via ad-hoc dataCache.invalidate() calls elsewhere. That left the
-    // documented behaviour and the actual behaviour free to drift apart silently.
-    // A rule with no caller is a lie about what the app does, so fail on it.
-    it(
-        'has a caller in the app for every declared rule',
-        () => {
-            const called = new Set(rulesCalledInApp());
+    it('has a caller in the app for every declared rule', () => {
+        const called = rulesCalledInApp();
 
-            const uncalled = Object.keys(CACHE_INVALIDATION_RULES).filter((rule) => !called.has(rule));
+        const uncalled = Object.keys(CACHE_INVALIDATION_RULES).filter((rule) => !called.has(rule));
 
-            expect(uncalled).toEqual([]);
-        },
-        STRUCTURAL_SCAN_TIMEOUT_MS,
-    );
+        expect(
+            uncalled,
+            `\nThese invalidation rules are declared but never called:\n${uncalled
+                .map((r) => `  ${r}`)
+                .join('\n')}\n\n` +
+                'Either call the rule where that action happens, or delete it. A rule with no\n' +
+                'caller is a lie about what the app invalidates.\n',
+        ).toEqual([]);
+    });
 
-    // The mirror of the above: a call site naming a rule that does not exist returns
-    // an empty key list, so nothing is invalidated and nothing complains.
-    it(
-        'declares every rule the app asks for',
-        () => {
-            const undeclared = rulesCalledInApp().filter((rule) => !(rule in CACHE_INVALIDATION_RULES));
-
-            expect(undeclared).toEqual([]);
-        },
-        STRUCTURAL_SCAN_TIMEOUT_MS,
-    );
+    // NOTE: there used to be a mirror test asserting that every rule the app *asks* for
+    // is declared. It is gone because the compiler owns that now -- getInvalidationKeys
+    // is generic over `keyof InvalidationRules`, so an undeclared rule fails to compile
+    // with a message listing the valid ones. Type errors are ratcheted and block CI, so
+    // the test was checking something that can no longer reach main.
 
     it('resolves every rule to at least one key', () => {
         const empty = [
