@@ -28,7 +28,7 @@ git log --oneline -15
 
 | | Why |
 |---|---|
-| **P2.7 — public API for `scoring`** | `draft` is done and is the worked example to copy. `division-teams.service` has 6 importers across 5 domains — the worst offender, and it stands between P2.3 and its remaining readers. |
+| **P2.7 — public API for `transfers`, then the rest** | `draft` and `scoring` are done and are the worked examples. `MAY_REACH_INSIDE` is down to 21; the biggest remaining clusters are `players/components/player` (7 importers) and `teams/components/gameweek-selector` (5), which are P2.5 rather than P2.7. |
 
 *Recently done: P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
 
@@ -404,8 +404,8 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   | Domain | First job | |
   |---|---|---|
   | `draft` | expose draft state + sync so `firebase-draft-sync.ts` can move into the domain and `admin` can still call it | ✅ **done** |
-  | `scoring` | `division-teams.service` has 6 importers across 5 domains — the single worst offender | next |
-  | `transfers` | `transfers-data.service`, used by admin | |
+  | `scoring` | `division-teams.service` has 6 importers across 5 domains — the single worst offender | ✅ **done** |
+  | `transfers` | `transfers-data.service`, used by admin | next |
   | rest | as their allowlist entries come up | |
 
   ### ✅ `draft` — done
@@ -421,6 +421,24 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   **1. The rule did not recognise its own target.** A bare `import … from '../../draft'` resolves to `draft/index.ts`, but the parser recorded a segment-less path and reported it as reaching inside. Nobody had noticed, because no domain had an index yet. Fixed by normalising bare and extensionless index specifiers.
 
   **2. One barrel per domain would have been wrong.** See the decisions log — `index.ts` is client-safe, `index.server.ts` is for anything touching Firebase, Sheets or `process.env`. Without the split, `draft/index.ts` would have dragged the Firebase admin SDK into every component importing it, failing at runtime in the browser rather than at build time.
+
+  ### ✅ `scoring` — done
+
+  The worst Rule 2 offender in the codebase. **13 allowlist entries cleared in one change** — `MAY_REACH_INSIDE` 34 → 21.
+
+  | Reached into | By |
+  |---|---|
+  | `scoring/server/services/division-teams.service` | `admin`, `cup`, `leagues`, `teams`, `transfers` — 8 imports |
+  | `scoring/server/services/division-teams-points-population.service` | `admin` |
+  | `scoring/server/services/gameweek-points.service` | `admin`, and `root.tsx` |
+  | `scoring/components/points-breakdown-tooltip` | `players`, `transfers` |
+  | `scoring/components/scoring-info` | `players` |
+
+  Same two-entry-point split as `draft`: `index.ts` is client-safe (types, the scoring engine, `POSITION_RULES`); `index.server.ts` holds the division-teams documents and `GameweekPointsService`, which reach `firebase.admin` and its module-scope `process.env` read.
+
+  **The scoring components are exposed rather than promoted to `_shared`.** Explaining a points figure is scoring's job — `PointsBreakdownTooltip` and `ScoringInfo` are scoring UI other pages embed, not generic widgets. That keeps them out of P2.5, which is for genuinely shared components like `gameweek-selector`.
+
+  **Two of the imports were dynamic** (`await import(...)` inside a function body) and invisible to a grep of the import block. The architecture test caught both — it walks dynamic imports too, which is exactly why it exists.
 
   *Acceptance (whole item):* each domain has an `index.ts`; `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
   *Note:* `TRANSITIONAL_PUBLIC_SEGMENTS` is global, so it cannot come out until every domain has an index. `draft`'s own `types/` and `lib/` are still imported directly by `admin`, `players`, `transfers` and `scoring` — legal for now, and a tidy-up for when the flag goes.

@@ -3,7 +3,7 @@
 import type { TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { PlayerSummary } from '../../players/components/player';
-import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
+import { PointsBreakdownTooltip } from '../../scoring';
 import { isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 

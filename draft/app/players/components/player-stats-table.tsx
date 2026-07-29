@@ -7,7 +7,7 @@ import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import { getPlayerPosition } from '../../draft/lib/draft-rules';
-import { PointsBreakdownTooltip } from '../../scoring/components/points-breakdown-tooltip';
+import { PointsBreakdownTooltip } from '../../scoring';
 import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
 import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { sortPositions } from '../../teams/lib/sorting-utils';

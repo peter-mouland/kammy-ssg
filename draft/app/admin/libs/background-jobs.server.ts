@@ -2,13 +2,11 @@
 
 import type { DivisionSheetData } from '../../_shared/types/league-types';
 import {
+    calculateSingleTeamPoints,
     getDivisionTeamsDocument,
     updateDivisionTeamsDocument,
-} from '../../scoring/server/services/division-teams.service';
-import {
-    calculateSingleTeamPoints,
     upsertDivisionTeamsDocument,
-} from '../../scoring/server/services/division-teams-points-population.service';
+} from '../../scoring/index.server';
 import type { DivisionTeamsDocument } from '../../teams/types/team-types';
 import { progressStore } from './progress-store.server';
 

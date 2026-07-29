@@ -120,7 +120,7 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
  */
 async function getDivisionRosters(divisionId: DivisionId, gameweek: number): Promise<RosterByManagerId> {
     try {
-        const { getDivisionTeamsDocument } = await import('../../../scoring/server/services/division-teams.service');
+        const { getDivisionTeamsDocument } = await import('../../../scoring/index.server');
 
         const divisionDocument = await getDivisionTeamsDocument(divisionId, gameweek);
 

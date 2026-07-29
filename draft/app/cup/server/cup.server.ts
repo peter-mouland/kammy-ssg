@@ -175,7 +175,7 @@ export async function getCupSubmitData(input: {
     if (!selectedUser || !round) return empty;
 
     // Load the manager's roster for this gameweek from their own division.
-    const { getTeamsForGameweek } = await import('../../scoring/server/services/division-teams.service');
+    const { getTeamsForGameweek } = await import('../../scoring/index.server');
     const team = await getTeamsForGameweek(selectedUser.divisionId, selectedUser.userId, gameweek);
     const squad = team ? getCupSquad(team.roster) : [];
 
