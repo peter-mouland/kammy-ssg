@@ -11,7 +11,7 @@ import type {
 } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamPositionSlot, TeamRoster } from '../../_shared/types/squad-types';
-import type { TeamOfTheWeekData } from '../../leagues/types/league-standings-types';
+import type { TeamOfTheWeekData } from '../../leagues';
 import type { AllTeamsData } from './team-view-types';
 
 /**

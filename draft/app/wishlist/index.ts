@@ -13,3 +13,6 @@
 // `players` embeds both in its stats table — deciding what a wishlist is remains here.
 export { WishlistButton } from './components/wishlist-button';
 export { WishlistTags } from './components/wishlist-tags';
+// --- The wishlists themselves ------------------------------------------------
+// The hook and its provider. `draft` reads wishlists to mark players in the draft room.
+export { useWishlists, WishlistProvider } from './lib/use-wishlists';

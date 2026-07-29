@@ -92,7 +92,7 @@ So: if it touches Firebase, Google Sheets or `process.env`, it goes in `index.se
 
 This exists because **`admin` orchestrates other domains** — that is its job — and previously had no legal way to do it, so it reached into their server code. An index lets a domain say *"this operation is for others to call"* without exposing everything behind it.
 
-**Transitional:** importing another domain's `types/` and `lib/` is still accepted while indexes are introduced (see P2.7 in the backlog). Prefer the index for anything new.
+**The index is the only way in.** Importing another domain's `types/` or `lib/` directly used to be accepted as transitional; it is not any more (P2.7). Every domain has an `index.ts` and/or `index.server.ts`, and reaching past it fails `architecture.test.ts`. If you need something that is not exported, add it to the owning domain's index — that is the file's purpose.
 
 This rule is enforced by `draft/app/architecture.test.ts`, not by good intentions. If you need to break it, the failure message tells you the three ways to fix it properly.
 

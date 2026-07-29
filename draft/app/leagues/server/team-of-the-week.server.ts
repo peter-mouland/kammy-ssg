@@ -1,8 +1,8 @@
 /* Location: app/leagues/server/team-of-the-week.server.ts */
 
 import type { CustomPosition, UserTeamsSheetData } from '../../_shared/types/league-types';
-import { calculateGameweekPoints, convertToPlayerGameweekStats } from '../../scoring/lib';
-import type { DivisionTeamsDocument } from '../../teams/types/team-types';
+import { calculateGameweekPoints, convertToPlayerGameweekStats } from '../../scoring';
+import type { DivisionTeamsDocument } from '../../teams';
 import type { TeamOfTheWeekData, TeamOfTheWeekPlayer } from '../types/league-standings-types';
 
 const POSITION_COUNTS: Record<CustomPosition, number> = {

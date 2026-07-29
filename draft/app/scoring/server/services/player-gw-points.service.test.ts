@@ -4,11 +4,8 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
-import {
-    googleAuthHandler,
-    sheetValuesHandler,
-    useFakeSheetsCredentials,
-} from '../../../_shared/test/google-sheets-msw';
+import { googleAuthHandler, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
+import * as service from './player-gw-points.service';
 
 /**
  * Building the `player-gw-points` table.
@@ -23,8 +20,6 @@ import {
  * idea one layer up: a real seam the app genuinely has, with all the code under test still
  * running for real. Nothing is module-mocked.
  */
-
-let service: typeof import('./player-gw-points.service');
 
 const PLAYERS_TAB = [
     ['code', 'position', 'team', 'webName', 'isHidden', 'new'],
@@ -76,10 +71,8 @@ async function seedFplCache(statsById: Record<number, { history: ReturnType<type
     }
 }
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
+beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
-    service = await import('./player-gw-points.service');
 });
 beforeEach(() => dataCache.clear());
 afterEach(() => server.resetHandlers());

@@ -10,7 +10,7 @@ import type {
 } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamPositionSlot, TeamRoster } from '../../_shared/types/squad-types';
-import type { RosterByManagerId } from '../../teams/types/team-types';
+import type { RosterByManagerId } from '../../teams';
 import type { TransferRecommendation, TransferRuleContext, TransferValidationResult } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
 

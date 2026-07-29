@@ -11,6 +11,10 @@
  * Rule of thumb: if it touches Firestore, Sheets or `process.env`, it goes here.
  */
 
+// --- Reading and interpreting the Transfers sheet -----------------------------
+// Normalises raw sheet rows into ProcessedTransfers (P2.3). It reaches the Sheets
+// readers, which is why it is here and not in index.ts despite living in lib/.
+export { readTransferDataForDivision } from './lib/transfer-rows';
 // --- Transfer data for a division --------------------------------------------
 // The division's transfers, validated. `admin` needs this to build its transfer approval
 // screen and its system-status report, which is what admin is for — it had no legal way

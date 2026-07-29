@@ -4,8 +4,8 @@ import { CACHE_KEYS } from '../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../_shared/lib/cache/data-cache.service';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData } from '../../_shared/types/league-types';
+import type { TransferAdminOverviewData, TransferRecommendation } from '../../transfers';
 import { getTransfersDataForDivision } from '../../transfers/index.server';
-import type { TransferAdminOverviewData, TransferRecommendation } from '../../transfers/types/transfer-rule-types';
 
 interface TransfersActionResult {
     success: boolean;

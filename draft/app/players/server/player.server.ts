@@ -3,7 +3,7 @@
 import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
-import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
+import type { GameweekStatWithPoints } from '../../scoring';
 import type { DataSource, PlayerDetailData } from '../types/player-types';
 
 export async function getPlayerDetailData(

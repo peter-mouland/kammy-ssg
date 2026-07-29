@@ -1,7 +1,7 @@
 /* Location: app/players/lib/player-stats-tsv.ts */
 
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
-import { isStatRelevant } from '../../scoring/lib';
+import { isStatRelevant } from '../../scoring';
 import type { PlayerStatsData } from '../types/player-types';
 
 export const PLAYER_STATS_TSV_HEADERS = [

@@ -2,7 +2,7 @@
 
 import { useFetcher } from 'react-router';
 import type { DivisionSheetData, UserTeamsSheetData } from '../../../_shared/types/league-types';
-import type { DraftAction, DraftOrderData, DraftStateData, DraftStatusData } from '../../../draft/types/draft-types';
+import type { DraftAction, DraftOrderData, DraftStateData, DraftStatusData } from '../../../draft';
 import styles from './draft-card.module.css';
 
 interface DraftCardProps {

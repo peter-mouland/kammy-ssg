@@ -9,7 +9,7 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { PlayerGameweekStatsData } from '../../_shared/types/performance-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
-import { isStatRelevant } from '../../scoring/lib';
+import { isStatRelevant } from '../../scoring';
 import { compareByManagerThenPosition } from '../lib/sorting-utils';
 import type { AllTeamsData, TeamFilters, TeamRowData } from '../types/team-view-types';
 import { AllTeamsFilters } from './all-teams-filters';

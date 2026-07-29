@@ -205,21 +205,21 @@ A loader test needs the Sheets harness below, plus any FPL values seeded into `d
 
 Sheets tests use `_shared/test/google-sheets-msw.ts` rather than hand-rolling handlers. Two things about it are not guessable:
 
-1. **Auth signs locally.** `google.auth.JWT` signs a JWT with the service account's private key *before* exchanging it for a token, so a test needs a real (throwaway) RSA key — `fakeServiceAccount()` generates one per run. Nothing verifies the signature; the client just will not reach the network without one.
-2. **Import the module under test dynamically, inside `beforeAll`.** `sheets/utils/common.ts` builds its client on first use and memoises it at module scope, so a static import at the top of a test file can bind before the fake credentials exist.
+1. **Auth signs locally.** `google.auth.JWT` signs a JWT with the service account's private key *before* exchanging it for a token, so a test needs a real (throwaway) RSA key — `fakeServiceAccount()` generates one per worker. Nothing verifies the signature; the client just will not reach the network without one, and it is 1024-bit for that reason.
+2. **Credentials are already set for you.** `vitest.setup.ts` calls `useFakeSheetsCredentials()` before any test file's imports run, so **import the module under test normally**. A test should not call it itself.
 
 ```ts
-let sheets: typeof import('./cup-sheets');
+import * as sheets from './cup-sheets';
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
-    server.listen({ onUnhandledRequest: 'error' });
-    sheets = await import('./cup-sheets');
-});
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
     server.resetHandlers();
     dataCache.clear(); // every sheet read is cached, or test 2 sees test 1's rows
 });
 ```
+
+**This used to be a dynamic `await import()` inside `beforeAll`, and that is worth knowing about**, because the same trap is available elsewhere. `sheets/utils/common.ts` reads `GOOGLE_SHEETS_ID` at module scope and memoises its client, so tests imported it late to guarantee the fake credentials existed first. That put the `googleapis` import inside a hook — and `import { google } from 'googleapis'` costs **1.7s**, because it loads Google's entire API surface to talk to one spreadsheet. Under parallel workers that blew vitest's 10s `hookTimeout` often enough to fail about **one `yarn test` run in three**, which gated the pre-commit hook and reddened CI for reasons unrelated to the change under test.
+
+The lesson generalises: **keep expensive module loading out of `beforeAll`.** A hook has a timeout; module collection does not. If a hook needs environment set up first, set it in `vitest.setup.ts` and import normally.
 
 **Where the network is not the boundary.** `fplApiCache` reads from Firestore over gRPC, which MSW cannot intercept. Seed the app's own in-memory cache instead — `dataCache.get(key, async () => fixture)` populates it through the real API, so the fetcher never runs and everything downstream still executes. Same idea one layer up, and still not a module mock.

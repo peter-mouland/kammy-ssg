@@ -4,7 +4,7 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { CustomPosition } from '../../_shared/types/league-types';
-import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
+import type { GameweekStatWithPoints } from '../../scoring';
 import { PlayerGameweekTable } from './player-gameweek-table';
 
 /**

@@ -53,6 +53,8 @@ export {
     calculateSeasonPoints,
     getFullBreakdown,
 } from './lib/calculations';
+// Raw FPL gameweek data -> our stat shape. `players` needs this to render a stat line.
+export { convertToGameweekStats } from './lib/data-conversion';
 export { POSITION_RULES } from './lib/rules';
 export type { GameweekStatWithPoints, SeasonTotals } from './types/scoring-types';
 

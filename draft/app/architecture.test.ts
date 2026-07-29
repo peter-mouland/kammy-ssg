@@ -155,9 +155,27 @@ describe('_shared must not depend on a domain', () => {
 // and re-exporting those from index.ts would make the whole public API unsafe to import
 // from a component. See the decisions log in .kiro/backlog.md (2026-07-28).
 const PUBLIC_API_ENTRYPOINTS = ['index.ts', 'index.tsx', 'index.server.ts'];
-const TRANSITIONAL_PUBLIC_SEGMENTS = ['types', 'lib'];
+// EMPTY as of P2.7. `types/` and `lib/` used to be accepted as transitional entry points,
+// because flipping to index-only in one go would have turned ~64 working imports into
+// violations at once. Those 64 are now routed through the indexes, so the index is the
+// ONLY way into a domain.
+const TRANSITIONAL_PUBLIC_SEGMENTS: string[] = [];
 
 const PUBLIC_SEGMENTS = [...PUBLIC_API_ENTRYPOINTS, ...TRANSITIONAL_PUBLIC_SEGMENTS];
+
+// One narrow exemption: a test may use another domain's TEST FIXTURES.
+//
+// `cup/lib/cup-squad.test.ts` builds a squad from `makeStandardRoster()`, which lives in
+// `transfers/lib/validators/fixtures.ts`. That function returns a `TeamRoster` -- a kernel
+// type -- and is not transfers-specific at all; it lives there only because transfers'
+// validators needed a roster first. The alternatives were both worse: export a test
+// fixture from the production public API, or duplicate the 13-slot roster per domain.
+//
+// This exemption is deliberately about fixtures, not tests in general -- a test still may
+// not reach into another domain's `server/` or `components/`. The fixture's misplacement
+// is P4.3's to fix (it also renames the file to `test-fixtures.ts`); when it moves
+// somewhere shared, delete this.
+const isTestFixtureImport = (i: Import) => /\.test\.tsx?$/.test(i.from) && i.to.includes('fixtures');
 
 // EMPTY as of P2.7. Every domain now has an index.ts and/or index.server.ts, and that
 // is the only way in. If you are about to add an entry here, export what you need from
@@ -166,7 +184,11 @@ const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([]);
 
 describe('a domain may only use another domain’s public API', () => {
     const reachesInside = crossDomainImports.filter(
-        (i) => i.fromDomain !== SHARED && i.toDomain !== SHARED && !PUBLIC_SEGMENTS.includes(i.toSegment),
+        (i) =>
+            i.fromDomain !== SHARED &&
+            i.toDomain !== SHARED &&
+            !PUBLIC_SEGMENTS.includes(i.toSegment) &&
+            !isTestFixtureImport(i),
     );
 
     it('has no new import into another domain’s internals', () => {
@@ -178,7 +200,6 @@ describe('a domain may only use another domain’s public API', () => {
                 unexpected,
                 'A domain is reachable through its public API only:\n' +
                     `  ${PUBLIC_API_ENTRYPOINTS.join(' / ')}   (the target -- see P2.7)\n` +
-                    `  ${TRANSITIONAL_PUBLIC_SEGMENTS.map((s) => `${s}/`).join(', ')}   (transitional, being phased out)\n\n` +
                     'Everything else -- components/, server/, internal helpers -- is private.\n\n' +
                     'To fix, in order of preference:\n' +
                     "  1. Export what you need from the owning domain's index.ts, and import that.\n" +

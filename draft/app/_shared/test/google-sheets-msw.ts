@@ -9,10 +9,12 @@ import { HttpResponse, http, type RequestHandler } from 'msw';
  * its response parsing all execute. See "MSW is the standard for anything crossing the
  * network" in `.kiro/steering/testing-conventions.md`.
  *
- * IMPORTANT: import the module under test **dynamically, inside `beforeAll`**, after
- * calling `useFakeSheetsCredentials()`. `_shared/lib/sheets/utils/common.ts` builds its
- * client on first use and memoises it in a module-scope promise, so a static import at
- * the top of a test file can bind before the fake credentials exist.
+ * The credentials are set globally in `vitest.setup.ts`, which runs before a test file's
+ * imports, so a test can import the module under test **statically**. That was not always
+ * true: `_shared/lib/sheets/utils/common.ts` reads `GOOGLE_SHEETS_ID` at module scope and
+ * memoises its client, so tests used to import it dynamically inside `beforeAll` to be
+ * sure the fake credentials existed first. Doing the heavy `googleapis` import inside a
+ * hook is what made the suite flaky -- see the note on the key below.
  *
  * The awkward part is auth. `_shared/lib/sheets/utils/common.ts` uses `google.auth.JWT`,
  * which signs a JWT **locally** with the service account's private key before exchanging
@@ -20,10 +22,27 @@ import { HttpResponse, http, type RequestHandler } from 'msw';
  * verifies the signature, but the client will not get as far as the network without one.
  */
 
-/** A syntactically valid service account. The key is generated per run, never committed. */
+/**
+ * A syntactically valid service account, generated once per worker and never committed.
+ *
+ * **1024 bits is deliberate and is not a security decision.** Nothing verifies this
+ * signature — `google.auth.JWT` only needs a key it can sign *with* before MSW intercepts
+ * the token exchange. Measured: 1024 costs 23ms against 148ms for 2048. Do not copy this
+ * size into anything that is not a throwaway test key.
+ *
+ * Memoised because `vitest.setup.ts` now calls this for every test file, not just the six
+ * that touch Sheets.
+ */
+let cachedServiceAccount: string | null = null;
+
 export function fakeServiceAccount(): string {
+    cachedServiceAccount ??= buildFakeServiceAccount();
+    return cachedServiceAccount;
+}
+
+function buildFakeServiceAccount(): string {
     const { privateKey } = generateKeyPairSync('rsa', {
-        modulusLength: 2048,
+        modulusLength: 1024,
         privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
         publicKeyEncoding: { type: 'spki', format: 'pem' },
     });
@@ -39,10 +58,11 @@ export function fakeServiceAccount(): string {
 }
 
 /**
- * Point the sheets client at a fake project. Call inside `beforeAll`.
+ * Point the sheets client at a fake project.
  *
- * Note `common.ts` memoises the client in a module-scope promise, so within one test
- * file the first call wins — set this up before anything reads a sheet.
+ * `vitest.setup.ts` calls this for every test file, before the file's own imports run, so
+ * a test does not need to call it — and must not rely on calling it later, because
+ * `common.ts` reads `GOOGLE_SHEETS_ID` at module scope and memoises its client.
  */
 export function useFakeSheetsCredentials(): void {
     process.env.GOOGLE_SERVICE_ACCOUNT_KEY = fakeServiceAccount();

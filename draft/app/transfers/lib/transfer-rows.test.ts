@@ -4,8 +4,9 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { dataCache } from '../../_shared/lib/cache/data-cache.service';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import { googleAuthHandler, sheetValuesHandler, useFakeSheetsCredentials } from '../../_shared/test/google-sheets-msw';
+import { googleAuthHandler, sheetValuesHandler } from '../../_shared/test/google-sheets-msw';
 import type { PlayersByCode } from '../../_shared/types/player-types';
+import * as transferRows from './transfer-rows';
 
 /**
  * Turning `Transfers` sheet rows into the transfers this domain models.
@@ -17,7 +18,6 @@ import type { PlayersByCode } from '../../_shared/types/player-types';
  */
 
 // Loaded after the fake credentials are in place -- see google-sheets-msw.ts.
-let transferRows: typeof import('./transfer-rows');
 
 const TRANSFER_HEADERS = [
     'Status',
@@ -81,10 +81,8 @@ const withRows = (rows: (string | number)[][]) =>
 
 const server = setupServer(googleAuthHandler, withRows([transferRow()]));
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
+beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
-    transferRows = await import('./transfer-rows');
 });
 afterEach(() => {
     server.resetHandlers();

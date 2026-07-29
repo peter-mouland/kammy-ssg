@@ -2,7 +2,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
-import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../draft/types/draft-types';
+import type { DraftOrderData, DraftStateData, DraftStatusData } from '../../draft';
 
 // ==========================================
 // ADMIN DASHBOARD DATA TYPES

@@ -1,7 +1,7 @@
 /* Location: app/leagues/components/team-of-the-week.tsx */
 
 import { Link } from 'react-router';
-import type { TeamOfTheWeekData, TeamOfTheWeekPlayer } from '../../leagues/types/league-standings-types';
+import type { TeamOfTheWeekData, TeamOfTheWeekPlayer } from '../../leagues';
 import styles from './team-of-the-week.module.css';
 
 function PlayerCard({ player, teamShortName }: { player: TeamOfTheWeekPlayer; teamShortName: string }) {

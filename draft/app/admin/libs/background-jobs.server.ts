@@ -7,7 +7,7 @@ import {
     updateDivisionTeamsDocument,
     upsertDivisionTeamsDocument,
 } from '../../scoring/index.server';
-import type { DivisionTeamsDocument } from '../../teams/types/team-types';
+import type { DivisionTeamsDocument } from '../../teams';
 import { progressStore } from './progress-store.server';
 
 interface DivisionInfo {

@@ -2,7 +2,7 @@
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
 import type { DivisionId, ManagerId } from '../../../_shared/types/league-types';
-import type { DivisionTeamsDocument } from '../../../teams/types/team-types';
+import type { DivisionTeamsDocument } from '../../../teams';
 import { GameweekPointsService } from './gameweek-points.service';
 
 /**

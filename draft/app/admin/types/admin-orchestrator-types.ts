@@ -4,8 +4,8 @@ import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { DraftStateRow, PlayersSheetData } from '../../_shared/types/sheets-types';
-import type { DraftOrderData } from '../../draft/types/draft-types';
-import type { ProcessedTransferSheetData } from '../../transfers/types/transfer-types';
+import type { DraftOrderData } from '../../draft';
+import type { ProcessedTransferSheetData } from '../../transfers';
 
 // ================================
 // DRAFT SYNC COMPARISON TYPES
