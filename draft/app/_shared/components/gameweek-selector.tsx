@@ -1,10 +1,9 @@
-/* Location: app/teams/components/gameweek-selector.tsx */
+/* Location: app/_shared/components/gameweek-selector.tsx */
 
-// /teams/components/gameweek-selector.tsx
 import type React from 'react';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router';
-import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
+import type { GameWeekData } from '../lib/fpl/fpl-types';
 import styles from './gameweek-selector.module.css';
 
 interface GameweekSelectorProps {

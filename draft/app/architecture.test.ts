@@ -161,17 +161,14 @@ const PUBLIC_SEGMENTS = [...PUBLIC_API_ENTRYPOINTS, ...TRANSITIONAL_PUBLIC_SEGME
 
 const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
     'admin/components/sections/transfers-section.tsx -> players/components/player',
-    'admin/components/sections/transfers-section.tsx -> teams/components/gameweek-selector',
     'admin/components/sections/transfers-section.tsx -> transfers/components/loan-status-display',
     'admin/server/services/system-status.service.ts -> transfers/server/services/transfers-data.service',
     'admin/server/transfers-admin.server.tsx -> transfers/server/services/transfers-data.service',
     'draft/server/draft.server.ts -> admin/server/actions/team-commit-actions',
     'homepage/homepage.route.tsx -> leagues/server/league-standings.server',
     'homepage/home.page.tsx -> leagues/components/position-points-table',
-    'leagues/league-standings.tsx -> teams/components/gameweek-selector',
     'players/components/player-stats-table.tsx -> wishlist/components/wishlist-button',
     'players/components/player-stats-table.tsx -> wishlist/components/wishlist-tags',
-    'players/players.page.tsx -> teams/components/gameweek-selector',
     'teams/components/all-teams-table.tsx -> players/components/player',
     'teams/components/position-slot-card.tsx -> players/components/player',
     'teams/server/team.server.tsx -> leagues/server/team-of-the-week.server',
@@ -179,7 +176,6 @@ const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
     'transfers/components/loan-status-display.tsx -> players/components/player',
     'transfers/components/transfer-form.tsx -> players/components/player',
     'transfers/components/transfer-selector-stat-columns.tsx -> players/components/player',
-    'transfers/transfers.page.tsx -> teams/components/gameweek-selector',
     'wishlist/components/wishlist-details.tsx -> players/components/player',
 ]);
 

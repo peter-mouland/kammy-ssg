@@ -2,9 +2,9 @@
 
 // app/routes/players.tsx
 import { useLoaderData } from 'react-router';
+import { GameweekSelector } from '../_shared/components/gameweek-selector';
 import { PageHeader } from '../_shared/components/page-header';
 import { ScoringInfo } from '../scoring';
-import { GameweekSelector } from '../teams/components/gameweek-selector';
 import { PlayerStatsTable } from './components/player-stats-table';
 import type { PlayerStatsData } from './types/player-types';
 

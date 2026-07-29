@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useLoaderData, useSearchParams } from 'react-router';
+import { GameweekSelector } from '../_shared/components/gameweek-selector';
 import { PageHeader } from '../_shared/components/page-header';
 import { SelectUser } from '../_shared/components/select-user';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import type { ManagerId, PositionSlotKey } from '../_shared/types/league-types';
-import { GameweekSelector } from '../teams/components/gameweek-selector';
 import type { RosterPlayer } from '../teams/types/team-types';
 import { CurrentTransfers } from './components/current-transfers';
 import { LoanStatusDisplay } from './components/loan-status-display';
