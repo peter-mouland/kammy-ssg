@@ -3,7 +3,7 @@
 import { getUserSelection } from '../../_shared/features/user-selection/user-selection.utils';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
-import { getTeamsForGameweek } from '../../scoring/server/services/division-teams.service';
+import { getTeamsForGameweek } from '../../scoring/index.server';
 import { transformToTeamRows } from '../lib/all-teams-utils';
 import type { TeamViewData } from '../types/team-types';
 

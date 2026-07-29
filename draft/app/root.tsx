@@ -20,7 +20,7 @@ import { fplApiCache } from './_shared/lib/fpl/api-cache';
 import designTokens from './design-tokens.css?url';
 import globalStyles from './root.css?url';
 import { calculateScoringStatus, PendingGamesModal, ScoringStatusBadge } from './scoring/feature/scoring-status';
-import { GameweekPointsService } from './scoring/server/services/gameweek-points.service';
+import { GameweekPointsService } from './scoring/index.server';
 import { WishlistProvider } from './wishlist/lib/use-wishlists';
 
 export const meta: MetaFunction = () => {

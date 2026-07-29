@@ -7,7 +7,7 @@ import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import type { DraftStatusByDivisionId, DraftStatusData } from '../../../draft/types/draft-types';
-import { divisionDocumentExists } from '../../../scoring/server/services/division-teams.service';
+import { divisionDocumentExists } from '../../../scoring/index.server';
 import type { FplCacheHealth, HealthLevel, SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
 
 /** Reported when the FPL cache status could not be read at all. */
@@ -328,7 +328,7 @@ async function getGameweekProcessingStatusReal() {
         console.log('🔄 Loading real gameweek processing status...');
 
         // Use the GameweekPointsService which tracks actual point generation
-        const { GameweekPointsService } = await import('../../../scoring/server/services/gameweek-points.service');
+        const { GameweekPointsService } = await import('../../../scoring/index.server');
         const pointsService = new GameweekPointsService(); // todo: pass in context
         const pointsStatus = await pointsService.getPointsStatus();
 

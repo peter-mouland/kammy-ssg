@@ -3,7 +3,7 @@
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
 import type { PositionSlotKey } from '../../../_shared/types/league-types';
-import { createDivisionTeamsDocument } from '../../../scoring/server/services/division-teams.service';
+import { createDivisionTeamsDocument } from '../../../scoring/index.server';
 import { convertLegacyPlayersToRoster } from '../../../teams/lib/roster-conversion-utils';
 import type { DivisionTeamsDocument, TeamPositionSlot } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
