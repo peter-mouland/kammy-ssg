@@ -110,7 +110,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
 | `_shared` → domain imports | 34, across 6 domains | **0** — P2.1 + P2.4 + P2.7 (draft) + P2.3 + P2.1b complete. The allowlist is empty. |
-| Domain → another domain's internals | 34 | **9** — P2.7 (draft, scoring) thirteen, P2.5 twelve |
+| Domain → another domain's internals | 34 | **0** — P2.7 twenty-two, P2.5 twelve. The allowlist is empty. |
 | Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
 | Domain dependency cycles | 15 | **6** — P2.4 two, P2.7 (draft) one, P2.3 two, P2.1b two, P2.5 two |
 
@@ -475,7 +475,38 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
   **Two of the imports were dynamic** (`await import(...)` inside a function body) and invisible to a grep of the import block. The architecture test caught both — it walks dynamic imports too, which is exactly why it exists.
 
-  *Acceptance (whole item):* each domain has an `index.ts`; `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
+  ### ✅ `transfers`, `leagues`, `wishlist`, `admin` — done
+
+  **`MAY_REACH_INSIDE` 9 → 0. The debt register is empty.** Four indexes, nine call sites.
+
+  | Domain | `index.ts` | `index.server.ts` |
+  |---|---|---|
+  | `transfers` | `LoanStatusDisplay` | `getTransfersDataForDivision` |
+  | `leagues` | `PositionPointsTable` | `getAllLeagueStandingsData`, `getTeamOfTheWeek` |
+  | `wishlist` | `WishlistButton`, `WishlistTags` | — none needed |
+  | `admin` | — none | `handleCommitTeamsToFirestore` |
+
+  **`wishlist` needs no server half** — it is backed by local storage, so nothing in it reaches Firebase, Sheets or `process.env`. **`admin` needs no client half**: its components are its own dashboard and nothing outside admin should render them.
+
+  **Four of the nine were dynamic imports** (`await import(...)` inside a function body) and invisible to a grep of the import block — `homepage.route.tsx`, `team.server.tsx`, `system-status.service.ts` and `draft.server.ts`. Same lesson as the `scoring` index: the architecture test walks dynamic imports, which is why it keeps finding these.
+
+  **`admin/index.server.ts` records an inversion rather than fixing one.** Admin orchestrates other domains — that is the premise of this whole item — but `draft/server/draft.server.ts` needs `handleCommitTeamsToFirestore`, which lives in admin's server actions. So this one dependency runs the *wrong way*: a feature domain reaching into admin. Exposing it makes the reach legal without making it right; the file says so in its own docblock. The underlying modelling problem is the `admin ↔ draft` cycle, already logged in *Found along the way* and now carried into P2.6.
+
+  ### Still open: `TRANSITIONAL_PUBLIC_SEGMENTS`
+
+  The other half of the acceptance. **64 cross-domain imports** still reach `types/` and `lib/` directly, which the rule accepts as transitional:
+
+  ```
+  14  scoring/lib      6  teams/lib        3  leagues/types    2  players/types
+  12  teams/types      6  transfers/types  2  wishlist/lib     2  transfers/lib
+   7  draft/types      5  draft/lib        4  scoring/types    1  players/lib
+  ```
+
+  The flag is **global**, so it cannot come out gradually — flipping it turns all 64 into violations at once. Each domain's index has to re-export the types its consumers use first.
+
+  Worth knowing: `teams/types` (12, the second biggest) overlaps **P2.2**, which splits `team-types.ts` into domain entities, view-models and component props. The index does not block P2.2 — it helps it, because P2.2 can then reorganise behind a stable public name. But whoever does the flip should expect to be making P2.2's decisions early for those 12.
+
+  *Acceptance (whole item):* each domain has an `index.ts`; ✅ `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
   *Note:* `TRANSITIONAL_PUBLIC_SEGMENTS` is global, so it cannot come out until every domain has an index. `draft`'s own `types/` and `lib/` are still imported directly by `admin`, `players`, `transfers` and `scoring` — legal for now, and a tidy-up for when the flag goes.
 
 - [x] **P2.5 — Promote genuinely shared components**

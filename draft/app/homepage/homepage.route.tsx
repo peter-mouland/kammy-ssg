@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
 export async function loader() {
     try {
         // Dynamic import to keep server code on server
-        const { getAllLeagueStandingsData } = await import('../leagues/server/league-standings.server');
+        const { getAllLeagueStandingsData } = await import('../leagues/index.server');
         const dashboardData = await getAllLeagueStandingsData();
         return data(dashboardData);
     } catch (error) {

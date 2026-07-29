@@ -10,7 +10,7 @@ import { Table, type TableColumn } from '../../../_shared/components/table';
 import type { FplTeam, GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import type { DivisionSheetData, ManagerId, PositionSlotKey } from '../../../_shared/types/league-types';
 import type { RosterPlayer } from '../../../_shared/types/squad-types';
-import { LoanStatusDisplay } from '../../../transfers/components/loan-status-display';
+import { LoanStatusDisplay } from '../../../transfers';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';
 import type { ProcessedTransfer } from '../../../transfers/types/transfer-types';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';

@@ -159,17 +159,10 @@ const TRANSITIONAL_PUBLIC_SEGMENTS = ['types', 'lib'];
 
 const PUBLIC_SEGMENTS = [...PUBLIC_API_ENTRYPOINTS, ...TRANSITIONAL_PUBLIC_SEGMENTS];
 
-const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
-    'admin/components/sections/transfers-section.tsx -> transfers/components/loan-status-display',
-    'admin/server/services/system-status.service.ts -> transfers/server/services/transfers-data.service',
-    'admin/server/transfers-admin.server.tsx -> transfers/server/services/transfers-data.service',
-    'draft/server/draft.server.ts -> admin/server/actions/team-commit-actions',
-    'homepage/homepage.route.tsx -> leagues/server/league-standings.server',
-    'homepage/home.page.tsx -> leagues/components/position-points-table',
-    'players/components/player-stats-table.tsx -> wishlist/components/wishlist-button',
-    'players/components/player-stats-table.tsx -> wishlist/components/wishlist-tags',
-    'teams/server/team.server.tsx -> leagues/server/team-of-the-week.server',
-]);
+// EMPTY as of P2.7. Every domain now has an index.ts and/or index.server.ts, and that
+// is the only way in. If you are about to add an entry here, export what you need from
+// the owning domain's index instead -- that is what the index is for.
+const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([]);
 
 describe('a domain may only use another domain’s public API', () => {
     const reachesInside = crossDomainImports.filter(

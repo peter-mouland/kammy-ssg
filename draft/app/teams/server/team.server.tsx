@@ -58,7 +58,7 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
         const allTeamsData = transformToTeamRows(currentTeams.divisionDoc, userTeams);
 
         // Get Team of the Week with manager ownership data
-        const { getTeamOfTheWeek } = await import('../../leagues/server/team-of-the-week.server');
+        const { getTeamOfTheWeek } = await import('../../leagues/index.server');
         const teamOfTheWeek = await getTeamOfTheWeek(targetGameweek, {
             divisionDoc: currentTeams.divisionDoc,
             userTeams,
