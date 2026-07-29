@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { Link } from 'react-router';
+import { PlayerSummary } from '../../_shared/components/player';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
@@ -13,7 +14,6 @@ import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
 import { sortPositions } from '../../teams/lib/sorting-utils';
 import { WishlistButton } from '../../wishlist/components/wishlist-button';
 import { WishlistTags } from '../../wishlist/components/wishlist-tags';
-import { PlayerSummary } from './player';
 import styles from './player-stats-table.module.css';
 import { PlayersFilters } from './players-filters';
 

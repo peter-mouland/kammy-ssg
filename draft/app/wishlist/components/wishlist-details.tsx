@@ -1,9 +1,9 @@
 // app/wishlist/components/wishlist-details.tsx
 
 import React from 'react';
+import { PlayerSummary } from '../../_shared/components/player';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
-import { PlayerSummary } from '../../players/components/player';
 import type { Wishlist } from '../types/wishlist-types';
 import styles from './wishlist-item.module.css';
 

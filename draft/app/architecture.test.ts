@@ -160,7 +160,6 @@ const TRANSITIONAL_PUBLIC_SEGMENTS = ['types', 'lib'];
 const PUBLIC_SEGMENTS = [...PUBLIC_API_ENTRYPOINTS, ...TRANSITIONAL_PUBLIC_SEGMENTS];
 
 const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
-    'admin/components/sections/transfers-section.tsx -> players/components/player',
     'admin/components/sections/transfers-section.tsx -> transfers/components/loan-status-display',
     'admin/server/services/system-status.service.ts -> transfers/server/services/transfers-data.service',
     'admin/server/transfers-admin.server.tsx -> transfers/server/services/transfers-data.service',
@@ -169,14 +168,7 @@ const MAY_REACH_INSIDE: ReadonlySet<string> = new Set([
     'homepage/home.page.tsx -> leagues/components/position-points-table',
     'players/components/player-stats-table.tsx -> wishlist/components/wishlist-button',
     'players/components/player-stats-table.tsx -> wishlist/components/wishlist-tags',
-    'teams/components/all-teams-table.tsx -> players/components/player',
-    'teams/components/position-slot-card.tsx -> players/components/player',
     'teams/server/team.server.tsx -> leagues/server/team-of-the-week.server',
-    'transfers/components/current-transfers.tsx -> players/components/player',
-    'transfers/components/loan-status-display.tsx -> players/components/player',
-    'transfers/components/transfer-form.tsx -> players/components/player',
-    'transfers/components/transfer-selector-stat-columns.tsx -> players/components/player',
-    'wishlist/components/wishlist-details.tsx -> players/components/player',
 ]);
 
 describe('a domain may only use another domain’s public API', () => {
@@ -224,7 +216,7 @@ describe('a domain may only use another domain’s public API', () => {
 // understand, test or move scoring without also holding players, teams and transfers in
 // your head. Most of the current ones dissolve once Rule 1 and Rule 2 are satisfied,
 // so this is measured as a count that may only go down (P2.6).
-const KNOWN_CYCLIC_PAIRS = 8;
+const KNOWN_CYCLIC_PAIRS = 6;
 
 describe('the domain dependency graph', () => {
     const graph = new Map<string, Set<string>>();

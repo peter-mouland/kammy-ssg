@@ -28,10 +28,10 @@ git log --oneline -15
 
 | | Why |
 |---|---|
-| **P2.5 — `players/components/player`** | Now unblocked: P2.1b put `EnhancedPlayerData` and `RosterPlayer` in the kernel, so the file can move to `_shared/components/` without dragging a domain behind it. 8 allowlist entries, and it dissolves the `players ↔ wishlist` cycle. |
-| **P2.7 — public API for `transfers`, then the rest** | `draft` and `scoring` are done and are the worked examples. Clears the remaining 9, but 1–2 per domain. |
+| **P2.7 — public API for `transfers`, then the rest** | `draft` and `scoring` are done and are the worked examples. This now clears **all 9** remaining `MAY_REACH_INSIDE` entries, 1–2 per domain. Note the acceptance also needs `TRANSITIONAL_PUBLIC_SEGMENTS` emptied, which is global and cannot come out until every domain has an index. |
+| **P2.6 — decide the last 6 cycles** | Down from 15. P2.1–P2.5 have taken every cycle that a move can take; what is left is a modelling question, which is what P2.6 always said it would be. |
 
-*Recently done: P2.1b (the data kernel — `_shared` now imports no domain at all), P2.5 for `gameweek-selector` (`MAY_REACH_INSIDE` 21 → 17), P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
+*Recently done: P2.5 (`MAY_REACH_INSIDE` 21 → 9; cycles 10 → 6), P2.1b (the data kernel — `_shared` now imports no domain at all), P2.5 for `gameweek-selector` (`MAY_REACH_INSIDE` 21 → 17), P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
 
 **Working agreements that are not obvious from the code:**
 - Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
@@ -110,9 +110,9 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
 | `_shared` → domain imports | 34, across 6 domains | **0** — P2.1 + P2.4 + P2.7 (draft) + P2.3 + P2.1b complete. The allowlist is empty. |
-| Domain → another domain's internals | 34 | **17** — P2.7 (draft, scoring) thirteen, P2.5 (`gameweek-selector`) four |
+| Domain → another domain's internals | 34 | **9** — P2.7 (draft, scoring) thirteen, P2.5 twelve |
 | Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
-| Domain dependency cycles | 15 | **8** — P2.4 two, P2.7 (draft) one, P2.3 two, P2.1b two |
+| Domain dependency cycles | 15 | **6** — P2.4 two, P2.7 (draft) one, P2.3 two, P2.1b two, P2.5 two |
 
 ### Type errors by domain
 
@@ -478,7 +478,7 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   *Acceptance (whole item):* each domain has an `index.ts`; `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
   *Note:* `TRANSITIONAL_PUBLIC_SEGMENTS` is global, so it cannot come out until every domain has an index. `draft`'s own `types/` and `lib/` are still imported directly by `admin`, `players`, `transfers` and `scoring` — legal for now, and a tidy-up for when the flag goes.
 
-- [~] **P2.5 — Promote genuinely shared components**
+- [x] **P2.5 — Promote genuinely shared components**
   `teams/components/gameweek-selector` is used by transfers, leagues, players and admin. `players/components/player` is used by teams, transfers, admin and wishlist. Both belong in `_shared/components/`.
   *Acceptance:* no domain imports another domain's `components/`; `architecture.test.ts` enforces it.
 
@@ -490,23 +490,47 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
   *No cycle dissolved.* `teams ↔ leagues` survives it: `leagues/server/team-of-the-week.server.ts -> teams/types/team-types` is the other edge and is untouched by this.
 
-  ### `players/components/player` — blocked on P2.1b
+  ### ✅ `players/components/player` — done
 
-  The bigger half (8 importers) is **not** a like-for-like follow-up, and doing it next would go backwards.
+  The bigger cluster: **8 allowlist entries cleared. `MAY_REACH_INSIDE` 17 → 9.** Ten importers
+  updated — the eight cross-domain ones, plus `players/player.page.tsx` and
+  `players/components/player-stats-table.tsx`, which owned it.
 
-  [player.tsx](../draft/app/players/components/player.tsx) imports `EnhancedPlayerData` (`scoring/types`) and `DisplayablePlayer` (`players/types`), and `DisplayablePlayer` is itself `EnhancedPlayerData & RosterPlayer`. Moving the file into `_shared/components/` therefore adds new `_shared` → domain edges, taking `SHARED_MAY_IMPORT` from **3 back to ~5** — reversing the metric Phase 2 has driven from 34. Those are exactly P2.1b's types, so P2.1b is the unblock.
+  **P2.1b was genuinely the unblock, exactly as predicted.** Before it, `player.tsx` imported
+  `EnhancedPlayerData` from `scoring/types`, so moving the file would have added new `_shared`
+  → domain edges. With those types in the kernel, the moved file imports only
+  `_shared/lib/fpl/fpl-types`, `_shared/types/league-types`, `_shared/types/player-types` and
+  `_shared/types/squad-types` — **zero domain imports**, and `SHARED_MAY_IMPORT` stays empty.
 
-  **There is also a real design question here, and P2.5 assumed the answer.** P2.7 for `scoring` set the opposite precedent: its components were *exposed via the index* rather than promoted, because explaining a points figure is scoring's job. Rendering a player card arguably fails that test the same way. Both routes clear the same 8 entries:
+  **`DisplayablePlayer` travelled with the component rather than going into the kernel.**
+  `player.tsx` was its only consumer, and it is a component prop type — so it now lives in the
+  component file, per "component props live next to their components". Putting it in the kernel
+  would also have forced `player-types.ts` to import `squad-types.ts`, breaking the sibling
+  relationship P2.1b just established.
 
-  | | Blocked on P2.1b? | `players ↔ wishlist` cycle |
-  |---|---|---|
-  | Expose via `players/index.ts` (P2.7) | no | survives |
-  | Move to `_shared/components/` (P2.5) | yes | **dissolves** |
+  **Two cycles dissolved, not one — 8 → 6.** `players ↔ wishlist` was the predicted one:
+  `wishlist-details.tsx -> players/components/player` was wishlist's only outbound edge to
+  `players`. The second was unforecast, and falls out of `player-stats-table.tsx` being the
+  tenth importer nobody had counted.
 
-  The cycle point decides it: `wishlist/components/wishlist-details.tsx -> players/components/player` is wishlist's **only** outbound edge to `players`, so moving the file kills that direction outright. Worth P2.1b first to get it.
+  **The tenth importer was nearly missed.** The grep used to find call sites filtered out
+  filenames containing `player-stats-table`, which hid its `from './player'` sibling import.
+  `yarn typecheck` caught it as +1 error against the 176 baseline — the ratchet earning its keep
+  for the third time in this phase.
 
-- [ ] **P2.6 — Confirm the cycles are gone**
+- [ ] **P2.6 — Decide the last cycles**
   `scoring ↔ players`, `scoring ↔ teams`, `scoring ↔ transfers`, `teams ↔ leagues`, `players ↔ wishlist`, `players ↔ draft` should all dissolve once P2.1–P2.5 land. Anything left is a genuine modelling problem and needs a decision, not a move.
+
+  **15 → 6 as of P2.5.** `players ↔ wishlist` and `scoring ↔ players` are gone, as predicted. The six that remain, measured 2026-07-29:
+
+  ```
+  admin <-> draft        draft <-> players      draft <-> scoring
+  leagues <-> teams      scoring <-> teams      scoring <-> transfers
+  ```
+
+  **Two of these were never on the original list** — `admin ↔ draft` and `draft ↔ scoring`. Note `draft/server/draft.server.ts -> admin/server/actions/team-commit-actions` is already logged in *Found along the way* as a domain reaching into **admin's** server actions, which inverts the intended direction; that is the `admin ↔ draft` pair and it needs a decision, not a move.
+
+  P2.1–P2.5 have now taken every cycle a *move* can take. What is left is modelling, which is what this item always said it would be.
   *Acceptance:* the cycle check in `architecture.test.ts` passes with no exemptions.
 
 ---
