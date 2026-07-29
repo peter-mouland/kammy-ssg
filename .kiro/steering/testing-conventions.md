@@ -180,6 +180,27 @@ afterAll(() => server.close());
 
 `onUnhandledRequest: 'error'` is not optional. Without it a request you forgot to handle escapes to the real internet, and the test either hits live FPL or fails slowly and confusingly. With it, an unhandled request fails immediately and tells you which URL it was.
 
+### Testing a route loader
+
+Loaders are the boundary principle 2 calls the most valuable, and `cup/cup.route.test.ts` is the worked example. Call the loader with a real `Request` and assert the data the page receives — never how the loader is assembled, so the test survives it being rearranged.
+
+```ts
+const load = async (search = '') => {
+    const result = await route.loader({ request: new Request(`http://localhost/cup${search}`) } as Parameters<
+        typeof route.loader
+    >[0]);
+    return (result as { data: ... }).data;
+};
+```
+
+Worth testing for every loader, because these are where a page silently degrades:
+
+- what a query parameter changes (`?gameweek=2`)
+- what the page gets when a sheet is empty or unconfigured
+- what the page gets when a read **fails** — most loaders have a try/catch fallback that nothing exercises
+
+A loader test needs the Sheets harness below, plus any FPL values seeded into `dataCache`.
+
 ### The Google Sheets harness
 
 Sheets tests use `_shared/test/google-sheets-msw.ts` rather than hand-rolling handlers. Two things about it are not guessable:
