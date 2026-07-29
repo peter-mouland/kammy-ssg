@@ -3,6 +3,7 @@
 import type * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useFetcher } from 'react-router';
+import { PlayerSummary } from '../../_shared/components/player';
 import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
 import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
@@ -16,7 +17,6 @@ import type {
 } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
-import { PlayerSummary } from '../../players/components/player';
 import type { RosterByManagerId } from '../../teams/types/team-types';
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';

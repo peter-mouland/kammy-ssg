@@ -2,13 +2,13 @@
 import type React from 'react';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
+import { PlayerSummary } from '../../_shared/components/player';
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { PlayerGameweekStatsData } from '../../_shared/types/performance-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
-import { PlayerSummary } from '../../players/components/player';
 import { isStatRelevant } from '../../scoring/lib';
 import { compareByManagerThenPosition } from '../lib/sorting-utils';
 import type { AllTeamsData, TeamFilters, TeamRowData } from '../types/team-view-types';

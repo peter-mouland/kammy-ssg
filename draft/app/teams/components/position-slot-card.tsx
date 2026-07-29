@@ -1,7 +1,7 @@
 // app/teams/components/position-slot-card.tsx
 import type React from 'react';
 import { Link } from 'react-router';
-import { PlayerSummaryPoints } from '../../players/components/player';
+import { PlayerSummaryPoints } from '../../_shared/components/player';
 import type { PositionSlotCardProps } from '../types/team-types';
 import styles from './position-slot-card.module.css';
 

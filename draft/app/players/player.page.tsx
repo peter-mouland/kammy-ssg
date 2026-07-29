@@ -2,8 +2,8 @@
 
 // app/routes/players.$playerId.tsx
 import { Link, useLoaderData } from 'react-router';
+import { Player } from '../_shared/components/player';
 import { DataSourceToggle } from './components/data-source-toggle';
-import { Player } from './components/player';
 import { PlayerFixtureTable } from './components/player-fixture-table';
 import { PlayerGameweekTable } from './components/player-gameweek-table';
 import { PlayerHighlights, StatCard } from './components/player-highlights';

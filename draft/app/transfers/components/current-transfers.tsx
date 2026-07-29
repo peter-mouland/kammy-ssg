@@ -1,9 +1,9 @@
 /* Location: app/transfers/components/current-transfers.tsx */
 
+import { PlayerSummary } from '../../_shared/components/player';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { DivisionId } from '../../_shared/types/league-types';
-import { PlayerSummary } from '../../players/components/player';
 import type { TransferRecommendation, TransferValidationResult } from '../types/transfer-rule-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import styles from './current-transfers.module.css';
