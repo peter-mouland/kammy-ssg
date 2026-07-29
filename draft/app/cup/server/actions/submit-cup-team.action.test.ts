@@ -4,11 +4,8 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
-import {
-    googleAuthHandler,
-    sheetValuesHandler,
-    useFakeSheetsCredentials,
-} from '../../../_shared/test/google-sheets-msw';
+import { googleAuthHandler, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
+import * as action from './submit-cup-team.action';
 
 /**
  * Server-side rules for a cup submission.
@@ -24,8 +21,6 @@ import {
  * these tests cover the checks that run *before* it. That is deliberate — the deadline
  * check belongs before an expensive lookup for a request that is already doomed.
  */
-
-let action: typeof import('./submit-cup-team.action');
 
 /** `start`/`end` bracket the submission window — see `cup/lib/cup-deadlines.ts`. */
 const gameweek = (id: number, { start = '2020-01-01T00:00:00Z', end = '2099-01-01T00:00:00Z' } = {}) => ({
@@ -86,10 +81,8 @@ const submit = (over: Partial<Parameters<typeof action.handleCupSubmission>[0]> 
         .handleCupSubmission({ manager: 'ann', division: 'premierLeague', gameweek: 3, players: SQUAD, ...over })
         .catch((error: Error) => ({ success: false, error: error.message, message: undefined }));
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
+beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
-    action = await import('./submit-cup-team.action');
 });
 beforeEach(() => dataCache.clear());
 afterEach(() => server.resetHandlers());

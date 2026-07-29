@@ -2,7 +2,7 @@
 
 import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import type { DivisionId } from '../../../_shared/types/league-types';
-import type { RosterByManagerId } from '../../../teams/types/team-types';
+import type { RosterByManagerId } from '../../../teams';
 import { validateTransfers } from '../../lib/transfer-validation.service';
 import type { TransferValidationResult } from '../../types/transfer-rule-types';
 

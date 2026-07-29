@@ -4,7 +4,7 @@ import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import type { PlayerGameweekStatsData, Points } from '../../_shared/types/performance-types';
 import type { TeamRoster } from '../../_shared/types/squad-types';
-import type { RosterByManagerId } from '../../teams/types/team-types';
+import type { RosterByManagerId } from '../../teams';
 import type { ProcessedTransfer, TransferApplicationResult } from '../types/transfer-types';
 import { findPlayerInRoster } from './find-player-in-roster';
 

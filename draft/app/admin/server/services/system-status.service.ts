@@ -6,7 +6,7 @@ import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
-import type { DraftStatusByDivisionId, DraftStatusData } from '../../../draft/types/draft-types';
+import type { DraftStatusByDivisionId, DraftStatusData } from '../../../draft';
 import { divisionDocumentExists } from '../../../scoring/index.server';
 import type { FplCacheHealth, HealthLevel, SystemHealthStatus, SystemStatusSummary } from '../../types/admin-types';
 
@@ -261,7 +261,7 @@ async function getDraftStatusReal(): Promise<SystemStatusSummary['draft']> {
         const divisionSheetData = await readDivisions();
         const draftPicks = await readDraftPicks();
         // The sheet stores rows; currentPick is derived by the draft domain.
-        const { toDraftStateForDivision } = await import('../../../draft/lib/draft-state');
+        const { toDraftStateForDivision } = await import('../../../draft');
         const draftStateRow = await readDraftState();
         const draftState = toDraftStateForDivision([draftStateRow], draftPicks, draftStateRow.divisionId);
 

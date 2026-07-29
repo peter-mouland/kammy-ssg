@@ -4,7 +4,8 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_KEYS } from '../_shared/lib/cache/cache-config';
 import { dataCache } from '../_shared/lib/cache/data-cache.service';
-import { googleAuthHandler, sheetValuesHandler, useFakeSheetsCredentials } from '../_shared/test/google-sheets-msw';
+import { googleAuthHandler, sheetValuesHandler } from '../_shared/test/google-sheets-msw';
+import * as route from './cup.route';
 
 /**
  * The first route-loader test — the boundary `testing-conventions.md` names as the most
@@ -18,8 +19,6 @@ import { googleAuthHandler, sheetValuesHandler, useFakeSheetsCredentials } from 
  * What it asserts is what the page receives for a given URL — not how the loader is
  * assembled — so it should survive the loader being refactored.
  */
-
-let route: typeof import('./cup.route');
 
 /**
  * A gameweek's `end` is what decides whether submitted squads are revealed —
@@ -116,10 +115,8 @@ const load = async (search = '') => {
     return (result as { data: Awaited<ReturnType<typeof route.loader>>['data'] }).data;
 };
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
+beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
-    route = await import('./cup.route');
 });
 beforeEach(async () => {
     dataCache.clear();

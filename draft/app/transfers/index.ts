@@ -16,3 +16,14 @@
 // How a loan reads on screen. `admin` embeds this in its transfers section: explaining a
 // loan is the transfers domain's job, so it is exposed rather than promoted to _shared.
 export { LoanStatusDisplay } from './components/loan-status-display';
+// --- Applying transfers ------------------------------------------------------
+// Folding approved transfers into a stored gameweek document. `scoring` does this while
+// populating points -- deciding what a transfer *means* stays here.
+export { applyTransfersToGameweekDocument } from './lib/transfer-integration.service';
+// --- Types -------------------------------------------------------------------
+export type {
+    TransferAdminOverviewData,
+    TransferRecommendation,
+    TransferValidationResult,
+} from './types/transfer-rule-types';
+export type { ProcessedTransfer, ProcessedTransferSheetData } from './types/transfer-types';

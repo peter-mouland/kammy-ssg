@@ -1,8 +1,8 @@
 /* Location: app/admin/components/ui/copy-player-stats.tsx */
 
 import { useState } from 'react';
-import { buildPlayerStatsTsv } from '../../../players/lib/player-stats-tsv';
-import type { PlayerStatsData } from '../../../players/types/player-types';
+import type { PlayerStatsData } from '../../../players';
+import { buildPlayerStatsTsv } from '../../../players';
 import * as Icons from '../icons/admin-icons';
 import { AdminSection } from '../layout/admin-section';
 import { AdminButton } from './admin-button';

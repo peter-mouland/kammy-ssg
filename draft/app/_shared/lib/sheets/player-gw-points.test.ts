@@ -3,9 +3,10 @@
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { googleAuthHandler, sheetValuesHandler, useFakeSheetsCredentials } from '../../test/google-sheets-msw';
+import { googleAuthHandler, sheetValuesHandler } from '../../test/google-sheets-msw';
 import type { PlayerGameweekPointsRow } from '../../types/sheets-types';
 import { dataCache } from '../cache/data-cache.service';
+import * as sheet from './player-gw-points';
 
 /**
  * Storage only. This module used to compute the points it wrote, which is what made
@@ -13,8 +14,6 @@ import { dataCache } from '../cache/data-cache.service';
  * `scoring/server/services/player-gw-points.service.ts` (P2.3) and this now stores rows
  * it is handed and reads them back.
  */
-
-let sheet: typeof import('./player-gw-points');
 
 const POINTS_TAB = [
     ['playerCode', 'webName', 'position', 'teamName', 'gw-1', 'gw-2'],
@@ -24,10 +23,8 @@ const POINTS_TAB = [
 
 const server = setupServer(googleAuthHandler, sheetValuesHandler({ 'player-gw-points': POINTS_TAB }));
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
+beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
-    sheet = await import('./player-gw-points');
 });
 beforeEach(() => dataCache.clear());
 afterEach(() => server.resetHandlers());

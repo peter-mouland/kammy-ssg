@@ -7,8 +7,7 @@ import type { CustomPosition } from '../../_shared/types/league-types';
 import type { PlayerGameweekStatsData } from '../../_shared/types/performance-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
-import { convertToPlayerGameweekStats } from '../../scoring/lib';
-import { calculateSeasonPoints, getFullBreakdown } from '../../scoring/lib/calculations';
+import { calculateSeasonPoints, convertToPlayerGameweekStats, getFullBreakdown } from '../../scoring';
 import type { PlayerStatsData } from '../types/player-types';
 
 export async function getPlayerStatsData(): Promise<PlayerStatsData> {

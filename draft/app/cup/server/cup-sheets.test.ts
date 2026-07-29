@@ -4,12 +4,12 @@ import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { dataCache } from '../../_shared/lib/cache/data-cache.service';
-import { googleAuthHandler, sheetValuesHandler, useFakeSheetsCredentials } from '../../_shared/test/google-sheets-msw';
+import { googleAuthHandler, sheetValuesHandler } from '../../_shared/test/google-sheets-msw';
+import * as sheets from './cup-sheets';
 
 // Loaded in beforeAll, not statically. `_shared/lib/sheets/utils/common.ts` reads the
 // service account when its client is first built and memoises the result, so the module
 // has to be imported AFTER the fake credentials are in place.
-let sheets: typeof import('./cup-sheets');
 
 /**
  * The cup domain reads its own sheets through `_shared/lib/sheets/cup.ts`, which returns
@@ -57,10 +57,8 @@ const server = setupServer(
     sheetValuesHandler({ CupConfig: CUP_CONFIG_TAB, CupBracket: CUP_BRACKET_TAB, Cup: CUP_TAB }),
 );
 
-beforeAll(async () => {
-    useFakeSheetsCredentials();
+beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
-    sheets = await import('./cup-sheets');
 });
 afterEach(() => {
     server.resetHandlers();

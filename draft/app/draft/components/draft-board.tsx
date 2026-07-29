@@ -1,7 +1,7 @@
 /* Location: app/draft/components/draft-board.tsx */
 
 import { Table, type TableColumn } from '../../_shared/components/table';
-import { getPositionDisplayName } from '../../scoring/lib';
+import { getPositionDisplayName } from '../../scoring';
 import type { DraftPickData } from '../types/draft-types';
 
 interface DraftBoardProps {

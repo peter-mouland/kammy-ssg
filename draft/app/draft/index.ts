@@ -28,6 +28,7 @@ export { generateDraftSequence } from './lib/generate-draft-sequence';
 // --- Types -------------------------------------------------------------------
 // The draft concepts other domains model against. Owned here; imported everywhere.
 export type {
+    DraftAction,
     DraftActionData,
     DraftDivisionStatus,
     DraftLoaderData,

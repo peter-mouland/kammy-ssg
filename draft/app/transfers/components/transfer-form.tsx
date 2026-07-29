@@ -17,7 +17,7 @@ import type {
 } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
-import type { RosterByManagerId } from '../../teams/types/team-types';
+import type { RosterByManagerId } from '../../teams';
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';

@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../_shared/types/league-types';
-import { getPositionDisplayName } from '../../scoring/lib';
-import { useWishlists } from '../../wishlist/lib/use-wishlists';
+import { getPositionDisplayName } from '../../scoring';
+import { useWishlists } from '../../wishlist';
 import { DRAFT_RULES, getPlayerPosition, getSquadComposition, validateDraftEligibility } from '../lib/draft-rules';
 import { DraftFilters } from './draft-filters';
 import styles from './draft-players.module.css';

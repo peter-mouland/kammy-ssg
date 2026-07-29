@@ -28,10 +28,10 @@ git log --oneline -15
 
 | | Why |
 |---|---|
-| **P2.7 — public API for `transfers`, then the rest** | `draft` and `scoring` are done and are the worked examples. This now clears **all 9** remaining `MAY_REACH_INSIDE` entries, 1–2 per domain. Note the acceptance also needs `TRANSITIONAL_PUBLIC_SEGMENTS` emptied, which is global and cannot come out until every domain has an index. |
-| **P2.6 — decide the last 6 cycles** | Down from 15. P2.1–P2.5 have taken every cycle that a move can take; what is left is a modelling question, which is what P2.6 always said it would be. |
+| **P2.6 — decide the last 6 cycles** | The only Phase 2 item left. Down from 15. P2.1–P2.7 have taken every cycle a *move* can take; what is left is a modelling question, which is what P2.6 always said it would be. |
+| **Swap `googleapis` for `@googleapis/sheets`** | Measured 7x faster to import (1675ms → 231ms). Matters most for Cloud Function cold starts. See *Found along the way*. |
 
-*Recently done: P2.5 (`MAY_REACH_INSIDE` 21 → 9; cycles 10 → 6), P2.1b (the data kernel — `_shared` now imports no domain at all), P2.5 for `gameweek-selector` (`MAY_REACH_INSIDE` 21 → 17), P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
+*Recently done: P2.7 (every domain has a public API; all three architecture allowlists are now empty), P2.5 (`MAY_REACH_INSIDE` 21 → 9; cycles 10 → 6), P2.1b (the data kernel — `_shared` now imports no domain at all), P2.5 for `gameweek-selector` (`MAY_REACH_INSIDE` 21 → 17), P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
 
 **Working agreements that are not obvious from the code:**
 - Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
@@ -111,7 +111,7 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
 | `_shared` → domain imports | 34, across 6 domains | **0** — P2.1 + P2.4 + P2.7 (draft) + P2.3 + P2.1b complete. The allowlist is empty. |
 | Domain → another domain's internals | 34 | **0** — P2.7 twenty-two, P2.5 twelve. The allowlist is empty. |
-| Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
+| Architecture rules enforced | 0 | **5** (P1.2, P4.5) — and all three of their allowlists are now empty (P2.1b, P2.5, P2.7) |
 | Domain dependency cycles | 15 | **6** — P2.4 two, P2.7 (draft) one, P2.3 two, P2.1b two, P2.5 two |
 
 ### Type errors by domain
@@ -419,7 +419,7 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   | `_shared/lib/sheets/` | 9 | P2.3 |
   | `_shared/lib/fpl/` | 3 | P2.1b |
 
-- [ ] **P2.7 — Give each domain a public API**
+- [x] **P2.7 — Give each domain a public API**
   Every domain gets an `index.ts` that re-exports what other domains are allowed to use. `components/`, `server/` and internal helpers become private.
 
   **Why this and not the alternatives.** Three items stalled on the same wall: `admin` orchestrates other domains — that is its entire purpose — and Rule 2 gave it no legal way to do so, which is why 10 `admin -> X/server` entries sit in the allowlist. The options were:
@@ -492,21 +492,17 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
 
   **`admin/index.server.ts` records an inversion rather than fixing one.** Admin orchestrates other domains — that is the premise of this whole item — but `draft/server/draft.server.ts` needs `handleCommitTeamsToFirestore`, which lives in admin's server actions. So this one dependency runs the *wrong way*: a feature domain reaching into admin. Exposing it makes the reach legal without making it right; the file says so in its own docblock. The underlying modelling problem is the `admin ↔ draft` cycle, already logged in *Found along the way* and now carried into P2.6.
 
-  ### Still open: `TRANSITIONAL_PUBLIC_SEGMENTS`
+  ### ✅ `TRANSITIONAL_PUBLIC_SEGMENTS` — emptied
 
-  The other half of the acceptance. **64 cross-domain imports** still reach `types/` and `lib/` directly, which the rule accepts as transitional:
+  The other half of the acceptance. **64 cross-domain imports** reached `types/` and `lib/` directly; all are now routed through the indexes, and the flag is empty. **The index is the only way into a domain.**
 
-  ```
-  14  scoring/lib      6  teams/lib        3  leagues/types    2  players/types
-  12  teams/types      6  transfers/types  2  wishlist/lib     2  transfers/lib
-   7  draft/types      5  draft/lib        4  scoring/types    1  players/lib
-  ```
+  Two new indexes (`players`, `teams`) plus additions to the six that existed. Most of what was needed was already exported — `scoring` needed only `convertToGameweekStats`, `draft` only `DraftAction`.
 
-  The flag is **global**, so it cannot come out gradually — flipping it turns all 64 into violations at once. Each domain's index has to re-export the types its consumers use first.
+  **`readTransferDataForDivision` went to `index.server.ts`, not `index.ts`**, even though it lives in `lib/`. It reaches the Sheets readers, so exporting it client-side would have made the whole transfers public API unsafe to import from a component — the exact failure the two-entry-point split exists to prevent. Worth knowing that `lib/` is *not* a reliable proxy for client-safe.
 
-  Worth knowing: `teams/types` (12, the second biggest) overlaps **P2.2**, which splits `team-types.ts` into domain entities, view-models and component props. The index does not block P2.2 — it helps it, because P2.2 can then reorganise behind a stable public name. But whoever does the flip should expect to be making P2.2's decisions early for those 12.
+  **One narrow exemption was added: a test may use another domain's test fixtures.** `cup/lib/cup-squad.test.ts` builds a squad from `makeStandardRoster()` in `transfers/lib/validators/fixtures.ts`. That function returns a `TeamRoster` — a **kernel** type — and is not transfers-specific at all; it lives there only because transfers' validators needed a roster first. Both alternatives were worse: export a test fixture from the production public API, or duplicate the 13-slot roster per domain. The exemption is deliberately about *fixtures*, not tests in general — a test still may not reach another domain's `server/` or `components/`. **P4.3 owns the real fix** (it already renames that file); when the fixture moves somewhere shared, the exemption goes.
 
-  *Acceptance (whole item):* each domain has an `index.ts`; ✅ `MAY_REACH_INSIDE` is empty; `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
+  *Acceptance (whole item):* ✅ each domain has an `index.ts`; ✅ `MAY_REACH_INSIDE` is empty; ✅ `TRANSITIONAL_PUBLIC_SEGMENTS` is empty, making the index the only cross-domain entry point.
   *Note:* `TRANSITIONAL_PUBLIC_SEGMENTS` is global, so it cannot come out until every domain has an index. `draft`'s own `types/` and `lib/` are still imported directly by `admin`, `players`, `transfers` and `scoring` — legal for now, and a tidy-up for when the flag goes.
 
 - [x] **P2.5 — Promote genuinely shared components**
@@ -701,7 +697,8 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-28 | **[Polish]** | `validateDraftEligibility` has an unreachable branch. The guard at `draft-rules.ts:158` requires `positionCount >= max && subCount >= 1`, which is exactly the condition the branch above it already returned on. Dead while `maxSubstitutes >= 1`. Found by P3.3 while working out which cases were reachable. | [draft-rules.ts](../draft/app/draft/lib/draft-rules.ts) |
 | 2026-07-26 | **[Fixed + tested]** | The defensive-contribution tooltip on the player gameweek table always read **"0 points"** for every player. It passed `stat.defensiveContribution` (a number) where `calculateDefensiveContribution` expects the raw components object, so every field read came back `undefined`, the total was 0, and 0 is below every threshold. Invisible because it was a plausible-looking value. Surfaced only once `TableColumn.title` was declared and the compiler could finally see the call site. Now covered by rendering tests. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
 | 2026-07-26 | **[Separate problem found]** | `DraftPickData.teamCode` and `FirebaseDraftPick.teamCode` are typed `string`, but callers assign a number (`FplTeam.code`). Surfaced by P1.3a once the surrounding code stopped being implicit `any`. Causes 3 of the 12 remaining `draft` errors, including a `number === string` comparison in [draft.tsx:202](../draft/app/draft/draft.tsx) that can never be true. Fix during the `draft` burn-down. | [draft-types.ts](../draft/app/draft/types/draft-types.ts) |
-| 2026-07-29 | **[Separate problem found]** | **The test suite is flaky.** Three consecutive `yarn test` runs on an unmodified tree gave 38 pass / 38 pass / **6 files failed**, with `Firebase service account not configured` and files failing to collect. It varies run to run, so it passes often enough to have gone unnoticed — but `yarn test` gates the pre-commit hook *and* CI, so it will intermittently block commits and redden PRs for no reason. Most likely the module-scope singletons already logged below (`DataCacheService`, the memoised sheets client) racing between parallel test files. Confirmed pre-existing, not introduced by P2.1b. | suite-wide |
+| 2026-07-29 | **[Fixed + measured]** | **The test suite was flaky — about one `yarn test` run in three failed**, always `Hook timed out in 10000ms` in the `beforeAll` of a file using the Sheets MSW harness. Nothing was wrong with those tests; they passed in isolation and `--no-file-parallelism` passed every time. **Root cause: `import { google } from 'googleapis'` costs 1.7s** because it loads Google's entire API surface to talk to one spreadsheet, and the harness convention put that import *inside a hook*, where vitest's 10s `hookTimeout` applies. Two wrong guesses first: the `Firebase service account not configured` stderr was a red herring from an unrelated passing test, and the 2048-bit RSA keygen was measured at only 148ms (1024 is 23ms). *Fixed* by moving `useFakeSheetsCredentials()` into `vitest.setup.ts`, which runs before a test file's imports — so the six sheets tests import statically and the cost lands in module collection, where no timeout applies. **8 consecutive green runs**, and the suite got faster: wall clock ~25s → **13s**, hook/test time 63s → **3.8s**. The `hookTimeout` was deliberately *not* raised — that widens the window rather than closing it. | [vitest.setup.ts](../draft/vitest.setup.ts), [google-sheets-msw.ts](../draft/app/_shared/test/google-sheets-msw.ts) |
+| 2026-07-29 | **[Will slow down future work]** | **`googleapis` is the wrong dependency for this app.** `import { google } from 'googleapis'` pulls every Google API — 1.7s — and the app uses exactly one, Sheets. Google publishes `@googleapis/sheets`; a scoped package measured **231ms** against 1675ms, a **7x** saving. That is per-worker in tests and, more importantly, on every Cloud Function **cold start**. One import in `_shared/lib/sheets/utils/common.ts` to change, but it swaps the app's only Sheets client, so it wants its own change and a careful look at how `auth.JWT` is obtained. | [common.ts](../draft/app/_shared/lib/sheets/utils/common.ts) |
 | 2026-07-26 | **[Will slow down future work]** | `scoring/server/services/division-teams.service` has 6 importers across admin, cup, leagues, teams and transfers. It is a de-facto shared service living in a feature domain — the server-side twin of the `gameweek-selector` problem. Decide its home during P2.3. | [division-teams.service.ts](../draft/app/scoring/server/services/division-teams.service.ts) |
 
 ---

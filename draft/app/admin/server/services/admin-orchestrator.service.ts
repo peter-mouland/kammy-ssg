@@ -7,7 +7,7 @@ import { FplFirestore } from '../../../_shared/lib/fpl/fpl-firestore';
 import { readPlayers } from '../../../_shared/lib/sheets/players';
 import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../../../_shared/types/league-types';
-import type { DraftAction } from '../../../draft/types/draft-types';
+import type { DraftAction } from '../../../draft';
 import { generateAndCacheEnhancedData } from '../../../scoring/index.server';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import { getSystemStatus } from './system-status.service';

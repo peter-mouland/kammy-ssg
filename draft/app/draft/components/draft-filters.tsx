@@ -3,8 +3,8 @@ import { MultiSelect, type MultiSelectOption } from '../../_shared/components/mu
 import { SearchInput } from '../../_shared/components/search-input';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { CustomPosition } from '../../_shared/types/league-types';
-import { getPositionDisplayName } from '../../scoring/lib';
-import { useWishlists } from '../../wishlist/lib/use-wishlists';
+import { getPositionDisplayName } from '../../scoring';
+import { useWishlists } from '../../wishlist';
 import { DRAFT_RULES, getPlayerPosition, validateDraftEligibility } from '../lib/draft-rules';
 import type { PositionAvailabilityCounts, SquadComposition, TeamAvailabilityCounts } from '../types/draft-types';
 import styles from './draft-filters.module.css';

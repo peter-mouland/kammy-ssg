@@ -2,10 +2,14 @@
 
 import { Table, TableBadge, type TableColumn } from '../../_shared/components/table';
 import type { CustomPosition } from '../../_shared/types/league-types';
-import { calculateGameweekPoints, formatPointsDisplay, isStatRelevant } from '../../scoring/lib';
-import { calculateDefensiveActions } from '../../scoring/lib/calculations';
-import { convertToGameweekStats } from '../../scoring/lib/data-conversion';
-import type { GameweekStatWithPoints } from '../../scoring/types/scoring-types';
+import type { GameweekStatWithPoints } from '../../scoring';
+import {
+    calculateDefensiveActions,
+    calculateGameweekPoints,
+    convertToGameweekStats,
+    formatPointsDisplay,
+    isStatRelevant,
+} from '../../scoring';
 
 // import { PointsBreakdownTooltip } from './points-breakdown-tooltip'
 

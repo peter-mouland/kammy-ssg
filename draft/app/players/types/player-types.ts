@@ -3,7 +3,7 @@
 import type { FplPlayerSeasonFixture, FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
-import type { GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
+import type { GameweekStatWithPoints, SeasonTotals } from '../../scoring';
 
 // Map position codes to their full names
 export type PositionNameMap = {
