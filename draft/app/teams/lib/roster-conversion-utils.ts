@@ -1,9 +1,9 @@
 // app/_shared/lib/roster-conversion-utils.ts
 
 import type { PositionSlotKey } from '../../_shared/types/league-types';
-import type { PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { Points } from '../../scoring/types/scoring-types';
-import type { LoanStatus, RosterPlayer, TeamPositionSlot, TeamRoster } from '../types/team-types';
+import type { PlayerGameweekStatsData, Points } from '../../_shared/types/performance-types';
+import type { RosterPlayer, TeamPositionSlot, TeamRoster } from '../../_shared/types/squad-types';
+import type { LoanStatus } from '../types/team-types';
 import { getNextAvailableSlot, parsePositionSlot } from './position-slot-utils';
 
 /**

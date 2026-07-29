@@ -2,10 +2,10 @@
 
 import type { FplPlayerData, FplPlayerSeasonData, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
+import type { PlayerGameweekStatsData, Points } from '../../_shared/types/performance-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
-import type { PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { TeamPositionSlot } from '../../teams/types/team-types';
-import type { EnhancedPlayerData, Points } from '../types/scoring-types';
+import type { TeamPositionSlot } from '../../_shared/types/squad-types';
 import { calculateGameweekPoints, calculateSeasonPoints, getFullBreakdown } from './calculations';
 import { convertToPlayerGameweeksStats, convertToSingleGameweeksStats } from './data-conversion';
 

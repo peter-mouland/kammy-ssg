@@ -2,7 +2,7 @@
 
 // components/wishlist-button.tsx
 import { useState } from 'react';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { useWishlists } from '../lib/use-wishlists';
 import styles from './wishlist-button.module.css';
 import { CreateWishlistForm } from './wishlist-form';

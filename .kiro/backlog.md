@@ -28,11 +28,10 @@ git log --oneline -15
 
 | | Why |
 |---|---|
-| **P2.1b — move the data kernel** | Not just its own item: it is what **unblocks the rest of P2.5**. `players/components/player` has 8 importers, the biggest cluster left, but it cannot move to `_shared/components/` until `EnhancedPlayerData` and `RosterPlayer` are in the kernel — moving it today would add new `_shared` → domain edges and push that count back up from 3. |
-| **P2.5 — `players/components/player`** | Straight after P2.1b. 8 allowlist entries, and it dissolves the `players ↔ wishlist` cycle. |
+| **P2.5 — `players/components/player`** | Now unblocked: P2.1b put `EnhancedPlayerData` and `RosterPlayer` in the kernel, so the file can move to `_shared/components/` without dragging a domain behind it. 8 allowlist entries, and it dissolves the `players ↔ wishlist` cycle. |
 | **P2.7 — public API for `transfers`, then the rest** | `draft` and `scoring` are done and are the worked examples. Clears the remaining 9, but 1–2 per domain. |
 
-*Recently done: P2.5 for `gameweek-selector` (`MAY_REACH_INSIDE` 21 → 17), P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
+*Recently done: P2.1b (the data kernel — `_shared` now imports no domain at all), P2.5 for `gameweek-selector` (`MAY_REACH_INSIDE` 21 → 17), P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
 
 **Working agreements that are not obvious from the code:**
 - Consumer-focused tests that survive refactoring come **before** the refactor they protect. We violated this early and it cost us.
@@ -110,10 +109,10 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | `functions/` type errors | unmeasured — only `yarn build` saw them | **0**, ratcheted and must stay there |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
-| `_shared` → domain imports | 34, across 6 domains | **3** — P2.1 + P2.4 + P2.7 (draft) + P2.3 complete; the rest is P2.1b |
+| `_shared` → domain imports | 34, across 6 domains | **0** — P2.1 + P2.4 + P2.7 (draft) + P2.3 + P2.1b complete. The allowlist is empty. |
 | Domain → another domain's internals | 34 | **17** — P2.7 (draft, scoring) thirteen, P2.5 (`gameweek-selector`) four |
 | Architecture rules enforced | 0 | **5** (P1.2, P4.5) |
-| Domain dependency cycles | 15 | **10** — P2.4 two, P2.7 (draft) one, P2.3 two |
+| Domain dependency cycles | 15 | **8** — P2.4 two, P2.7 (draft) one, P2.3 two, P2.1b two |
 
 ### Type errors by domain
 
@@ -277,9 +276,42 @@ The real DDD work. Large, but correct — and it is what unblocks route-loader t
   | P2.4 — move domain logic out of `_shared/lib` | 5 |
   | P2.1b — `EnhancedPlayerData` into the kernel | 3 |
 
-- [ ] **P2.1b — Move the data kernel**
-  `EnhancedPlayerData`, `PlayersByCode`, `Points`, `PlayerGameweekStatsData`, `RosterPlayer`, `TeamPositionSlot`, `TeamRoster`. Larger than P2.1: `EnhancedPlayerData` alone appears in 37 files, and `TeamRoster` pulls in `TeamPositionSlot` → `Points` + `PlayerGameweekStatsData`.
-  *Acceptance:* the 3 remaining `_shared/lib/fpl/*` allowlist entries are gone.
+- [x] **P2.1b — Move the data kernel**
+  *Done:* **`SHARED_MAY_IMPORT` is now empty — `_shared` imports no feature domain at all.** That metric started at 34. **Two more cycles dissolved, 10 → 8.**
+
+  **The data kernel is three files, not one**, because these are three concepts and collapsing them hides that:
+
+  | File | Says | Holds | Depends on |
+  |---|---|---|---|
+  | [performance-types.ts](../draft/app/_shared/types/performance-types.ts) | what happened in a match | `PlayerGameweekStatsData`, `Points`, `PointsBreakdown`, `PointsBreakdownItem` | nothing |
+  | [player-types.ts](../draft/app/_shared/types/player-types.ts) | who a player is | `EnhancedPlayerData`, `PlayersByCode` | performance |
+  | [squad-types.ts](../draft/app/_shared/types/squad-types.ts) | where a player is | `RosterPlayer`, `TeamPositionSlot`, `TeamRoster` | performance |
+
+  **`RosterPlayer` does not reference `EnhancedPlayerData`.** It snapshots the identity fields it needs (`playerId`, `playerCode`, `playerName`, `playerPosition`) *at the time of assignment*, so a later change to a player's record cannot rewrite history on a team sheet. Player and squad are therefore siblings, not parent and child — they never refer to each other, and both depend only on performance. That is what made three files the honest split rather than one.
+
+  Named `performance-types` rather than `points-types` because it holds the raw stat line too, which is not points. The rules that turn a stat line into points stay in `scoring/lib` — only the shapes moved.
+
+  *Not to be confused with* `players/types/player-types.ts`, which stays in the players domain and holds view-models for the player pages. Same basename, different job; both docblocks say so.
+
+  **Two things the original plan got wrong.**
+
+  **1. The closure was bigger than the list.** `EnhancedPlayerData.draft.pointsBreakdown` is typed `PointsBreakdown` → `PointsBreakdownItem`, neither of which was listed. They had to come too, or the kernel would import `scoring`.
+
+  **2. The acceptance criterion was unachievable as written.** It said all 3 `_shared/lib/fpl/*` entries would go. Only two were type imports. The third was a **value** import — `fpl-firestore.ts` ran `generateSeasonData` from `scoring/lib`, i.e. the scoring engine executing inside the shared persistence layer. No type move touches that. See below.
+
+  ### ✅ The last one: `generateSeasonData` out of `fpl-firestore.ts`
+
+  Same shape as the `player-gw-points` reader P2.3 moved, and fixed the same way. `FplFirestore.generateAndCacheEnhancedData` became [scoring/server/services/enhanced-player-data.service.ts](../draft/app/scoring/server/services/enhanced-player-data.service.ts), exposed on `scoring/index.server.ts`.
+
+  Deciding what a player's season data *is* belongs to scoring; storing it belongs to the FPL persistence layer. The service reads the inputs, runs the engine, and hands the result to `updateElementsWithDraft` — both firestore methods it uses were already public, so nothing new was exposed.
+
+  `preloadCommonData` no longer runs the scoring step; `admin`'s orchestrator sequences the two, which is what admin is for. Order (clear → bootstrap → enhanced) and the returned `results` shape are unchanged. The `FplFirestore` instance is passed in rather than constructed, so admin reuses the one it already holds.
+
+  **⚠️ This last part is not covered by a test, and that is a real gap.** `FplFirestore` writes to Firestore over gRPC, which MSW cannot intercept — the same wall documented against `fplApiCache` in the testing conventions. Verified instead by type-check, the architecture rules, and `yarn build`. Worth an emulator-backed test if this area is touched again.
+
+  *Verification:* type errors **unchanged at 176** before and after — the correct result for a type-only move, since none of it survives compilation (same check P2.1 used). 346 tests pass, ratchet counts all unchanged.
+
+  **A fake ratchet win, caught and reverted.** Adding `biome-ignore-all lint/style/useNamingConvention` to the new `player-types.ts` dropped lint warnings 266 → 262, and `yarn ratchet` invited me to bank it. It was not a fix: `scoring-types.ts` had no such suppression, so `EnhancedPlayerData`'s four snake_case FPL field names were *counted* in the 266 baseline, and the ignore simply erased them. Removed, and the count is honestly back at 266. `squad-types.ts` keeps its suppression because those slot keys came from `team-types.ts`, which already had a file-level ignore — those were never in the count.
 
 - [ ] **P2.2 — Split `team-types.ts` three ways**
   It currently does three jobs: domain entities, page view-models (`TeamViewData`), and React component props (`FormationDisplayProps`, `PositionSlotCardProps`, `TeamStatsProps`, `ContributingStatsProps`). That is why every domain has to import it.
@@ -614,6 +646,7 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-28 | **[Polish]** | `validateDraftEligibility` has an unreachable branch. The guard at `draft-rules.ts:158` requires `positionCount >= max && subCount >= 1`, which is exactly the condition the branch above it already returned on. Dead while `maxSubstitutes >= 1`. Found by P3.3 while working out which cases were reachable. | [draft-rules.ts](../draft/app/draft/lib/draft-rules.ts) |
 | 2026-07-26 | **[Fixed + tested]** | The defensive-contribution tooltip on the player gameweek table always read **"0 points"** for every player. It passed `stat.defensiveContribution` (a number) where `calculateDefensiveContribution` expects the raw components object, so every field read came back `undefined`, the total was 0, and 0 is below every threshold. Invisible because it was a plausible-looking value. Surfaced only once `TableColumn.title` was declared and the compiler could finally see the call site. Now covered by rendering tests. | [player-gameweek-table.tsx](../draft/app/players/components/player-gameweek-table.tsx) |
 | 2026-07-26 | **[Separate problem found]** | `DraftPickData.teamCode` and `FirebaseDraftPick.teamCode` are typed `string`, but callers assign a number (`FplTeam.code`). Surfaced by P1.3a once the surrounding code stopped being implicit `any`. Causes 3 of the 12 remaining `draft` errors, including a `number === string` comparison in [draft.tsx:202](../draft/app/draft/draft.tsx) that can never be true. Fix during the `draft` burn-down. | [draft-types.ts](../draft/app/draft/types/draft-types.ts) |
+| 2026-07-29 | **[Separate problem found]** | **The test suite is flaky.** Three consecutive `yarn test` runs on an unmodified tree gave 38 pass / 38 pass / **6 files failed**, with `Firebase service account not configured` and files failing to collect. It varies run to run, so it passes often enough to have gone unnoticed — but `yarn test` gates the pre-commit hook *and* CI, so it will intermittently block commits and redden PRs for no reason. Most likely the module-scope singletons already logged below (`DataCacheService`, the memoised sheets client) racing between parallel test files. Confirmed pre-existing, not introduced by P2.1b. | suite-wide |
 | 2026-07-26 | **[Will slow down future work]** | `scoring/server/services/division-teams.service` has 6 importers across admin, cup, leagues, teams and transfers. It is a de-facto shared service living in a feature domain — the server-side twin of the `gameweek-selector` problem. Decide its home during P2.3. | [division-teams.service.ts](../draft/app/scoring/server/services/division-teams.service.ts) |
 
 ---

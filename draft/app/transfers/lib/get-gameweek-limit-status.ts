@@ -1,7 +1,7 @@
 // app/transfers/lib/get-gameweek-limit-status.ts
 
 import type { ManagerId } from '../../_shared/types/league-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
 import { formatGameweekLimitDisplay, isGameweekLimitMessage } from './format-eligibility-status';

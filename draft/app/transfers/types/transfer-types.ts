@@ -7,8 +7,8 @@ export type { ProcessedTransferSheetData, TransferSheetData };
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { ManagerId } from '../../_shared/types/league-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { TeamRoster } from '../../teams/types/team-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { TeamRoster } from '../../_shared/types/squad-types';
 
 /**
  * Raw transfer data from Google Sheets

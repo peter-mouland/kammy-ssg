@@ -91,11 +91,11 @@ const report = (violations: Import[], guidance: string) =>
 // Today _shared depends on six domains. That is backwards: shared infrastructure knows
 // the vocabulary of every feature. Phase 2 fixes it by naming a shared kernel (P2.1)
 // and moving each sheets module into the domain that owns it (P2.3, P2.4).
-const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([
-    '_shared/lib/fpl/api-cache.ts -> scoring/types/scoring-types',
-    '_shared/lib/fpl/fpl-firestore.ts -> scoring/lib',
-    '_shared/lib/fpl/fpl-firestore.ts -> scoring/types/scoring-types',
-]);
+// EMPTY as of P2.1b, and it should stay that way. _shared no longer imports any feature
+// domain. If you are about to add an entry here, the fix is almost always that the type
+// belongs in the shared kernel (_shared/types/), or that the logic belongs in the domain
+// that owns it and the caller should sequence the two.
+const SHARED_MAY_IMPORT: ReadonlySet<string> = new Set([]);
 
 describe('_shared must not depend on a domain', () => {
     const sharedImports = crossDomainImports.filter((i) => i.fromDomain === SHARED);
@@ -224,7 +224,7 @@ describe('a domain may only use another domain’s public API', () => {
 // understand, test or move scoring without also holding players, teams and transfers in
 // your head. Most of the current ones dissolve once Rule 1 and Rule 2 are satisfied,
 // so this is measured as a count that may only go down (P2.6).
-const KNOWN_CYCLIC_PAIRS = 10;
+const KNOWN_CYCLIC_PAIRS = 8;
 
 describe('the domain dependency graph', () => {
     const graph = new Map<string, Set<string>>();

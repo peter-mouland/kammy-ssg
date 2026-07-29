@@ -8,8 +8,8 @@ import type {
     DivisionSheetData,
     UserTeamsSheetData,
 } from '../../_shared/types/league-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { DraftOrderRow, DraftPickRow, DraftStateRow } from '../../_shared/types/sheets-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 
 /**
  * The draft state as the app uses it: the sheet row, plus `currentPick`.

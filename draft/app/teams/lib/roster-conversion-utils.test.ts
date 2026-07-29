@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { TeamRoster } from '../types/team-types';
+import type { TeamRoster } from '../../_shared/types/squad-types';
 import { createEmptyPoints, createEmptyStats, getRosterTopScorer } from './roster-conversion-utils';
 
 // ---------------------------------------------------------------------------

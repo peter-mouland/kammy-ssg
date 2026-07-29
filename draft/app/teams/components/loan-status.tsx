@@ -2,7 +2,7 @@
 
 // /teams/components/loan-status.tsx
 import type React from 'react';
-import type { RosterPlayer } from '../types/team-types';
+import type { RosterPlayer } from '../../_shared/types/squad-types';
 import styles from './loan-status.module.css';
 import { PlayerCard } from './player-card';
 

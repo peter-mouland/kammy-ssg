@@ -2,8 +2,8 @@
 
 import React from 'react';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { PlayerSummary } from '../../players/components/player';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import type { Wishlist } from '../types/wishlist-types';
 import styles from './wishlist-item.module.css';
 

@@ -1,4 +1,4 @@
-import type { TeamRoster } from '../../teams/types/team-types';
+import type { TeamRoster } from '../../_shared/types/squad-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import { findPlayerInRoster } from './find-player-in-roster';
 

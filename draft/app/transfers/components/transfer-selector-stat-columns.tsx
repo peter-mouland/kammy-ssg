@@ -2,10 +2,10 @@
 
 import type { TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { PlayerSummary } from '../../players/components/player';
 import { PointsBreakdownTooltip } from '../../scoring';
 import { isStatRelevant } from '../../scoring/lib';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 
 const STAT_COLUMN_WIDTH = '2rem';
 

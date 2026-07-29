@@ -1,7 +1,7 @@
 /* Location: app/cup/lib/cup-squad.ts */
 
 import type { CustomPosition, PositionSlotKey } from '../../_shared/types/league-types';
-import type { TeamRoster } from '../../teams/types/team-types';
+import type { TeamRoster } from '../../_shared/types/squad-types';
 
 /** A player a manager can pick for their cup team, drawn from their squad. */
 export interface CupSquadPlayer {

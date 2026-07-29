@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { dataCache } from '../../_shared/lib/cache/data-cache.service';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { googleAuthHandler, sheetValuesHandler, useFakeSheetsCredentials } from '../../_shared/test/google-sheets-msw';
-import type { PlayersByCode } from '../../scoring/types/scoring-types';
+import type { PlayersByCode } from '../../_shared/types/player-types';
 
 /**
  * Turning `Transfers` sheet rows into the transfers this domain models.

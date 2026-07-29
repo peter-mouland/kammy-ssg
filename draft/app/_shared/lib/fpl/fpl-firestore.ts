@@ -5,8 +5,7 @@
 /* Notes: */
 /* - 90% of use-case should use api-cache*/
 
-import { generateSeasonData } from '../../../scoring/lib';
-import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../types/player-types';
 import type { PlayersSheetData } from '../../types/sheets-types';
 import { FirestoreClearService } from '../firestore-cache/clear-service';
 import { FirestoreClient } from '../firestore-cache/firestore-client';
@@ -118,42 +117,6 @@ export class FplFirestore {
 
     // === WRITE METHODS ===
     /**
-     * Generate and cache enhanced data
-     */
-    private async generateAndCacheEnhancedData(): Promise<EnhancedPlayerData[]> {
-        console.log('🔄 generateAndCacheEnhancedData() - Starting fresh generation...');
-
-        // Get base FPL data
-        const players = await this.getElements();
-        const sheetsPlayers = await readPlayers();
-
-        // Filter to only players that exist in sheets
-        const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
-            acc[player.code] = player;
-            return acc;
-        }, {});
-        const filteredPlayers = players.filter((player) => sheetsPlayersByCode[player.code]);
-        const playerIds = filteredPlayers.map((p) => p.id);
-        const fplPlayerGameweeksById = await fplApi.getBatchPlayerDetailedStats(playerIds);
-
-        if (filteredPlayers.length === 0) {
-            throw new Error('No players found that exist in both FPL data and sheets');
-        }
-
-        console.log(`🔄 Generating enhanced data for ${filteredPlayers.length} players...`);
-
-        const enhancedPlayers = generateSeasonData(filteredPlayers, fplPlayerGameweeksById, sheetsPlayersByCode);
-        const playersById = enhancedPlayers.reduce((acc: Record<string, EnhancedPlayerData>, player) => {
-            acc[player.id] = player;
-            return acc;
-        }, {});
-        await this.updateElementsWithDraft(playersById);
-
-        console.log(`✅ Enhanced data generated and cached for ${enhancedPlayers.length} players`);
-        return enhancedPlayers;
-    }
-
-    /**
      * Preload common data based on what's missing
      */
     async preloadCommonData() {
@@ -167,7 +130,6 @@ export class FplFirestore {
 
             // populate base db info
             results.bootstrap = await this.populateBootstrap();
-            results.enhanced = await this.generateAndCacheEnhancedData();
 
             return {
                 success: true,

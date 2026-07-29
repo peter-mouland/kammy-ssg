@@ -1,21 +1,5 @@
 // app/scoring/types/scoring-types.ts
 
-import type { CustomPosition } from '../../_shared/types/league-types';
-export interface Points {
-    appearance: number;
-    goals: number;
-    assists: number;
-    cleanSheets: number;
-    yellowCards: number;
-    redCards: number;
-    saves: number;
-    penaltiesSaved: number;
-    goalsConceded: number;
-    bonus: number;
-    defensiveContribution: number;
-    total: number;
-}
-
 // ================================
 // ENHANCED PLAYER DATA TYPES
 // ================================
@@ -88,52 +72,3 @@ export interface SeasonTotals {
     cleanSheetPercentage: number;
     savesPerGamePercentage: number;
 }
-
-interface PointsBreakdown {
-    appearance: PointsBreakdownItem;
-    goals: PointsBreakdownItem;
-    assists: PointsBreakdownItem;
-    cleanSheets: PointsBreakdownItem;
-    yellowCards: PointsBreakdownItem;
-    redCards: PointsBreakdownItem;
-    saves: PointsBreakdownItem;
-    penaltiesSaved: PointsBreakdownItem;
-    goalsConceded: PointsBreakdownItem;
-    bonus: PointsBreakdownItem;
-    defensiveContribution: PointsBreakdownItem;
-    total: PointsBreakdownItem;
-}
-
-export interface PointsBreakdownItem {
-    label: string;
-    isRelevant?: boolean;
-    points: number;
-    stat: number;
-    formula: string | string[];
-}
-
-export interface EnhancedPlayerData {
-    // Base FPL player data
-    id: number;
-    code: number;
-    first_name: string;
-    second_name: string;
-    web_name: string;
-    team_code: number;
-
-    // Enhanced draft data
-    draft: {
-        isHidden?: boolean; // Flag indicating if this is a hidden player
-        isNew?: boolean; // Flag indicating if this is a new player available for request
-        position: CustomPosition;
-        pointsTotal: number;
-        pointsBreakdown: PointsBreakdown;
-        __generatedFor?: {
-            gameweeks?: number[];
-            generatedAt: string;
-            type: 'selective' | 'full' | 'season';
-        };
-    };
-}
-
-export type PlayersByCode = Record<EnhancedPlayerData['code'], EnhancedPlayerData>;

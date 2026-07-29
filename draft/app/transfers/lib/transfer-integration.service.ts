@@ -2,9 +2,10 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { PositionSlotKey } from '../../_shared/types/league-types';
+import type { TeamRoster } from '../../_shared/types/squad-types';
 import { isSlotScoringActive } from '../../teams/lib/position-slot-utils';
 import { createEmptyPoints, createEmptyStats } from '../../teams/lib/roster-conversion-utils';
-import type { DivisionTeamsDocument, TeamRoster } from '../../teams/types/team-types';
+import type { DivisionTeamsDocument } from '../../teams/types/team-types';
 import type { ProcessedTransfer } from '../types/transfer-types';
 import { applyTransfersToRosters, getGameweekTransfers } from './transfer-processor.service';
 

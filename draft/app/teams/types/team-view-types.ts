@@ -1,7 +1,7 @@
 // app/teams/types/team-view-types.ts
 
 import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
-import type { TeamPositionSlot } from './team-types';
+import type { TeamPositionSlot } from '../../_shared/types/squad-types';
 
 /**
  * Tab management types

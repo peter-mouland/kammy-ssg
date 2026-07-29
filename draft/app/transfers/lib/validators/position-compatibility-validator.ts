@@ -1,7 +1,7 @@
 /* Location: app/transfers/lib/position-compatibility-validator.ts */
 
-import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
-import type { TeamRoster } from '../../../teams/types/team-types';
+import type { EnhancedPlayerData } from '../../../_shared/types/player-types';
+import type { TeamRoster } from '../../../_shared/types/squad-types';
 import type { RuleValidationResult, TransferRuleContext } from '../../types/transfer-rule-types';
 import { findPlayerInRoster } from '../find-player-in-roster';
 

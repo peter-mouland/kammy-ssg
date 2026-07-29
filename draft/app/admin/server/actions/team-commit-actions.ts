@@ -3,9 +3,10 @@
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { getDraftPicksByDivision } from '../../../_shared/lib/sheets/draft';
 import type { PositionSlotKey } from '../../../_shared/types/league-types';
+import type { TeamPositionSlot } from '../../../_shared/types/squad-types';
 import { createDivisionTeamsDocument } from '../../../scoring/index.server';
 import { convertLegacyPlayersToRoster } from '../../../teams/lib/roster-conversion-utils';
-import type { DivisionTeamsDocument, TeamPositionSlot } from '../../../teams/types/team-types';
+import type { DivisionTeamsDocument } from '../../../teams/types/team-types';
 import type { AdminActionResult, DraftActionParams } from '../../types/admin-types';
 
 export async function handleCommitTeamsToFirestore(

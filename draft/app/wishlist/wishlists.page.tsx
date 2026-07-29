@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
-import type { EnhancedPlayerData } from '../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../_shared/types/player-types';
 import { WishlistDetails } from './components/wishlist-details';
 import { CreateWishlistForm } from './components/wishlist-form';
 import { WishlistItem } from './components/wishlist-item';

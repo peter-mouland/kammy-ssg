@@ -1,7 +1,7 @@
 // app/_shared/lib/position-order-utils.ts
 
 import type { CustomPosition, ManagerId } from '../../_shared/types/league-types';
-import type { RosterPlayer } from '../types/team-types';
+import type { RosterPlayer } from '../../_shared/types/squad-types';
 
 /**
  * Position order configuration for sorting players by position

@@ -28,6 +28,10 @@ export {
     calculateSingleTeamPoints,
     upsertDivisionTeamsDocument,
 } from './server/services/division-teams-points-population.service';
+// --- Enhanced player data ----------------------------------------------------
+// Generating the season's enhanced player data. This ran inside _shared's FPL
+// persistence layer, which is what made _shared import scoring/lib (P2.1b).
+export { generateAndCacheEnhancedData } from './server/services/enhanced-player-data.service';
 // --- Gameweek points ---------------------------------------------------------
 export { GameweekPointsService } from './server/services/gameweek-points.service';
 // --- The player-gw-points table ----------------------------------------------
