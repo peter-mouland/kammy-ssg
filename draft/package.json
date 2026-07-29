@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@firebase/database": "^1.1.0",
+    "@googleapis/sheets": "13.0.2",
     "@react-router/node": "^7.10.1",
     "@react-router/serve": "^7.10.1",
     "@tanstack/react-query": "^5.90.12",
@@ -27,8 +28,6 @@
     "date-fns": "^3.6.0",
     "firebase": "^11.10.0",
     "firebase-admin": "^13.6.0",
-    "google-auth-library": "^9.15.1",
-    "googleapis": "^144.0.0",
     "isbot": "^5",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
