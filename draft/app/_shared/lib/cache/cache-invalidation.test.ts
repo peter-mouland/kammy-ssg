@@ -166,36 +166,58 @@ describe('invalidatePattern', () => {
     });
 });
 
+/**
+ * Both structural checks below need the same scan of the app. It shells out to `grep -r`
+ * over every source file, so it is by far the slowest thing in the suite -- it is done
+ * ONCE and shared, rather than per test.
+ *
+ * These have an explicit timeout because they are I/O bound, not compute bound: under a
+ * loaded machine (the suite runs test files in parallel) the default 5s was marginal and
+ * made the whole suite flaky.
+ */
+let ruleCallSites: string[] | null = null;
+
+const rulesCalledInApp = (): string[] => {
+    if (ruleCallSites === null) {
+        const source = execFileSync('grep', ['-rho', "getInvalidationKeys('[A-Z_]*'", 'app'], {
+            cwd: process.cwd(),
+            encoding: 'utf8',
+        });
+        ruleCallSites = Array.from(source.matchAll(/getInvalidationKeys\('([A-Z_]+)'/g), (m) => m[1]);
+    }
+    return ruleCallSites;
+};
+
+const STRUCTURAL_SCAN_TIMEOUT_MS = 30_000;
+
 describe('the invalidation rules stay honest', () => {
     // Four rules were declared here and never called, while the real invalidation
     // happened via ad-hoc dataCache.invalidate() calls elsewhere. That left the
     // documented behaviour and the actual behaviour free to drift apart silently.
     // A rule with no caller is a lie about what the app does, so fail on it.
-    it('has a caller in the app for every declared rule', () => {
-        const source = execFileSync('grep', ['-rho', "getInvalidationKeys('[A-Z_]*'", 'app'], {
-            cwd: process.cwd(),
-            encoding: 'utf8',
-        });
-        const called = new Set(Array.from(source.matchAll(/getInvalidationKeys\('([A-Z_]+)'/g), (m) => m[1]));
+    it(
+        'has a caller in the app for every declared rule',
+        () => {
+            const called = new Set(rulesCalledInApp());
 
-        const uncalled = Object.keys(CACHE_INVALIDATION_RULES).filter((rule) => !called.has(rule));
+            const uncalled = Object.keys(CACHE_INVALIDATION_RULES).filter((rule) => !called.has(rule));
 
-        expect(uncalled).toEqual([]);
-    });
+            expect(uncalled).toEqual([]);
+        },
+        STRUCTURAL_SCAN_TIMEOUT_MS,
+    );
 
     // The mirror of the above: a call site naming a rule that does not exist returns
     // an empty key list, so nothing is invalidated and nothing complains.
-    it('declares every rule the app asks for', () => {
-        const source = execFileSync('grep', ['-rho', "getInvalidationKeys('[A-Z_]*'", 'app'], {
-            cwd: process.cwd(),
-            encoding: 'utf8',
-        });
-        const called = Array.from(source.matchAll(/getInvalidationKeys\('([A-Z_]+)'/g), (m) => m[1]);
+    it(
+        'declares every rule the app asks for',
+        () => {
+            const undeclared = rulesCalledInApp().filter((rule) => !(rule in CACHE_INVALIDATION_RULES));
 
-        const undeclared = called.filter((rule) => !(rule in CACHE_INVALIDATION_RULES));
-
-        expect(undeclared).toEqual([]);
-    });
+            expect(undeclared).toEqual([]);
+        },
+        STRUCTURAL_SCAN_TIMEOUT_MS,
+    );
 
     it('resolves every rule to at least one key', () => {
         const empty = [
