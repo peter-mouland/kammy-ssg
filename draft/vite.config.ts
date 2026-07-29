@@ -16,9 +16,11 @@ export default defineConfig(({ mode }) => {
         ssr: {
             noExternal: [],
             external: [
-                // Ensure Google APIs are not bundled for client
-                "googleapis",
-                "google-auth-library"
+                // Ensure Google APIs are not bundled for client.
+                // Scoped @googleapis/sheets, not the googleapis umbrella -- see the note in
+                // _shared/lib/sheets/utils/common.ts. Anything named here must also be a
+                // dependency of functions/package.json, since that is what Firebase installs.
+                "@googleapis/sheets"
             ]
         },
         build: {
@@ -30,8 +32,7 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 external: [
                     // Additional external packages for client build
-                    "googleapis",
-                    "google-auth-library"
+                    "@googleapis/sheets"
                 ]
             }
         }

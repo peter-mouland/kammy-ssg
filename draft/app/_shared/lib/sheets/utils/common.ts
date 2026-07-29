@@ -1,6 +1,18 @@
 /* Location: app/_shared/lib/sheets/utils/common.ts */
 
-import { google } from 'googleapis';
+// The scoped `@googleapis/sheets` rather than the `googleapis` umbrella. Importing
+// `{ google }` from the umbrella loads Google's ENTIRE API surface -- hundreds of clients
+// -- to talk to one spreadsheet. Measured on this machine: ~650ms warm and ~1.7s cold,
+// against ~78ms for the scoped package. That cost was paid on every Cloud Function cold
+// start, and in tests it was the direct cause of the flaky suite (see vitest.setup.ts).
+//
+// `JWT` is taken from `@googleapis/sheets`'s own `auth` export, NOT from the
+// `google-auth-library` in this workspace. They are different: this package resolves
+// google-auth-library 10.5.0 through a nested copy, while `draft` depends on 9.15.1, so a
+// JWT built from the workspace copy is not the class `sheets()` expects -- it fails to
+// type-check and would be a version mismatch at runtime. Taking auth from the same package
+// makes the versions match by construction.
+import { auth as googleAuth, sheets, type sheets_v4 } from '@googleapis/sheets';
 import type { AppError } from '../../../types';
 
 export const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_ID as string;
@@ -25,7 +37,7 @@ export interface SheetWriteOptions {
     responseDateTimeRenderOption?: 'SERIAL_NUMBER' | 'FORMATTED_STRING';
 }
 
-let sheetsClientPromise: Promise<ReturnType<typeof google.sheets>> | null = null;
+let sheetsClientPromise: Promise<sheets_v4.Sheets> | null = null;
 
 type GaxiosLikeRequest = {
     method?: string;
@@ -198,18 +210,17 @@ async function createSheetsClient() {
                     request: fetchTransporterRequest,
                 };
 
-                const auth = new google.auth.JWT({
+                const auth = new googleAuth.JWT({
                     email: credentials.client_email,
                     key: credentials.private_key,
                     scopes: SCOPES,
-                    transporter,
-                } as ConstructorParameters<typeof google.auth.JWT>[0]);
+                });
 
                 // Prefer self-signed JWT access tokens (no token-endpoint round trip)
                 auth.useJWTAccessWithScope = true;
                 auth.transporter = transporter as typeof auth.transporter;
 
-                return google.sheets({ version: 'v4', auth });
+                return sheets({ version: 'v4', auth });
             } catch (error) {
                 sheetsClientPromise = null;
                 console.error('Failed to initialize Google Sheets client:', error);
