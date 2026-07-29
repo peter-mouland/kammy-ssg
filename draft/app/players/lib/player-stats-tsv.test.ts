@@ -1,7 +1,7 @@
 /* Location: app/players/lib/player-stats-tsv.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { PlayerStatsData } from '../types/player-types';
 import { buildPlayerStatsTsv, PLAYER_STATS_TSV_HEADERS } from './player-stats-tsv';
 

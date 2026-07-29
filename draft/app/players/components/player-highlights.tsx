@@ -1,6 +1,6 @@
 /* Location: app/players/components/player-highlights.tsx */
 
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import styles from './player-highlights.module.css';
 
 interface PlayerHighlightsProps {

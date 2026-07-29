@@ -3,73 +3,16 @@
 
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type {
-    CustomPosition,
     DivisionId,
     DivisionSheetData,
     ManagerId,
     PositionSlotKey,
-    RosterPosition,
     UserTeamsSheetData,
 } from '../../_shared/types/league-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { RosterPlayer, TeamPositionSlot, TeamRoster } from '../../_shared/types/squad-types';
 import type { TeamOfTheWeekData } from '../../leagues/types/league-standings-types';
-import type { PlayerGameweekStatsData } from '../../players/types/player-types';
-import type { EnhancedPlayerData, Points } from '../../scoring/types/scoring-types';
 import type { AllTeamsData } from './team-view-types';
-
-export type RosterPlayer = {
-    playerId: number; // FPL player ID
-    playerCode: number; // FPL player code at time of assignment
-    playerName: string; // web_name at time of assignment
-    playerPosition: CustomPosition; // sheets position
-    teamPosition: RosterPosition; // actual team slot
-    teamSlotIndex: number; // 0-based index within position
-    isSub: boolean;
-    onLoanTo: string | null; // userId
-    onLoanFrom: string | null; // userId of team lending player (NEW)
-    onLoanStart: string | null; // ISO date string
-    assignedAt: string; // ISO date when assigned to this slot
-};
-
-/**
- * Team position slot with player data and points
- */
-export interface TeamPositionSlot {
-    // Player info (from draft/transfers)
-    player: RosterPlayer;
-
-    // Points data per gameweek
-    gameweek: {
-        stats: PlayerGameweekStatsData;
-        points: Points;
-    };
-
-    // Season totals for this position slot
-    season: {
-        stats: PlayerGameweekStatsData; // cumulative stats
-        points: Points; // cumulative points
-        seasonUpToGameweek: number; // highest gameweek included in season totals (0 = no gameweeks included)
-        seasonGeneratedOn: string; // ISO date when season totals were last updated
-    };
-}
-
-/**
- * Team roster structure
- */
-export type TeamRoster = {
-    ca_0: TeamPositionSlot;
-    ca_1: TeamPositionSlot;
-    cb_0: TeamPositionSlot;
-    cb_1: TeamPositionSlot;
-    fb_0: TeamPositionSlot;
-    fb_1: TeamPositionSlot;
-    gk_0: TeamPositionSlot;
-    mid_0: TeamPositionSlot;
-    mid_1: TeamPositionSlot;
-    on_loan_0?: TeamPositionSlot;
-    sub_0: TeamPositionSlot;
-    wa_0: TeamPositionSlot;
-    wa_1: TeamPositionSlot;
-};
 
 /**
  * Team gameweek data structure

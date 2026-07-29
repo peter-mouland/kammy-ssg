@@ -3,7 +3,7 @@
 /* - the public interface to get fantasy.premierleague.com data */
 /* - common helper functions e.g. data-transfers should live here */
 
-import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../types/player-types';
 import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
 import { fuzzyStringMatch } from '../fuzzy-string-match';

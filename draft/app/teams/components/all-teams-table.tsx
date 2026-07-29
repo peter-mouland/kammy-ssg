@@ -6,10 +6,10 @@ import { Table, TableBadge, type TableColumn } from '../../_shared/components/ta
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
+import type { PlayerGameweekStatsData } from '../../_shared/types/performance-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { PlayerSummary } from '../../players/components/player';
-import type { PlayerGameweekStatsData } from '../../players/types/player-types';
 import { isStatRelevant } from '../../scoring/lib';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
 import { compareByManagerThenPosition } from '../lib/sorting-utils';
 import type { AllTeamsData, TeamFilters, TeamRowData } from '../types/team-view-types';
 import { AllTeamsFilters } from './all-teams-filters';

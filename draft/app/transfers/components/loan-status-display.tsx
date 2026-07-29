@@ -2,9 +2,9 @@
 
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { RosterPlayer } from '../../_shared/types/squad-types';
 import { PlayerSummary } from '../../players/components/player';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { RosterPlayer } from '../../teams/types/team-types';
 import styles from './loan-status-display.module.css';
 
 type ActiveLoan = {

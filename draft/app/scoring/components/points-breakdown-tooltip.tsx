@@ -1,7 +1,8 @@
 /* Location: app/scoring/components/points-breakdown-tooltip.tsx */
 
 import { useState } from 'react';
-import type { EnhancedPlayerData, PointsBreakdownItem } from '../types/scoring-types';
+import type { PointsBreakdownItem } from '../../_shared/types/performance-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import styles from './points-breakdown-tooltip.module.css';
 
 interface PointsBreakdownTooltipProps {

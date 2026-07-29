@@ -8,7 +8,7 @@ import { SelectUser } from '../_shared/components/select-user';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import type { ManagerId, PositionSlotKey } from '../_shared/types/league-types';
-import type { RosterPlayer } from '../teams/types/team-types';
+import type { RosterPlayer } from '../_shared/types/squad-types';
 import { CurrentTransfers } from './components/current-transfers';
 import { LoanStatusDisplay } from './components/loan-status-display';
 import { type JourneyPath, TransferForm } from './components/transfer-form';

@@ -4,10 +4,10 @@ import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import type { FplPlayerGameweekData } from '../../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../../_shared/lib/sheets/players';
 import type { CustomPosition } from '../../../_shared/types/league-types';
+import type { EnhancedPlayerData } from '../../../_shared/types/player-types';
 import type { PlayerGameweekPointsRow, PlayersSheetData } from '../../../_shared/types/sheets-types';
 import { calculateGameweekPoints } from '../../lib/calculations';
 import { convertToPlayerGameweekStats } from '../../lib/data-conversion';
-import type { EnhancedPlayerData } from '../../types/scoring-types';
 
 /**
  * Build the `player-gw-points` table: every rostered player, with their custom points

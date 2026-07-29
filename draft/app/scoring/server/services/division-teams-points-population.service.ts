@@ -2,12 +2,12 @@
 
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import type { DivisionId, PositionSlotKey } from '../../../_shared/types/league-types';
-import type { PlayerGameweekStatsData } from '../../../players/types/player-types';
-import type { DivisionTeamsDocument, TeamGameweekData, TeamPositionSlot } from '../../../teams/types/team-types';
+import type { PlayerGameweekStatsData, Points } from '../../../_shared/types/performance-types';
+import type { TeamPositionSlot } from '../../../_shared/types/squad-types';
+import type { DivisionTeamsDocument, TeamGameweekData } from '../../../teams/types/team-types';
 import { applyTransfersToGameweekDocument } from '../../../transfers/lib/transfer-integration.service';
 import { readTransferDataForDivision } from '../../../transfers/lib/transfer-rows';
 import { generateGameweekData } from '../../lib/generators';
-import type { Points } from '../../types/scoring-types';
 import { getDivisionTeamsDocument } from './division-teams.service';
 
 type CalcProps = {

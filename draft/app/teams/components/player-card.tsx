@@ -3,7 +3,7 @@
 // /teams/components/player-card.tsx
 import type React from 'react';
 import { Link } from 'react-router';
-import type { RosterPlayer } from '../types/team-types';
+import type { RosterPlayer } from '../../_shared/types/squad-types';
 import styles from './player-card.module.css';
 
 interface PlayerCardProps {

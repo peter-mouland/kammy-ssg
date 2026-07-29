@@ -12,6 +12,11 @@
  * belongs in `index.server.ts` instead — see the note at the bottom.
  */
 
+// --- Types -------------------------------------------------------------------
+// The vocabulary of points. `EnhancedPlayerData` and `PlayersByCode` are used by most
+// of the app; they are on the P2.1b list to move into the shared kernel.
+export type { Points, PointsBreakdownItem } from '../_shared/types/performance-types';
+export type { EnhancedPlayerData, PlayersByCode } from '../_shared/types/player-types';
 // --- Scoring UI --------------------------------------------------------------
 // Explaining a points figure is scoring's job, so these are part of the contract rather
 // than components other domains happen to reach for. `players` and `transfers` embed
@@ -49,17 +54,7 @@ export {
     getFullBreakdown,
 } from './lib/calculations';
 export { POSITION_RULES } from './lib/rules';
-// --- Types -------------------------------------------------------------------
-// The vocabulary of points. `EnhancedPlayerData` and `PlayersByCode` are used by most
-// of the app; they are on the P2.1b list to move into the shared kernel.
-export type {
-    EnhancedPlayerData,
-    GameweekStatWithPoints,
-    PlayersByCode,
-    Points,
-    PointsBreakdownItem,
-    SeasonTotals,
-} from './types/scoring-types';
+export type { GameweekStatWithPoints, SeasonTotals } from './types/scoring-types';
 
 // --- Server-only operations are NOT here -------------------------------------
 // `getTeamsForGameweek`, the division-teams documents and `GameweekPointsService` live

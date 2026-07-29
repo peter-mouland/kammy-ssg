@@ -3,7 +3,7 @@
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readTransfers } from '../../_shared/lib/sheets/transfers';
 import type { DivisionId } from '../../_shared/types/league-types';
-import type { EnhancedPlayerData, PlayersByCode } from '../../scoring/types/scoring-types';
+import type { EnhancedPlayerData, PlayersByCode } from '../../_shared/types/player-types';
 import type {
     ProcessedTransfer,
     ProcessedTransferSheetData,

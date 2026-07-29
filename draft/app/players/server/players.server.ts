@@ -4,11 +4,12 @@ import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
 import type { CustomPosition } from '../../_shared/types/league-types';
+import type { PlayerGameweekStatsData } from '../../_shared/types/performance-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
 import { convertToPlayerGameweekStats } from '../../scoring/lib';
 import { calculateSeasonPoints, getFullBreakdown } from '../../scoring/lib/calculations';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { PlayerGameweekStatsData, PlayerStatsData } from '../types/player-types';
+import type { PlayerStatsData } from '../types/player-types';
 
 export async function getPlayerStatsData(): Promise<PlayerStatsData> {
     const [players, fplTeams, sheetsPlayers, currentGameweekData] = await Promise.all([

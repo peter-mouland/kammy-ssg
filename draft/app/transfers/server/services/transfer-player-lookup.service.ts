@@ -1,6 +1,6 @@
 /* Location: app/transfers/server/actions/transfer-player-lookup.service.ts */
 
-import type { EnhancedPlayerData } from '../../../scoring/types/scoring-types';
+import type { EnhancedPlayerData } from '../../../_shared/types/player-types';
 
 /**
  * Get player details by code for transfer operations

@@ -8,6 +8,7 @@ import { readPlayers } from '../../../_shared/lib/sheets/players';
 import { getDivisionUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../../../_shared/types/league-types';
 import type { DraftAction } from '../../../draft/types/draft-types';
+import { generateAndCacheEnhancedData } from '../../../scoring/index.server';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import { getSystemStatus } from './system-status.service';
 
@@ -214,7 +215,11 @@ export class AdminOrchestrator {
     }
 
     public async preloadCommonData() {
+        // Order matters and is unchanged: clear, populate the bootstrap, then generate the
+        // enhanced data from it. The last step moved out of FplFirestore in P2.1b -- it is
+        // scoring's job -- so admin sequences the two, which is what admin is for.
         const result = await firestore.preloadCommonData();
+        result.results.enhanced = await generateAndCacheEnhancedData(firestore);
         dataCache.invalidateMultiple(getInvalidationKeys('FPL_DATA_UPDATED'));
         return result;
     }

@@ -2,8 +2,9 @@
 
 import type { FplPlayerSeasonFixture, FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
-import type { EnhancedPlayerData, GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
-import type { RosterPlayer } from '../../teams/types/team-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { RosterPlayer } from '../../_shared/types/squad-types';
+import type { GameweekStatWithPoints, SeasonTotals } from '../../scoring/types/scoring-types';
 
 /**
  * A player as the shared player components render it.
@@ -32,26 +33,6 @@ export type PositionNameMap = {
 };
 
 export type DataSource = 'fpl' | '2425';
-
-export interface PlayerGameweekStatsData {
-    appearance: number;
-    goals: number;
-    assists: number;
-    cleanSheets: number;
-    goalsConceded: number;
-    penaltiesSaved: number;
-    yellowCards: number;
-    redCards: number;
-    saves: number;
-    bonus: number;
-    defensiveContribution: number;
-    // Raw components behind the defensive-contribution metric. We compute CBIT/CBIRT
-    // ourselves (by custom position) rather than trusting FPL's aggregate, which is
-    // baked to FPL's own position.
-    clearancesBlocksInterceptions: number;
-    tackles: number;
-    recoveries: number;
-}
 
 export interface PlayerDetailData {
     player: EnhancedPlayerData;

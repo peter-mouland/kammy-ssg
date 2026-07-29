@@ -2,8 +2,8 @@
 
 import { Table } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
-import type { EnhancedPlayerData } from '../../scoring/types/scoring-types';
-import type { RosterPlayer, TeamRoster } from '../../teams/types/team-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
 import type { TransferType } from '../types/transfer-types';
 import styles from './player-out-selector.module.css';
 import { getTransferSelectorStatColumns } from './transfer-selector-stat-columns';

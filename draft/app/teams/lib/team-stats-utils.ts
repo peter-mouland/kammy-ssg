@@ -1,5 +1,5 @@
 // app/teams/lib/team-stats-utils.ts
-import type { TeamRoster } from '../types/team-types';
+import type { TeamRoster } from '../../_shared/types/squad-types';
 
 /**
  * Calculate contributing stats breakdown for the team
