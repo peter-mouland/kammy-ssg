@@ -3,12 +3,12 @@
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useFetcher, useNavigate } from 'react-router';
+import { GameweekSelector } from '../../../_shared/components/gameweek-selector';
 import { SelectDivision } from '../../../_shared/components/select-division';
 import { Table, type TableColumn } from '../../../_shared/components/table';
 import type { FplTeam, GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import type { DivisionSheetData, ManagerId, PositionSlotKey } from '../../../_shared/types/league-types';
 import { PlayerSummary } from '../../../players/components/player';
-import { GameweekSelector } from '../../../teams/components/gameweek-selector';
 import type { RosterPlayer } from '../../../teams/types/team-types';
 import { LoanStatusDisplay } from '../../../transfers/components/loan-status-display';
 import type { TransferAdminOverviewData, TransferValidationResult } from '../../../transfers/types/transfer-rule-types';

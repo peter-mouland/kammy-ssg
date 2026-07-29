@@ -1,13 +1,13 @@
 // app/teams/components/team-view.tsx
 
 import { Link, useLoaderData, useNavigate, useSearchParams } from 'react-router';
+import { GameweekSelector } from '../../_shared/components/gameweek-selector';
 import { PageHeader } from '../../_shared/components/page-header';
 import { SelectUser } from '../../_shared/components/select-user';
 import { TimeTravelBanner } from '../../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../../_shared/features/user-selection/user-selection-provider';
 import type { StatsViewMode, TeamViewData } from '../types/team-types';
 import type { TeamViewTab } from '../types/team-view-types';
-import { GameweekSelector } from './gameweek-selector';
 import { TeamOfTheWeek } from './team-of-the-week';
 import styles from './team-view.module.css';
 import { AllTeamsView } from './team-view-all-teams';
