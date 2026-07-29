@@ -181,9 +181,7 @@ async function getTransferStatusReal() {
         console.log('🔄 Loading (getTransferStatusReal) real transfer status...');
 
         // Use the existing transfer data service
-        const { getTransfersDataForDivision } = await import(
-            '../../../transfers/server/services/transfers-data.service'
-        );
+        const { getTransfersDataForDivision } = await import('../../../transfers/index.server');
 
         // Get divisions and current gameweek context
         const [divisions, gameweekData] = await Promise.all([readDivisions(), fplApiCache.getFplEvents()]);

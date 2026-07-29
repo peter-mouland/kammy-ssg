@@ -227,7 +227,7 @@ const autoCommitDraft = async ({ draftState, nextState, totalPicks, pick }) => {
         console.log(`🎉 Draft completed! Auto-committing teams for division: ${divisionId}`);
 
         // Import and run auto-commit (don't await to avoid blocking the pick response)
-        const { handleCommitTeamsToFirestore } = await import('../../admin/server/actions/team-commit-actions');
+        const { handleCommitTeamsToFirestore } = await import('../../admin/index.server');
         const commitResult = await handleCommitTeamsToFirestore(divisionId);
         if (commitResult.success) {
             await FirebaseDraftSync.broadcastDraftEvent(divisionId, {

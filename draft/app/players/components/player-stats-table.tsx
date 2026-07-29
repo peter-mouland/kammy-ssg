@@ -12,8 +12,7 @@ import { getPlayerPosition } from '../../draft/lib/draft-rules';
 import { PointsBreakdownTooltip } from '../../scoring';
 import { getPositionDisplayName, isStatRelevant } from '../../scoring/lib';
 import { sortPositions } from '../../teams/lib/sorting-utils';
-import { WishlistButton } from '../../wishlist/components/wishlist-button';
-import { WishlistTags } from '../../wishlist/components/wishlist-tags';
+import { WishlistButton, WishlistTags } from '../../wishlist';
 import styles from './player-stats-table.module.css';
 import { PlayersFilters } from './players-filters';
 

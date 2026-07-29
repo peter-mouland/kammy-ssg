@@ -1,6 +1,6 @@
 import { Link, useLoaderData } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
-import { PositionPointsTable } from '../leagues/components/position-points-table';
+import { PositionPointsTable } from '../leagues';
 import type { EnhancedLeagueStandingsLoaderData } from '../leagues/types/league-standings-types';
 
 export const LeagueStandings = () => {
