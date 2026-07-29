@@ -29,7 +29,6 @@ git log --oneline -15
 | | Why |
 |---|---|
 | **P2.7 — public API for `scoring`** | `draft` is done and is the worked example to copy. `division-teams.service` has 6 importers across 5 domains — the worst offender, and it stands between P2.3 and its remaining readers. |
-| **P3.4 — first loader test** | **No longer blocked** — MSW substitutes at the network boundary, so it needs no injection seam. Costs one fixture-service-account helper, then every loader test reuses it. |
 
 *Recently done: P4.5 (steering realigned + drift check), P3.3 (draft/lib now has 47 tests), P2.7 for `draft` (first public API), P2.3 (every sheets reader is now domain-free).*
 
@@ -104,8 +103,9 @@ Re-measure with `yarn ratchet` and `yarn test`. Committed counts live in `.ratch
 | Type errors | 275 | **176** |
 | CSS convention violations | not measurable (stylelint not installed) | **175** — `color-no-hex` cleared |
 | Biome lint warnings | 280, none enforced | **266**, ratcheted |
-| Tests | 149 passing, 24 files | **333 passing, 36 files** |
+| Tests | 149 passing, 24 files | **342 passing, 37 files** |
 | CI type check | `continue-on-error: true` — cannot fail a PR | ratcheted, blocking |
+| `functions/` type errors | unmeasured — only `yarn build` saw them | **0**, ratcheted and must stay there |
 | Root `yarn type-check` | fails: `command not found: tsc` | works |
 | Pre-commit hook | never ran (see P0.6) | runs lint-staged + tests |
 | `_shared` → domain imports | 34, across 6 domains | **3** — P2.1 + P2.4 + P2.7 (draft) + P2.3 complete; the rest is P2.1b |
@@ -476,7 +476,7 @@ Ordered by risk. The existing tests are good — this is a coverage-placement pr
   *Acceptance:* ✅ all three named modules covered, even-round reversal included.
   *Not covered:* "the same player cannot be picked twice in a division". That guard is in `draft.server.ts:150`, not `lib/`, and needs the injection seam P3.4 is waiting on. Carried into P3.4.
 
-- [ ] **P3.4 — First route-loader test**
+- [x] **P3.4 — First route-loader test**
   Named as the priority boundary in the testing conventions, and there is still not one test there.
 
   **No longer hard-blocked on P2.3.** That block assumed the only way in was an injection seam. With MSW the substitution happens at the network boundary instead, so the sheets modules can be imported exactly as they are — and the real `googleapis` client, its auth and its parsing all run for real, which is better coverage than a fake client would give.
@@ -487,7 +487,15 @@ Ordered by risk. The existing tests are good — this is a coverage-placement pr
 
   *Also carries from P3.3:* the "same player cannot be picked twice in a division" rule, which lives in `draft.server.ts:150`.
 
-  *Acceptance:* one loader test exists and the pattern is documented in the testing conventions.
+  *Done:* [cup.route.test.ts](../draft/app/cup/cup.route.test.ts), 9 tests. The loader runs end to end — the real sheets client and parsing behind MSW, the real cup config parsing, the real (pure) `getCupPageData`. Nothing module-mocked. FPL values are seeded through `dataCache` because that side reads Firestore over gRPC, which MSW cannot intercept.
+
+  Covers what a manager actually gets: the default gameweek, an explicit `?gameweek`, a squad hidden before the deadline and revealed after, a league with no cup configured, and a sheet that is unavailable. That last group is the point — every loader has a try/catch fallback and nothing exercised any of them.
+
+  **Two of my first assertions were wrong, and the code was right.** Points come back `null` before the deadline (the visibility mechanic, working), and `rows` still lists managers when no round is configured (by design, rather than an empty screen). Both tests were rewritten to describe the intended behaviour rather than being "fixed" by changing the code.
+
+  *Note:* `isDeadlinePassed` compares against the gameweek's **`end`**, not `deadline_time`. Non-obvious, and it cost a debugging cycle.
+
+  *Acceptance:* ✅ one loader test exists and the pattern is documented in the testing conventions.
   Establish the pattern once — inject a fake sheets client returning fixtures, assert the loader's returned shape for a given URL and division — then replicate across loaders.
   *Acceptance:* one loader test exists and the pattern is documented in the testing conventions.
 
@@ -552,7 +560,7 @@ Add new issues here as they surface. Do not fix them in the task that found them
 | 2026-07-26 | **[Will slow down future work]** | `DataCacheService` is a singleton with a `setInterval` started in its constructor at module import. Makes isolated testing awkward (tests share one instance and clear between cases) and keeps a timer alive in any process that imports it. | [data-cache.service.ts](../draft/app/_shared/lib/cache/data-cache.service.ts) |
 | 2026-07-26 | **[Polish]** | `FplApiCache.clearFplCaches()` has zero callers. Kept and corrected rather than deleted, but if nothing calls it by the time Phase 2 lands, delete it. | [api-cache.ts](../draft/app/_shared/lib/fpl/api-cache.ts) |
 | 2026-07-26 | **[Polish]** | `dataCache.delete()` is an alias for `dataCache.invalidate()`. Two names for one operation invites picking the wrong one. | [data-cache.service.ts](../draft/app/_shared/lib/cache/data-cache.service.ts) |
-| 2026-07-26 | **[Separate problem found]** | `functions/` workspace is not type-checked by `yarn type-check` or the ratchet — only by `yarn build`. Its error count is unmeasured. | root `package.json` |
+| 2026-07-26 | **[Fixed]** | `functions/` was not type-checked by `yarn type-check` or the ratchet — only by `yarn build`. It bit exactly as predicted: the dependabot batch in `16b4953` brought in `tough-cookie` 6, which stopped `@types/request` compiling, and **master's build was broken** while tests, types, CSS and lint were all green. Root cause was that `functions/tsconfig.json` declared no `types`, so `tsc` auto-included every `@types/*` in `node_modules` — including a stale transitive stub nothing here imports. Fixed by declaring `"types": ["node"]`, not by `skipLibCheck`, which would have hidden it. Now ratcheted as `functionsTypes`, baseline **0** — unlike the other counts there is no backlog to burn down, so anything above zero is a regression. Verified in both directions. | [functions/tsconfig.json](../functions/tsconfig.json), [ratchet.mjs](../scripts/ratchet.mjs) |
 | 2026-07-26 | **[Will slow down future work]** | `keyframes-name-pattern` ×14 — keyframe names are not kebab-case. Cosmetic, but it is 14 of the 603 and trivially fixable in one pass. | various `.module.css` |
 | 2026-07-26 | **[Separate problem found]** | `draft/server/draft.server.ts` imports `admin/server/actions/team-commit-actions`. A feature domain reaching into **admin's** server actions inverts the intended direction — admin orchestrates domains, not the reverse. Found by P1.2. | [draft.server.ts](../draft/app/draft/server/draft.server.ts) |
 | 2026-07-26 | **[Fixed + tested]** | `formatPointsDisplay` rendered a negative total as `--3`: the negative branch built `` `-${points}` `` while `points` already carried its own sign. Visible in the Points column whenever a player scored negatively in a gameweek. Found by the subagent writing the table tests, which correctly declined to encode it. Reproduced with a failing test, then fixed. | [utils.ts](../draft/app/scoring/lib/utils.ts) |

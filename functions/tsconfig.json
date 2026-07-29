@@ -8,7 +8,12 @@
     "strict": true,
     "target": "es2017",
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    // Without this, tsc auto-includes EVERY @types/* package found in node_modules --
+    // including stale transitive stubs like @types/request (pulled in by retry-request),
+    // which nothing here imports and which stopped compiling against tough-cookie 6.
+    // Listing what is actually used keeps the compiler to this project's real surface.
+    "types": ["node"]
   },
   "compileOnSave": true,
   "include": [
