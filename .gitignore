@@ -41,3 +41,9 @@ aws
 .yarn/cache
 .yarn/install-state.gz
 .vercel
+
+# Raw FPL/Sheets captures — 57MB, and irreplaceable: a finished season's per-gameweek
+# history cannot be re-fetched from the FPL API. Kept locally, never committed.
+# The harness reads the small tracked slice in test-fixtures/ instead; regenerate it with
+# `node scripts/extract-harness-stats.mjs`. See archive/README.md.
+/archive/
