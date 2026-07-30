@@ -2,6 +2,7 @@
 
 import { cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getInMemoryFirestore } from './firestore-memory';
 
 let db: FirebaseFirestore.Firestore;
 
@@ -23,6 +24,14 @@ if (process.env.MY_FIREBASE_SERVICE_ACCOUNT_KEY) {
 
 export function getFirestoreInstance() {
     if (!db) {
+        // The offline test harness: no credentials, no network, no emulator. Set only by
+        // `yarn dev:fixtures` and the harness tests -- see ./firestore-memory.ts.
+        if (process.env.KAMMY_FIXTURE_FIRESTORE === '1') {
+            console.log('🧪 Using the in-memory fixture Firestore (KAMMY_FIXTURE_FIRESTORE=1)');
+            db = getInMemoryFirestore();
+            return db;
+        }
+
         if (!serviceAccount) {
             throw new Error('Firebase service account not configured');
         }

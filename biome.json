@@ -29,8 +29,8 @@
     },
     "javascript": {
         "parser": {
-           "unsafeParameterDecoratorsEnabled": false,
-           "jsxEverywhere": false
+            "unsafeParameterDecoratorsEnabled": false,
+            "jsxEverywhere": false
         },
         "formatter": {
             "quoteStyle": "single",
