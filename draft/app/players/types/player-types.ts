@@ -15,8 +15,6 @@ export type PositionNameMap = {
     ca: 'Centre Attacker';
 };
 
-export type DataSource = 'fpl' | '2425';
-
 export interface PlayerDetailData {
     player: EnhancedPlayerData;
     team: {
@@ -28,7 +26,6 @@ export interface PlayerDetailData {
     gameweekStats: GameweekStatWithPoints[];
     seasonTotals: SeasonTotals;
     currentGameweek: number;
-    dataSource: DataSource;
     fixtures: FplPlayerSeasonFixture[];
     fplTeamsById: Record<number, FplTeam>;
     fplEvents: GameWeekData[];

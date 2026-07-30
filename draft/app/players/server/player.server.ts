@@ -1,17 +1,13 @@
 /* Location: app/players/server/player.server.ts */
 
-import type { FplBootstrapData, FplPlayerSeasonData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { GameweekStatWithPoints } from '../../scoring';
-import type { DataSource, PlayerDetailData } from '../types/player-types';
+import type { PlayerDetailData } from '../types/player-types';
 
-export async function getPlayerDetailData(
-    playerCode: number,
-    dataSource: DataSource = 'fpl',
-): Promise<PlayerDetailData> {
+export async function getPlayerDetailData(playerCode: number): Promise<PlayerDetailData> {
     try {
-        console.log(`🔄 Loading player detail data for player: ${playerCode}, source: ${dataSource}`);
+        console.log(`🔄 Loading player detail data for player: ${playerCode}`);
 
         // Import required services
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
@@ -43,21 +39,12 @@ export async function getPlayerDetailData(
             {} as Record<number, any>,
         );
 
-        let playerDetailedStats: FplPlayerSeasonData | null;
-        if (dataSource === 'fpl') {
-            // Get detailed player stats from current FPL API (all from cache)
-            playerDetailedStats = await fplApiCache.getPlayerDetailedStats(fplPlayer.id);
-        } else {
-            // Load 2425 fixture data
-            playerDetailedStats = await loadFixturesPlayerData(fplPlayer.code, dataSource);
-        }
+        const playerDetailedStats = await fplApiCache.getPlayerDetailedStats(fplPlayer.id);
 
         const gameweekStats = processGameweekData(playerDetailedStats?.history || [], teamLookup);
         const seasonTotals = calculateSeasonTotals(gameweekStats, fplPlayer);
 
-        console.log(
-            `✅ Player detail data loaded for ${fplPlayer.first_name} ${fplPlayer.second_name} (${dataSource})`,
-        );
+        console.log(`✅ Player detail data loaded for ${fplPlayer.first_name} ${fplPlayer.second_name}`);
 
         return {
             player: fplPlayer,
@@ -66,7 +53,6 @@ export async function getPlayerDetailData(
             gameweekStats,
             seasonTotals,
             currentGameweek: currentGameweek || 1,
-            dataSource,
             fixtures: playerDetailedStats?.fixtures ?? [],
             fplTeamsById: teamLookup,
             fplEvents,
@@ -74,20 +60,6 @@ export async function getPlayerDetailData(
     } catch (error) {
         console.error(`❌ Failed to load player detail data for player ${playerCode}:`, error);
         throw error;
-    }
-}
-
-/**
- * Load 2425 fixture data from local files
- */
-async function loadFixturesPlayerData(playerCode: number, season: string): Promise<FplPlayerSeasonData | null> {
-    try {
-        const bootstrap: FplBootstrapData = await import(`../../api/fixtures/${season}/fpl/bootstrap-static.json`);
-        const playerId = bootstrap.elements.find((e) => e.code === playerCode)?.id;
-        return await import(`../../api/fixtures/${season}/fpl/element-summary/${playerId}.json`);
-    } catch (_error) {
-        console.log(`⚠️ No 2425 data found for player code ${playerCode}, returning empty stats`);
-        return null;
     }
 }
 

@@ -3,7 +3,6 @@
 // app/routes/players.$playerId.tsx
 import { Link, useLoaderData } from 'react-router';
 import { Player } from '../_shared/components/player';
-import { DataSourceToggle } from './components/data-source-toggle';
 import { PlayerFixtureTable } from './components/player-fixture-table';
 import { PlayerGameweekTable } from './components/player-gameweek-table';
 import { PlayerHighlights, StatCard } from './components/player-highlights';
@@ -11,18 +10,8 @@ import styles from './player.page.module.css';
 import type { PlayerDetailData } from './types/player-types';
 
 export const PlayerPage = () => {
-    const {
-        player,
-        team,
-        position,
-        gameweekStats,
-        seasonTotals,
-        currentGameweek,
-        dataSource,
-        fixtures,
-        fplEvents,
-        fplTeamsById,
-    } = useLoaderData<PlayerDetailData>();
+    const { player, team, position, gameweekStats, seasonTotals, currentGameweek, fixtures, fplEvents, fplTeamsById } =
+        useLoaderData<PlayerDetailData>();
     const fixtureData = fixtures.map((f) => ({
         difficulty: f.difficulty,
         is_home: f.is_home,
@@ -81,10 +70,7 @@ export const PlayerPage = () => {
 
             {/* Gameweek Breakdown */}
             <div className={styles.gameweekSection}>
-                <h2 className={styles.sectionTitle}>
-                    Gameweek Performance
-                    <DataSourceToggle dataSource={dataSource} />
-                </h2>
+                <h2 className={styles.sectionTitle}>Gameweek Performance</h2>
 
                 <PlayerGameweekTable
                     gameweekStats={gameweekStats}
