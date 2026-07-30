@@ -192,15 +192,27 @@ New `draft/app/_shared/test/fixtures/fixture-msw-handlers.ts`:
   an unhandled request there means the app reaches a network the harness does not know about, which is
   itself a finding.
 
-**Firestore.** MSW cannot intercept gRPC, there is no Java on this machine (`java -version` fails), and
-there is nothing in Firebase to seed from. Add an in-memory storage driver selected inside
-`getFirestoreInstance()` when `KAMMY_FIXTURE_FIRESTORE=1` — `firebase.admin.ts:24` already resolves lazily
-behind a getter, so the branch is small and contained. The surface used across the whole app is eight
-methods, all enumerated: `collection(n).doc(id)` → `.get()/.set()/.update()`; `db.getAll(...refs)`;
-`collection(n).select().get()`; `collection(n).count().get()`; `collection(n).where(f,op,v).get()`;
-`collection(n).limit(1).get()`; `db.batch()` → `.set()/.delete()/.commit()`. Write values through a JSON
-round-trip so shape drift surfaces as it would over the wire. Optionally persist to a gitignored
-`.harness/firestore.json` so repeat runs can skip the rebuild.
+**Firestore — ✅ built.** `_shared/lib/firestore-cache/firestore-memory.ts`, selected inside
+`getFirestoreInstance()` when `KAMMY_FIXTURE_FIRESTORE=1`. MSW cannot intercept gRPC, there is no Java on
+this machine (`java -version` fails), and there is nothing in Firebase to seed from, so this is the
+zero-install default; `FIRESTORE_EMULATOR_HOST` still works unchanged for anyone who has Java.
+
+It implements exactly the eight calls the app makes and throws on anything else, so a new call site is a
+loud failure rather than a silent empty read: `collection(n).doc(id)` → `.get()/.set()/.update()`;
+`db.getAll(...refs)`; `collection(n).select().get()`; `collection(n).count().get()`;
+`collection(n).where(f,op,v).get()`; `collection(n).limit(1).get()`; `db.batch()` →
+`.set()/.delete()/.commit()`. Writes go through a JSON round-trip, so shape drift surfaces as it would over
+the wire and reads cannot hand out a mutable reference into the store. Documents are ordered by id, matching
+Firestore's default `__name__` ordering, which is what makes a harness run reproducible.
+
+Two behaviours are deliberately not reproduced and are pinned by tests rather than assumed: a `Date` comes
+back as an ISO string, not a `Timestamp` with `.toDate()` (`fpl-firestore.ts:62-72` accepts both, which is
+why events survive it), and there are no `getAll` batch limits, transactions or latency. That is G19.
+
+Persistence is left to the caller: `dumpInMemoryFirestore()` / `loadInMemoryFirestore()` return and accept
+plain JSON, so Part D can persist to a gitignored `.harness/firestore.json` and skip the rebuild while this
+module stays free of `fs` and usable from a test worker. `resetInMemoryFirestore()` clears it between
+scenarios.
 
 ## Part C — Rebuilding the season from local data
 

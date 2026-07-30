@@ -60,14 +60,14 @@ Raw file counts, for context on where the 38 existing test files sit:
 | `cup` | **12/12** | 2/3 | 0/1 | 0/7 |
 | `transfers` | 8/23 | 0/4 | 0/8 | 0/2 |
 | `draft` | 4/7 | 0/2 | 0/9 | 0/1 |
-| `scoring` | 2/7 | 1/5 | 0/4 | — |
+| `scoring` | 2/7 | 2/5 | 0/4 | — |
 | `teams` | 1/5 | 0/1 | 0/13 | 0/1 |
 | `leagues` | 1/2 | 0/2 | 0/2 | 0/1 |
 | `players` | 1/1 | 0/2 | 1/6 | 0/6 |
 | `admin` | — | 0/6 | 0/24 | 0/10 |
 | `wishlist` | 0/2 | — | 0/5 | 0/2 |
 | `homepage` | — | — | — | 0/2 |
-| `_shared` | 1/30 | — | 0/13 | — |
+| `_shared` | 3/30 | — | 0/13 | — |
 
 `cup/lib` at 12/12 against `cup` pages at 0/7 is the shape of the whole problem: the rules are proven, and
 nothing proves a manager can use them.
@@ -124,7 +124,7 @@ are excluded as untestable; the counts below are runtime exports.
 | API | Exports | Responsible for | Unit | Data | Render | Notes |
 |---|---|---|---|---|---|---|
 | `scoring/index.ts` | 24 | the points engine: rules, formulas, breakdowns | ◐ 2/7 lib files | — | ○ 2 components | `calculations` + `utils` tested; `generators`, `data-conversion` not |
-| `scoring/index.server.ts` | 10 | division-teams documents, points population | ◐ 1/10 | ○ | — | only `generatePlayerGameweekPointsTable` |
+| `scoring/index.server.ts` | 10 | division-teams documents, points population | ◐ 6/10 | ○ | — | the 5 division-teams exports ● (`division-teams.service.test.ts`, on the fixture Firestore) + `generatePlayerGameweekPointsTable`; the points-population 4 remain |
 | `draft/index.ts` | 9 | snake order, pick calculator, eligibility | ◐ 8/9 | — | — | `toDraftStates` / `toDraftStateForDivision` untested |
 | `draft/index.server.ts` | 1 | `FirebaseDraftSync` | ○ | — | — | ▲ needs RTDB to test properly |
 | `teams/index.ts` | 6 | roster conversion, slot rules, sorting | ◐ 1/5 lib files | — | — | only `roster-conversion-utils` |
@@ -236,7 +236,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 | **G8** | Unit tests for the 6 untested sheet readers (`Divisions`, `UserTeams`, `Draft`, `DraftState`, `DraftOrder`, `Players`) against fixture payloads via MSW | B |
 | **G9** | `leagues/index.server.ts` — both exports feed the homepage, neither is tested | G |
 | **G10** | Storybook for the 14 shared components, `table` and `player` first | F |
-| **G11** | `scoring/index.server.ts` — 9 of 10 exports untested | G |
+| **G11** | `scoring/index.server.ts` — 4 of 10 exports untested. The five division-teams exports are now covered; what remains is the points-population service (`upsertDivisionTeamsDocument`, `calculateSingleTeamPoints`), `generateAndCacheEnhancedData` and `GameweekPointsService` | G |
 
 ### Worth doing
 
@@ -255,7 +255,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 | id | task | blocked on |
 |---|---|---|
 | **G18** | `/draft` live sync, `FirebaseDraftSync`, draft drift comparison | an RTDB emulator (needs Java) or a second browser context |
-| **G19** | Firestore serialization behaviour — `Timestamp.toDate()` at `fpl-firestore.ts:62-72`, `getAll` batch limits | the Firestore emulator (needs Java); `FIRESTORE_EMULATOR_HOST` works with no code change for anyone who installs it |
+| **G19** | Firestore serialization behaviour — `Timestamp.toDate()` at `fpl-firestore.ts:62-72`, `getAll` batch limits | the Firestore emulator (needs Java); `FIRESTORE_EMULATOR_HOST` works with no code change for anyone who installs it. The in-memory driver now pins the divergence in a test (a `Date` comes back as an ISO string) so it is visible rather than assumed |
 
 ---
 
@@ -318,8 +318,19 @@ Measured while building it, and each one changes what is worth doing:
   are harness-owned by definition. 13 of the 31 files there were byte-identical duplicates across `cup/`,
   `draft/`, `points/`, `setup/` and `transfers/` subfolders; hash-verified and removed. The one genuinely
   distinct file, `player-gw-points 24/25.json`, is the 24/25 archive tab and was kept.
-- **`_shared/lib` has two test files across 30 modules** — `sheets/player-gw-points.test.ts` and
+- **`_shared/lib` has three test files across 30 modules** — `sheets/player-gw-points.test.ts`,
   `cache/cache-invalidation.test.ts` (which covers `cache-config` + `data-cache` without a matching
-  filename, so the 1/30 in the file-count table undercounts it). The steering only asks for cache logic and
+  filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
+- **Firestore is now substitutable without Java** — `firestore-cache/firestore-memory.ts`, selected inside
+  `getFirestoreInstance()` when `KAMMY_FIXTURE_FIRESTORE=1` and never otherwise. It implements only the
+  eight calls the app makes and throws on anything else, so a new call site fails loudly in the harness
+  instead of silently reading empty data. Both tests drive it through the real callers — `FirestoreClient`,
+  `FirestoreClearService`, and the five division-teams exports — rather than testing the Map underneath,
+  because the harness's value rests on those behaving identically here and in production. Two things it
+  does not reproduce are named in the file header and in G19.
+- **`batchGetDocuments`, `batchWrite`, `queryDocuments` and `documentExists` have no callers.** Four of
+  `FirestoreClient`'s nine public methods are reachable only from tests. They are covered here because the
+  driver has to support them if anything ever calls them, but the honest status is dead code, not coverage.
+  *[Separate problem found]* — deleting them would shrink the surface the harness must imitate.
