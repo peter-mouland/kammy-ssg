@@ -48,7 +48,7 @@ Baseline at the time of writing. These are the numbers that should move.
 | Pages | 20 | n/a | **0/20** | 0/13 wanted | **0/20** |
 | Data endpoints | 6 | n/a | **0/6** | n/a | **0/6** |
 | Domain public APIs | 12 | 6/12 (5 partial) | 0/8 wanted | 0/5 wanted | n/a |
-| Data readers | 15 | **2/15** | n/a | n/a | n/a |
+| Data readers | 15 | **12/15** | n/a | n/a | n/a |
 | Shared components | 13 | n/a | n/a | **0/13** | n/a |
 | Domain components | 86 files | 1/86 | n/a | 0/30 wanted | n/a |
 | Pipelines | 5 | 2/5 | 0/5 | n/a | 0/3 wanted |
@@ -143,20 +143,23 @@ contract to publish. Verified, not assumed.
 
 Every reader wants `Unit` against fixture payloads through MSW, plus `Val` that its fixture is usable.
 
+`Val` moved from 0 to 12 with `fixture-msw-handlers.test.ts`: every reader below marked `●`
+now parses its captured tab through its **real** reader over MSW, with the row count asserted.
+
 | Reader | Tab / endpoint | Unit | Fix | Val | Notes |
 |---|---|---|---|---|---|
-| `sheets/cup.ts` | `Cup` | ● | ○ | ○ | **1 submission in the fixture** |
-| `sheets/cup.ts` | `CupConfig` | ● | ● | ○ | league 21,22,23 / r16 24,25 / … |
+| `sheets/cup.ts` | `Cup` | ● | ○ | ● | **1 submission in the fixture**, asserted as 1 so authoring rows is a visible change |
+| `sheets/cup.ts` | `CupConfig` | ● | ● | ● | league 21,22,23 / r16 24,25 / … |
 | `sheets/cup.ts` | `CupBracket` | ● | ○ | ○ | **header row only — empty** |
 | `sheets/player-gw-points.ts` | `player-gw-points` | ● | ● | ○ | 605 players × 38 GWs |
-| `sheets/transfers.ts` | `<division>-transfers` ×3 | ◐ parsing only | ● | ○ | 847 rows |
-| `sheets/divisions.ts` | `Divisions` | ○ | ● | ○ | |
-| `sheets/user-teams.ts` | `UserTeams` | ○ | ● | ○ | 24 managers |
-| `sheets/draft.ts` | `Draft` | ○ | ● | ○ | 288 picks, joined by `code` |
-| `sheets/draft.ts` | `DraftState` | ○ | ● | ○ | all three drafts complete |
-| `sheets/draft-order.ts` | `DraftOrder` | ○ | ● | ○ | |
-| `sheets/players.ts` | `Players` | ○ | ● | ○ | 572 rows, position overrides |
-| `fpl/api.ts` | FPL HTTP client | ○ | ● | ○ | 2425 bootstrap, fixtures, 721 summaries |
+| `sheets/transfers.ts` | `<division>-transfers` ×3 | ◐ parsing only | ● | ● | 147 / 214 / 483 rows, each asserted |
+| `sheets/divisions.ts` | `Divisions` | ● | ● | ● | |
+| `sheets/user-teams.ts` | `UserTeams` | ● | ● | ● | 24 managers, all with a division |
+| `sheets/draft.ts` | `Draft` | ● | ● | ● | 288 picks, every one carrying `playerCode` |
+| `sheets/draft.ts` | `DraftState` | ● | ● | ● | one per division (via `readAllDraftStates`) |
+| `sheets/draft-order.ts` | `DraftOrder` | ● | ● | ● | 24 rows, grouped by division |
+| `sheets/players.ts` | `Players` | ● | ● | ● | 458 rows, 1:1 with the element-summary pool |
+| `fpl/api.ts` | FPL HTTP client | ● | ● | ● | 858 elements, 380 fixtures, summaries, derived live |
 | `fpl/api-cache.ts` | the public FPL interface + TTLs | ○ | ● | ○ | where the current gameweek is decided |
 | `fpl/gameweeks.ts` | gameweek flags from dates | ○ | ● | ○ | the clock's main consumer |
 | `fpl/fpl-firestore.ts` | FPL data in/out of Firestore | ○ | — derived | ○ | |
@@ -233,7 +236,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 | **G5** | `applyTransfersToGameweekDocument` — a published export, load-bearing in the season rebuild, untested | G |
 | **G6** | Playwright action specs: submit transfer → approve → roster changes; submit cup squad; process points | E3 |
 | **G7** | `fpl/api-cache.ts` + `fpl/gameweeks.ts` unit tests — where the current gameweek is decided | A |
-| **G8** | Unit tests for the 6 untested sheet readers (`Divisions`, `UserTeams`, `Draft`, `DraftState`, `DraftOrder`, `Players`) against fixture payloads via MSW | B |
+| ~~**G8**~~ | ~~Unit tests for the 6 untested sheet readers (`Divisions`, `UserTeams`, `Draft`, `DraftState`, `DraftOrder`, `Players`) against fixture payloads via MSW~~ — **done** in `fixture-msw-handlers.test.ts`, against the real captured tabs rather than hand-written rows | B |
 | **G9** | `leagues/index.server.ts` — both exports feed the homepage, neither is tested | G |
 | **G10** | Storybook for the 14 shared components, `table` and `player` first | F |
 | **G11** | `scoring/index.server.ts` — 4 of 10 exports untested. The five division-teams exports are now covered; what remains is the points-population service (`upsertDivisionTeamsDocument`, `calculateSingleTeamPoints`), `generateAndCacheEnhancedData` and `GameweekPointsService` | G |
@@ -247,7 +250,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 | **G14** | `getTransfersDataForDivision`, `toDraftStates`, `useWishlists`, `handleCommitTeamsToFirestore` | G |
 | **G15** | Navigation + hydration specs | E4 |
 | **G16** | Live contract checks against real FPL and the real spreadsheet | H |
-| **G17** | `Val` for every fixture: assert each tab parses through its real reader and yields the expected row count | B |
+| **G17** | ~~`Val` for every fixture~~ — **mostly done**: 12 of 15 readers now parse their captured tab through the real reader with the row count asserted. Left: `player-gw-points` (has a reader test against hand-written rows, not the fixture), `CupBracket` (empty, blocked on G1), `api-cache`/`gameweeks` (G7) | B |
 | **G20** | ~~Cover the defensive-contribution rule at the integration level~~ — **done**: the components are synthesized for every player, crossing the threshold in 49% of cb games, 11% of fb, 42% of mid. The rule is now reachable, at the cost of invented points in standings | B |
 
 ### Blocked
@@ -323,6 +326,19 @@ Measured while building it, and each one changes what is worth doing:
   filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
+- **The external world is now served from fixtures** — `_shared/test/fixtures/season-fixtures.ts`
+  (readers) and `fixture-msw-handlers.ts` (MSW). The substitution is at the network, so the real
+  `@googleapis/sheets` client and the real FPL client both run in full. Three things about it are not
+  guessable: **the sheet store is writable**, because a handler that swallows writes makes every action
+  look like it worked while changing nothing; **live gameweek data is derived, not captured**, since FPL
+  only ever serves the current gameweek — the round-N row of each element-summary *is* the live payload
+  for GW N, and two loaders would otherwise show every player on zero; and **`sheetTab()` throws for an
+  unknown tab** rather than returning `[]`, because an empty tab is a legitimate state here, so a typo
+  would read as "the cup has no entries".
+- **`readDraftState()` returns one state, not one per division.** The per-division array is
+  `readAllDraftStates()`. Likewise `readDraftOrders()` returns a `Record<DivisionId, DraftOrderRow[]>`,
+  not a flat list, and draft picks carry `playerCode`, not `code`. Three wrong guesses in a row while
+  writing the reader tests — worth reading the signature rather than inferring it from the tab.
 - **Firestore is now substitutable without Java** — `firestore-cache/firestore-memory.ts`, selected inside
   `getFirestoreInstance()` when `KAMMY_FIXTURE_FIRESTORE=1` and never otherwise. It implements only the
   eight calls the app makes and throws on anything else, so a new call site fails loudly in the harness

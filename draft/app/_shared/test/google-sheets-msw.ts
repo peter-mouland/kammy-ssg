@@ -2,6 +2,7 @@
 
 import { generateKeyPairSync } from 'node:crypto';
 import { HttpResponse, http, type RequestHandler } from 'msw';
+import { tabNameFromRange } from './sheet-range';
 
 /**
  * MSW handlers for the Google Sheets API, so sheets code can be tested with everything
@@ -82,9 +83,8 @@ export function sheetValuesHandler(tabs: Record<string, (string | number)[][]>):
     return http.get('https://sheets.googleapis.com/v4/spreadsheets/:id/values/:range', ({ params }) => {
         // The range arrives percent-encoded, e.g. "'Cup'!A:G".
         const range = decodeURIComponent(String(params.range));
-        const tabName = range.replace(/^'?/, '').replace(/'?!.*$/, '');
 
-        return HttpResponse.json({ range, majorDimension: 'ROWS', values: tabs[tabName] ?? [] });
+        return HttpResponse.json({ range, majorDimension: 'ROWS', values: tabs[tabNameFromRange(range)] ?? [] });
     });
 }
 

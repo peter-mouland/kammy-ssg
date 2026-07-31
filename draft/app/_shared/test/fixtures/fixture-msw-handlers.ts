@@ -1,0 +1,189 @@
+/* Location: app/_shared/test/fixtures/fixture-msw-handlers.ts */
+
+import { HttpResponse, http, type RequestHandler } from 'msw';
+import { startRowFromRange, tabNameFromRange } from '../sheet-range';
+import { elementSummary, fplBootstrap, fplFixtures, gameweekLive, type SheetCell, sheetTab } from './season-fixtures';
+
+/**
+ * MSW handlers that serve the whole external world from `test-fixtures/`.
+ *
+ * This is the substitution the harness rests on, and it is made at the network: the real
+ * `@googleapis/sheets` client runs, signs its JWT, builds its ranges and parses its
+ * responses; the real FPL client runs with its own URL building and error handling. Only
+ * the bytes on the wire are ours. See "MSW is the standard for anything crossing the
+ * network" in `.kiro/steering/testing-conventions.md`.
+ *
+ * Firestore is the one boundary this cannot cover -- it is gRPC, not HTTP -- and is
+ * handled by `_shared/lib/firestore-cache/firestore-memory.ts` instead.
+ */
+
+const SHEETS_VALUES_URL = 'https://sheets.googleapis.com/v4/spreadsheets/:id/values/:range';
+const FPL_BASE = 'https://fantasy.premierleague.com/api';
+
+/**
+ * The sheets, in memory and **writable**.
+ *
+ * Writes have to mutate something. A handler that accepts a write and discards it makes
+ * every action look like it worked while changing nothing, so a submitted transfer would
+ * vanish on reload -- the difference between testing a form and testing a form's
+ * rendering. Every POST path in the app is unverified today precisely because there was
+ * nowhere for a write to land.
+ *
+ * Tabs load from disk on first read and stay in memory after, so a write is visible to the
+ * next read and `reset()` returns to the captured state. Nothing touches `test-fixtures/`
+ * on disk -- it is opened read-only.
+ */
+export class FixtureSheetStore {
+    private readonly tabs = new Map<string, SheetCell[][]>();
+
+    /** A tab's rows, header included. Loaded on first use, mutated in place after. */
+    values(tab: string): SheetCell[][] {
+        const loaded = this.tabs.get(tab);
+        if (loaded) return loaded;
+
+        // sheetTab() throws for an unknown tab rather than returning [], which is what
+        // stops a mistyped name from looking like an empty sheet.
+        const rows = sheetTab(tab).map((row) => [...row]);
+        this.tabs.set(tab, rows);
+        return rows;
+    }
+
+    /** `values.append` -- what a transfer or cup submission does. */
+    append(tab: string, rows: SheetCell[][]): void {
+        this.values(tab).push(...rows.map((row) => [...row]));
+    }
+
+    /**
+     * `values.update` -- writes rows starting at `startRow` (1-based).
+     *
+     * It splices in place and does **not** truncate what follows, matching the real API:
+     * an update to `'Cup'!A:G` overwrites from row 1 and leaves any longer tail alone. Two
+     * callers depend on the row-targeted form to change one record --
+     * `sheets/draft.ts:330` and `transfers-admin.server.tsx:267`, the latter being how a
+     * transfer is approved.
+     */
+    update(tab: string, startRow: number, rows: SheetCell[][]): void {
+        const existing = this.values(tab);
+        const offset = Math.max(0, startRow - 1);
+
+        rows.forEach((row, index) => {
+            existing[offset + index] = [...row];
+        });
+    }
+
+    /** Back to the captured rows, for the next scenario. */
+    reset(): void {
+        this.tabs.clear();
+    }
+
+    /** Which tabs have been touched -- useful when a test wants to assert a write landed. */
+    loadedTabs(): string[] {
+        return [...this.tabs.keys()].sort();
+    }
+}
+
+interface SheetWriteBody {
+    values?: SheetCell[][];
+}
+
+const rangeOf = (params: Record<string, unknown>) => decodeURIComponent(String(params.range));
+
+/**
+ * Sheets: reads and writes against the store.
+ *
+ * The read handler answers the exact `{ range, majorDimension, values }` shape the client
+ * parses, so `readSheetWithHeaders` and its header matching all run for real.
+ */
+export function fixtureSheetsHandlers(store: FixtureSheetStore): RequestHandler[] {
+    return [
+        http.get(SHEETS_VALUES_URL, ({ params }) => {
+            const range = rangeOf(params);
+            return HttpResponse.json({
+                range,
+                majorDimension: 'ROWS',
+                values: store.values(tabNameFromRange(range)),
+            });
+        }),
+
+        http.put(SHEETS_VALUES_URL, async ({ params, request }) => {
+            const range = rangeOf(params);
+            const body = (await request.json()) as SheetWriteBody;
+            const rows = body.values ?? [];
+
+            store.update(tabNameFromRange(range), startRowFromRange(range), rows);
+
+            return HttpResponse.json({
+                spreadsheetId: String(params.id),
+                updatedRange: range,
+                updatedRows: rows.length,
+                updatedCells: rows.reduce((total, row) => total + row.length, 0),
+            });
+        }),
+
+        http.post(`${SHEETS_VALUES_URL}\\:append`, async ({ params, request }) => {
+            const range = rangeOf(params);
+            const body = (await request.json()) as SheetWriteBody;
+            const rows = body.values ?? [];
+
+            store.append(tabNameFromRange(range), rows);
+
+            return HttpResponse.json({
+                spreadsheetId: String(params.id),
+                updates: {
+                    updatedRange: range,
+                    updatedRows: rows.length,
+                    updatedCells: rows.reduce((total, row) => total + row.length, 0),
+                },
+            });
+        }),
+    ];
+}
+
+/**
+ * Serialise once and reuse the string.
+ *
+ * The merged bootstrap is ~2MB. Re-stringifying it on every request turns the route crawl
+ * into a JSON benchmark, and the payload never changes within a run.
+ */
+function jsonOnce(build: () => unknown): () => HttpResponse<string> {
+    let body: string | undefined;
+
+    return () => {
+        body ??= JSON.stringify(build());
+        return new HttpResponse(body, { headers: { 'Content-Type': 'application/json' } });
+    };
+}
+
+const bootstrapResponse = jsonOnce(fplBootstrap);
+const fixturesResponse = jsonOnce(fplFixtures);
+
+/** FPL: the four endpoints `fpl/api.ts` actually calls. */
+export function fixtureFplHandlers(): RequestHandler[] {
+    return [
+        http.get(`${FPL_BASE}/bootstrap-static/`, () => bootstrapResponse()),
+        http.get(`${FPL_BASE}/fixtures/`, () => fixturesResponse()),
+        http.get(`${FPL_BASE}/element-summary/:id/`, ({ params }) =>
+            HttpResponse.json(elementSummary(Number(params.id))),
+        ),
+        http.get(`${FPL_BASE}/event/:gameweek/live/`, ({ params }) =>
+            HttpResponse.json(gameweekLive(Number(params.gameweek))),
+        ),
+    ];
+}
+
+/**
+ * Everything, plus the OAuth token exchange the JWT client may perform.
+ *
+ * `common.ts` sets `useJWTAccessWithScope`, so it usually self-signs and never reaches the
+ * token endpoint -- but the handler costs nothing and its absence would be a confusing
+ * failure if that setting ever changed.
+ */
+export function fixtureHandlers(store: FixtureSheetStore): RequestHandler[] {
+    return [
+        http.post('https://oauth2.googleapis.com/token', () =>
+            HttpResponse.json({ access_token: 'fixture-access-token', expires_in: 3600, token_type: 'Bearer' }),
+        ),
+        ...fixtureSheetsHandlers(store),
+        ...fixtureFplHandlers(),
+    ];
+}
