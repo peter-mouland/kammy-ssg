@@ -6,6 +6,7 @@
 import type { EnhancedPlayerData } from '../../types/player-types';
 import { CACHE_KEYS, getCacheTTL, getInvalidationKeys } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
+import { isFakeNow } from '../clock';
 import { fuzzyStringMatch } from '../fuzzy-string-match';
 import { fplApi } from './api';
 import { FplFirestore } from './fpl-firestore';
@@ -17,6 +18,7 @@ import type {
     FplTeam,
     GameWeekData,
 } from './fpl-types';
+import { recomputeGameweekFlags } from './gameweeks';
 
 const CACHE_STATUS_TIMEOUT_MS = 15_000;
 
@@ -161,7 +163,7 @@ class FplApiCache {
      * Get FPL events using unified cache
      */
     async getFplEvents() {
-        return await dataCache.get(
+        const events = await dataCache.get(
             CACHE_KEYS.FPL.EVENTS,
             async () => {
                 console.log('🔄 getFplEvents() - Loading from Firestore');
@@ -170,6 +172,17 @@ class FplApiCache {
             },
             { ttlMs: getCacheTTL(CACHE_KEYS.FPL.EVENTS) },
         );
+
+        // Recomputed on READ, deliberately outside the cache callback above. The stored
+        // flags were frozen when `populateEvents` last ran, and `fpl:events` has a 4h TTL,
+        // so recomputing inside the fetcher would pin them to whenever the cache filled --
+        // and one server could not then answer two requests at two different dates.
+        //
+        // Only under a fake clock. In production this would be a real semantic change:
+        // the app's own date math and FPL's `is_current` disagree about which gameweek is
+        // current once a deadline has passed (see gameweeks.ts), and that is not this
+        // change's argument to have.
+        return isFakeNow() ? recomputeGameweekFlags(events) : events;
     }
 
     /**
@@ -230,8 +243,13 @@ class FplApiCache {
      */
     async getCurrentGameweekData(): Promise<GameWeekData> {
         const events = await this.getFplEvents();
-        const gw = events.find((event) => event.fplEvent.is_current); //isCurrent);
-        return gw;
+
+        // The recomputed flag first, FPL's frozen one as the fallback. Production sets no
+        // fake clock, so nothing is recomputed and this is exactly the old behaviour.
+        // The harness replays a finished season, where every `is_current` is false -- so
+        // without the date-derived flag there is no current gameweek at any date and every
+        // page renders its empty state forever.
+        return events.find((event) => event.isCurrent) ?? events.find((event) => event.fplEvent.is_current);
     }
 
     /**

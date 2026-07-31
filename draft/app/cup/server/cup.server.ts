@@ -1,5 +1,7 @@
 /* Location: app/cup/server/cup.server.ts */
 
+// Aliased: both builders below assign to a local `now`.
+import { now as clockNow } from '../../_shared/lib/clock';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { UserTeamsSheetData } from '../../_shared/types/league-types';
 import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
@@ -45,7 +47,7 @@ export function getCupPageData(input: {
     now?: Date;
 }): Omit<CupPageData, 'bracket' | 'fixtures' | 'stageMatchups' | 'userTeams' | 'selectedUserId'> {
     const { userTeams, gameweekData, cupConfig, submissions, pointsRows } = input;
-    const now = input.now ?? new Date();
+    const now = input.now ?? clockNow();
     const gameweek = gameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
     const deadlinePassed = isDeadlinePassed(gameweekData, now);
@@ -143,7 +145,7 @@ export async function getCupSubmitData(input: {
     now?: Date;
 }): Promise<CupSubmitPageData> {
     const { userTeams, selectedUser, gameweekData, cupConfig, submissions, fixtures } = input;
-    const now = input.now ?? new Date();
+    const now = input.now ?? clockNow();
     const gameweek = gameweekData.fplEvent.id;
     const round = getRoundForGameweek(cupConfig, gameweek);
     const submissionOpen = isSubmissionOpen(gameweekData, now);

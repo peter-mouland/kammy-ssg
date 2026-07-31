@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { MultiSelect } from '../../_shared/components/multi-select';
 import { Table, type TableColumn } from '../../_shared/components/table';
 import { useTableFilters } from '../../_shared/hooks/use-table-filters';
+import { now } from '../../_shared/lib/clock';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import { fuzzyStringMatch } from '../../_shared/lib/fuzzy-string-match';
 import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
@@ -129,7 +130,7 @@ export function PlayerInSelector({
             transferType,
             gameweekData: validationContext.gameweekData,
             id: `eligibility-check-${Date.now()}`,
-            timestamp: new Date(),
+            timestamp: now(),
             status: 'PENDING',
             comment: 'Eligibility check',
             onLoanTo: undefined,

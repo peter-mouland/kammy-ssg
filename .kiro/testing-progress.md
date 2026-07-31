@@ -160,8 +160,9 @@ now parses its captured tab through its **real** reader over MSW, with the row c
 | `sheets/draft-order.ts` | `DraftOrder` | ● | ● | ● | 24 rows, grouped by division |
 | `sheets/players.ts` | `Players` | ● | ● | ● | 458 rows, 1:1 with the element-summary pool |
 | `fpl/api.ts` | FPL HTTP client | ● | ● | ● | 858 elements, 380 fixtures, summaries, derived live |
-| `fpl/api-cache.ts` | the public FPL interface + TTLs | ○ | ● | ○ | where the current gameweek is decided |
-| `fpl/gameweeks.ts` | gameweek flags from dates | ○ | ● | ○ | the clock's main consumer |
+| `fpl/api-cache.ts` | the public FPL interface + TTLs | ◐ | ● | ● | `getCurrentGameweekData` covered via `gameweeks.test.ts`; the caching and TTL paths are not |
+| `fpl/gameweeks.ts` | gameweek flags from dates | ● | ● | ● | 15 tests against the real 2024/25 calendar |
+| `lib/clock.ts` + `clock.server.ts` | the date every decision reads | ● | — | — | precedence order, and concurrent `runWithNow` scopes |
 | `fpl/fpl-firestore.ts` | FPL data in/out of Firestore | ○ | — derived | ○ | |
 
 ## Shared components
@@ -235,7 +236,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 |---|---|---|
 | **G5** | `applyTransfersToGameweekDocument` — a published export, load-bearing in the season rebuild, untested | G |
 | **G6** | Playwright action specs: submit transfer → approve → roster changes; submit cup squad; process points | E3 |
-| **G7** | `fpl/api-cache.ts` + `fpl/gameweeks.ts` unit tests — where the current gameweek is decided | A |
+| ~~**G7**~~ | ~~`fpl/api-cache.ts` + `fpl/gameweeks.ts` unit tests~~ — **done**: `gameweeks.test.ts` (15) and `clock.test.ts` (12), against the real 2024/25 calendar. `api-cache`'s caching and TTL paths are still uncovered | A |
 | ~~**G8**~~ | ~~Unit tests for the 6 untested sheet readers (`Divisions`, `UserTeams`, `Draft`, `DraftState`, `DraftOrder`, `Players`) against fixture payloads via MSW~~ — **done** in `fixture-msw-handlers.test.ts`, against the real captured tabs rather than hand-written rows | B |
 | **G9** | `leagues/index.server.ts` — both exports feed the homepage, neither is tested | G |
 | **G10** | Storybook for the 14 shared components, `table` and `player` first | F |
@@ -326,6 +327,23 @@ Measured while building it, and each one changes what is worth doing:
   filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
+- **The scenario dates in the harness plan were wrong, and are now corrected there.** Measured against
+  the real 2024/25 calendar: 2025-01-20 is **GW23**, not GW21 (GW21's deadline was the 14th); and
+  2024-08-01 is **GW1**, not "no current gameweek" — GW1's window opens at a hardcoded floor, so every
+  date before the first deadline reports GW1. **The only genuine no-gameweek state is after the final
+  deadline**, where `season-end` then reports GW38 solely because `getCurrentGameweekData()` falls back to
+  FPL's frozen `is_current`. Right answer, wrong road: remove the fallback and that scenario silently
+  becomes empty.
+- **The gameweek recompute is gated on a fake clock, deliberately.** The app's own date math and FPL's
+  `is_current` disagree — a gameweek is current here from the *previous* deadline to its own, whereas FPL
+  tracks matches in progress — so recomputing unconditionally would change which gameweek production
+  considers current. Under a fake clock there is no alternative: the harness replays a finished season
+  where every `is_current` is false.
+- **"~25–30 decision sites" for the clock was a large overestimate — it is seven.** Read one at a time,
+  nearly every `new Date()` in the listed files is a write stamp (`assignedAt`, `generatedAt`,
+  `appliedAt`), already on the leave-alone list. The non-obvious ones are the three `timestamp: now()`
+  calls that build a *candidate* transfer for the validators to judge: they look like stamps and are
+  actually decision inputs.
 - **The external world is now served from fixtures** — `_shared/test/fixtures/season-fixtures.ts`
   (readers) and `fixture-msw-handlers.ts` (MSW). The substitution is at the network, so the real
   `@googleapis/sheets` client and the real FPL client both run in full. Three things about it are not

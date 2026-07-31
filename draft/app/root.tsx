@@ -16,6 +16,7 @@ import {
     useRouteError,
 } from 'react-router';
 import { DesktopNav, MobileNav } from './_shared/components/g-nav';
+import { fakeNowIso } from './_shared/lib/clock';
 import { fplApiCache } from './_shared/lib/fpl/api-cache';
 import designTokens from './design-tokens.css?url';
 import globalStyles from './root.css?url';
@@ -113,6 +114,7 @@ export async function loader() {
             scoresPublishedAt: metadata?.lastGenerated || null,
             scoresStatus: status,
             pendingGames,
+            fakeNow: fakeNowIso(),
         };
     } catch (error) {
         console.error('Error in root loader:', error);
@@ -120,6 +122,7 @@ export async function loader() {
             scoresPublishedAt: null,
             scoresStatus: 'up-to-date' as const,
             pendingGames: [],
+            fakeNow: fakeNowIso(),
         };
     }
 }
@@ -138,6 +141,21 @@ const logoConfig = {
     href: '/',
     text: 'Fantasy Draft',
 };
+
+/**
+ * Hands the server's fake date to the browser, ahead of hydration.
+ *
+ * Without it the server renders at the harness date and the client re-renders at the real
+ * one, so anything date-dependent -- a deadline countdown, an open-or-locked transfer form
+ * -- mismatches. `fakeNow` is null in production, so this never renders there.
+ */
+function FakeNowScript({ iso }: { iso: string }) {
+    return (
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: an ISO string this app generated, and it has to run before hydration
+        // biome-ignore lint/style/useNamingConvention: __html is React's own prop name
+        <script dangerouslySetInnerHTML={{ __html: `window.__KAMMY_NOW__=${JSON.stringify(iso)}` }} />
+    );
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
     const data = useLoaderData<typeof loader>();
@@ -191,6 +209,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <Meta />
                 <Links />
+                {data?.fakeNow ? <FakeNowScript iso={data.fakeNow} /> : null}
             </head>
             <body>
                 <QueryClientProvider client={queryClient}>
