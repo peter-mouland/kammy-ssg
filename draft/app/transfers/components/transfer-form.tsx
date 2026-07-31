@@ -7,6 +7,7 @@ import { PlayerSummary } from '../../_shared/components/player';
 import { SelectUser } from '../../_shared/components/select-user';
 import { ToastManager, useToast } from '../../_shared/components/toast-manager';
 import { playCelebrationSound } from '../../_shared/lib/audio/celebration-sounds';
+import { now } from '../../_shared/lib/clock';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type {
     DivisionId,
@@ -319,7 +320,7 @@ function SelectorReview({
                       transferType,
                       gameweekData: validationContext.gameweekData,
                       id: 'review-journey-check',
-                      timestamp: new Date(),
+                      timestamp: now(),
                       status: 'PENDING',
                       comment: 'Review journey check',
                       onLoanTo: undefined,

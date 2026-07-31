@@ -88,10 +88,14 @@ the code.
 
 ---
 
-## Part A — The clock
+## Part A — The clock — ✅ built
 
-New `draft/app/_shared/lib/clock.ts`. Both the server and the browser need it, so it resolves from
-several places:
+`draft/app/_shared/lib/clock.ts`, with `runWithNow` split into `clock.server.ts`: `node:async_hooks`
+does not exist in a browser bundle and `clock.ts` is imported by client components. Importing the
+server file installs the resolver into the shared clock; verified that `async_hooks` stays out of
+`build/client`.
+
+Both the server and the browser need it, so it resolves from several places:
 
 ```ts
 export function now(): Date;
@@ -108,8 +112,19 @@ of these, so `now()` is `new Date()` there; say so in the file header.
 Playwright can run dates in parallel and you can hand-drive the season in a browser. `setNow()` stays for
 the Node and Storybook layers, where a process is a scenario.
 
-**Replace `new Date()` at decision sites only** (~25–30 of the 92). `cup/lib/cup-deadlines.ts` already
-takes an injected `now` — keep the signature, change the default to `now()`, and follow that pattern:
+**Replace `new Date()` at decision sites only.** The estimate of 25–30 was far too high: read one by one,
+almost every `new Date()` in the files below is a **write stamp** (`assignedAt`, `generatedAt`,
+`appliedAt`, `onLoanStart`), which the "leave alone" list already covers. Only **seven** were genuine
+decision inputs, and all seven are now converted:
+
+- `cup/lib/cup-deadlines.ts` ×2 — already took an injected `now`; only the default changed.
+- `cup/server/cup.server.ts` ×2 — `input.now ?? clockNow()`.
+- `transfers/lib/get-gameweek-limit-status.ts`, `components/transfer-form.tsx`,
+  `components/player-in-selector.tsx` — each builds a **candidate** transfer whose `timestamp` is fed to
+  the validators to decide gameweek eligibility. It looks like a stamp and is not one.
+
+`validators/fixtures.ts`'s `makeGameweek()` is test-data construction and was deliberately left alone.
+The original list, kept because the remaining files are still worth a second pass:
 
 - `_shared/lib/fpl/gameweeks.ts` — `isCurrent` / `hasPassed`; accept an optional `now`.
 - `transfers/lib/get-gameweek-limit-status.ts`, `lib/validators/fixtures.ts`,
@@ -131,8 +146,20 @@ gameweek, and out of season every page stays on its empty state no matter what d
   a 4h TTL and the stored document's flags were frozen when `populateEvents` ran, so recomputing inside the
   cached fetcher would pin them to whenever the cache filled. This is also what lets one server answer two
   requests at two dates.
-- `getCurrentGameweekData()` prefers the recomputed `isCurrent`, falling back to `fplEvent.is_current`, so
-  production is unchanged when no fake clock is set.
+- `getCurrentGameweekData()` prefers the recomputed `isCurrent`, falling back to `fplEvent.is_current`.
+
+**The recompute only runs under a fake clock** (`isFakeNow()`), which the plan did not say and which
+matters. The app's own date math and FPL's `is_current` genuinely disagree: a gameweek is "current" here
+from the *previous* deadline to its own — the window you pick a team in — whereas FPL's flag tracks
+matches in progress. Recomputing unconditionally would therefore change which gameweek production
+considers current, which is a real behaviour change this work has no business making. Under a fake clock
+there is no such risk and no alternative: the harness replays a finished season where every `is_current`
+is false, so without the date-derived flag no date has a current gameweek and every page is empty forever.
+
+*[Separate problem found]* The stored `isCurrent` in Firestore has always been frozen at whenever
+`populateEvents` last ran, since `getGameweekData` computed it with `new Date()` at write time. Nothing
+reads it in production (`getCurrentGameweekData` used FPL's flag), so this is latent rather than broken —
+but any new caller trusting `event.isCurrent` in production would get a stale answer.
 
 **Hydration.** If the server renders at a fake date and the client uses the real one, React will mismatch.
 So the root loader returns `fakeNow` (null in production) and `root.tsx`'s `Layout` emits
@@ -336,14 +363,33 @@ its data is real loader output rather than invented.
 New `draft/app/_shared/test/scenarios.ts` — one table, pure data, importing nothing from a domain
 (`architecture.test.ts` rule 1). Shared by layers 2, 3 and 4. Dates are on 2425's calendar:
 
-| scenario | now | exercises |
-|---|---|---|
-| `preseason` | 2024-08-01 | no current gameweek, empty states |
-| `gw1-deadline-day` | 2024-08-16T12:00Z | submission open, deadline 5h away |
-| `gw1-locked` | 2024-08-16T18:00Z | just past deadline, teams revealed |
-| `cup-league-gw21` | 2025-01-20 | cup league stage (`CupConfig`: league = 21,22,23) |
-| `cup-r16-leg1-gw24` | 2025-02-12 | two-legged round, player-reuse ban |
-| `season-end` | 2025-05-26 | GW38 finished, promotion/relegation markers |
+**Corrected against the real 2024/25 calendar** — the original dates below did not produce the
+gameweeks they claimed, which `gameweeks.test.ts` now pins. Each row states the gameweek it
+*actually* yields:
+
+| scenario | now | current GW | exercises |
+|---|---|---|---|
+| `preseason` | 2024-08-01 | **1** | pre-deadline GW1, **not** an empty state — see below |
+| `gw1-deadline-day` | 2024-08-16T12:00Z | 1 | submission open, deadline 5.5h away |
+| `gw1-locked` | 2024-08-16T18:00Z | 2 | just past GW1's deadline, teams revealed |
+| `cup-league` | 2025-01-10 | **21** | cup league stage (`CupConfig`: league = 21,22,23) |
+| `cup-r16-leg1` | 2025-01-29 | **24** | two-legged round (r16 = 24,25), player-reuse ban |
+| `season-end` | 2025-05-26 | **none by date → 38** | past the last deadline; falls back to FPL's frozen flag |
+
+Three corrections worth understanding rather than just copying:
+
+- **There is no "no gameweek yet" state at the start of a season.** GW1's window opens at a hardcoded
+  floor (`2023-07-30T11:00:00.000Z` in `gameweeks.ts`), so *every* date before GW1's deadline reports GW1
+  as current. `preseason` gets pre-deadline GW1, which is still a useful state — nothing played, submission
+  open — but it is not the empty state the plan assumed. The only genuine no-current-gameweek state is
+  **after** the final deadline.
+- **2025-01-20 is GW23, not GW21.** GW21's deadline was the 14th and GW22's the 18th. The date is still
+  inside the cup league stage, so the scenario's *intent* held by luck. To actually get GW21, the date has
+  to fall between GW20's deadline (2025-01-04T11:00Z) and GW21's (2025-01-14T18:00Z) — hence 2025-01-10.
+- **`season-end` has no current gameweek by date at all**, and only reports GW38 because
+  `getCurrentGameweekData()` falls through to FPL's frozen `is_current`, which happens to be GW38 in the
+  captured bootstrap. That is the right answer by the wrong road; if the fallback is ever removed, this
+  scenario silently becomes "no gameweek".
 
 One payload test per route, co-located in its own domain (`cup/cup.payload.test.ts`,
 `leagues/league-standings.payload.test.ts`, `teams/team.payload.test.ts`, …) — co-located because a

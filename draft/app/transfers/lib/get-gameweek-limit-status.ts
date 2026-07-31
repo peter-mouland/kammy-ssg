@@ -1,5 +1,6 @@
 // app/transfers/lib/get-gameweek-limit-status.ts
 
+import { now } from '../../_shared/lib/clock';
 import type { ManagerId } from '../../_shared/types/league-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
@@ -31,7 +32,7 @@ export function getGameweekLimitStatus(
         playerIn: {} as EnhancedPlayerData,
         playerOut: null,
         gameweekData: validationContext.gameweekData,
-        timestamp: new Date(),
+        timestamp: now(),
         status: 'PENDING',
         comment: 'Gameweek limit check',
         onLoanTo: undefined,
