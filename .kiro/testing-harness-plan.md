@@ -141,11 +141,24 @@ So the root loader returns `fakeNow` (null in production) and `root.tsx`'s `Layo
 Tests: `clock.test.ts`, plus `gameweeks.test.ts` (none exists) asserting GW21 is current on 2025-01-20 and
 GW1 on 2024-08-15 against the real 2425 events.
 
-## Part B — The fixture data layer
+## Part B — The fixture data layer — ✅ built
 
-New `draft/app/_shared/test/fixtures/season-fixtures.ts` — Node-only readers over `test-fixtures/`, which
+`draft/app/_shared/test/fixtures/season-fixtures.ts` — Node-only readers over `test-fixtures/`, which
 is now the single tracked root (raw captures live in gitignored `archive/`): `sheetTab(name)`,
-`fplBootstrap()` (merged), `fplFixtures()`, `elementSummary(id)`.
+`fplBootstrap()` (merged), `fplFixtures()`, `elementSummary(id)`, plus `elementSummaryIds()` and
+`gameweekLive(gw)` that the plan did not anticipate — see the live-data note below.
+
+The range→tab parsing came out to `_shared/test/sheet-range.ts` and is shared by both MSW layers, as
+planned. It gained `startRowFromRange()`: `values.update` is used in two shapes, a whole-tab overwrite
+(`'Cup'!A:G`) and a single targeted row (`'Draft'!A12:M12`), and the row-targeted form is how a transfer
+gets approved — without it an approval would overwrite the header row.
+
+**Live gameweek data has to be derived, and the plan missed that it was needed at all.** There is no
+capture and there cannot be one: `event/{gw}/live/` only ever serves the current gameweek. But a live
+element is `{ id, stats }` where `stats` is the same per-gameweek stat line the element-summary history
+holds, so the round-N row of every summary *is* the live payload for gameweek N. Two loaders read it
+(`leagues/server/team-of-the-week.server.ts:26`, `players/server/players.server.ts:60`) and an empty list
+would put every player on zero — indistinguishable from a scoring bug.
 
 **The merged element pool** is now a concatenation rather than a computation — the synthesis already
 happened and is committed:
@@ -163,13 +176,13 @@ The merge is required because `FplFirestore.populateBootstrap()` filters element
 were pruned — so a missing summary means a broken fixture, not a routine gap. Return
 `{ fixtures: [], history: [] }` and log loudly rather than throwing.
 
-New `draft/app/_shared/test/fixtures/fixture-msw-handlers.ts`:
+`draft/app/_shared/test/fixtures/fixture-msw-handlers.ts`:
 
-- **Sheets, and stateful.** A fixture-backed variant of `sheetValuesHandler` — extract the range→tab-name
-  parsing from `_shared/test/google-sheets-msw.ts:84-85` so both share one implementation, then resolve
-  tab → `test-fixtures/spreadsheets/<slug>.json`. Fixture filenames are lower-kebab-case, so the
-  resolver needs one shared slug function, and it must be *exactly* this one — the fixtures were renamed
-  with it:
+- **Sheets, and stateful.** `FixtureSheetStore` loads a tab on first read and mutates in memory after, so
+  `append` and `update` are visible to the next read and `reset()` returns to the captured rows. Nothing
+  writes to `test-fixtures/` on disk, and a test asserts that. Resolution is tab →
+  `test-fixtures/spreadsheets/<slug>.json` with the shared slug below, which must be *exactly* this one —
+  the fixtures were renamed with it:
 
   ```ts
   const slug = (tab: string) =>
