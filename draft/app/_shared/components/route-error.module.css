@@ -25,6 +25,14 @@
     margin-bottom: var(--spacing-4);
 }
 
+/* An expected state, not a fault: calm type, no alarm colour. */
+.explanation {
+    font-size: var(--font-base);
+    color: var(--color-gray-700);
+    line-height: 1.6;
+    max-width: 60ch;
+}
+
 .chain {
     list-style: none;
     padding: 0;

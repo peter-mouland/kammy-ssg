@@ -83,6 +83,38 @@ describe('a thrown AppError that never reached a Response', () => {
     });
 });
 
+describe('an expected state rather than a fault', () => {
+    const seasonEnded = {
+        status: 503,
+        statusText: 'Service Unavailable',
+        data: {
+            context: 'The season has ended',
+            chain: [{ message: 'The final gameweek is over, so there is no live gameweek to show.' }],
+            friendly: true,
+        },
+        internal: false,
+    };
+
+    it('leads with the explanation', () => {
+        renderError(seasonEnded);
+
+        expect(screen.getByText('The season has ended')).toBeDefined();
+        expect(screen.getByText(/final gameweek is over/)).toBeDefined();
+    });
+
+    it('shows no stack trace — this is not a bug and should not look like one', () => {
+        renderError(seasonEnded);
+
+        expect(screen.queryByText('Stack trace')).toBeNull();
+    });
+
+    it('shows no error code', () => {
+        renderError({ ...seasonEnded, data: { ...seasonEnded.data, code: 'SOME_CODE' } });
+
+        expect(screen.queryByText('SOME_CODE')).toBeNull();
+    });
+});
+
 describe('other things a boundary can catch', () => {
     it('renders a plain Error’s message', () => {
         renderError(new Error('Firebase service account not configured'));

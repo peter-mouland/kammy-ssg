@@ -32,6 +32,14 @@ export interface LoaderErrorPayload {
     chain: ErrorLink[];
     /** Development only; never sent to a browser in production. */
     stack?: string;
+    /**
+     * An expected, explainable state rather than a fault — "the season has ended".
+     *
+     * Rendered as an explanation: no error code, no stack, no red. The distinction matters
+     * because these are not bugs and showing them like bugs trains people to ignore the
+     * page that does mean something is broken.
+     */
+    friendly?: boolean;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
@@ -100,6 +108,20 @@ export function loaderErrorResponse(context: string, error: unknown, status = 50
     console.error(`${context}:`, error);
 
     return new Response(JSON.stringify(toLoaderErrorPayload(context, error)), {
+        status,
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+/**
+ * For a state the app understands and can explain, rather than a failure.
+ *
+ * Not logged as an error, because it is not one — "the season has ended" filling the server
+ * log with stack traces every request would be noise. 503 rather than 500: the page is
+ * genuinely unavailable right now, and it is not the reader's request that is malformed.
+ */
+export function friendlyErrorResponse(title: string, detail: string, status = 503): Response {
+    return new Response(JSON.stringify({ context: title, chain: [{ message: detail }], friendly: true }), {
         status,
         headers: { 'Content-Type': 'application/json' },
     });

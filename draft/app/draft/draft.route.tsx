@@ -28,6 +28,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             },
         });
     } catch (error) {
+        if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load the draft room', error);
     }
 }

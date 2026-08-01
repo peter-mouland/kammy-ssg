@@ -48,7 +48,29 @@ function hintFor(payload: LoaderErrorPayload): string | null {
     return null;
 }
 
+/**
+ * An expected state, explained. No code badge, no stack, no red.
+ *
+ * These are not faults — the season really has ended, or really has not started — and
+ * dressing them as errors trains people to scroll past the page that does mean something
+ * is broken.
+ */
+function FriendlyStateView({ payload }: { payload: LoaderErrorPayload }) {
+    return (
+        <div className={styles.routeError}>
+            <h1 className={styles.heading}>{payload.context}</h1>
+            {payload.chain.map((link, index) => (
+                <p key={`${link.message}-${index}`} className={styles.explanation}>
+                    {link.message}
+                </p>
+            ))}
+        </div>
+    );
+}
+
 function ErrorPayloadView({ payload }: { payload: LoaderErrorPayload }) {
+    if (payload.friendly) return <FriendlyStateView payload={payload} />;
+
     const hint = hintFor(payload);
 
     return (

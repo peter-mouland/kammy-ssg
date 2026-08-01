@@ -32,6 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const playerStatsData = await getPlayerStatsData();
         return data<PlayerStatsData>(playerStatsData);
     } catch (error) {
+        if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load the player list', error);
     }
 }

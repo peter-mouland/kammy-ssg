@@ -1,6 +1,8 @@
 // app/teams/server/team.server.ts
 
 import { getUserSelection } from '../../_shared/features/user-selection/user-selection.utils';
+import { describeGameweekAvailability } from '../../_shared/lib/gameweek-availability';
+import { friendlyErrorResponse } from '../../_shared/lib/loader-error';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../_shared/lib/sheets/user-teams';
 import { getTeamsForGameweek } from '../../scoring/index.server';
@@ -19,6 +21,13 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
             readUserTeams(),
             readDivisions(),
         ]);
+        // No current gameweek is an explainable state, not a crash. Thrown rather than
+        // returned so it passes through the catch below untouched -- see the guard there.
+        const availability = describeGameweekAvailability(events, currentGameweekData);
+        if (!availability.available) {
+            throw friendlyErrorResponse(availability.title, availability.detail);
+        }
+
         const persistedUser = getUserSelection(request, params);
         const currentUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
         const currentGameweek = currentGameweekData.fplEvent.id;
@@ -80,6 +89,10 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
             teamOfTheWeek: teamOfTheWeek ?? undefined,
         };
     } catch (error) {
+        // A thrown Response is a deliberate result -- the friendly "no gameweek" state
+        // above -- not a failure to wrap.
+        if (error instanceof Response) throw error;
+
         console.error('Load team data error:', error);
         throw new Error('Failed to load team data', {
             cause: error,

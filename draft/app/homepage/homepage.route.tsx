@@ -20,6 +20,7 @@ export async function loader() {
         const dashboardData = await getAllLeagueStandingsData();
         return data(dashboardData);
     } catch (error) {
+        if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load the dashboard', error);
     }
 }
