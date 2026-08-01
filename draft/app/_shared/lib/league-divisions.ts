@@ -1,23 +1,23 @@
 /* Location: app/_shared/lib/league-divisions.ts */
 
-import type { DivisionId } from '../types/league-types';
+import type { DivisionId, DivisionSheetData } from '../types/league-types';
 
 /**
- * Which divisions this build of the app understands.
+ * What each division takes part in — read from the `Divisions` sheet, not inferred.
  *
- * `DivisionId` is a compile-time union, which means it says nothing at runtime about a
- * spreadsheet somebody edited this morning. This is the runtime half of the same fact, and
- * it exists because the two drifted: a fourth division (`greatScott`) was added to the
- * sheet across `Divisions`, `UserTeams`, `DraftOrder` and `DraftState`, and the app's only
- * reaction was `Cannot read properties of undefined (reading 'push')` on the admin page.
+ * This used to be inferred from the id: promotion was `divisionId !== 'premierLeague'`,
+ * relegation was `divisionId !== 'leagueOne'`. That quietly encoded "there are exactly
+ * three divisions and they form a single pyramid", and it stopped being true when
+ * `greatScott` was added — a fourth division that takes part in nothing cross-division.
  *
- * Adding a division is a code change, not just a sheet change — scoring, promotion and
- * relegation all assume a known set. The point of this module is that the app should
- * **say** that, clearly, rather than crashing and leaving someone to infer it from a stack
- * trace.
+ * **Position cannot express that.** By `order` greatScott is bottom, so deriving the rules
+ * from rank would have moved relegation onto it and taken it off leagueOne: exactly
+ * backwards. Membership is a fact about each division, so each division states it, in the
+ * sheet, where the league is actually administered.
  */
 
-export const KNOWN_DIVISION_IDS: readonly DivisionId[] = ['premierLeague', 'championship', 'leagueOne'];
+/** Divisions this build has a `DivisionId` for. The sheet may legitimately contain more. */
+export const KNOWN_DIVISION_IDS: readonly DivisionId[] = ['premierLeague', 'championship', 'leagueOne', 'greatScott'];
 
 const isKnown = (id: string): id is DivisionId => (KNOWN_DIVISION_IDS as readonly string[]).includes(id);
 
@@ -53,4 +53,30 @@ export function describeUnknownDivisions(ids: readonly (string | null | undefine
         'Adding a division needs a code change as well as a sheet change, because scoring and ' +
         'promotion/relegation both assume a fixed set — until then, data for it is ignored.'
     );
+}
+
+/** Just the divisions that play in the cup. The cup is cross-division, but not all-division. */
+export function cupDivisions(divisions: readonly DivisionSheetData[]): DivisionSheetData[] {
+    return divisions.filter((division) => division.cup);
+}
+
+/**
+ * The managers eligible for the cup.
+ *
+ * The cup page reads every manager in the league and ranks them for 16 qualifying places.
+ * With a division that does not play in it, "every manager" is the wrong set — and wrong
+ * silently, since nothing crashes: the standings simply contain people who should not be
+ * in them, competing for places against people who should.
+ */
+export function cupEligibleManagers<T extends { divisionId: DivisionId }>(
+    managers: readonly T[],
+    divisions: readonly DivisionSheetData[],
+): T[] {
+    const playing = new Set(cupDivisions(divisions).map((division) => division.id));
+
+    // No division rules at all means nothing has been configured yet; excluding everyone
+    // would empty the cup, which is a worse failure than including everyone.
+    if (playing.size === 0) return [...managers];
+
+    return managers.filter((manager) => playing.has(manager.divisionId));
 }

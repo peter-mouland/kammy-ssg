@@ -22,7 +22,8 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
     const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
 
     // Get data for specific division with position rank changes
-    const standingsData: Record<DivisionId, LeagueStandingsTeamData[]> = {};
+    // Partial: it is filled in per division below, and which divisions exist is data.
+    const standingsData: Partial<Record<DivisionId, LeagueStandingsTeamData[]>> = {};
     const standingsPromises = divisions.map(async (division) => {
         standingsData[division.id] = await getDivisionStandingsWithPositionRankChanges(division.id, currentGameweek);
     });

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { RankBadge, Table, type TableColumn } from '../../_shared/components/table';
-import type { DivisionId } from '../../_shared/types/league-types';
+import type { DivisionSheetData } from '../../_shared/types/league-types';
 import { POSITION_COLUMNS } from '../constants/position-columns';
 import styles from '../league-standings.module.css';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
@@ -23,7 +23,8 @@ export type PositionPointsTableProps = {
     showRankChange?: boolean;
     isFirstGameweek?: boolean;
     selectedGameweek?: number;
-    divisionId?: DivisionId;
+    /** The whole division: the marker rules travel with it, not with its id. */
+    division?: DivisionSheetData;
     layout?: 'card' | 'plain';
 };
 
@@ -35,7 +36,7 @@ export function PositionPointsTable({
     showRankChange = false,
     isFirstGameweek = false,
     selectedGameweek,
-    divisionId,
+    division,
     layout = 'card',
 }: PositionPointsTableProps) {
     const positionRankings = useMemo(() => calculatePositionRankings(teams, pointsSource), [teams, pointsSource]);
@@ -160,9 +161,9 @@ export function PositionPointsTable({
             defaultSort={{ key: 'total', direction: 'desc' }}
             className="table-compact"
             getRowProps={(_team, index) => {
-                if (showRankChange || !divisionId) return {};
+                if (showRankChange || !division) return {};
 
-                const marker = getStandingsRowMarker(divisionId, index, teams.length);
+                const marker = getStandingsRowMarker(division, index, teams.length);
                 if (!marker) return {};
 
                 return { className: MARKER_ROW_CLASS[marker] };

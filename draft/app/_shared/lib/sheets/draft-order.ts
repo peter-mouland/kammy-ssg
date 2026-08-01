@@ -4,6 +4,7 @@ import type { DivisionId } from '../../types/league-types';
 import type { DraftOrderRow } from '../../types/sheets-types';
 import { CACHE_KEYS, getCacheTTL } from '../cache/cache-config';
 import { dataCache } from '../cache/data-cache.service';
+import { KNOWN_DIVISION_IDS } from '../league-divisions';
 import {
     convertToSheetRows,
     createAppError,
@@ -36,11 +37,12 @@ const DRAFT_ORDER_TRANSFORM_FUNCTIONS: Partial<Record<keyof DraftOrderRow, (valu
  */
 async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderRow[]>> {
     try {
-        const draftOrders: Record<DivisionId, DraftOrderRow[]> = {
-            premierLeague: [],
-            championship: [],
-            leagueOne: [],
-        };
+        // Seeded from the known divisions rather than three literals, so adding a division
+        // to `DivisionId` does not leave a hole here for someone to trip over later.
+        const draftOrders = Object.fromEntries(KNOWN_DIVISION_IDS.map((id) => [id, [] as DraftOrderRow[]])) as Record<
+            DivisionId,
+            DraftOrderRow[]
+        >;
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
         const sheetRange: SheetRange = {
             spreadsheetId,

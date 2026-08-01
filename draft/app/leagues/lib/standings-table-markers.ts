@@ -1,5 +1,18 @@
-import type { DivisionId } from '../../_shared/types/league-types';
 export type StandingsRowMarker = 'prize' | 'promotion' | 'relegation';
+
+/**
+ * What the division takes part in, from the `Divisions` sheet.
+ *
+ * This used to take a `DivisionId` and compare it: `!== 'premierLeague'` for promotion,
+ * `!== 'leagueOne'` for relegation. That encoded "three divisions, one pyramid" and broke
+ * when `greatScott` was added -- a division in neither. Deriving it from `order` would
+ * have been worse than the comparison it replaced: greatScott sorts last, so relegation
+ * would have moved onto it and off leagueOne.
+ */
+export interface DivisionMarkerRules {
+    promotion: boolean;
+    relegation: boolean;
+}
 
 /** Row index for the 2nd-place team when sorted by total points descending. */
 export const SECOND_PLACE_ROW_INDEX = 1;
@@ -17,7 +30,7 @@ export const MIN_TEAMS_FOR_RELEGATION_MARKER = 5;
 export const MIN_TEAMS_FOR_PROMOTION_MARKER = 4;
 
 export function getStandingsRowMarker(
-    divisionId: DivisionId,
+    rules: DivisionMarkerRules,
     rowIndex: number,
     teamCount: number,
 ): StandingsRowMarker | undefined {
@@ -29,7 +42,7 @@ export function getStandingsRowMarker(
 
     if (
         rowIndex === PROMOTION_ROW_INDEX &&
-        divisionId !== 'premierLeague' &&
+        rules.promotion &&
         teamCount >= MIN_TEAMS_FOR_PROMOTION_MARKER &&
         rowIndex < teamCount - 1
     ) {
@@ -39,7 +52,7 @@ export function getStandingsRowMarker(
     const relegationRowIndex = teamCount - RELEGATION_OFFSET_FROM_BOTTOM;
     if (
         rowIndex === relegationRowIndex &&
-        divisionId !== 'leagueOne' &&
+        rules.relegation &&
         teamCount >= MIN_TEAMS_FOR_RELEGATION_MARKER &&
         rowIndex < teamCount - 1
     ) {
