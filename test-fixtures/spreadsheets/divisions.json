@@ -1,10 +1,46 @@
 {
-    "range": "Divisions!A1:Z1000",
-    "majorDimension": "ROWS",
-    "values": [
-        ["id", "spreadsheetKey", "label", "order", "url"],
-        ["leagueOne", "leagueOne", "League One", 3, "league-one"],
-        ["championship", "championship", "Championship", 2, "championship"],
-        ["premierLeague", "premierLeague", "Premier League", 1, "premier-league"]
+  "range": "Divisions!A1:Z1000",
+  "majorDimension": "ROWS",
+  "values": [
+    [
+      "id",
+      "spreadsheetKey",
+      "label",
+      "order",
+      "url",
+      "promotion",
+      "relegation",
+      "cup"
+    ],
+    [
+      "leagueOne",
+      "leagueOne",
+      "League One",
+      3,
+      "league-one",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    [
+      "championship",
+      "championship",
+      "Championship",
+      2,
+      "championship",
+      "TRUE",
+      "TRUE",
+      "TRUE"
+    ],
+    [
+      "premierLeague",
+      "premierLeague",
+      "Premier League",
+      1,
+      "premier-league",
+      "FALSE",
+      "TRUE",
+      "TRUE"
     ]
+  ]
 }

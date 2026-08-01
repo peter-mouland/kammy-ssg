@@ -51,6 +51,19 @@ const USER_TEAMS_TAB = [
     ['User ID', 'User Name', 'Team Name', 'Division ID', 'Last Updated'],
     ['ann', 'Ann', 'Ann FC', 'premierLeague', '2026-08-01'],
     ['bob', 'Bob', 'Bob FC', 'championship', '2026-08-01'],
+    // Cat is in a division that does not play in the cup. She is here deliberately: every
+    // assertion in this file that expects Ann and Bob is now also a guard that she was
+    // filtered out. If the loader stops filtering, they all fail at once.
+    ['cat', 'Cat', 'Cat FC', 'greatScott', '2026-08-01'],
+];
+
+/** Which divisions play in the cup is data. greatScott does not. */
+const DIVISIONS_TAB = [
+    ['id', 'spreadsheetKey', 'label', 'order', 'url', 'promotion', 'relegation', 'cup'],
+    ['premierLeague', 'premierLeague', 'Premier League', 1, 'premier-league', 'FALSE', 'TRUE', 'TRUE'],
+    ['championship', 'championship', 'Championship', 2, 'championship', 'TRUE', 'TRUE', 'TRUE'],
+    ['leagueOne', 'leagueOne', 'League One', 3, 'league-one', 'TRUE', 'FALSE', 'TRUE'],
+    ['greatScott', 'greatScott', 'Great Scott League', 4, 'great-scott', 'FALSE', 'FALSE', 'FALSE'],
 ];
 
 const CUP_CONFIG_TAB = [
@@ -90,6 +103,7 @@ const CUP_BRACKET_TAB = [['Stage', 'Tie', 'Home', 'Away', 'HomeAggregate', 'Away
 const allTabs = (over: Record<string, (string | number)[][]> = {}) =>
     sheetValuesHandler({
         UserTeams: USER_TEAMS_TAB,
+        Divisions: DIVISIONS_TAB,
         CupConfig: CUP_CONFIG_TAB,
         Cup: CUP_TAB,
         'player-gw-points': POINTS_TAB,
@@ -213,5 +227,41 @@ describe('the cup page loader', () => {
         const pageData = await load();
 
         expect(pageData.userTeams).toHaveLength(2);
+    });
+});
+
+describe('who is in the cup', () => {
+    /**
+     * The cup is cross-division but not all-division. Before this filter existed the
+     * loader passed every manager in the league into the standings, so a division that
+     * does not play was still ranked for the 16 qualifying places -- no crash, just the
+     * wrong competition. `greatScott` is that division; Cat is in it.
+     */
+    it('leaves out managers from a division whose cup flag is off', async () => {
+        const pageData = await load();
+
+        expect(pageData.userTeams.map((team) => team.userName)).toEqual(['Ann', 'Bob']);
+    });
+
+    it('includes a division once its cup flag is on', async () => {
+        server.use(
+            allTabs({
+                Divisions: DIVISIONS_TAB.map((row) => (row[0] === 'greatScott' ? [...row.slice(0, 7), 'TRUE'] : row)),
+            }),
+        );
+
+        const pageData = await load();
+
+        expect(pageData.userTeams.map((team) => team.userName)).toEqual(['Ann', 'Bob', 'Cat']);
+    });
+
+    it('falls back to including everyone when no division is configured for the cup', async () => {
+        // An unconfigured sheet should not silently empty the cup -- that fails worse, and
+        // less visibly, than including too many.
+        server.use(allTabs({ Divisions: [DIVISIONS_TAB[0]] }));
+
+        const pageData = await load();
+
+        expect(pageData.userTeams.map((team) => team.userName)).toEqual(['Ann', 'Bob', 'Cat']);
     });
 });
