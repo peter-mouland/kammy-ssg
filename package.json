@@ -35,7 +35,8 @@
         "functions:build": "yarn workspace functions build",
         "functions:dev": "yarn workspace functions serve",
         "functions:deploy": "yarn workspace functions build && firebase deploy --only functions",
-        "test": "yarn workspace draft vitest run"
+        "test": "yarn workspace draft vitest run",
+        "dev:fixtures": "yarn workspace draft dev:fixtures"
     },
     "workspaces": [
         "draft",
