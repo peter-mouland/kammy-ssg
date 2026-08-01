@@ -254,7 +254,18 @@ plain JSON, so Part D can persist to a gitignored `.harness/firestore.json` and 
 module stays free of `fs` and usable from a test worker. `resetInMemoryFirestore()` clears it between
 scenarios.
 
-## Part C — Rebuilding the season from local data
+## Part C — Rebuilding the season from local data — ✅ built
+
+`draft/harness/rebuild-season.ts`. **Outside `app/` deliberately**: it has to reach both `admin` and
+`scoring`, and nothing inside the app may orchestrate two domains (`architecture.test.ts` rule 1). It
+still goes through published APIs only — `admin/index.server`, `scoring/index.server` — never a domain's
+internals. `vitest.config.ts` gained `harness/**/*.test.ts` so it runs with everything else.
+
+**A full season costs 6.8 seconds, not the minutes the plan budgeted for** — 117 documents, 3 divisions
+× GW0–38, all real code. Two consequences: the whole rebuild stays on the pre-commit hook rather than
+being trimmed to a few gameweeks, and **Part D does not need `.harness/` persistence** — the fixture
+server can just rebuild at boot. The `dumpInMemoryFirestore()` / `loadInMemoryFirestore()` pair added in
+Part B is still there if a future run gets slower, but nothing needs it today.
 
 Firebase is empty, so the harness reconstructs the derived data — using the app's own pipeline, which
 makes this the single biggest coverage win here. The harness only orchestrates existing code:
@@ -268,12 +279,25 @@ makes this the single biggest coverage win here. The harness only orchestrates e
    points path from `admin/libs/background-jobs.server.ts:124` — real element-summary stats over MSW, real
    `POSITION_RULES` scoring.
 
-Element-summaries load once into `dataCache`, so expect seconds. Do **not** commit the resulting documents
-(117 docs × 24 teams × 13 slots is tens of MB) — they are deterministic given a fixed clock. Persist them
-to `.harness/` and regenerate on demand.
+Element-summaries load once into `dataCache`, so expect seconds — measured at 6.8s for the full 38. Do
+**not** commit the resulting documents (117 docs × 24 teams × 13 slots is tens of MB); they are
+deterministic given a fixed clock, and cheap enough to just rebuild.
 
-This step is shared: the fixture server runs it at boot (or loads `.harness/`), and the loader tests run it
-in-process.
+This step is shared: the fixture server runs it at boot, and the loader tests run it in-process.
+
+**What building it actually found:**
+
+- **`update()` is called with dotted field paths** — `background-jobs.server.ts:139` writes `teams`
+  alongside three `metadata.*` paths in one call. The in-memory Firestore threw on these, exactly as it
+  was designed to, rather than writing junk top-level keys and leaving `pointsLastGameweek` unset. Now
+  implemented as real nested-field writes, with a test.
+- **`calculateSingleTeamPoints`'s signature does not match its production caller.** `teams[userId]` is
+  `{ roster }` against a `TeamGameweekData` parameter, and `previousDivisionDoc` is null at GW1. The
+  harness passes exactly what `background-jobs.server.ts` passes and casts, rather than "fixing" the call
+  — tightening that signature is a change to the app. *[Will slow down future work]*
+- **`scoring/lib/generators.ts:103` logs `console.error` for a normal condition** — a player with no
+  history row for a gameweek (injured, or not yet in the league). A full-season rebuild emits hundreds of
+  these. Harmless, but it makes real errors hard to spot in harness output. *[Polish]*
 
 ## Part D — The fixture server (`yarn dev:fixtures`)
 

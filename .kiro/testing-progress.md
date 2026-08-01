@@ -51,7 +51,7 @@ Baseline at the time of writing. These are the numbers that should move.
 | Data readers | 15 | **12/15** | n/a | n/a | n/a |
 | Shared components | 13 | n/a | n/a | **0/13** | n/a |
 | Domain components | 86 files | 1/86 | n/a | 0/30 wanted | n/a |
-| Pipelines | 5 | 2/5 | 0/5 | n/a | 0/3 wanted |
+| Pipelines | 5 | **4/5** | 0/5 | n/a | 0/3 wanted |
 
 Raw file counts, for context on where the 38 existing test files sit:
 
@@ -209,9 +209,9 @@ The multi-step server flows. These are where a break is expensive and where noth
 
 | Pipeline | Responsible for | Unit | Data | Site | Fix | Wired |
 |---|---|---|---|---|---|---|
-| Season rebuild (GW0 → GW38) | draft picks → rosters → points, per division | ○ | ○ | — | ● | ○ |
-| Points processing | element stats → `POSITION_RULES` → division-teams | ◐ formulas only | ○ | ○ via `/admin/points` | ● | ○ |
-| Transfer approval | `PENDING` → `APPROVED` → roster changes | ◐ validators ● 7/7, integration ○ | ○ | ○ via `/admin/transfers` | ● | ○ |
+| Season rebuild (GW0 → GW38) | draft picks → rosters → points, per division | ● `rebuild-season.test.ts`, all 117 docs in 6.8s | ○ | — | ● | ● |
+| Points processing | element stats → `POSITION_RULES` → division-teams | ● runs for all 38 GWs in the rebuild; ◐ totals never asserted (invented defensive stats) | ○ | ○ via `/admin/points` | ● | ● |
+| Transfer approval | `PENDING` → `APPROVED` → roster changes | ◐ validators ● 7/7; `applyTransfersToGameweekDocument` now **runs** for every gameweek of the rebuild but is not asserted directly (G5) | ○ | ○ via `/admin/transfers` | ● | ● |
 | Snake draft | order generation, pick advancement | ● 4/4 lib | ○ | ▲ RTDB | ◐ | ○ |
 | Cup autopick + scoring | missed deadline → autopick → DQ at 2 | ● 12/12 lib | ○ | ○ | ○ empty fixtures | ○ |
 
@@ -327,6 +327,15 @@ Measured while building it, and each one changes what is worth doing:
   filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
+- **A full season rebuild costs 6.8 seconds.** 117 documents, 3 divisions × GW0–38, through the real
+  transfer integration and the real `POSITION_RULES`. The plan budgeted minutes and hedged with a
+  `.harness/` cache; neither is needed — the fixture server can rebuild at boot, and the whole thing sits
+  on the pre-commit hook. It is now by far the most code any single test here exercises.
+- **The Firestore driver's "throw rather than guess" paid for itself immediately.** The season rebuild
+  writes `{ teams, 'metadata.updatedAt': …, 'metadata.pointsLastUpdated': …, 'metadata.pointsLastGameweek': … }`
+  in one `update()`. Had the driver treated those as literal keys, every gameweek would have looked
+  processed while `pointsLastGameweek` stayed null and three junk keys accumulated — a silent
+  half-failure. It threw instead, and dotted paths are now real nested writes.
 - **The scenario dates in the harness plan were wrong, and are now corrected there.** Measured against
   the real 2024/25 calendar: 2025-01-20 is **GW23**, not GW21 (GW21's deadline was the 14th); and
   2024-08-01 is **GW1**, not "no current gameweek" — GW1's window opens at a hardcoded floor, so every
