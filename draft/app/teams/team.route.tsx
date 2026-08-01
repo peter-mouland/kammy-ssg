@@ -3,6 +3,7 @@
 // app/teams/team.route.tsx
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 import { TeamView } from './components/team-view';
 import type { TeamViewData } from './types/team-types';
 
@@ -19,8 +20,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const teamData = await loadTeamData({ request, params });
         return data<TeamViewData>(teamData);
     } catch (error) {
-        console.error('Team loader error:', error);
-        throw new Response('Failed to load team data', { status: 500 });
+        throw loaderErrorResponse('Could not load this team', error);
     }
 }
 

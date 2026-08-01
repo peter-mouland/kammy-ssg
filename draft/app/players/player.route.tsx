@@ -3,6 +3,7 @@
 // app/routes/players.$playerId.tsx
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 import { PlayerPage } from './player.page';
 import type { PlayerDetailData } from './types/player-types';
 
@@ -31,11 +32,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
         return data<PlayerDetailData>(playerDetailData);
     } catch (error) {
-        console.error('Player detail loader error:', error);
         if (error instanceof Response) {
             throw error;
         }
-        throw new Response('Failed to load player data', { status: 500 });
+        throw loaderErrorResponse('Could not load this player', error);
     }
 }
 

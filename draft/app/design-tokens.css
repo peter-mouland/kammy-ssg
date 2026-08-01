@@ -110,6 +110,11 @@
     --font-3xl: 1.875rem; /* 30px */
     --font-4xl: 2.25rem; /* 36px */
 
+    /* Font Families */
+
+    /* Added for error codes and stack traces, where alignment carries meaning. */
+    --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", "Menlo", "Consolas", monospace;
+
     /* Font Weights */
     --font-weight-normal: 400;
     --font-weight-medium: 500;

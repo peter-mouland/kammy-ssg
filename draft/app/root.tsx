@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React from 'react';
 import {
-    isRouteErrorResponse,
     Links,
     type LinksFunction,
     Meta,
@@ -16,6 +15,7 @@ import {
     useRouteError,
 } from 'react-router';
 import { DesktopNav, MobileNav } from './_shared/components/g-nav';
+import { RouteError } from './_shared/components/route-error';
 import { fakeNowIso } from './_shared/lib/clock';
 import { fplApiCache } from './_shared/lib/fpl/api-cache';
 import designTokens from './design-tokens.css?url';
@@ -286,30 +286,7 @@ export default function App() {
 export function ErrorBoundary() {
     const error = useRouteError();
 
-    if (isRouteErrorResponse(error)) {
-        return (
-            <div className="error">
-                <h1>
-                    {error.status} {error.statusText}
-                </h1>
-                <p>{error.data}</p>
-            </div>
-        );
-    } else if (error instanceof Error) {
-        return (
-            <div className="error">
-                <h1>Error</h1>
-                <p>{error.message}</p>
-                <p>The stack trace is:</p>
-                <pre>{error.stack}</pre>
-            </div>
-        );
-    } else {
-        return (
-            <div className="error">
-                <h1>Unknown Error</h1>
-                <p>An unexpected error occurred.</p>
-            </div>
-        );
-    }
+    // Everything specific lives in RouteError, so every page fails the same way and a
+    // reader gets the real cause rather than "An unexpected error occurred".
+    return <RouteError error={error} />;
 }

@@ -1,6 +1,7 @@
 /* Location: app/players/player-json.route.ts */
 
 import type { LoaderFunctionArgs } from 'react-router';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 
 export async function loader({ params }: LoaderFunctionArgs) {
     const playerCode = params.playerCode;
@@ -46,10 +47,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
-        console.error('Player JSON loader error:', error);
         if (error instanceof Response) {
             throw error;
         }
-        throw new Response('Failed to load player data', { status: 500 });
+        throw loaderErrorResponse('Could not load this player', error);
     }
 }
