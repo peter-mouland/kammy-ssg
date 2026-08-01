@@ -56,9 +56,7 @@ async function generateDraftSyncComparison(divisionId: DivisionId): Promise<Draf
         return comparison;
     } catch (error) {
         console.error(`❌ Failed to generate draft sync comparison for ${divisionId}:`, error);
-        throw new Error(
-            `Failed to generate draft sync comparison: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        throw new Error('Failed to generate draft sync comparison', { cause: error });
     }
 }
 
@@ -78,9 +76,7 @@ async function generateAllDraftSyncComparisons(): Promise<DraftSyncComparison[]>
         return comparisons;
     } catch (error) {
         console.error('❌ Failed to generate all draft sync comparisons:', error);
-        throw new Error(
-            `Failed to generate all comparisons: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        throw new Error('Failed to generate all comparisons', { cause: error });
     }
 }
 

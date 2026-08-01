@@ -81,6 +81,8 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
         };
     } catch (error) {
         console.error('Load team data error:', error);
-        throw new Error(`Failed to load team data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error('Failed to load team data', {
+            cause: error,
+        });
     }
 }
