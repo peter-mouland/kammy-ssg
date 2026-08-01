@@ -3574,7 +3574,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/node@npm:7.10.1, @react-router/node@npm:^7.10.1":
+"@react-router/node@npm:7.10.1":
   version: 7.10.1
   resolution: "@react-router/node@npm:7.10.1"
   dependencies:
@@ -3622,18 +3622,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-router/node@npm:^7.9.4":
-  version: 7.18.1
-  resolution: "@react-router/node@npm:7.18.1"
+"@react-router/node@npm:^7.11.0":
+  version: 7.11.0
+  resolution: "@react-router/node@npm:7.11.0"
   dependencies:
     "@mjackson/node-fetch-server": "npm:^0.2.0"
   peerDependencies:
-    react-router: 7.18.1
-    typescript: ^5.1.0 || ^6.0.0
+    react-router: 7.11.0
+    typescript: ^5.1.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/46714e8c54ca4f0efefb87a14eebb0dc39d6c577291c2238298f921954fa24cb43506461f5af56f0673b6f54d84e1da4fbcb5c03ea837a9414f0d85997f2e75d
+  checksum: 10/a9d85e6d90fe6b07f7ed95a128cce84aa8c1daa47a2c11fe76c4f8e17e556d1633e6a064a757b8c2aba690c3ba515304548099c81d463458e2c6af3fb533d141
   languageName: node
   linkType: hard
 
@@ -6158,7 +6158,7 @@ __metadata:
     "@googleapis/sheets": "npm:13.0.2"
     "@react-router/dev": "npm:^7.10.1"
     "@react-router/express": "npm:^7.10.1"
-    "@react-router/node": "npm:^7.10.1"
+    "@react-router/node": "npm:^7.11.0"
     "@react-router/serve": "npm:^7.10.1"
     "@tanstack/react-query": "npm:^5.90.12"
     "@tanstack/react-query-devtools": "npm:^5.91.1"
@@ -7605,7 +7605,7 @@ __metadata:
   dependencies:
     "@googleapis/sheets": "npm:13.0.2"
     "@react-router/express": "npm:^7.0.0"
-    "@react-router/node": "npm:^7.9.4"
+    "@react-router/node": "npm:^7.11.0"
     "@react-router/serve": "npm:^7.0.0"
     "@tanstack/react-query": "npm:^5.85.5"
     "@tanstack/react-query-devtools": "npm:^5.85.5"
