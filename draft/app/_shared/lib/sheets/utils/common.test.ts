@@ -6,7 +6,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { googleAuthHandler } from '../../../test/google-sheets-msw';
 import { dataCache } from '../../cache/data-cache.service';
 import { readDivisions } from '../divisions';
-import { toPlainHeaders } from './common';
+import { appendToSheet, SPREADSHEET_ID, toPlainHeaders, writeSheetRange } from './common';
 
 /**
  * **Every Sheets request must actually carry its credentials.**
@@ -24,10 +24,17 @@ import { toPlainHeaders } from './common';
 
 let seenAuthorization: string | null = null;
 
+let seenContentType: string | null = null;
+
+const capture = (request: Request) => {
+    seenAuthorization = request.headers.get('authorization');
+    seenContentType = request.headers.get('content-type');
+};
+
 const server = setupServer(
     googleAuthHandler,
     http.get('https://sheets.googleapis.com/v4/spreadsheets/:id/values/:range', ({ request }) => {
-        seenAuthorization = request.headers.get('authorization');
+        capture(request);
         return HttpResponse.json({
             range: 'Divisions!A:E',
             majorDimension: 'ROWS',
@@ -37,6 +44,14 @@ const server = setupServer(
             ],
         });
     }),
+    http.put('https://sheets.googleapis.com/v4/spreadsheets/:id/values/:range', ({ request }) => {
+        capture(request);
+        return HttpResponse.json({ updatedCells: 1 });
+    }),
+    http.post('https://sheets.googleapis.com/v4/spreadsheets/:id/values/:range\\:append', ({ request }) => {
+        capture(request);
+        return HttpResponse.json({ updates: { updatedCells: 1 } });
+    }),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -45,6 +60,7 @@ afterEach(() => {
     server.resetHandlers();
     dataCache.clear();
     seenAuthorization = null;
+    seenContentType = null;
 });
 
 afterAll(() => server.close());
@@ -58,7 +74,34 @@ describe('a real Sheets read', () => {
     });
 
     it('still returns the parsed rows', async () => {
+        // This one passed throughout the outage, which is precisely the problem: MSW
+        // answers a request whether or not it is authenticated.
         expect(await readDivisions()).toHaveLength(1);
+    });
+});
+
+describe('a real Sheets write', () => {
+    // Writes take the other branch of the transporter, where Content-Type is assigned ONTO
+    // the header object. Assigning to a `Headers` that way silently does nothing, so a
+    // write could break independently of a read.
+    const range = { spreadsheetId: SPREADSHEET_ID, range: "'Divisions'!A:E" };
+
+    it('sends an Authorization header when appending a row', async () => {
+        await appendToSheet(range, [['leagueTwo', 'leagueTwo', 'League Two', 4, 'league-two']]);
+
+        expect(seenAuthorization).toMatch(/^Bearer /);
+    });
+
+    it('sends an Authorization header when updating a range', async () => {
+        await writeSheetRange(range, [['id', 'spreadsheetKey', 'label', 'order', 'url']]);
+
+        expect(seenAuthorization).toMatch(/^Bearer /);
+    });
+
+    it('still sets the JSON content type alongside the auth header', async () => {
+        await appendToSheet(range, [['leagueTwo', 'leagueTwo', 'League Two', 4, 'league-two']]);
+
+        expect(seenContentType).toContain('application/json');
     });
 });
 
