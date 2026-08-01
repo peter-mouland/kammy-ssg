@@ -25,6 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
+        if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load the player list', error);
     }
 }

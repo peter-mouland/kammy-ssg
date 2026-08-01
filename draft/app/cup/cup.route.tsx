@@ -3,6 +3,8 @@
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
+import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
+import { friendlyErrorResponse } from '../_shared/lib/loader-error';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupPage } from './cup.page';
@@ -46,6 +48,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
         fplApiCache.getFplFixtures(),
         fplApiCache.getFplTeams(),
     ]);
+
+    // No current gameweek is an explainable state, not a crash. Distinguishes an
+    // unpopulated database from a season that has ended or not yet begun.
+    const availability = describeGameweekAvailability(events, currentGameweekData);
+    if (!availability.available) {
+        throw friendlyErrorResponse(availability.title, availability.detail);
+    }
+
     const selectedUserId = getUserSelection(request).selectedUserId;
 
     // The cup config/sheet may not be set up yet — degrade gracefully rather than 500.
@@ -101,6 +111,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             selectedUserId,
         });
     } catch (error) {
+        if (error instanceof Response) throw error;
         console.error('Cup loader (config/submissions) error:', error);
         return data<CupPageData>({ ...EMPTY, gameweek: currentGameweekData.fplEvent.id, userTeams, selectedUserId });
     }

@@ -3,7 +3,8 @@
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
-import { loaderErrorResponse } from '../_shared/lib/loader-error';
+import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
+import { friendlyErrorResponse, loaderErrorResponse } from '../_shared/lib/loader-error';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
@@ -32,6 +33,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
             readUserTeams(),
             readDivisions(),
         ]);
+
+        // No current gameweek is an explainable state, not a crash. Distinguishes an
+        // unpopulated database from a season that has ended or not yet begun.
+        const availability = describeGameweekAvailability(events, currentGameweekData);
+        if (!availability.available) {
+            throw friendlyErrorResponse(availability.title, availability.detail);
+        }
+
         const persistedUser = getUserSelection(request);
         const currentUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
         const currentGameweek = currentGameweekData.fplEvent.id;
@@ -50,6 +59,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
         return data<EnhancedLeagueStandingsLoaderData>({ ...loaderData, userTeams, persistedUser });
     } catch (error) {
+        if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load the league standings', error);
     }
 }

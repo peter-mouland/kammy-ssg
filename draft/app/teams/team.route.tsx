@@ -20,6 +20,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const teamData = await loadTeamData({ request, params });
         return data<TeamViewData>(teamData);
     } catch (error) {
+        if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load this team', error);
     }
 }
