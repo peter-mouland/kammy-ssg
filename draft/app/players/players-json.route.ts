@@ -1,6 +1,7 @@
 /* Location: app/players/players-json.route.ts */
 
 import type { LoaderFunctionArgs } from 'react-router';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
@@ -24,7 +25,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
             headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
-        console.error('Players JSON loader error:', error);
-        throw new Response('Failed to load player statistics', { status: 500 });
+        throw loaderErrorResponse('Could not load the player list', error);
     }
 }

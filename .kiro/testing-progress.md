@@ -234,6 +234,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 
 | id | task | Part |
 |---|---|---|
+| **G23** | Services that flatten a cause into a string before it can reach the error boundary — `teams/server/team.server.tsx:78` does `new Error('Failed to load team data: ' + (e instanceof Error ? e.message : 'Unknown error'))`, so `/teams` shows "Unknown error" where every other page now shows the real 403. The chain machinery can only render what it is handed | — |
 | **G22** | `_shared/components/player.tsx:45` — `PositionBadge` calls `position.toLowerCase()` unguarded, so a player with no `draft` block cannot render anywhere the badge appears. Not reachable now that the harness generates enhanced data, but it is the same unguarded-dereference class as G21 and `_shared` components are reused everywhere | — |
 | **G5** | `applyTransfersToGameweekDocument` — a published export, load-bearing in the season rebuild, untested | G |
 | **G6** | Playwright action specs: submit transfer → approve → roster changes; submit cup squad; process points | E3 |

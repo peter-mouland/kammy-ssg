@@ -1,0 +1,82 @@
+/* Location: app/_shared/components/route-error.module.css */
+
+.routeError {
+    padding: var(--spacing-6);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.heading {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-2);
+}
+
+.code {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-white);
+    background-color: var(--color-red-600);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-4);
+}
+
+.chain {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-4) 0;
+    border-left: 2px solid var(--color-gray-200);
+}
+
+.link {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
+}
+
+/* The deepest link is the actual cause, so it earns the emphasis. */
+.link.cause {
+    color: var(--color-gray-900);
+    font-weight: var(--font-weight-semibold);
+}
+
+.linkCode {
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+    margin-right: var(--spacing-2);
+}
+
+.hint {
+    padding: var(--spacing-4);
+    background-color: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-4);
+}
+
+.details {
+    margin-top: var(--spacing-4);
+}
+
+.summary {
+    cursor: pointer;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+}
+
+.stack {
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-4);
+    background-color: var(--color-gray-900);
+    color: var(--color-gray-100);
+    border-radius: var(--radius-md);
+    font-size: var(--font-xs);
+    overflow-x: auto;
+    white-space: pre;
+}

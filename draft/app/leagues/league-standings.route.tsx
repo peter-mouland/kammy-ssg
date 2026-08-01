@@ -3,6 +3,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
@@ -49,8 +50,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
         return data<EnhancedLeagueStandingsLoaderData>({ ...loaderData, userTeams, persistedUser });
     } catch (error) {
-        console.error('League standings loader error:', error);
-        throw new Response('Failed to load enhanced standings data', { status: 500 });
+        throw loaderErrorResponse('Could not load the league standings', error);
     }
 }
 

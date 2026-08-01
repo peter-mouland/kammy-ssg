@@ -3,6 +3,7 @@
 // app/routes/dashboard.tsx
 import type { MetaFunction } from 'react-router';
 import { data } from 'react-router';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 import { LeagueStandings } from './home.page';
 
 export const meta: MetaFunction = () => {
@@ -19,8 +20,7 @@ export async function loader() {
         const dashboardData = await getAllLeagueStandingsData();
         return data(dashboardData);
     } catch (error) {
-        console.error('Dashboard loader error:', error);
-        throw new Response('Failed to load dashboard data', { status: 500 });
+        throw loaderErrorResponse('Could not load the dashboard', error);
     }
 }
 

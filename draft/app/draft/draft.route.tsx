@@ -4,6 +4,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react
 import { data } from 'react-router';
 import { ErrorBoundary } from '../_shared/components/error-boundary';
 import { requestFormData } from '../_shared/lib/form-data';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 import { Draft } from './draft';
 import type { DraftActionData } from './types/draft-types';
 
@@ -27,8 +28,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             },
         });
     } catch (error) {
-        console.error('Draft loader error:', error);
-        throw new Response('Failed to load draft data', { status: 500 });
+        throw loaderErrorResponse('Could not load the draft room', error);
     }
 }
 

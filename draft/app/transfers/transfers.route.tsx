@@ -4,6 +4,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { requestFormData } from '../_shared/lib/form-data';
+import { loaderErrorResponse } from '../_shared/lib/loader-error';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { TransfersPage } from './transfers.page';
@@ -60,8 +61,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
         return data<TransfersPageData>({ ...transfersData, userTeams, persistedUser });
     } catch (error) {
-        console.error('Transfers loader error:', error);
-        throw new Response('Failed to load transfers data', { status: 500 });
+        throw loaderErrorResponse('Could not load transfers', error);
     }
 }
 
