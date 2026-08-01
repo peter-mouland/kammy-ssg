@@ -27,6 +27,8 @@ export default defineConfig({
     test: {
         environment: 'node',
         setupFiles: ['./vitest.setup.ts'],
-        include: ['app/**/*.test.{ts,tsx}'],
+        // `harness/` sits outside `app/` because it orchestrates several domains, which
+        // nothing inside the app is allowed to do (architecture.test.ts, rule 1).
+        include: ['app/**/*.test.{ts,tsx}', 'harness/**/*.test.ts'],
     },
 });

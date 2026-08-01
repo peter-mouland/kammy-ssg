@@ -70,6 +70,35 @@ function readPath(doc: StoredDoc, path: string): unknown {
     }, doc);
 }
 
+/**
+ * Set a nested field from a dotted path, as Firestore's `update` does.
+ *
+ * `{ 'metadata.updatedAt': iso }` sets that one key and leaves the rest of `metadata`
+ * alone -- it is NOT a top-level key called "metadata.updatedAt", and it does not replace
+ * the whole object. The season rebuild depends on this: `background-jobs.server.ts:139`
+ * writes `teams` alongside three `metadata.*` paths in a single update, and treating them
+ * as literal keys would leave `pointsLastGameweek` unset while adding junk keys nothing
+ * reads.
+ *
+ * Intermediate objects are created as needed, and a non-object in the way is replaced --
+ * both matching the real API.
+ */
+function writePath(target: StoredDoc, path: string, value: unknown): void {
+    const segments = path.split('.');
+    const last = segments.pop() as string;
+
+    let cursor = target;
+    for (const segment of segments) {
+        const next = cursor[segment];
+        // Clone rather than mutate: the existing nested object is shared with the document
+        // that was already handed out by an earlier read.
+        cursor[segment] = next && typeof next === 'object' && !Array.isArray(next) ? { ...(next as StoredDoc) } : {};
+        cursor = cursor[segment] as StoredDoc;
+    }
+
+    cursor[last] = value;
+}
+
 function sameValue(a: unknown, b: unknown): boolean {
     if (a === b) return true;
     if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return false;
@@ -284,9 +313,10 @@ class MemoryDocumentReference {
     }
 
     /**
-     * Firestore's `update` merges into an existing document and rejects a missing one.
-     * Both halves matter: `updateDivisionTeamsDocument` relies on the merge, and a caller
-     * that updates before creating should fail here exactly as it does live.
+     * Firestore's `update` merges into an existing document, rejects a missing one, and
+     * treats a dotted key as a nested field path. All three matter: the season rebuild
+     * relies on the merge and on `metadata.*` paths, and a caller that updates before
+     * creating should fail here exactly as it does live.
      */
     async update(data: unknown): Promise<{ writeTime: null }> {
         this.applyUpdate(data);
@@ -310,14 +340,17 @@ class MemoryDocumentReference {
         }
 
         const patch = serialise(data, `update ${this.path}`);
-        const dotted = Object.keys(patch).find((key) => key.includes('.'));
-        if (dotted) {
-            throw new Error(
-                `[fixture-firestore] update ${this.path}: dotted field paths are not implemented (got "${dotted}")`,
-            );
+        const updated: StoredDoc = { ...existing };
+
+        for (const [field, value] of Object.entries(patch)) {
+            if (field.includes('.')) {
+                writePath(updated, field, value);
+            } else {
+                updated[field] = value;
+            }
         }
 
-        documents.set(this.id, { ...existing, ...patch });
+        documents.set(this.id, updated);
     }
 
     applyDelete(): void {

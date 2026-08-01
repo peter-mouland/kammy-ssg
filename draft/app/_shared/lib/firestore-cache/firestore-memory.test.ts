@@ -71,6 +71,38 @@ describe('the fixture Firestore, through FirestoreClient', () => {
         expect(doc?.source).toBe('fpl'); // not part of the update, so it must survive it
     });
 
+    it('treats a dotted key as a nested field path, not a literal key', async () => {
+        // `background-jobs.server.ts:139` writes `teams` alongside three `metadata.*` paths
+        // in one update. Treating those as literal keys would leave pointsLastGameweek
+        // unset while adding junk keys nothing reads -- a silently half-processed gameweek.
+        const db = getFirestoreInstance();
+        await db
+            .collection('division-teams')
+            .doc('leagueOne_gw21')
+            .set({ teams: {}, metadata: { createdAt: 'then', pointsLastGameweek: null } });
+
+        await db
+            .collection('division-teams')
+            .doc('leagueOne_gw21')
+            .update({ 'metadata.pointsLastGameweek': 21, 'metadata.updatedAt': 'now' });
+
+        const doc = await db.collection('division-teams').doc('leagueOne_gw21').get();
+        expect(doc.data()?.metadata).toEqual({
+            createdAt: 'then', // untouched siblings survive
+            pointsLastGameweek: 21,
+            updatedAt: 'now',
+        });
+    });
+
+    it('creates the intermediate object when a dotted path has no parent yet', async () => {
+        const db = getFirestoreInstance();
+        await db.collection(CACHE_STATE).doc('a').set({ data: 1 });
+
+        await db.collection(CACHE_STATE).doc('a').update({ 'metadata.updatedAt': 'now' });
+
+        expect((await db.collection(CACHE_STATE).doc('a').get()).data()?.metadata).toEqual({ updatedAt: 'now' });
+    });
+
     it('rejects an update to a document that does not exist, as Firestore does', async () => {
         await expect(client.updateDocument(CACHE_STATE, 'never-created', { data: [] })).rejects.toThrow(
             /does not exist/,
