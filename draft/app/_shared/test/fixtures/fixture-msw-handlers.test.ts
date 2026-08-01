@@ -138,7 +138,8 @@ describe('the FPL endpoints, through the real FPL client', () => {
         const bootstrap = await fplApi.getFplBootstrapData();
 
         expect(bootstrap.elements).toHaveLength(858);
-        expect(bootstrap.teams).toHaveLength(20);
+        // 20 from 2024/25 plus Sunderland and Leeds, promoted for 2025/26 — see below.
+        expect(bootstrap.teams).toHaveLength(22);
         expect(bootstrap.events).toHaveLength(38);
     });
 
@@ -147,6 +148,34 @@ describe('the FPL endpoints, through the real FPL client', () => {
         const ids = bootstrap.elements.map((element) => element.id);
 
         expect(Math.max(...ids)).toBe(858);
+        expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it('names the clubs that were promoted after the FPL pool’s season', async () => {
+        // The pool is 2024/25 and the league data is 2025/26, so 15 synthesized players
+        // are at Sunderland or Leeds -- neither in the Premier League that season. Without
+        // them merged in, those players' rows read "Team 56".
+        const bootstrap = await fplApi.getFplBootstrapData();
+        const byCode = new Map(bootstrap.teams.map((team) => [team.code, team.name]));
+
+        expect(byCode.get(56)).toBe('Sunderland');
+        expect(byCode.get(2)).toBe('Leeds');
+    });
+
+    it('leaves every element pointing at a team that exists, except the genuinely clubless', async () => {
+        const bootstrap = await fplApi.getFplBootstrapData();
+        const codes = new Set(bootstrap.teams.map((team) => team.code));
+
+        // team_code 0 is the eight stand-ins, who were abroad in 2024/25 and have no club.
+        // Inventing one would be a lie, so the UI handles it instead.
+        const unresolved = bootstrap.elements.filter((e) => e.team_code !== 0 && !codes.has(e.team_code));
+        expect(unresolved).toEqual([]);
+    });
+
+    it('gives each added team an id that does not collide with a real one', async () => {
+        const bootstrap = await fplApi.getFplBootstrapData();
+        const ids = bootstrap.teams.map((team) => team.id);
+
         expect(new Set(ids).size).toBe(ids.length);
     });
 

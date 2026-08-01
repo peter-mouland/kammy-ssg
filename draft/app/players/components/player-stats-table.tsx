@@ -20,6 +20,16 @@ interface PlayerStatsTableProps {
     teamsByCode: Record<number, FplTeam>;
 }
 
+/**
+ * A team's name, or '' when the code does not resolve.
+ *
+ * `_shared/components/player.tsx:40` guards the same lookup for the same reason: a player
+ * can carry a `team_code` that is not in the current team list.
+ */
+function teamName(teamsByCode: Record<number, FplTeam>, teamCode: number): string {
+    return teamsByCode[teamCode]?.name ?? '';
+}
+
 function formatPlayerName(player: EnhancedPlayerData, style: 'full' | 'short' | 'web' = 'full'): string {
     switch (style) {
         case 'full':
@@ -75,11 +85,15 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             {} as Record<number, number>,
         );
 
+        // A team_code need not resolve: a player can be at a club that is not in the
+        // current team list (newly promoted, or the player was abroad last season). That
+        // is a missing label on one filter option, not a reason to fail the whole page --
+        // which is what dereferencing `.name` here used to do.
         return Array.from(new Set(players.map((p) => p.team_code)))
-            .sort((a, b) => (teamsByCode[a].name || '').localeCompare(teamsByCode[b].name || ''))
+            .sort((a, b) => teamName(teamsByCode, a).localeCompare(teamName(teamsByCode, b)))
             .map((teamCode) => ({
                 id: teamCode.toString(),
-                label: teamsByCode[teamCode].name || `Team ${teamCode}`,
+                label: teamName(teamsByCode, teamCode) || `Team ${teamCode}`,
                 count: teamCounts[teamCode] || 0,
             }));
     }, [players, teamsByCode]);
@@ -101,11 +115,11 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
     const filteredPlayers = useMemo(() => {
         return players.filter((player) => {
             const playerName = formatPlayerName(player, 'full').toLowerCase();
-            const teamName = teamsByCode[player.team_code].name?.toLowerCase() || '';
+            const playerTeam = teamName(teamsByCode, player.team_code).toLowerCase();
             const searchMatch =
                 !filters.search ||
                 fuzzyStringMatch(playerName, filters.search) ||
-                fuzzyStringMatch(teamName, filters.search);
+                fuzzyStringMatch(playerTeam, filters.search);
 
             // Position filter (multi-select)
             const positionMatch =
@@ -192,13 +206,13 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
                 </div>
             ),
             accessor: (player) =>
-                isStatRelevant('cleanSheets', player.draft.position)
+                isStatRelevant('cleanSheets', player.draft?.position ?? '')
                     ? player.draft?.pointsBreakdown.cleanSheets.stat || 0
                     : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('cleanSheets', player.draft.position) ? stat : '-'),
+            render: (stat, player) => (isStatRelevant('cleanSheets', player.draft?.position ?? '') ? stat : '-'),
         },
         {
             key: 'penaltiesSaved',
@@ -215,23 +229,25 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
                 </div>
             ),
             accessor: (player) =>
-                isStatRelevant('penaltiesSaved', player.draft.position)
+                isStatRelevant('penaltiesSaved', player.draft?.position ?? '')
                     ? player.draft?.pointsBreakdown.penaltiesSaved.stat || 0
                     : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('penaltiesSaved', player.draft.position) ? stat : '-'),
+            render: (stat, player) => (isStatRelevant('penaltiesSaved', player.draft?.position ?? '') ? stat : '-'),
         },
         {
             key: 'saves',
             header: 'Saves',
             accessor: (player) =>
-                isStatRelevant('saves', player.draft.position) ? player.draft?.pointsBreakdown.saves.stat || 0 : -1,
+                isStatRelevant('saves', player.draft?.position ?? '')
+                    ? player.draft?.pointsBreakdown.saves.stat || 0
+                    : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('saves', player.draft.position) ? stat : '-'),
+            render: (stat, player) => (isStatRelevant('saves', player.draft?.position ?? '') ? stat : '-'),
         },
         {
             key: 'goalsConceded',
@@ -243,13 +259,13 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
                 </div>
             ),
             accessor: (player) =>
-                isStatRelevant('goalsConceded', player.draft.position)
+                isStatRelevant('goalsConceded', player.draft?.position ?? '')
                     ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
                     : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
-            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
+            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft?.position ?? '') ? stat : '-'),
         },
         {
             key: 'yellowCards',

@@ -365,28 +365,37 @@ as if it were 10 January 2025 — mid-season, GW21, cup league stage. `?now=clea
 and the cookie alone (no query string) still renders GW21. That is the whole harness proven in four page
 loads.
 
-**Route crawl at `?now=2025-01-10`: 9 of 10 render, 1 genuine bug found.**
+**Route crawl at `?now=2025-01-10`: 10 of 10 render.** `/` `/leagues` `/teams` `/players` `/transfers`
+`/cup` `/draft` `/wishlists` `/admin` `/players.json`.
 
-| | |
-|---|---|
-| 200 | `/` `/leagues` `/teams` `/transfers` `/cup` `/draft` `/wishlists` `/admin` `/players.json` |
-| **500** | `/players` |
+Getting there took fixing the two `/players` crashes the first run exposed, and they were different
+animals — worth separating, because the harness's whole purpose is telling those two apart.
 
-`/players` is a **real crash in app code**, and the first thing this harness has caught:
-`players/components/player-stats-table.tsx:79` does `teamsByCode[a].name` while building its team filter,
-and line 82 does the same. If any player's `team_code` is missing from `teamsByCode`, the lookup is
-`undefined` and the whole page 500s.
+**1. A real code bug.** `players/components/player-stats-table.tsx` dereferenced `teamsByCode[code].name`
+in three places — the team filter's sort, its label, and the search filter — so a single unresolvable
+`team_code` failed the whole page. `_shared/components/player.tsx:40` already guarded the identical
+lookup, with a comment saying it can miss; the stats table simply had not. Fixed with a `teamName()`
+helper and six render tests. Latent in production, where a single-season pool always resolves, but the
+cost of ever hitting it was a blank page rather than a blank cell.
 
-It fires here because 23 of the 54 synthesized elements carry team codes absent from the 2024/25 team list
-— 56 (Sunderland) and 2 (Leeds), promoted for 2025/26, plus 0 for the stand-ins with no club. **That
-fixture data is defensible**: those players genuinely had no 2024/25 Premier League club, and the pool is
-2024/25 by construction. So the honest reading is that the fixtures are right and the code is fragile — a
-page should not 500 because one player's club is unknown, and line 82's `|| \`Team ${teamCode}\`` fallback
-shows the author already expected a missing name, just not a missing team.
+**2. A harness gap wearing a bug's clothes.** Every player arrived with `draft` undefined, and eight
+columns read `player.draft.position`. The cause was not app code: `rebuildSeason` populated the bootstrap
+but never ran `generateAndCacheEnhancedData`, the step that computes each player's custom position, season
+points and breakdown and writes it back onto the stored elements. Fixed in `harness/rebuild-season.ts`.
+**A 500 in the harness is not automatically an app bug** — here one of the two was, and telling them apart
+is exactly the job.
 
-Latent in production today (a single-season pool always resolves), but it is one FPL mid-season quirk away
-from a 500 on a main page. **Not fixed here** — it is app code outside this work, and it carries a product
-question (what should a player with no known club display as?). Logged as G21.
+**And a fixture fix.** The merged bootstrap now carries Sunderland and Leeds, which 15 synthesized players
+belong to and which the 2024/25 list lacks because both were promoted for 2025/26. Names come from the
+real `FPL Team Codes` sheet; standings and strengths are zeroed, since those clubs played no 2024/25
+matches and nothing reads the fields. **`team_code: 0` is deliberately left unresolved** — the eight
+stand-ins were playing abroad and genuinely have no club, so inventing one would be a lie, and the guard
+above is what absorbs it.
+
+Still open: `_shared/components/player.tsx:45` renders a `PositionBadge` that calls
+`position.toLowerCase()` unguarded, so a player with no `draft` block still cannot render. Unreachable now
+that the rebuild generates enhanced data, but it is the same class of fault in a component every domain
+reuses. Logged as G22, not fixed here.
 
 ## Part E — Playwright
 

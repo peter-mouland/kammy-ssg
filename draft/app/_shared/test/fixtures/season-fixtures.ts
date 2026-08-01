@@ -116,11 +116,91 @@ export function fplBootstrap(): FplBootstrap {
             join(FIXTURES_ROOT, 'fpl', 'synthetic-elements.json'),
         );
 
-        bootstrapCache = { ...base, elements: [...base.elements, ...synthetic.elements] };
+        const elements = [...base.elements, ...synthetic.elements];
+
+        bootstrapCache = {
+            ...base,
+            elements,
+            teams: [...base.teams, ...promotedTeams(base.teams as FplTeamLike[], elements)],
+        };
     }
 
     return bootstrapCache;
 }
+
+interface FplTeamLike {
+    code: number;
+    id: number;
+    name: string;
+    // biome-ignore lint/style/useNamingConvention: FPL's own field name
+    short_name: string;
+    [key: string]: unknown;
+}
+
+/**
+ * Teams that the synthesized players belong to but the 2024/25 list does not contain.
+ *
+ * The pool is 2024/25 and the league data is 2025/26, so a player who arrived that summer
+ * can be at a club that was not in the Premier League the season before — Sunderland and
+ * Leeds, both promoted. Without this their rows read "Team 56" instead of "Sunderland".
+ *
+ * Names come from the `FPL Team Codes` sheet, which is real data and already carries both.
+ * Everything else is a plausible blank: these teams played no 2024/25 matches, so there
+ * are no real strengths or standings to borrow, and nothing in the app reads them.
+ *
+ * **`team_code: 0` is deliberately not resolved.** Eight stand-in players were abroad in
+ * 2024/25 and genuinely have no club; inventing one would be a lie. The UI handles it —
+ * see `players/components/player-stats-table.test.tsx`.
+ */
+function promotedTeams(known: FplTeamLike[], elements: Record<string, unknown>[]): FplTeamLike[] {
+    const knownCodes = new Set(known.map((team) => team.code));
+    const missing = [
+        ...new Set(
+            elements.map((element) => Number(element.team_code)).filter((code) => code > 0 && !knownCodes.has(code)),
+        ),
+    ].sort((a, b) => a - b);
+
+    if (missing.length === 0) return [];
+
+    const named = new Map(
+        sheetTab('FPL Team Codes').map((row) => [Number(row[0]), { name: String(row[1]), short: String(row[2]) }]),
+    );
+
+    let nextId = Math.max(...known.map((team) => team.id));
+
+    return missing.map((code) => {
+        const details = named.get(code);
+        nextId += 1;
+
+        return {
+            ...blankTeam,
+            code,
+            id: nextId,
+            name: details?.name ?? `Team ${code}`,
+            short_name: details?.short ?? String(code),
+        };
+    });
+}
+
+/**
+ * The non-identifying half of an `FplTeam`.
+ *
+ * These clubs played no 2024/25 matches, so there are no real standings or strengths to
+ * borrow and nothing in the app reads them. Zeros are the honest answer rather than
+ * invented figures.
+ */
+const blankTeam = {
+    draw: 0,
+    form: null,
+    loss: 0,
+    played: 0,
+    points: 0,
+    position: 0,
+    strength: 3,
+    team_division: null,
+    unavailable: false,
+    win: 0,
+} as unknown as FplTeamLike;
 
 let fixturesCache: unknown[] | undefined;
 

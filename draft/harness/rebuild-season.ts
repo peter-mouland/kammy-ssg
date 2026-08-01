@@ -5,6 +5,7 @@ import { FplFirestore } from '../app/_shared/lib/fpl/fpl-firestore';
 import { handleCommitTeamsToFirestore } from '../app/admin/index.server';
 import {
     calculateSingleTeamPoints,
+    generateAndCacheEnhancedData,
     getDivisionTeamsDocument,
     updateDivisionTeamsDocument,
     upsertDivisionTeamsDocument,
@@ -49,14 +50,24 @@ export interface RebuildSummary {
 }
 
 /**
- * Stage 1: FPL reference data into `fpl-bootstrap/{teams,events,elements}`.
+ * Stage 1: FPL reference data into `fpl-bootstrap/{teams,events,elements}`, then the
+ * enhanced per-player season data on top.
  *
  * `populateBootstrap` filters elements to codes present in the `Players` sheet, which is
  * why the fixture bootstrap has to be the *merged* pool -- without the 54 synthesized
  * elements those roster slots resolve to nothing.
+ *
+ * `generateAndCacheEnhancedData` is the second half and is not optional: it computes each
+ * player's `draft` block -- their custom position, season points and points breakdown --
+ * and writes it back onto the stored elements. Leaving it out was how `/players` 500'd on
+ * the fixture server's first run: every player arrived with `draft` undefined, and the
+ * stats table reads `player.draft.position` for eight of its columns.
  */
 async function populateFplReferenceData(): Promise<void> {
-    await new FplFirestore().populateBootstrap();
+    const fplFirestore = new FplFirestore();
+
+    await fplFirestore.populateBootstrap();
+    await generateAndCacheEnhancedData(fplFirestore);
 }
 
 /**

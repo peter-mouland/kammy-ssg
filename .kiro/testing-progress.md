@@ -84,7 +84,7 @@ nothing proves a manager can use them.
 | `/` | dashboard: all three division tables | — page | ○ | ○ | ○ | ● | ○ | ○ |
 | `/leagues/:divisionId?` | standings, position rankings, time travel (**has action**) | — page | ○ | ○ | ○ | ● | ○ | ○ |
 | `/teams/:userId?` | roster, pitch layout, gameweek nav | — page | ○ | ○ | ○ | ● | ○ | ○ |
-| `/players` | player list, filters, stat columns | — page | ○ | ○ | ○ | ● | ○ | ○ |
+| `/players` | player list, filters, stat columns | — page | ○ | ◐ `player-stats-table.test.ts` 6 tests, unresolvable teams | ○ | ● | ● | ● |
 | `/players/:playerCode` | player detail, per-gameweek history | — page | ○ | ○ | ○ | ● 12 synthesized | ● | ○ |
 | `/transfers/:divisionId?` | transfer submission + validation (**has action**) | — page | ○ | ○ needed: open vs locked | ○ | ● | ○ | ○ |
 | `/cup` | bracket, cup standings | — page | ◐ `cup.route.test.ts` | ○ | ○ | ○ **1 submission, empty bracket** | ○ | ◐ |
@@ -234,7 +234,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 
 | id | task | Part |
 |---|---|---|
-| **G21** | `/players` 500s when a player's `team_code` is not in `teamsByCode` — `players/components/player-stats-table.tsx:79` and `:82` dereference the lookup without a guard. Found by the fixture server's route crawl. Latent in production (a single-season pool always resolves) but one FPL quirk away from a live 500. Needs a decision on what a player with no known club should display as | D |
+| **G22** | `_shared/components/player.tsx:45` — `PositionBadge` calls `position.toLowerCase()` unguarded, so a player with no `draft` block cannot render anywhere the badge appears. Not reachable now that the harness generates enhanced data, but it is the same unguarded-dereference class as G21 and `_shared` components are reused everywhere | — |
 | **G5** | `applyTransfersToGameweekDocument` — a published export, load-bearing in the season rebuild, untested | G |
 | **G6** | Playwright action specs: submit transfer → approve → roster changes; submit cup squad; process points | E3 |
 | ~~**G7**~~ | ~~`fpl/api-cache.ts` + `fpl/gameweeks.ts` unit tests~~ — **done**: `gameweeks.test.ts` (15) and `clock.test.ts` (12), against the real 2024/25 calendar. `api-cache`'s caching and TTL paths are still uncovered | A |
@@ -328,11 +328,20 @@ Measured while building it, and each one changes what is worth doing:
   filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
-- **The harness found its first real bug on its first run.** `/players` 500s because
-  `player-stats-table.tsx:79` dereferences `teamsByCode[code].name` without a guard, and 23 synthesized
-  players carry team codes absent from the 2024/25 team list (Sunderland, Leeds — promoted for 2025/26 —
-  plus the clubless stand-ins). The fixture data is defensible; the code is fragile. That is precisely the
-  question this whole exercise was built to answer, and it answered it in nine seconds. G21.
+- **The harness found two `/players` crashes on its first run, and they were different animals.** Both are
+  now fixed and the route crawl is 10/10.
+  1. **A real code bug.** `player-stats-table.tsx` dereferenced `teamsByCode[code].name` in three places
+     without a guard, so one unresolvable `team_code` took the whole page down. Fixed with a `teamName()`
+     helper mirroring the guard `_shared/components/player.tsx:40` already had, plus six render tests.
+  2. **A harness gap wearing a bug's clothes.** Every player arrived with `draft` undefined, because
+     `rebuildSeason` was populating the bootstrap but never running `generateAndCacheEnhancedData` — the
+     step that computes each player's custom position, season points and breakdown. Fixed in the rebuild.
+     The lesson: a 500 in the harness is not automatically an app bug; here one of two was.
+- **Sunderland and Leeds are now in the fixture team list.** 15 synthesized players belong to clubs that
+  were promoted for 2025/26 and so are absent from the 2024/25 pool. Names come from the real
+  `FPL Team Codes` sheet; standings and strengths are zeroed because those clubs played no 2024/25
+  matches. **`team_code: 0` is left unresolved on purpose** — the eight stand-ins were abroad and
+  genuinely have no club, so inventing one would be a lie the UI should absorb instead.
 - **The fixture server runs the app through Vite SSR, not the production bundle, and it has to.** The
   harness shares three pieces of module state with the app — the Firestore singleton, the clock's
   `AsyncLocalStorage`, and MSW's interception. A built bundle is a second copy of every module: the
