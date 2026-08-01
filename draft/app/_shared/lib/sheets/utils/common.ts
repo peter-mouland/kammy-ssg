@@ -54,6 +54,33 @@ type GaxiosLikeRequest = {
  * gaxios/node-fetch is failing with ERR_STREAM_PREMATURE_CLOSE against Google APIs
  * in this environment. Native fetch (undici) works, so use that as the transporter.
  */
+/**
+ * Normalise whatever the auth library hands us into a plain header object.
+ *
+ * **This is load-bearing, and getting it wrong silently unauthenticates every request.**
+ * `{ ...headers }` works on a plain object and yields `{}` on a `Headers` instance, because
+ * `Headers` keeps its entries in internal slots rather than own enumerable properties. The
+ * spread therefore threw away `Authorization`, every Sheets call went out with no identity,
+ * and Google answered 403 "Method doesn't allow unregistered callers" — which reads like a
+ * spreadsheet sharing problem and is not one.
+ *
+ * It started happening when this file moved from the `googleapis` umbrella to the scoped
+ * `@googleapis/sheets`: the scoped package resolves google-auth-library 10.x, whose gaxios 7
+ * passes fetch-style `Headers`. The umbrella version passed plain objects, so the spread had
+ * always worked.
+ */
+export function toPlainHeaders(headers: unknown): Record<string, string> {
+    if (!headers) return {};
+    if (headers instanceof Headers) return Object.fromEntries(headers.entries());
+
+    // A Map-like with entries(), or an already-plain object.
+    if (typeof (headers as Headers).entries === 'function') {
+        return Object.fromEntries((headers as Headers).entries());
+    }
+
+    return { ...(headers as Record<string, string>) };
+}
+
 async function fetchTransporterRequest(opts: GaxiosLikeRequest) {
     const method = (opts.method || 'GET').toUpperCase();
     let url = opts.url || '';
@@ -68,7 +95,7 @@ async function fetchTransporterRequest(opts: GaxiosLikeRequest) {
         url += (url.includes('?') ? '&' : '?') + qs.toString();
     }
 
-    const headers = { ...(opts.headers || {}) };
+    const headers = toPlainHeaders(opts.headers);
     let body: BodyInit | undefined;
 
     if (opts.data !== undefined && opts.data !== null && method !== 'GET' && method !== 'HEAD') {
