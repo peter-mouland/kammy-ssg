@@ -12,10 +12,14 @@ import { getInvalidationKeys } from '../_shared/lib/cache/cache-config';
 import { dataCache } from '../_shared/lib/cache/data-cache.service';
 import { requestFormData } from '../_shared/lib/form-data';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
+import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
+import { describeUnknownDivisions } from '../_shared/lib/league-divisions';
+import { friendlyErrorResponse } from '../_shared/lib/loader-error';
 import type { DivisionId } from '../_shared/types/league-types';
 import type { DraftAction } from '../draft';
 import type { TransferAdminOverviewData } from '../transfers';
 import { AdminLayout } from './admin.layout';
+import styles from './admin.route.module.css';
 import type { AdminDataContext } from './types/admin-orchestrator-types';
 import type { AdminActionData, SystemStatusSummary } from './types/admin-types';
 
@@ -31,6 +35,8 @@ interface AdminLoaderData {
     sharedContext: AdminDataContext | null;
     transfersData: Record<string, TransferAdminOverviewData> | null;
     teamsByCode: Record<number, FplTeam> | null;
+    /** A sentence naming divisions in the sheet this build does not support, or null. */
+    unknownDivisions?: string | null;
     cacheStats: any | null;
     loadedAt: string;
 }
@@ -46,6 +52,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             sharedContext: null,
             transfersData: null,
             teamsByCode: null,
+            unknownDivisions: null,
             cacheStats: null,
             loadedAt: new Date().toISOString(),
         };
@@ -69,6 +76,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const isTransferRoute = url.pathname.includes('/admin/transfers');
 
     if (isTransferRoute) {
+        // Transfer admin is gameweek-scoped, so with no current gameweek there is nothing
+        // to approve. Explained rather than crashed on -- the rest of /admin still loads,
+        // which is what you need in order to go and populate the data.
+        const availability = describeGameweekAvailability(sharedContext.fplData.events, systemStatus.currentGameweek);
+        if (!availability.available) {
+            throw friendlyErrorResponse(availability.title, availability.detail);
+        }
+
         const { getTransfersAdminData } = await import('./server/transfers-admin.server');
         const divisions = sharedContext.sheetData.divisions;
         const selectedGameweekId =
@@ -78,11 +93,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
         transfersData = await getTransfersAdminData(divisions, gameweek);
     }
 
+    // A division in the sheet that this build does not know about is worth saying out loud
+    // rather than silently dropping. It used to announce itself as
+    // "Cannot read properties of undefined (reading 'push')".
+    const unknownDivisions = describeUnknownDivisions(
+        (sharedContext.sheetData.divisions ?? []).map((division: { id?: string }) => division.id),
+    );
+    if (unknownDivisions) console.warn(`⚠️  ${unknownDivisions}`);
+
     return {
         systemStatus,
         sharedContext,
         transfersData,
         teamsByCode,
+        unknownDivisions,
         cacheStats: null,
         loadedAt: new Date().toISOString(),
     };
@@ -269,6 +293,9 @@ export default function AdminRoute() {
 
     return (
         <AdminLayout>
+            {context.unknownDivisions ? (
+                <output className={styles.unknownDivisions}>{context.unknownDivisions}</output>
+            ) : null}
             <Outlet context={context} />
         </AdminLayout>
     );
