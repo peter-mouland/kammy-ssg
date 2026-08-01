@@ -285,6 +285,18 @@ deterministic given a fixed clock, and cheap enough to just rebuild.
 
 This step is shared: the fixture server runs it at boot, and the loader tests run it in-process.
 
+**The rebuild does not depend on the clock, and Part D's design rests on that.** Measured, not assumed:
+rebuilt at GW1 and again past the final deadline, `division-teams` is **byte-identical** across all 117
+documents and 13MB. Gameweek numbers come from the loop, transfers are assigned to gameweeks by their own
+timestamps against the calendar, and points come from each player's history row for that gameweek number
+— nothing consults `now()`. The only clock-dependent output is the three stored flags on
+`fpl-bootstrap/events`, and those are re-derived on every read under a fake clock, so they are inert.
+
+So the fixture server rebuilds **once** at boot and serves every `?now=` from the same data. The clock
+chooses which slice a page reads; it does not change what is stored. `rebuild-determinism.test.ts` guards
+it, because if it ever stopped being true every date after the first would quietly get data built for a
+different one — which would present as a scoring bug.
+
 **What building it actually found:**
 
 - **`update()` is called with dotted field paths** — `background-jobs.server.ts:139` writes `teams`

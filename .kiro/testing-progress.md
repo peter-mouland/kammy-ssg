@@ -327,6 +327,11 @@ Measured while building it, and each one changes what is worth doing:
   filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
+- **The season rebuild is clock-independent, measured rather than assumed.** Rebuilt at GW1 and again
+  past the final deadline, `division-teams` is byte-identical — all 117 documents, 13MB. Only the stored
+  gameweek flags on `fpl-bootstrap/events` differ, and those are recomputed on read. This is what lets the
+  fixture server rebuild once at boot and serve every date: **the clock chooses which slice a page reads,
+  it does not change what is stored.** `rebuild-determinism.test.ts` guards it.
 - **A full season rebuild costs 6.8 seconds.** 117 documents, 3 divisions × GW0–38, through the real
   transfer integration and the real `POSITION_RULES`. The plan budgeted minutes and hedged with a
   `.harness/` cache; neither is needed — the fixture server can rebuild at boot, and the whole thing sits
