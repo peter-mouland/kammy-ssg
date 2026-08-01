@@ -114,8 +114,6 @@ export async function handleCommitTeamsToFirestore(
         };
     } catch (error) {
         console.error('Commit teams to new structure error:', error);
-        throw new Error(
-            `Failed to commit teams to new structure: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        throw new Error('Failed to commit teams to new structure', { cause: error });
     }
 }

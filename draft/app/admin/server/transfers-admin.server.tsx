@@ -117,7 +117,9 @@ async function handleApproveTransfer(
             },
         };
     } catch (error) {
-        throw new Error(`Failed to approve transfer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error('Failed to approve transfer', {
+            cause: error,
+        });
     }
 }
 
@@ -149,7 +151,9 @@ async function handleRejectTransfer(
             },
         };
     } catch (error) {
-        throw new Error(`Failed to reject transfer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error('Failed to reject transfer', {
+            cause: error,
+        });
     }
 }
 
@@ -172,7 +176,9 @@ export async function handleRefreshTransfers(divisionId: DivisionId): Promise<Tr
             },
         };
     } catch (error) {
-        throw new Error(`Failed to refresh transfers: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error('Failed to refresh transfers', {
+            cause: error,
+        });
     }
 }
 

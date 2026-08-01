@@ -108,6 +108,8 @@ export async function getTransfersPageData({
         };
     } catch (error) {
         console.error('❌ Failed to load transfers page data:', error);
-        throw new Error(`Failed to load transfers data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error('Failed to load transfers data', {
+            cause: error,
+        });
     }
 }

@@ -24,11 +24,7 @@ export async function getDivisionTeamsDocument(
         return doc.data() as DivisionTeamsDocument;
     } catch (error) {
         console.error('Get division teams document error:', error);
-        throw new Error(
-            `Failed to get division teams for ${divisionId} GW${gameweek}: ${
-                error instanceof Error ? error.message : 'Unknown error'
-            }`,
-        );
+        throw new Error(`Failed to get division teams for ${divisionId} GW${gameweek}`, { cause: error });
     }
 }
 
@@ -50,11 +46,7 @@ export async function getTeamsForGameweek(divisionId: DivisionId, userId: Manage
         };
     } catch (error) {
         console.error('Get user team for gameweek error:', error);
-        throw new Error(
-            `Failed to get user team for ${userId} in ${divisionId} GW${gameweek}: ${
-                error instanceof Error ? error.message : 'Unknown error'
-            }`,
-        );
+        throw new Error(`Failed to get user team for ${userId} in ${divisionId} GW${gameweek}`, { cause: error });
     }
 }
 
@@ -89,9 +81,7 @@ export async function createDivisionTeamsDocument(document: DivisionTeamsDocumen
         console.log(`✅ Created division teams document: ${docId}`);
     } catch (error) {
         console.error('Create division teams document error:', error);
-        throw new Error(
-            `Failed to create division teams document: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        throw new Error('Failed to create division teams document', { cause: error });
     }
 }
 
@@ -128,8 +118,6 @@ export async function updateDivisionTeamsDocument(
         console.log(`✅ Updated division teams document: ${docId}`);
     } catch (error) {
         console.error('Update division teams document error:', error);
-        throw new Error(
-            `Failed to update division teams document: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        throw new Error('Failed to update division teams document', { cause: error });
     }
 }

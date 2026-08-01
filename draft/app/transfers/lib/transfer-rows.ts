@@ -60,9 +60,7 @@ export async function readTransferDataForDivision(
         return processingResult;
     } catch (error) {
         console.error(`❌ Failed to read transfer data for division ${divisionId}:`, error);
-        throw new Error(
-            `Failed to read transfer data for division ${divisionId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        );
+        throw new Error(`Failed to read transfer data for division ${divisionId}`, { cause: error });
     }
 }
 
