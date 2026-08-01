@@ -226,7 +226,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 | id | task | Part |
 |---|---|---|
 | **G1** | Author cup fixture rows — 16 qualifiers across `league`/`r16`/`qf`/`sf`/`final`, plus a bracket. Without this the best-tested domain in the codebase has no integrated coverage and every cup page renders only its empty state | B |
-| **G2** | Fixture server so any page can be loaded at any date | D |
+| ~~**G2**~~ | ~~Fixture server so any page can be loaded at any date~~ — **done**: `yarn dev:fixtures`, `?now=<iso>`, verified GW1/21/38 from one server. 9 of 10 routes render; `/players` is G21 | D |
 | **G3** | Route crawl: 20 pages + 6 endpoints × 3 dates, asserting 200, no error boundary, no console error | E1 |
 | **G4** | Loader payload tests + committed payloads, one per route | G |
 
@@ -234,6 +234,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 
 | id | task | Part |
 |---|---|---|
+| **G21** | `/players` 500s when a player's `team_code` is not in `teamsByCode` — `players/components/player-stats-table.tsx:79` and `:82` dereference the lookup without a guard. Found by the fixture server's route crawl. Latent in production (a single-season pool always resolves) but one FPL quirk away from a live 500. Needs a decision on what a player with no known club should display as | D |
 | **G5** | `applyTransfersToGameweekDocument` — a published export, load-bearing in the season rebuild, untested | G |
 | **G6** | Playwright action specs: submit transfer → approve → roster changes; submit cup squad; process points | E3 |
 | ~~**G7**~~ | ~~`fpl/api-cache.ts` + `fpl/gameweeks.ts` unit tests~~ — **done**: `gameweeks.test.ts` (15) and `clock.test.ts` (12), against the real 2024/25 calendar. `api-cache`'s caching and TTL paths are still uncovered | A |
@@ -327,6 +328,15 @@ Measured while building it, and each one changes what is worth doing:
   filename) and now `firestore-cache/firestore-memory.test.ts`. The steering only asks for cache logic and
   TTL config here, so most of that gap is legitimately `—` at the file level. The exceptions are the FPL
   modules in G7.
+- **The harness found its first real bug on its first run.** `/players` 500s because
+  `player-stats-table.tsx:79` dereferences `teamsByCode[code].name` without a guard, and 23 synthesized
+  players carry team codes absent from the 2024/25 team list (Sunderland, Leeds — promoted for 2025/26 —
+  plus the clubless stand-ins). The fixture data is defensible; the code is fragile. That is precisely the
+  question this whole exercise was built to answer, and it answered it in nine seconds. G21.
+- **The fixture server runs the app through Vite SSR, not the production bundle, and it has to.** The
+  harness shares three pieces of module state with the app — the Firestore singleton, the clock's
+  `AsyncLocalStorage`, and MSW's interception. A built bundle is a second copy of every module: the
+  rebuild would fill one Firestore while pages read another, empty one. One module graph, no globals.
 - **The season rebuild is clock-independent, measured rather than assumed.** Rebuilt at GW1 and again
   past the final deadline, `division-teams` is byte-identical — all 117 documents, 13MB. Only the stored
   gameweek flags on `fpl-bootstrap/events` differ, and those are recomputed on read. This is what lets the

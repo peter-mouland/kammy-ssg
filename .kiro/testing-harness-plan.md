@@ -311,15 +311,30 @@ different one — which would present as a scoring bug.
   history row for a gameweek (injured, or not yet in the league). A full-season rebuild emits hundreds of
   these. Harmless, but it makes real errors hard to spot in harness output. *[Polish]*
 
-## Part D — The fixture server (`yarn dev:fixtures`)
+## Part D — The fixture server (`yarn dev:fixtures`) — ✅ built
 
 The deliverable that answers your immediate question, and the one that is useful before a single test
 exists: **a real server serving the real app entirely from fixtures, with the date in the URL.**
 
-New `draft/harness/server.mjs`, modelled directly on `functions/src/ssr.ts` — same Express +
-`@react-router/express` shape, so the harness exercises the same wiring production uses, including its
-`getLoadContext: (req) => req.body` body pass-through (which is how form actions receive data in prod, and
-therefore has to be replicated or actions behave differently here than live):
+```bash
+yarn dev:fixtures                              # boots in ~8s: 6s rebuild, 2s Vite
+open http://localhost:3100/?now=2025-01-10     # GW21, mid-season
+```
+
+`draft/harness/server.mjs`, modelled on `functions/src/ssr.ts` — same Express +
+`@react-router/express` shape, including its `getLoadContext: (req) => req.body` body pass-through (which
+is how form actions receive data in prod, and therefore has to be replicated or actions behave differently
+here than live).
+
+**One deviation from the plan, and it is structural: the app runs through Vite's SSR pipeline, not the
+production bundle.** The harness has to share three pieces of module state with the app — the in-memory
+Firestore singleton, the clock's `AsyncLocalStorage`, and MSW's interception. Loading
+`build/server/index.js` would give it a *second copy of every app module*: the rebuild would populate one
+Firestore while the pages read a different, empty one, and `runWithNow` would set a date nothing could
+see. One module graph removes that entire class of bug. Express, React Router, SSR, hydration, route
+config, loaders and actions all still run exactly as production runs them; what differs is module
+transformation, not app logic. If a production-bundle mode is ever wanted, the fix is to move the
+Firestore store and the clock's storage onto `globalThis` — not to load the bundle as-is.
 
 ```
 1. start MSW (setupServer) with the fixture handlers          → FPL + Sheets served locally
@@ -336,11 +351,42 @@ Add `express` and `@react-router/express` to `draft`'s devDependencies, matching
 - `yarn dev:fixtures --watch` — the same harness wrapped around `react-router dev`'s Vite server, for
   iterating on UI against fixture data.
 
-Using it by hand: `http://localhost:3100/leagues?now=2025-01-20` sets a cookie and every page then renders
-as if it were 20 January 2025 — mid-season, GW21, cup league stage. Drop the cookie to return to real time.
+Using it by hand: `http://localhost:3100/leagues?now=2025-01-10` sets a cookie and every page then renders
+as if it were 10 January 2025 — mid-season, GW21, cup league stage. `?now=clear` returns to real time.
 
-**This is the diagnosis you asked for.** Green here with red in production means the fault is data, not
-code, and the 500s stop being ambiguous.
+**Verified working.** One server, three dates, same fixtures:
+
+| `?now=` | standings show |
+|---|---|
+| `2024-08-16T12:00:00Z` | Gameweek 1 |
+| `2025-01-10T00:00:00Z` | Gameweek 21 |
+| `2025-05-26T00:00:00Z` | Gameweek 38 |
+
+and the cookie alone (no query string) still renders GW21. That is the whole harness proven in four page
+loads.
+
+**Route crawl at `?now=2025-01-10`: 9 of 10 render, 1 genuine bug found.**
+
+| | |
+|---|---|
+| 200 | `/` `/leagues` `/teams` `/transfers` `/cup` `/draft` `/wishlists` `/admin` `/players.json` |
+| **500** | `/players` |
+
+`/players` is a **real crash in app code**, and the first thing this harness has caught:
+`players/components/player-stats-table.tsx:79` does `teamsByCode[a].name` while building its team filter,
+and line 82 does the same. If any player's `team_code` is missing from `teamsByCode`, the lookup is
+`undefined` and the whole page 500s.
+
+It fires here because 23 of the 54 synthesized elements carry team codes absent from the 2024/25 team list
+— 56 (Sunderland) and 2 (Leeds), promoted for 2025/26, plus 0 for the stand-ins with no club. **That
+fixture data is defensible**: those players genuinely had no 2024/25 Premier League club, and the pool is
+2024/25 by construction. So the honest reading is that the fixtures are right and the code is fragile — a
+page should not 500 because one player's club is unknown, and line 82's `|| \`Team ${teamCode}\`` fallback
+shows the author already expected a missing name, just not a missing team.
+
+Latent in production today (a single-season pool always resolves), but it is one FPL mid-season quirk away
+from a 500 on a main page. **Not fixed here** — it is app code outside this work, and it carries a product
+question (what should a player with no known club display as?). Logged as G21.
 
 ## Part E — Playwright
 
