@@ -76,6 +76,17 @@ describe('the sheet tabs the app reads, through their real readers', () => {
         expect(divisions.map((d) => d.id).sort()).toEqual(['championship', 'leagueOne', 'premierLeague']);
     });
 
+    it('parses what each division takes part in, from the sheet’s TRUE/FALSE columns', async () => {
+        // Until these columns existed the rules were inferred from the id. They are read
+        // now, which means a parsing mistake would silently switch every marker off and
+        // let every manager into the cup -- both failures being invisible.
+        const byId = new Map((await readDivisions()).map((division) => [division.id, division]));
+
+        expect(byId.get('premierLeague')).toMatchObject({ promotion: false, relegation: true, cup: true });
+        expect(byId.get('championship')).toMatchObject({ promotion: true, relegation: true, cup: true });
+        expect(byId.get('leagueOne')).toMatchObject({ promotion: true, relegation: false, cup: true });
+    });
+
     it('reads all 24 managers, each assigned to a division', async () => {
         const managers = await readUserTeams();
 

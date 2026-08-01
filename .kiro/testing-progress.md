@@ -249,6 +249,7 @@ Ordered by value, not by size. Each entry names the plan Part that unblocks it.
 
 | id | task | Part |
 |---|---|---|
+| **G25** | Untested from the greatScott work: the admin orchestrator's per-division transfer loop (no tests exist in `admin/server/services/` at all), and the `divisionId` → `division` prop change on `PositionPointsTable` (no component tests in `leagues/components/`). Both are wiring rather than logic, but both would fail silently | — |
 | **G12** | Date-behaviour Playwright specs: banner, transfer window, cup reveal, GW38 markers | E2 |
 | **G13** | Storybook for the 30 domain components that carry state, `transfer-form` and `points-breakdown-tooltip` first | F |
 | **G14** | `getTransfersDataForDivision`, `toDraftStates`, `useWishlists`, `handleCommitTeamsToFirestore` | G |
