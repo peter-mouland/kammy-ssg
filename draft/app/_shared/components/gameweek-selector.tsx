@@ -56,6 +56,18 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
 
     const selectedGameweek = selectedGameweekData?.fplEvent.id || 1;
     const currentGameweek = currentGameweekData?.fplEvent.id || 1;
+
+    /**
+     * The deadline, if there is a usable one.
+     *
+     * `selectedGameweekData?.end` guarded the object but not the field, so a gameweek
+     * without a deadline crashed the whole page on `.toLocaleDateString`. `end` also comes
+     * back as an ISO **string** rather than a Date on the paths that read it straight out
+     * of Firestore, and a string has no such method either -- hence `new Date()` rather
+     * than an `instanceof` check.
+     */
+    const parsedDeadline = selectedGameweekData?.end ? new Date(selectedGameweekData.end) : null;
+    const deadline = parsedDeadline && !Number.isNaN(parsedDeadline.getTime()) ? parsedDeadline : null;
     const canGoPrevious = isSeasonSelected || selectedGameweek > 1;
     const canGoNext = isSeasonSelected ? false : selectedGameweek < availableGameweeks.length || showSeasonOption;
 
@@ -64,12 +76,9 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
             <div className={styles.selectorHeader}>
                 <div className={styles.label}>Gameweek Deadline:</div>
                 <div className={styles.endData}>
-                    <span>{selectedGameweekData?.end.toLocaleDateString('en-gb')}</span>
+                    <span>{deadline ? deadline.toLocaleDateString('en-gb') : '—'}</span>
                     <span>
-                        {selectedGameweekData?.end.toLocaleTimeString(['en-gb'], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        })}
+                        {deadline ? deadline.toLocaleTimeString(['en-gb'], { hour: '2-digit', minute: '2-digit' }) : ''}
                     </span>
                 </div>
             </div>

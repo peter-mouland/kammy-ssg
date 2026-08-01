@@ -58,8 +58,18 @@ async function originalReadDraftOrders(): Promise<Record<DivisionId, DraftOrderR
             DRAFT_ORDER_HEADERS,
             DRAFT_ORDER_TRANSFORM_FUNCTIONS,
         );
-        // Fetch user teams and draft orders for each division
+        // Group by whatever divisions the sheet actually contains.
+        //
+        // This used to index into a record pre-seeded with the three known divisions, so a
+        // row for any other one -- a fourth division added to the sheet, or simply a typo
+        // -- hit `undefined.push` and took the whole admin page down with
+        // "Cannot read properties of undefined (reading 'push')". Grouping is not the place
+        // to police which divisions are allowed; `unknownDivisionIds()` reports that, and
+        // the caller can decide what to do about it.
         draftOrder.forEach((order) => {
+            if (!draftOrders[order.divisionId]) {
+                draftOrders[order.divisionId] = [];
+            }
             draftOrders[order.divisionId].push(order);
         });
         return draftOrders;
