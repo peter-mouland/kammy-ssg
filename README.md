@@ -13,6 +13,12 @@ A comprehensive React Router v7 application for managing division-based fantasy 
 - **Google Sheets Database**: Header-based parsing with robust error handling
 
 ### Pages & Routes
+
+> **This list is out of date** — `/my-team`, `/generate-draft` and `/player/$playerId` no longer
+> exist. The route table in [`.kiro/steering/architecture.md`](.kiro/steering/architecture.md) is
+> the accurate one, and `architecture.test.ts` fails if it drifts from `routes.ts`. The same goes
+> for the *Project Structure* tree below.
+
 - **Dashboard** (`/`) - League overview with top players and standings
 - **Team Management** (`/my-team`) - View league standings with division filtering
 - **Live Draft** (`/draft`) - Real-time draft interface with player selection
@@ -95,20 +101,80 @@ cp .env.example .env.local
 # Edit .env.local with your values
 ```
 
-### 4. Installation & Development
+### 4. Installation
+
+This is a Yarn 4 workspace repo — use `yarn`, not `npm`.
+
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+yarn install
 ```
+
+## Running it locally
+
+There are **two** ways to start the app, and they answer different questions.
+
+### `yarn dev` — the real thing
+
+```bash
+yarn dev          # http://localhost:5173
+```
+
+Reads live Google Sheets, the live FPL API and your real Firestore. Needs `.env.local`
+(see *Environment Variables* below); `yarn dev` syncs it into the workspaces for you.
+
+### `yarn dev:fixtures` — the offline fixture server
+
+```bash
+yarn dev:fixtures # http://localhost:3100
+```
+
+The same app, served **entirely from `test-fixtures/`**. No credentials, no network, nothing
+to set up. On boot it rebuilds the whole season through the app's own pipeline — 117 documents
+in about six seconds — into an in-memory Firestore, and serves Sheets and FPL over MSW.
+
+**It takes the date as a URL parameter**, which is the only way to see the site in a state
+other than "today":
+
+| URL | what you get |
+|---|---|
+| `http://localhost:3100/?now=2025-01-10` | mid-season, gameweek 21, cup league stage |
+| `http://localhost:3100/?now=2024-08-16` | gameweek 1, before the first deadline |
+| `http://localhost:3100/?now=2025-05-26` | after the final deadline, gameweek 38 |
+| `http://localhost:3100/?now=clear` | back to real time |
+
+`?now=` sets a cookie, so you set the date once and then click around normally. Two browsers
+can sit at two different dates against the same server.
+
+**What it is for.** When the real site 500s there is no way to tell whether the code broke or
+the data simply is not there. Here the data is known-good by construction, so: **green here and
+red in production means the fault is data, not code.** It changes nothing about the real app —
+repopulating real Firestore is what `/admin` is for.
+
+The date parameter only exists on the fixture server. `yarn dev` always runs at the real date.
+
+### Everything else
+
+```bash
+yarn local        # firebase emulators
+yarn build        # build everything (the only thing that type-checks `functions`)
+yarn start        # serve the production build locally (run `yarn build` first)
+yarn deploy       # build + firebase deploy
+```
+
+> `yarn preview` is currently **broken** — it delegates to a `preview` script in the `draft`
+> workspace that does not exist. Use `yarn build && yarn start`.
+
+### Checks
+
+```bash
+yarn test         # vitest, including the full season rebuild
+yarn ratchet      # type errors / CSS violations / lint warnings must not increase
+yarn check:fix    # Biome lint + format
+yarn type-check   # tsc on the draft workspace
+```
+
+Run `yarn build` before committing — it is the only thing that type-checks the `functions`
+workspace, and `yarn test` and `yarn ratchet` never touch it.
 
 ## Google Sheets Structure
 
