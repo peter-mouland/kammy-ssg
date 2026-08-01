@@ -24,7 +24,11 @@
  */
 
 /** The three divisions. premierLeague > championship > leagueOne. */
-export type DivisionId = 'leagueOne' | 'championship' | 'premierLeague';
+/**
+ * `greatScott` is a standalone division: no promotion, no relegation, not in the cup.
+ * What each division takes part in is data, not position — see `DivisionSheetData`.
+ */
+export type DivisionId = 'leagueOne' | 'championship' | 'premierLeague' | 'greatScott';
 
 /** A manager's user id, as used in the Google Sheets. */
 export type ManagerId = string;
@@ -33,6 +37,20 @@ export interface DivisionSheetData {
     id: DivisionId;
     label: string;
     order: number;
+    /**
+     * What this division takes part in, straight from the `Divisions` sheet.
+     *
+     * These used to be inferred from the id — promotion was `id !== 'premierLeague'`,
+     * relegation was `id !== 'leagueOne'` — which quietly encoded "there are exactly three
+     * divisions and they form one pyramid". `greatScott` is a fourth division that takes
+     * part in none of it, and position cannot express that: by order it is bottom, which
+     * would have moved relegation onto it and off leagueOne.
+     *
+     * So each division states its own rules and the sheet is the source of truth.
+     */
+    promotion: boolean;
+    relegation: boolean;
+    cup: boolean;
 }
 
 export interface UserTeamsSheetData {

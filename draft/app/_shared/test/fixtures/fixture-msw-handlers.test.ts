@@ -102,7 +102,11 @@ describe('the sheet tabs the app reads, through their real readers', () => {
     it('reads the draft order, grouped by division', async () => {
         const orders = await readDraftOrders();
 
-        expect(Object.keys(orders).sort()).toEqual(['championship', 'leagueOne', 'premierLeague']);
+        // Every division the app knows gets a key, whether or not the sheet has rows for
+        // it. These fixtures are the 2025/26 season, which predates `greatScott` — so it
+        // is present and empty, which is exactly what a division with no draft looks like.
+        expect(Object.keys(orders).sort()).toEqual(['championship', 'greatScott', 'leagueOne', 'premierLeague']);
+        expect(orders.greatScott).toEqual([]);
         expect(Object.values(orders).flat()).toHaveLength(24);
     });
 

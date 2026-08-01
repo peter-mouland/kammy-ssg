@@ -23,7 +23,7 @@ export const LeagueStandings = () => {
                         title={<Link to={`/leagues/${division.id}`}>{division.label}</Link>}
                         showRankChange={false}
                         selectedGameweek={selectedGameweek}
-                        divisionId={division.id}
+                        division={division}
                     />
                 ))}
         </div>

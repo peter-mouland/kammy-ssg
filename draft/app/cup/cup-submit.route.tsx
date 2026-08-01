@@ -4,6 +4,8 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { requestFormData } from '../_shared/lib/form-data';
+import { cupEligibleManagers } from '../_shared/lib/league-divisions';
+import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
 import { CupSubmitPage } from './cup-submit.page';
@@ -24,13 +26,18 @@ interface CupActionData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, events, userTeams, fplFixtures, teams] = await Promise.all([
+    const [currentGameweekData, events, allUserTeams, fplFixtures, teams] = await Promise.all([
         fplApiCache.getCurrentGameweekData(),
         fplApiCache.getFplEvents(),
         readUserTeams(),
         fplApiCache.getFplFixtures(),
         fplApiCache.getFplTeams(),
     ]);
+
+    // Only divisions whose `cup` flag is set take part. Without this the cup silently
+    // includes every manager in the league -- no crash, just the wrong competition, with
+    // people ranked for the 16 qualifying places who should not be in the running.
+    const userTeams = cupEligibleManagers(allUserTeams, await readDivisions());
     const persistedUser = getUserSelection(request);
     const selectedUser = userTeams.find((team) => team.userId === persistedUser.selectedUserId);
 

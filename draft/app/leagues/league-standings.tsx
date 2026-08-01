@@ -6,7 +6,7 @@ import { PageHeader } from '../_shared/components/page-header';
 import { SelectDivision } from '../_shared/components/select-division';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
-import type { DivisionId } from '../_shared/types/league-types';
+import type { DivisionId, DivisionSheetData } from '../_shared/types/league-types';
 import { PositionPointsTable } from './components/position-points-table';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
 
@@ -15,7 +15,7 @@ function DivisionStandingsTable({
     teams,
     selectedGameweek,
 }: {
-    division: { id: DivisionId; label: string };
+    division: DivisionSheetData;
     teams: EnhancedLeagueStandingsLoaderData['standingsData'][DivisionId];
     selectedGameweek: number;
 }) {
@@ -45,7 +45,7 @@ function DivisionStandingsTable({
                 subtitle={`Total points accumulated until gameweek ${selectedGameweek}`}
                 showRankChange={false}
                 selectedGameweek={selectedGameweek}
-                divisionId={division.id}
+                division={division}
             />
 
             <PositionPointsTable

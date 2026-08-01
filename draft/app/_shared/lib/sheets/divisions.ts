@@ -7,6 +7,7 @@ import { dataCache } from '../cache/data-cache.service';
 import {
     createAppError,
     parseHeaderBasedData,
+    parseSheetBoolean,
     parseSheetNumber,
     readSheetRange,
     type SheetRange,
@@ -18,11 +19,20 @@ const DIVISIONS_HEADERS = {
     ID: 'id' as keyof DivisionSheetData,
     Label: 'label' as keyof DivisionSheetData,
     Order: 'order' as keyof DivisionSheetData,
+    // What the division takes part in. Absent columns parse as false, which is the safe
+    // default: a division opts IN to promotion, relegation and the cup, it is not assumed.
+    promotion: 'promotion' as keyof DivisionSheetData,
+    relegation: 'relegation' as keyof DivisionSheetData,
+    cup: 'cup' as keyof DivisionSheetData,
 };
 
 // Transform functions for parsing
 const DIVISIONS_TRANSFORM_FUNCTIONS: Partial<Record<keyof DivisionSheetData, (value: any) => any>> = {
     order: parseSheetNumber,
+    // The sheet stores these as the strings "TRUE"/"FALSE".
+    promotion: parseSheetBoolean,
+    relegation: parseSheetBoolean,
+    cup: parseSheetBoolean,
 };
 
 /**
@@ -34,7 +44,7 @@ async function originalReadDivisions(): Promise<DivisionSheetData[]> {
     try {
         const sheetRange: SheetRange = {
             spreadsheetId,
-            range: `'${DIVISIONS_SHEET_NAME}'!A:E`,
+            range: `'${DIVISIONS_SHEET_NAME}'!A:H`,
         };
 
         const rawData = await readSheetRange(sheetRange);

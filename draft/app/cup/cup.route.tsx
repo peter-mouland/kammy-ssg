@@ -4,7 +4,9 @@ import type { LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
+import { cupEligibleManagers } from '../_shared/lib/league-divisions';
 import { friendlyErrorResponse } from '../_shared/lib/loader-error';
+import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupPage } from './cup.page';
@@ -41,13 +43,18 @@ const EMPTY: CupPageData = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, events, userTeams, fixtures, teams] = await Promise.all([
+    const [currentGameweekData, events, allUserTeams, fixtures, teams] = await Promise.all([
         fplApiCache.getCurrentGameweekData(),
         fplApiCache.getFplEvents(),
         readUserTeams(),
         fplApiCache.getFplFixtures(),
         fplApiCache.getFplTeams(),
     ]);
+
+    // Only divisions whose `cup` flag is set take part. Without this the cup silently
+    // includes every manager in the league -- no crash, just the wrong competition, with
+    // people ranked for the 16 qualifying places who should not be in the running.
+    const userTeams = cupEligibleManagers(allUserTeams, await readDivisions());
 
     // No current gameweek is an explainable state, not a crash. Distinguishes an
     // unpopulated database from a season that has ended or not yet begun.

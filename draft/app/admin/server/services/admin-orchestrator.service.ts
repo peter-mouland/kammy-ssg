@@ -156,25 +156,20 @@ export class AdminOrchestrator {
         const { readDraftOrders } = await import('../../../_shared/lib/sheets/draft-order');
         const { readTransfers } = await import('../../../_shared/lib/sheets/transfers');
 
-        const [
-            divisions,
-            managers,
-            draftStates,
-            draftOrder,
-            players,
-            premierLeagueTransfers,
-            championshipTransfers,
-            leagueOneTransfers,
-        ] = await Promise.all([
+        const [divisions, managers, draftStates, draftOrder, players] = await Promise.all([
             readDivisions(),
             readUserTeams(),
             readAllDraftStates(),
             readDraftOrders(),
             readPlayers(),
-            readTransfers('premierLeague'),
-            readTransfers('championship'),
-            readTransfers('leagueOne'),
         ]);
+
+        // Read every division the sheet lists, rather than three named ones. A fourth
+        // division used to be invisible here: its transfers were simply never fetched.
+        const transferLists = await Promise.all(divisions.map((division) => readTransfers(division.id)));
+        const transfers = Object.fromEntries(
+            divisions.map((division, index) => [division.id, transferLists[index]]),
+        ) as Record<DivisionId, Awaited<ReturnType<typeof readTransfers>>>;
 
         return {
             divisions,
@@ -182,11 +177,7 @@ export class AdminOrchestrator {
             draftStates,
             draftOrder,
             players,
-            transfers: {
-                premierLeague: premierLeagueTransfers,
-                championship: championshipTransfers,
-                leagueOne: leagueOneTransfers,
-            },
+            transfers,
         };
     }
 
