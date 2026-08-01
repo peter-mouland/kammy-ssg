@@ -224,6 +224,58 @@ Note that `admin-progress` and `admin-progress-poll` are **not** nested under `/
 
 ---
 
+## Running it locally
+
+Two ways to start the app, and they answer different questions.
+
+| command | data source | port | use it when |
+|---|---|---|---|
+| `yarn dev` | **real** Sheets, FPL and Firestore | 5173 | working against live data |
+| `yarn dev:fixtures` | **fixtures only** — no network, no credentials | 3100 | the real app 500s and you need to know whether it is the code or the data |
+
+`yarn dev` syncs `.env.local` into the workspaces first. `yarn dev:fixtures` needs no
+credentials at all: Sheets and FPL are served over MSW from `test-fixtures/`, Firestore is an
+in-memory driver, and the whole season is rebuilt at boot (~6s, 117 documents).
+
+**The fixture server takes the date as a URL parameter.** This is the only way to see the site
+in a state other than "today":
+
+```
+http://localhost:3100/?now=2025-01-10     # mid-season, GW21
+http://localhost:3100/?now=2024-08-16     # GW1, before the first deadline
+http://localhost:3100/?now=2025-05-26     # after the final deadline, GW38
+http://localhost:3100/?now=clear          # back to real time
+```
+
+`?now=` sets a cookie, so you set the date once and then browse normally. Two browsers can sit
+at two different dates against the same server.
+
+**If it is green here and red in production, the fault is data, not code.** The fixture server
+proves the code path end to end; it changes nothing about the real app. Repopulating real
+Firestore is what `/admin` is for — `populateBootstrapData`, then commit teams per division,
+then points processing.
+
+Other entry points:
+
+```bash
+yarn local        # firebase emulators
+yarn build        # the ONLY thing that type-checks the functions workspace
+yarn start        # serve the production build locally (needs yarn build first)
+yarn test         # vitest, including the harness rebuild
+yarn ratchet      # type errors / CSS violations / lint warnings must not increase
+```
+
+`yarn preview` is broken — it delegates to a `draft preview` script that does not exist.
+
+Environment variables the harness understands (none are set in production):
+
+| variable | effect |
+|---|---|
+| `KAMMY_FIXTURE_FIRESTORE=1` | swap Firestore for the in-memory driver. `dev:fixtures` sets it |
+| `KAMMY_FAKE_NOW=<iso>` | freeze the clock for a whole process |
+| `PORT` | fixture server port, default 3100 |
+| `FIRESTORE_EMULATOR_HOST` | use the real Firestore emulator instead (needs Java) |
+
 ## Deployment
 
 ```bash
