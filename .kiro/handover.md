@@ -48,21 +48,35 @@ only thing that type-checks the `functions` workspace.
    teams per division → run points processing. **Do the greatScott division too** — it has no
    `division-teams` documents at all, so its standings stay empty otherwise (G24).
 
-   **2026-08-02 — still not done. "Populate Bootstrap Data" fails.** It returned a bare
-   "Unexpected Server Error" page and wrote nothing (`players.json` still `[]`, checked past the
-   CDN). The cause was invisible by design: React Router substitutes that placeholder for any
-   unhandled server error, and `/admin`'s action read its form fields *outside* its own
-   try/catch, so the throw escaped as an unhandled 500 rather than becoming action data.
-   `requestFormData` indexed a load context that is `undefined` whenever Firebase does not parse
-   the body. Fixed in [PR #120](https://github.com/peter-mouland/kammy-ssg/pull/120) —
-   **retry the populate once that is merged and deployed**, and if it still fails the page will
-   name the real cause instead of hiding it. Update this line when it succeeds.
+   **2026-08-02 — attempted, failed, root cause fixed, not yet retried.** "Populate Bootstrap
+   Data" returned a bare "Unexpected Server Error" and wrote nothing. Two faults stacked, and
+   both are fixed and deployed:
+
+   - **`/admin`'s action hid every failure** ([PR #120](https://github.com/peter-mouland/kammy-ssg/pull/120)).
+     It read its form fields *outside* its own try/catch, so a throw escaped as an unhandled
+     500 — and React Router replaces that with its "Unexpected Server Error" placeholder in
+     production, so the cause reached nobody.
+   - **The real failure was a dependency version skew** ([PR #121](https://github.com/peter-mouland/kammy-ssg/pull/121)).
+     `draft` builds the SSR bundle but leaves `react`, `react-dom/server` and `react-router`
+     **external**, so production resolves them from `functions/node_modules` — which was on
+     react-router **7.6.1** and React **18** against a bundle built with **7.10.1** and React
+     **19**. 7.6.1's `singleFetchAction` still uses the old `unstable_respond` protocol, so
+     every fetcher submission to `/admin` came back `Error: Bad Request`. Caret ranges let it
+     drift; both workspaces now pin identical exact versions and
+     `harness/dependency-alignment.test.ts` fails if they diverge again.
+
+   **Retry the populate.** If it still fails, the page now names the cause.
 
    Ruled out while diagnosing, so nobody pays for it twice: the live data is fine (`Players`
-   sheet 558 rows, FPL bootstrap 564 elements, **558 matched by code**), and it is not the 60s
-   function timeout (element-summary fetches project to ~3s for all 558). `yarn dev:fixtures`
-   runs the identical action end to end without error, which is what established that this was
-   environment and not logic — the harness doing exactly the job it was built for.
+   sheet 558 rows, FPL bootstrap 564 elements, **558 matched by code**), and it was never the
+   60s function timeout (element-summary fetches project to ~3s for all 558).
+
+   **The harness could not have caught this, and the reason is worth knowing.** It copied
+   production's `getLoadContext: req => req.body` but had no body parser, so `req.body` was
+   `undefined` on every request — it replicated the shape of Firebase and not the behaviour,
+   which looks like coverage and is not. Firebase parses the body before the handler runs and
+   *consumes the stream*, so the Request the adapter builds is empty while its `Content-Type`
+   still promises form data. The harness now parses the same way.
 2. **Part E1 of the plan — the Playwright route crawl.** Every route at three dates, asserting 200,
    no error boundary, no console error. This is the regression net the project still lacks, and the
    fixture server already makes it cheap. See [testing-harness-plan.md](testing-harness-plan.md).
