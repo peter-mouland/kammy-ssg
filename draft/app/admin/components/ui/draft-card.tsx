@@ -139,11 +139,14 @@ export const DraftCard = ({ division, teams, orders, draftStates, draftStatus }:
                 </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1em' }}>
-                {divisionStati.map((divisionStatus, idx) => {
+                {divisionStati.map((divisionStatus) => {
                     return (
-                        <div>
+                        // The key belonged on this div, not the button inside it -- React
+                        // only reads it on the element the map returns, so every render
+                        // warned and the list reconciled by position. `status` is the
+                        // per-division action label, which is unique within this list.
+                        <div key={divisionStatus.status}>
                             <button
-                                key={idx}
                                 type={'button'}
                                 onClick={() => divisionStatus.action && handleAction(divisionStatus.action)}
                                 className={`${styles.draftButton} ${styles[divisionStatus.variant]}`}

@@ -42,12 +42,11 @@ export default defineConfig({
         // about 7s locally and slower on a cold CI runner.
         timeout: 180_000,
         reuseExistingServer: !process.env.CI,
-        // Not piped. The season rebuild alone emits thousands of lines -- including the
-        // `🚨 no stats for gw*` that `scoring/lib/generators.ts` logs for the entirely normal
-        // case of a player with no history row -- which buries the test results and is enough
-        // output to get the run killed. Run `yarn dev:fixtures` in another terminal when you
-        // want the server's own logs.
+        // stdout is ignored because the season rebuild alone emits thousands of ✅ lines,
+        // which bury the test results. stderr is kept: without it, a server that fails to
+        // boot looks identical to a slow one, and the first CI run of this crawl spent 180s
+        // timing out on a module-scope crash it could not report.
         stdout: 'ignore',
-        stderr: 'ignore',
+        stderr: 'pipe',
     },
 });

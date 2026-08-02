@@ -100,9 +100,14 @@ export function generateGameweekData(
             throw new Error(e.message);
         }
         if (!gameweekStats.length) {
-            console.error(`🚨 no stats for gw${gameweek}`);
-            console.log(` - max history : ${allGameweekData.length}`);
-            console.log(` - player : ${fplPlayer.playerId} ${fplPlayer.playerName} ${position}`);
+            // Not an error: a player with no history row for a gameweek is injured, or not
+            // in the league yet. Logging it at error level put hundreds of 🚨 lines on
+            // stderr for every full-season rebuild, which buried the real failures and made
+            // the harness's output impossible to pipe anywhere useful.
+            console.debug(
+                `no stats for gw${gameweek} — player ${fplPlayer.playerId} ${fplPlayer.playerName} ${position}, ` +
+                    `max history ${allGameweekData.length}`,
+            );
         }
 
         try {
