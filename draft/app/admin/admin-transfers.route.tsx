@@ -27,6 +27,13 @@ export default function AdminTransfersRoute() {
     const { sharedContext, systemStatus, transfersData, teamsByCode } = useOutletContext<AdminOutletContext>();
     const [searchParams] = useSearchParams();
 
+    // The loader throws a friendly "no current gameweek" response before this ever renders,
+    // so this is belt and braces -- but it is what lets the type stay honest about the
+    // gameweek being optional rather than fabricating one.
+    if (!systemStatus.currentGameweek) {
+        return <p>There is no current gameweek, so there are no transfers to review.</p>;
+    }
+
     // Get filter parameters from URL
     const selectedDivisionId = searchParams.get('division') || sharedContext.sheetData.divisions[0]?.id;
     const selectedGameweekId =

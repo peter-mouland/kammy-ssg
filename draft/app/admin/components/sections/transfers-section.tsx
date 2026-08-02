@@ -457,7 +457,16 @@ export function TransfersSection({
     const divisionTransferData = transfersData[selectedDivision.id];
     const navigate = useNavigate();
 
-    const availableGameweeks = Array.from({ length: systemStatus.currentGameweek.fplEvent.id }, (_, i) => i + 1);
+    // Transfers are gameweek-scoped, so without one there is nothing here. The loader throws
+    // a friendly response before this renders; this keeps the narrowing local and honest
+    // rather than asserting a gameweek the type no longer promises. After all hooks, so the
+    // early return cannot change hook order.
+    const currentGameweekData = systemStatus.currentGameweek;
+    if (!currentGameweekData) {
+        return <p>There is no current gameweek, so there are no transfers to review.</p>;
+    }
+
+    const availableGameweeks = Array.from({ length: currentGameweekData.fplEvent.id }, (_, i) => i + 1);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
     const handleDivisionChange = (divisionId: string) => {
         if (divisionId !== 'all') {
@@ -491,7 +500,7 @@ export function TransfersSection({
                 actions={
                     <ActionBar align={'right'} gap={'md'}>
                         <GameweekSelector
-                            currentGameweekData={systemStatus.currentGameweek}
+                            currentGameweekData={currentGameweekData}
                             selectedGameweekData={selectedGameweek}
                             availableGameweeks={availableGameweeks}
                         />
