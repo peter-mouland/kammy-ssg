@@ -134,6 +134,20 @@ async function main() {
     const app = express();
     app.use(vite.middlewares);
     app.use(timeTravel(runWithNow));
+
+    // Firebase Functions parses the request body before the SSR handler ever runs, and that
+    // is not a detail -- it *consumes the stream*, so `@react-router/express` then builds a
+    // Request whose body is empty while its Content-Type still promises form data. Every
+    // action bug this project has hit lives in that gap.
+    //
+    // Without these the harness had `req.body === undefined` on every request, so the
+    // `getLoadContext: req => req.body` below passed undefined and no action behaved as it
+    // does live. It replicated the shape of production and not the behaviour, which is worse
+    // than not replicating it at all: it looked covered.
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.text());
+
     app.all(
         '*',
         createRequestHandler({
