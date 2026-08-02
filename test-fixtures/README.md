@@ -69,6 +69,12 @@ Two things to know before trusting a number:
   [testing-progress.md](../.kiro/testing-progress.md)). The one submission's four players *are* present in
   `player-gw-points`, so scoring it works.
 
+**`divisions.json` carries the rule columns the live sheet gained.** `promotion`, `relegation` and
+`cup` per division — the real 2025/26 values for those three. `greatScott` is deliberately **not** in
+this fixture: it did not exist that season, and these files are that season. So the harness exercises a
+three-division league while the live sheet has four, which is why greatScott is code-covered
+(`league-divisions.test.ts`, `cup.route.test.ts`) but not fixture-covered.
+
 `players.json` is **cleaned, not raw** — see *Regenerating* below.
 
 ## `fpl/` — one element pool

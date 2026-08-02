@@ -6,7 +6,7 @@ inclusion: always
 
 ## What is this project?
 
-A draft-based fantasy football web app. Any anonymous user can join a league with friends. Each league week (gameweek), players earn points based on real-world football stats. Managers pick players in a snake draft — no player can be owned by more than one team within the same league. Managers can make transfers, trades, and loans within rules. At the end of the season, the winner is promoted and the loser is relegated across three divisions.
+A draft-based fantasy football web app. Any anonymous user can join a league with friends. Each league week (gameweek), players earn points based on real-world football stats. Managers pick players in a snake draft — no player can be owned by more than one team within the same league. Managers can make transfers, trades, and loans within rules. At the end of the season, the winner is promoted and the loser is relegated — across the divisions that take part in promotion and relegation, which is not all of them.
 
 ---
 
@@ -47,7 +47,7 @@ All league configuration and management decisions live here — managed by admin
 
 | Sheet | Purpose |
 |---|---|
-| `Divisions` | The three divisions (leagueOne, championship, premierLeague) |
+| `Divisions` | The divisions, and what each takes part in (`promotion`, `relegation`, `cup` columns) |
 | `UserTeams` | Manager → team → division assignments |
 | `Draft` | All draft picks (pickNumber, round, userId, playerId, divisionId) |
 | `DraftState` | Whether a draft is active and whose pick it is |
@@ -74,6 +74,19 @@ Backed by Firestore as a persistent cache to avoid hammering the FPL API.
 - **Firestore** — persistent cache for expensive FPL + scoring computations. Collections: `fpl-bootstrap`, `fpl-elements`, `division-teams`, `cache-state`
 - **Realtime Database** — live draft state sync between users during a live draft. Clients subscribe via `@firebase/database`
 
+### Substituting all three, offline
+`yarn dev:fixtures` runs the real app against `test-fixtures/` with no credentials — Sheets and FPL
+over MSW, Firestore swapped for an in-memory driver (`_shared/lib/firestore-cache/firestore-memory.ts`,
+gated on `KAMMY_FIXTURE_FIRESTORE=1`), and the season rebuilt at boot by `draft/harness/rebuild-season.ts`.
+The date is a URL parameter — see *Running it locally*. **Green there and red in production means the
+fault is data, not code.**
+
+### The clock
+`_shared/lib/clock.ts` is where "now" comes from; `new Date()` at a decision site is a bug waiting to
+happen. `clock.server.ts` adds `runWithNow` for per-request time travel and is split out because
+`node:async_hooks` cannot be in a browser bundle. Production sets no override, so `now()` is the real
+date there. Cache TTL arithmetic deliberately does **not** use it.
+
 ### In-Memory Cache
 `DataCacheService` in `_shared/lib/cache/` with per-key TTLs. Centralised config in `cache-config.ts` with invalidation rules per action type (e.g. `DRAFT_ACTION`, `TRANSFERS_PROCESSED`). TTL ranges from 30s (live transfers) to 24h (static reference data).
 
@@ -82,6 +95,15 @@ Backed by Firestore as a persistent cache to avoid hammering the FPL API.
 ## Domain Structure
 
 The `draft/app/` directory follows a **vertical domain + horizontal shared** layout. Features own their full slice (route, components, types, lib, server). Cross-cutting concerns live in `_shared/`.
+
+```
+kammy-ssg/
+├── test-fixtures/  # A whole season of captured data. Read-only, never imported by the app
+└── draft/
+    ├── harness/    # The offline fixture server + season rebuild. OUTSIDE app/ on purpose:
+    │               # it orchestrates several domains, which nothing in app/ may do
+    └── app/        # ↓ the domains below
+```
 
 ```
 draft/app/
@@ -114,9 +136,26 @@ If a pattern here disagrees with what you find elsewhere, `cup/` is more likely 
 ## Domain Model
 
 ### Divisions
-`DivisionId`: `'leagueOne' | 'championship' | 'premierLeague'`
+`DivisionId`: `'leagueOne' | 'championship' | 'premierLeague' | 'greatScott'`
 
-Three divisions. Winners of lower divisions are promoted; losers of upper divisions are relegated.
+**What a division takes part in is data, not something to infer from its id or its rank.** The
+`Divisions` sheet carries `promotion`, `relegation` and `cup` columns, read into
+`DivisionSheetData` and used via `_shared/lib/league-divisions.ts`.
+
+| division | order | promotion | relegation | cup |
+|---|---|---|---|---|
+| `premierLeague` | 1 | — (top) | ✅ | ✅ |
+| `championship` | 2 | ✅ | ✅ | ✅ |
+| `leagueOne` | 3 | ✅ | — (bottom of the pyramid) | ✅ |
+| `greatScott` | 4 | — | — | — |
+
+`greatScott` is standalone: it plays in nothing cross-division. **Do not derive these rules from
+`order`** — greatScott sorts last, so rank-based logic moves relegation onto it and off
+leagueOne, which is exactly backwards. This was inferred from the id (`!== 'premierLeague'`,
+`!== 'leagueOne'`) until a fourth division made that wrong.
+
+Adding a division means: the `DivisionId` union, `KNOWN_DIVISION_IDS`, and a row in the sheet.
+`/admin` shows a banner naming any division in the sheet the build does not recognise.
 
 ### Managers
 `ManagerId = string`. Each manager has a `userId`, `userName`, `teamName`, and belongs to one `divisionId`.
