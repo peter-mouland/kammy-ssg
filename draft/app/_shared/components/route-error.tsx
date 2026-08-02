@@ -57,7 +57,10 @@ function hintFor(payload: LoaderErrorPayload): string | null {
  */
 function FriendlyStateView({ payload }: { payload: LoaderErrorPayload }) {
     return (
-        <div className={styles.routeError}>
+        // The crawl in `e2e/` has to tell these two apart, and it cannot do it by looking:
+        // both render a heading and some prose, and CSS module class names are hashed. A
+        // failure is a bug; an explained state is the app working.
+        <div className={styles.routeError} data-testid="friendly-state">
             <h1 className={styles.heading}>{payload.context}</h1>
             {payload.chain.map((link, index) => (
                 <p key={`${link.message}-${index}`} className={styles.explanation}>
@@ -74,7 +77,7 @@ function ErrorPayloadView({ payload }: { payload: LoaderErrorPayload }) {
     const hint = hintFor(payload);
 
     return (
-        <div className={styles.routeError}>
+        <div className={styles.routeError} data-testid="route-error">
             <h1 className={styles.heading}>{payload.context}</h1>
             {payload.code ? <div className={styles.code}>{payload.code}</div> : null}
 

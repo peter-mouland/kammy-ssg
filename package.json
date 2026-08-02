@@ -36,7 +36,10 @@
         "functions:dev": "yarn workspace functions serve",
         "functions:deploy": "yarn workspace functions build && firebase deploy --only functions",
         "test": "yarn workspace draft vitest run",
-        "dev:fixtures": "yarn workspace draft dev:fixtures"
+        "test:e2e": "playwright test",
+        "test:e2e:ui": "playwright test --ui",
+        "dev:fixtures": "yarn workspace draft dev:fixtures",
+        "postinstall": "test \"$SKIP_PLAYWRIGHT_BROWSERS\" = \"1\" || playwright install chromium --only-shell"
     },
     "workspaces": [
         "draft",
@@ -44,6 +47,7 @@
     ],
     "devDependencies": {
         "@biomejs/biome": "^2.0.0",
+        "@playwright/test": "1.62.1",
         "firebase-tools": "^14.27.0",
         "husky": "9.1.7",
         "lint-staged": "17.2.0",
