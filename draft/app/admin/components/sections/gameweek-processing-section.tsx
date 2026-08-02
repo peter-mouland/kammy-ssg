@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useFetcher } from 'react-router';
+import { describeGameweekAvailability } from '../../../_shared/lib/gameweek-availability';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import type { SystemStatusSummary } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
@@ -19,7 +20,7 @@ interface GameweekProcessingSectionProps {
     sharedContext: AdminDataContext;
 }
 
-export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSectionProps) {
+export function GameweekProcessingSection({ systemStatus, sharedContext }: GameweekProcessingSectionProps) {
     const fetcher = useFetcher();
 
     // Progress modal state
@@ -29,14 +30,22 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
     const isLoading = fetcher.state !== 'idle';
     const actionData = fetcher.data;
 
-    const currentGameweek = systemStatus.gameweekProcessing.currentGameweek.fplEvent.id;
+    // There is not always a current gameweek, and this section is exactly where an admin
+    // lands when there isn't -- an empty database and a pre-season FPL calendar both produce
+    // it. Reading `.fplEvent.id` straight off it crashed the page in that state, which hid
+    // the one control that fixes it.
+    const currentGameweekData = systemStatus.gameweekProcessing.currentGameweek;
+    const availability = describeGameweekAvailability(sharedContext?.fplData?.events, currentGameweekData);
+
+    const currentGameweek = currentGameweekData?.fplEvent?.id ?? 0;
     const lastProcessedGameweek = systemStatus.gameweekProcessing.lastProcessedGameweek;
-    const needsProcessing = currentGameweek > lastProcessedGameweek;
+    const needsProcessing = availability.available && currentGameweek > lastProcessedGameweek;
 
     // Check if bootstrap was run during the current gameweek
-    const currentGameweekStart = systemStatus.gameweekProcessing.currentGameweek.start;
+    const currentGameweekStart = currentGameweekData?.start;
     const bootstrapLastUpdated = systemStatus.bootstrapLastUpdated ? new Date(systemStatus.bootstrapLastUpdated) : null;
-    const bootstrapRecommended = !bootstrapLastUpdated || bootstrapLastUpdated < currentGameweekStart;
+    const bootstrapRecommended =
+        !bootstrapLastUpdated || !currentGameweekStart || bootstrapLastUpdated < new Date(currentGameweekStart);
 
     const handleCacheAction = (actionType: string) => {
         const formData = new FormData();
@@ -80,27 +89,32 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                 description="End-to-end gameweek workflow management"
                 actions={
                     <ActionBar align="right">
-                        {needsProcessing ? (
-                            <AdminButton
-                                variant="primary"
-                                onClick={() => handleProcessGameweek('gameweek', currentGameweek)}
-                                disabled={isLoading}
-                                loading={isLoading}
-                            >
-                                Process Gameweek {currentGameweek}
-                            </AdminButton>
+                        {availability.available ? (
+                            needsProcessing ? (
+                                <AdminButton
+                                    variant="primary"
+                                    onClick={() => handleProcessGameweek('gameweek', currentGameweek)}
+                                    disabled={isLoading}
+                                    loading={isLoading}
+                                >
+                                    Process Gameweek {currentGameweek}
+                                </AdminButton>
+                            ) : (
+                                <AdminMessage type="success">All gameweeks up to date</AdminMessage>
+                            )
                         ) : (
-                            <AdminMessage type="success">All gameweeks up to date</AdminMessage>
+                            <AdminMessage type="warning">{availability.title}</AdminMessage>
                         )}
                     </ActionBar>
                 }
             >
+                {availability.available ? null : <p>{availability.detail}</p>}
                 <AdminGrid columns="auto" minWidth="250px">
                     <StatusCard
                         icon="📅"
                         label="Current Gameweek"
-                        percentage={`Gameweek ${currentGameweek}`}
-                        status="healthy"
+                        percentage={availability.available ? `Gameweek ${currentGameweek}` : 'None'}
+                        status={availability.available ? 'healthy' : 'warning'}
                     />
                     <StatusCard
                         icon="🔄"
@@ -169,13 +183,17 @@ export function GameweekProcessingSection({ systemStatus }: GameweekProcessingSe
                     <AdminButton
                         variant="primary"
                         onClick={() => handleProcessGameweek('gameweek', currentGameweek)}
-                        disabled={isLoading}
+                        disabled={isLoading || !availability.available}
                         loading={isLoading}
                         icon={'▶️'}
                     >
-                        Run Gameweek {currentGameweek}
+                        {availability.available ? `Run Gameweek ${currentGameweek}` : 'Run Gameweek'}
                     </AdminButton>
-                    {actionData?.error && <AdminMessage type="error">Error: ${actionData.error}</AdminMessage>}
+                    {/* The `$` was literal: an admin read "Error: ${the actual message}". */}
+                    {actionData?.error && <AdminMessage type="error">Error: {actionData.error}</AdminMessage>}
+                    {actionData?.success && actionData.message && (
+                        <AdminMessage type="success">{actionData.message}</AdminMessage>
+                    )}
                 </AdminGrid>
             </AdminSection>
 

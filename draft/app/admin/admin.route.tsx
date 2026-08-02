@@ -14,7 +14,7 @@ import { requestFormData } from '../_shared/lib/form-data';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
 import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
 import { describeUnknownDivisions } from '../_shared/lib/league-divisions';
-import { friendlyErrorResponse } from '../_shared/lib/loader-error';
+import { friendlyErrorResponse, toErrorChain } from '../_shared/lib/loader-error';
 import type { DivisionId } from '../_shared/types/league-types';
 import type { DraftAction } from '../draft';
 import type { TransferAdminOverviewData } from '../transfers';
@@ -113,32 +113,75 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 /**
+ * Every link in the cause chain, outermost first, as one line.
+ *
+ * `error.message` alone is what an admin used to get, and for a wrapped failure it is the
+ * least useful link in the chain: `SHEET_READ_ERROR` says a read gave up, the 403 three
+ * levels beneath it says why. `toErrorChain` unwraps both shapes this codebase throws --
+ * real `Error`s via `cause`, and `createAppError()`'s plain objects via `details`.
+ */
+function describeActionFailure(error: unknown): string {
+    const chain = toErrorChain(error);
+    if (chain.length === 0) return 'Unknown error occurred';
+
+    return chain.map((link) => (link.code ? `${link.code}: ${link.message}` : link.message)).join(' → ');
+}
+
+/**
  * Unified action handler for all admin operations using the orchestrator
+ *
+ * **Everything is inside the try, including reading the form.** It used to start outside it,
+ * and a throw there -- `requestFormData` indexing an undefined load context -- escaped as an
+ * unhandled 500. React Router replaces that with a bare "Unexpected Server Error" before it
+ * reaches the browser, so the admin saw a blank error page and the cause reached nobody.
+ * An admin action should always come back as action data the page can render.
  */
 export async function action({ request, context }: ActionFunctionArgs) {
-    const formData = await requestFormData({ request, context });
-    const actionType = formData.get('actionType')?.trim();
-    const divisionId = formData.get('divisionId')?.trim() as DivisionId;
-    const draftActionType = formData.get('draftAction')?.trim() as DraftAction;
-    const gameweekActionType = formData.get('gameweekAction')?.trim() || 'all';
-    const gameweek = Number.parseInt(formData.get('gameweek') as string, 10) || undefined;
-    if (!actionType) {
-        return data<AdminActionData>({
-            success: false,
-            error: 'Action type is required',
-        });
-    }
-
-    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
-    const orchestrator = new AdminOrchestrator();
-
-    let result: AdminActionData;
+    let actionType: string | undefined;
 
     try {
+        const formData = await requestFormData({ request, context });
+        actionType = formData.get('actionType')?.trim();
+        const divisionId = formData.get('divisionId')?.trim() as DivisionId;
+        const draftActionType = formData.get('draftAction')?.trim() as DraftAction;
+        const gameweekActionType = formData.get('gameweekAction')?.trim() || 'all';
+        const gameweek = Number.parseInt(formData.get('gameweek') as string, 10) || undefined;
+
+        if (!actionType) {
+            return data<AdminActionData>({
+                success: false,
+                error: 'Action type is required',
+            });
+        }
+
+        const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
+        const orchestrator = new AdminOrchestrator();
+
+        let result: AdminActionData;
+
         switch (actionType) {
             case 'populateBootstrapData': {
-                const result = await orchestrator.preloadCommonData();
-                return result;
+                const populated = await orchestrator.preloadCommonData();
+
+                // Counts, not the payload. This used to return `preloadCommonData()`'s whole
+                // result -- every element plus every enhanced player, season breakdowns and
+                // all -- serialized back to the browser through the fetcher. Nothing rendered
+                // it; the section only reads `jobId` and `error`.
+                result = {
+                    success: populated.success,
+                    message:
+                        `Bootstrap populated: ${populated.results.bootstrap.teams.length} teams, ` +
+                        `${populated.results.bootstrap.events.length} gameweeks, ` +
+                        `${populated.results.bootstrap.elements.length} players, ` +
+                        `${populated.results.enhanced.length} enhanced`,
+                    data: {
+                        teams: populated.results.bootstrap.teams.length,
+                        events: populated.results.bootstrap.events.length,
+                        elements: populated.results.bootstrap.elements.length,
+                        enhanced: populated.results.enhanced.length,
+                    },
+                };
+                break;
             }
 
             case 'systemHealthCheck': {
@@ -279,11 +322,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
         return data<AdminActionData>(result);
     } catch (error) {
-        console.error(`❌ Admin action ${actionType} failed:`, error);
+        console.error(`❌ Admin action ${actionType ?? '(unread)'} failed:`, error);
 
         return data<AdminActionData>({
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error occurred',
+            error: describeActionFailure(error),
         });
     }
 }
