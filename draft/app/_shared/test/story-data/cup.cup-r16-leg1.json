@@ -1,0 +1,79 @@
+{
+  "bracket": [
+    "array(0)"
+  ],
+  "deadlinePassed": "boolean",
+  "fixtures": [
+    "array(11)",
+    {
+      "away": "string",
+      "awayScore": "number",
+      "finished": "boolean",
+      "home": "string",
+      "homeScore": "number",
+      "kickoff": "string",
+      "started": "boolean"
+    }
+  ],
+  "gameweek": "number",
+  "gameweekOptions": [
+    "array(10)",
+    {
+      "gameweek": "number",
+      "label": "string"
+    }
+  ],
+  "hasConfig": "boolean",
+  "qualifiers": [
+    "array(1)",
+    {
+      "manager": "string",
+      "rank": "number",
+      "userName": "string"
+    }
+  ],
+  "round": {
+    "gameweek": "number",
+    "leg": "number",
+    "playersRequired": "number",
+    "stage": "string",
+    "twoLegged": "boolean"
+  },
+  "rows": [
+    "array(24)",
+    {
+      "division": "string",
+      "manager": "string",
+      "players": "null",
+      "points": "null",
+      "teamName": "string",
+      "userName": "string",
+      "visibility": "string"
+    }
+  ],
+  "selectedGameweek": "number",
+  "selectedUserId": "null",
+  "stageMatchups": [
+    "array(0)"
+  ],
+  "standings": [
+    "array(1)",
+    {
+      "autopickCount": "number",
+      "disqualified": "boolean",
+      "manager": "string",
+      "points": "number",
+      "rank": "number"
+    }
+  ],
+  "userTeams": [
+    "array(24)",
+    {
+      "divisionId": "string",
+      "lastUpdated": "Date",
+      "teamName": "string",
+      "userId": "string",
+      "userName": "string"
+    }
+  ]
+}

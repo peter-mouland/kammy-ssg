@@ -36,6 +36,8 @@
         "functions:dev": "yarn workspace functions serve",
         "functions:deploy": "yarn workspace functions build && firebase deploy --only functions",
         "test": "yarn workspace draft vitest run",
+        "harness": "yarn workspace draft vitest run -c vitest.harness.config.ts",
+        "harness:update": "UPDATE_STORY_DATA=1 yarn workspace draft vitest run -c vitest.harness.config.ts",
         "test:e2e": "playwright test",
         "test:e2e:ui": "playwright test --ui",
         "dev:fixtures": "yarn workspace draft dev:fixtures",

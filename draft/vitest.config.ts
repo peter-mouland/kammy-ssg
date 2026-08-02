@@ -30,5 +30,9 @@ export default defineConfig({
         // `harness/` sits outside `app/` because it orchestrates several domains, which
         // nothing inside the app is allowed to do (architecture.test.ts, rule 1).
         include: ['app/**/*.test.{ts,tsx}', 'harness/**/*.test.ts'],
+        // `*.payload.test.ts` matches the include glob but belongs to the harness project:
+        // it needs a rebuilt season and MSW standing up, which `yarn test` deliberately does
+        // not pay for. `yarn harness` runs those -- see vitest.harness.config.ts.
+        exclude: ['**/node_modules/**', '**/dist/**', 'app/**/*.payload.test.ts'],
     },
 });

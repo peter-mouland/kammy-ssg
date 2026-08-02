@@ -3,6 +3,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
+import { now } from '../_shared/lib/clock';
 import { requestFormData } from '../_shared/lib/form-data';
 import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
 import { friendlyErrorResponse, loaderErrorResponse } from '../_shared/lib/loader-error';
@@ -47,7 +48,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const selectedUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
 
         const end = new Date(currentGameweekData.fplEvent.deadline_time);
-        const isPastDeadline = new Date() > end;
+        // `now()`, not `new Date()`. This is a decision site -- it chooses which gameweek a
+        // transfer lands in -- so the real clock here made the page unreachable at any date
+        // but today: it derived the right gameweek from the fake clock, then compared that
+        // gameweek's deadline against the real one and always concluded "past", reporting
+        // the gameweek after the one it had just chosen. Found by the payload tests.
+        const isPastDeadline = now() > end;
         const currentGameweek = isPastDeadline ? currentGameweekData.fplEvent.id + 1 : currentGameweekData.fplEvent.id;
         const selectedDivision = selectedUser?.divisionId;
         const selectedGameweek = Number.parseInt(

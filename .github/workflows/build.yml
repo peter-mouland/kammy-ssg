@@ -164,6 +164,11 @@ jobs:
       # needs no credentials -- which is what makes a red run here mean the code broke.
       # (Player photos still point at the real Premier League CDN and simply fail offline;
       # the crawl only asserts on same-origin requests for that reason.)
+      # Layer 2: real loaders against the rebuilt season. Shares this job because it shares
+      # the install and the fixture data, and needs no browser of its own.
+      - name: Loader payloads
+        run: yarn harness
+
       - name: Route crawl
         run: yarn test:e2e
 
