@@ -5,7 +5,7 @@ import { get, off, onValue, ref } from 'firebase/database';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRevalidator } from 'react-router';
 import { useToast } from '../../_shared/components/toast-manager';
-import { getRealtimeDbInstance } from '../lib/firebase-client-config';
+import { getRealtimeDbInstance, hasRealtimeConfig } from '../lib/firebase-client-config';
 import type { ConnectionStatusProps } from './connection-status';
 
 interface DraftEvent {
@@ -50,6 +50,14 @@ export const DraftFirebaseHandler: React.FC<DraftFirebaseHandlerProps> = ({
 
     // Monitor Firebase connection status
     useEffect(() => {
+        // Without Realtime Database config there is no live sync to monitor. The draft page
+        // still renders its state from the sheets, which is all the fixture harness can do
+        // anyway -- live sync needs a real RTDB and is out of scope there.
+        if (!hasRealtimeConfig) {
+            setConnectionState('disconnected');
+            return;
+        }
+
         const database = getRealtimeDbInstance();
         const connectedRef = ref(database, '.info/connected');
 
@@ -183,6 +191,8 @@ export const DraftFirebaseHandler: React.FC<DraftFirebaseHandlerProps> = ({
             console.log('🔥 ❌ Listeners already setup, skipping');
             return;
         }
+
+        if (!hasRealtimeConfig) return;
 
         console.log(`🔥 ✅ Setting up Firebase listeners for division: ${divisionId} (ONCE)`);
         listenersSetupRef.current = true;

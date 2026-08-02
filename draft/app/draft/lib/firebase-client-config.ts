@@ -16,18 +16,29 @@ const realtimeConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Validate config
-if (!realtimeConfig.apiKey || !realtimeConfig.databaseURL) {
-    throw new Error('Missing Firebase Realtime Database configuration. Please check your environment variables.');
-}
-
 // Use a unique app name for Realtime Database
 const REALTIME_APP_NAME = 'realtime-draft';
+
+/**
+ * Whether live draft sync can run at all.
+ *
+ * Exported so a caller can degrade rather than crash — the draft page still renders its
+ * state from the sheets without it.
+ */
+export const hasRealtimeConfig = Boolean(realtimeConfig.apiKey && realtimeConfig.databaseURL);
 
 // Get or create the Realtime Database app
 let realtimeDB: Database;
 
 export function getRealtimeDbInstance() {
+    // Validated here, not at module scope. Throwing on import took down any process without
+    // these variables *before a line of app code ran* -- including `yarn dev:fixtures`,
+    // whose entire premise is that it needs no credentials. It only ever worked because
+    // machines had a leftover `draft/.env`; on a clean checkout and on CI it could not boot.
+    if (!hasRealtimeConfig) {
+        throw new Error('Missing Firebase Realtime Database configuration. Please check your environment variables.');
+    }
+
     if (!realtimeDB) {
         const existingApps = getApps();
         let realtimeApp = existingApps.find((app) => app.name === REALTIME_APP_NAME);

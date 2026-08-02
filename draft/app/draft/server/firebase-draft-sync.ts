@@ -22,7 +22,16 @@ interface DraftState {
     syncedFromSheets?: boolean;
 }
 
-const adminDatabase = getRealtimeAdminDbInstance();
+/**
+ * Resolved per call, not at module scope.
+ *
+ * `const adminDatabase = getRealtimeAdminDbInstance()` here meant that merely *importing*
+ * this module read `MY_FIREBASE_SERVICE_ACCOUNT_KEY` and threw without it -- and
+ * `draft.server.ts` imports it at the top, so `/draft` could not load at all on any process
+ * without Firebase credentials. That included `yarn dev:fixtures`, whose whole premise is
+ * that it needs none. Found by the route crawl on its first credential-free run.
+ */
+const adminDatabase = () => getRealtimeAdminDbInstance();
 
 export class FirebaseDraftSync {
     // Cache to prevent redundant writes
@@ -75,7 +84,7 @@ export class FirebaseDraftSync {
                 lastUpdate: Date.now(),
             };
 
-            const stateRef = adminDatabase.ref(path);
+            const stateRef = adminDatabase().ref(path);
             await stateRef.update(updateData);
 
             // Cache this data to prevent future redundant writes
@@ -92,7 +101,7 @@ export class FirebaseDraftSync {
     // Get current draft state
     static async getDraftState(divisionId: string): Promise<DraftState | null> {
         try {
-            const stateRef = adminDatabase.ref(`drafts/${divisionId}/state`);
+            const stateRef = adminDatabase().ref(`drafts/${divisionId}/state`);
             const snapshot = await stateRef.once('value');
             return snapshot.exists() ? snapshot.val() : null;
         } catch (error) {
@@ -104,7 +113,7 @@ export class FirebaseDraftSync {
     // Update a specific draft pick
     static async updateDraftPick(divisionId: string, pickNumber: number, pickData: any) {
         try {
-            const pickRef = adminDatabase.ref(`drafts/${divisionId}/picks/${pickNumber}`);
+            const pickRef = adminDatabase().ref(`drafts/${divisionId}/picks/${pickNumber}`);
             await pickRef.set(pickData);
             console.log(`🔥 SERVER: ✅ Pick ${pickNumber} updated`);
             return true;
@@ -117,7 +126,7 @@ export class FirebaseDraftSync {
     // Remove picks that no longer exist in sheets
     static async removeOrphanedPicks(divisionId: string, validPickNumbers: number[]) {
         try {
-            const picksRef = adminDatabase.ref(`drafts/${divisionId}/picks`);
+            const picksRef = adminDatabase().ref(`drafts/${divisionId}/picks`);
             const snapshot = await picksRef.once('value');
 
             if (!snapshot.exists()) {
@@ -136,7 +145,7 @@ export class FirebaseDraftSync {
 
                 // Remove each orphaned pick
                 for (const pickNum of orphanedPickNumbers) {
-                    const pickRef = adminDatabase.ref(`drafts/${divisionId}/picks/${pickNum}`);
+                    const pickRef = adminDatabase().ref(`drafts/${divisionId}/picks/${pickNum}`);
                     await pickRef.remove();
                 }
 
@@ -153,7 +162,7 @@ export class FirebaseDraftSync {
     // Clear all events (fresh start for sync)
     static async clearAllEvents(divisionId: string) {
         try {
-            const eventsRef = adminDatabase.ref(`drafts/${divisionId}/events`);
+            const eventsRef = adminDatabase().ref(`drafts/${divisionId}/events`);
             await eventsRef.remove();
             console.log(`🔥 SERVER: ✅ All events cleared for division ${divisionId}`);
             return true;
@@ -176,7 +185,7 @@ export class FirebaseDraftSync {
                 return null;
             }
 
-            const eventsRef = adminDatabase.ref(`drafts/${divisionId}/events`);
+            const eventsRef = adminDatabase().ref(`drafts/${divisionId}/events`);
             const eventData: DraftEvent = {
                 ...event,
                 divisionId,
@@ -274,7 +283,7 @@ export class FirebaseDraftSync {
     // Clean up old events to prevent Firebase bloat
     static async cleanupOldEvents(divisionId: string) {
         try {
-            const eventsRef = adminDatabase.ref(`drafts/${divisionId}/events`);
+            const eventsRef = adminDatabase().ref(`drafts/${divisionId}/events`);
             const snapshot = await eventsRef.orderByKey().limitToFirst(1000).once('value');
 
             if (snapshot.exists()) {
@@ -286,7 +295,7 @@ export class FirebaseDraftSync {
                     const eventsToDelete = eventKeys.slice(0, eventKeys.length - 50);
 
                     for (const eventKey of eventsToDelete) {
-                        const deleteRef = adminDatabase.ref(`drafts/${divisionId}/events/${eventKey}`);
+                        const deleteRef = adminDatabase().ref(`drafts/${divisionId}/events/${eventKey}`);
                         await deleteRef.remove();
                     }
 
@@ -364,7 +373,7 @@ export class FirebaseDraftSync {
             // Clear existing Firebase data if force reset
             if (forceReset) {
                 console.log(`🔥 SERVER: 🧹 Force resetting Firebase data for division ${divisionId}`);
-                const picksRef = adminDatabase.ref(`drafts/${divisionId}/picks`);
+                const picksRef = adminDatabase().ref(`drafts/${divisionId}/picks`);
                 await picksRef.remove();
             } else {
                 // Remove orphaned picks that don't exist in sheets
