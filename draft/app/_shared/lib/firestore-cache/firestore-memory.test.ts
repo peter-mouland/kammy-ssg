@@ -197,4 +197,75 @@ describe('the fixture Firestore, through FirestoreClearService', () => {
         const snapshot = await getFirestoreInstance().collection(CACHE_STATE).count().get();
         expect(snapshot.data().count).toBe(0);
     });
+
+    /**
+     * These cover the two things that made "Reset Database" fail in production: a
+     * hard-coded collection list that had gone stale, and a single request that could not
+     * outlive the function timeout.
+     */
+    describe('clearEverything', () => {
+        const countIn = async (name: string) =>
+            (await getFirestoreInstance().collection(name).count().get()).data().count;
+
+        it('clears collections this build does not know about', async () => {
+            // The real orphans: left by an earlier version, named nowhere in the code, and
+            // therefore untouched by every reset that walked a hard-coded list.
+            await client.setDocument('player-gameweeks', 'gw1', cacheDoc('orphan'));
+            await client.setDocument('player_stats_cache', '123', cacheDoc('orphan'));
+            await client.setDocument(CACHE_STATE, 'events', cacheDoc('known'));
+
+            const pass = await new FirestoreClearService().clearEverything();
+
+            expect(pass.done).toBe(true);
+            expect(await countIn('player-gameweeks')).toBe(0);
+            expect(await countIn('player_stats_cache')).toBe(0);
+            expect(await countIn(CACHE_STATE)).toBe(0);
+        });
+
+        it('reports what it deleted, per collection', async () => {
+            await client.setDocument('player-gameweeks', 'gw1', cacheDoc(1));
+            await client.setDocument('player-gameweeks', 'gw2', cacheDoc(2));
+
+            const pass = await new FirestoreClearService().clearEverything();
+
+            expect(pass.deleted).toBe(2);
+            expect(pass.collections).toContainEqual({ name: 'player-gameweeks', deleted: 2, emptied: true });
+        });
+
+        it('says it is done when there was nothing to delete', async () => {
+            const pass = await new FirestoreClearService().clearEverything();
+
+            expect(pass).toEqual({ deleted: 0, collections: [], done: true });
+        });
+
+        it('stops when its time budget runs out and reports that more remains', async () => {
+            for (let i = 0; i < 25; i++) {
+                await client.setDocument(CACHE_STATE, `doc-${i}`, cacheDoc(i));
+            }
+
+            // A zero budget cannot complete a pass, which is the shape of the real failure:
+            // the caller must be told to come back rather than being left to assume success.
+            const pass = await new FirestoreClearService().clearEverything(0);
+
+            expect(pass.done).toBe(false);
+            expect(await countIn(CACHE_STATE)).toBe(25);
+        });
+
+        it('finishes a large collection across repeated passes', async () => {
+            for (let i = 0; i < 30; i++) {
+                await client.setDocument(CACHE_STATE, `doc-${i}`, cacheDoc(i));
+            }
+
+            const service = new FirestoreClearService();
+            let passes = 0;
+            let pass = await service.clearEverything();
+            while (!pass.done && passes < 10) {
+                pass = await service.clearEverything();
+                passes++;
+            }
+
+            expect(pass.done).toBe(true);
+            expect(await countIn(CACHE_STATE)).toBe(0);
+        });
+    });
 });
