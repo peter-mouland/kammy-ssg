@@ -41,7 +41,10 @@ reachable by any test. All three feel like "we have fixtures" and none of them i
 
 ## Scoreboard
 
-Baseline at the time of writing. These are the numbers that should move.
+**Last updated 2026-08-01, after the harness landed (PR #118).** 52 test files, 524 tests — up from
+38 files / 346 tests at the baseline below. The per-group numbers are the ones that should move; they
+are still largely at baseline because the harness built the *machinery* for Data/Render/Site coverage
+without yet writing the per-page tests (Parts E–G of the plan).
 
 | group | rows | Unit | Data | Render | Site |
 |---|---|---|---|---|---|
