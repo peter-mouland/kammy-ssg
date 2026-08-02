@@ -99,24 +99,19 @@ const IGNORED_CONSOLE = [
 ];
 
 /**
- * Server-side errors the crawl tolerates, each with the reason it is not a code fault.
+ * No allowlist.
  *
- * Deliberately narrow — matched on the specific message, not on "transfers" or "error" —
- * because the whole point of watching the server is to see what the browser cannot.
+ * There was one, for `Player X not found in Y's roster` from `/admin/transfers`, excused as
+ * a fixture seam. It was not a seam to be tolerated -- it was the fixtures being wrong. The
+ * transfer timestamps sat a year ahead of the FPL calendar, so every transfer was assigned
+ * past the final deadline and the replay met players who were not in the roster yet.
+ * `scripts/align-transfer-fixtures.mjs` fixed the data; the error is gone; the exception is
+ * gone with it.
+ *
+ * If a server error appears here, it is a real one. Fix it or fix the data -- do not add a
+ * pattern to this file.
  */
-const IGNORED_SERVER_ERRORS = [
-    /**
-     * The documented season seam. The fixtures pair 2024/25 FPL data with a 2025/26
-     * spreadsheet, so a transfer stamped `2026-02-27` is assigned against a calendar that
-     * ended in May 2025. Transfers therefore land in the wrong gameweeks and the validation
-     * replay meets a player who is not in the roster yet. It cannot happen in production,
-     * where both halves are the same season.
-     *
-     * The blast radius is worth knowing separately: one inconsistent row makes the whole
-     * division's transfer data unavailable. Logged as a gap rather than fixed here.
-     */
-    /not found in .*'s roster/,
-];
+const IGNORED_SERVER_ERRORS: RegExp[] = [];
 
 interface PageProblems {
     consoleErrors: string[];

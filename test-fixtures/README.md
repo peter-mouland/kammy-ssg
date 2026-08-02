@@ -37,6 +37,29 @@ through MSW.
 **The live sheet no longer contains any of this.** The 2026/27 rollover cleared the transfer tabs,
 `player-gw-points`, `Cup` and `CupBracket`, and replaced the draft. These files are the only copy.
 
+### The transfer timestamps have been shifted back 364 days, deliberately
+
+The only edit made to the captured sheet data, and it is load-bearing.
+
+A transfer is assigned to a gameweek by comparing **its own timestamp** against the FPL
+calendar's deadlines. The sheet half is 2025/26 and the FPL half is 2024/25, so as captured
+every transfer fell after the final deadline — 483 of 483 in `premierLeague`, all of them
+unassigned. The effects were silent:
+
+- the season rebuild reported `transfersApplied: 0` for **every** gameweek of every division,
+  copying rosters forward 38 times and never once exercising the transfer path;
+- `/admin/transfers` tried to replay a whole season against one gameweek's roster and threw
+  `Player Konsa (199798) not found in Tom S's roster`, which made a division's transfer data
+  unavailable.
+
+`scripts/align-transfer-fixtures.mjs` shifted them by **364 days** — 52 whole weeks, so a
+Saturday stays a Saturday, because deadlines fall on particular weekdays. Transfers now spread
+across all 38 gameweeks (766 applied across the rebuild) with 3 genuine close-season leftovers.
+The original timestamps are in git history.
+
+This narrows the seam rather than widening it: it makes true the claim the plan already made,
+that gameweek *numbers* align between the halves and dates enter only through deadlines.
+
 **Filenames are lower-kebab-case; the sheet tabs are not.** The tabs use four naming styles (`UserTeams`,
 `premierLeague-transfers`, `FPL Team Codes`, `FPL_Player_export`), so a reader resolving a tab to a file
 needs this slug — and exactly this one, because the files were renamed with it:
