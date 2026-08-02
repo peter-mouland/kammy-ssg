@@ -18,6 +18,7 @@
  *   collection(n).select().get()          -- clear-service.ts, ids only
  *   collection(n).count().get()           -- fpl-firestore.ts
  *   collection(n).limit(1).get()          -- system-status.service.ts
+ *   db.listCollections()                  -- clear-service.ts, so reset finds every one
  *   collection(n).where(f, op, v).get()   -- firestore-client.ts
  *   db.getAll(...refs)                    -- firestore-client.ts
  *   db.batch().set() / .update() / .delete() / .commit()
@@ -176,6 +177,20 @@ class MemoryStore {
      */
     ids(name: string): string[] {
         return [...this.collection(name).keys()].sort();
+    }
+
+    /**
+     * Names of collections that actually hold documents.
+     *
+     * Empty ones are filtered out because `collection(name)` creates on read, so a single
+     * lookup for a collection that does not exist would otherwise invent it -- and because
+     * real Firestore's `listCollections()` only returns collections with documents in them.
+     */
+    collectionNames(): string[] {
+        return [...this.collections.entries()]
+            .filter(([, docs]) => docs.size > 0)
+            .map(([name]) => name)
+            .sort();
     }
 
     clear(): void {
@@ -359,6 +374,11 @@ class MemoryDocumentReference {
 }
 
 class MemoryCollectionReference extends MemoryQuery {
+    /** Firestore calls the collection's name `id` on a reference; `listCollections()` reads it. */
+    get id(): string {
+        return this.collectionName;
+    }
+
     doc(id: string): MemoryDocumentReference {
         return new MemoryDocumentReference(this.store, this.collectionName, id);
     }
@@ -399,6 +419,17 @@ class MemoryFirestore {
 
     async getAll(...refs: MemoryDocumentReference[]): Promise<MemoryDocumentSnapshot[]> {
         return Promise.all(refs.map((ref) => ref.get()));
+    }
+
+    /**
+     * Every collection holding documents, as the real API's `listCollections()` does.
+     *
+     * Reset needs this because a hard-coded list of collections goes stale silently: two
+     * collections from an earlier version of the app survived every "reset the entire
+     * database" simply because nothing in the code named them any more.
+     */
+    async listCollections(): Promise<MemoryCollectionReference[]> {
+        return this.store.collectionNames().map((name) => this.collection(name));
     }
 
     batch(): MemoryWriteBatch {

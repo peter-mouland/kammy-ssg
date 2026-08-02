@@ -258,8 +258,19 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
             // Cache management actions using the unified cache API
             case 'resetDatabase': {
-                await orchestrator.clearAllData();
-                result = { success: true, message: 'Database reset completed' };
+                // One bounded pass. A collection too large to clear inside the function's
+                // 60s timeout used to kill the request outright, so the client repeats this
+                // until `done` rather than asking for the whole thing at once.
+                const pass = await orchestrator.clearAllData();
+                const summary = pass.collections.map(({ name, deleted }) => `${name} ${deleted}`).join(', ');
+
+                result = {
+                    success: true,
+                    message: pass.done
+                        ? `Database reset completed — ${pass.deleted} documents deleted${summary ? ` (${summary})` : ''}`
+                        : `Deleted ${pass.deleted} documents${summary ? ` (${summary})` : ''} — more remain, continuing…`,
+                    data: pass,
+                };
                 break;
             }
             case 'refreshSheetsData': {

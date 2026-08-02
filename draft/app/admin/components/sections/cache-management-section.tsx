@@ -1,5 +1,6 @@
 /* Location: app/admin/components/sections/cache-management-section.tsx */
 
+import { useEffect, useRef } from 'react';
 import { useFetcher } from 'react-router';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import type { SystemStatusSummary } from '../../types/admin-types';
@@ -17,8 +18,12 @@ interface CacheManagementSectionProps {
     cacheStats?: any;
 }
 
+/** Guards against a bug in the clear loop turning into an unbounded stream of deletes. */
+const MAX_RESET_PASSES = 200;
+
 export function CacheManagementSection({ systemStatus, sharedContext }: CacheManagementSectionProps) {
     const fetcher = useFetcher();
+    const resetPasses = useRef(0);
 
     const isLoading = fetcher.state !== 'idle';
     const actionData = fetcher.data;
@@ -26,6 +31,8 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
     const cacheStatus = sharedContext.cacheStatus;
 
     const handleCacheAction = (actionType: string) => {
+        if (actionType === 'resetDatabase') resetPasses.current = 0;
+
         const formData = new FormData();
         formData.append('actionType', actionType);
 
@@ -35,6 +42,30 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
             action: '/admin', // This ensures we hit the parent route's action
         });
     };
+
+    /**
+     * Reset clears as much as it can inside the function's timeout and says whether more is
+     * left. Collections large enough to outlast a single request -- which is what killed
+     * "Reset Database" outright -- are cleared by coming back for another pass.
+     */
+    const resetPass = actionData?.data as { done?: boolean; deleted?: number } | undefined;
+    const resetIncomplete = fetcher.state === 'idle' && resetPass?.done === false;
+
+    // Between passes the fetcher is briefly idle; the reset is still running.
+    const busy = isLoading || resetIncomplete;
+
+    useEffect(() => {
+        if (!resetIncomplete) return;
+        if (resetPasses.current >= MAX_RESET_PASSES) {
+            console.error('Reset stopped after', MAX_RESET_PASSES, 'passes without finishing.');
+            return;
+        }
+
+        resetPasses.current += 1;
+        const formData = new FormData();
+        formData.append('actionType', 'resetDatabase');
+        fetcher.submit(formData, { method: 'POST', action: '/admin' });
+    }, [resetIncomplete, fetcher]);
 
     return (
         <AdminContainer>
@@ -50,14 +81,14 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                         <AdminButton
                             variant="secondary"
                             onClick={() => handleCacheAction('refreshFplData')}
-                            disabled={isLoading}
+                            disabled={busy}
                         >
                             Refresh FPL Data
                         </AdminButton>
                         <AdminButton
                             variant="secondary"
                             onClick={() => handleCacheAction('refreshSheetsData')}
-                            disabled={isLoading}
+                            disabled={busy}
                         >
                             Refresh Sheets Data
                         </AdminButton>
@@ -68,7 +99,7 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                         <AdminButton
                             variant="danger"
                             onClick={() => handleCacheAction('invalidateAllCaches')}
-                            disabled={isLoading}
+                            disabled={busy}
                             requireConfirm={true}
                             confirmMessage="This will invalidate ALL caches system-wide. Are you sure?"
                         >
@@ -77,7 +108,7 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                         <AdminButton
                             variant="danger"
                             onClick={() => handleCacheAction('resetDatabase')}
-                            disabled={isLoading}
+                            disabled={busy}
                             requireConfirm={true}
                             confirmMessage="This will RESET the entire database. This cannot be undone. Are you absolutely sure?"
                         >
@@ -105,7 +136,7 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                     variant="secondary"
                     className={`${styles.actionButton} ${styles.secondary}`}
                     onClick={() => window.open('/api/cache?action=status', '_blank')}
-                    disabled={isLoading}
+                    disabled={busy}
                 >
                     <Icons.FileIcon />
                     View Cache Statistics
@@ -115,7 +146,7 @@ export function CacheManagementSection({ systemStatus, sharedContext }: CacheMan
                     variant="secondary"
                     className={`${styles.actionButton} ${styles.secondary}`}
                     onClick={() => window.open('/api/cache?action=keys', '_blank')}
-                    disabled={isLoading}
+                    disabled={busy}
                 >
                     <Icons.DatabaseIcon />
                     View All Cache Keys

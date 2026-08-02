@@ -215,7 +215,8 @@ export class AdminOrchestrator {
         return result;
     }
 
+    /** One bounded pass of the reset. Repeat until the result says `done`. */
     public async clearAllData() {
-        return await clearService.clearAllData();
+        return await clearService.clearEverything();
     }
 }

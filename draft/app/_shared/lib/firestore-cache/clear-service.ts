@@ -12,13 +12,129 @@ interface ClearProgress {
     error?: string;
 }
 
+/** What one bounded pass of `clearEverything` managed to do. */
+export interface ClearPass {
+    /** Documents deleted in this pass. */
+    deleted: number;
+    /** Per collection, what this pass removed and whether anything is left. */
+    collections: Array<{ name: string; deleted: number; emptied: boolean }>;
+    /** False when the budget ran out with documents still to delete — call again. */
+    done: boolean;
+}
+
 export class FirestoreClearService {
     private client: FirestoreClient;
-    private readonly BATCH_SIZE = 10; // Documents per batch
-    private readonly DELAY_BETWEEN_BATCHES = 100; // ms
+    /**
+     * Firestore's hard limit is 500 writes per batch. This was 10, with a 100ms sleep
+     * between batches, which made clearing a few thousand documents take minutes — long
+     * enough that the ssr function's 60s timeout killed "Reset Database" every time and
+     * returned a generic error with nothing in it.
+     */
+    private readonly BATCH_SIZE = 400;
+    private readonly DELAY_BETWEEN_BATCHES = 0; // ms; batches of 400 are their own rate limit
+
+    /**
+     * How long one `clearEverything` pass may run for.
+     *
+     * The ssr function's timeout is 60s, so a pass stops well inside it and reports what is
+     * left. The caller repeats until `done`, which is what makes a collection of any size
+     * clearable through a request that cannot itself run for long.
+     */
+    private readonly PASS_BUDGET_MS = 25_000;
 
     constructor() {
         this.client = new FirestoreClient();
+    }
+
+    /**
+     * Delete everything, a bounded pass at a time.
+     *
+     * Two things were wrong with clearing a fixed list of collections in one request:
+     * `player-gameweeks` and `player_stats_cache` are left over from an earlier version of
+     * the app and appear nowhere in the code, so no hard-coded list mentioned them and every
+     * "reset the entire database" left them untouched; and a collection large enough to
+     * outlast the function timeout could never be cleared at all.
+     *
+     * So the collections are discovered from Firestore rather than listed here, and a pass
+     * stops when its time budget runs out and says whether to call it again.
+     */
+    async clearEverything(budgetMs: number = this.PASS_BUDGET_MS): Promise<ClearPass> {
+        const startedAt = Date.now();
+        const names = await this.listCollectionNames();
+        const collections: ClearPass['collections'] = [];
+        let deleted = 0;
+        let done = true;
+
+        for (const name of names) {
+            const remainingBudget = budgetMs - (Date.now() - startedAt);
+            if (remainingBudget <= 0) {
+                // Untouched this pass. Not emptied, so the caller comes back.
+                done = false;
+                break;
+            }
+
+            const pass = await this.clearCollectionWithin(name, remainingBudget);
+            deleted += pass.deleted;
+            collections.push({ name, deleted: pass.deleted, emptied: pass.emptied });
+            if (!pass.emptied) done = false;
+        }
+
+        console.log(`🗑️ Clear pass: ${deleted} documents in ${Date.now() - startedAt}ms, done=${done}`);
+
+        return { deleted, collections, done };
+    }
+
+    /**
+     * Delete from one collection until it is empty or the budget runs out.
+     *
+     * Reads a bounded page rather than every id up front: `getAllDocumentIds` pulls the whole
+     * collection into memory, which is its own failure mode on a large one.
+     */
+    private async clearCollectionWithin(
+        collectionName: string,
+        budgetMs: number,
+    ): Promise<{ deleted: number; emptied: boolean }> {
+        const startedAt = Date.now();
+        const db = this.client.db;
+        let deleted = 0;
+
+        while (Date.now() - startedAt < budgetMs) {
+            const snapshot = await db.collection(collectionName).select().limit(this.BATCH_SIZE).get();
+            if (snapshot.docs.length === 0) {
+                return { deleted, emptied: true };
+            }
+
+            const batch = db.batch();
+            snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+            await batch.commit();
+
+            deleted += snapshot.docs.length;
+            if (this.DELAY_BETWEEN_BATCHES > 0) await this.delay(this.DELAY_BETWEEN_BATCHES);
+        }
+
+        // Budget spent. A shorter page than a full batch means it was the last one anyway.
+        return { deleted, emptied: false };
+    }
+
+    /**
+     * Every collection in the database, falling back to the ones the app knows about.
+     *
+     * `listCollections()` needs `datastore.entities.list`, which a restricted service account
+     * may not have. Falling back keeps reset working at the level it worked at before rather
+     * than failing outright — but it will then miss orphaned collections, so it says so.
+     */
+    private async listCollectionNames(): Promise<string[]> {
+        try {
+            const collections = await this.client.db.listCollections();
+            return collections.map((collection) => collection.id).sort();
+        } catch (error) {
+            console.warn(
+                '⚠️ Could not list collections; falling back to the known list. Collections this build ' +
+                    'does not name will not be cleared.',
+                error,
+            );
+            return Object.values(this.client.collections);
+        }
     }
 
     /**
