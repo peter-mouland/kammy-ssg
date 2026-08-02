@@ -1,3 +1,4 @@
+import { usingFixtureBackends } from '../fixture-backends';
 // app/_shared/lib/firestore-cache/firebase.admin.ts
 
 import { cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
@@ -26,7 +27,7 @@ export function getFirestoreInstance() {
     if (!db) {
         // The offline test harness: no credentials, no network, no emulator. Set only by
         // `yarn dev:fixtures` and the harness tests -- see ./firestore-memory.ts.
-        if (process.env.KAMMY_FIXTURE_FIRESTORE === '1') {
+        if (usingFixtureBackends()) {
             console.log('🧪 Using the in-memory fixture Firestore (KAMMY_FIXTURE_FIRESTORE=1)');
             db = getInMemoryFirestore();
             return db;

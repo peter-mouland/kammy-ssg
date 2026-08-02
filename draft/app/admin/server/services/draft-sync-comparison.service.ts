@@ -9,21 +9,12 @@ import type { DraftSyncComparison, DraftSyncDifference, FirebaseDraftPick, Fireb
 /**
  * Get all draft sync comparisons for all divisions
  *
- * **Returns nothing under fixtures, and that is deliberate.** The comparison's whole job is
- * to check the Realtime Database against the sheets, and RTDB has no fixture and no
- * in-memory driver. Left to run, it reaches the real network — the one thing the fixture
- * server exists to avoid — and then hangs: `/admin` waits out its 12s timeout on every page
- * load, and `/api/admin/draft-sync-comparisons`, which calls this directly and has no
- * timeout at all, never returns. Both found by the route crawl.
- *
- * The guard lives here rather than in the two callers so a third cannot miss it.
+ * Knows nothing about fixtures. `getRealtimeAdminDbInstance()` decides which database this
+ * reads, so against fixtures it reads an empty one and reports no differences — which is
+ * the truth, not a special case. An earlier version branched on the fixture flag right
+ * here, which put test infrastructure inside a domain service.
  */
 export async function getAllDraftSyncComparisons(): Promise<DraftSyncComparison[]> {
-    if (process.env.KAMMY_FIXTURE_FIRESTORE === '1') {
-        console.log('⏭️  Skipping draft sync comparisons: no Realtime Database under fixtures');
-        return [];
-    }
-
     return await dataCache.get(CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS, generateAllDraftSyncComparisons, {
         ttlMs: getCacheTTL(CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS),
     });

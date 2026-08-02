@@ -3,6 +3,8 @@
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import type { Database } from 'firebase-admin/database';
 import { getDatabase } from 'firebase-admin/database';
+import { usingFixtureBackends } from '../fixture-backends';
+import { getInMemoryRealtimeDb } from './realtime-memory';
 
 // Use a unique app name for Realtime Database admin
 const REALTIME_ADMIN_APP_NAME = 'admin-realtime-draft';
@@ -39,7 +41,13 @@ function readServiceAccount(): Record<string, unknown> {
 // Get or create the Realtime Database app
 let realtimeDB: Database;
 
-export function getRealtimeAdminDbInstance() {
+export function getRealtimeAdminDbInstance(): Database {
+    // The seam. Callers get a database and never learn which one, exactly as
+    // `getFirestoreInstance()` does for Firestore.
+    if (usingFixtureBackends()) {
+        return getInMemoryRealtimeDb();
+    }
+
     if (!realtimeDB) {
         const existingApps = getApps();
 
