@@ -119,6 +119,12 @@ function watchForProblems(page: Page, baseURL: string): PageProblems {
         // failing the crawl on it would train people to ignore it.
         if (!request.url().startsWith(baseURL)) return;
 
+        // Vite's own optimized dependency bundles. `harness/server.mjs` pre-bundles these at
+        // boot so they should not be re-optimized mid-run, but a newly added dependency would
+        // reintroduce the flake, and no app route lives under this path -- so it stays
+        // excluded as well as prevented.
+        if (request.url().includes('/node_modules/.vite/')) return;
+
         problems.failedRequests.push(`${request.method()} ${request.url()} — ${request.failure()?.errorText}`);
     });
 

@@ -96,6 +96,23 @@ async function main() {
     const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: 'custom',
+        // Pre-bundle the client dependencies at boot instead of discovering them on the
+        // first browser request. Discovery mid-run makes Vite re-optimize and abort whatever
+        // was in flight -- `net::ERR_ABORTED` on `/node_modules/.vite/deps/*`, plus a matching
+        // 504 in the console -- which surfaced as a flaky `/players` on CI and never locally,
+        // because only a cold optimizer does it.
+        optimizeDeps: {
+            include: [
+                'react',
+                'react-dom',
+                'react-dom/client',
+                'react/jsx-dev-runtime',
+                'react/jsx-runtime',
+                'react-router',
+                '@tanstack/react-query',
+                '@tanstack/react-query-devtools',
+            ],
+        },
     });
 
     const load = (path) => vite.ssrLoadModule(path);
