@@ -2,7 +2,6 @@
 
 import { getFirestoreInstance } from '../../../_shared/lib/firestore-cache/firebase.admin';
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
-import type { GameWeekData } from '../../../_shared/lib/fpl/fpl-types';
 import { groupByDivision } from '../../../_shared/lib/group-by-id';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
@@ -87,7 +86,11 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
         };
 
         console.log(
-            `✅ System Status Summary: GW${gameweekProcessingStatus.currentGameweek.fplEvent.id}, ${overallHealth.status.toUpperCase()}, ${recommendations.length} recommendations`,
+            `✅ System Status Summary: ${
+                gameweekProcessingStatus.currentGameweek
+                    ? `GW${gameweekProcessingStatus.currentGameweek.fplEvent.id}`
+                    : 'no current gameweek'
+            }, ${overallHealth.status.toUpperCase()}, ${recommendations.length} recommendations`,
         );
 
         return summary;
@@ -96,7 +99,9 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
 
         // Return safe defaults on error
         return {
-            currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
+            // No fabricated gameweek. Reporting "Gameweek 1" for a league that has none sent
+            // admins looking for a processing problem instead of an empty database.
+            currentGameweek: undefined,
             bootstrapLastUpdated: null,
             systemHealth: {
                 fplCache: FPL_CACHE_HEALTH_UNKNOWN,
@@ -107,7 +112,7 @@ export async function getSystemStatus(): Promise<SystemStatusSummary> {
             transfers: { pending: 0, approved: 0, rejected: 0, total: 0, byDivision: {} },
             draft: DRAFT_STATUS_UNKNOWN,
             gameweekProcessing: {
-                currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
+                currentGameweek: undefined,
                 lastProcessedGameweek: 0,
                 totalGameweeks: 38,
                 processedGameweeks: [],
@@ -330,7 +335,10 @@ async function getGameweekProcessingStatusReal() {
         const pointsService = new GameweekPointsService(); // todo: pass in context
         const pointsStatus = await pointsService.getPointsStatus();
 
-        const currentGameweekId = pointsStatus.currentGameweek.fplEvent.id;
+        // No current gameweek is a state, not a failure. This used to throw here and be
+        // caught below, which reported the whole gameweek status as broken -- and then
+        // invented "Gameweek 1" to replace it.
+        const currentGameweekId = pointsStatus.currentGameweek?.fplEvent.id ?? 0;
         const lastProcessedGameweek = pointsStatus.lastGameweek;
 
         // Calculate processed and pending gameweeks
@@ -362,7 +370,7 @@ async function getGameweekProcessingStatusReal() {
     } catch (error) {
         console.error('Failed to load gameweek processing status:', error);
         return {
-            currentGameweek: { fplEvent: { id: 1 } } as GameWeekData,
+            currentGameweek: undefined,
             lastProcessedGameweek: 0,
             totalGameweeks: 38,
             processedGameweeks: [],

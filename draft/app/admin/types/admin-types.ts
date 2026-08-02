@@ -142,7 +142,13 @@ export interface FplCacheHealth {
 }
 
 export interface SystemStatusSummary {
-    currentGameweek: GameWeekData;
+    /**
+     * Absent when nothing is current — an empty database, or a pre-season calendar where no
+     * event carries `is_current`. Optional because the alternative was worse: the status
+     * services used to substitute a fabricated `{ fplEvent: { id: 1 } }` whenever they
+     * failed, so `/admin` reported "Gameweek 1" for a league that had no gameweeks at all.
+     */
+    currentGameweek: GameWeekData | undefined;
     bootstrapLastUpdated: string | null;
     systemHealth: {
         fplCache: FplCacheHealth;
@@ -167,7 +173,8 @@ export interface SystemStatusSummary {
     };
     draft: DraftStatusData;
     gameweekProcessing: {
-        currentGameweek: GameWeekData;
+        /** Absent for the same reasons as `SystemStatusSummary['currentGameweek']` above. */
+        currentGameweek: GameWeekData | undefined;
         lastProcessedGameweek: number;
         totalGameweeks: number;
         processedGameweeks: number[];

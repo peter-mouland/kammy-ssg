@@ -52,14 +52,29 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
         // Get user's division
         const division = divisions.find((d) => d.id === currentUser.divisionId);
         if (!division) {
-            throw new Error('Division not found');
+            // The manager is assigned to a division the `Divisions` sheet does not list --
+            // a sheet mismatch, which nobody can act on from a bare "Division not found".
+            throw friendlyErrorResponse(
+                'This manager’s division is missing',
+                `${currentUser.userId} is assigned to “${currentUser.divisionId}”, which is not listed in the ` +
+                    'Divisions sheet. Add it there, or correct the manager’s division in UserTeams.',
+            );
         }
 
         // Get current team data from new division-teams structure
         const currentTeams = await getTeamsForGameweek(currentUser.divisionId, currentUser.userId, targetGameweek);
         if (!currentTeams) {
-            throw new Error(
-                `Current team data not found - division may not be set up yet. divisionId: ${currentUser.divisionId} user: ${currentUser.userId} `,
+            // Not a fault: the division genuinely has no `division-teams` document for this
+            // gameweek yet. It read as a crash ("Failed to load team data") because it was
+            // thrown as a bare Error, which sent people looking for a bug in the loader
+            // rather than at the admin step that has not been run.
+            console.info(
+                `No division-teams document for ${currentUser.divisionId} gw${targetGameweek} (user ${currentUser.userId})`,
+            );
+            throw friendlyErrorResponse(
+                'This team has not been set up yet',
+                `${division.label} has no squad data for gameweek ${targetGameweek}. ` +
+                    'An admin needs to commit teams for this division from Settings → Admin, then run points processing.',
             );
         }
 

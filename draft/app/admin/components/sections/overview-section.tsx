@@ -36,6 +36,12 @@ export function OverviewSection({ systemStatus }: OverviewSectionProps) {
     const fetcher = useFetcher();
     const actionData = fetcher.data;
 
+    // Absent before anything has been populated, and in pre-season. The overview is the first
+    // page an admin opens in exactly that state, so it has to say so rather than crash.
+    const currentGameweekId = systemStatus.currentGameweek?.fplEvent.id;
+    const isProcessed =
+        currentGameweekId !== undefined && systemStatus.gameweekProcessing.lastProcessedGameweek === currentGameweekId;
+
     return (
         <AdminContainer>
             {/* System Health Overview */}
@@ -77,17 +83,13 @@ export function OverviewSection({ systemStatus }: OverviewSectionProps) {
                         icon="📊"
                         label="Gameweek Processing"
                         percentage={
-                            systemStatus.gameweekProcessing.lastProcessedGameweek ===
-                            systemStatus.currentGameweek.fplEvent.id
-                                ? `GW ${systemStatus.currentGameweek.fplEvent.id} processed`
-                                : `GW ${systemStatus.currentGameweek.fplEvent.id} needs processing`
+                            currentGameweekId === undefined
+                                ? 'No current gameweek'
+                                : isProcessed
+                                  ? `GW ${currentGameweekId} processed`
+                                  : `GW ${currentGameweekId} needs processing`
                         }
-                        status={
-                            systemStatus.gameweekProcessing.lastProcessedGameweek ===
-                            systemStatus.currentGameweek.fplEvent.id
-                                ? 'healthy'
-                                : 'warning'
-                        }
+                        status={isProcessed ? 'healthy' : 'warning'}
                     />
                 </AdminGrid>
             </AdminSection>
@@ -106,7 +108,8 @@ export function OverviewSection({ systemStatus }: OverviewSectionProps) {
                 </ul>
             </AdminSection>
 
-            <CopyPlayerStats currentGameweekId={systemStatus.currentGameweek.fplEvent.id} />
+            {/* Nothing to copy stats for until there is a gameweek. */}
+            {currentGameweekId !== undefined && <CopyPlayerStats currentGameweekId={currentGameweekId} />}
 
             {/* Action Messages */}
             {actionData?.success && actionData.message && (

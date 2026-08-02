@@ -14,7 +14,7 @@ import { requestFormData } from '../_shared/lib/form-data';
 import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
 import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
 import { describeUnknownDivisions } from '../_shared/lib/league-divisions';
-import { friendlyErrorResponse, toErrorChain } from '../_shared/lib/loader-error';
+import { friendlyErrorResponse, loaderErrorResponse, toErrorChain } from '../_shared/lib/loader-error';
 import type { DivisionId } from '../_shared/types/league-types';
 import type { DraftAction } from '../draft';
 import type { TransferAdminOverviewData } from '../transfers';
@@ -60,56 +60,71 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     console.log('🔄 Loading admin dashboard data...');
 
-    const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
-    const orchestrator = new AdminOrchestrator();
-    const teamsByCode = await fplApiCache.getTeamsByCode();
+    // Sheets, FPL and Firestore are all read below and any of them can fail. Unwrapped, that
+    // reached the browser as the same opaque "Unexpected Server Error" the populate action
+    // used to give -- on the one page whose job is diagnosing exactly those systems.
+    try {
+        const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
+        const { AdminOrchestrator } = await import('./server/services/admin-orchestrator.service');
+        const orchestrator = new AdminOrchestrator();
+        const teamsByCode = await fplApiCache.getTeamsByCode();
 
-    const [systemStatus, sharedContext] = await Promise.all([
-        orchestrator.getSystemStatus(),
-        orchestrator.getSharedContext(),
-    ]);
+        const [systemStatus, sharedContext] = await Promise.all([
+            orchestrator.getSystemStatus(),
+            orchestrator.getSharedContext(),
+        ]);
 
-    // Load transfer-specific data only on the transfers admin page (heavy validation)
-    let transfersData: Record<string, TransferAdminOverviewData> | null = null;
+        // Load transfer-specific data only on the transfers admin page (heavy validation)
+        let transfersData: Record<string, TransferAdminOverviewData> | null = null;
 
-    const isTransferRoute = url.pathname.includes('/admin/transfers');
+        const isTransferRoute = url.pathname.includes('/admin/transfers');
 
-    if (isTransferRoute) {
-        // Transfer admin is gameweek-scoped, so with no current gameweek there is nothing
-        // to approve. Explained rather than crashed on -- the rest of /admin still loads,
-        // which is what you need in order to go and populate the data.
-        const availability = describeGameweekAvailability(sharedContext.fplData.events, systemStatus.currentGameweek);
-        if (!availability.available) {
-            throw friendlyErrorResponse(availability.title, availability.detail);
+        if (isTransferRoute) {
+            // Transfer admin is gameweek-scoped, so with no current gameweek there is nothing
+            // to approve. Explained rather than crashed on -- the rest of /admin still loads,
+            // which is what you need in order to go and populate the data.
+            const availability = describeGameweekAvailability(
+                sharedContext.fplData.events,
+                systemStatus.currentGameweek,
+            );
+            if (!availability.available) {
+                throw friendlyErrorResponse(availability.title, availability.detail);
+            }
+
+            const { getTransfersAdminData } = await import('./server/transfers-admin.server');
+            const divisions = sharedContext.sheetData.divisions;
+            // `availability.gameweek` rather than `systemStatus.currentGameweek`: same value,
+            // but the narrowed one is the one the guard above proved is there.
+            const selectedGameweekId =
+                Number.parseInt(url.searchParams.get('gameweek') || '', 10) || availability.gameweek.fplEvent.id;
+            const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
+
+            transfersData = await getTransfersAdminData(divisions, gameweek);
         }
 
-        const { getTransfersAdminData } = await import('./server/transfers-admin.server');
-        const divisions = sharedContext.sheetData.divisions;
-        const selectedGameweekId =
-            Number.parseInt(url.searchParams.get('gameweek') || '', 10) || systemStatus.currentGameweek.fplEvent.id;
-        const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
+        // A division in the sheet that this build does not know about is worth saying out loud
+        // rather than silently dropping. It used to announce itself as
+        // "Cannot read properties of undefined (reading 'push')".
+        const unknownDivisions = describeUnknownDivisions(
+            (sharedContext.sheetData.divisions ?? []).map((division: { id?: string }) => division.id),
+        );
+        if (unknownDivisions) console.warn(`⚠️  ${unknownDivisions}`);
 
-        transfersData = await getTransfersAdminData(divisions, gameweek);
+        return {
+            systemStatus,
+            sharedContext,
+            transfersData,
+            teamsByCode,
+            unknownDivisions,
+            cacheStats: null,
+            loadedAt: new Date().toISOString(),
+        };
+    } catch (error) {
+        // The friendly "no gameweek" state above is a deliberate result, not a failure.
+        if (error instanceof Response) throw error;
+
+        throw loaderErrorResponse('Failed to load the admin dashboard', error);
     }
-
-    // A division in the sheet that this build does not know about is worth saying out loud
-    // rather than silently dropping. It used to announce itself as
-    // "Cannot read properties of undefined (reading 'push')".
-    const unknownDivisions = describeUnknownDivisions(
-        (sharedContext.sheetData.divisions ?? []).map((division: { id?: string }) => division.id),
-    );
-    if (unknownDivisions) console.warn(`⚠️  ${unknownDivisions}`);
-
-    return {
-        systemStatus,
-        sharedContext,
-        transfersData,
-        teamsByCode,
-        unknownDivisions,
-        cacheStats: null,
-        loadedAt: new Date().toISOString(),
-    };
 }
 
 /**
@@ -210,8 +225,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 // Add a small delay to let the SSE connection establish first
                 setTimeout(() => {
                     regeneratePoints(jobId, jobType, orchestrator, gameweek || undefined).catch((error) => {
-                        console.error('🚨 Background job error:', error);
-                        throw new Error('🚨 Background job error:', error.message);
+                        // Log only. Rethrowing from a setTimeout callback reaches no caller --
+                        // it becomes an unhandled rejection, which on Node takes the process
+                        // down. And `new Error(msg, string)` was wrong regardless: the second
+                        // argument is an options object, so that `error.message` was dropped
+                        // on the floor. `regeneratePoints` has already recorded the failure on
+                        // the job itself, which is what the client polls and the admin sees.
+                        console.error(`🚨 Background job ${jobId} failed:`, error);
                     });
                 }, 100); // 100ms delay
 
