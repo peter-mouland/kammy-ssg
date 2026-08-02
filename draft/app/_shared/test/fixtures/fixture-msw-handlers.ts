@@ -18,6 +18,7 @@ import { elementSummary, fplBootstrap, fplFixtures, gameweekLive, type SheetCell
  */
 
 const SHEETS_VALUES_URL = 'https://sheets.googleapis.com/v4/spreadsheets/:id/values/:range';
+const SHEETS_METADATA_URL = 'https://sheets.googleapis.com/v4/spreadsheets/:id';
 const FPL_BASE = 'https://fantasy.premierleague.com/api';
 
 /**
@@ -96,6 +97,17 @@ const rangeOf = (params: Record<string, unknown>) => decodeURIComponent(String(p
  */
 export function fixtureSheetsHandlers(store: FixtureSheetStore): RequestHandler[] {
     return [
+        // Spreadsheet metadata, not values -- `testConnection()` in `sheets/utils/common.ts`
+        // reads only the title, and `/debug` is its one caller. Found by the route crawl:
+        // without this the harness logged an unhandled request and the call escaped to the
+        // real Sheets API, which is the one thing the fixture server must never do.
+        http.get(SHEETS_METADATA_URL, ({ params }) =>
+            HttpResponse.json({
+                spreadsheetId: params.id,
+                properties: { title: 'Kammy fixtures' },
+            }),
+        ),
+
         http.get(SHEETS_VALUES_URL, ({ params }) => {
             const range = rangeOf(params);
             return HttpResponse.json({
@@ -180,8 +192,13 @@ export function fixtureFplHandlers(): RequestHandler[] {
  */
 export function fixtureHandlers(store: FixtureSheetStore): RequestHandler[] {
     return [
-        http.post('https://oauth2.googleapis.com/token', () =>
-            HttpResponse.json({ access_token: 'fixture-access-token', expires_in: 3600, token_type: 'Bearer' }),
+        // Both endpoints, because the client picks between them: `google-auth-library` uses
+        // the legacy `www.googleapis.com/oauth2/v4/token` on some paths. The route crawl
+        // caught the second one escaping to the real network.
+        ...['https://oauth2.googleapis.com/token', 'https://www.googleapis.com/oauth2/v4/token'].map((url) =>
+            http.post(url, () =>
+                HttpResponse.json({ access_token: 'fixture-access-token', expires_in: 3600, token_type: 'Bearer' }),
+            ),
         ),
         ...fixtureSheetsHandlers(store),
         ...fixtureFplHandlers(),

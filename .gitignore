@@ -47,3 +47,9 @@ aws
 # The harness reads the small tracked slice in test-fixtures/ instead; regenerate it with
 # `node scripts/extract-harness-stats.mjs`. See archive/README.md.
 /archive/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

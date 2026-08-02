@@ -36,6 +36,8 @@ jobs:
         run: yarn install --immutable
         env:
           CI: true
+          # Only the e2e job drives a browser; the rest skip the ~100MB download.
+          SKIP_PLAYWRIGHT_BROWSERS: '1'
 
       - name: Lint
         run: |
@@ -78,6 +80,8 @@ jobs:
         run: yarn install --immutable
         env:
           CI: true
+          # Only the e2e job drives a browser; the rest skip the ~100MB download.
+          SKIP_PLAYWRIGHT_BROWSERS: '1'
 
       - name: Test
         run: yarn test
@@ -109,6 +113,8 @@ jobs:
         run: yarn install --immutable
         env:
           CI: true
+          # Only the e2e job drives a browser; the rest skip the ~100MB download.
+          SKIP_PLAYWRIGHT_BROWSERS: '1'
 
       # No secrets here on purpose. This job only proves the app compiles and
       # bundles — every value the app reads from env is read at request time,
@@ -116,10 +122,62 @@ jobs:
       - name: Build
         run: yarn build
 
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get yarn cache directory
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      # Keyed on the lockfile because that is what pins the Playwright version, and the
+      # browser build must match it. A miss just means postinstall downloads it again.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-playwright-
+
+      # No SKIP_PLAYWRIGHT_BROWSERS here: postinstall fetches chromium if the cache missed.
+      - name: Install dependencies
+        run: yarn install --immutable
+        env:
+          CI: true
+
+      # No secrets. The fixture server serves the whole site from test-fixtures/ with an
+      # in-memory Firestore, so every value the app reads comes from the repo and this job
+      # needs no credentials -- which is what makes a red run here mean the code broke.
+      # (Player photos still point at the real Premier League CDN and simply fail offline;
+      # the crawl only asserts on same-origin requests for that reason.)
+      - name: Route crawl
+        run: yarn test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
   deploy:
     name: deploy
     runs-on: ubuntu-latest
-    needs: [lint, test, build]
+    needs: [lint, test, build, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
@@ -145,6 +203,8 @@ jobs:
         run: yarn install --immutable
         env:
           CI: true
+          # Only the e2e job drives a browser; the rest skip the ~100MB download.
+          SKIP_PLAYWRIGHT_BROWSERS: '1'
 
       - name: Build
         run: yarn build
