@@ -1,7 +1,11 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type APIRequestContext, expect, type Page, test } from '@playwright/test';
 
 /**
  * Part E1 — every route, at three dates, asserting the site is not broken.
+ *
+ * **Not end-to-end.** Every external system is substituted, so this proves the code path and
+ * says nothing about the deployed application — see `playwright.config.ts` for why that
+ * distinction cost this project a production outage. `yarn test:smoke` covers the real thing.
  *
  * This is the regression net the project has never had. It answers one question that unit
  * and loader tests cannot: *does the site work* — Express, SSR, route config, hydration and
@@ -94,6 +98,26 @@ const IGNORED_CONSOLE = [
     /Outdated Optimize Dep/,
 ];
 
+/**
+ * Server-side errors the crawl tolerates, each with the reason it is not a code fault.
+ *
+ * Deliberately narrow — matched on the specific message, not on "transfers" or "error" —
+ * because the whole point of watching the server is to see what the browser cannot.
+ */
+const IGNORED_SERVER_ERRORS = [
+    /**
+     * The documented season seam. The fixtures pair 2024/25 FPL data with a 2025/26
+     * spreadsheet, so a transfer stamped `2026-02-27` is assigned against a calendar that
+     * ended in May 2025. Transfers therefore land in the wrong gameweeks and the validation
+     * replay meets a player who is not in the roster yet. It cannot happen in production,
+     * where both halves are the same season.
+     *
+     * The blast radius is worth knowing separately: one inconsistent row makes the whole
+     * division's transfer data unavailable. Logged as a gap rather than fixed here.
+     */
+    /not found in .*'s roster/,
+];
+
 interface PageProblems {
     consoleErrors: string[];
     failedRequests: string[];
@@ -131,11 +155,22 @@ function watchForProblems(page: Page, baseURL: string): PageProblems {
     return problems;
 }
 
+/** Clear the harness's error buffer so a test only sees what its own page load produced. */
+const resetServerErrors = async (request: APIRequestContext): Promise<void> => {
+    await request.post('/__harness/server-errors/reset');
+};
+
+const serverErrorsSince = async (request: APIRequestContext): Promise<string[]> => {
+    const { errors } = (await (await request.get('/__harness/server-errors')).json()) as { errors: string[] };
+    return errors.filter((error) => !IGNORED_SERVER_ERRORS.some((pattern) => pattern.test(error)));
+};
+
 for (const scenario of SCENARIOS) {
     test.describe(`${scenario.name} (${scenario.now})`, () => {
         for (const path of PAGES) {
-            test(`${path} renders`, async ({ page, baseURL }) => {
+            test(`${path} renders`, async ({ page, baseURL, request }) => {
                 const problems = watchForProblems(page, baseURL ?? '');
+                await resetServerErrors(request);
 
                 const response = await page.goto(withNow(path, scenario.now), { waitUntil: 'domcontentloaded' });
                 expect(response, `no response for ${path}`).not.toBeNull();
@@ -162,6 +197,11 @@ for (const scenario of SCENARIOS) {
 
                 expect(problems.consoleErrors, `${path} logged console errors`).toEqual([]);
                 expect(problems.failedRequests, `${path} had failed requests`).toEqual([]);
+
+                // The server's own errors. A page can render perfectly while its loader
+                // swallowed a failure and returned nothing -- which is exactly what
+                // /admin/transfers was doing, unnoticed, on every run.
+                expect(await serverErrorsSince(request), `${path} logged server-side errors`).toEqual([]);
             });
         }
 
