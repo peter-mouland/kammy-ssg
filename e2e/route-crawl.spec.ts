@@ -85,6 +85,13 @@ const IGNORED_CONSOLE = [
     /Download the React DevTools/,
     // Vite serves the app unbundled in the harness; this is dev-server chatter.
     /\[vite\]/,
+    // Vite's dependency optimizer, not the app. The fixture server runs through Vite's SSR
+    // pipeline deliberately (Part D: the harness has to share module state with the app, so
+    // it cannot load the production bundle), and when the browser asks for a module Vite has
+    // not pre-bundled it re-optimizes and 504s whatever was in flight. It hits the first
+    // heavy page on a cold optimizer and never again, which is why it presented as one flaky
+    // test on CI and never locally. Nothing about it involves app code.
+    /Outdated Optimize Dep/,
 ];
 
 interface PageProblems {

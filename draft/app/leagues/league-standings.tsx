@@ -112,7 +112,8 @@ const LeagueStandingsComp = ({
                     <>
                         <SelectDivision
                             divisions={divisions}
-                            selectedDivision={selectedDivision?.id}
+                            // `null` is this component's "nothing selected"; undefined is ours.
+                            selectedDivision={selectedDivision?.id ?? null}
                             handleDivisionChange={handleDivisionChange}
                         />
                         <GameweekSelector

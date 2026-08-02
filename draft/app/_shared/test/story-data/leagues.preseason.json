@@ -53,11 +53,7 @@
     "isNext": "boolean",
     "start": "Date"
   },
-  "standingsData": {
-    "undefined": [
-      "array(0)"
-    ]
-  },
+  "standingsData": {},
   "userTeams": [
     "array(24)",
     {
