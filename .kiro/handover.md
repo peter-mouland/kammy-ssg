@@ -47,6 +47,22 @@ only thing that type-checks the `functions` workspace.
    `/teams`, `/transfers` and `/cup` return 503. Via `/admin`: populate bootstrap data → commit
    teams per division → run points processing. **Do the greatScott division too** — it has no
    `division-teams` documents at all, so its standings stay empty otherwise (G24).
+
+   **2026-08-02 — still not done. "Populate Bootstrap Data" fails.** It returned a bare
+   "Unexpected Server Error" page and wrote nothing (`players.json` still `[]`, checked past the
+   CDN). The cause was invisible by design: React Router substitutes that placeholder for any
+   unhandled server error, and `/admin`'s action read its form fields *outside* its own
+   try/catch, so the throw escaped as an unhandled 500 rather than becoming action data.
+   `requestFormData` indexed a load context that is `undefined` whenever Firebase does not parse
+   the body. Fixed in [PR #120](https://github.com/peter-mouland/kammy-ssg/pull/120) —
+   **retry the populate once that is merged and deployed**, and if it still fails the page will
+   name the real cause instead of hiding it. Update this line when it succeeds.
+
+   Ruled out while diagnosing, so nobody pays for it twice: the live data is fine (`Players`
+   sheet 558 rows, FPL bootstrap 564 elements, **558 matched by code**), and it is not the 60s
+   function timeout (element-summary fetches project to ~3s for all 558). `yarn dev:fixtures`
+   runs the identical action end to end without error, which is what established that this was
+   environment and not logic — the harness doing exactly the job it was built for.
 2. **Part E1 of the plan — the Playwright route crawl.** Every route at three dates, asserting 200,
    no error boundary, no console error. This is the regression net the project still lacks, and the
    fixture server already makes it cheap. See [testing-harness-plan.md](testing-harness-plan.md).
@@ -65,6 +81,12 @@ authoring, and need a human decision) are the live ones.
   every player. Assert behaviour and shape.
 - **The fixtures are a three-division season; the live sheet has four.** greatScott is code-covered
   but not fixture-covered.
+- **The fixtures cannot reproduce pre-season, and production is in it.** Live FPL is on the
+  2026/27 pre-season — 38 events, none `finished`, **no `is_current` at all** — so
+  `getCurrentGameweekData()` returns undefined and every `.fplEvent.id` on it is a crash site.
+  The captured 2024/25 bootstrap is a *finished* season whose frozen `is_current` (GW38) always
+  rescues the fallback, so no `?now=` reaches that state. Part E1's `preseason` scenario
+  (2024-08-01) yields a current **GW1** — it does not cover "no current gameweek anywhere".
 - **What a division takes part in is data** — `promotion`/`relegation`/`cup` columns in the sheet.
   Never derive it from `order`; greatScott sorts last and is in none of them, so rank-based logic
   gets it exactly backwards.
