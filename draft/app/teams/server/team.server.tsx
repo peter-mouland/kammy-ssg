@@ -14,7 +14,7 @@ export async function loadTeamData({ request, params }): Promise<TeamViewData> {
     try {
         const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
         const [currentGameweekData, teamsByCode, fplPlayersByCode, events, userTeams, divisions] = await Promise.all([
-            fplApiCache.getCurrentGameweekData(),
+            fplApiCache.getScoringGameweekData(),
             fplApiCache.getTeamsByCode(),
             fplApiCache.getPlayersByCode(),
             fplApiCache.getFplEvents(),

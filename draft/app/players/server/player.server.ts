@@ -16,7 +16,7 @@ export async function getPlayerDetailData(playerCode: number): Promise<PlayerDet
         const [fplPlayer, fplTeams, currentGameweek, fplEvents] = await Promise.all([
             fplApiCache.getPlayerByCode(playerCode),
             fplApiCache.getFplTeams(),
-            fplApiCache.getCurrentGameweek(),
+            fplApiCache.getScoringGameweek(),
             fplApiCache.getFplEvents(),
         ]);
 

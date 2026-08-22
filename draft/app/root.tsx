@@ -55,7 +55,7 @@ export async function loader() {
         const [metadataResult, fixturesResult, currentGameweekNumberResult, teamsResult] = await Promise.allSettled([
             gameweekService.getPointsStatus(),
             fplApiCache.getFplFixtures(),
-            fplApiCache.getCurrentGameweek(),
+            fplApiCache.getScoringGameweek(),
             fplApiCache.getFplTeams(),
         ]);
 

@@ -241,7 +241,7 @@ class FplApiCache {
     /**
      * Get current gameweek using unified cache
      */
-    async getCurrentGameweekData(): Promise<GameWeekData> {
+    async getScoringGameweekData(): Promise<GameWeekData> {
         const events = await this.getFplEvents();
 
         // The gameweek being PLAYED, which is not the one `isCurrent` marks. `isCurrent`
@@ -256,7 +256,7 @@ class FplApiCache {
      * The gameweek managers are picking a team for: the window that runs from the previous
      * deadline to this one.
      *
-     * The counterpart to `getCurrentGameweekData()`, and the reason both exist. A page
+     * The counterpart to `getScoringGameweekData()`, and the reason both exist. A page
      * showing points wants the gameweek being played; a page taking team submissions wants
      * the one still open. They are the same number only in the run-up to a deadline.
      */
@@ -281,8 +281,8 @@ class FplApiCache {
     /**
      * Get current gameweek number from cached events
      */
-    async getCurrentGameweek(): Promise<number> {
-        const event = await this.getCurrentGameweekData();
+    async getScoringGameweek(): Promise<number> {
+        const event = await this.getScoringGameweekData();
         return event?.fplEvent.id || 0;
     }
 

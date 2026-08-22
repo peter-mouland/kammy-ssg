@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const url = new URL(request.url);
         const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
         const [currentGameweekData, events, userTeams, divisions] = await Promise.all([
-            fplApiCache.getCurrentGameweekData(),
+            fplApiCache.getScoringGameweekData(),
             fplApiCache.getFplEvents(),
             readUserTeams(),
             readDivisions(),

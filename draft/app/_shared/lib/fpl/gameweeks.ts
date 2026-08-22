@@ -10,7 +10,7 @@ import type { EventData, GameWeekData } from './fpl-types';
  *
  * Both questions get asked, so both have a function. This one answers "which team is being
  * picked" and backs `getSelectionGameweekData()`; `findScoringGameweek()` below answers
- * "which matches are being played" and backs `getCurrentGameweekData()`. Reaching for the
+ * "which matches are being played" and backs `getScoringGameweekData()`. Reaching for the
  * wrong one is not a subtle bug -- it points every page at a gameweek nobody has played.
  */
 function isCurrentAt(start: Date, end: Date, at: Date): boolean {

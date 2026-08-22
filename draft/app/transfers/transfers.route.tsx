@@ -30,7 +30,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const url = new URL(request.url);
         const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
         const [currentGameweekData, events, userTeams, divisions] = await Promise.all([
-            fplApiCache.getCurrentGameweekData(),
+            fplApiCache.getSelectionGameweekData(),
             fplApiCache.getFplEvents(),
             readUserTeams(),
             readDivisions(),
@@ -42,13 +42,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
         if (!availability.available) {
             throw friendlyErrorResponse(availability.title, availability.detail);
         }
+        // Past the guard there is a gameweek; take it from the guard so nothing below
+        // needs to re-check the nullable it was given.
+        const selectionGameweekData = availability.gameweek;
 
         const persistedUser = getUserSelection(request);
         const selectedUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
 
-        const end = new Date(currentGameweekData.fplEvent.deadline_time);
-        const isPastDeadline = new Date() > end;
-        const currentGameweek = isPastDeadline ? currentGameweekData.fplEvent.id + 1 : currentGameweekData.fplEvent.id;
+        // A transfer is made FOR the gameweek still open, which is what the selection
+        // accessor returns. This used to roll forward by hand off the scoring gameweek --
+        // `isPastDeadline ? id + 1 : id` -- because there was no accessor for the question;
+        // the two agree at every point in the cycle, which api-cache.test.ts pins.
+        const currentGameweek = selectionGameweekData.fplEvent.id;
         const selectedDivision = selectedUser?.divisionId;
         const selectedGameweek = Number.parseInt(
             url.searchParams.get('gameweek') || String(currentGameweek) || '1',

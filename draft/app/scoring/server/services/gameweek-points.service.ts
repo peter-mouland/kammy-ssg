@@ -31,7 +31,7 @@ export class GameweekPointsService {
         reason: string;
         gameweeksToGenerate: GameWeekData['fplEvent']['id'][];
     }> {
-        const currentGameweekId = (await fplApiCache.getCurrentGameweek()) || 0;
+        const currentGameweekId = (await fplApiCache.getScoringGameweek()) || 0;
         const meta = await this.getPointsMetadata();
         const lastGeneratedGameweek = meta?.lastGeneratedGameweek || 0;
 
@@ -132,7 +132,7 @@ export class GameweekPointsService {
         reason: string;
     }> {
         try {
-            const currentGameweek = await fplApiCache.getCurrentGameweekData();
+            const currentGameweek = await fplApiCache.getScoringGameweekData();
             const metadata = await this.getPointsMetadata();
 
             if (!metadata) {

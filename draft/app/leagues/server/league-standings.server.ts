@@ -18,7 +18,7 @@ export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandin
     const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
     const divisions = await readDivisions();
-    const currentGameweek = await fplApiCache.getCurrentGameweek();
+    const currentGameweek = await fplApiCache.getScoringGameweek();
     const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
 
     // Get data for specific division with position rank changes
