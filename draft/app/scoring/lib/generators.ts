@@ -9,6 +9,9 @@ import type { TeamPositionSlot } from '../../_shared/types/squad-types';
 import { calculateGameweekPoints, calculateSeasonPoints, getFullBreakdown } from './calculations';
 import { convertToPlayerGameweeksStats, convertToSingleGameweeksStats } from './data-conversion';
 
+/** `KAMMY_VERBOSE_SCORING=1` to see every player's per-gameweek score. */
+const VERBOSE_SCORING = process.env.KAMMY_VERBOSE_SCORING === '1';
+
 const baselineStats = {
     appearance: 0,
     goals: 0,
@@ -132,9 +135,16 @@ export function generateGameweekData(
             },
         };
 
-        console.log(
-            `✅ ${fplPlayer.playerName} (${fplPlayer.playerId}): GW${gameweek} w/ ${points.total}pts (has Stats:${!!stats})`,
-        );
+        // Off unless asked for. Per player, per gameweek, per division is roughly 14,000
+        // lines for one season rebuild -- most of what made CI output unreadable, and how a
+        // real error logged on every run went unnoticed for hours. `console.debug` does not
+        // help: it goes to the same stream. Still worth keeping for debugging one player's
+        // score by hand, so it is a flag rather than a deletion.
+        if (VERBOSE_SCORING) {
+            console.log(
+                `✅ ${fplPlayer.playerName} (${fplPlayer.playerId}): GW${gameweek} w/ ${points.total}pts (has Stats:${!!stats})`,
+            );
+        }
 
         result[fplPlayer.playerId] = gameweekPoints;
     });
