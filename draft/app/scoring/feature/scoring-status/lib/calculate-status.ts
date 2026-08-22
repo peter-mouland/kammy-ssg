@@ -3,39 +3,40 @@
 import type { ScoringStatus, ScoringStatusInput, ScoringStatusResult } from '../types';
 
 /**
- * Calculate the scoring status based on gameweek fixtures and last generation time
+ * How fresh are the published points for the gameweek being played?
  *
- * Logic:
- * 1. If games have started since last generation -> 'stale' (RED)
- * 2. If gameweek is finished -> 'up-to-date' (GREEN)
- * 3. Otherwise -> 'pending' (ORANGE)
+ * - `stale` (RED) -- something has happened since the last run: a match kicked off after
+ *   it, or a match is in play right now and its points are still moving.
+ * - `up-to-date` (GREEN) -- every match in the gameweek is finished and nothing has
+ *   happened since the last run.
+ * - `pending` (ORANGE) -- the gameweek has not started, or has no fixtures loaded.
+ *
+ * All three are read from the FPL fixtures, which are fetched live. Whether the gameweek
+ * is finished is deliberately NOT taken from the stored events document: those flags only
+ * change when an admin repopulates bootstrap data, so that answer can be days out of date
+ * in either direction -- and this badge is the only prompt an admin gets to re-run points.
  */
 export function calculateScoringStatus(input: ScoringStatusInput): ScoringStatusResult {
-    const { lastGenerated, currentGameweekNumber, isGameweekFinished, fixtures } = input;
+    const { lastGenerated, currentGameweekNumber, fixtures } = input;
 
-    // Get the timestamp of last generation, or 0 if never generated
     const lastGeneratedTime = lastGenerated ? new Date(lastGenerated).getTime() : 0;
+    const gameweekFixtures = fixtures.filter((fixture) => fixture.event === currentGameweekNumber);
 
-    // Filter fixtures to only current gameweek
-    const currentGameweekFixtures = fixtures.filter((f) => f.event === currentGameweekNumber);
+    const startedSinceLastRun = gameweekFixtures.some(
+        (fixture) => fixture.started && new Date(fixture.kickoff_time).getTime() > lastGeneratedTime,
+    );
+    // A match in play makes the published points wrong no matter when they were generated:
+    // they keep moving for 90 minutes, and bonus lands after the whistle.
+    const inPlay = gameweekFixtures.some((fixture) => fixture.started && !fixture.finished);
+    // An empty list is "nothing loaded", not "everything done", so it must not read green.
+    const allFinished = gameweekFixtures.length > 0 && gameweekFixtures.every((fixture) => fixture.finished);
 
-    // Check if any fixtures in current gameweek have started since last generation
-    const hasGamesStartedSinceUpdate = currentGameweekFixtures.some((fixture) => {
-        if (!fixture.started) return false;
-        const kickoffTime = new Date(fixture.kickoff_time).getTime();
-        return kickoffTime > lastGeneratedTime;
-    });
-
-    // Determine score status based on conditions
     let status: ScoringStatus;
-    if (hasGamesStartedSinceUpdate) {
-        // New games have been played - scores are stale
+    if (startedSinceLastRun || inPlay) {
         status = 'stale';
-    } else if (isGameweekFinished) {
-        // Gameweek is finished and no new games started - scores are up to date
+    } else if (allFinished) {
         status = 'up-to-date';
     } else {
-        // Gameweek not finished yet, but no new games - scores are pending
         status = 'pending';
     }
 
