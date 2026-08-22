@@ -18,7 +18,7 @@ import type {
     FplTeam,
     GameWeekData,
 } from './fpl-types';
-import { recomputeGameweekFlags } from './gameweeks';
+import { findScoringGameweek, recomputeGameweekFlags } from './gameweeks';
 
 const CACHE_STATUS_TIMEOUT_MS = 15_000;
 
@@ -244,11 +244,27 @@ class FplApiCache {
     async getCurrentGameweekData(): Promise<GameWeekData> {
         const events = await this.getFplEvents();
 
-        // The recomputed flag first, FPL's frozen one as the fallback. Production sets no
-        // fake clock, so nothing is recomputed and this is exactly the old behaviour.
-        // The harness replays a finished season, where every `is_current` is false -- so
-        // without the date-derived flag there is no current gameweek at any date and every
-        // page renders its empty state forever.
+        // The gameweek being PLAYED, which is not the one `isCurrent` marks. `isCurrent`
+        // is the window for picking the next team, so it moves on at the deadline while
+        // that gameweek's matches are still to come -- and every caller here is a points
+        // page. Neither stored flag is used: both are frozen at whenever an admin last
+        // populated bootstrap data. See `findScoringGameweek`.
+        return findScoringGameweek(events);
+    }
+
+    /**
+     * The gameweek managers are picking a team for: the window that runs from the previous
+     * deadline to this one.
+     *
+     * The counterpart to `getCurrentGameweekData()`, and the reason both exist. A page
+     * showing points wants the gameweek being played; a page taking team submissions wants
+     * the one still open. They are the same number only in the run-up to a deadline.
+     */
+    async getSelectionGameweekData(): Promise<GameWeekData | undefined> {
+        const events = await this.getFplEvents();
+
+        // FPL's flag as the fallback: a finished season has no open window at all, which
+        // is the state the offline harness replays.
         return events.find((event) => event.isCurrent) ?? events.find((event) => event.fplEvent.is_current);
     }
 

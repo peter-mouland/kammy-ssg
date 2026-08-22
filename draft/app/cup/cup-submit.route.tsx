@@ -4,7 +4,9 @@ import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { requestFormData } from '../_shared/lib/form-data';
+import { describeGameweekAvailability } from '../_shared/lib/gameweek-availability';
 import { cupEligibleManagers } from '../_shared/lib/league-divisions';
+import { friendlyErrorResponse } from '../_shared/lib/loader-error';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
@@ -26,13 +28,21 @@ interface CupActionData {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, events, allUserTeams, fplFixtures, teams] = await Promise.all([
-        fplApiCache.getCurrentGameweekData(),
+    const [selectionGameweekData, events, allUserTeams, fplFixtures, teams] = await Promise.all([
+        fplApiCache.getSelectionGameweekData(),
         fplApiCache.getFplEvents(),
         readUserTeams(),
         fplApiCache.getFplFixtures(),
         fplApiCache.getFplTeams(),
     ]);
+
+    // No gameweek is an explainable state, not a crash -- the same guard /cup and the
+    // other loaders use. Without it the reads below are a TypeError on an empty database.
+    const availability = describeGameweekAvailability(events, selectionGameweekData);
+    if (!availability.available) {
+        throw friendlyErrorResponse(availability.title, availability.detail);
+    }
+    const selectionGameweek = availability.gameweek;
 
     // Only divisions whose `cup` flag is set take part. Without this the cup silently
     // includes every manager in the league -- no crash, just the wrong competition, with
@@ -48,13 +58,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const { resolveCupRounds } = await import('./lib/cup-config');
         const cupGameweeks = resolveCupRounds(cupConfig).map((round) => round.gameweek);
         const requested = Number.parseInt(new URL(request.url).searchParams.get('gameweek') ?? '', 10);
-        const currentId = currentGameweekData.fplEvent.id;
+        const currentId = selectionGameweek.fplEvent.id;
         const selectedGameweek = Number.isNaN(requested)
             ? cupGameweeks.includes(currentId)
                 ? currentId
                 : (cupGameweeks[0] ?? currentId)
             : requested;
-        const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? currentGameweekData;
+        const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? selectionGameweek;
         const fixtures = buildCupFixtures(fplFixtures, teams, selectedGameweek);
 
         const pageData = await getCupSubmitData({
@@ -79,8 +89,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
             existingPlayers: [],
             usedPlayers: [],
             submissionOpen: false,
-            deadline: String(currentGameweekData.fplEvent.deadline_time),
-            selectedGameweek: currentGameweekData.fplEvent.id,
+            deadline: String(selectionGameweek.fplEvent.deadline_time),
+            selectedGameweek: selectionGameweek.fplEvent.id,
             gameweekOptions: [],
             fixtures: [],
         });

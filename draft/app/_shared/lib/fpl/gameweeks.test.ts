@@ -3,8 +3,8 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { fplBootstrap } from '../../test/fixtures/season-fixtures';
 import { setNow } from '../clock';
-import type { EventData } from './fpl-types';
-import { getGameweekData, recomputeGameweekFlags } from './gameweeks';
+import type { EventData, GameWeekData } from './fpl-types';
+import { findScoringGameweek, getGameweekData, recomputeGameweekFlags } from './gameweeks';
 
 /**
  * Which gameweek is "current" decides what almost every page shows, and until now nothing
@@ -133,5 +133,59 @@ describe('taking the date from the clock', () => {
         setNow('2025-01-10T00:00:00Z');
 
         expect(getGameweekData(events).find((gw) => gw.isCurrent)?.fplEvent.id).toBe(21);
+    });
+});
+
+/**
+ * The other question, and the one every points page is actually asking: which gameweek's
+ * matches are being played? That is one BEHIND `isCurrent` for the whole of every match
+ * weekend, because `isCurrent` is the window in which you pick the NEXT team.
+ *
+ * Confusing the two is what emptied the gameweek table and both team views on 2026-08-22:
+ * GW1 was being played, the site defaulted every points view to GW2, and GW2's matches
+ * were still a week away.
+ */
+describe('which gameweek is being played', () => {
+    const scoringIdAt = (iso: string) =>
+        findScoringGameweek(getGameweekData(events, new Date(iso)), new Date(iso))?.fplEvent.id ?? 0;
+
+    it('is GW1 through GW1’s match weekend, while isCurrent has already moved to GW2', () => {
+        // GW1's deadline is 2024-08-16T17:30Z; its matches run across the weekend after it.
+        expect(scoringIdAt('2024-08-17T14:00:00Z')).toBe(1);
+        expect(currentIdAt('2024-08-17T14:00:00Z')).toBe(2);
+    });
+
+    it('is GW20 on 2025-01-10, the gameweek isCurrent calls 21', () => {
+        // GW20's deadline 2025-01-04T11:00Z has passed; GW21's 2025-01-14T18:00Z has not.
+        expect(scoringIdAt('2025-01-10T00:00:00Z')).toBe(20);
+        expect(currentIdAt('2025-01-10T00:00:00Z')).toBe(21);
+    });
+
+    it('holds on the last gameweek once the season is over, rather than going blank', () => {
+        // GW38's deadline is 2025-05-25T13:30Z. There are final standings to show.
+        expect(scoringIdAt('2025-05-26T00:00:00Z')).toBe(38);
+    });
+
+    it('is GW1 before the first deadline, so pre-season renders squads not an error', () => {
+        expect(scoringIdAt('2024-08-01T00:00:00Z')).toBe(1);
+    });
+
+    it('has nothing to return when the calendar has not been loaded', () => {
+        // Distinct from every state above: an empty Firestore must still be explainable.
+        expect(findScoringGameweek([], new Date('2025-01-10T00:00:00Z'))).toBeUndefined();
+    });
+
+    it('survives end arriving as an ISO string, as it does from Firestore', () => {
+        const stored: GameWeekData[] = JSON.parse(
+            JSON.stringify(getGameweekData(events, new Date('2024-08-17T14:00:00Z'))),
+        );
+
+        expect(findScoringGameweek(stored, new Date('2024-08-17T14:00:00Z'))?.fplEvent.id).toBe(1);
+    });
+
+    it('defaults to whatever the clock says, so callers need not thread a date', () => {
+        setNow('2024-08-17T14:00:00Z');
+
+        expect(findScoringGameweek(getGameweekData(events))?.fplEvent.id).toBe(1);
     });
 });
