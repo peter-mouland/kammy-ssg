@@ -52,22 +52,18 @@ export async function loader() {
         const gameweekService = new GameweekPointsService();
 
         // Fetch data with individual error handling
-        const [metadataResult, fixturesResult, currentGameweekNumberResult, currentGameweekDataResult, teamsResult] =
-            await Promise.allSettled([
-                gameweekService.getPointsStatus(),
-                fplApiCache.getFplFixtures(),
-                fplApiCache.getCurrentGameweek(),
-                fplApiCache.getCurrentGameweekData(),
-                fplApiCache.getFplTeams(),
-            ]);
+        const [metadataResult, fixturesResult, currentGameweekNumberResult, teamsResult] = await Promise.allSettled([
+            gameweekService.getPointsStatus(),
+            fplApiCache.getFplFixtures(),
+            fplApiCache.getCurrentGameweek(),
+            fplApiCache.getFplTeams(),
+        ]);
 
         // Extract values or use defaults
         const metadata = metadataResult.status === 'fulfilled' ? metadataResult.value : { lastGenerated: null };
         const fixtures = fixturesResult.status === 'fulfilled' ? fixturesResult.value : [];
         const currentGameweekNumber =
             currentGameweekNumberResult.status === 'fulfilled' ? currentGameweekNumberResult.value : 0;
-        const currentGameweekData =
-            currentGameweekDataResult.status === 'fulfilled' ? currentGameweekDataResult.value : null;
         const teams = teamsResult.status === 'fulfilled' ? teamsResult.value : [];
 
         // Log any failures for debugging
@@ -75,15 +71,15 @@ export async function loader() {
         if (fixturesResult.status === 'rejected') console.error('Failed to load fixtures:', fixturesResult.reason);
         if (currentGameweekNumberResult.status === 'rejected')
             console.error('Failed to load current gameweek:', currentGameweekNumberResult.reason);
-        if (currentGameweekDataResult.status === 'rejected')
-            console.error('Failed to load gameweek data:', currentGameweekDataResult.reason);
         if (teamsResult.status === 'rejected') console.error('Failed to load teams:', teamsResult.reason);
 
-        // Calculate scoring status using the scoring-status feature
+        // Calculate scoring status using the scoring-status feature. Whether the gameweek
+        // has finished is derived from the fixtures inside, not read off
+        // `currentGameweekData.fplEvent.finished` -- that one is frozen at whenever an
+        // admin last populated bootstrap data.
         const { status } = calculateScoringStatus({
             lastGenerated: metadata?.lastGenerated || null,
             currentGameweekNumber: currentGameweekNumber || 0,
-            isGameweekFinished: currentGameweekData?.fplEvent?.finished ?? false,
             fixtures: fixtures || [],
         });
 
