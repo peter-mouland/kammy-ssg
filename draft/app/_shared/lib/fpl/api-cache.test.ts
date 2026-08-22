@@ -4,11 +4,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fplBootstrap } from '../../test/fixtures/season-fixtures';
 import { setNow } from '../clock';
 import { fplApiCache } from './api-cache';
-import type { EventData } from './fpl-types';
+import type { EventData, GameWeekData } from './fpl-types';
 import { getGameweekData } from './gameweeks';
 
 /**
- * `getCurrentGameweekData()` is the single answer four loaders build their whole page
+ * `getScoringGameweekData()` is the single answer four loaders build their whole page
  * around, and it had no test at all when it silently changed meaning in PR #118.
  *
  * The events it reads are STORED: `populateEvents` runs `getGameweekData()` once and
@@ -27,7 +27,7 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-describe('getCurrentGameweekData', () => {
+describe('getScoringGameweekData', () => {
     it('returns the gameweek being played, not the one being picked', async () => {
         // Populated after GW1's deadline, so the stored flags say GW2 is current -- the
         // window for picking a GW2 team. GW1's matches are the ones actually being played.
@@ -36,7 +36,7 @@ describe('getCurrentGameweekData', () => {
         vi.spyOn(fplApiCache, 'getFplEvents').mockResolvedValue(stored);
         setNow('2024-08-17T14:00:00Z');
 
-        const current = await fplApiCache.getCurrentGameweekData();
+        const current = await fplApiCache.getScoringGameweekData();
 
         expect(current?.fplEvent.id).toBe(1);
     });
@@ -46,7 +46,7 @@ describe('getCurrentGameweekData', () => {
         vi.spyOn(fplApiCache, 'getFplEvents').mockResolvedValue(storedAt('2024-08-16T18:00:00Z'));
         setNow('2025-01-10T00:00:00Z');
 
-        const current = await fplApiCache.getCurrentGameweekData();
+        const current = await fplApiCache.getScoringGameweekData();
 
         expect(current?.fplEvent.id).toBe(20);
     });
@@ -55,7 +55,7 @@ describe('getCurrentGameweekData', () => {
         vi.spyOn(fplApiCache, 'getFplEvents').mockResolvedValue([]);
         setNow('2025-01-10T00:00:00Z');
 
-        expect(await fplApiCache.getCurrentGameweekData()).toBeUndefined();
+        expect(await fplApiCache.getScoringGameweekData()).toBeUndefined();
     });
 });
 
@@ -74,7 +74,7 @@ describe('getSelectionGameweekData', () => {
         const selection = await fplApiCache.getSelectionGameweekData();
 
         expect(selection?.fplEvent.id).toBe(2);
-        expect((await fplApiCache.getCurrentGameweekData())?.fplEvent.id).toBe(1);
+        expect((await fplApiCache.getScoringGameweekData())?.fplEvent.id).toBe(1);
     });
 
     it('falls back to FPL’s own flag when no window is marked, as a finished season has none', async () => {
@@ -83,5 +83,33 @@ describe('getSelectionGameweekData', () => {
         vi.spyOn(fplApiCache, 'getFplEvents').mockResolvedValue(stored);
 
         expect((await fplApiCache.getSelectionGameweekData())?.fplEvent.id).toBe(38);
+    });
+});
+
+/**
+ * A characterization test, written to justify a deletion rather than to drive a change.
+ *
+ * `transfers.route.tsx` rolled its own selection gameweek -- `isPastDeadline ? id + 1 : id`
+ * on top of the scoring one -- because there was no accessor for the question it was
+ * asking. This pins that the accessor gives the same answer at every point in the cycle,
+ * so removing the hand-rolled version is provably a no-op.
+ */
+describe('the selection gameweek matches what transfers used to compute by hand', () => {
+    const handRolled = (scoring: GameWeekData, at: Date) =>
+        at > new Date(scoring.fplEvent.deadline_time) ? scoring.fplEvent.id + 1 : scoring.fplEvent.id;
+
+    it.each([
+        ['before the first deadline', '2024-08-16T12:00:00Z'],
+        ['mid match weekend', '2024-08-17T14:00:00Z'],
+        ['the day before the next deadline', '2024-08-23T12:00:00Z'],
+        ['mid season', '2025-01-10T00:00:00Z'],
+    ])('agrees %s', async (_when, iso) => {
+        vi.spyOn(fplApiCache, 'getFplEvents').mockResolvedValue(storedAt(iso));
+        setNow(iso);
+
+        const scoring = await fplApiCache.getScoringGameweekData();
+        const selection = await fplApiCache.getSelectionGameweekData();
+
+        expect(selection?.fplEvent.id).toBe(handRolled(scoring, new Date(iso)));
     });
 });

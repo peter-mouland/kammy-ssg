@@ -47,7 +47,7 @@ describe('which gameweek is current', () => {
 
     it('has no current gameweek once the final deadline has passed', () => {
         // GW38's deadline is 2025-05-25T13:30Z. Callers fall back to FPL's frozen
-        // `is_current` here, which is GW38 -- see `getCurrentGameweekData()`.
+        // `is_current` here, which is GW38 -- see `getScoringGameweekData()`.
         expect(currentIdAt('2025-05-26T00:00:00Z')).toBe(0);
     });
 

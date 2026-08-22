@@ -135,7 +135,7 @@ export class AdminOrchestrator {
             fplApiCache.getFplPlayers(),
             fplApiCache.getFplTeams(),
             fplApiCache.getFplEvents(),
-            fplApiCache.getCurrentGameweek(),
+            fplApiCache.getScoringGameweek(),
         ]);
 
         return {

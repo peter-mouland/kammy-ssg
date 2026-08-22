@@ -29,7 +29,9 @@ export async function getTransfersDataForDivision(divisionId: DivisionId, gamewe
         const gameweekData = await fplApiCache.getFplEvents();
         const fplPlayersByCode = await fplApiCache.getPlayersByCode();
         const transferResult = await readTransferDataForDivision(divisionId, fplPlayersByCode, gameweekData);
-        const currentGameweek = await fplApiCache.getCurrentGameweekData();
+        // The gameweek a transfer counts against is the one still open, not the one being
+        // played -- `validationContext.gameweekData` feeds the per-gameweek transfer limit.
+        const currentGameweek = (await fplApiCache.getSelectionGameweekData()) ?? gameweek;
         const divisionRosters = await getDivisionRosters(divisionId, gameweekId - 1);
 
         console.log(

@@ -15,7 +15,7 @@ export async function getPlayerStatsData(): Promise<PlayerStatsData> {
         fplApiCache.getFplPlayers(),
         fplApiCache.getFplTeams(),
         readPlayers(),
-        fplApiCache.getCurrentGameweekData(),
+        fplApiCache.getScoringGameweekData(),
     ]);
 
     const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
@@ -55,7 +55,7 @@ export async function getPlayerStatsForGameweek(gameweek: number): Promise<Playe
         fplApiCache.getFplPlayers(),
         fplApiCache.getFplTeams(),
         readPlayers(),
-        fplApiCache.getCurrentGameweekData(),
+        fplApiCache.getScoringGameweekData(),
         fplApiCache.getFplEvents(),
         fplApiCache.getGameweekLiveData(gameweek),
     ]);

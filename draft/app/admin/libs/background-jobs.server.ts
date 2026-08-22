@@ -238,7 +238,7 @@ async function getDivisionInfos(divisions: DivisionSheetData[], sampleGameweek: 
 
 async function getCurrentGameweekId(): Promise<number> {
     const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
-    return await fplApiCache.getCurrentGameweek();
+    return await fplApiCache.getScoringGameweek();
 }
 
 async function getAllGameweekIds(): Promise<number[]> {
