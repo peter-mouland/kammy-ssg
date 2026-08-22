@@ -7,7 +7,11 @@ import type { EventData, GameWeekData } from './fpl-types';
  * So GW21 is "current" from GW20's deadline until GW21's deadline -- the period in which
  * you pick a GW21 team -- not the period its matches are played. That is the app's own
  * definition and it differs from FPL's `is_current`, which tracks matches in progress.
- * Both are used; see `getCurrentGameweekData()` in `api-cache.ts` for which wins where.
+ *
+ * Both questions get asked, so both have a function. This one answers "which team is being
+ * picked" and backs `getSelectionGameweekData()`; `findScoringGameweek()` below answers
+ * "which matches are being played" and backs `getCurrentGameweekData()`. Reaching for the
+ * wrong one is not a subtle bug -- it points every page at a gameweek nobody has played.
  */
 function isCurrentAt(start: Date, end: Date, at: Date): boolean {
     return at < end && at > start;
@@ -71,4 +75,27 @@ export const getGameweekData = (fplEvents: EventData[], at: Date = now()): GameW
  */
 export function recomputeGameweekFlags(gameweeks: GameWeekData[], at: Date = now()): GameWeekData[] {
     return withFlagsAt(gameweeks, at);
+}
+
+/**
+ * The gameweek whose matches are being played, or were played most recently.
+ *
+ * This is a different question from `isCurrent` above, and the distinction is the whole
+ * point of having two functions. `isCurrent` is the window in which you pick a team, so it
+ * moves to GW21 the instant GW20's deadline passes -- while GW20's matches are still to be
+ * played. Points pages want the other one.
+ *
+ * It is what FPL's own `is_current` means, re-derived from the clock rather than read from
+ * the stored events, whose flags are frozen at whenever `populateEvents` last ran and only
+ * move when an admin repopulates bootstrap data.
+ *
+ * Before the first deadline nothing has been played; GW1 is returned so pre-season renders
+ * squads rather than an error. An empty calendar returns `undefined`, which is what lets
+ * `describeGameweekAvailability` tell "nobody has loaded the data" apart from every other
+ * state.
+ */
+export function findScoringGameweek<T extends { end: Date | string }>(gameweeks: T[], at: Date = now()): T | undefined {
+    const played = gameweeks.filter((gameweek) => new Date(gameweek.end) <= at);
+
+    return played.at(-1) ?? gameweeks[0];
 }

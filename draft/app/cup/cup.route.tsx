@@ -43,8 +43,8 @@ const EMPTY: CupPageData = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
-    const [currentGameweekData, events, allUserTeams, fixtures, teams] = await Promise.all([
-        fplApiCache.getCurrentGameweekData(),
+    const [selectionGameweekData, events, allUserTeams, fixtures, teams] = await Promise.all([
+        fplApiCache.getSelectionGameweekData(),
         fplApiCache.getFplEvents(),
         readUserTeams(),
         fplApiCache.getFplFixtures(),
@@ -58,10 +58,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     // No current gameweek is an explainable state, not a crash. Distinguishes an
     // unpopulated database from a season that has ended or not yet begun.
-    const availability = describeGameweekAvailability(events, currentGameweekData);
+    const availability = describeGameweekAvailability(events, selectionGameweekData);
     if (!availability.available) {
         throw friendlyErrorResponse(availability.title, availability.detail);
     }
+    // Past the guard there is a gameweek; take it from the guard rather than re-reading
+    // the nullable it was given, so the rest of the loader needs no further checks.
+    const selectionGameweek = availability.gameweek;
 
     const selectedUserId = getUserSelection(request).selectedUserId;
 
@@ -79,13 +82,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const { resolveCupRounds } = await import('./lib/cup-config');
         const cupGameweeks = resolveCupRounds(cupConfig).map((round) => round.gameweek);
         const requested = Number.parseInt(new URL(request.url).searchParams.get('gameweek') ?? '', 10);
-        const currentId = currentGameweekData.fplEvent.id;
+        const currentId = selectionGameweek.fplEvent.id;
         const selectedGameweek = Number.isNaN(requested)
             ? cupGameweeks.includes(currentId)
                 ? currentId
                 : (cupGameweeks[0] ?? currentId)
             : requested;
-        const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? currentGameweekData;
+        const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? selectionGameweek;
 
         const pageData = getCupPageData({ userTeams, gameweekData, cupConfig, submissions, pointsRows });
         const cupFixtures = buildCupFixtures(fixtures, teams, selectedGameweek);
@@ -120,7 +123,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     } catch (error) {
         if (error instanceof Response) throw error;
         console.error('Cup loader (config/submissions) error:', error);
-        return data<CupPageData>({ ...EMPTY, gameweek: currentGameweekData.fplEvent.id, userTeams, selectedUserId });
+        return data<CupPageData>({ ...EMPTY, gameweek: selectionGameweek.fplEvent.id, userTeams, selectedUserId });
     }
 }
 
