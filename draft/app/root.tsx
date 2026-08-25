@@ -116,7 +116,9 @@ export async function loader() {
         console.error('Error in root loader:', error);
         return {
             scoresPublishedAt: null,
-            scoresStatus: 'up-to-date' as const,
+            // Not 'up-to-date'. We know nothing here, and the badge's whole job is to
+            // refuse to say everything is fine unless it has seen that it is.
+            scoresStatus: 'pending' as const,
             pendingGames: [],
             fakeNow: fakeNowIso(),
         };

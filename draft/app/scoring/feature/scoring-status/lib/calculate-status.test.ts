@@ -15,7 +15,9 @@ import { calculateScoringStatus } from './calculate-status';
  * still read `false` days after a gameweek ended -- or `true` off a stale populate.
  */
 
-const GENERATED = '2025-01-11T12:00:00Z';
+// After the 11:00 kickoff has settled, so the default fixture below is a match this run
+// has fully seen. Tests that want an unsettled one move the kickoff, not this.
+const GENERATED = '2025-01-11T14:00:00Z';
 
 type Fixture = ScoringStatusInput['fixtures'][number];
 
@@ -36,7 +38,7 @@ describe('scoring status', () => {
     });
 
     it('is stale when a match kicked off after the last generation', () => {
-        expect(statusOf([fixture(), fixture({ kickoff_time: '2025-01-11T15:00:00Z' })])).toBe('stale');
+        expect(statusOf([fixture(), fixture({ kickoff_time: '2025-01-11T16:00:00Z' })])).toBe('stale');
     });
 
     it('is stale while a match is in play, even one that kicked off before the last run', () => {
@@ -57,7 +59,7 @@ describe('scoring status', () => {
 
     it('ignores other gameweeks entirely', () => {
         // A GW2 match kicking off says nothing about whether GW1's points are current.
-        expect(statusOf([fixture(), fixture({ event: 2, started: true, kickoff_time: '2025-01-11T15:00:00Z' })])).toBe(
+        expect(statusOf([fixture(), fixture({ event: 2, started: true, kickoff_time: '2025-01-11T16:00:00Z' })])).toBe(
             'up-to-date',
         );
     });
@@ -66,6 +68,26 @@ describe('scoring status', () => {
         // No fixtures is not the same as every fixture being finished. Calling it green
         // would tell an admin there is nothing to do on a gameweek nobody has loaded.
         expect(statusOf([])).toBe('pending');
+    });
+
+    it('is stale when the last run happened while the final match was still being played', () => {
+        // The transition #128 left open. The badge correctly turns red while the match
+        // plays, then goes green the instant it is marked finished -- although the run at
+        // 17:00 never saw the result, let alone the bonus. Kickoff is the wrong anchor:
+        // what matters is whether the match had SETTLED by the time points were generated.
+        const status = statusOf(
+            [fixture({ kickoff_time: '2025-01-11T14:00:00Z' }), fixture({ kickoff_time: '2025-01-11T16:30:00Z' })],
+            '2025-01-11T17:00:00Z',
+        );
+
+        expect(status).toBe('stale');
+    });
+
+    it('is up to date once the last match has settled and points were generated after it', () => {
+        // The other side of the same line: a run late enough to have seen everything.
+        expect(statusOf([fixture({ kickoff_time: '2025-01-11T16:30:00Z' })], '2025-01-11T21:00:00Z')).toBe(
+            'up-to-date',
+        );
     });
 
     it('is stale when points have never been generated and a match has started', () => {

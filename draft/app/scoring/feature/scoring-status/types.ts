@@ -1,11 +1,16 @@
 // Scoring status types
 
 /**
- * Represents the freshness status of scoring data
+ * How fresh the published points are for the gameweek being played.
  *
- * - 'up-to-date': Gameweek is finished and all scores have been generated
- * - 'pending': Gameweek not finished yet, no new games have started since last generation
- * - 'stale': New games have started since last score generation - scores need updating
+ * - 'up-to-date': every match in the gameweek is finished, and points were generated
+ *   after the last of them settled
+ * - 'pending': nothing to do yet -- the gameweek has not started, has no fixtures loaded,
+ *   or the loader could not tell
+ * - 'stale': a match had not settled by the time points were last generated, whether it is
+ *   still in play or has since finished
+ *
+ * `calculateScoringStatus` is where the reasoning lives; keep this in step with it.
  */
 export type ScoringStatus = 'up-to-date' | 'pending' | 'stale';
 
