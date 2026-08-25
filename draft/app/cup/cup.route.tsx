@@ -44,7 +44,12 @@ const EMPTY: CupPageData = {
 export async function loader({ request }: LoaderFunctionArgs) {
     const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
     const [selectionGameweekData, events, allUserTeams, fixtures, teams] = await Promise.all([
-        fplApiCache.getSelectionGameweekData(),
+        // Selection, because a cup round is entered before its deadline and the page shows
+        // who has submitted. Falling back to the round just played matters at the end of a
+        // season: nothing is open, but there is still a final to look at.
+        Promise.all([fplApiCache.getSelectionGameweekData(), fplApiCache.getScoringGameweekData()]).then(
+            ([selection, scoring]) => selection ?? scoring,
+        ),
         fplApiCache.getFplEvents(),
         readUserTeams(),
         fplApiCache.getFplFixtures(),
