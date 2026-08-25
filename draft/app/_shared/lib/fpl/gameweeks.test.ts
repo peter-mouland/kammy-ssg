@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { fplBootstrap } from '../../test/fixtures/season-fixtures';
 import { setNow } from '../clock';
 import type { EventData, GameWeekData } from './fpl-types';
-import { findScoringGameweek, getGameweekData, recomputeGameweekFlags } from './gameweeks';
+import { findScoringGameweek, findSelectionGameweek, getGameweekData, recomputeGameweekFlags } from './gameweeks';
 
 /**
  * Which gameweek is "current" decides what almost every page shows, and until now nothing
@@ -187,5 +187,52 @@ describe('which gameweek is being played', () => {
         setNow('2024-08-17T14:00:00Z');
 
         expect(findScoringGameweek(getGameweekData(events))?.fplEvent.id).toBe(1);
+    });
+});
+
+/**
+ * The mirror of the above, and the reason both are derived from the clock rather than read
+ * off the stored `isCurrent`: those flags are frozen at whenever an admin last ran Populate
+ * Bootstrap Data, so a site nobody has repopulated for a month offers a month-old round.
+ */
+describe('which gameweek is being picked', () => {
+    const selectionIdAt = (iso: string) =>
+        findSelectionGameweek(getGameweekData(events, new Date(iso)), new Date(iso))?.fplEvent.id ?? 0;
+
+    it('is GW1 before the first deadline, when nothing has been picked yet', () => {
+        expect(selectionIdAt('2024-08-16T12:00:00Z')).toBe(1);
+    });
+
+    it('moves to GW2 the moment GW1’s deadline passes, while GW1 is still being played', () => {
+        expect(selectionIdAt('2024-08-17T14:00:00Z')).toBe(2);
+        expect(findScoringGameweek(getGameweekData(events), new Date('2024-08-17T14:00:00Z'))?.fplEvent.id).toBe(1);
+    });
+
+    it('is GW21 on 2025-01-10, one ahead of the gameweek being played', () => {
+        expect(selectionIdAt('2025-01-10T00:00:00Z')).toBe(21);
+    });
+
+    it('has no answer once the final deadline has passed', () => {
+        // There is no team left to pick. Callers show the availability explanation rather
+        // than inventing a gameweek 39, which the arithmetic it replaced used to do.
+        expect(findSelectionGameweek(getGameweekData(events), new Date('2025-05-26T00:00:00Z'))).toBeUndefined();
+    });
+
+    it('has nothing to return when the calendar has not been loaded', () => {
+        expect(findSelectionGameweek([], new Date('2025-01-10T00:00:00Z'))).toBeUndefined();
+    });
+
+    it('survives end arriving as an ISO string, as it does from Firestore', () => {
+        const stored: GameWeekData[] = JSON.parse(
+            JSON.stringify(getGameweekData(events, new Date('2024-08-17T14:00:00Z'))),
+        );
+
+        expect(findSelectionGameweek(stored, new Date('2024-08-17T14:00:00Z'))?.fplEvent.id).toBe(2);
+    });
+
+    it('defaults to whatever the clock says, so callers need not thread a date', () => {
+        setNow('2024-08-17T14:00:00Z');
+
+        expect(findSelectionGameweek(getGameweekData(events))?.fplEvent.id).toBe(2);
     });
 });
