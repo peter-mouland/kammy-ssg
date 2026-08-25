@@ -85,6 +85,11 @@ const IGNORED_CONSOLE = [
     /Download the React DevTools/,
     // Vite serves the app unbundled in the harness; this is dev-server chatter.
     /\[vite\]/,
+    // An explained state is SERVED as a 503, which the status check below accepts on
+    // purpose -- and the browser logs a console error for the document response as it
+    // does so. Failing on that would mean the spec rejects the one thing it allows.
+    // Narrow to 503: any other status still counts.
+    /Failed to load resource: the server responded with a status of 503/,
 ];
 
 interface PageProblems {
