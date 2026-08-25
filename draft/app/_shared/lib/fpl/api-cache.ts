@@ -18,7 +18,7 @@ import type {
     FplTeam,
     GameWeekData,
 } from './fpl-types';
-import { findScoringGameweek, recomputeGameweekFlags } from './gameweeks';
+import { findScoringGameweek, findSelectionGameweek, recomputeGameweekFlags } from './gameweeks';
 
 const CACHE_STATUS_TIMEOUT_MS = 15_000;
 
@@ -263,9 +263,10 @@ class FplApiCache {
     async getSelectionGameweekData(): Promise<GameWeekData | undefined> {
         const events = await this.getFplEvents();
 
-        // FPL's flag as the fallback: a finished season has no open window at all, which
-        // is the state the offline harness replays.
-        return events.find((event) => event.isCurrent) ?? events.find((event) => event.fplEvent.is_current);
+        // Derived from the clock, not read off the stored `isCurrent`. That flag says the
+        // same thing, but only as of the last Populate Bootstrap Data -- and nothing runs
+        // that on a schedule, so it can name a round whose deadline is weeks gone.
+        return findSelectionGameweek(events);
     }
 
     /**

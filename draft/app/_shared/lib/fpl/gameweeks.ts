@@ -93,9 +93,32 @@ export function recomputeGameweekFlags(gameweeks: GameWeekData[], at: Date = now
  * squads rather than an error. An empty calendar returns `undefined`, which is what lets
  * `describeGameweekAvailability` tell "nobody has loaded the data" apart from every other
  * state.
+ *
+ * Assumes `gameweeks` is in deadline order, as FPL's bootstrap gives it. That survives
+ * Firestore because the events are one document holding an array, not a document each --
+ * if that ever changes, this and `findSelectionGameweek` both need a sort.
  */
 export function findScoringGameweek<T extends { end: Date | string }>(gameweeks: T[], at: Date = now()): T | undefined {
     const played = gameweeks.filter((gameweek) => new Date(gameweek.end) <= at);
 
     return played.at(-1) ?? gameweeks[0];
+}
+
+/**
+ * The gameweek a team is being picked for: the first whose deadline has not passed.
+ *
+ * The mirror of `findScoringGameweek`, and derived from the clock for the same reason. The
+ * stored `isCurrent` says this too, but only as of whenever `populateEvents` last ran, and
+ * nothing runs it on a schedule -- so reading it offers managers whichever round was open
+ * the last time an admin pressed the button.
+ *
+ * Returns `undefined` once the final deadline has passed. There is no team left to pick,
+ * and saying so lets `describeGameweekAvailability` explain the end of the season instead
+ * of callers inventing a gameweek 39.
+ */
+export function findSelectionGameweek<T extends { end: Date | string }>(
+    gameweeks: T[],
+    at: Date = now(),
+): T | undefined {
+    return gameweeks.find((gameweek) => new Date(gameweek.end) > at);
 }

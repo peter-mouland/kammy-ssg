@@ -25,12 +25,12 @@ import * as route from './cup.route';
  * `isDeadlinePassed` compares it against now, not `deadline_time`. The loader takes no
  * clock, so moving `end` either side of the real `now` is the lever these tests pull.
  */
-const gameweek = (id: number, { isCurrent = false, end = FUTURE } = {}) => ({
-    fplEvent: { id, name: `Gameweek ${id}`, is_current: isCurrent, deadline_time: end },
+const gameweek = (id: number, end: string) => ({
+    fplEvent: { id, name: `Gameweek ${id}`, is_current: false, deadline_time: end },
     gameWeekIndex: id - 1,
     start: new Date('2020-01-01T11:00:00Z'),
     end: new Date(end),
-    isCurrent,
+    isCurrent: false,
     isNext: false,
     hasPassed: false,
 });
@@ -38,13 +38,25 @@ const gameweek = (id: number, { isCurrent = false, end = FUTURE } = {}) => ({
 const FUTURE = '2099-01-01T11:00:00Z';
 const FINISHED = '2020-01-02T11:00:00Z';
 
-/** Gameweek 3 is current. It is still in progress unless a test says otherwise. */
+/**
+ * A coherent calendar, not a flag.
+ *
+ * Which gameweek is in focus is derived from the deadlines rather than read off a stored
+ * `isCurrent` — see `findSelectionGameweek` — so these have to be a real season: GW1 and
+ * GW2 behind us, GW3 the one still open, GW4 and GW5 ahead. Setting `isCurrent` on a
+ * gameweek whose deadline was in 2099, as this used to, no longer means anything.
+ *
+ * GW3 is the round in focus. It is still open unless a test says otherwise.
+ */
+const PLAYED = ['2020-01-01T11:00:00Z', '2020-01-01T12:00:00Z'];
+const AHEAD = ['2099-06-01T11:00:00Z', '2099-12-01T11:00:00Z'];
+
 const events = (gw3End = FUTURE) => [
-    gameweek(1),
-    gameweek(2),
-    gameweek(3, { isCurrent: true, end: gw3End }),
-    gameweek(4),
-    gameweek(5),
+    gameweek(1, PLAYED[0]),
+    gameweek(2, PLAYED[1]),
+    gameweek(3, gw3End),
+    gameweek(4, AHEAD[0]),
+    gameweek(5, AHEAD[1]),
 ];
 
 const USER_TEAMS_TAB = [
@@ -183,11 +195,14 @@ describe('the cup page loader', () => {
 
     // Once the deadline has gone, the squad is revealed and scored from that gameweek's
     // column only: Salah 9 + Saliba 6 in GW3.
+    // `?gameweek=3` because once GW3's deadline passes the page's default moves on to
+    // GW4, the round now open. Looking back at a finished round is what the gameweek
+    // selector is for, and it is the round with submissions on it that this is about.
     it('reveals and scores a submitted squad once the deadline has passed', async () => {
         dataCache.clear();
         await seedFpl(FINISHED);
 
-        const pageData = await load();
+        const pageData = await load('?gameweek=3');
         const ann = pageData.rows.find((row) => row.manager === 'ann');
 
         expect(pageData.deadlinePassed).toBe(true);
@@ -199,7 +214,9 @@ describe('the cup page loader', () => {
         dataCache.clear();
         await seedFpl(FINISHED);
 
-        const pageData = await load();
+        // Same reason as above -- and without naming the round this passes vacuously on
+        // GW4, where nobody has submitted anything.
+        const pageData = await load('?gameweek=3');
         const bob = pageData.rows.find((row) => row.manager === 'bob');
 
         expect(bob?.players).toBeNull();
