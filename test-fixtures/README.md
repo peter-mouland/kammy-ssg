@@ -5,7 +5,7 @@ deployed. That rule is load-bearing: it used to be broken, and it cost 35MB of e
 
 ```
 test-fixtures/
-├── spreadsheets/   18 Google Sheets tabs, as the API returns them   1.3MB
+├── spreadsheets/   19 Google Sheets tabs, as the API returns them   1.3MB
 └── fpl/            one FPL pool: bootstrap, fixtures, 458 summaries  12MB
 ```
 
@@ -89,6 +89,13 @@ three-division league while the live sheet has four, which is why greatScott is 
 One directory, one id space: synthetic ids start above 2024/25's maximum of 804, so there is nothing to
 merge at read time. **`players.json` and `element-summary/` are 1:1** — 458 players, 458 files, no orphans
 either way — so a missing summary is a real error, not a routine one.
+
+## `player-inbox.json` is not a capture
+
+It holds the header row and nothing else, because that is the real starting state: the
+`PlayerInbox` tab is written by the new-player intake and is empty until something has been
+researched or held. It exists so the harness can exercise approve and release, which need a
+tab to write to. Everything else here was captured from the live sheet.
 
 ## Provenance
 

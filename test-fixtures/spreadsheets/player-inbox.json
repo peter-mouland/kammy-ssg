@@ -1,0 +1,21 @@
+{
+    "range": "PlayerInbox!A1:M1000",
+    "majorDimension": "ROWS",
+    "values": [
+        [
+            "code",
+            "name",
+            "club",
+            "fplType",
+            "suggested",
+            "confidence",
+            "basis",
+            "summary",
+            "reasoning",
+            "sources",
+            "added",
+            "position",
+            "status"
+        ]
+    ]
+}

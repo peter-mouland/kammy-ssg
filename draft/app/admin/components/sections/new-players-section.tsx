@@ -1,7 +1,9 @@
 /* Location: app/admin/components/sections/new-players-section.tsx */
 
 import { useMemo, useState } from 'react';
+import { type FetcherWithComponents, useFetcher } from 'react-router';
 import { PositionBadge } from '../../../_shared/components/player';
+import { SearchInput } from '../../../_shared/components/search-input';
 import { Table, type TableColumn } from '../../../_shared/components/table';
 import type { CustomPosition } from '../../../_shared/types/league-types';
 import type { HeldPlayer, NewPlayerCandidate, PositionBucket, PositionSuggestion } from '../../types/new-players-types';
@@ -16,10 +18,11 @@ import styles from './new-players-section.module.css';
 interface NewPlayersSectionProps {
     newPlayers: NewPlayerCandidate[];
     heldPlayers: HeldPlayer[];
-    /** Absent while the page is a mockup; supplied once the actions are wired. */
-    onApprove?: (approvals: Array<{ code: number; position: PositionBucket }>) => void;
-    onRelease?: (codes: number[]) => void;
-    isBusy?: boolean;
+}
+
+interface ActionResult {
+    success: boolean;
+    message: string;
 }
 
 /**
@@ -28,20 +31,28 @@ interface NewPlayersSectionProps {
  * exist and have a position, and nobody can take them. Release clears `isHidden` and sets
  * `new` for a batch, handing them to the `NEW_PLAYER` transfer flow that already exists.
  */
-export function NewPlayersSection({
-    newPlayers,
-    heldPlayers,
-    onApprove,
-    onRelease,
-    isBusy = false,
-}: NewPlayersSectionProps) {
+export function NewPlayersSection({ newPlayers, heldPlayers }: NewPlayersSectionProps) {
+    // One fetcher per table: approving and releasing are independent, and sharing a
+    // fetcher would let one table's result render as the other's.
+    const approveFetcher = useFetcher<ActionResult>();
+    const releaseFetcher = useFetcher<ActionResult>();
+
     return (
         <AdminContainer>
-            <NewPlayersTable players={newPlayers} onApprove={onApprove} isBusy={isBusy} />
-            <HeldPlayersTable players={heldPlayers} onRelease={onRelease} isBusy={isBusy} />
+            <NewPlayersTable players={newPlayers} fetcher={approveFetcher} />
+            <HeldPlayersTable players={heldPlayers} fetcher={releaseFetcher} />
         </AdminContainer>
     );
 }
+
+/** The action's own words, rather than a generic success line that could be about anything. */
+function ActionOutcome({ result }: { result: ActionResult | undefined }) {
+    if (!result) return null;
+    return <AdminMessage type={result.success ? 'success' : 'error'}>{result.message}</AdminMessage>;
+}
+
+/** Enough to see a normal week's intake without scrolling, and to tame a pre-season diff. */
+const PAGE_SIZE = 25;
 
 /**
  * A high-confidence suggestion is pre-ticked so the ordinary case is one click. A
@@ -54,13 +65,12 @@ function isPreSelected(suggestion: PositionSuggestion | null): boolean {
 
 function NewPlayersTable({
     players,
-    onApprove,
-    isBusy,
+    fetcher,
 }: {
     players: NewPlayerCandidate[];
-    onApprove?: NewPlayersSectionProps['onApprove'];
-    isBusy: boolean;
+    fetcher: FetcherWithComponents<ActionResult>;
 }) {
+    const isBusy = fetcher.state !== 'idle';
     const [selected, setSelected] = useState<Set<number>>(
         () => new Set(players.filter((p) => isPreSelected(p.suggestion)).map((p) => p.code)),
     );
@@ -68,6 +78,24 @@ function NewPlayersTable({
         Object.fromEntries(players.map((p) => [p.code, p.suggestion?.position ?? ''])),
     );
     const [expanded, setExpanded] = useState<Set<number>>(new Set());
+    const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+
+    /**
+     * Pre-season the diff can be hundreds of players, which is an unusable wall of rows.
+     * Selections and chosen positions are keyed by code, so they survive both filtering
+     * and paging -- and the button's count is over every selection, not the visible page,
+     * so nothing gets approved or forgotten off-screen.
+     */
+    const visible = useMemo(() => {
+        const term = search.trim().toLowerCase();
+        if (!term) return players;
+        return players.filter(
+            (player) => player.webName.toLowerCase().includes(term) || player.club.toLowerCase().includes(term),
+        );
+    }, [players, search]);
+
+    const pageOf = visible.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
     const toggleExpanded = (code: number) =>
         setExpanded((prev) => {
@@ -83,8 +111,16 @@ function NewPlayersTable({
             return next;
         });
 
-    const allSelected = players.length > 0 && selected.size === players.length;
-    const toggleAll = () => setSelected(allSelected ? new Set() : new Set(players.map((p) => p.code)));
+    const allSelected = visible.length > 0 && visible.every((player) => selected.has(player.code));
+    const toggleAll = () =>
+        setSelected((prev) => {
+            const next = new Set(prev);
+            for (const player of visible) {
+                if (allSelected) next.delete(player.code);
+                else next.add(player.code);
+            }
+            return next;
+        });
 
     // A selected row with no position is not approvable, so it does not count towards the
     // button's total either -- the number on the button is what will actually be written.
@@ -213,11 +249,32 @@ function NewPlayersTable({
                     : 'Every FPL player is in the sheet. Nothing to add.'
             }
         >
+            {players.length > PAGE_SIZE && (
+                <div className={styles.filter_row}>
+                    <SearchInput
+                        value={search}
+                        onChange={(value: string) => {
+                            setSearch(value);
+                            setPage(1);
+                        }}
+                        placeholder="Filter by player or club..."
+                    />
+                    <span className={styles.action_hint}>
+                        {visible.length} shown{selected.size > 0 ? `, ${selected.size} selected in total` : ''}
+                    </span>
+                </div>
+            )}
+
             <Table
-                data={players}
+                data={pageOf}
                 columns={columns}
                 size="compact"
                 bordered
+                pagination={
+                    visible.length > PAGE_SIZE
+                        ? { page, pageSize: PAGE_SIZE, total: visible.length, onPageChange: setPage }
+                        : undefined
+                }
                 expandable={{
                     isExpanded: (player) => expanded.has(player.code),
                     render: (player) => <SuggestionRationale player={player} />,
@@ -240,14 +297,21 @@ function NewPlayersTable({
                     type="button"
                     className={styles.primary_button}
                     disabled={approvals.length === 0 || isBusy}
-                    onClick={() => onApprove?.(approvals)}
+                    onClick={() =>
+                        fetcher.submit(
+                            { intent: 'approve', approvals: JSON.stringify(approvals) },
+                            { method: 'post', action: '/admin/new-players' },
+                        )
+                    }
                 >
                     {approvals.length > 0 ? `Approve ${approvals.length} selected` : 'Approve selected'}
                 </button>
                 <span className={styles.action_hint}>
-                    Approved players are added to the sheet but stay hidden until released.
+                    Approved players are held. They only enter the game when released.
                 </span>
             </ActionBar>
+
+            <ActionOutcome result={fetcher.data} />
         </AdminSection>
     );
 }
@@ -330,13 +394,12 @@ function SuggestionRationale({ player }: { player: NewPlayerCandidate }) {
 
 function HeldPlayersTable({
     players,
-    onRelease,
-    isBusy,
+    fetcher,
 }: {
     players: HeldPlayer[];
-    onRelease?: NewPlayersSectionProps['onRelease'];
-    isBusy: boolean;
+    fetcher: FetcherWithComponents<ActionResult>;
 }) {
+    const isBusy = fetcher.state !== 'idle';
     const [selected, setSelected] = useState<Set<number>>(new Set());
     const [copied, setCopied] = useState(false);
 
@@ -428,7 +491,12 @@ function HeldPlayersTable({
                     type="button"
                     className={styles.primary_button}
                     disabled={selected.size === 0 || isBusy}
-                    onClick={() => onRelease?.(selectedPlayers.map((p) => p.code))}
+                    onClick={() =>
+                        fetcher.submit(
+                            { intent: 'release', codes: JSON.stringify(selectedPlayers.map((p) => p.code)) },
+                            { method: 'post', action: '/admin/new-players' },
+                        )
+                    }
                 >
                     {selected.size > 0 ? `Release ${selected.size} into the game` : 'Release into the game'}
                 </button>
@@ -440,7 +508,12 @@ function HeldPlayersTable({
                 >
                     {copied ? 'Copied' : 'Copy announcement'}
                 </button>
+                <span className={styles.action_hint}>
+                    Released players appear on the site once Populate Bootstrap Data has run.
+                </span>
             </ActionBar>
+
+            <ActionOutcome result={fetcher.data} />
         </AdminSection>
     );
 }

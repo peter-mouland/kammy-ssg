@@ -44,8 +44,8 @@ interface AdminLoaderData {
 export async function loader({ request }: LoaderFunctionArgs) {
     const url = new URL(request.url);
 
-    // Pages with no shared-context needs — skip FPL/Sheets/Firebase bootstrap.
-    // `new-players` is here only while it is a mockup; it moves out when its loader lands.
+    // Pages that bring their own data — skip the FPL/Sheets/Firebase bootstrap this
+    // loader does for the dashboard. `new-players` has its own loader and needs none of it.
     if (url.pathname.includes('/admin/setup-new-season') || url.pathname.includes('/admin/new-players')) {
         console.log('⚡ Lightweight admin load for', url.pathname);
         return {
