@@ -36,6 +36,12 @@ const navigationItems: AdminNavItem[] = [
         path: '/admin/transfers',
     },
     {
+        key: 'newPlayers',
+        label: 'New Players',
+        icon: <Icons.FileIcon />,
+        path: '/admin/new-players',
+    },
+    {
         key: 'points',
         label: 'GameWeek Processing',
         icon: <Icons.ChartIcon />,
@@ -63,6 +69,7 @@ export const AdminLayout: React.FC<AdminDashboardLayoutProps> = ({ children }) =
         if (path === '/admin') return 'overview';
         if (path.startsWith('/admin/draft')) return 'draft';
         if (path.startsWith('/admin/transfers')) return 'transfers';
+        if (path.startsWith('/admin/new-players')) return 'newPlayers';
         if (path.startsWith('/admin/points')) return 'points';
         if (path.startsWith('/admin/settings')) return 'settings';
         if (path.startsWith('/admin/setup-new-season')) return 'setupNewSeason';

@@ -242,6 +242,7 @@ Mirrors [routes.ts](../../draft/app/routes.ts). If you add a route, add it here.
 | `/admin/draft` | `admin/admin-draft.route.tsx` | Draft management |
 | `/admin/points` | `admin/admin-points.route.tsx` | Points processing |
 | `/admin/settings` | `admin/admin-settings.route.tsx` | Admin settings |
+| `/admin/new-players` | `admin/admin-new-players.route.tsx` | Approve positions for players FPL has but the sheet does not, then release them into the new-player transfer window |
 | `/admin/setup-new-season` | `admin/admin-setup-new-season.route.tsx` | Season rollover checklist |
 | `/admin/transfers` | `admin/admin-transfers.route.tsx` | Transfer approval |
 | `/admin-progress/:jobId` | `admin/admin-progress.route.tsx` | Long-running job progress (legacy, top-level) |

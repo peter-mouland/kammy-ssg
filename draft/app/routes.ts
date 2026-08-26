@@ -40,6 +40,7 @@ export default [
     route('admin', 'admin/admin.route.tsx', [
         index('admin/admin-overview.route.tsx'),
         route('draft', 'admin/admin-draft.route.tsx'),
+        route('new-players', 'admin/admin-new-players.route.tsx'),
         route('points', 'admin/admin-points.route.tsx'),
         route('settings', 'admin/admin-settings.route.tsx'),
         route('setup-new-season', 'admin/admin-setup-new-season.route.tsx'),
