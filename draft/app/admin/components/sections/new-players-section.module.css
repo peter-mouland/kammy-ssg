@@ -122,3 +122,92 @@
     font-size: var(--font-xs);
     color: var(--color-gray-500);
 }
+
+/* Expand affordance */
+.expand_button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: var(--spacing-1);
+    color: var(--color-gray-500);
+    line-height: 1;
+}
+
+.expand_button:hover {
+    color: var(--color-gray-900);
+}
+
+.chevron {
+    display: inline-block;
+    transition: transform var(--transition-normal);
+}
+
+.chevron_open {
+    transform: rotate(180deg);
+}
+
+/* The rationale panel, inside the table's full-width detail row */
+.rationale {
+    padding: var(--spacing-4) var(--spacing-6);
+    border-left: 3px solid var(--color-primary);
+}
+
+.rationale_head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-3);
+}
+
+.rationale_title {
+    margin: 0;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.rationale_meta {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+.rationale_points {
+    margin: 0 0 var(--spacing-3);
+    padding-left: var(--spacing-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
+    line-height: var(--line-height-normal);
+}
+
+.rationale_sources {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+    font-size: var(--font-xs);
+}
+
+.rationale_sources_label {
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Said plainly rather than left blank: an unverified call should look unverified. */
+.rationale_nosource {
+    margin: 0;
+    font-size: var(--font-xs);
+    color: var(--color-error-text);
+}
+
+.rationale_empty {
+    margin: 0;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+}
