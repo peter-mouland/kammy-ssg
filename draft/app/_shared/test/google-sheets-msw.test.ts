@@ -69,8 +69,18 @@ describe('sheetHandlers', () => {
         expect(store.values('Players')).toHaveLength(PLAYERS_TAB.length);
     });
 
-    it('seeds an undeclared tab empty rather than failing the read', async () => {
-        expect(await common.readSheetRange(range("'NotDeclared'!A:Z"))).toEqual([]);
+    it('fails the read for a tab that was never declared, as the real API does', async () => {
+        // An empty result here would make a missing tab look like an empty one, and code
+        // that has to tell those apart could not be tested at all.
+        await expect(common.readSheetRange(range("'NotDeclared'!A:Z"))).rejects.toMatchObject({
+            details: expect.anything(),
+        });
+    });
+
+    it('treats a tab that has been written to as existing', async () => {
+        await common.appendToSheet(range("'Fresh'!A:C"), [['a', 'b', 'c']]);
+
+        expect(await common.readSheetRange(range("'Fresh'!A:C"))).toEqual([['a', 'b', 'c']]);
     });
 
     it('resets to the seeded rows between cases', async () => {

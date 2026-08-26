@@ -90,8 +90,19 @@ function readHandler(store: SheetStore): RequestHandler {
     return http.get(SHEETS_VALUES_URL, ({ params }) => {
         // The range arrives percent-encoded, e.g. "'Cup'!A:G".
         const range = decodeURIComponent(String(params.range));
+        const tab = tabNameFromRange(range);
 
-        return HttpResponse.json({ range, majorDimension: 'ROWS', values: store.values(tabNameFromRange(range)) });
+        // Google's own answer for a sheet name that does not exist. Serving [] instead
+        // would make a missing tab indistinguishable from an empty one, which is a real
+        // distinction: only one of them needs somebody to go and create a tab.
+        if (!store.has(tab)) {
+            return HttpResponse.json(
+                { error: { code: 400, status: 'INVALID_ARGUMENT', message: `Unable to parse range: ${range}` } },
+                { status: 400 },
+            );
+        }
+
+        return HttpResponse.json({ range, majorDimension: 'ROWS', values: store.values(tab) });
     });
 }
 
