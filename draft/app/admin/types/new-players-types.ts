@@ -25,14 +25,26 @@ export type SuggestionBasis = 'record' | 'projection';
 
 export type SuggestionConfidence = 'high' | 'medium' | 'low';
 
+export interface SuggestionSource {
+    /** What the source is, e.g. "Sofascore lineups" -- a bare URL says nothing at a glance. */
+    label: string;
+    url: string;
+}
+
 export interface PositionSuggestion {
     /** Null when no source was found. A blank cell beats a guess an admin approves by reflex. */
     position: PositionBucket | null;
     confidence: SuggestionConfidence;
     basis: SuggestionBasis;
-    sourceUrl: string | null;
-    /** One line on what the call rests on, or why it could not be made. */
-    note?: string;
+    /** One line for the table row: the single fact that decides it, or why it could not be decided. */
+    summary: string;
+    /**
+     * The argument, one point per entry, shown when the row is expanded. This is what an
+     * admin needs to disagree with the call -- a position with no visible reasoning can
+     * only be taken on trust, which is exactly what this page is meant to replace.
+     */
+    reasoning: string[];
+    sources: SuggestionSource[];
 }
 
 /** In FPL, absent from the `Players` tab, so invisible everywhere on the site. */

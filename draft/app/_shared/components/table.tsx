@@ -1,7 +1,7 @@
 /* Location: app/_shared/components/table.tsx */
 
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import styles from './table.module.css';
 
 // Types
@@ -74,6 +74,15 @@ interface TableProps<T = any> {
         onPageChange: (page: number) => void;
         onPageSizeChange?: (pageSize: number) => void;
     };
+    /**
+     * Renders a full-width detail row beneath an expanded row. The table owns the markup
+     * -- the colSpan has to match the real column count, including the actions column --
+     * while the caller owns which rows are open and what the panel says.
+     */
+    expandable?: {
+        isExpanded: (item: T, index: number) => boolean;
+        render: (item: T, index: number) => React.ReactNode;
+    };
     getRowProps?: (item: T, row: number, sortKey: string) => React.HTMLAttributes<HTMLTableRowElement>;
     getCellProps?: (item: T, row: number, column: number) => React.HTMLAttributes<HTMLTableRowElement>;
     className?: string;
@@ -106,6 +115,7 @@ export function Table<T = any>({
     rowClassName,
     actions,
     pagination,
+    expandable,
     getRowProps,
     getCellProps,
     className = '',
@@ -312,79 +322,92 @@ export function Table<T = any>({
                             const rowProps = getRowProps?.(item, rowIndex, sortKey) || {};
                             const rowClasses = [rowClassName?.(item, rowIndex)].filter(Boolean).join(' ');
 
+                            const isExpanded = expandable?.isExpanded(item, rowIndex) ?? false;
+
                             return (
-                                <tr
-                                    key={rowIndex}
-                                    {...rowProps}
-                                    className={`${rowClasses} ${rowProps.className ? rowProps.className : ''}`}
-                                    onClick={onRowClick ? () => onRowClick(item, rowIndex) : undefined}
-                                    style={{ ...rowProps?.style, cursor: onRowClick ? 'pointer' : undefined }}
-                                >
-                                    {columns.map((column, columnIndex) => {
-                                        const cellProps = getCellProps?.(item, rowIndex, columnIndex) || {};
-                                        const cellClasses = [
-                                            column.align &&
-                                                styles[
-                                                    `cell${column.align.charAt(0).toUpperCase() + column.align.slice(1)}`
-                                                ],
-                                            column.variant &&
-                                                column.variant !== 'default' &&
-                                                styles[
-                                                    `cell${column.variant.charAt(0).toUpperCase() + column.variant.slice(1)}`
-                                                ],
-                                            column.hideOnMobile && styles.hideOnMobile,
-                                            column.fixed && styles.fixedColumn,
-                                        ]
-                                            .filter(Boolean)
-                                            .join(' ');
+                                <Fragment key={rowIndex}>
+                                    <tr
+                                        {...rowProps}
+                                        className={`${rowClasses} ${rowProps.className ? rowProps.className : ''}`}
+                                        onClick={onRowClick ? () => onRowClick(item, rowIndex) : undefined}
+                                        style={{ ...rowProps?.style, cursor: onRowClick ? 'pointer' : undefined }}
+                                    >
+                                        {columns.map((column, columnIndex) => {
+                                            const cellProps = getCellProps?.(item, rowIndex, columnIndex) || {};
+                                            const cellClasses = [
+                                                column.align &&
+                                                    styles[
+                                                        `cell${column.align.charAt(0).toUpperCase() + column.align.slice(1)}`
+                                                    ],
+                                                column.variant &&
+                                                    column.variant !== 'default' &&
+                                                    styles[
+                                                        `cell${column.variant.charAt(0).toUpperCase() + column.variant.slice(1)}`
+                                                    ],
+                                                column.hideOnMobile && styles.hideOnMobile,
+                                                column.fixed && styles.fixedColumn,
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' ');
 
-                                        return (
-                                            <td
-                                                key={column.key}
-                                                {...cellProps}
-                                                title={column.title?.(item, column, rowIndex)}
-                                                className={cellClasses}
-                                            >
-                                                {renderCell(item, column, rowIndex)}
+                                            return (
+                                                <td
+                                                    key={column.key}
+                                                    {...cellProps}
+                                                    title={column.title?.(item, column, rowIndex)}
+                                                    className={cellClasses}
+                                                >
+                                                    {renderCell(item, column, rowIndex)}
+                                                </td>
+                                            );
+                                        })}
+                                        {actions && actions.length > 0 && (
+                                            <td className={styles.cellCenter}>
+                                                <div className={styles.cellActions}>
+                                                    {actions.map((action) => {
+                                                        if (action.hidden?.(item)) return null;
+
+                                                        const isDisabled = action.disabled?.(item);
+                                                        const buttonClasses = [
+                                                            styles.actionButton,
+                                                            action.variant &&
+                                                                action.variant !== 'default' &&
+                                                                styles[action.variant],
+                                                        ]
+                                                            .filter(Boolean)
+                                                            .join(' ');
+
+                                                        return (
+                                                            <button
+                                                                key={action.label}
+                                                                type="button"
+                                                                className={buttonClasses}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    action.onClick(item, rowIndex);
+                                                                }}
+                                                                disabled={isDisabled}
+                                                                title={action.label}
+                                                            >
+                                                                {action.icon}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
                                             </td>
-                                        );
-                                    })}
-                                    {actions && actions.length > 0 && (
-                                        <td className={styles.cellCenter}>
-                                            <div className={styles.cellActions}>
-                                                {actions.map((action) => {
-                                                    if (action.hidden?.(item)) return null;
-
-                                                    const isDisabled = action.disabled?.(item);
-                                                    const buttonClasses = [
-                                                        styles.actionButton,
-                                                        action.variant &&
-                                                            action.variant !== 'default' &&
-                                                            styles[action.variant],
-                                                    ]
-                                                        .filter(Boolean)
-                                                        .join(' ');
-
-                                                    return (
-                                                        <button
-                                                            key={action.label}
-                                                            type="button"
-                                                            className={buttonClasses}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                action.onClick(item, rowIndex);
-                                                            }}
-                                                            disabled={isDisabled}
-                                                            title={action.label}
-                                                        >
-                                                            {action.icon}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </td>
+                                        )}
+                                    </tr>
+                                    {isExpanded && expandable && (
+                                        <tr className={styles.expandedRow}>
+                                            <td
+                                                className={styles.expandedCell}
+                                                colSpan={columns.length + (actions && actions.length > 0 ? 1 : 0)}
+                                            >
+                                                {expandable.render(item, rowIndex)}
+                                            </td>
+                                        </tr>
                                     )}
-                                </tr>
+                                </Fragment>
                             );
                         })}
                     </tbody>

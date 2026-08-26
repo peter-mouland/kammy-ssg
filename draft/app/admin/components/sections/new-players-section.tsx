@@ -67,6 +67,14 @@ function NewPlayersTable({
     const [positions, setPositions] = useState<Record<number, PositionBucket | ''>>(() =>
         Object.fromEntries(players.map((p) => [p.code, p.suggestion?.position ?? ''])),
     );
+    const [expanded, setExpanded] = useState<Set<number>>(new Set());
+
+    const toggleExpanded = (code: number) =>
+        setExpanded((prev) => {
+            const next = new Set(prev);
+            if (!next.delete(code)) next.add(code);
+            return next;
+        });
 
     const toggle = (code: number) =>
         setSelected((prev) => {
@@ -116,7 +124,7 @@ function NewPlayersTable({
             render: (_, player) => (
                 <div className={styles.player_cell}>
                     <span className={styles.player_name}>{player.webName}</span>
-                    {player.suggestion?.note && <span className={styles.note}>{player.suggestion.note}</span>}
+                    {player.suggestion?.summary && <span className={styles.note}>{player.suggestion.summary}</span>}
                 </div>
             ),
         },
@@ -146,7 +154,7 @@ function NewPlayersTable({
         {
             key: 'why',
             header: 'Why',
-            width: '150px',
+            width: '160px',
             sortable: false,
             render: (_, player) => <SuggestionEvidence suggestion={player.suggestion} />,
         },
@@ -173,6 +181,26 @@ function NewPlayersTable({
                 </select>
             ),
         },
+        {
+            key: 'expand',
+            header: '',
+            width: '44px',
+            align: 'center',
+            sortable: false,
+            render: (_, player) => (
+                <button
+                    type="button"
+                    className={styles.expand_button}
+                    onClick={() => toggleExpanded(player.code)}
+                    aria-expanded={expanded.has(player.code)}
+                    aria-label={`${expanded.has(player.code) ? 'Hide' : 'Show'} reasoning for ${player.webName}`}
+                >
+                    <span className={`${styles.chevron} ${expanded.has(player.code) ? styles.chevron_open : ''}`}>
+                        ▾
+                    </span>
+                </button>
+            ),
+        },
     ];
 
     return (
@@ -190,6 +218,10 @@ function NewPlayersTable({
                 columns={columns}
                 size="compact"
                 bordered
+                expandable={{
+                    isExpanded: (player) => expanded.has(player.code),
+                    render: (player) => <SuggestionRationale player={player} />,
+                }}
                 empty={{
                     title: 'Nothing new',
                     description: 'Every player FPL knows about is already in the sheet.',
@@ -231,10 +263,66 @@ function SuggestionEvidence({ suggestion }: { suggestion: PositionSuggestion | n
                 {suggestion.confidence}
             </span>
             <span className={styles.basis}>{suggestion.basis}</span>
-            {suggestion.sourceUrl && (
-                <a className={styles.source_link} href={suggestion.sourceUrl} target="_blank" rel="noreferrer noopener">
-                    source
-                </a>
+        </div>
+    );
+}
+
+/**
+ * The full argument for a suggested position, shown when a row is expanded.
+ *
+ * A position an admin cannot interrogate can only be taken on trust, and taking positions
+ * on trust is the habit this page replaces. So the panel leads with what the call rests on,
+ * names its sources, and states the FPL prior it is arguing with rather than hiding it.
+ */
+function SuggestionRationale({ player }: { player: NewPlayerCandidate }) {
+    const { suggestion } = player;
+
+    if (!suggestion) {
+        return (
+            <div className={styles.rationale}>
+                <p className={styles.rationale_empty}>
+                    Nobody has researched {player.webName} yet. FPL lists them as {player.fplType}; the call is yours.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.rationale}>
+            <div className={styles.rationale_head}>
+                <h4 className={styles.rationale_title}>
+                    {suggestion.position ? `Why ${suggestion.position}` : 'Why no call was made'}
+                </h4>
+                <span className={styles.rationale_meta}>
+                    FPL says {player.fplType} · {suggestion.basis} · {suggestion.confidence} confidence
+                </span>
+            </div>
+
+            <ul className={styles.rationale_points}>
+                {suggestion.reasoning.map((point) => (
+                    <li key={point}>{point}</li>
+                ))}
+            </ul>
+
+            {suggestion.sources.length > 0 ? (
+                <div className={styles.rationale_sources}>
+                    <span className={styles.rationale_sources_label}>Sources</span>
+                    {suggestion.sources.map((source) => (
+                        <a
+                            key={source.url}
+                            className={styles.source_link}
+                            href={source.url}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                        >
+                            {source.label}
+                        </a>
+                    ))}
+                </div>
+            ) : (
+                <p className={styles.rationale_nosource}>
+                    No source was reachable, so nothing here has been verified first-hand.
+                </p>
             )}
         </div>
     );
