@@ -1,0 +1,124 @@
+/* Location: app/admin/components/sections/new-players-section.module.css */
+
+.player_cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.player_name {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+}
+
+/* The caveat that qualifies a suggestion, e.g. "no Premier League minutes yet". */
+.note {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+.no_suggestion {
+    font-size: var(--font-xs);
+    color: var(--color-gray-400);
+    font-style: italic;
+}
+
+.why_cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-xs);
+}
+
+.confidence {
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    font-weight: var(--font-weight-semibold);
+    text-transform: capitalize;
+}
+
+.confidence_high {
+    background: var(--color-success-light);
+    color: var(--color-success-text);
+}
+
+.confidence_medium {
+    background: var(--color-warning-light);
+    color: var(--color-warning-text);
+}
+
+.confidence_low {
+    background: var(--color-error-light);
+    color: var(--color-error-text);
+}
+
+.basis {
+    color: var(--color-gray-500);
+}
+
+.source_link {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.source_link:hover {
+    text-decoration: underline;
+}
+
+.position_select {
+    width: 100%;
+    padding: var(--spacing-1) var(--spacing-2);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    font-size: var(--font-sm);
+    color: var(--color-gray-900);
+}
+
+.position_select:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -1px;
+}
+
+.primary_button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-normal);
+}
+
+.primary_button:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+}
+
+.secondary_button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    color: var(--color-gray-700);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-normal);
+}
+
+.secondary_button:hover:not(:disabled) {
+    background: var(--color-gray-100);
+}
+
+.primary_button:disabled,
+.secondary_button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action_hint {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
