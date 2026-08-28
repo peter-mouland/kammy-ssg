@@ -52,6 +52,27 @@ const BOOTSTRAP = {
     teams: [{ code: 3, short_name: 'BUR', name: 'Burnley', id: 1 }],
 };
 
+/** A row the suggester has already researched, for the reader to interpret. */
+const researched = (overrides: Record<string, string> = {}) => {
+    const row: Record<string, string> = {
+        code: '542273',
+        name: 'Kone',
+        club: 'BUR',
+        fplType: 'MID',
+        suggested: 'WA',
+        confidence: 'high',
+        basis: 'record',
+        summary: 'Wide left in every sampled start.',
+        reasoning: 'Slot 10 of a 4-2-3-1 in 5 of 5 sampled starts.\nNever started central.',
+        sources: 'Sofascore lineups | https://api.sofascore.com/x',
+        added: '2026-08-24T06:00:00.000Z',
+        position: '',
+        status: '',
+        ...overrides,
+    };
+    return PLAYER_INBOX_HEADERS.map((header) => row[header] ?? '');
+};
+
 let service: typeof import('./new-players.service');
 
 let handles = sheetHandlers({});
@@ -95,6 +116,42 @@ describe('finding new players', () => {
         const kone = newPlayers.find((player) => player.webName === 'Kone');
 
         expect(kone).toMatchObject({ club: 'BUR', fplType: 'MID', suggestion: null });
+    });
+
+    it('surfaces a researched suggestion, reasoning and sources against the player', async () => {
+        await seed({ inbox: [...INBOX_TAB, researched()] });
+
+        const { newPlayers } = await service.getNewPlayersData();
+        const kone = newPlayers.find((player) => player.webName === 'Kone');
+
+        expect(kone?.suggestion).toEqual({
+            position: 'WA',
+            confidence: 'high',
+            basis: 'record',
+            summary: 'Wide left in every sampled start.',
+            reasoning: ['Slot 10 of a 4-2-3-1 in 5 of 5 sampled starts.', 'Never started central.'],
+            sources: [{ label: 'Sofascore lineups', url: 'https://api.sofascore.com/x' }],
+        });
+    });
+
+    it('shows no position when the suggested value is not one of the six buckets', async () => {
+        // The suggester is an LLM writing into a spreadsheet a human can also edit, so
+        // 'LW' or 'Left Wing' will turn up eventually. A blank is honest; a guess is not.
+        await seed({ inbox: [...INBOX_TAB, researched({ suggested: 'LW' })] });
+
+        const { newPlayers } = await service.getNewPlayersData();
+        const kone = newPlayers.find((player) => player.webName === 'Kone');
+
+        expect(kone?.suggestion?.position).toBeNull();
+        expect(kone?.suggestion?.reasoning).toHaveLength(2);
+    });
+
+    it('treats an unreadable confidence as low, so a bad cell cannot pre-tick a row', async () => {
+        await seed({ inbox: [...INBOX_TAB, researched({ confidence: 'very high' })] });
+
+        const { newPlayers } = await service.getNewPlayersData();
+
+        expect(newPlayers.find((player) => player.webName === 'Kone')?.suggestion?.confidence).toBe('low');
     });
 
     it('still lists new players when there is no PlayerInbox tab, so the page works without one', async () => {
