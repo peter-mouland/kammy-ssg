@@ -24,6 +24,10 @@ const PAGE = '/admin/new-players';
 const PLAYER = { name: 'Jorginho', club: 'ARS' };
 const OTHER = { name: 'Thomas', club: 'ARS' };
 
+/** The two players the fixture PlayerInbox has already been researched for. */
+const RESEARCHED = { name: 'Tierney', club: 'ARS' }; // FB, high confidence, from a record
+const UNCERTAIN = { name: 'Tomiyasu', club: 'ARS' }; // CB, low confidence, a projection
+
 type Who = { name: string; club: string };
 const label = (who: Who) => `${who.name} (${who.club})`;
 
@@ -36,7 +40,21 @@ async function findPlayer(page: Page, who: Who) {
     await expect(newTable(page).getByLabel(`Select ${label(who)}`)).toBeVisible();
 }
 
+/**
+ * High-confidence suggestions arrive pre-ticked, which is the whole point of them, but it
+ * means a test about approving one named player starts with somebody else already selected.
+ * Select-all works over the entire filtered set rather than the visible page, so ticking
+ * and unticking it with the filter cleared leaves nothing selected.
+ */
+async function clearPreTicked(page: Page) {
+    await page.getByPlaceholder(/Filter by player or club/i).fill('');
+    const all = newTable(page).getByLabel('Select all new players');
+    await all.check();
+    await all.uncheck();
+}
+
 async function approve(page: Page, who: Who, position: string) {
+    await clearPreTicked(page);
     await findPlayer(page, who);
     await newTable(page).getByLabel(`Select ${label(who)}`).check();
     await page.getByLabel(`Position for ${label(who)}`).selectOption(position);
@@ -92,6 +110,7 @@ test('releasing puts the player into the sheet', async ({ page }) => {
 });
 
 test('a player with no position chosen cannot be approved by accident', async ({ page }) => {
+    await clearPreTicked(page);
     await findPlayer(page, PLAYER);
     await newTable(page).getByLabel(`Select ${label(PLAYER)}`).check();
 
@@ -105,6 +124,7 @@ test('selections survive filtering, so nothing is approved or forgotten off-scre
     await expect(page.getByText(/1 player held/)).toBeVisible();
 
     await page.reload();
+    await clearPreTicked(page);
     await findPlayer(page, OTHER);
     await newTable(page).getByLabel(`Select ${label(OTHER)}`).check();
     await page.getByLabel(`Position for ${label(OTHER)}`).selectOption('CB');
@@ -112,4 +132,29 @@ test('selections survive filtering, so nothing is approved or forgotten off-scre
     // Clear the filter: the selection is keyed by code, not by what is rendered.
     await page.getByPlaceholder(/Filter by player or club/i).fill('');
     await expect(page.getByRole('button', { name: 'Approve 1 selected' })).toBeEnabled();
+});
+
+test('a researched player arrives with the position filled in and the argument behind it', async ({ page }) => {
+    await findPlayer(page, RESEARCHED);
+
+    // The suggestion is a starting point, not a decision, so it is visible and editable.
+    await expect(page.getByLabel(`Position for ${label(RESEARCHED)}`)).toHaveValue('FB');
+
+    await page.getByRole('button', { name: `Show reasoning for ${label(RESEARCHED)}` }).click();
+
+    // The point of the panel is that the admin can disagree on the evidence rather than
+    // on the label, so the sampled-starts detail has to be on the page, not just the FB.
+    await expect(page.getByText(/Slot 5 of a back four in 5 of 5 sampled league starts/)).toBeVisible();
+    await expect(page.getByRole('link', { name: /Sofascore lineups/ })).toBeVisible();
+});
+
+test('confidence decides what is pre-ticked, so a weak call needs a deliberate approval', async ({ page }) => {
+    await findPlayer(page, RESEARCHED);
+    await expect(newTable(page).getByLabel(`Select ${label(RESEARCHED)}`)).toBeChecked();
+
+    await findPlayer(page, UNCERTAIN);
+    await expect(newTable(page).getByLabel(`Select ${label(UNCERTAIN)}`)).not.toBeChecked();
+
+    // Still suggested, still arguable -- just not on by default.
+    await expect(page.getByLabel(`Position for ${label(UNCERTAIN)}`)).toHaveValue('CB');
 });
