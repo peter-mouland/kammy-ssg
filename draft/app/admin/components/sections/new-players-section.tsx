@@ -148,7 +148,7 @@ function NewPlayersTable({
                     type="checkbox"
                     checked={selected.has(player.code)}
                     onChange={() => toggle(player.code)}
-                    aria-label={`Select ${player.webName}`}
+                    aria-label={`Select ${player.webName} (${player.club})`}
                 />
             ),
         },
@@ -206,7 +206,7 @@ function NewPlayersTable({
                     onChange={(e) =>
                         setPositions((prev) => ({ ...prev, [player.code]: e.target.value as PositionBucket | '' }))
                     }
-                    aria-label={`Position for ${player.webName}`}
+                    aria-label={`Position for ${player.webName} (${player.club})`}
                 >
                     <option value="">-</option>
                     {POSITION_BUCKETS.map((bucket) => (
@@ -229,7 +229,7 @@ function NewPlayersTable({
                     className={styles.expand_button}
                     onClick={() => toggleExpanded(player.code)}
                     aria-expanded={expanded.has(player.code)}
-                    aria-label={`${expanded.has(player.code) ? 'Hide' : 'Show'} reasoning for ${player.webName}`}
+                    aria-label={`${expanded.has(player.code) ? 'Hide' : 'Show'} reasoning for ${player.webName} (${player.club})`}
                 >
                     <span className={`${styles.chevron} ${expanded.has(player.code) ? styles.chevron_open : ''}`}>
                         ▾
@@ -265,25 +265,27 @@ function NewPlayersTable({
                 </div>
             )}
 
-            <Table
-                data={pageOf}
-                columns={columns}
-                size="compact"
-                bordered
-                pagination={
-                    visible.length > PAGE_SIZE
-                        ? { page, pageSize: PAGE_SIZE, total: visible.length, onPageChange: setPage }
-                        : undefined
-                }
-                expandable={{
-                    isExpanded: (player) => expanded.has(player.code),
-                    render: (player) => <SuggestionRationale player={player} />,
-                }}
-                empty={{
-                    title: 'Nothing new',
-                    description: 'Every player FPL knows about is already in the sheet.',
-                }}
-            />
+            <div data-testid="new-players-table">
+                <Table
+                    data={pageOf}
+                    columns={columns}
+                    size="compact"
+                    bordered
+                    pagination={
+                        visible.length > PAGE_SIZE
+                            ? { page, pageSize: PAGE_SIZE, total: visible.length, onPageChange: setPage }
+                            : undefined
+                    }
+                    expandable={{
+                        isExpanded: (player) => expanded.has(player.code),
+                        render: (player) => <SuggestionRationale player={player} />,
+                    }}
+                    empty={{
+                        title: 'Nothing new',
+                        description: 'Every player FPL knows about is already in the sheet.',
+                    }}
+                />
+            </div>
 
             {blockedCount > 0 && (
                 <AdminMessage type="warning">
@@ -443,7 +445,7 @@ function HeldPlayersTable({
                     type="checkbox"
                     checked={selected.has(player.code)}
                     onChange={() => toggle(player.code)}
-                    aria-label={`Select ${player.webName}`}
+                    aria-label={`Select ${player.webName} (${player.club})`}
                 />
             ),
         },
@@ -475,16 +477,18 @@ function HeldPlayersTable({
             icon={<Icons.CalendarIcon />}
             description="Position agreed, hidden from managers. Release a batch to put them into the new-player transfer window."
         >
-            <Table
-                data={players}
-                columns={columns}
-                size="compact"
-                bordered
-                empty={{
-                    title: 'Nobody held',
-                    description: 'Every approved player has been released into the game.',
-                }}
-            />
+            <div data-testid="held-players-table">
+                <Table
+                    data={players}
+                    columns={columns}
+                    size="compact"
+                    bordered
+                    empty={{
+                        title: 'Nobody held',
+                        description: 'Every approved player has been released into the game.',
+                    }}
+                />
+            </div>
 
             <ActionBar>
                 <button
