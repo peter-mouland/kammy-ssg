@@ -2,7 +2,8 @@
 
 import { HttpResponse, http, type RequestHandler } from 'msw';
 import { startRowFromRange, tabNameFromRange } from '../sheet-range';
-import { elementSummary, fplBootstrap, fplFixtures, gameweekLive, type SheetCell, sheetTab } from './season-fixtures';
+import { type SheetCell, SheetStore } from '../sheet-store';
+import { elementSummary, fplBootstrap, fplFixtures, gameweekLive, sheetTab } from './season-fixtures';
 
 /**
  * MSW handlers that serve the whole external world from `test-fixtures/`.
@@ -22,64 +23,26 @@ const SHEETS_METADATA_URL = 'https://sheets.googleapis.com/v4/spreadsheets/:id';
 const FPL_BASE = 'https://fantasy.premierleague.com/api';
 
 /**
- * The sheets, in memory and **writable**.
+ * The sheets, in memory and **writable**, seeded from `test-fixtures/` on disk.
  *
  * Writes have to mutate something. A handler that accepts a write and discards it makes
  * every action look like it worked while changing nothing, so a submitted transfer would
  * vanish on reload -- the difference between testing a form and testing a form's
- * rendering. Every POST path in the app is unverified today precisely because there was
- * nowhere for a write to land.
+ * rendering.
  *
  * Tabs load from disk on first read and stay in memory after, so a write is visible to the
  * next read and `reset()` returns to the captured state. Nothing touches `test-fixtures/`
  * on disk -- it is opened read-only.
  */
-export class FixtureSheetStore {
-    private readonly tabs = new Map<string, SheetCell[][]>();
-
-    /** A tab's rows, header included. Loaded on first use, mutated in place after. */
-    values(tab: string): SheetCell[][] {
-        const loaded = this.tabs.get(tab);
-        if (loaded) return loaded;
-
-        // sheetTab() throws for an unknown tab rather than returning [], which is what
-        // stops a mistyped name from looking like an empty sheet.
-        const rows = sheetTab(tab).map((row) => [...row]);
-        this.tabs.set(tab, rows);
-        return rows;
-    }
-
-    /** `values.append` -- what a transfer or cup submission does. */
-    append(tab: string, rows: SheetCell[][]): void {
-        this.values(tab).push(...rows.map((row) => [...row]));
-    }
-
+export class FixtureSheetStore extends SheetStore {
     /**
-     * `values.update` -- writes rows starting at `startRow` (1-based).
-     *
-     * It splices in place and does **not** truncate what follows, matching the real API:
-     * an update to `'Cup'!A:G` overwrites from row 1 and leaves any longer tail alone. Two
-     * callers depend on the row-targeted form to change one record --
-     * `sheets/draft.ts:330` and `transfers-admin.server.tsx:267`, the latter being how a
-     * transfer is approved.
+     * `sheetTab()` throws for an unknown tab rather than returning [], which is what stops
+     * a mistyped name from looking like an empty sheet. That is the opposite of the
+     * record-backed store's choice, and deliberately so: every tab the harness serves
+     * exists on disk, so an unknown one is a bug rather than a tab a test did not declare.
      */
-    update(tab: string, startRow: number, rows: SheetCell[][]): void {
-        const existing = this.values(tab);
-        const offset = Math.max(0, startRow - 1);
-
-        rows.forEach((row, index) => {
-            existing[offset + index] = [...row];
-        });
-    }
-
-    /** Back to the captured rows, for the next scenario. */
-    reset(): void {
-        this.tabs.clear();
-    }
-
-    /** Which tabs have been touched -- useful when a test wants to assert a write landed. */
-    loadedTabs(): string[] {
-        return [...this.tabs.keys()].sort();
+    protected seed(tab: string): SheetCell[][] {
+        return sheetTab(tab);
     }
 }
 

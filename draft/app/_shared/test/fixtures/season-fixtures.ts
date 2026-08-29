@@ -3,6 +3,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { SheetCell } from '../sheet-store';
 
 /**
  * Node-only readers over `test-fixtures/`.
@@ -26,7 +27,8 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 /** `draft/app/_shared/test/fixtures` -> the repo root's `test-fixtures/`. */
 export const FIXTURES_ROOT = resolve(HERE, '../../../../../test-fixtures');
 
-export type SheetCell = string | number | boolean;
+/** Defined with the store, since the store is what enforces its shape on a write. */
+export type { SheetCell };
 
 /** Exactly what the Sheets API returns, which is how the files were captured. */
 export interface SheetValuesResponse {
