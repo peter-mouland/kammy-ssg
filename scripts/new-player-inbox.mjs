@@ -26,7 +26,7 @@
 
 import { readFile } from 'node:fs/promises';
 import { classify } from './lib/classify-position.mjs';
-import { explain } from './lib/explain-position.mjs';
+import { CHEAP_MODEL, DEFAULT_MODEL, explain } from './lib/explain-position.mjs';
 import { formatEvidence, gatherEvidence } from './lib/player-evidence.mjs';
 // `@googleapis/sheets`, not the `googleapis` umbrella, and `JWT` from this package's own auth
 // export -- the nested google-auth-library is a different version to the workspace one and
@@ -67,9 +67,6 @@ const FPL_ELEMENT_TYPES = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 const POSITIONS = ['GK', 'CB', 'FB', 'MID', 'WA', 'CA'];
 const CONFIDENCES = ['high', 'medium', 'low'];
 const BASES = ['record', 'projection'];
-
-/** Only used for reporting what was billed. The model itself lives in lib/explain-position.mjs. */
-const MODEL_LABEL = 'gemini-3.6-flash';
 
 // ---------------------------------------------------------------------------
 // Sheets
@@ -512,7 +509,7 @@ async function commandScore(sheets, filePath) {
  * does not settle it the row is filed with no position and all of the evidence, which is more
  * use to an admin than a guess would be.
  */
-async function commandResearch(sheets, { dry, verbose, useModel }) {
+async function commandResearch(sheets, { dry, verbose, useModel, model }) {
     const { candidates, missingFromExport } = await gatherCandidates(sheets);
 
     if (candidates.length === 0) {
@@ -547,6 +544,7 @@ async function commandResearch(sheets, { dry, verbose, useModel }) {
                 evidenceText: formatEvidence(evidence),
                 verdict,
                 player: player.name,
+                model,
             });
             if (written?.error) {
                 modelFailures.push(`${player.name}: ${written.error}`);
@@ -582,7 +580,7 @@ async function commandResearch(sheets, { dry, verbose, useModel }) {
     );
 
     if (useModel) {
-        console.log(`Rationales written by ${MODEL_LABEL}: ${tokensIn} input tokens, ${tokensOut} output tokens.`);
+        console.log(`Rationales written by ${model}: ${tokensIn} input tokens, ${tokensOut} output tokens.`);
         for (const failure of modelFailures) console.log(`  no rationale for ${failure}`);
         if (modelFailures.length) console.log('  (those rows keep the counting reasoning instead)');
     } else {
@@ -621,6 +619,9 @@ async function main() {
                 dry: args.includes('--dry'),
                 verbose: args.includes('--verbose'),
                 useModel: !args.includes('--no-model'),
+                // --cheap trades a vaguer rationale for about a tenth of the output tokens.
+                // Worth it for a pre-season review of hundreds; not for six.
+                model: args.includes('--cheap') ? CHEAP_MODEL : DEFAULT_MODEL,
             });
         default:
             console.error('Usage: new-player-inbox.mjs <init|list|research|write|sample|score> [args]');

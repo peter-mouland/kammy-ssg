@@ -64,9 +64,18 @@ group" is the statistic restated, not a reason anyone can argue with. So the mod
 evidence and the verdict and asked to say why, and told it may not introduce a fact that is not
 in front of it. Grounding stays off for the same reason.
 
-Roughly 1,300 input and 1,500 output tokens per player on Flash. Pass `--no-model` to skip it
-entirely, and rows keep the counting reasoning. If the call fails the row is still filed; a dry
-rationale beats a row that never gets written because an API was down.
+Roughly 1,300 input and 1,500 output tokens per player on Flash, which the free tier covers, so
+a normal window costs nothing. Free tier allows only a few requests a minute, so a 429 is
+expected rather than exceptional and is retried with backoff.
+
+`--no-model` skips the step and rows keep the counting reasoning. `--cheap` switches to
+`gemini-3.1-flash-lite` with thinking disabled: about a tenth of the output tokens and an answer
+in roughly a second, at the cost of a vaguer rationale that tends to drop the FPL contradiction.
+Worth it for a pre-season review of several hundred players, not for six. Note that only the
+lite model accepts `thinkingBudget: 0`; Flash 3.6 and 3.5-flash-lite reject the request.
+
+If the call fails the row is still filed; a dry rationale beats a row that never gets written
+because an API was down.
 
 The rule that made the call is appended to every rationale, so the arithmetic sits next to the
 prose rather than being replaced by it.

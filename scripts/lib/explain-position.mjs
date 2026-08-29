@@ -18,8 +18,22 @@
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 
-/** Flash rather than Pro: this is summarising supplied text, not solving anything. */
-const MODEL = 'gemini-3.6-flash';
+/**
+ * Flash rather than Pro: this is summarising supplied text, not solving anything.
+ *
+ * Free tier covers this model, so a normal window costs nothing. For a pre-season review of
+ * several hundred players, `gemini-3.1-flash-lite` with thinking off is roughly ten times
+ * fewer output tokens and answers in about a second, at the cost of a vaguer rationale. It is
+ * the only one of the three that accepts `thinkingBudget: 0`; Flash 3.6 and 3.5-flash-lite
+ * reject the request outright.
+ */
+export const DEFAULT_MODEL = 'gemini-3.6-flash';
+export const CHEAP_MODEL = 'gemini-3.1-flash-lite';
+
+/** Free tier allows only a few requests a minute, so a 429 is expected rather than exceptional. */
+const RETRY_DELAYS_MS = [4000, 12000, 30000];
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SYSTEM = `You explain a football position decision to a fantasy league admin who may
 disagree with it and wants to be able to check.
@@ -44,7 +58,7 @@ Reply as JSON only:
  * @returns {{summary: string, reasoning: string[]} | null} null when the call could not be made,
  * so the caller can fall back rather than treating it as an error.
  */
-export async function explain({ apiKey, evidenceText, verdict, player }) {
+export async function explain({ apiKey, evidenceText, verdict, player, model = DEFAULT_MODEL }) {
     // Reported rather than returned as null: a silently missing key looks exactly like a run
     // that chose not to write rationales, and the two need telling apart.
     if (!apiKey) return { error: 'GEMINI_API_KEY is not set' };
@@ -56,34 +70,49 @@ Confidence: ${verdict.confidence}. Basis: ${verdict.basis}.
 
 ${evidenceText}`;
 
-    let res;
-    try {
-        res = await fetch(`${ENDPOINT}/${MODEL}:generateContent`, {
-            method: 'POST',
-            headers: { 'x-goog-api-key': apiKey, 'content-type': 'application/json' },
-            // No tools. Grounding would let it search, which is exactly what we do not want:
-            // the whole point is that every claim traces to the evidence already fetched.
-            body: JSON.stringify({
-                contents: [{ role: 'user', parts: [{ text: ask }] }],
-                generationConfig: { temperature: 0.2, responseMimeType: 'application/json' },
-            }),
-        });
-    } catch (error) {
-        return { error: `network: ${error.message}` };
-    }
+    // No tools. Grounding would let it search, which is exactly what we do not want: the whole
+    // point is that every claim traces to the evidence already fetched.
+    const body = JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: ask }] }],
+        generationConfig: {
+            temperature: 0.2,
+            responseMimeType: 'application/json',
+            // Only the lite model accepts this, and only it needs it.
+            ...(model === CHEAP_MODEL ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+        },
+    });
 
-    if (!res.ok) {
-        const body = await res.text();
+    let json;
+    for (let attempt = 0; ; attempt += 1) {
+        let res;
+        try {
+            res = await fetch(`${ENDPOINT}/${model}:generateContent`, {
+                method: 'POST',
+                headers: { 'x-goog-api-key': apiKey, 'content-type': 'application/json' },
+                body,
+            });
+        } catch (error) {
+            return { error: `network: ${error.message}` };
+        }
+
+        if (res.ok) {
+            json = await res.json();
+            break;
+        }
+
+        const text = await res.text();
         let message = `HTTP ${res.status}`;
         try {
-            message = JSON.parse(body).error?.message ?? message;
+            message = JSON.parse(text).error?.message ?? message;
         } catch {
             // keep the status
         }
-        return { error: message.slice(0, 160) };
-    }
 
-    const json = await res.json();
+        // Free tier is a few requests a minute, so waiting is the correct response to a 429.
+        const retryable = res.status === 429 || res.status >= 500;
+        if (!retryable || attempt >= RETRY_DELAYS_MS.length) return { error: message.slice(0, 160) };
+        await sleep(RETRY_DELAYS_MS[attempt]);
+    }
     const text = (json.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? '').join('');
     const usage = json.usageMetadata ?? {};
 
