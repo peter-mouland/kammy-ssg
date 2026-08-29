@@ -25,6 +25,8 @@
  */
 
 import { readFile } from 'node:fs/promises';
+import { classify } from './lib/classify-position.mjs';
+import { formatEvidence, gatherEvidence } from './lib/player-evidence.mjs';
 // `@googleapis/sheets`, not the `googleapis` umbrella, and `JWT` from this package's own auth
 // export -- the nested google-auth-library is a different version to the workspace one and
 // `sheets()` will not accept a JWT built from the other copy. Same reason as
@@ -276,7 +278,12 @@ async function commandWrite(sheets, filePath) {
     for (const [index, row] of rows.entries()) {
         const where = `row ${index + 1} (code ${row.code ?? 'missing'})`;
         if (!byCode.has(row.code)) problems.push(`${where}: not awaiting research, so it would be a duplicate`);
-        if (!POSITIONS.includes(row.suggested)) problems.push(`${where}: suggested must be one of ${POSITIONS}`);
+        // An empty suggestion is allowed and is not a failure. When the evidence does not
+        // settle the group, filing the reasoning with no position is more use to an admin
+        // than either a guess or an empty row.
+        if (row.suggested && !POSITIONS.includes(row.suggested)) {
+            problems.push(`${where}: suggested must be empty or one of ${POSITIONS}`);
+        }
         if (!CONFIDENCES.includes(row.confidence)) problems.push(`${where}: confidence must be one of ${CONFIDENCES}`);
         if (!BASES.includes(row.basis)) problems.push(`${where}: basis must be one of ${BASES}`);
         if (!row.summary) problems.push(`${where}: needs a summary`);
@@ -298,8 +305,16 @@ async function commandWrite(sheets, filePath) {
         return;
     }
 
-    // Written at explicit row numbers rather than appended, so the range is known and a
-    // concurrent edit shows up as a conflict rather than silently interleaving.
+    await writeRows(sheets, rows, byCode);
+}
+
+/**
+ * Append rows at explicit row numbers rather than using values.append, so the range is known
+ * and a concurrent edit shows up as a conflict rather than silently interleaving.
+ */
+async function writeRows(sheets, rows, known) {
+    const byCode = known ?? new Map((await gatherCandidates(sheets)).candidates.map((c) => [c.code, c]));
+
     const existing = await readRange(sheets, `'${INBOX_TAB}'!A:${LAST_COLUMN}`);
     const firstRow = Math.max(existing.length, 1) + 1;
     const added = new Date().toISOString();
@@ -330,10 +345,7 @@ async function commandWrite(sheets, filePath) {
         requestBody: { values },
     });
 
-    console.log(`Wrote ${values.length} row(s) to ${INBOX_TAB}, rows ${firstRow}-${firstRow + values.length - 1}.`);
-    for (const row of rows) {
-        console.log(`  ${byCode.get(row.code).name.padEnd(22)} ${row.suggested.padEnd(4)} ${row.confidence}`);
-    }
+    console.log(`\nWrote ${values.length} row(s) to ${INBOX_TAB}, rows ${firstRow}-${firstRow + values.length - 1}.`);
 }
 
 /**
@@ -487,6 +499,65 @@ async function commandScore(sheets, filePath) {
     }
 }
 
+/**
+ * The whole job: find who needs a position, read what several sites say about where each one
+ * actually plays, and file the answer with its reasoning.
+ *
+ * No model is involved. The scoring table means only the group has to be right, and FotMob
+ * publishes appearance counts per slot, so most players are settled by counting. Where counting
+ * does not settle it the row is filed with no position and all of the evidence, which is more
+ * use to an admin than a guess would be.
+ */
+async function commandResearch(sheets, { dry, verbose }) {
+    const { candidates, missingFromExport } = await gatherCandidates(sheets);
+
+    if (candidates.length === 0) {
+        console.log('Nobody needs researching.');
+        if (missingFromExport > 0) {
+            console.log(`${missingFromExport} are in FPL but not in ${EXPORT_TAB} yet.`);
+        }
+        return;
+    }
+
+    console.log(`Researching ${candidates.length}...\n`);
+
+    const rows = [];
+    let abstained = 0;
+
+    for (const player of candidates) {
+        const evidence = await gatherEvidence(player);
+        const verdict = classify(evidence);
+        if (!verdict.bucket) abstained += 1;
+
+        console.log(
+            `  ${player.name.padEnd(20)} ${String(verdict.bucket ?? 'no call').padEnd(8)} ` +
+                `${verdict.confidence.padEnd(6)} ${verdict.basis.padEnd(10)} sources ${evidence.sourceCount}/3`,
+        );
+        if (verbose) console.log(`\n${formatEvidence(evidence)}\n`);
+
+        rows.push({
+            code: player.code,
+            suggested: verdict.bucket ?? '',
+            confidence: verdict.confidence,
+            basis: verdict.basis,
+            summary: verdict.summary,
+            reasoning: verdict.reasoning,
+            sources: verdict.sources,
+        });
+    }
+
+    console.log(
+        `\n${rows.length - abstained} settled by the appearance record, ${abstained} left for an admin to call.`,
+    );
+
+    if (dry) {
+        console.log('\nDry run, nothing written. Drop --dry to file these.');
+        return;
+    }
+
+    await writeRows(sheets, rows);
+}
+
 // ---------------------------------------------------------------------------
 
 async function main() {
@@ -506,8 +577,10 @@ async function main() {
         }
         case 'score':
             return commandScore(sheets, args.find((arg) => !arg.startsWith('--')));
+        case 'research':
+            return commandResearch(sheets, { dry: args.includes('--dry'), verbose: args.includes('--verbose') });
         default:
-            console.error('Usage: new-player-inbox.mjs <init|list|write|sample|score> [args]');
+            console.error('Usage: new-player-inbox.mjs <init|list|research|write|sample|score> [args]');
             process.exitCode = 1;
     }
 }
