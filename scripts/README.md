@@ -54,6 +54,23 @@ embedded JSON. FootballCritic's search is client-rendered.
 Search names need a fallback ladder: FotMob returns nothing for "El Hadji Malick Diouf" and
 finds him at once as "Malick Diouf".
 
+### The rationale
+
+`lib/explain-position.mjs` writes the per-player explanation, and that is the only paid step.
+
+It does not choose the bucket. Counting does that, because counting is free and cannot invent
+anything. What counting cannot do is explain itself: "93% of 27 appearances are in the ATT
+group" is the statistic restated, not a reason anyone can argue with. So the model is handed the
+evidence and the verdict and asked to say why, and told it may not introduce a fact that is not
+in front of it. Grounding stays off for the same reason.
+
+Roughly 1,300 input and 1,500 output tokens per player on Flash. Pass `--no-model` to skip it
+entirely, and rows keep the counting reasoning. If the call fails the row is still filed; a dry
+rationale beats a row that never gets written because an API was down.
+
+The rule that made the call is appended to every rationale, so the arithmetic sits next to the
+prose rather than being replaced by it.
+
 `lib/classify-position.mjs` then answers by counting. The scoring table allows this: CB and FB
 score identically and so do WA and CA, so only the group has to be right, and appearance counts
 settle the group for most players. It abstains rather than guessing when appearances are spread

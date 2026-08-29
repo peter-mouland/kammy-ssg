@@ -41,12 +41,27 @@ const stripTags = (html) =>
         .replace(/\s+/g, ' ')
         .trim();
 
-async function get(url, { json = false } = {}) {
-    const res = await fetch(url, {
-        headers: { 'User-Agent': UA, Accept: json ? 'application/json' : 'text/html,application/json' },
-    });
-    if (!res.ok) return null;
-    return json ? res.json() : res.text();
+/**
+ * Wikipedia's API policy requires a descriptive User-Agent naming the tool and a contact.
+ * Sending a browser string gets you throttled, and the failure is silent: the fetch returns
+ * non-200 and the player looks like he has no article. That produced rationales stating
+ * "Wikipedia returned no article" for players who plainly have one.
+ */
+const WIKI_UA = 'KammyFantasyFootball/1.0 (https://github.com/peter-mouland/kammy-ssg) node-fetch';
+
+async function get(url, { json = false, attempts = 2 } = {}) {
+    const agent = url.includes('wikipedia.org') ? WIKI_UA : UA;
+
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        const res = await fetch(url, {
+            headers: { 'User-Agent': agent, Accept: json ? 'application/json' : 'text/html,application/json' },
+        });
+        if (res.ok) return json ? res.json() : res.text();
+        // 429 and 5xx are worth one more go; a 404 is an answer.
+        if (res.status !== 429 && res.status < 500) return null;
+        if (attempt < attempts) await sleep(1500);
+    }
+    return null;
 }
 
 /**
