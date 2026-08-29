@@ -31,13 +31,22 @@ node --env-file=.env.local scripts/new-player-inbox.mjs list --json > todo.json
 node --env-file=.env.local scripts/new-player-inbox.mjs write researched.json
 ```
 
-### The candidate list is narrower than "in FPL, not in the sheet"
+### The diff reads the sheet, not FPL
 
-Four of the eight columns in `Players` are VLOOKUPs into `FPL_Player_export`. Adding a row for a
-code that tab does not carry yet writes `#N/A` into club, value and status, and `isHidden` then
-derives from an `#N/A` status. The export is refreshed on its own schedule and runs behind the
-FPL API, so players it has not seen are held back and reported rather than offered.
-`new-players.service.ts` applies the same rule. Change one, change the other.
+`FPL_Player_export` is the new-player feed. Nick refreshes it from FPL, and it is the tab the
+four formula columns in `Players` look a code up in, so a player who is not in it cannot be
+added at all: the row would land `#N/A` in club, value and status, and `isHidden` derives from
+an `#N/A` status. Starting from the export means the diff asks the same question Nick answers
+by hand, which is what is in the export that is not yet in the game.
+
+FPL is still called, for the one field the export does not carry: `element_type`. That is what
+lets the page say "FPL says MID, this says WA", and that crossing is the point of the whole
+exercise. If FPL is unreachable the diff still works and the FPL position reads as unknown,
+because a day with no suggestions is worse than a day with suggestions missing one column.
+
+`new-players.service.ts` reaches the same set from the other direction, starting at FPL and
+filtering by the export. Verified against the live sheet: both produce the same six players, and
+there are no codes in the export that FPL has dropped.
 
 ### Checking the answers against calls the league has already made
 
