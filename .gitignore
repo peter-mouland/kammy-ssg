@@ -48,6 +48,10 @@ aws
 # `node scripts/extract-harness-stats.mjs`. See archive/README.md.
 /archive/
 
+# Live Firestore backups from scripts/backup-division-teams.mjs. Real league data, and
+# the whole point of them is to exist before a destructive regeneration. Never committed.
+/backups/
+
 # Playwright
 /test-results/
 /playwright-report/
