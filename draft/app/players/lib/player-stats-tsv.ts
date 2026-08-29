@@ -19,7 +19,6 @@ export const PLAYER_STATS_TSV_HEADERS = [
     'Goals Con.',
     'Yellow Cards',
     'Red Cards',
-    'Bonus',
     'Def. Con.',
 ] as const;
 
@@ -52,7 +51,6 @@ function playerToTsvRow(player: EnhancedPlayerData, teamShortName: string): stri
         formatStatCell(player, 'goalsConceded', breakdown.goalsConceded.stat),
         escapeTsvCell(breakdown.yellowCards.stat ?? 0),
         escapeTsvCell(breakdown.redCards.stat ?? 0),
-        formatStatCell(player, 'bonus', breakdown.bonus.stat),
         formatStatCell(player, 'defensiveContribution', breakdown.defensiveContribution.stat),
     ].join('\t');
 }

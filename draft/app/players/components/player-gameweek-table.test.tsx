@@ -23,7 +23,6 @@ const makeGameweek = (overrides: Partial<GameweekStatWithPoints> = {}): Gameweek
     redCards: 0,
     saves: 0,
     penaltiesSaved: 0,
-    bonus: 0,
     defensiveContribution: 0,
     clearancesBlocksInterceptions: 0,
     tackles: 0,
@@ -116,17 +115,6 @@ describe('PlayerGameweekTable columns', () => {
         expect(visibleColumns()).not.toContain('DC');
     });
 
-    it.each(['cb', 'mid'] as const)('shows the bonus column for a %s', (position) => {
-        renderTable(position, [makeGameweek()]);
-
-        expect(visibleColumns()).toContain('Bonus');
-    });
-
-    it.each(['gk', 'fb', 'wa', 'ca'] as const)('hides the bonus column for a %s', (position) => {
-        renderTable(position, [makeGameweek()]);
-
-        expect(visibleColumns()).not.toContain('Bonus');
-    });
 });
 
 describe('PlayerGameweekTable stat tooltips', () => {
@@ -233,12 +221,6 @@ describe('PlayerGameweekTable stat tooltips', () => {
         renderTable('mid', [makeGameweek({ redCards: 1 })]);
 
         expect(tooltipOf('RC')).toBe('-5 points');
-    });
-
-    it('reports the bonus points awarded', () => {
-        renderTable('mid', [makeGameweek({ bonus: 1 })]);
-
-        expect(tooltipOf('Bonus')).toBe('1 points');
     });
 });
 

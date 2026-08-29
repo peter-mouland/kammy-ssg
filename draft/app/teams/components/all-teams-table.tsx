@@ -436,28 +436,6 @@ export const AllTeamsTable: React.FC<AllTeamsTableProps> = ({
             },
         },
         {
-            key: 'stats.bonus',
-            header: (
-                <div>
-                    <span className={styles.smallScreen} title={'Bonus'}>
-                        B
-                    </span>
-                    <span className={styles.largeScreen}>Bonus</span>
-                </div>
-            ),
-            sortable: true,
-            accessor: ({ positionSlot }) =>
-                viewMode === 'gameweek' ? positionSlot.gameweek.stats : positionSlot.season.stats,
-            align: 'center',
-            render: (stats: PlayerGameweekStatsData, _team) => {
-                return (
-                    <span className={`${styles.points} ${positiveNegativeStyle(stats.bonus)}`}>
-                        {stats.bonus < 0 ? `-${stats.bonus}` : stats.bonus}
-                    </span>
-                );
-            },
-        },
-        {
             key: 'stats.defensiveContribution',
             header: (
                 <div>

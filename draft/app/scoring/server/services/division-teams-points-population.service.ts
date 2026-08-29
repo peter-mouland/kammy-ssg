@@ -289,7 +289,6 @@ function addStatsToSeason(
         yellowCards: seasonStats.yellowCards + gameweekStats.yellowCards,
         redCards: seasonStats.redCards + gameweekStats.redCards,
         saves: seasonStats.saves + gameweekStats.saves,
-        bonus: seasonStats.bonus + gameweekStats.bonus,
         defensiveContribution: seasonStats.defensiveContribution + gameweekStats.defensiveContribution,
         clearancesBlocksInterceptions:
             seasonStats.clearancesBlocksInterceptions + gameweekStats.clearancesBlocksInterceptions,
@@ -312,7 +311,6 @@ function addPointsToSeason(seasonPoints: Points, gameweekPoints: Points): Points
         saves: seasonPoints.saves + gameweekPoints.saves,
         penaltiesSaved: seasonPoints.penaltiesSaved + gameweekPoints.penaltiesSaved,
         goalsConceded: seasonPoints.goalsConceded + gameweekPoints.goalsConceded,
-        bonus: seasonPoints.bonus + gameweekPoints.bonus,
         defensiveContribution: seasonPoints.defensiveContribution + gameweekPoints.defensiveContribution,
         total: 0,
     };
@@ -343,7 +341,6 @@ function createEmptyStats(): PlayerGameweekStatsData {
         clearancesBlocksInterceptions: 0,
         tackles: 0,
         recoveries: 0,
-        bonus: 0,
     };
 }
 
@@ -361,7 +358,6 @@ function createEmptyPoints(): Points {
         saves: 0,
         penaltiesSaved: 0,
         goalsConceded: 0,
-        bonus: 0,
         defensiveContribution: 0,
         total: 0,
     };

@@ -3,7 +3,6 @@
 export {
     calculateAppearancePoints,
     calculateAssistPoints,
-    calculateBonus,
     calculateCleanSheetPoints,
     calculateGameweekPoints,
     calculateGoalPoints,

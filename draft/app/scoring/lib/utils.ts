@@ -14,8 +14,6 @@ export const isStatRelevant = (stat: string, position: string): boolean => {
             return position.toLowerCase() === 'gk';
         case 'saves':
             return position.toLowerCase() === 'gk';
-        case 'bonus':
-            return ['cb', 'mid'].includes(position.toLowerCase());
         case 'defensiveContribution':
             return ['fb', 'cb', 'mid'].includes(position.toLowerCase());
         default:

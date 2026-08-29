@@ -16,7 +16,6 @@ export interface GameweekStatWithPoints {
     redCards: number;
     saves: number;
     penaltiesSaved: number;
-    bonus: number;
     defensiveContribution: number;
     clearancesBlocksInterceptions: number;
     tackles: number;
@@ -51,7 +50,6 @@ export interface SeasonTotals {
     redCards: number;
     saves: number;
     penaltiesSaved: number;
-    bonus: number;
     defensiveContribution: number;
 
     // Points

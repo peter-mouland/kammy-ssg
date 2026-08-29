@@ -20,7 +20,6 @@ const baselineStats = {
     saves: 0,
     penaltiesSaved: 0,
     defensiveContribution: 0,
-    bonus: 0,
 };
 
 /**

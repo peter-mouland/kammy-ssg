@@ -27,7 +27,7 @@ const getStatDisplay = (value: number, stat: string, position: string): React.Re
     if (value === 0) return '0';
 
     // Color coding for different stats
-    if (['goals', 'assists', 'cleanSheets', 'saves', 'penaltiesSaved', 'bonus'].includes(stat)) {
+    if (['goals', 'assists', 'cleanSheets', 'saves', 'penaltiesSaved'].includes(stat)) {
         return <span style={{ color: 'var(--color-success)' }}>{value}</span>;
     }
 
@@ -199,18 +199,6 @@ export function PlayerGameweekTable({ gameweekStats, position, currentGameweek }
         },
     );
 
-    // Add bonus if relevant
-    if (isStatRelevant('bonus', position)) {
-        columns.push({
-            key: 'bonus',
-            header: 'Bonus',
-            accessor: 'bonus',
-            align: 'center',
-            width: 60,
-            title: (stat) => `${pointsFor(stat).bonus} points`,
-            render: (bonus) => getStatDisplay(bonus, 'bonus', position),
-        });
-    }
     // The cell counts the defensive actions OUR position cares about -- CBIT for
     // defenders, CBIRT for midfielders -- so the number shown is the one the threshold in
     // the tooltip was applied to. It deliberately ignores `stat.defensiveContribution`,

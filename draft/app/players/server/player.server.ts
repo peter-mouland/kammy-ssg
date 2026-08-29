@@ -85,7 +85,6 @@ function processGameweekData(fplHistory: any[], teamLookup: Record<number, any>)
             redCards: gwData.red_cards,
             saves: gwData.saves,
             penaltiesSaved: gwData.penalties_saved,
-            bonus: gwData.bonus,
 
             // Opponent and fixture info
             opponent: gwData.opponent_team,
@@ -131,7 +130,6 @@ function calculateSeasonTotals(gameweekStats: GameweekStatWithPoints[], fplPlaye
         redCards: gameweekStats.reduce((sum, gw) => sum + gw.redCards, 0),
         saves: gameweekStats.reduce((sum, gw) => sum + gw.saves, 0),
         penaltiesSaved: gameweekStats.reduce((sum, gw) => sum + gw.penaltiesSaved, 0),
-        bonus: gameweekStats.reduce((sum, gw) => sum + gw.bonus, 0),
         defensiveContribution: gameweekStats.reduce((sum, gw) => sum + gw.defensiveContribution, 0),
 
         // Points

@@ -23,7 +23,6 @@ export function convertToSingleGameweeksStats(gameweekData: PlayerGameweekStatsD
             clearancesBlocksInterceptions: acc.clearancesBlocksInterceptions + curr.clearancesBlocksInterceptions,
             tackles: acc.tackles + curr.tackles,
             recoveries: acc.recoveries + curr.recoveries,
-            bonus: acc.bonus + curr.bonus,
         }),
         {
             appearance: 0,
@@ -39,7 +38,6 @@ export function convertToSingleGameweeksStats(gameweekData: PlayerGameweekStatsD
             clearancesBlocksInterceptions: 0,
             tackles: 0,
             recoveries: 0,
-            bonus: 0,
         },
     );
 }
@@ -65,7 +63,6 @@ export function convertToPlayerGameweekStats(gw: FplPlayerGameweekData): PlayerG
         redCards: gw.red_cards,
         saves: gw.saves,
         penaltiesSaved: gw.penalties_saved,
-        bonus: gw.bonus,
         defensiveContribution: gw.defensive_contribution,
         clearancesBlocksInterceptions: gw.clearances_blocks_interceptions,
         tackles: gw.tackles,
@@ -86,7 +83,6 @@ export function convertToGameweekStats(gw: GameweekStatWithPoints): PlayerGamewe
         redCards: gw.redCards,
         saves: gw.saves,
         penaltiesSaved: gw.penaltiesSaved,
-        bonus: gw.bonus,
         defensiveContribution: gw.defensiveContribution,
         clearancesBlocksInterceptions: gw.clearancesBlocksInterceptions,
         tackles: gw.tackles,

@@ -31,7 +31,6 @@ export const ContributingStats: React.FC<ContributingStatsProps> = ({
             saves: '🥅',
             penaltiesSaved: '🚫',
             goalsConceded: '😞',
-            bonus: '⭐',
         };
         return icons[statKey] || '📊';
     };

@@ -16,7 +16,6 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
         penaltiesSaved: 0,
         goalsConceded: 0,
         defensiveContribution: 0,
-        bonus: 0,
     };
 
     const allPoints = {
@@ -30,7 +29,6 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
         penaltiesSaved: 0,
         goalsConceded: 0,
         defensiveContribution: 0,
-        bonus: 0,
     };
 
     // Sum up stats and points from all players
@@ -112,13 +110,6 @@ export function calculateContributingStats(roster: TeamRoster, useSeasonPoints: 
             pointsValue: allPoints.goalsConceded,
             isRelevant: allStats.goalsConceded > 0,
             description: 'Penalty points for goalkeepers and defenders',
-        },
-        bonus: {
-            label: 'Bonus Points',
-            statValue: allStats.bonus,
-            pointsValue: allPoints.bonus,
-            isRelevant: allStats.bonus > 0,
-            description: 'FPL bonus points system',
         },
         defensiveContribution: {
             label: 'Defensive Contribution',
