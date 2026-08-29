@@ -26,6 +26,7 @@
 
 import { readFile } from 'node:fs/promises';
 import { classify } from './lib/classify-position.mjs';
+import { explain } from './lib/explain-position.mjs';
 import { formatEvidence, gatherEvidence } from './lib/player-evidence.mjs';
 // `@googleapis/sheets`, not the `googleapis` umbrella, and `JWT` from this package's own auth
 // export -- the nested google-auth-library is a different version to the workspace one and
@@ -66,6 +67,9 @@ const FPL_ELEMENT_TYPES = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 const POSITIONS = ['GK', 'CB', 'FB', 'MID', 'WA', 'CA'];
 const CONFIDENCES = ['high', 'medium', 'low'];
 const BASES = ['record', 'projection'];
+
+/** Only used for reporting what was billed. The model itself lives in lib/explain-position.mjs. */
+const MODEL_LABEL = 'gemini-3.6-flash';
 
 // ---------------------------------------------------------------------------
 // Sheets
@@ -508,7 +512,7 @@ async function commandScore(sheets, filePath) {
  * does not settle it the row is filed with no position and all of the evidence, which is more
  * use to an admin than a guess would be.
  */
-async function commandResearch(sheets, { dry, verbose }) {
+async function commandResearch(sheets, { dry, verbose, useModel }) {
     const { candidates, missingFromExport } = await gatherCandidates(sheets);
 
     if (candidates.length === 0) {
@@ -523,11 +527,38 @@ async function commandResearch(sheets, { dry, verbose }) {
 
     const rows = [];
     let abstained = 0;
+    let tokensIn = 0;
+    let tokensOut = 0;
+    const modelFailures = [];
 
     for (const player of candidates) {
         const evidence = await gatherEvidence(player);
         const verdict = classify(evidence);
         if (!verdict.bucket) abstained += 1;
+
+        // The model writes the rationale; it never picks the bucket. If it fails, the
+        // mechanical reasoning stands and the row is still filed.
+        let summary = verdict.summary;
+        let reasoning = verdict.reasoning;
+
+        if (useModel) {
+            const written = await explain({
+                apiKey: process.env.GEMINI_API_KEY,
+                evidenceText: formatEvidence(evidence),
+                verdict,
+                player: player.name,
+            });
+            if (written?.error) {
+                modelFailures.push(`${player.name}: ${written.error}`);
+            } else if (written) {
+                summary = written.summary;
+                // The rule that actually made the call stays on the row, so the arithmetic is
+                // auditable next to the prose rather than replaced by it.
+                reasoning = [...written.reasoning, `Decided by counting: ${verdict.summary}`];
+                tokensIn += written.tokens.input;
+                tokensOut += written.tokens.output;
+            }
+        }
 
         console.log(
             `  ${player.name.padEnd(20)} ${String(verdict.bucket ?? 'no call').padEnd(8)} ` +
@@ -540,8 +571,8 @@ async function commandResearch(sheets, { dry, verbose }) {
             suggested: verdict.bucket ?? '',
             confidence: verdict.confidence,
             basis: verdict.basis,
-            summary: verdict.summary,
-            reasoning: verdict.reasoning,
+            summary,
+            reasoning,
             sources: verdict.sources,
         });
     }
@@ -549,6 +580,14 @@ async function commandResearch(sheets, { dry, verbose }) {
     console.log(
         `\n${rows.length - abstained} settled by the appearance record, ${abstained} left for an admin to call.`,
     );
+
+    if (useModel) {
+        console.log(`Rationales written by ${MODEL_LABEL}: ${tokensIn} input tokens, ${tokensOut} output tokens.`);
+        for (const failure of modelFailures) console.log(`  no rationale for ${failure}`);
+        if (modelFailures.length) console.log('  (those rows keep the counting reasoning instead)');
+    } else {
+        console.log('Rationales not written (--no-model), so rows carry the counting reasoning.');
+    }
 
     if (dry) {
         console.log('\nDry run, nothing written. Drop --dry to file these.');
@@ -578,7 +617,11 @@ async function main() {
         case 'score':
             return commandScore(sheets, args.find((arg) => !arg.startsWith('--')));
         case 'research':
-            return commandResearch(sheets, { dry: args.includes('--dry'), verbose: args.includes('--verbose') });
+            return commandResearch(sheets, {
+                dry: args.includes('--dry'),
+                verbose: args.includes('--verbose'),
+                useModel: !args.includes('--no-model'),
+            });
         default:
             console.error('Usage: new-player-inbox.mjs <init|list|research|write|sample|score> [args]');
             process.exitCode = 1;
