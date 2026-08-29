@@ -29,6 +29,18 @@ const PLAYERS_TAB = [
 
 const INBOX_TAB = [[...PLAYER_INBOX_HEADERS]];
 
+/**
+ * The tab the four formula columns look up. In the real sheet it is refreshed from FPL and
+ * runs slightly ahead of `Players`, so Dubravka and Kone are here but not in the game yet.
+ */
+const EXPORT_TAB = [
+    ['code', 'web_name'],
+    [154561, 'Raya'],
+    [109745, 'Arrizabalaga'],
+    [118748, 'Dubravka'],
+    [542273, 'Kone'],
+];
+
 const element = (code: number, webName: string, elementType: number) => ({
     code,
     id: code,
@@ -78,15 +90,23 @@ let service: typeof import('./new-players.service');
 let handles = sheetHandlers({});
 const server = setupServer(googleAuthHandler);
 
-async function seed(tabs: { players?: unknown[][]; inbox?: unknown[][] }) {
+async function seed(tabs: { players?: unknown[][]; inbox?: unknown[][]; fplExport?: unknown[][] }) {
     handles = sheetHandlers({
         Players: structuredClone(tabs.players ?? PLAYERS_TAB) as (string | number)[][],
+        // biome-ignore lint/style/useNamingConvention: the sheet's own tab name
+        FPL_Player_export: structuredClone(tabs.fplExport ?? EXPORT_TAB) as (string | number)[][],
         ...(tabs.inbox ? { PlayerInbox: structuredClone(tabs.inbox) as (string | number)[][] } : {}),
     });
     server.resetHandlers(googleAuthHandler, ...handles.handlers);
 
     dataCache.clear();
     await dataCache.get(CACHE_KEYS.FPL.BOOTSTRAP, async () => BOOTSTRAP);
+}
+
+/** Re-seed some tabs while keeping whatever the inbox currently holds. */
+async function seedKeepingInbox(tabs: { players?: unknown[][]; fplExport?: unknown[][] }) {
+    const inbox = handles.store.values('PlayerInbox');
+    await seed({ ...tabs, inbox });
 }
 
 beforeAll(async () => {
@@ -152,6 +172,16 @@ describe('finding new players', () => {
         const { newPlayers } = await service.getNewPlayersData();
 
         expect(newPlayers.find((player) => player.webName === 'Kone')?.suggestion?.confidence).toBe('low');
+    });
+
+    it('holds back a player the export tab has not caught up with, and counts them', async () => {
+        // Kone is in FPL and not in the game, but the export tab does not carry him yet.
+        await seed({ fplExport: EXPORT_TAB.filter((row) => row[0] !== 542273) });
+
+        const { newPlayers, awaitingExport } = await service.getNewPlayersData();
+
+        expect(newPlayers.map((player) => player.webName)).toEqual(['Dubravka']);
+        expect(awaitingExport).toBe(1);
     });
 
     it('still lists new players when there is no PlayerInbox tab, so the page works without one', async () => {
@@ -246,6 +276,20 @@ describe('releasing into the game', () => {
         await service.releasePlayers([118748]);
 
         expect(inboxRows()[0].at(-1)).toBe('released');
+    });
+
+    it('refuses to release a player the export tab is missing, which would write #N/A columns', async () => {
+        await service.approveNewPlayers([{ code: 542273, position: 'MID' }], new Date('2026-08-24'));
+
+        // The export is refreshed on its own schedule, so it can lose ground between the
+        // approval and the batch going out.
+        await seedKeepingInbox({ fplExport: EXPORT_TAB.filter((row) => row[0] !== 542273) });
+
+        const result = await service.releasePlayers([542273]);
+
+        expect(result.success).toBe(false);
+        expect(result.message).toContain('Not in FPL_Player_export yet: Kone');
+        expect(playersRows()).toHaveLength(2); // nothing appended
     });
 
     it('refuses to release a player who was never held', async () => {

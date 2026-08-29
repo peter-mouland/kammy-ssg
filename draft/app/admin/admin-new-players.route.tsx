@@ -58,7 +58,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function AdminNewPlayersRoute() {
-    const { newPlayers, heldPlayers, inboxAvailable } = useLoaderData<NewPlayersData>();
+    const { newPlayers, heldPlayers, inboxAvailable, awaitingExport } = useLoaderData<NewPlayersData>();
 
     return (
         <>
@@ -66,6 +66,14 @@ export default function AdminNewPlayersRoute() {
                 <AdminMessage type="warning">
                     There is no <strong>PlayerInbox</strong> tab in the sheet, so no researched suggestions are
                     available. The page still works: choose a position yourself and approve.
+                </AdminMessage>
+            )}
+            {awaitingExport > 0 && (
+                <AdminMessage type="info">
+                    {awaitingExport} {awaitingExport === 1 ? 'player is' : 'players are'} in FPL but not yet in the{' '}
+                    <strong>FPL_Player_export</strong> tab, so they are not listed below. Adding them now would leave
+                    their club, value and status as <strong>#N/A</strong>, because those columns look the code up in
+                    that tab. Refresh it and they will appear here.
                 </AdminMessage>
             )}
             <NewPlayersSection newPlayers={newPlayers} heldPlayers={heldPlayers} />
