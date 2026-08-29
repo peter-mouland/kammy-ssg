@@ -237,13 +237,13 @@ export async function releasePlayers(codes: number[]): Promise<ActionResult> {
     const inbox = await readPlayerInbox();
     const inboxByCode = new Map(inbox.map((row) => [row.code, row]));
 
-    const rows = codes.map((code) => inboxByCode.get(code));
-    const missing = codes.filter((code, index) => !rows[index] || rows[index]?.status !== 'approved');
+    const missing = codes.filter((code) => inboxByCode.get(code)?.status !== 'approved');
     if (missing.length > 0) {
         return { success: false, message: `Not held: ${missing.join(', ')}. Reload the page.` };
     }
 
-    const approved = rows as PlayerInboxRow[];
+    // Safe after the guard above: every code has a row, and every row is approved.
+    const approved = codes.map((code) => inboxByCode.get(code) as PlayerInboxRow);
 
     const blank = approved.filter((row) => !isPositionBucket(row.position));
     if (blank.length > 0) {
