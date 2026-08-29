@@ -150,44 +150,81 @@ async function commandInit(sheets) {
     console.log(`Created '${INBOX_TAB}' with its header row.`);
 }
 
+/**
+ * Who still needs a position, read from the sheet rather than from FPL.
+ *
+ * `FPL_Player_export` is the new-player feed. Nick refreshes it from FPL, and it is what the
+ * four formula columns in `Players` look a code up in, so a player who is not in it cannot be
+ * added at all. Starting from it means the diff is the same question Nick answers by hand:
+ * what is in the export that is not yet in the game.
+ *
+ * FPL is still called, for one field the export does not carry: `element_type`. That is what
+ * lets the page say "FPL says MID, this says WA", and that crossing is the entire point of the
+ * exercise. If FPL is unreachable the diff still works and `fplType` reads as unknown, because
+ * a day with no suggestions is worse than a day with suggestions missing one column.
+ */
 async function gatherCandidates(sheets) {
-    const res = await fetch(FPL_BOOTSTRAP, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Kammy Fantasy Football)' },
-    });
-    if (!res.ok) throw new Error(`FPL bootstrap -> HTTP ${res.status}`);
-    const bootstrap = await res.json();
-
-    const [inGame, exported, inbox] = await Promise.all([
+    const [exportRows, inGame, inbox] = await Promise.all([
+        readRange(sheets, `'${EXPORT_TAB}'!A:M`),
         readCodes(sheets, PLAYERS_TAB, 'C'),
-        readCodes(sheets, EXPORT_TAB, 'A'),
-        (await tabExists(sheets, INBOX_TAB)) ? readCodes(sheets, INBOX_TAB, 'A') : new Set(),
+        (async () => ((await tabExists(sheets, INBOX_TAB)) ? readCodes(sheets, INBOX_TAB, 'A') : new Set()))(),
     ]);
 
-    const clubByCode = {};
-    for (const team of bootstrap.teams) clubByCode[team.code] = team.short_name;
+    // Column order of the export tab, which is FPL's own field order.
+    const [CODE, WEB_NAME, FIRST_NAME, SECOND_NAME, , NOW_COST, , STATUS, , , TEAM_CODE, , MINUTES] = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ];
 
-    const missing = bootstrap.elements.filter((element) => !inGame.has(element.code));
-    const awaitingExport = missing.filter((element) => !exported.has(element.code));
+    const rows = exportRows.slice(1).filter((row) => {
+        const code = Number.parseInt(String(row[CODE] ?? ''), 10);
+        return Number.isFinite(code) && !inGame.has(code) && !inbox.has(code);
+    });
 
-    const candidates = missing
-        .filter((element) => exported.has(element.code))
-        .filter((element) => !inbox.has(element.code))
-        .map((element) => ({
-            code: element.code,
-            name: element.web_name,
-            fullName: `${element.first_name} ${element.second_name}`.trim(),
-            club: clubByCode[element.team_code] ?? '',
-            fplType: FPL_ELEMENT_TYPES[element.element_type] ?? 'MID',
-            price: element.now_cost / 10,
-            status: element.status,
-            minutes: element.minutes ?? 0,
-        }));
+    // FPL is enrichment here, not the source, so a failure is reported and survived.
+    let typeByCode = new Map();
+    let fplReachable = true;
+    let missingFromExport = 0;
+    try {
+        const res = await fetch(FPL_BOOTSTRAP, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Kammy Fantasy Football)' },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const bootstrap = await res.json();
+        typeByCode = new Map(bootstrap.elements.map((e) => [e.code, FPL_ELEMENT_TYPES[e.element_type]]));
 
-    return { candidates, awaitingExport, counts: { inGame: inGame.size, exported: exported.size, inbox: inbox.size } };
+        const exported = new Set(
+            exportRows.slice(1).map((row) => Number.parseInt(String(row[CODE] ?? ''), 10)),
+        );
+        missingFromExport = bootstrap.elements.filter((e) => !inGame.has(e.code) && !exported.has(e.code)).length;
+    } catch (error) {
+        fplReachable = false;
+        console.error(`FPL unreachable (${error.message}); continuing without the FPL position.`);
+    }
+
+    const candidates = rows.map((row) => {
+        const code = Number.parseInt(String(row[CODE] ?? ''), 10);
+        return {
+            code,
+            name: String(row[WEB_NAME] ?? ''),
+            fullName: `${row[FIRST_NAME] ?? ''} ${row[SECOND_NAME] ?? ''}`.trim(),
+            club: String(row[TEAM_CODE] ?? ''),
+            fplType: typeByCode.get(code) ?? 'unknown',
+            price: Number(row[NOW_COST] ?? 0) / 10,
+            status: String(row[STATUS] ?? ''),
+            minutes: Number(row[MINUTES] ?? 0),
+        };
+    });
+
+    return {
+        candidates,
+        missingFromExport,
+        fplReachable,
+        counts: { inGame: inGame.size, exported: exportRows.length - 1, inbox: inbox.size },
+    };
 }
 
 async function commandList(sheets, { json }) {
-    const { candidates, awaitingExport, counts } = await gatherCandidates(sheets);
+    const { candidates, missingFromExport, fplReachable, counts } = await gatherCandidates(sheets);
 
     if (json) {
         console.log(JSON.stringify(candidates, null, 2));
@@ -207,12 +244,13 @@ async function commandList(sheets, { json }) {
         );
     }
 
-    if (awaitingExport.length > 0) {
+    if (missingFromExport > 0) {
         console.log(
-            `\n${awaitingExport.length} more are in FPL but not in ${EXPORT_TAB} yet, so they are not ` +
-                'listed. Refresh that tab and re-run.',
+            `\n${missingFromExport} more are in FPL but not in ${EXPORT_TAB} yet, so they cannot be ` +
+                'added. Refresh that tab and re-run.',
         );
     }
+    if (!fplReachable) console.log('\nFPL was unreachable, so the FPL position column reads as unknown.');
 }
 
 /**
