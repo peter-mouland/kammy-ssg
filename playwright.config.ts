@@ -1,6 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
+ * The **route crawl**: `yarn test:routes`.
+ *
+ * **This is not end-to-end, and it used to be called that.** There is no far end — Sheets and
+ * FPL are MSW, Firestore and the Realtime Database are in-memory. It is a full-stack
+ * *integration* suite: real Express, real SSR, real routing and hydration, substituted
+ * externals. The old name implied a coverage it does not have, and that mattered: a
+ * dependency skew between the build and runtime workspaces broke every admin action in
+ * production while this suite stayed green, because it runs the build workspace's own copies.
+ * Real end-to-end coverage is `yarn test:smoke`, which hits the deployed site.
+ *
  * Playwright runs against the **fixture server**, not a real environment.
  *
  * `yarn dev:fixtures` serves the whole site from `test-fixtures/` with an in-memory
@@ -19,6 +29,9 @@ const PORT = 3100;
 
 export default defineConfig({
     testDir: './e2e',
+    // `e2e/smoke/` runs against the deployed site and has its own config; it must never be
+    // pulled into the fixture run, which would point it at localhost.
+    testIgnore: ['**/smoke/**'],
     // The fixture server is a single shared process holding one in-memory Firestore, so
     // parallel files would be racing each other's data. Within a file, tests still run in
     // order and share it safely because the crawl only reads.

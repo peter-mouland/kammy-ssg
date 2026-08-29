@@ -1,0 +1,165 @@
+{
+  "availableGameweeks": [
+    "array(2)",
+    "number"
+  ],
+  "currentGameweekData": {
+    "end": "Date",
+    "fplEvent": {
+      "deadline_time": "string",
+      "finished": "boolean",
+      "id": "number",
+      "is_current": "boolean",
+      "is_next": "boolean",
+      "name": "string"
+    },
+    "gameWeekIndex": "number",
+    "hasPassed": "boolean",
+    "isCurrent": "boolean",
+    "isNext": "boolean",
+    "start": "Date"
+  },
+  "players": [
+    "array(458)",
+    {
+      "code": "number",
+      "draft": {
+        "__generatedFor": {
+          "generatedAt": "string",
+          "type": "string"
+        },
+        "isHidden": "boolean",
+        "isNew": "boolean",
+        "pointsBreakdown": {
+          "appearance": {
+            "formula": [
+              "array(2)",
+              "string"
+            ],
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "assists": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "bonus": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "cleanSheets": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "defensiveContribution": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "goals": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "goalsConceded": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "penaltiesSaved": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "redCards": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "saves": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "total": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          },
+          "yellowCards": {
+            "formula": "string",
+            "isRelevant": "boolean",
+            "label": "string",
+            "points": "number",
+            "stat": "number"
+          }
+        },
+        "pointsTotal": "number",
+        "position": "string"
+      },
+      "first_name": "string",
+      "form": "string",
+      "id": "number",
+      "second_name": "string",
+      "team_code": "number",
+      "web_name": "string"
+    }
+  ],
+  "positions": {
+    "ca": "string",
+    "cb": "string",
+    "fb": "string",
+    "gk": "string",
+    "mid": "string",
+    "wa": "string"
+  },
+  "selectedGameweek": "null",
+  "selectedGameweekData": {
+    "end": "Date",
+    "fplEvent": {
+      "deadline_time": "string",
+      "finished": "boolean",
+      "id": "number",
+      "is_current": "boolean",
+      "is_next": "boolean",
+      "name": "string"
+    },
+    "gameWeekIndex": "number",
+    "hasPassed": "boolean",
+    "isCurrent": "boolean",
+    "isNext": "boolean",
+    "start": "Date"
+  },
+  "teamsByCode": [
+    "record(22)",
+    [
+      "record(21)",
+      "number"
+    ]
+  ]
+}

@@ -56,7 +56,8 @@ export interface TeamOfTheWeekData {
 
 export interface EnhancedLeagueStandingsLoaderData {
     divisions: DivisionSheetData[];
-    selectedDivision: DivisionSheetData;
+    /** Absent when the URL names no division and the reader has selected no team. */
+    selectedDivision: DivisionSheetData | undefined;
     selectedGameweek: number;
     selectedGameweekData: GameWeekData;
     currentGameweek: number;

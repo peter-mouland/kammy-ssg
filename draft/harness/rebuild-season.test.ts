@@ -41,6 +41,14 @@ afterAll(() => {
 
 afterEach(() => server.resetHandlers());
 
+/** A manager's squad as a comparable string: who is in it, ignoring points and slots. */
+const squadOf = (doc: Awaited<ReturnType<typeof getDivisionTeamsDocument>>, managerId: string) =>
+    Object.values(doc?.teams?.[managerId]?.roster ?? {})
+        .map((slot) => slot?.player?.playerCode)
+        .filter(Boolean)
+        .sort()
+        .join(',');
+
 describe('rebuilding the season from fixtures', () => {
     let summary: Awaited<ReturnType<typeof rebuildSeason>>;
 
@@ -99,6 +107,64 @@ describe('rebuilding the season from fixtures', () => {
         ]);
 
         expect(Object.keys(gw2?.teams ?? {})).toEqual(Object.keys(gw1?.teams ?? {}));
+    });
+
+    /**
+     * The rebuild had been applying **zero** transfers, for every gameweek of every
+     * division, and nothing noticed. The transfer timestamps sat a year ahead of the FPL
+     * calendar, so every transfer was assigned past the final deadline and none was ever
+     * due -- the rebuild just copied rosters forward 38 times.
+     *
+     * The test above passed *because of* that bug: "carries a roster forward" is trivially
+     * true when nothing ever changes. So these assert the opposite -- that squads move --
+     * which is what proves the transfer path is exercised at all.
+     */
+    it('applies transfers, so a manager’s squad changes during the season', async () => {
+        const documents = await Promise.all(
+            Array.from({ length: THROUGH_GAMEWEEK + 1 }, (_, gameweek) =>
+                getDivisionTeamsDocument('premierLeague', gameweek),
+            ),
+        );
+
+        const managers = Object.keys(documents[0]?.teams ?? {});
+        expect(managers.length).toBeGreaterThan(0);
+
+        let changes = 0;
+        for (let gameweek = 1; gameweek < documents.length; gameweek++) {
+            for (const manager of managers) {
+                if (squadOf(documents[gameweek - 1], manager) !== squadOf(documents[gameweek], manager)) changes++;
+            }
+        }
+
+        // A season of real transfers moves a lot of squads. The threshold is deliberately
+        // well above zero and well below the real figure, so it fails loudly if transfers
+        // stop applying and does not churn when the fixtures shift by a row.
+        expect(changes, 'no squad ever changed — transfers are not being applied').toBeGreaterThan(20);
+    });
+
+    it('assigns transfers across the season rather than piling them at the end', async () => {
+        // The failure mode was not only "no transfers" but "every transfer in the last
+        // gameweek", which is what an out-of-range timestamp produces. Squad changes must be
+        // spread out.
+        //
+        // Comparing whole team objects would be useless here -- points change every gameweek
+        // regardless of transfers, so any two documents differ and the test passes on the
+        // broken data. It compares squad *composition* only, which is what a transfer moves.
+        const documents = await Promise.all(
+            Array.from({ length: THROUGH_GAMEWEEK + 1 }, (_, gameweek) =>
+                getDivisionTeamsDocument('premierLeague', gameweek),
+            ),
+        );
+
+        const gameweeksWithChange = new Set<number>();
+        for (let gameweek = 1; gameweek < documents.length; gameweek++) {
+            const managers = Object.keys(documents[gameweek]?.teams ?? {});
+            if (managers.some((manager) => squadOf(documents[gameweek - 1], manager) !== squadOf(documents[gameweek], manager))) {
+                gameweeksWithChange.add(gameweek);
+            }
+        }
+
+        expect(gameweeksWithChange.size, 'squad changes are not spread across the season').toBeGreaterThan(10);
     });
 
     it('scores each gameweek, stamping which gameweek the points are for', async () => {

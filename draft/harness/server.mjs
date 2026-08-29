@@ -96,6 +96,23 @@ async function main() {
     const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: 'custom',
+        // Pre-bundle the client dependencies at boot instead of discovering them on the
+        // first browser request. Discovery mid-run makes Vite re-optimize and abort whatever
+        // was in flight -- `net::ERR_ABORTED` on `/node_modules/.vite/deps/*`, plus a matching
+        // 504 in the console -- which surfaced as a flaky `/players` on CI and never locally,
+        // because only a cold optimizer does it.
+        optimizeDeps: {
+            include: [
+                'react',
+                'react-dom',
+                'react-dom/client',
+                'react/jsx-dev-runtime',
+                'react/jsx-runtime',
+                'react-router',
+                '@tanstack/react-query',
+                '@tanstack/react-query-devtools',
+            ],
+        },
     });
 
     const load = (path) => vite.ssrLoadModule(path);
@@ -131,7 +148,37 @@ async function main() {
 
     // Built once and reused: the rebuild is clock-independent, so one set of documents
     // serves every date. See rebuild-determinism.test.ts.
+    /**
+     * Server-side errors, so a test can fail on them.
+     *
+     * The route crawl watches the *browser* console and never saw these, so the suite went
+     * green for hours while `/admin/transfers` logged a real failure on every run and
+     * silently dropped a division's data. A green suite that logs errors is manufacturing
+     * alert fatigue.
+     *
+     * Harness-only: nothing in `app/` knows this exists, and it is never deployed.
+     */
+    const serverErrors = [];
+    const realConsoleError = console.error.bind(console);
+    console.error = (...args) => {
+        serverErrors.push(
+            args
+                .map((arg) => (arg instanceof Error ? `${arg.message}` : typeof arg === 'string' ? arg : ''))
+                .filter(Boolean)
+                .join(' '),
+        );
+        realConsoleError(...args);
+    };
+
     const app = express();
+
+    // Before the Vite middleware, so it cannot be mistaken for an app route.
+    app.get('/__harness/server-errors', (_req, res) => res.json({ errors: serverErrors }));
+    app.post('/__harness/server-errors/reset', (_req, res) => {
+        serverErrors.length = 0;
+        res.json({ ok: true });
+    });
+
     app.use(vite.middlewares);
     app.use(timeTravel(runWithNow));
 

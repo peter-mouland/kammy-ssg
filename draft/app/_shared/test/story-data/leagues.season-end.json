@@ -1,0 +1,67 @@
+{
+  "availableGameweeks": [
+    "array(38)",
+    "number"
+  ],
+  "currentGameweek": "number",
+  "currentGameweekData": {
+    "end": "Date",
+    "fplEvent": {
+      "deadline_time": "string",
+      "finished": "boolean",
+      "id": "number",
+      "is_current": "boolean",
+      "is_next": "boolean",
+      "name": "string"
+    },
+    "gameWeekIndex": "number",
+    "hasPassed": "boolean",
+    "isCurrent": "boolean",
+    "isNext": "boolean",
+    "start": "Date"
+  },
+  "divisions": [
+    "array(3)",
+    {
+      "cup": "boolean",
+      "id": "string",
+      "label": "string",
+      "order": "number",
+      "promotion": "boolean",
+      "relegation": "boolean"
+    }
+  ],
+  "persistedUser": {
+    "requiresSelection": "boolean",
+    "selectedUserId": "null"
+  },
+  "selectedDivision": "undefined",
+  "selectedGameweek": "number",
+  "selectedGameweekData": {
+    "end": "Date",
+    "fplEvent": {
+      "deadline_time": "string",
+      "finished": "boolean",
+      "id": "number",
+      "is_current": "boolean",
+      "is_next": "boolean",
+      "name": "string"
+    },
+    "gameWeekIndex": "number",
+    "hasPassed": "boolean",
+    "isCurrent": "boolean",
+    "isNext": "boolean",
+    "start": "Date"
+  },
+  "standingsData": {},
+  "userTeams": [
+    "array(24)",
+    {
+      "divisionId": "string",
+      "lastUpdated": "Date",
+      "teamName": "string",
+      "userId": "string",
+      "userName": "string"
+    }
+  ]
+}

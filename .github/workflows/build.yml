@@ -122,8 +122,8 @@ jobs:
       - name: Build
         run: yarn build
 
-  e2e:
-    name: e2e
+  routes:
+    name: routes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -164,8 +164,13 @@ jobs:
       # needs no credentials -- which is what makes a red run here mean the code broke.
       # (Player photos still point at the real Premier League CDN and simply fail offline;
       # the crawl only asserts on same-origin requests for that reason.)
+      # Layer 2: real loaders against the rebuilt season. Shares this job because it shares
+      # the install and the fixture data, and needs no browser of its own.
+      - name: Loader payloads
+        run: yarn harness
+
       - name: Route crawl
-        run: yarn test:e2e
+        run: yarn test:routes
 
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -177,7 +182,7 @@ jobs:
   deploy:
     name: deploy
     runs-on: ubuntu-latest
-    needs: [lint, test, build, e2e]
+    needs: [lint, test, build, routes]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
@@ -230,3 +235,14 @@ jobs:
         run: ./node_modules/.bin/firebase deploy --force
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
+
+      # The only check that touches the deployed application. Every other suite substitutes
+      # its externals, which is what made them blind to a build/runtime dependency skew that
+      # broke every admin action in production while CI stayed green. Read-only, ~10s.
+      - name: Install browser for smoke tests
+        run: yarn playwright install chromium --only-shell
+
+      - name: Smoke test production
+        run: yarn test:smoke
+        env:
+          SMOKE_BASE_URL: https://draft-ff.web.app

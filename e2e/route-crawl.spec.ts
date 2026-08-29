@@ -1,7 +1,11 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type APIRequestContext, expect, type Page, test } from '@playwright/test';
 
 /**
  * Part E1 — every route, at three dates, asserting the site is not broken.
+ *
+ * **Not end-to-end.** Every external system is substituted, so this proves the code path and
+ * says nothing about the deployed application — see `playwright.config.ts` for why that
+ * distinction cost this project a production outage. `yarn test:smoke` covers the real thing.
  *
  * This is the regression net the project has never had. It answers one question that unit
  * and loader tests cannot: *does the site work* — Express, SSR, route config, hydration and
@@ -85,7 +89,29 @@ const IGNORED_CONSOLE = [
     /Download the React DevTools/,
     // Vite serves the app unbundled in the harness; this is dev-server chatter.
     /\[vite\]/,
+    // Vite's dependency optimizer, not the app. The fixture server runs through Vite's SSR
+    // pipeline deliberately (Part D: the harness has to share module state with the app, so
+    // it cannot load the production bundle), and when the browser asks for a module Vite has
+    // not pre-bundled it re-optimizes and 504s whatever was in flight. It hits the first
+    // heavy page on a cold optimizer and never again, which is why it presented as one flaky
+    // test on CI and never locally. Nothing about it involves app code.
+    /Outdated Optimize Dep/,
 ];
+
+/**
+ * No allowlist.
+ *
+ * There was one, for `Player X not found in Y's roster` from `/admin/transfers`, excused as
+ * a fixture seam. It was not a seam to be tolerated -- it was the fixtures being wrong. The
+ * transfer timestamps sat a year ahead of the FPL calendar, so every transfer was assigned
+ * past the final deadline and the replay met players who were not in the roster yet.
+ * `scripts/align-transfer-fixtures.mjs` fixed the data; the error is gone; the exception is
+ * gone with it.
+ *
+ * If a server error appears here, it is a real one. Fix it or fix the data -- do not add a
+ * pattern to this file.
+ */
+const IGNORED_SERVER_ERRORS: RegExp[] = [];
 
 interface PageProblems {
     consoleErrors: string[];
@@ -112,17 +138,34 @@ function watchForProblems(page: Page, baseURL: string): PageProblems {
         // failing the crawl on it would train people to ignore it.
         if (!request.url().startsWith(baseURL)) return;
 
+        // Vite's own optimized dependency bundles. `harness/server.mjs` pre-bundles these at
+        // boot so they should not be re-optimized mid-run, but a newly added dependency would
+        // reintroduce the flake, and no app route lives under this path -- so it stays
+        // excluded as well as prevented.
+        if (request.url().includes('/node_modules/.vite/')) return;
+
         problems.failedRequests.push(`${request.method()} ${request.url()} — ${request.failure()?.errorText}`);
     });
 
     return problems;
 }
 
+/** Clear the harness's error buffer so a test only sees what its own page load produced. */
+const resetServerErrors = async (request: APIRequestContext): Promise<void> => {
+    await request.post('/__harness/server-errors/reset');
+};
+
+const serverErrorsSince = async (request: APIRequestContext): Promise<string[]> => {
+    const { errors } = (await (await request.get('/__harness/server-errors')).json()) as { errors: string[] };
+    return errors.filter((error) => !IGNORED_SERVER_ERRORS.some((pattern) => pattern.test(error)));
+};
+
 for (const scenario of SCENARIOS) {
     test.describe(`${scenario.name} (${scenario.now})`, () => {
         for (const path of PAGES) {
-            test(`${path} renders`, async ({ page, baseURL }) => {
+            test(`${path} renders`, async ({ page, baseURL, request }) => {
                 const problems = watchForProblems(page, baseURL ?? '');
+                await resetServerErrors(request);
 
                 const response = await page.goto(withNow(path, scenario.now), { waitUntil: 'domcontentloaded' });
                 expect(response, `no response for ${path}`).not.toBeNull();
@@ -149,6 +192,11 @@ for (const scenario of SCENARIOS) {
 
                 expect(problems.consoleErrors, `${path} logged console errors`).toEqual([]);
                 expect(problems.failedRequests, `${path} had failed requests`).toEqual([]);
+
+                // The server's own errors. A page can render perfectly while its loader
+                // swallowed a failure and returned nothing -- which is exactly what
+                // /admin/transfers was doing, unnoticed, on every run.
+                expect(await serverErrorsSince(request), `${path} logged server-side errors`).toEqual([]);
             });
         }
 

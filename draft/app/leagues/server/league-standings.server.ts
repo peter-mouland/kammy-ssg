@@ -46,14 +46,15 @@ export async function getEnhancedLeagueStandingsData({
     divisions,
     events,
 }: {
-    selectedDivision: DivisionId;
+    /** Absent on `/leagues` with no division in the URL and no user selection. */
+    selectedDivision: DivisionId | undefined;
     selectedGameweek?: number;
     currentGameweekData: GameWeekData;
     divisions: DivisionSheetData[];
     events: GameWeekData[];
 }): Promise<EnhancedLeagueStandingsLoaderData> {
     const currentGameweek = currentGameweekData.fplEvent.id;
-    const division = divisions.find((d) => selectedDivision === d.id)!;
+    const division = divisions.find((d) => selectedDivision === d.id);
     const targetGameweek = selectedGameweek ?? currentGameweek;
     const targetGameweekData = events.find((e) => e.fplEvent.id === targetGameweek);
 
@@ -61,10 +62,17 @@ export async function getEnhancedLeagueStandingsData({
 
     const standingsData: Record<string, LeagueStandingsTeamData[]> = {};
 
-    standingsData[selectedDivision] = await getDivisionStandingsWithPositionRankChanges(
-        selectedDivision,
-        targetGameweek,
-    );
+    // No division selected means there is nothing to fetch. This used to read regardless,
+    // which asked Firestore for the document id `undefined_gw21` on every `/leagues` load,
+    // got nothing, and warned "No division document found for undefined GW21" -- a line that
+    // reads like missing data and is really a missing parameter. The `!` on the lookup above
+    // hid the same thing from the type checker.
+    if (selectedDivision) {
+        standingsData[selectedDivision] = await getDivisionStandingsWithPositionRankChanges(
+            selectedDivision,
+            targetGameweek,
+        );
+    }
 
     return {
         divisions,

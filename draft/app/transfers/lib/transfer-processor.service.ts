@@ -17,9 +17,8 @@ export const getGameweekTransfers = (transfers: ProcessedTransfer[], gameweekDat
                 new Date(transfer.timestamp) >= new Date(gameweekData.start) &&
                 new Date(transfer.timestamp) <= new Date(gameweekData.end);
 
-            // CRITICAL FIX: Only include APPROVED transfers
-            // This prevents rejected loans from being applied to rosters
-            console.log(transfer.status);
+            // Only include APPROVED transfers -- this prevents rejected loans from being
+            // applied to rosters.
             const isApproved = transfer.status !== 'REJECTED';
 
             return isInGameweek && isApproved;

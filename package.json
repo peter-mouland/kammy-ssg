@@ -36,8 +36,11 @@
         "functions:dev": "yarn workspace functions serve",
         "functions:deploy": "yarn workspace functions build && firebase deploy --only functions",
         "test": "yarn workspace draft vitest run",
-        "test:e2e": "playwright test",
-        "test:e2e:ui": "playwright test --ui",
+        "harness": "yarn workspace draft vitest run -c vitest.harness.config.ts",
+        "harness:update": "UPDATE_STORY_DATA=1 yarn workspace draft vitest run -c vitest.harness.config.ts",
+        "test:routes": "playwright test --config playwright.config.ts",
+        "test:routes:ui": "playwright test --config playwright.config.ts --ui",
+        "test:smoke": "playwright test --config playwright.smoke.config.ts",
         "dev:fixtures": "yarn workspace draft dev:fixtures",
         "postinstall": "test \"$SKIP_PLAYWRIGHT_BROWSERS\" = \"1\" || playwright install chromium --only-shell"
     },
