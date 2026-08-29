@@ -39,6 +39,25 @@ derives from an `#N/A` status. The export is refreshed on its own schedule and r
 FPL API, so players it has not seen are held back and reported rather than offered.
 `new-players.service.ts` applies the same rule. Change one, change the other.
 
+### Checking the answers against calls the league has already made
+
+```bash
+node --env-file=.env.local scripts/new-player-inbox.mjs sample --size=24 > todo.json
+# research those, then
+node --env-file=.env.local scripts/new-player-inbox.mjs score researched.json
+```
+
+`sample` does not take a random slice of the sheet. GK maps onto GK and FWD maps onto CA with
+no judgement involved, and CB and FB score identically, so agreement there is agreement about
+nothing. Every call that moves points sits in one place: FPL's midfielders, who the sheet splits
+between MID, WA and CA. That is what it samples, plus anywhere the sheet has already crossed a
+group boundary FPL did not. It withholds the current position, because researching a player
+whose answer you have read is not a test.
+
+`score` reports exact agreement and scoring agreement separately. Only a move between the
+defensive, midfield and attacking groups changes anyone's points, so a run that gets every group
+right and argues about CB against FB is a good run.
+
 ### The shape `write` expects
 
 ```json

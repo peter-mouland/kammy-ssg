@@ -298,6 +298,157 @@ async function commandWrite(sheets, filePath) {
     }
 }
 
+/**
+ * Pull a sample of players the sheet has already classified, so the agent's answers can be
+ * checked against calls the league has lived with.
+ *
+ * Deliberately not a random sample of everyone. GK and FWD map onto GK and CA with no
+ * judgement involved, and CB and FB score identically, so agreement on those is agreement
+ * about nothing. The only calls that move points are the crossings between the defensive,
+ * midfield and attacking groups, and almost all of them sit in one place: FPL's midfielders,
+ * who the sheet splits between MID, WA and CA. That is what this samples.
+ *
+ * The current position is withheld. Researching a player whose answer you have already read
+ * is not a test of anything.
+ */
+async function commandSample(sheets, { size }) {
+    const res = await fetch(FPL_BOOTSTRAP, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Kammy Fantasy Football)' },
+    });
+    if (!res.ok) throw new Error(`FPL bootstrap -> HTTP ${res.status}`);
+    const bootstrap = await res.json();
+
+    const elementByCode = new Map(bootstrap.elements.map((element) => [element.code, element]));
+    const clubByCode = {};
+    for (const team of bootstrap.teams) clubByCode[team.code] = team.short_name;
+
+    const rows = await readRange(sheets, `'${PLAYERS_TAB}'!A:H`);
+
+    // Group by the answer so the sample is not swamped by whichever bucket is largest.
+    const byPosition = new Map();
+    for (const row of rows.slice(1)) {
+        const code = Number.parseInt(String(row[2] ?? ''), 10);
+        const position = String(row[5] ?? '').trim();
+        const element = elementByCode.get(code);
+        if (!element || !POSITIONS.includes(position)) continue;
+
+        // Only where a crossing is possible: FPL midfielders, plus anywhere the sheet has
+        // already crossed a group boundary FPL did not.
+        const fplType = FPL_ELEMENT_TYPES[element.element_type];
+        const crossable = fplType === 'MID' || (fplType === 'DEF' && ['MID', 'WA', 'CA'].includes(position));
+        if (!crossable) continue;
+
+        if (!byPosition.has(position)) byPosition.set(position, []);
+        byPosition.get(position).push({ element, position });
+    }
+
+    // Minutes first inside each bucket: a player with no minutes has no record to check
+    // against, so testing on him tells you about the projection, not the classifier.
+    const picked = [];
+    const buckets = [...byPosition.values()].map((list) => list.sort((a, b) => b.element.minutes - a.element.minutes));
+    for (let round = 0; picked.length < size; round += 1) {
+        const before = picked.length;
+        for (const bucket of buckets) {
+            if (picked.length >= size) break;
+            if (bucket[round]) picked.push(bucket[round]);
+        }
+        if (picked.length === before) break; // every bucket exhausted
+    }
+
+    console.log(
+        JSON.stringify(
+            picked.map(({ element }) => ({
+                code: element.code,
+                name: element.web_name,
+                fullName: `${element.first_name} ${element.second_name}`.trim(),
+                club: clubByCode[element.team_code] ?? '',
+                fplType: FPL_ELEMENT_TYPES[element.element_type] ?? 'MID',
+                minutes: element.minutes ?? 0,
+            })),
+            null,
+            2,
+        ),
+    );
+}
+
+/**
+ * Compare researched answers against what the sheet already says.
+ *
+ * Reports two numbers, because they mean different things. Exact agreement is whether the
+ * bucket matches. Scoring agreement is whether it matters: CB and FB score identically, as
+ * do WA and CA, so only a move between the defensive, midfield and attacking groups changes
+ * anyone's points. A run that gets every group right and argues about CB against FB is a
+ * good run.
+ */
+async function commandScore(sheets, filePath) {
+    if (!filePath) throw new Error('Usage: score <researched.json>');
+
+    const answers = JSON.parse(await readFile(filePath, 'utf8'));
+    const rows = await readRange(sheets, `'${PLAYERS_TAB}'!A:H`);
+
+    const sheetPosition = new Map();
+    const sheetName = new Map();
+    for (const row of rows.slice(1)) {
+        const code = Number.parseInt(String(row[2] ?? ''), 10);
+        if (Number.isFinite(code)) {
+            sheetPosition.set(code, String(row[5] ?? '').trim());
+            sheetName.set(code, String(row[3] ?? '').trim());
+        }
+    }
+
+    const GROUP = { GK: 'GK', CB: 'DEF', FB: 'DEF', MID: 'MID', WA: 'ATT', CA: 'ATT' };
+
+    let exact = 0;
+    let sameGroup = 0;
+    const disagreements = [];
+
+    for (const answer of answers) {
+        const theirs = sheetPosition.get(answer.code);
+        if (!theirs) {
+            disagreements.push({ ...answer, theirs: '(not in sheet)', kind: 'missing' });
+            continue;
+        }
+        if (theirs === answer.suggested) exact += 1;
+        if (GROUP[theirs] === GROUP[answer.suggested]) {
+            sameGroup += 1;
+            if (theirs !== answer.suggested) {
+                disagreements.push({ ...answer, theirs, kind: 'same group, no points effect' });
+            }
+        } else {
+            disagreements.push({ ...answer, theirs, kind: 'DIFFERENT GROUP, changes points' });
+        }
+    }
+
+    const total = answers.length;
+    const pct = (n) => `${n}/${total} (${Math.round((n / total) * 100)}%)`;
+    console.log(`Exact agreement:    ${pct(exact)}`);
+    console.log(`Scoring agreement:  ${pct(sameGroup)}`);
+
+    const byConfidence = {};
+    for (const answer of answers) {
+        const theirs = sheetPosition.get(answer.code);
+        const key = answer.confidence ?? 'unstated';
+        byConfidence[key] = byConfidence[key] ?? { n: 0, group: 0 };
+        byConfidence[key].n += 1;
+        if (theirs && GROUP[theirs] === GROUP[answer.suggested]) byConfidence[key].group += 1;
+    }
+    console.log('\nScoring agreement by confidence:');
+    for (const [key, { n, group }] of Object.entries(byConfidence)) {
+        console.log(`  ${key.padEnd(8)} ${group}/${n}`);
+    }
+
+    if (disagreements.length > 0) {
+        console.log(`\n${disagreements.length} disagreement(s):`);
+        for (const d of disagreements) {
+            console.log(`\n  ${sheetName.get(d.code) ?? d.code}  sheet ${d.theirs} vs suggested ${d.suggested}`);
+            console.log(`    ${d.kind}, ${d.confidence} confidence, ${d.basis}`);
+            console.log(`    ${d.summary}`);
+        }
+        console.log('\nRead these both ways. Some are the agent being wrong; some are sheet rows');
+        console.log('that went stale when a player\'s role changed. Do not assume which.');
+    }
+}
+
 // ---------------------------------------------------------------------------
 
 async function main() {
@@ -311,8 +462,14 @@ async function main() {
             return commandList(sheets, { json: args.includes('--json') });
         case 'write':
             return commandWrite(sheets, args.find((arg) => !arg.startsWith('--')));
+        case 'sample': {
+            const flag = args.find((arg) => arg.startsWith('--size='));
+            return commandSample(sheets, { size: flag ? Number.parseInt(flag.slice(7), 10) : 24 });
+        }
+        case 'score':
+            return commandScore(sheets, args.find((arg) => !arg.startsWith('--')));
         default:
-            console.error('Usage: new-player-inbox.mjs <init|list|write> [args]');
+            console.error('Usage: new-player-inbox.mjs <init|list|write|sample|score> [args]');
             process.exitCode = 1;
     }
 }
