@@ -160,7 +160,6 @@ interface ContributingStatsBreakdown {
     saves: ContributingStatItem;
     penaltiesSaved: ContributingStatItem;
     goalsConceded: ContributingStatItem;
-    bonus: ContributingStatItem;
 }
 
 /**

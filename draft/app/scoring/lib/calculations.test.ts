@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import type { FplPlayerGameweekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition } from '../../_shared/types/league-types';
 import {
-    calculateBonus,
     calculateDefensiveActions,
     calculateDefensiveContribution,
     calculateGameweekPoints,
@@ -181,38 +180,6 @@ describe('calculateSavesBonus', () => {
     });
 });
 
-// ---------------------------------------------------------------------------
-// calculateBonus
-// ---------------------------------------------------------------------------
-
-describe('calculateBonus', () => {
-    // Rule: cb and mid only. rule.bonus = 1 (the minimum threshold, not a multiplier).
-    // Returns the raw bonus stat value when stat >= threshold, otherwise 0.
-    // i.e. bonus stat IS the points value (1 BPS point = 1 app point)
-
-    it('returns 0 for positions with no bonus rule (gk, fb, wa, ca)', () => {
-        expect(calculateBonus(10, 'gk')).toBe(0);
-        expect(calculateBonus(10, 'fb')).toBe(0);
-        expect(calculateBonus(10, 'wa')).toBe(0);
-        expect(calculateBonus(10, 'ca')).toBe(0);
-    });
-
-    it('returns 0 when bonus stat is below threshold (< 1)', () => {
-        expect(calculateBonus(0, 'cb')).toBe(0);
-        expect(calculateBonus(0, 'mid')).toBe(0);
-    });
-
-    it('returns the raw stat value when bonus stat meets the threshold', () => {
-        expect(calculateBonus(1, 'cb')).toBe(1);
-        expect(calculateBonus(1, 'mid')).toBe(1);
-    });
-
-    it('returns the raw stat value for higher bonus values (stat = points)', () => {
-        expect(calculateBonus(3, 'cb')).toBe(3);
-        expect(calculateBonus(5, 'mid')).toBe(5);
-    });
-});
-
 // ===========================================================================
 // What a player scores for a match
 // ===========================================================================
@@ -280,15 +247,14 @@ const pointsFor = (position: CustomPosition, ...matches: Partial<FplPlayerGamewe
     );
 
 describe('points for a single match', () => {
-    // 90 min = 3, goal = 8, clean sheet = 5, bonus 3 (>= the cb threshold of 1) = 3,
-    // CBIT 6+4 = 10, which meets the defender threshold of 10 = 1. Nothing conceded, so
-    // no concession penalty. Total 20.
+    // 90 min = 3, goal = 8, clean sheet = 5, CBIT 6+4 = 10, which meets the defender
+    // threshold of 10 = 1. Nothing conceded, so no concession penalty. The three FPL
+    // bonus points in the stat line score nothing. Total 17.
     it('scores a centre back who played, scored and kept a clean sheet', () => {
         const points = pointsFor('cb', {
             minutes: 90,
             goals_scored: 1,
             clean_sheets: 1,
-            bonus: 3,
             clearances_blocks_interceptions: 6,
             tackles: 4,
         });
@@ -296,22 +262,20 @@ describe('points for a single match', () => {
         expect(points.appearance).toBe(3);
         expect(points.goals).toBe(8);
         expect(points.cleanSheets).toBe(5);
-        expect(points.bonus).toBe(3);
         expect(points.defensiveContribution).toBe(1);
         expect(points.goalsConceded).toBe(0);
-        expect(points.total).toBe(20);
+        expect(points.total).toBe(17);
     });
 
     // 90 min = 3, conceded 2 = (2 x -1) + 1 = -1 (the first goal is free), 5 saves is
     // above the threshold of 2 so floor(5/3) = 1, penalty saved = 5. A keeper has no
-    // bonus or defensive-contribution rule, so those stay 0. Total 8.
+    // defensive-contribution rule, so that stays 0. Total 8.
     it('scores a goalkeeper who conceded, made saves and saved a penalty', () => {
         const points = pointsFor('gk', {
             minutes: 90,
             goals_conceded: 2,
             saves: 5,
             penalties_saved: 1,
-            bonus: 3,
             clearances_blocks_interceptions: 20,
             tackles: 20,
         });
@@ -320,7 +284,6 @@ describe('points for a single match', () => {
         expect(points.goalsConceded).toBe(-1);
         expect(points.saves).toBe(1);
         expect(points.penaltiesSaved).toBe(5);
-        expect(points.bonus).toBe(0);
         expect(points.defensiveContribution).toBe(0);
         expect(points.total).toBe(8);
     });

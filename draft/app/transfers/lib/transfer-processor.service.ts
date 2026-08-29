@@ -291,7 +291,6 @@ function createEmptyStats(): PlayerGameweekStatsData {
         yellowCards: 0,
         redCards: 0,
         saves: 0,
-        bonus: 0,
         defensiveContribution: 0,
         clearancesBlocksInterceptions: 0,
         tackles: 0,
@@ -310,7 +309,6 @@ function createEmptyPoints(): Points {
         saves: 0,
         penaltiesSaved: 0,
         goalsConceded: 0,
-        bonus: 0,
         total: 0,
     };
 }

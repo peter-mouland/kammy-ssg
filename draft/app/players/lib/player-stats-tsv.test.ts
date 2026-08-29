@@ -38,7 +38,6 @@ function makePlayer(overrides: {
                 saves: breakdownItem(stats.saves ?? 0),
                 penaltiesSaved: breakdownItem(stats.penaltiesSaved ?? 0),
                 goalsConceded: breakdownItem(stats.goalsConceded ?? 0),
-                bonus: breakdownItem(stats.bonus ?? 0),
                 defensiveContribution: breakdownItem(stats.defensiveContribution ?? 0),
                 total: breakdownItem(overrides.pointsTotal),
             },
@@ -103,7 +102,6 @@ describe('buildPlayerStatsTsv', () => {
                         penaltiesSaved: 1,
                         saves: 10,
                         goalsConceded: 2,
-                        bonus: 3,
                         defensiveContribution: 8,
                     },
                 }),
@@ -111,13 +109,12 @@ describe('buildPlayerStatsTsv', () => {
         );
 
         const cells = tsv.split('\n')[1].split('\t');
-        // Clean Sheets, Pens Saved, Saves, Goals Con., Bonus, Def. Con.
+        // Clean Sheets, Pens Saved, Saves, Goals Con., Def. Con.
         expect(cells[8]).toBe('0');
         expect(cells[9]).toBe('0');
         expect(cells[10]).toBe('0');
         expect(cells[11]).toBe('0');
         expect(cells[14]).toBe('0');
-        expect(cells[15]).toBe('0');
     });
 
     it('includes relevant GK defensive stats', () => {
@@ -143,8 +140,7 @@ describe('buildPlayerStatsTsv', () => {
         expect(cells[9]).toBe('1');
         expect(cells[10]).toBe('12');
         expect(cells[11]).toBe('3');
-        expect(cells[14]).toBe('0'); // bonus not relevant for GK
-        expect(cells[15]).toBe('0'); // def con not relevant for GK
+        expect(cells[14]).toBe('0'); // def con not relevant for GK
     });
 
     it('sorts players by points descending', () => {

@@ -62,10 +62,6 @@ export const ScoringInfo = () => {
                         <div>GK: +1 pt per 3 saves</div>
                     </div>
                     <div className={styles.scoringItem}>
-                        <strong>Bonus Points:</strong>
-                        <div>CB/MID: Full value</div>
-                    </div>
-                    <div className={styles.scoringItem}>
                         <strong>Defensive Contribution:</strong>
                         <div>CB/FB: +1 pts</div>
                         <div>MID: +2 pts</div>

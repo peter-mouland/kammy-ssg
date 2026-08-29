@@ -308,22 +308,6 @@ export function PlayerStatsTable({ players, teamsByCode }: PlayerStatsTableProps
             render: (stat, _player) => stat,
         },
         {
-            key: 'bonus',
-            header: (
-                <div>
-                    <span className={styles.smallScreen} title={'Bonus'}>
-                        B
-                    </span>
-                    <span className={styles.largeScreen}>Bonus</span>
-                </div>
-            ),
-            accessor: (player) => player.draft?.pointsBreakdown.bonus.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            render: (stat, _player) => stat,
-        },
-        {
             key: 'defensiveContribution',
             header: (
                 <div>

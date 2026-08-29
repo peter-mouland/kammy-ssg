@@ -135,16 +135,6 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
             render: (stat) => stat,
         },
         {
-            key: 'bonus',
-            header: <span title="Bonus">Bs</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.bonus.stat || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            width: STAT_COLUMN_WIDTH,
-            render: (stat) => stat,
-        },
-        {
             key: 'defensiveContribution',
             header: <span title="Defensive Contribution">DC</span>,
             accessor: (player) => player.draft?.pointsBreakdown.defensiveContribution?.stat || 0,

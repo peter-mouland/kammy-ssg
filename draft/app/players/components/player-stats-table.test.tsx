@@ -32,7 +32,6 @@ const pointsBreakdown = Object.fromEntries(
     [
         'appearance',
         'assists',
-        'bonus',
         'cleanSheets',
         'defensiveContribution',
         'goals',

@@ -31,12 +31,10 @@ interface FallBackRules extends BasePositionRules {
 
 interface CenterBackRules extends BasePositionRules {
     goalsConcededPenalty: number;
-    bonus: number;
     defensiveContribution: DefensiveContributionRules;
 }
 
 interface MidfielderRules extends BasePositionRules {
-    bonus: number;
     defensiveContribution: DefensiveContributionRules;
 }
 
@@ -89,7 +87,6 @@ export const POSITION_RULES: PositionRules = {
         goalsConcededPenalty: -1, // <=1 goal conceded : 0 points // 2nd goal conceded : -1 points etc...
         yellowCard: -1,
         redCardPenalty: -3,
-        bonus: 1,
         appearance: {
             under45Min: 1,
             over45Min: 3,
@@ -101,7 +98,6 @@ export const POSITION_RULES: PositionRules = {
     },
     mid: {
         goalPoints: 4,
-        bonus: 1,
         cleanSheetPoints: 2,
         redCardPenalty: -5,
         assists: 3,

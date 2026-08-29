@@ -29,7 +29,6 @@ export { ScoringInfo } from './components/scoring-info';
 export {
     calculateAppearancePoints,
     calculateAssistPoints,
-    calculateBonus,
     calculateCleanSheetPoints,
     calculateGameweekPoints,
     calculateGoalPoints,

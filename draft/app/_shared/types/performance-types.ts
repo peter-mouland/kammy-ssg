@@ -35,7 +35,6 @@ export interface PlayerGameweekStatsData {
     yellowCards: number;
     redCards: number;
     saves: number;
-    bonus: number;
     defensiveContribution: number;
     // Raw components behind the defensive-contribution metric. We compute CBIT/CBIRT
     // ourselves (by custom position) rather than trusting FPL's aggregate, which is
@@ -56,7 +55,6 @@ export interface Points {
     saves: number;
     penaltiesSaved: number;
     goalsConceded: number;
-    bonus: number;
     defensiveContribution: number;
     total: number;
 }
@@ -80,7 +78,6 @@ export interface PointsBreakdown {
     saves: PointsBreakdownItem;
     penaltiesSaved: PointsBreakdownItem;
     goalsConceded: PointsBreakdownItem;
-    bonus: PointsBreakdownItem;
     defensiveContribution: PointsBreakdownItem;
     total: PointsBreakdownItem;
 }

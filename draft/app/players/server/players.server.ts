@@ -100,7 +100,6 @@ export async function getPlayerStatsForGameweek(gameweek: number): Promise<Playe
                     yellowCards: 0,
                     redCards: 0,
                     saves: 0,
-                    bonus: 0,
                     defensiveContribution: 0,
                     clearancesBlocksInterceptions: 0,
                     tackles: 0,

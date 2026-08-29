@@ -15,7 +15,6 @@ const baselineStats: Points = {
     saves: 0,
     penaltiesSaved: 0,
     goalsConceded: 0,
-    bonus: 0,
     defensiveContribution: 0,
     total: 0,
 };
@@ -125,18 +124,6 @@ export function calculatePenaltiesSaved(saved: number, position: CustomPosition)
 }
 
 /**
- * Calculate bonus points
- */
-export function calculateBonus(bonus: number, position: CustomPosition): number {
-    const rule = POSITION_RULES[position];
-    if (!('bonus' in rule)) return 0;
-
-    if (bonus < rule.bonus) return 0;
-
-    return bonus;
-}
-
-/**
  * Calculate goals conceded penalty for defenders and goalkeepers
  */
 export function calculateGoalsConcededPenalty(goalsConceded: number, position: CustomPosition): number {
@@ -164,7 +151,6 @@ export function calculateGameweekPoints(gws: PlayerGameweekStatsData[], position
                 saves: acc.saves + calculateSavesBonus(stats.saves, position),
                 penaltiesSaved: acc.penaltiesSaved + calculatePenaltiesSaved(stats.penaltiesSaved, position),
                 goalsConceded: acc.goalsConceded + calculateGoalsConcededPenalty(stats.goalsConceded, position),
-                bonus: acc.bonus + calculateBonus(stats.bonus, position),
                 defensiveContribution: acc.defensiveContribution + calculateDefensiveContribution(stats, position),
                 total: 0,
             };
@@ -181,7 +167,6 @@ export function calculateGameweekPoints(gws: PlayerGameweekStatsData[], position
             saves: 0,
             penaltiesSaved: 0,
             goalsConceded: 0,
-            bonus: 0,
             defensiveContribution: 0,
             total: 0,
         },
@@ -335,15 +320,6 @@ export function getFullBreakdown(
                       .join(', ')}`
                 : 'Not applicable for this position',
             isRelevant: isStatRelevant('goalsConceded', position),
-        },
-        bonus: {
-            label: 'Bonus',
-            stat: stats.bonus,
-            points: points.bonus || 0,
-            formula: isStatRelevant('bonus', position)
-                ? `${stats.bonus} × ${'bonus' in rules ? rules.bonus : 0} pts`
-                : 'Not applicable for this position',
-            isRelevant: isStatRelevant('bonus', position),
         },
         defensiveContribution: {
             label: 'Defensive Contribution',
