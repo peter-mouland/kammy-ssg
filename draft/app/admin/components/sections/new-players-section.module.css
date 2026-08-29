@@ -92,10 +92,6 @@
     transition: background-color var(--transition-normal);
 }
 
-.primary_button:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-}
-
 .secondary_button {
     padding: var(--spacing-2) var(--spacing-4);
     border: 1px solid var(--color-gray-300);
@@ -108,14 +104,21 @@
     transition: background-color var(--transition-normal);
 }
 
-.secondary_button:hover:not(:disabled) {
-    background: var(--color-gray-100);
-}
-
+/* Modifiers below the base rules, in ascending specificity: stylelint's
+   no-descending-specificity wants the weaker selector declared first, and
+   :hover:not(:disabled) outranks a bare :disabled. */
 .primary_button:disabled,
 .secondary_button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.primary_button:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+}
+
+.secondary_button:hover:not(:disabled) {
+    background: var(--color-gray-100);
 }
 
 .action_hint {
