@@ -23,13 +23,43 @@ takes on the page, after the weekly batch has been announced.
 # Create the PlayerInbox tab. Run once, deliberately.
 node --env-file=.env.local scripts/new-player-inbox.mjs init
 
-# Who needs researching, and why anyone is being held back
-node --env-file=.env.local scripts/new-player-inbox.mjs list
-node --env-file=.env.local scripts/new-player-inbox.mjs list --json > todo.json
+# The whole job: find who is new, research them, file the answers
+node --env-file=.env.local scripts/new-player-inbox.mjs research
+node --env-file=.env.local scripts/new-player-inbox.mjs research --dry      # writes nothing
+node --env-file=.env.local scripts/new-player-inbox.mjs research --verbose  # prints the evidence
 
-# Put the answers back
+# Just the diff
+node --env-file=.env.local scripts/new-player-inbox.mjs list
+
+# File answers researched some other way
 node --env-file=.env.local scripts/new-player-inbox.mjs write researched.json
 ```
+
+### How a position is decided
+
+No model is involved, and nothing costs anything.
+
+`lib/player-evidence.mjs` fetches three sources in parallel and keeps their disagreement rather
+than resolving it. FotMob is the valuable one: it publishes how many times a player lined up in
+each slot, plus minutes by competition, so cup and international minutes can be seen rather than
+silently folded in. Transfermarkt gives a curated main position and any secondary ones.
+Wikipedia confirms the current club, which is what makes the other two trustworthy for a player
+who has just moved.
+
+Reachability, tested 29 Aug 2026: FotMob 200 on `/api/data/` paths (the older `/api/` paths
+404), Transfermarkt 200, Wikipedia 200. Sofascore 403 on every endpoint and header combination
+tried, which costs us the per-match lineup-slot method. FBref 403. Understat no longer serves
+embedded JSON. FootballCritic's search is client-rendered.
+
+Search names need a fallback ladder: FotMob returns nothing for "El Hadji Malick Diouf" and
+finds him at once as "Malick Diouf".
+
+`lib/classify-position.mjs` then answers by counting. The scoring table allows this: CB and FB
+score identically and so do WA and CA, so only the group has to be right, and appearance counts
+settle the group for most players. It abstains rather than guessing when appearances are spread
+across groups, when the attacking-midfield slot dominates (it spans MID and CA), or when there
+is no appearance record. An abstention is still filed, with no position and all of the evidence,
+because that is more use to an admin than a guess.
 
 ### The diff reads the sheet, not FPL
 
