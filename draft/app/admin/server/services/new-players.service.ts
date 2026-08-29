@@ -11,7 +11,7 @@ import {
     updatePlayerInboxRow,
 } from '../../../_shared/lib/sheets/player-inbox';
 import { readPlayers } from '../../../_shared/lib/sheets/players';
-import { appendPlayersRows, readPlayersCodes } from '../../../_shared/lib/sheets/players-write';
+import { appendPlayersRows, readFplExportCodes, readPlayersCodes } from '../../../_shared/lib/sheets/players-write';
 import type {
     FplElementType,
     HeldPlayer,
@@ -38,6 +38,12 @@ export interface NewPlayersData {
     heldPlayers: HeldPlayer[];
     /** False when the PlayerInbox tab does not exist, so the page can say so. */
     inboxAvailable: boolean;
+    /**
+     * How many players FPL has that the export tab has not caught up with yet. They are
+     * held back rather than listed, because a row appended for a code the export lacks
+     * gets `#N/A` in all four formula columns.
+     */
+    awaitingExport: number;
 }
 
 export interface ApprovalRequest {
@@ -80,7 +86,11 @@ function suggestionFrom(row: PlayerInboxRow): PositionSuggestion | null {
 }
 
 export async function getNewPlayersData(): Promise<NewPlayersData> {
-    const [{ elements, clubByCode }, sheetPlayers] = await Promise.all([readFplElements(), readPlayers()]);
+    const [{ elements, clubByCode }, sheetPlayers, exportCodes] = await Promise.all([
+        readFplElements(),
+        readPlayers(),
+        readFplExportCodes(),
+    ]);
 
     const inGame = new Set(sheetPlayers.map((player) => player.code));
 
@@ -97,7 +107,12 @@ export async function getNewPlayersData(): Promise<NewPlayersData> {
 
     // A player already in Players is done, however the inbox describes them -- the sheet
     // is the truth about who is in the game, not the inbox's own status column.
-    const awaiting = elements.filter((element) => !inGame.has(element.code));
+    const missing = elements.filter((element) => !inGame.has(element.code));
+
+    // Offering someone the export tab has not seen would append a row whose club, value and
+    // status are all #N/A, so they wait a day for the export to catch up instead.
+    const awaiting = missing.filter((element) => exportCodes.has(element.code));
+    const awaitingExport = missing.length - awaiting.length;
 
     const newPlayers: NewPlayerCandidate[] = awaiting
         .filter((element) => (inboxByCode.get(element.code)?.status ?? '') !== 'approved')
@@ -127,7 +142,7 @@ export async function getNewPlayersData(): Promise<NewPlayersData> {
             };
         });
 
-    return { newPlayers, heldPlayers, inboxAvailable };
+    return { newPlayers, heldPlayers, inboxAvailable, awaitingExport };
 }
 
 /**
@@ -235,10 +250,24 @@ export async function releasePlayers(codes: number[]): Promise<ActionResult> {
         return { success: false, message: `No position set for: ${blank.map((row) => row.name).join(', ')}` };
     }
 
-    const inGame = await readPlayersCodes();
+    const [inGame, exportCodes] = await Promise.all([readPlayersCodes(), readFplExportCodes()]);
+
     const duplicates = approved.filter((row) => inGame.has(row.code));
     if (duplicates.length > 0) {
         return { success: false, message: `Already in the game: ${duplicates.map((row) => row.name).join(', ')}` };
+    }
+
+    // Checked again here, not just when the list was built: the four formula columns look
+    // the code up in the export tab, and writing a row without it gives #N/A club, value
+    // and status, which is worse than not adding the player at all.
+    const notExported = approved.filter((row) => !exportCodes.has(row.code));
+    if (notExported.length > 0) {
+        return {
+            success: false,
+            message:
+                `Not in FPL_Player_export yet: ${notExported.map((row) => row.name).join(', ')}. ` +
+                'Refresh that tab first, or their club, value and status will come through as #N/A.',
+        };
     }
 
     await appendPlayersRows(approved.map((row) => ({ code: row.code, webName: row.name, position: row.position })));

@@ -22,6 +22,9 @@ import { readSheetRange, type SheetRange, writeSheetRange } from './utils/common
 
 const PLAYERS_SHEET_NAME = 'Players';
 
+/** The tab the formula columns look up. Nick refreshes it from FPL; the site never writes it. */
+const FPL_EXPORT_SHEET_NAME = 'FPL_Player_export';
+
 /**
  * The real header row, in order:
  *   A isHidden | B new | C code | D web_name | E club_shortcode | F position | G fpl_value | H status
@@ -57,6 +60,28 @@ export async function readPlayersCodes(): Promise<Set<number>> {
         data
             .slice(1)
             .map((row) => Number.parseInt(String(row[CODE_COLUMN_INDEX] ?? ''), 10))
+            .filter((code) => Number.isFinite(code)),
+    );
+}
+
+/**
+ * Every code the `FPL_Player_export` tab currently holds.
+ *
+ * The four formula columns all look a player up in that tab, so appending a row for a code
+ * it does not carry yet writes four `#N/A` cells, and `isHidden` then derives from an
+ * `#N/A` status. The export lands a day or so behind FPL's own list, so this is a real gap
+ * rather than a theoretical one: a signing can exist in the API and not in the tab.
+ */
+export async function readFplExportCodes(): Promise<Set<number>> {
+    const data = await readSheetRange({
+        spreadsheetId: process.env.GOOGLE_SHEETS_ID as string,
+        range: `'${FPL_EXPORT_SHEET_NAME}'!A:A`,
+    });
+
+    return new Set(
+        data
+            .slice(1)
+            .map((row) => Number.parseInt(String(row[0] ?? ''), 10))
             .filter((code) => Number.isFinite(code)),
     );
 }
