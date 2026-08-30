@@ -28,9 +28,13 @@ export function PlayerOutSelector({
     embeddedInJourney = false,
 }: PlayerOutSelectorProps) {
     const rosterPlayersByCode: Record<number, RosterPlayer> = {};
-    const allRosterPlayers = Object.values(roster).map(({ player }) => {
+    const allRosterPlayers = Object.values(roster).flatMap(({ player }) => {
+        const enhanced = playersByCode[player.playerCode];
+        if (!enhanced) {
+            return [];
+        }
         rosterPlayersByCode[player.playerCode] = player;
-        return playersByCode[player.playerCode];
+        return [enhanced];
     });
 
     const handlePlayerClick = (player: EnhancedPlayerData) => {
