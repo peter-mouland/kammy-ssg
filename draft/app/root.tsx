@@ -133,6 +133,7 @@ const navigationItems = [
     { href: '/cup', label: 'Cup' },
     { href: '/wishlists', label: 'Wishlists' },
     { href: '/draft', label: 'Draft' },
+    { href: '/rules', label: 'Rules' },
 ];
 
 const logoConfig = {
