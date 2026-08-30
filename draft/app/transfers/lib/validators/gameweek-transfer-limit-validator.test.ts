@@ -81,14 +81,18 @@ describe('validateGameweekTransferLimit', () => {
         expect(result.passed).toBe(true);
     });
 
-    it('blocks the third SWAP in a gameweek (limit is 2)', () => {
-        const swap1 = makeApprovedTransfer({ id: 'swap-1', transferType: 'SWAP' });
-        const swap2 = makeApprovedTransfer({ id: 'swap-2', transferType: 'SWAP' });
+    it('allows unlimited SWAPs in a gameweek', () => {
+        const swaps = Array.from({ length: 5 }, (_, i) =>
+            makeApprovedTransfer({
+                id: `swap-${i}`,
+                transferType: 'SWAP',
+                timestamp: new Date(`2024-01-15T${String(i).padStart(2, '0')}:00:00Z`),
+            }),
+        );
         const transfer = makeTransfer({ transferType: 'SWAP', playerIn: PLAYER_MID1, playerOut: PLAYER_MID2 });
 
-        const result = validateGameweekTransferLimit(makeContext(transfer, { allGameweekTransfers: [swap1, swap2] }));
-        expect(result.passed).toBe(false);
-        expect(result.message).toMatch(/exceed swap limit/);
+        const result = validateGameweekTransferLimit(makeContext(transfer, { allGameweekTransfers: swaps }));
+        expect(result.passed).toBe(true);
     });
 
     it('does not count transfers from other managers', () => {

@@ -12,7 +12,7 @@ import type { ProcessedTransfer, TransferType } from '../../types/transfer-types
 export function validateGameweekTransferLimit(context: TransferRuleContext): RuleValidationResult {
     // Get parameters with defaults
     const maxTransfersPerGameweek = 2;
-    const maxSwapsPerGameweek = 2;
+    const maxSwapsPerGameweek = Number.POSITIVE_INFINITY;
     const maxNewPlayersPerGameweek = Number.POSITIVE_INFINITY;
     const maxTradesPerGameweek = Number.POSITIVE_INFINITY;
     const countPendingTransfers = true;
