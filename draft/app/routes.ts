@@ -15,6 +15,7 @@ export default [
     route('players/:playerCode', 'players/player.route.tsx'),
     route('transfers/:divisionId?', 'transfers/transfers.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),
+    route('rules', 'rules/rules.route.tsx'),
 
     // Cup (cross-division knockout)
     route('cup', 'cup/cup.route.tsx'),
