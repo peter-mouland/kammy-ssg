@@ -1,9 +1,12 @@
 /* Location: app/admin/components/layout/action-bar.module.css */
 
+/* Mobile-first: column + stretch under stacked AdminSection headers. */
 .action_bar {
     display: flex;
-    align-items: center;
-    margin-top: var(--spacing-4);
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin-top: 0;
 }
 
 .align_left {
@@ -30,12 +33,11 @@
     gap: var(--spacing-4);
 }
 
-/* Stretch controls full-width under a stacked AdminSection header (portrait phones). */
-@media (max-width: 767px) {
+@media (min-width: 768px) {
     .action_bar {
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-        margin-top: 0;
+        flex-direction: row;
+        align-items: center;
+        width: auto;
+        margin-top: var(--spacing-4);
     }
 }
