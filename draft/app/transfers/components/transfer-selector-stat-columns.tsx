@@ -37,7 +37,7 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
         {
             key: 'apps',
             header: <span title="Minutes">Min</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.appearance.stat || 0,
+            accessor: (player) => player.draft?.pointsBreakdown?.appearance?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
@@ -47,7 +47,7 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
         {
             key: 'goals',
             header: <span title="Goals">G</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.goals.stat || 0,
+            accessor: (player) => player.draft?.pointsBreakdown?.goals?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
@@ -57,7 +57,7 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
         {
             key: 'assists',
             header: <span title="Assists">A</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.assists.stat || 0,
+            accessor: (player) => player.draft?.pointsBreakdown?.assists?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
@@ -68,56 +68,62 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
             key: 'cleanSheets',
             header: <span title="Clean Sheets">CS</span>,
             accessor: (player) =>
-                isStatRelevant('cleanSheets', player.draft.position)
-                    ? player.draft?.pointsBreakdown.cleanSheets.stat || 0
+                player.draft?.position && isStatRelevant('cleanSheets', player.draft.position)
+                    ? player.draft?.pointsBreakdown?.cleanSheets?.stat || 0
                     : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
             width: STAT_COLUMN_WIDTH,
-            render: (stat, player) => (isStatRelevant('cleanSheets', player.draft.position) ? stat : '-'),
+            render: (stat, player) =>
+                player.draft?.position && isStatRelevant('cleanSheets', player.draft.position) ? stat : '-',
         },
         {
             key: 'penaltiesSaved',
             header: <span title="Penalties Saved">PS</span>,
             accessor: (player) =>
-                isStatRelevant('penaltiesSaved', player.draft.position)
-                    ? player.draft?.pointsBreakdown.penaltiesSaved.stat || 0
+                player.draft?.position && isStatRelevant('penaltiesSaved', player.draft.position)
+                    ? player.draft?.pointsBreakdown?.penaltiesSaved?.stat || 0
                     : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
             width: STAT_COLUMN_WIDTH,
-            render: (stat, player) => (isStatRelevant('penaltiesSaved', player.draft.position) ? stat : '-'),
+            render: (stat, player) =>
+                player.draft?.position && isStatRelevant('penaltiesSaved', player.draft.position) ? stat : '-',
         },
         {
             key: 'saves',
             header: <span title="Saves">Sv</span>,
             accessor: (player) =>
-                isStatRelevant('saves', player.draft.position) ? player.draft?.pointsBreakdown.saves.stat || 0 : -1,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            width: STAT_COLUMN_WIDTH,
-            render: (stat, player) => (isStatRelevant('saves', player.draft.position) ? stat : '-'),
-        },
-        {
-            key: 'goalsConceded',
-            header: <span title="Goals Conceded">GC</span>,
-            accessor: (player) =>
-                isStatRelevant('goalsConceded', player.draft.position)
-                    ? player.draft?.pointsBreakdown.goalsConceded.stat || 0
+                player.draft?.position && isStatRelevant('saves', player.draft.position)
+                    ? player.draft?.pointsBreakdown?.saves?.stat || 0
                     : -1,
             sortable: true,
             align: 'center',
             variant: 'numeric',
             width: STAT_COLUMN_WIDTH,
-            render: (stat, player) => (isStatRelevant('goalsConceded', player.draft.position) ? stat : '-'),
+            render: (stat, player) =>
+                player.draft?.position && isStatRelevant('saves', player.draft.position) ? stat : '-',
+        },
+        {
+            key: 'goalsConceded',
+            header: <span title="Goals Conceded">GC</span>,
+            accessor: (player) =>
+                player.draft?.position && isStatRelevant('goalsConceded', player.draft.position)
+                    ? player.draft?.pointsBreakdown?.goalsConceded?.stat || 0
+                    : -1,
+            sortable: true,
+            align: 'center',
+            variant: 'numeric',
+            width: STAT_COLUMN_WIDTH,
+            render: (stat, player) =>
+                player.draft?.position && isStatRelevant('goalsConceded', player.draft.position) ? stat : '-',
         },
         {
             key: 'yellowCards',
             header: <span title="Yellow Cards">YC</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.yellowCards.stat || 0,
+            accessor: (player) => player.draft?.pointsBreakdown?.yellowCards?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
@@ -127,7 +133,7 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
         {
             key: 'redCards',
             header: <span title="Red Cards">RC</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.redCards.stat || 0,
+            accessor: (player) => player.draft?.pointsBreakdown?.redCards?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
@@ -137,7 +143,7 @@ export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
         {
             key: 'defensiveContribution',
             header: <span title="Defensive Contribution">DC</span>,
-            accessor: (player) => player.draft?.pointsBreakdown.defensiveContribution?.stat || 0,
+            accessor: (player) => player.draft?.pointsBreakdown?.defensiveContribution?.stat || 0,
             sortable: true,
             align: 'center',
             variant: 'numeric',
