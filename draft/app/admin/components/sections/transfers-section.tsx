@@ -12,8 +12,11 @@ import type { DivisionSheetData, ManagerId, PositionSlotKey } from '../../../_sh
 import type { RosterPlayer } from '../../../_shared/types/squad-types';
 import type { ProcessedTransfer, TransferAdminOverviewData, TransferValidationResult } from '../../../transfers';
 import { LoanStatusDisplay } from '../../../transfers';
+import {
+    transfersAdminAvailableGameweeks,
+    transfersAdminSelectionGameweek,
+} from '../../lib/transfers-gameweek';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
-import type { SystemStatusSummary } from '../../types/admin-types';
 import * as Icons from '../icons/admin-icons';
 import { ActionBar } from '../layout/action-bar';
 import { AdminContainer } from '../layout/admin-container';
@@ -24,7 +27,6 @@ import styles from './transfers-section.module.css';
 interface TransfersSectionProps {
     divisions: DivisionSheetData[];
     transfersData?: Record<string, TransferAdminOverviewData>;
-    systemStatus: SystemStatusSummary;
     sharedContext: AdminDataContext;
     selectedDivision: DivisionSheetData;
     selectedGameweek: GameWeekData;
@@ -450,23 +452,21 @@ export function TransfersSection({
     selectedDivision,
     selectedGameweek,
     transfersData,
-    systemStatus,
     teamsByCode,
     sharedContext,
 }: TransfersSectionProps) {
     const divisionTransferData = transfersData[selectedDivision.id];
     const navigate = useNavigate();
 
-    // Transfers are gameweek-scoped, so without one there is nothing here. The loader throws
-    // a friendly response before this renders; this keeps the narrowing local and honest
-    // rather than asserting a gameweek the type no longer promises. After all hooks, so the
-    // early return cannot change hook order.
-    const currentGameweekData = systemStatus.currentGameweek;
+    // Transfers are gameweek-scoped on the selection GW (open transfer window). The loader
+    // throws a friendly response before this renders; this keeps the narrowing local and
+    // honest. After all hooks, so the early return cannot change hook order.
+    const currentGameweekData = transfersAdminSelectionGameweek(sharedContext.fplData.events);
     if (!currentGameweekData) {
         return <p>There is no current gameweek, so there are no transfers to review.</p>;
     }
 
-    const availableGameweeks = Array.from({ length: currentGameweekData.fplEvent.id }, (_, i) => i + 1);
+    const availableGameweeks = transfersAdminAvailableGameweeks(sharedContext.fplData.events);
     const selectedDivisionData = transfersData?.[selectedDivision.id];
     const handleDivisionChange = (divisionId: string) => {
         if (divisionId !== 'all') {
