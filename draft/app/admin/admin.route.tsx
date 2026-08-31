@@ -80,23 +80,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
         const isTransferRoute = url.pathname.includes('/admin/transfers');
 
         if (isTransferRoute) {
-            // Transfer admin is gameweek-scoped, so with no current gameweek there is nothing
-            // to approve. Explained rather than crashed on -- the rest of /admin still loads,
-            // which is what you need in order to go and populate the data.
-            const availability = describeGameweekAvailability(
-                sharedContext.fplData.events,
-                systemStatus.currentGameweek,
+            // Transfer admin reviews the open transfer window (selection GW), not the scoring
+            // GW — same question `/transfers` asks. Mid-window those differ; defaulting to
+            // scoring left reviewers on the played round with the next GW unreachable.
+            const { transfersAdminSelectionGameweek, resolveTransfersAdminSelectedGameweekId } = await import(
+                './lib/transfers-gameweek'
             );
+            const selectionGameweek = transfersAdminSelectionGameweek(sharedContext.fplData.events);
+            const availability = describeGameweekAvailability(sharedContext.fplData.events, selectionGameweek);
             if (!availability.available) {
                 throw friendlyErrorResponse(availability.title, availability.detail);
             }
 
             const { getTransfersAdminData } = await import('./server/transfers-admin.server');
             const divisions = sharedContext.sheetData.divisions;
-            // `availability.gameweek` rather than `systemStatus.currentGameweek`: same value,
-            // but the narrowed one is the one the guard above proved is there.
             const selectedGameweekId =
-                Number.parseInt(url.searchParams.get('gameweek') || '', 10) || availability.gameweek.fplEvent.id;
+                resolveTransfersAdminSelectedGameweekId(
+                    sharedContext.fplData.events,
+                    url.searchParams.get('gameweek'),
+                ) ?? availability.gameweek.fplEvent.id;
             const gameweek = sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId);
 
             transfersData = await getTransfersAdminData(divisions, gameweek);
