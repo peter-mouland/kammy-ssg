@@ -27,12 +27,13 @@
     box-shadow: var(--input-focus-shadow);
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
+/* Responsive adjustments — 768px matches GameweekSelector / AdminSection */
+@media (max-width: 767px) {
     .selectContainer {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: var(--spacing-2);
+        width: 100%;
     }
 
     .selectInput {
