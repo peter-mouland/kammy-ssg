@@ -1,0 +1,54 @@
+/* Location: app/rules/rules.module.css */
+
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    min-height: calc(100vh - 8rem);
+}
+
+.notice {
+    padding: var(--spacing-4);
+    border-radius: var(--radius-md);
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+    font-size: var(--font-sm);
+}
+
+.code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: var(--font-xs);
+}
+
+.openLinkRow {
+    margin: 0;
+}
+
+.openLink {
+    color: var(--color-primary);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+}
+
+.openLink:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+.embedFrame {
+    flex: 1;
+    min-height: 70vh;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-white);
+}
+
+.iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 70vh;
+    border: 0;
+}

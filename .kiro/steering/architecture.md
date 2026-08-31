@@ -224,6 +224,7 @@ Mirrors [routes.ts](../../draft/app/routes.ts). If you add a route, add it here.
 | `/players/:playerCode` | `players/player.route.tsx` | Player detail |
 | `/transfers/:divisionId?` | `transfers/transfers.route.tsx` | Transfer submission |
 | `/wishlists` | `wishlist/wishlists.route.tsx` | Personal wishlist |
+| `/rules` | `rules/rules.route.tsx` | League rules (embedded Google Doc) |
 
 **Cup** (cross-division knockout)
 
