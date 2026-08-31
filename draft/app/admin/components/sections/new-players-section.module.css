@@ -1,0 +1,224 @@
+/* Location: app/admin/components/sections/new-players-section.module.css */
+
+.player_cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.player_name {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+}
+
+/* The caveat that qualifies a suggestion, e.g. "no Premier League minutes yet". */
+.note {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+.no_suggestion {
+    font-size: var(--font-xs);
+    color: var(--color-gray-400);
+    font-style: italic;
+}
+
+.why_cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-xs);
+}
+
+.confidence {
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-full);
+    font-weight: var(--font-weight-semibold);
+    text-transform: capitalize;
+}
+
+.confidence_high {
+    background: var(--color-success-light);
+    color: var(--color-success-text);
+}
+
+.confidence_medium {
+    background: var(--color-warning-light);
+    color: var(--color-warning-text);
+}
+
+.confidence_low {
+    background: var(--color-error-light);
+    color: var(--color-error-text);
+}
+
+.basis {
+    color: var(--color-gray-500);
+}
+
+.source_link {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.source_link:hover {
+    text-decoration: underline;
+}
+
+.position_select {
+    width: 100%;
+    padding: var(--spacing-1) var(--spacing-2);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    font-size: var(--font-sm);
+    color: var(--color-gray-900);
+}
+
+.position_select:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -1px;
+}
+
+.primary_button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-normal);
+}
+
+.secondary_button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    color: var(--color-gray-700);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-normal);
+}
+
+/* Modifiers below the base rules, in ascending specificity: stylelint's
+   no-descending-specificity wants the weaker selector declared first, and
+   :hover:not(:disabled) outranks a bare :disabled. */
+.primary_button:disabled,
+.secondary_button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.primary_button:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+}
+
+.secondary_button:hover:not(:disabled) {
+    background: var(--color-gray-100);
+}
+
+.action_hint {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+/* Expand affordance */
+.expand_button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: var(--spacing-1);
+    color: var(--color-gray-500);
+    line-height: 1;
+}
+
+.expand_button:hover {
+    color: var(--color-gray-900);
+}
+
+.chevron {
+    display: inline-block;
+    transition: transform var(--transition-normal);
+}
+
+.chevron_open {
+    transform: rotate(180deg);
+}
+
+/* The rationale panel, inside the table's full-width detail row */
+.rationale {
+    padding: var(--spacing-4) var(--spacing-6);
+    border-left: 3px solid var(--color-primary);
+}
+
+.rationale_head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-3);
+}
+
+.rationale_title {
+    margin: 0;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.rationale_meta {
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
+.rationale_points {
+    margin: 0 0 var(--spacing-3);
+    padding-left: var(--spacing-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    font-size: var(--font-sm);
+    color: var(--color-gray-700);
+    line-height: var(--line-height-normal);
+}
+
+.rationale_sources {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    flex-wrap: wrap;
+    font-size: var(--font-xs);
+}
+
+.rationale_sources_label {
+    color: var(--color-gray-500);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Said plainly rather than left blank: an unverified call should look unverified. */
+.rationale_nosource {
+    margin: 0;
+    font-size: var(--font-xs);
+    color: var(--color-error-text);
+}
+
+.rationale_empty {
+    margin: 0;
+    font-size: var(--font-sm);
+    color: var(--color-gray-500);
+}
+
+.filter_row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    flex-wrap: wrap;
+}

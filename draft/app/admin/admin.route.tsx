@@ -44,9 +44,10 @@ interface AdminLoaderData {
 export async function loader({ request }: LoaderFunctionArgs) {
     const url = new URL(request.url);
 
-    // Static checklist page — skip FPL/Sheets/Firebase bootstrap
-    if (url.pathname.includes('/admin/setup-new-season')) {
-        console.log('⚡ Lightweight admin load for setup-new-season');
+    // Pages that bring their own data — skip the FPL/Sheets/Firebase bootstrap this
+    // loader does for the dashboard. `new-players` has its own loader and needs none of it.
+    if (url.pathname.includes('/admin/setup-new-season') || url.pathname.includes('/admin/new-players')) {
+        console.log('⚡ Lightweight admin load for', url.pathname);
         return {
             systemStatus: null,
             sharedContext: null,
