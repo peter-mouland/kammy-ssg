@@ -535,7 +535,7 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
     console.log(`Researching ${candidates.length}...\n`);
 
     const rows = [];
-    let abstained = 0;
+    let flagged = 0;
     let tokensIn = 0;
     let tokensOut = 0;
     const modelFailures = [];
@@ -545,7 +545,7 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
     for (const player of candidates) {
         const evidence = await gatherEvidence(player);
         const verdict = classify(evidence);
-        if (!verdict.bucket) abstained += 1;
+        if (verdict.review) flagged += 1;
 
         // The model writes the rationale; it never picks the bucket. If it fails, the
         // mechanical reasoning stands and the row is still filed.
@@ -574,7 +574,7 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
         }
 
         console.log(
-            `  ${player.name.padEnd(20)} ${String(verdict.bucket ?? 'no call').padEnd(8)} ` +
+            `  ${player.name.padEnd(20)} ${String(verdict.bucket).padEnd(8)} ` +
                 `${verdict.confidence.padEnd(6)} ${verdict.basis.padEnd(10)} sources ${evidence.sourceCount}/3`,
         );
         if (verbose) console.log(`\n${formatEvidence(evidence)}\n`);
@@ -591,7 +591,7 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
     }
 
     console.log(
-        `\n${rows.length - abstained} settled by the appearance record, ${abstained} left for an admin to call.`,
+        `\n${rows.length - flagged} settled cleanly, ${flagged} answered but worth a look.`,
     );
 
     if (useModel) {

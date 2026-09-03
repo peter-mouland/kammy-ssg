@@ -82,8 +82,10 @@ export async function explain({ apiKey, evidenceText, verdict, player, model = D
 
     const ask = `${SYSTEM}
 
-DECISION ALREADY MADE: ${verdict.bucket ?? 'none, the appearances do not settle the group'}
-Confidence: ${verdict.confidence}. Basis: ${verdict.basis}.
+DECISION ALREADY MADE: ${verdict.bucket}
+Confidence: ${verdict.confidence}. Basis: ${verdict.basis}.${
+        verdict.review ? '\nThis one did not settle cleanly. Say plainly what makes it awkward.' : ''
+    }
 
 ${evidenceText}`;
 
