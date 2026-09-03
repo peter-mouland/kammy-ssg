@@ -42,6 +42,12 @@ const FPL_BOOTSTRAP = 'https://fantasy.premierleague.com/api/bootstrap-static/';
 const INBOX_TAB = 'PlayerInbox';
 const PLAYERS_TAB = 'Players';
 const EXPORT_TAB = 'FPL_Player_export';
+/**
+ * Code, club, shortcode, and no header row. The sheet's own shortcodes are not FPL's -- it
+ * writes MCY, MNU and NTG where FPL writes MCI, MUN and NFO -- so this tab, not the FPL API,
+ * is what turns the export's club column into a name the research sources will recognise.
+ */
+const TEAM_CODES_TAB = 'FPL Team Codes';
 
 /** Column order is the sheet's contract. Must match `_shared/lib/sheets/player-inbox.ts`. */
 const INBOX_HEADERS = [
@@ -167,11 +173,14 @@ async function commandInit(sheets) {
  * a day with no suggestions is worse than a day with suggestions missing one column.
  */
 async function gatherCandidates(sheets) {
-    const [exportRows, inGame, inbox] = await Promise.all([
+    const [exportRows, inGame, inbox, teamRows] = await Promise.all([
         readRange(sheets, `'${EXPORT_TAB}'!A:M`),
         readCodes(sheets, PLAYERS_TAB, 'C'),
         (async () => ((await tabExists(sheets, INBOX_TAB)) ? readCodes(sheets, INBOX_TAB, 'A') : new Set()))(),
+        readRange(sheets, `'${TEAM_CODES_TAB}'!A:C`),
     ]);
+
+    const clubNames = new Map(teamRows.filter((row) => row[2]).map((row) => [String(row[2]).trim(), String(row[1]).trim()]));
 
     // Column order of the export tab, which is FPL's own field order.
     const [CODE, WEB_NAME, FIRST_NAME, SECOND_NAME, , NOW_COST, , STATUS, , , TEAM_CODE, , MINUTES] = [
@@ -211,6 +220,9 @@ async function gatherCandidates(sheets) {
             name: String(row[WEB_NAME] ?? ''),
             fullName: `${row[FIRST_NAME] ?? ''} ${row[SECOND_NAME] ?? ''}`.trim(),
             club: String(row[TEAM_CODE] ?? ''),
+            // The name the research sources use. Without it a search falls back to the first
+            // hit for the surname, which is how a Sevilla player was once counted as Brighton's.
+            clubName: clubNames.get(String(row[TEAM_CODE] ?? '').trim()) ?? '',
             fplType: typeByCode.get(code) ?? 'unknown',
             price: Number(row[NOW_COST] ?? 0) / 10,
             status: String(row[STATUS] ?? ''),

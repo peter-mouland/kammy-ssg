@@ -88,12 +88,51 @@ function nameQueries(name, fullName) {
     return [...new Set(candidates.filter((q) => q && q.length > 2))];
 }
 
+/**
+ * Whether two club names are the same club.
+ *
+ * This is the only place that question gets asked, because asking it twice is how the wrong
+ * player got through: the classifier compared the sheet's `BHA` against FotMob's `Sevilla`,
+ * which is never equal, so it warned on players it had matched correctly and stayed quiet on
+ * one it had not. Comparing a code against a name cannot work; comparing names can.
+ *
+ * Sources write the same club several ways, so compare on the distinctive word rather than the
+ * whole string: "Brighton" against "Brighton & Hove Albion" agrees on `brighton`. The aliases
+ * are the clubs where no word is shared at all.
+ */
+const CLUB_ALIASES = {
+    'man city': 'manchester city',
+    'man utd': 'manchester united',
+    "nott'm forest": 'nottingham forest',
+    spurs: 'tottenham hotspur',
+    wolves: 'wolverhampton wanderers',
+};
+
+const normaliseClub = (name) => {
+    const lower = String(name ?? '')
+        .toLowerCase()
+        .trim();
+    return (CLUB_ALIASES[lower] ?? lower).replace(/[^a-z]+/g, ' ').trim();
+};
+
+/**
+ * Containment rather than word matching, which is not a shortcut: dropping the common words
+ * to compare the distinctive ones makes "Man City" and "Manchester United" both read as
+ * Manchester. What actually varies between sources is a suffix, so "Brighton" sits inside
+ * "Brighton and Hove Albion" and Manchester City stays out of Manchester United.
+ */
+export function sameClub(a, b) {
+    const left = normaliseClub(a);
+    const right = normaliseClub(b);
+    if (!left || !right) return false;
+    return left.includes(right) || right.includes(left);
+}
+
 /** Prefer a hit at the club we expect, since surnames repeat across the league. */
 function pickHit(hits, clubName) {
     if (hits.length === 0) return null;
     if (!clubName) return hits[0];
-    const wanted = clubName.toLowerCase();
-    return hits.find((h) => (h.teamName ?? '').toLowerCase().includes(wanted)) ?? hits[0];
+    return hits.find((h) => sameClub(h.teamName, clubName)) ?? hits[0];
 }
 
 async function fotmob(name, fullName, clubName) {
@@ -129,11 +168,15 @@ async function fotmob(name, fullName, clubName) {
         byCompetition[key] = (byCompetition[key] ?? 0) + (m.minutesPlayed ?? 0);
     }
 
+    const club = data.primaryTeam?.teamName ?? '';
+
     return {
         source: 'FotMob',
         url: `https://www.fotmob.com/players/${hit.id}`,
         name: data.name,
-        club: data.primaryTeam?.teamName ?? '',
+        club,
+        // null when we had no club to check against, so "unknown" and "wrong" stay apart.
+        clubMatched: clubName ? sameClub(club, clubName) : null,
         primaryPosition: data.positionDescription?.primaryPosition?.label ?? '',
         positions,
         leagueAppearances: league.length,
@@ -213,7 +256,7 @@ export async function gatherEvidence({ name, fullName, club, clubName, fplType }
     const failures = [fm, tm, wiki].filter((s) => s?.error).map((s) => s.error);
 
     return {
-        player: { name, fullName, club, fplType },
+        player: { name, fullName, club, clubName, fplType },
         fotmob: fm?.error ? null : fm,
         transfermarkt: tm?.error ? null : tm,
         wikipedia: wiki?.error ? null : wiki,
@@ -228,13 +271,18 @@ export function formatEvidence(evidence) {
     const { player, fotmob: fm, transfermarkt: tm, wikipedia: wiki } = evidence;
 
     lines.push(`PLAYER: ${player.fullName || player.name}`);
-    lines.push(`Club per the league sheet: ${player.club}`);
+    lines.push(`Club per the league sheet: ${player.clubName || player.club}`);
     lines.push(`FPL registers him as: ${player.fplType}   (often stale; this is what we are checking)`);
     lines.push('');
 
     if (fm) {
         lines.push(`SOURCE FotMob  ${fm.url}`);
-        lines.push(`  listed club: ${fm.club}`);
+        lines.push(
+            `  listed club: ${fm.club}` +
+                (fm.clubMatched === false
+                    ? `   *** NOT ${player.clubName}. This may be the wrong player, or a transfer FotMob has not recorded yet. ***`
+                    : ''),
+        );
         lines.push(`  primary position: ${fm.primaryPosition}`);
         lines.push('  appearances by position:');
         for (const p of fm.positions) {

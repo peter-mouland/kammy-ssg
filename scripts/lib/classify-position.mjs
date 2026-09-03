@@ -116,8 +116,16 @@ export function classify(evidence) {
                 (tm.otherPositions.length ? `, also ${tm.otherPositions.join(' and ')}.` : '.'),
         );
     }
-    if (fm.club && player.club && !fm.club.toLowerCase().includes(String(player.club).toLowerCase())) {
-        reasoning.push(`FotMob has his club as ${fm.club}, which is worth checking against the sheet's ${player.club}.`);
+    // The club check lives in `player-evidence.mjs`, which is where the name was matched and
+    // where both club names exist. A mismatch is the strongest signal available that this is a
+    // different player of the same name, so it never leaves here as a high-confidence answer.
+    const wrongClub = fm.clubMatched === false;
+    if (wrongClub) {
+        reasoning.push(
+            `FotMob has this player at ${fm.club}, not ${player.clubName || player.club}. ` +
+                'That is either a different player of the same name or a move FotMob has not recorded, ' +
+                'so the appearance split below may not be his.',
+        );
     }
 
     // An attacking midfielder is not resolvable by counting: the slot itself spans two groups.
@@ -174,12 +182,12 @@ export function classify(evidence) {
     const inGroup = [...byBucket.entries()].filter(([b]) => BUCKET_GROUP[b] === topGroup).sort((a, b) => b[1] - a[1]);
     const bucket = inGroup[0][0];
 
-    const confident = share >= DOMINANT_SHARE && total >= CONFIDENT_APPEARANCES;
+    const confident = share >= DOMINANT_SHARE && total >= CONFIDENT_APPEARANCES && !wrongClub;
     reasoning.push(
         `${topCount} of ${total} appearances are in the ${topGroup} group (${Math.round(share * 100)}%), ` +
             `and ${bucket} is the most played slot within it.`,
     );
-    if (!confident) {
+    if (!confident && !wrongClub) {
         reasoning.push(`Only ${total} appearances in total, which is a small sample to read a pattern from.`);
     }
 
@@ -188,9 +196,11 @@ export function classify(evidence) {
         confidence: confident ? 'high' : 'medium',
         basis: 'record',
         needsModel: false,
-        summary:
-            `${Math.round(share * 100)}% of ${total} recorded appearances are in the ${topGroup} group, ` +
-            `most often at ${bucket}.`,
+        summary: wrongClub
+            ? `Check this one: the appearances counted are ${fm.club}'s, not ${player.clubName || player.club}'s. ` +
+              `On that record it is ${bucket}.`
+            : `${Math.round(share * 100)}% of ${total} recorded appearances are in the ${topGroup} group, ` +
+              `most often at ${bucket}.`,
         reasoning,
         sources,
     };
