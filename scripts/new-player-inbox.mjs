@@ -539,6 +539,8 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
     let tokensIn = 0;
     let tokensOut = 0;
     const modelFailures = [];
+    // Which models actually answered, since a spent daily quota moves the run to the next one.
+    const modelsUsed = new Set();
 
     for (const player of candidates) {
         const evidence = await gatherEvidence(player);
@@ -567,6 +569,7 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
                 reasoning = [...written.reasoning, `Decided by counting: ${verdict.summary}`];
                 tokensIn += written.tokens.input;
                 tokensOut += written.tokens.output;
+                modelsUsed.add(written.model);
             }
         }
 
@@ -592,7 +595,8 @@ async function commandResearch(sheets, { dry, verbose, useModel, model }) {
     );
 
     if (useModel) {
-        console.log(`Rationales written by ${model}: ${tokensIn} input tokens, ${tokensOut} output tokens.`);
+        const wrote = modelsUsed.size ? [...modelsUsed].join(', ') : 'nothing';
+        console.log(`Rationales written by ${wrote}: ${tokensIn} input tokens, ${tokensOut} output tokens.`);
         for (const failure of modelFailures) console.log(`  no rationale for ${failure}`);
         if (modelFailures.length) console.log('  (those rows keep the counting reasoning instead)');
     } else {
