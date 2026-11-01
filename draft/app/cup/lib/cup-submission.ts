@@ -1,10 +1,29 @@
 /* Location: app/cup/lib/cup-submission.ts */
 
+import type { ManagerId } from '../../_shared/types/league-types';
+import type { ProcessedCupSheetData } from '../types/cup-types';
 import { findReusedPlayers } from './cup-rules';
 
 export interface CupSubmissionValidation {
     valid: boolean;
     errors: string[];
+}
+
+/**
+ * The latest submission for a manager+gameweek. Resubmits append a new row
+ * rather than overwriting, so the last match wins and earlier rows stay on
+ * record as history.
+ */
+export function findLatestSubmission(
+    submissions: ProcessedCupSheetData[],
+    manager: ManagerId,
+    gameweek: number,
+): ProcessedCupSheetData | undefined {
+    for (let i = submissions.length - 1; i >= 0; i--) {
+        const submission = submissions[i];
+        if (submission?.manager === manager && submission.gameweek === gameweek) return submission;
+    }
+    return undefined;
 }
 
 /**
