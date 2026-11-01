@@ -11,6 +11,7 @@ import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
+import { findLatestSubmission } from '../lib/cup-submission';
 import { getTeamVisibility } from '../lib/cup-visibility';
 import type {
     CupGameweekOption,
@@ -31,7 +32,7 @@ function findSubmission(
     manager: string,
     gameweek: number,
 ): ProcessedCupSheetData | undefined {
-    return submissions.find((s) => s.manager === manager && s.gameweek === gameweek);
+    return findLatestSubmission(submissions, manager, gameweek);
 }
 
 /**
