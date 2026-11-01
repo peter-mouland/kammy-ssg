@@ -45,6 +45,47 @@ describe('computeLeagueStandings', () => {
     });
 });
 
+describe('computeLeagueStandings tiebreak (rules 4.15/4.8)', () => {
+    it('splits level points on combined first-entered players', () => {
+        const standings = computeLeagueStandings(
+            [scored('a', 21, 10), scored('b', 21, 10)],
+            LEAGUE_GWS,
+            new Map(),
+            new Map([
+                ['a', [12, 0, 0]],
+                ['b', [8, 0, 0]],
+            ]),
+        );
+        expect(standings.map((s) => s.manager)).toEqual(['a', 'b']);
+    });
+
+    it('falls through to second and third when earlier levels are equal', () => {
+        const standings = computeLeagueStandings(
+            [scored('a', 21, 10), scored('b', 21, 10)],
+            LEAGUE_GWS,
+            new Map(),
+            new Map([
+                ['a', [5, 5, 1]],
+                ['b', [5, 5, 9]],
+            ]),
+        );
+        expect(standings.map((s) => s.manager)).toEqual(['b', 'a']);
+    });
+
+    it('falls back to manager id when all three levels are equal', () => {
+        const standings = computeLeagueStandings(
+            [scored('zed', 21, 10), scored('ann', 21, 10)],
+            LEAGUE_GWS,
+            new Map(),
+            new Map([
+                ['zed', [5, 5, 5]],
+                ['ann', [5, 5, 5]],
+            ]),
+        );
+        expect(standings.map((s) => s.manager)).toEqual(['ann', 'zed']);
+    });
+});
+
 describe('getQualifiers', () => {
     it('takes the top non-disqualified managers', () => {
         const standings = computeLeagueStandings(
