@@ -4,7 +4,7 @@
 import { now as clockNow } from '../../_shared/lib/clock';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { UserTeamsSheetData } from '../../_shared/types/league-types';
-import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
+import { getOtherLegGameweek, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
 import type { CupFixture } from '../lib/cup-fixtures';
 import { CUP_STAGES } from '../lib/cup-rules';
@@ -21,9 +21,14 @@ import type {
 } from '../types/cup-page-types';
 import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
 
-/** A submission's subs count as confirmed once an admin has approved it (Status = 'Y'). */
+/**
+ * Whether a submission counts as confirmed for reveal purposes. There is no
+ * admin approval flow, so a normal submission sits at Status '' — it reveals
+ * after the deadline like a confirmed one. Only an explicit rejection ('N')
+ * stays hidden.
+ */
 function isConfirmed(submission: ProcessedCupSheetData | undefined): boolean {
-    return submission?.status === 'Y';
+    return !!submission && submission.status !== 'N';
 }
 
 function findSubmission(
@@ -183,13 +188,12 @@ export async function getCupSubmitData(input: {
 
     const existing = findSubmission(submissions, selectedUser.userId, gameweek);
 
-    // For leg 2 of a two-legged round, gather the players used in leg 1.
+    // For a two-legged round, gather the players used in the other leg (either
+    // direction) so they are disabled in the picker and rejected on submit.
     let usedPlayers: number[] = [];
-    if (round.twoLegged && round.leg === 2) {
-        const otherGameweek = getGameweekForStage(cupConfig, round.stage, 1);
-        if (otherGameweek !== null) {
-            usedPlayers = findSubmission(submissions, selectedUser.userId, otherGameweek)?.players ?? [];
-        }
+    const otherGameweek = getOtherLegGameweek(cupConfig, round);
+    if (otherGameweek !== null) {
+        usedPlayers = findSubmission(submissions, selectedUser.userId, otherGameweek)?.players ?? [];
     }
 
     return {

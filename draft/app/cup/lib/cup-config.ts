@@ -65,6 +65,16 @@ export function getGameweekForStage(config: CupConfig, stage: CupStageId, leg = 
 }
 
 /**
+ * The gameweek of the other leg of a two-legged round, for the reuse ban.
+ * Works in both directions: a leg-1 submission made after leg 2 must respect
+ * leg 2's players just as much as the reverse. Null for single-leg stages.
+ */
+export function getOtherLegGameweek(config: CupConfig, round: CupRound): number | null {
+    if (!round.twoLegged) return null;
+    return getGameweekForStage(config, round.stage, round.leg === 1 ? 2 : 1);
+}
+
+/**
  * Config is stored in the sheet as simple key/value rows so an admin can edit
  * it by hand if needed. These pure helpers convert between that flat form and
  * the typed CupConfig, and are unit-tested independently of the sheet client.
