@@ -3,7 +3,9 @@
 import { Form, useActionData, useLoaderData, useNavigation } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import styles from './cup-admin.module.css';
+import { nextKnockoutStage } from './lib/knockout';
 import type { CupAdminPageData } from './types/cup-page-types';
+import type { CupStageId } from './types/cup-types';
 
 interface CupAdminActionData {
     success?: boolean;
@@ -17,6 +19,18 @@ export function CupAdminPage() {
     const navigation = useNavigation();
     const config = data.config;
     const isBusy = navigation.state !== 'idle';
+
+    // Stages with every tie resolved that feed a next round.
+    const tiesByStage = new Map<CupStageId, { total: number; resolved: number; next: CupStageId }>();
+    for (const matchup of data.bracket) {
+        const next = nextKnockoutStage(matchup.stage);
+        if (!next) continue;
+        const entry = tiesByStage.get(matchup.stage) ?? { total: 0, resolved: 0, next };
+        entry.total += 1;
+        if (matchup.winner) entry.resolved += 1;
+        tiesByStage.set(matchup.stage, entry);
+    }
+    const stagesReady = [...tiesByStage].filter(([, entry]) => entry.total > 0 && entry.total === entry.resolved);
 
     return (
         <div className={styles.page}>
@@ -80,6 +94,21 @@ export function CupAdminPage() {
                     </button>
                 </Form>
 
+                {stagesReady.length > 0 && (
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>Advance winners</h2>
+                        {stagesReady.map(([stage, entry]) => (
+                            <Form method="post" key={stage}>
+                                <input type="hidden" name="actionType" value="advanceRound" />
+                                <input type="hidden" name="stage" value={stage} />
+                                <button type="submit" className={styles.button} disabled={isBusy}>
+                                    Advance {stage} winners to {entry.next}
+                                </button>
+                            </Form>
+                        ))}
+                    </section>
+                )}
+
                 {data.bracket.length > 0 && (
                     <ul className={styles.bracket}>
                         {data.bracket.map((matchup) => (
@@ -88,6 +117,14 @@ export function CupAdminPage() {
                                 <span className={styles.vs}>v</span>
                                 <span>{matchup.away ?? 'BYE'}</span>
                                 {matchup.winner && <span className={styles.winner}>→ {matchup.winner}</span>}
+                                <Form method="post">
+                                    <input type="hidden" name="actionType" value="resolveTie" />
+                                    <input type="hidden" name="stage" value={matchup.stage} />
+                                    <input type="hidden" name="tie" value={matchup.tie} />
+                                    <button type="submit" className={styles.button} disabled={isBusy}>
+                                        Resolve
+                                    </button>
+                                </Form>
                             </li>
                         ))}
                     </ul>
