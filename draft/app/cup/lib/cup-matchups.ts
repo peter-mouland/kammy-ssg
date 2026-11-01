@@ -54,7 +54,9 @@ export function buildStageMatchups(input: {
         if (!manager || gameweek === null) return null;
         const submission = submissions.find((s) => s.manager === manager && s.gameweek === gameweek);
         if (!submission) return null;
-        const revealed = deadlinePassedFor(gameweek) && submission.status === 'Y';
+        // No admin approval flow exists: anything but an explicit rejection
+        // reveals after the deadline (see isConfirmed in server/cup.server.ts).
+        const revealed = deadlinePassedFor(gameweek) && submission.status !== 'N';
         if (!revealed) return null;
         return scoreSubmission(submission.players, pointsMaps.get(gameweek) ?? new Map());
     };
