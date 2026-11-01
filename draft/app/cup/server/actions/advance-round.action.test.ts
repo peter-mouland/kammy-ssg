@@ -54,7 +54,7 @@ describe('advanceRoundAction', () => {
         expect(result.success).toBe(true);
         expect(result.message).toContain('ann v cat');
         const [rows] = sent;
-        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '']);
+        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '', '']);
     });
 
     it('refuses while ties are unresolved, naming them', async () => {
@@ -82,7 +82,7 @@ describe('advanceRoundAction', () => {
 
         expect(result.success).toBe(true);
         const [rows] = sent;
-        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '']);
+        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '', '']);
         expect(rows.some((row) => row.includes('stale'))).toBe(false);
     });
 
