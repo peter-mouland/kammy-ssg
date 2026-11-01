@@ -11,7 +11,7 @@ import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
-import { findLatestSubmission } from '../lib/cup-submission';
+import { findGroupUsedPlayers, findLatestSubmission } from '../lib/cup-submission';
 import { getTeamVisibility } from '../lib/cup-visibility';
 import type {
     CupGameweekOption,
@@ -214,13 +214,16 @@ export async function getCupSubmitData(input: {
 
     const existing = findSubmission(submissions, selectedUser.userId, gameweek);
 
-    // For leg 2 of a two-legged round, gather the players used in leg 1.
+    // For leg 2 of a two-legged round, gather the players used in leg 1. For
+    // the league stage, gather every other league gameweek's picks (rule 4.10).
     let usedPlayers: number[] = [];
     if (round.twoLegged && round.leg === 2) {
         const otherGameweek = getGameweekForStage(cupConfig, round.stage, 1);
         if (otherGameweek !== null) {
             usedPlayers = findSubmission(submissions, selectedUser.userId, otherGameweek)?.players ?? [];
         }
+    } else if (round.stage === 'league') {
+        usedPlayers = findGroupUsedPlayers(submissions, selectedUser.userId, cupConfig, gameweek);
     }
 
     return {

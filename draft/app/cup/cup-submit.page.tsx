@@ -158,7 +158,7 @@ export function CupSubmitPage() {
                                 <span className={styles.playerName}>{player.name}</span>
                                 <span className={styles.playerPosition}>{player.position}</span>
                                 {player.isPending && <span className={styles.pendingBadge}>pending</span>}
-                                {isUsed && <span className={styles.usedBadge}>used in leg 1</span>}
+                                {isUsed && <span className={styles.usedBadge}>already used in this stage</span>}
                             </button>
                         );
                     })}
