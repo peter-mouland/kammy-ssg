@@ -1,7 +1,14 @@
 /* Location: app/cup/lib/knockout.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import { advanceWinners, fisherYatesShuffle, pairIntoMatchups, resolveTie } from './knockout';
+import {
+    advanceWinners,
+    decideTiebreak,
+    fisherYatesShuffle,
+    nextKnockoutStage,
+    pairIntoMatchups,
+    resolveTie,
+} from './knockout';
 
 describe('fisherYatesShuffle', () => {
     it('is a permutation and is deterministic for a fixed random source', () => {
@@ -46,6 +53,35 @@ describe('resolveTie', () => {
     it('advances the present manager on a bye', () => {
         const bye = { stage: 'r16' as const, tie: 0, home: 'a', away: null };
         expect(resolveTie(bye, { homeLeg1: 0, awayLeg1: 0, homeLeg2: 0, awayLeg2: 0 }).winner).toBe('a');
+    });
+});
+
+describe('decideTiebreak', () => {
+    it('settles a level aggregate on the first-entered players', () => {
+        expect(decideTiebreak([5, 1, 1], [3, 9, 9])).toBe('home');
+        expect(decideTiebreak([3, 9, 9], [5, 1, 1])).toBe('away');
+    });
+
+    it('falls through to second and third when earlier levels are equal', () => {
+        expect(decideTiebreak([4, 6, 1], [4, 2, 9])).toBe('home');
+        expect(decideTiebreak([4, 4, 2], [4, 4, 7])).toBe('away');
+    });
+
+    it('needs a play-off when all three levels are equal', () => {
+        expect(decideTiebreak([4, 4, 4], [4, 4, 4])).toBeUndefined();
+    });
+});
+
+describe('nextKnockoutStage', () => {
+    it('feeds each round into the next', () => {
+        expect(nextKnockoutStage('r16')).toBe('qf');
+        expect(nextKnockoutStage('qf')).toBe('sf');
+        expect(nextKnockoutStage('sf')).toBe('final');
+    });
+
+    it('returns null where there is no next round', () => {
+        expect(nextKnockoutStage('final')).toBeNull();
+        expect(nextKnockoutStage('league')).toBeNull();
     });
 });
 
