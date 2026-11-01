@@ -3,7 +3,7 @@
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import type { DivisionId } from '../../../_shared/types/league-types';
 import { getTeamsForGameweek } from '../../../scoring/index.server';
-import { getGameweekForStage, getRoundForGameweek } from '../../lib/cup-config';
+import { getOtherLegGameweek, getRoundForGameweek } from '../../lib/cup-config';
 import { isSubmissionOpen } from '../../lib/cup-deadlines';
 import { getCupSquad } from '../../lib/cup-squad';
 import { validateCupSubmission } from '../../lib/cup-submission';
@@ -58,12 +58,12 @@ export async function handleCupSubmission(input: {
     }
     const squadCodes = getCupSquad(team.roster).map((player) => player.code);
 
+    // The ban works in both directions: a leg-1 submission made after leg 2 must
+    // respect leg 2's players just as much as the reverse.
     let usedPlayers: number[] = [];
-    if (round.twoLegged && round.leg === 2) {
-        const otherGameweek = getGameweekForStage(cupConfig, round.stage, 1);
-        if (otherGameweek !== null) {
-            usedPlayers = submissions.find((s) => s.manager === manager && s.gameweek === otherGameweek)?.players ?? [];
-        }
+    const otherGameweek = getOtherLegGameweek(cupConfig, round);
+    if (otherGameweek !== null) {
+        usedPlayers = submissions.find((s) => s.manager === manager && s.gameweek === otherGameweek)?.players ?? [];
     }
 
     const validation = validateCupSubmission({

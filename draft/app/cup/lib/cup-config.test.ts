@@ -1,9 +1,10 @@
 /* Location: app/cup/lib/cup-config.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import type { CupConfig } from '../types/cup-types';
+import type { CupConfig, CupRound } from '../types/cup-types';
 import {
     getGameweekForStage,
+    getOtherLegGameweek,
     getRoundForGameweek,
     parseCupConfig,
     resolveCupRounds,
@@ -47,6 +48,36 @@ describe('gameweek <-> stage lookups', () => {
         expect(getGameweekForStage(CONFIG, 'sf', 2)).toBe(32);
         expect(getGameweekForStage(CONFIG, 'final')).toBe(33);
         expect(getGameweekForStage(CONFIG, 'qf', 3)).toBeNull();
+    });
+});
+
+describe('getOtherLegGameweek', () => {
+    const leg = (stage: CupRound['stage'], legNum: number, gameweek: number): CupRound => ({
+        stage,
+        leg: legNum,
+        gameweek,
+        playersRequired: 4,
+        twoLegged: true,
+    });
+
+    it('returns the other leg in both directions', () => {
+        expect(getOtherLegGameweek(CONFIG, leg('r16', 1, 24))).toBe(25);
+        expect(getOtherLegGameweek(CONFIG, leg('r16', 2, 25))).toBe(24);
+    });
+
+    it('returns null for single-leg stages', () => {
+        expect(
+            getOtherLegGameweek(CONFIG, {
+                stage: 'league',
+                leg: 1,
+                gameweek: 21,
+                playersRequired: 4,
+                twoLegged: false,
+            }),
+        ).toBeNull();
+        expect(
+            getOtherLegGameweek(CONFIG, { stage: 'final', leg: 1, gameweek: 33, playersRequired: 6, twoLegged: false }),
+        ).toBeNull();
     });
 });
 

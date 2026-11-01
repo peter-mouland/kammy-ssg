@@ -210,6 +210,39 @@ describe('the cup page loader', () => {
         expect(ann?.points).toBe(15);
     });
 
+    // There is no admin approval flow: a normal submission sits at status '' and
+    // still has to reveal after the deadline. Only an explicit 'N' stays hidden.
+    it('reveals a pending (unconfirmed) submission once the deadline has passed', async () => {
+        dataCache.clear();
+        await seedFpl(FINISHED);
+        server.use(
+            allTabs({
+                Cup: [
+                    CUP_TAB[0],
+                    [
+                        '',
+                        '2026-08-12T10:00:00Z',
+                        'ann',
+                        'premierLeague',
+                        '3',
+                        'league',
+                        '1',
+                        '118748,223340',
+                        'FALSE',
+                        '',
+                    ],
+                ],
+            }),
+        );
+
+        const pageData = await load('?gameweek=3');
+        const ann = pageData.rows.find((row) => row.manager === 'ann');
+
+        expect(pageData.deadlinePassed).toBe(true);
+        expect(ann?.players).toEqual([118748, 223340]);
+        expect(ann?.points).toBe(15);
+    });
+
     it('shows a manager who never submitted with no players, even after the deadline', async () => {
         dataCache.clear();
         await seedFpl(FINISHED);
