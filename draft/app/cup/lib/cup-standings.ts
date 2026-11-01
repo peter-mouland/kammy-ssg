@@ -27,11 +27,16 @@ export interface CupStanding {
  * Elimination is season-wide (rule 4.14: twice in one season, league or
  * knockout), so the count comes from `seasonAutopickCounts` when given and
  * falls back to the league-stage count otherwise.
+ *
+ * Level points split per rules 4.15/4.8: combined first-entered players across
+ * the group gameweeks, then second, then third (`rankTotals`), with manager id
+ * as the final deterministic fallback.
  */
 export function computeLeagueStandings(
     scored: ScoredSubmission[],
     leagueGameweeks: number[],
     seasonAutopickCounts: Map<ManagerId, number> = new Map(),
+    rankTotals: Map<ManagerId, number[]> = new Map(),
 ): CupStanding[] {
     const gameweeks = new Set(leagueGameweeks);
     const byManager = new Map<ManagerId, { points: number; autopickCount: number }>();
@@ -55,7 +60,14 @@ export function computeLeagueStandings(
     standings.sort((a, b) => {
         // Disqualified managers always rank below non-disqualified ones.
         if (a.disqualified !== b.disqualified) return a.disqualified ? 1 : -1;
-        return b.points - a.points;
+        if (b.points !== a.points) return b.points - a.points;
+        const aRanks = rankTotals.get(a.manager) ?? [];
+        const bRanks = rankTotals.get(b.manager) ?? [];
+        for (let level = 0; level < 3; level++) {
+            const diff = (bRanks[level] ?? 0) - (aRanks[level] ?? 0);
+            if (diff !== 0) return diff;
+        }
+        return a.manager.localeCompare(b.manager);
     });
 
     standings.forEach((standing, index) => {

@@ -130,7 +130,20 @@ export function getCupStandings(input: {
         }
     }
 
-    const standings = computeLeagueStandings(scored, cupConfig.league, seasonAutopickCounts);
+    // Combined per-rank points across the league gameweeks for the 4.15/4.8
+    // tiebreak. Built from the same rows as the points above so the two agree.
+    const rankTotals = new Map<ManagerId, number[]>();
+    for (const submission of submissions) {
+        if (!cupConfig.league.includes(submission.gameweek)) continue;
+        const points = leaguePointsMaps.get(submission.gameweek) ?? new Map<number, number>();
+        const totals = rankTotals.get(submission.manager) ?? [];
+        submission.players.forEach((code, rank) => {
+            totals[rank] = (totals[rank] ?? 0) + (points.get(code) ?? 0);
+        });
+        rankTotals.set(submission.manager, totals);
+    }
+
+    const standings = computeLeagueStandings(scored, cupConfig.league, seasonAutopickCounts, rankTotals);
     const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
     const qualifiers: CupQualifier[] = getQualifiers(standings).map((manager) => {
         const standing = standings.find((s) => s.manager === manager);
