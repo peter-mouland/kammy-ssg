@@ -70,6 +70,19 @@ describe('buildStageMatchups', () => {
         expect(tie?.home.aggregate).toBe(15); // gw24 (5) + gw25 (10)
     });
 
+    it('reveals a pending (unconfirmed) submission once the deadline has passed', () => {
+        // There is no admin approval flow, so a normal submission sits at status
+        // '' — it still has to reveal after the deadline (only 'N' stays hidden).
+        const submissions = [sub('a', 24, [1], ''), sub('a', 25, [1, 2], '')];
+        const [tie] = buildStageMatchups({
+            ...base,
+            submissions,
+            deadlinePassedFor: () => true,
+        });
+        expect(tie?.home.points).toBe(10);
+        expect(tie?.home.aggregate).toBe(15);
+    });
+
     it('hides points until the leg is revealed', () => {
         const submissions = [sub('a', 25, [1, 2])];
         const [tie] = buildStageMatchups({
