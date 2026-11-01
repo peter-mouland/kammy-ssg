@@ -19,6 +19,16 @@ describe('computeLeagueStandings', () => {
         expect(a?.points).toBe(15); // gw99 excluded
     });
 
+    it('eliminates on season-wide autopicks, including knockout ones (rule 4.14)', () => {
+        const standings = computeLeagueStandings(
+            [scored('a', 21, 100, true), scored('b', 21, 90)],
+            LEAGUE_GWS,
+            new Map([['a', 2]]), // one league autopick plus one knockout autopick
+        );
+        expect(standings.find((s) => s.manager === 'a')?.disqualified).toBe(true);
+        expect(standings.map((s) => s.manager)).toEqual(['b', 'a']);
+    });
+
     it('ranks by points and orders disqualified managers last', () => {
         const standings = computeLeagueStandings(
             [
