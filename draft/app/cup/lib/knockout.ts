@@ -71,6 +71,14 @@ export function advanceWinners(resolved: CupMatchup[], nextStage: CupStageId): C
     return pairIntoMatchups(winners, nextStage);
 }
 
+/** The stage a stage's winners feed into, or null for the final. */
+export function nextKnockoutStage(stage: CupStageId): CupStageId | null {
+    if (stage === 'r16') return 'qf';
+    if (stage === 'qf') return 'sf';
+    if (stage === 'sf') return 'final';
+    return null;
+}
+
 /**
  * Rank-order tiebreak (rule 4.8): with aggregates level, compare the combined
  * scores of each side's first-entered players, then second, then third. Each
