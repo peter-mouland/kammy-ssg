@@ -112,7 +112,15 @@ export function getCupStandings(input: {
         cupConfig.league.map((gameweek) => [gameweek, buildGameweekPointsMap(pointsRows, gameweek)]),
     );
 
-    const scored: ScoredSubmission[] = submissions
+    // Resubmits append rows: only the latest per manager+gameweek counts, so a
+    // corrected team neither double-scores nor double-counts autopicks.
+    const latestByKey = new Map<string, ProcessedCupSheetData>();
+    for (const submission of submissions) {
+        latestByKey.set(`${submission.manager}:${submission.gameweek}`, submission);
+    }
+    const latest = [...latestByKey.values()];
+
+    const scored: ScoredSubmission[] = latest
         .filter((submission) => cupConfig.league.includes(submission.gameweek))
         .map((submission) => ({
             manager: submission.manager,
@@ -124,7 +132,7 @@ export function getCupStandings(input: {
     // Elimination counts autopicks across the whole season, league and
     // knockout (rule 4.14) — not just the league gameweeks scored above.
     const seasonAutopickCounts = new Map<ManagerId, number>();
-    for (const submission of submissions) {
+    for (const submission of latest) {
         if (submission.adminReason === 'autopick') {
             seasonAutopickCounts.set(submission.manager, (seasonAutopickCounts.get(submission.manager) ?? 0) + 1);
         }
@@ -133,7 +141,7 @@ export function getCupStandings(input: {
     // Combined per-rank points across the league gameweeks for the 4.15/4.8
     // tiebreak. Built from the same rows as the points above so the two agree.
     const rankTotals = new Map<ManagerId, number[]>();
-    for (const submission of submissions) {
+    for (const submission of latest) {
         if (!cupConfig.league.includes(submission.gameweek)) continue;
         const points = leaguePointsMaps.get(submission.gameweek) ?? new Map<number, number>();
         const totals = rankTotals.get(submission.manager) ?? [];
