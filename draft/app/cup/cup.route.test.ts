@@ -210,6 +210,39 @@ describe('the cup page loader', () => {
         expect(ann?.points).toBe(15);
     });
 
+    // Resubmits append a new row rather than overwriting; the latest one is
+    // what counts, the earlier rows stay as history.
+    it('reveals the latest submission when a manager resubmits', async () => {
+        dataCache.clear();
+        await seedFpl(FINISHED);
+        server.use(
+            allTabs({
+                Cup: [
+                    CUP_TAB[0],
+                    [
+                        'Y',
+                        '2026-08-12T10:00:00Z',
+                        'ann',
+                        'premierLeague',
+                        '3',
+                        'league',
+                        '1',
+                        '118748,223340',
+                        'FALSE',
+                        '',
+                    ],
+                    ['Y', '2026-08-13T10:00:00Z', 'ann', 'premierLeague', '3', 'league', '1', '223340', 'FALSE', ''],
+                ],
+            }),
+        );
+
+        const pageData = await load('?gameweek=3');
+        const ann = pageData.rows.find((row) => row.manager === 'ann');
+
+        expect(ann?.players).toEqual([223340]);
+        expect(ann?.points).toBe(6); // Saliba's gw3, not the earlier 15
+    });
+
     it('shows a manager who never submitted with no players, even after the deadline', async () => {
         dataCache.clear();
         await seedFpl(FINISHED);

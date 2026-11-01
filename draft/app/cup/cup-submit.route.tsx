@@ -12,9 +12,11 @@ import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
 import { CupSubmitPage } from './cup-submit.page';
 import { buildCupFixtures } from './lib/cup-fixtures';
+import { CUP_STAGES } from './lib/cup-rules';
 import { getCupSubmitData } from './server/cup.server';
-import { readCupConfig, readCupSubmissions } from './server/cup-sheets';
+import { readCupBracket, readCupConfig, readCupSubmissions } from './server/cup-sheets';
 import type { CupSubmitPageData } from './types/cup-page-types';
+import type { CupRound } from './types/cup-types';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Submit Cup Team - Fantasy Football Draft' }];
@@ -52,17 +54,42 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const selectedUser = userTeams.find((team) => team.userId === persistedUser.selectedUserId);
 
     try {
-        const [cupConfig, submissions] = await Promise.all([readCupConfig(), readCupSubmissions()]);
+        const [cupConfig, submissions, bracket] = await Promise.all([
+            readCupConfig(),
+            readCupSubmissions(),
+            readCupBracket().catch(() => []),
+        ]);
+
+        // The manager's open play-off ties (rule 4.8) behave as extra single-leg
+        // rounds outside the config: any four players, no reuse ban.
+        const playoffRounds: CupRound[] = selectedUser
+            ? bracket
+                  .filter(
+                      (matchup) =>
+                          matchup.stage === 'playoff' &&
+                          matchup.gameweek !== undefined &&
+                          !matchup.winner &&
+                          (matchup.home === selectedUser.userId || matchup.away === selectedUser.userId),
+                  )
+                  .map((matchup) => ({
+                      stage: 'playoff' as const,
+                      leg: 1,
+                      gameweek: matchup.gameweek as number,
+                      playersRequired: CUP_STAGES.playoff.playersRequired,
+                      twoLegged: false,
+                  }))
+            : [];
 
         // Same gameweek resolution as /cup: ?gameweek wins, else current-if-cup, else first cup gameweek.
         const { resolveCupRounds } = await import('./lib/cup-config');
         const cupGameweeks = resolveCupRounds(cupConfig).map((round) => round.gameweek);
+        const submittable = [...cupGameweeks, ...playoffRounds.map((round) => round.gameweek)];
         const requested = Number.parseInt(new URL(request.url).searchParams.get('gameweek') ?? '', 10);
         const currentId = selectionGameweek.fplEvent.id;
         const selectedGameweek = Number.isNaN(requested)
-            ? cupGameweeks.includes(currentId)
+            ? submittable.includes(currentId)
                 ? currentId
-                : (cupGameweeks[0] ?? currentId)
+                : (submittable[0] ?? currentId)
             : requested;
         const gameweekData = events.find((event) => event.fplEvent.id === selectedGameweek) ?? selectionGameweek;
         const fixtures = buildCupFixtures(fplFixtures, teams, selectedGameweek);
@@ -74,6 +101,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             cupConfig,
             submissions,
             fixtures,
+            extraRounds: playoffRounds,
         });
         return data<CupSubmitPageData>(pageData);
     } catch (error) {

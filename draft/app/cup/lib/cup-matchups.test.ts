@@ -70,6 +70,18 @@ describe('buildStageMatchups', () => {
         expect(tie?.home.aggregate).toBe(15); // gw24 (5) + gw25 (10)
     });
 
+    it('scores the latest submission when a manager resubmits', () => {
+        // Resubmits append a new row; the latest one counts, the earlier one
+        // stays as history.
+        const submissions = [sub('a', 25, [1]), sub('a', 25, [2])];
+        const [tie] = buildStageMatchups({
+            ...base,
+            submissions,
+            deadlinePassedFor: () => true,
+        });
+        expect(tie?.home.points).toBe(6); // player 2's gw25, not player 1's 4
+    });
+
     it('hides points until the leg is revealed', () => {
         const submissions = [sub('a', 25, [1, 2])];
         const [tie] = buildStageMatchups({

@@ -5,10 +5,12 @@ import type { DivisionId } from '../../../_shared/types/league-types';
 import { getTeamsForGameweek } from '../../../scoring/index.server';
 import { getGameweekForStage, getRoundForGameweek } from '../../lib/cup-config';
 import { isSubmissionOpen } from '../../lib/cup-deadlines';
+import { CUP_STAGES } from '../../lib/cup-rules';
 import { getCupSquad } from '../../lib/cup-squad';
-import { validateCupSubmission } from '../../lib/cup-submission';
-import type { CupStageId, ProcessedCupSheetData } from '../../types/cup-types';
-import { addCupSubmission, readCupConfig, readCupSubmissions } from '../cup-sheets';
+import { findGroupUsedPlayers, findLatestSubmission, validateCupSubmission } from '../../lib/cup-submission';
+import { findUnresolvedPlayoff } from '../../lib/knockout';
+import type { CupRound, CupStageId, ProcessedCupSheetData } from '../../types/cup-types';
+import { addCupSubmission, readCupBracket, readCupConfig, readCupSubmissions } from '../cup-sheets';
 
 export interface CupSubmissionResult {
     success: boolean;
@@ -32,8 +34,25 @@ export async function handleCupSubmission(input: {
         return { success: false, error: 'Missing manager, division or gameweek.' };
     }
 
-    const [cupConfig, submissions] = await Promise.all([readCupConfig(), readCupSubmissions()]);
-    const round = getRoundForGameweek(cupConfig, gameweek);
+    const [cupConfig, submissions, bracket] = await Promise.all([
+        readCupConfig(),
+        readCupSubmissions(),
+        readCupBracket().catch(() => []),
+    ]);
+    const configRound = getRoundForGameweek(cupConfig, gameweek);
+    // Play-off ties (rule 4.8) are submitted outside the config: any four
+    // players, but only while the tie is still open.
+    const round: CupRound | null =
+        configRound ??
+        (findUnresolvedPlayoff(bracket, manager, gameweek)
+            ? {
+                  stage: 'playoff' as const,
+                  leg: 1,
+                  gameweek,
+                  playersRequired: CUP_STAGES.playoff.playersRequired,
+                  twoLegged: false,
+              }
+            : null);
     if (!round) {
         return { success: false, error: `Gameweek ${gameweek} is not part of the cup.` };
     }
@@ -62,8 +81,10 @@ export async function handleCupSubmission(input: {
     if (round.twoLegged && round.leg === 2) {
         const otherGameweek = getGameweekForStage(cupConfig, round.stage, 1);
         if (otherGameweek !== null) {
-            usedPlayers = submissions.find((s) => s.manager === manager && s.gameweek === otherGameweek)?.players ?? [];
+            usedPlayers = findLatestSubmission(submissions, manager, otherGameweek)?.players ?? [];
         }
+    } else if (round.stage === 'league') {
+        usedPlayers = findGroupUsedPlayers(submissions, manager, cupConfig, gameweek);
     }
 
     const validation = validateCupSubmission({

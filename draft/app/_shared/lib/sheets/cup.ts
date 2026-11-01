@@ -198,7 +198,16 @@ export async function writeCupConfigRows(configRows: CupConfigRow[]): Promise<vo
     }
 }
 
-const CUP_BRACKET_HEADERS = ['Stage', 'Tie', 'Home', 'Away', 'HomeAggregate', 'AwayAggregate', 'Winner'] as const;
+const CUP_BRACKET_HEADERS = [
+    'Stage',
+    'Tie',
+    'Home',
+    'Away',
+    'HomeAggregate',
+    'AwayAggregate',
+    'Winner',
+    'Gameweek',
+] as const;
 
 function toManagerId(value: unknown): ManagerId | null {
     const str = value === undefined || value === null ? '' : String(value).trim();
@@ -214,7 +223,7 @@ function toOptionalNumber(value: unknown): number | undefined {
 async function originalReadCupBracketRows(): Promise<CupBracketRow[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
-        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:G` };
+        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:H` };
         const rows = await readSheetRange(range);
 
         return rows
@@ -228,6 +237,8 @@ async function originalReadCupBracketRows(): Promise<CupBracketRow[]> {
                 homeAggregate: toOptionalNumber(row[4]),
                 awayAggregate: toOptionalNumber(row[5]),
                 winner: toManagerId(row[6]) ?? undefined,
+                // Older rows predate the Gameweek column; they resolve via config.
+                gameweek: toOptionalNumber(row[7]),
             }));
     } catch (error) {
         throw createAppError('CUP_BRACKET_READ_ERROR', 'Failed to read cup bracket from sheet', error);
@@ -253,9 +264,10 @@ export async function writeCupBracketRows(matchups: CupBracketRow[]): Promise<vo
                 m.homeAggregate ?? '',
                 m.awayAggregate ?? '',
                 m.winner ?? '',
+                m.gameweek ?? '',
             ]),
         ];
-        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:G` };
+        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:H` };
         await writeSheetRange(range, rows);
         dataCache.invalidateMultiple(getInvalidationKeys('CUP_BRACKET_UPDATED'));
     } catch (error) {

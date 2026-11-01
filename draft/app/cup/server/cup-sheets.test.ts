@@ -169,8 +169,29 @@ describe('writing the cup config and bracket', () => {
 
         const [rows] = sent;
         expect(rows[0][0]).toBe('Stage');
-        expect(rows[1]).toEqual(['r16', 1, 'ann', 'bob', 55, 42, 'ann']);
+        expect(rows[1]).toEqual(['r16', 1, 'ann', 'bob', 55, 42, 'ann', '']);
         // An unplayed tie must not invent a 0 -- it writes empty cells back.
-        expect(rows[2]).toEqual(['r16', 2, 'cat', 'dee', '', '', '']);
+        expect(rows[2]).toEqual(['r16', 2, 'cat', 'dee', '', '', '', '']);
+    });
+
+    it('round-trips a play-off tie’s gameweek', async () => {
+        server.use(
+            sheetValuesHandler({
+                CupConfig: CUP_CONFIG_TAB,
+                CupBracket: [
+                    ['Stage', 'Tie', 'Home', 'Away', 'HomeAggregate', 'AwayAggregate', 'Winner', 'Gameweek'],
+                    ['playoff', '0', 'ann', 'bob', '10', '10', '', '11'],
+                ],
+                Cup: CUP_TAB,
+            }),
+        );
+        const sent = captureWrite();
+
+        const [tie] = await sheets.readCupBracket();
+        expect(tie?.gameweek).toBe(11);
+
+        await sheets.writeCupBracket(await sheets.readCupBracket());
+        const [rows] = sent;
+        expect(rows[1]).toEqual(['playoff', 0, 'ann', 'bob', 10, 10, '', 11]);
     });
 });

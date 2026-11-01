@@ -3,7 +3,7 @@
 // Aliased: both builders below assign to a local `now`.
 import { now as clockNow } from '../../_shared/lib/clock';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { UserTeamsSheetData } from '../../_shared/types/league-types';
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
 import type { CupFixture } from '../lib/cup-fixtures';
@@ -11,6 +11,7 @@ import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
+import { findGroupUsedPlayers, findLatestSubmission } from '../lib/cup-submission';
 import { getTeamVisibility } from '../lib/cup-visibility';
 import type {
     CupGameweekOption,
@@ -19,7 +20,7 @@ import type {
     CupQualifier,
     CupSubmitPageData,
 } from '../types/cup-page-types';
-import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
+import type { CupConfig, CupRound, ProcessedCupSheetData } from '../types/cup-types';
 
 /** A submission's subs count as confirmed once an admin has approved it (Status = 'Y'). */
 function isConfirmed(submission: ProcessedCupSheetData | undefined): boolean {
@@ -31,7 +32,7 @@ function findSubmission(
     manager: string,
     gameweek: number,
 ): ProcessedCupSheetData | undefined {
-    return submissions.find((s) => s.manager === manager && s.gameweek === gameweek);
+    return findLatestSubmission(submissions, manager, gameweek);
 }
 
 /**
@@ -111,7 +112,15 @@ export function getCupStandings(input: {
         cupConfig.league.map((gameweek) => [gameweek, buildGameweekPointsMap(pointsRows, gameweek)]),
     );
 
-    const scored: ScoredSubmission[] = submissions
+    // Resubmits append rows: only the latest per manager+gameweek counts, so a
+    // corrected team neither double-scores nor double-counts autopicks.
+    const latestByKey = new Map<string, ProcessedCupSheetData>();
+    for (const submission of submissions) {
+        latestByKey.set(`${submission.manager}:${submission.gameweek}`, submission);
+    }
+    const latest = [...latestByKey.values()];
+
+    const scored: ScoredSubmission[] = latest
         .filter((submission) => cupConfig.league.includes(submission.gameweek))
         .map((submission) => ({
             manager: submission.manager,
@@ -120,7 +129,29 @@ export function getCupStandings(input: {
             isAutopick: submission.adminReason === 'autopick',
         }));
 
-    const standings = computeLeagueStandings(scored, cupConfig.league);
+    // Elimination counts autopicks across the whole season, league and
+    // knockout (rule 4.14) — not just the league gameweeks scored above.
+    const seasonAutopickCounts = new Map<ManagerId, number>();
+    for (const submission of latest) {
+        if (submission.adminReason === 'autopick') {
+            seasonAutopickCounts.set(submission.manager, (seasonAutopickCounts.get(submission.manager) ?? 0) + 1);
+        }
+    }
+
+    // Combined per-rank points across the league gameweeks for the 4.15/4.8
+    // tiebreak. Built from the same rows as the points above so the two agree.
+    const rankTotals = new Map<ManagerId, number[]>();
+    for (const submission of latest) {
+        if (!cupConfig.league.includes(submission.gameweek)) continue;
+        const points = leaguePointsMaps.get(submission.gameweek) ?? new Map<number, number>();
+        const totals = rankTotals.get(submission.manager) ?? [];
+        submission.players.forEach((code, rank) => {
+            totals[rank] = (totals[rank] ?? 0) + (points.get(code) ?? 0);
+        });
+        rankTotals.set(submission.manager, totals);
+    }
+
+    const standings = computeLeagueStandings(scored, cupConfig.league, seasonAutopickCounts, rankTotals);
     const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
     const qualifiers: CupQualifier[] = getQualifiers(standings).map((manager) => {
         const standing = standings.find((s) => s.manager === manager);
@@ -142,20 +173,29 @@ export async function getCupSubmitData(input: {
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
     fixtures: CupFixture[];
+    /** Rounds outside the config, e.g. a manager's open play-off ties. */
+    extraRounds?: CupRound[];
     now?: Date;
 }): Promise<CupSubmitPageData> {
     const { userTeams, selectedUser, gameweekData, cupConfig, submissions, fixtures } = input;
+    const extraRounds = input.extraRounds ?? [];
     const now = input.now ?? clockNow();
     const gameweek = gameweekData.fplEvent.id;
-    const round = getRoundForGameweek(cupConfig, gameweek);
+    const round = getRoundForGameweek(cupConfig, gameweek, extraRounds);
     const submissionOpen = isSubmissionOpen(gameweekData, now);
     const rawDeadline = gameweekData.fplEvent.deadline_time;
     const deadline = typeof rawDeadline === 'string' ? rawDeadline : rawDeadline.toISOString();
 
-    const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
-        gameweek: r.gameweek,
-        label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
-    }));
+    const gameweekOptions: CupGameweekOption[] = [
+        ...resolveCupRounds(cupConfig).map((r) => ({
+            gameweek: r.gameweek,
+            label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+        })),
+        ...extraRounds.map((r) => ({
+            gameweek: r.gameweek,
+            label: `${CUP_STAGES[r.stage].label} · GW${r.gameweek}`,
+        })),
+    ];
 
     const empty: CupSubmitPageData = {
         hasConfig: !!round,
@@ -183,13 +223,16 @@ export async function getCupSubmitData(input: {
 
     const existing = findSubmission(submissions, selectedUser.userId, gameweek);
 
-    // For leg 2 of a two-legged round, gather the players used in leg 1.
+    // For leg 2 of a two-legged round, gather the players used in leg 1. For
+    // the league stage, gather every other league gameweek's picks (rule 4.10).
     let usedPlayers: number[] = [];
     if (round.twoLegged && round.leg === 2) {
         const otherGameweek = getGameweekForStage(cupConfig, round.stage, 1);
         if (otherGameweek !== null) {
             usedPlayers = findSubmission(submissions, selectedUser.userId, otherGameweek)?.players ?? [];
         }
+    } else if (round.stage === 'league') {
+        usedPlayers = findGroupUsedPlayers(submissions, selectedUser.userId, cupConfig, gameweek);
     }
 
     return {
