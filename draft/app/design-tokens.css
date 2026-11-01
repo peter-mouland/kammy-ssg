@@ -229,6 +229,8 @@
     --color-primary-dark: #1e40af;
     --color-pitch-dark: #2d5a2d;
     --color-pitch-light: #4a7c4a;
+    --color-pitch-gold-dark: var(--color-yellow-700);
+    --color-pitch-gold-light: var(--color-yellow-600);
 
     /* Alias Tokens (legacy — prefer canonical --spacing-*, --font-*, --font-weight-*) */
     --space-1: 0.25rem;

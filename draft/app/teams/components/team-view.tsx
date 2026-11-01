@@ -150,7 +150,13 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                     viewMode={viewMode}
                 />
             )}
-            {activeTab === 'totw' && data.teamOfTheWeek && <TeamOfTheWeek data={data.teamOfTheWeek} />}
+            {activeTab === 'totw' && data.teamOfTheWeek && (
+                <TeamOfTheWeek
+                    data={data.teamOfTheWeek}
+                    teamsByCode={data.teamsByCode}
+                    fplPlayersByCode={data.fplPlayersByCode}
+                />
+            )}
         </>
     );
 };
