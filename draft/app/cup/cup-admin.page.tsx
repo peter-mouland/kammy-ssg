@@ -88,6 +88,14 @@ export function CupAdminPage() {
                                 <span className={styles.vs}>v</span>
                                 <span>{matchup.away ?? 'BYE'}</span>
                                 {matchup.winner && <span className={styles.winner}>→ {matchup.winner}</span>}
+                                <Form method="post">
+                                    <input type="hidden" name="actionType" value="resolveTie" />
+                                    <input type="hidden" name="stage" value={matchup.stage} />
+                                    <input type="hidden" name="tie" value={matchup.tie} />
+                                    <button type="submit" className={styles.button} disabled={isBusy}>
+                                        Resolve
+                                    </button>
+                                </Form>
                             </li>
                         ))}
                     </ul>
