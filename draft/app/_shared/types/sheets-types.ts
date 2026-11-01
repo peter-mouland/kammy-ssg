@@ -170,4 +170,6 @@ export interface CupBracketRow {
     homeAggregate?: number;
     awayAggregate?: number;
     winner?: ManagerId | null;
+    /** Play-off gameweek. Absent on older rows, which use the configured gameweeks. */
+    gameweek?: number;
 }

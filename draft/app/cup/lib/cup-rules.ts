@@ -13,6 +13,7 @@ export const CUP_STAGES: Record<CupStageId, CupStageShape> = {
     qf: { id: 'qf', label: 'Quarter Final', playersRequired: 4, twoLegged: true },
     sf: { id: 'sf', label: 'Semi Final', playersRequired: 4, twoLegged: true },
     final: { id: 'final', label: 'Grand Final', playersRequired: 6, twoLegged: false },
+    playoff: { id: 'playoff', label: 'Play-off', playersRequired: 4, twoLegged: false },
 };
 
 /** Knockout stages, in bracket order. */

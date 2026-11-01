@@ -44,6 +44,12 @@ describe('gameweek <-> stage lookups', () => {
         expect(getRoundForGameweek(CONFIG, 99)).toBeNull();
     });
 
+    it('finds extra rounds outside the config, such as play-offs', () => {
+        const playoff: CupRound = { stage: 'playoff', leg: 1, gameweek: 35, playersRequired: 4, twoLegged: false };
+        expect(getRoundForGameweek(CONFIG, 35, [playoff])).toMatchObject({ stage: 'playoff', gameweek: 35 });
+        expect(getRoundForGameweek(CONFIG, 35)).toBeNull();
+    });
+
     it('finds the gameweek for a stage/leg', () => {
         expect(getGameweekForStage(CONFIG, 'sf', 2)).toBe(32);
         expect(getGameweekForStage(CONFIG, 'final')).toBe(33);
