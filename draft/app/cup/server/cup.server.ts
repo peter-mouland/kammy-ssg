@@ -11,7 +11,7 @@ import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
-import { findLatestSubmission } from '../lib/cup-submission';
+import { findGroupUsedPlayers, findLatestSubmission } from '../lib/cup-submission';
 import { getTeamVisibility } from '../lib/cup-visibility';
 import type {
     CupGameweekOption,
@@ -219,12 +219,15 @@ export async function getCupSubmitData(input: {
 
     const existing = findSubmission(submissions, selectedUser.userId, gameweek);
 
-    // For a two-legged round, gather the players used in the other leg (either
-    // direction) so they are disabled in the picker and rejected on submit.
+    // The reuse ban covers both directions of a two-legged round and every
+    // other league gameweek (rule 4.10), so used players stay disabled in the
+    // picker and rejected on submit.
     let usedPlayers: number[] = [];
     const otherGameweek = getOtherLegGameweek(cupConfig, round);
     if (otherGameweek !== null) {
         usedPlayers = findSubmission(submissions, selectedUser.userId, otherGameweek)?.players ?? [];
+    } else if (round.stage === 'league') {
+        usedPlayers = findGroupUsedPlayers(submissions, selectedUser.userId, cupConfig, gameweek);
     }
 
     return {
