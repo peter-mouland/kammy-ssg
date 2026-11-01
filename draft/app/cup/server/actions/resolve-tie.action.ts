@@ -33,8 +33,11 @@ export interface ResolveTieResult {
 export async function resolveTieAction(input: { stage: string; tie: number }): Promise<ResolveTieResult> {
     const { stage, tie } = input;
 
-    if (!isKnockoutStage(stage as CupStageId)) {
-        return { success: false, error: `Stage '${stage}' is not a knockout stage (${KNOCKOUT_STAGES.join(', ')}).` };
+    if (!isKnockoutStage(stage as CupStageId) && stage !== 'playoff') {
+        return {
+            success: false,
+            error: `Stage '${stage}' is not a knockout stage (${[...KNOCKOUT_STAGES, 'playoff'].join(', ')}).`,
+        };
     }
     const stageId = stage as CupStageId;
     if (!Number.isInteger(tie) || tie < 0) {
@@ -68,23 +71,30 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
     const away: ManagerId = matchup.away;
 
     // Leg gameweeks come from the config; both legs must be complete before a
-    // tie can be resolved.
-    const leg1 = getGameweekForStage(cupConfig, stageId, 1);
-    const leg2 = stageId === 'final' ? null : getGameweekForStage(cupConfig, stageId, 2);
-    if (leg1 === null || (stageId !== 'final' && leg2 === null)) {
-        return { success: false, error: `Stage '${stageId}' is not fully mapped to gameweeks.` };
+    // tie can be resolved. Play-off ties (rule 4.8) carry their own single
+    // gameweek on the bracket row instead.
+    let legs: number[];
+    if (stageId === 'playoff') {
+        if (matchup.gameweek === undefined) {
+            return { success: false, error: 'Play-off tie has no gameweek.' };
+        }
+        legs = [matchup.gameweek];
+    } else {
+        const leg1 = getGameweekForStage(cupConfig, stageId, 1);
+        const leg2 = stageId === 'final' ? null : getGameweekForStage(cupConfig, stageId, 2);
+        if (leg1 === null || (stageId !== 'final' && leg2 === null)) {
+            return { success: false, error: `Stage '${stageId}' is not fully mapped to gameweeks.` };
+        }
+        legs = stageId === 'final' ? [leg1] : [leg1, leg2 as number];
     }
     const eventById = new Map(events.map((event) => [event.fplEvent.id, event]));
-    const legsDone = [leg1, leg2].every((gameweek) => {
-        if (gameweek === null) return true;
+    const legsDone = legs.every((gameweek) => {
         const event = eventById.get(gameweek);
         return event ? isDeadlinePassed(event) : false;
     });
     if (!legsDone) {
-        return { success: false, error: 'Both legs must finish before this tie can be resolved.' };
+        return { success: false, error: 'The gameweek must finish before this tie can be resolved.' };
     }
-
-    const legs = stageId === 'final' ? [leg1] : [leg1, leg2 as number];
     const pointsByLeg = new Map<number, Map<number, number>>();
     for (const gameweek of legs) {
         pointsByLeg.set(gameweek, buildGameweekPointsMap(pointsRows, gameweek));
@@ -111,15 +121,17 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
         const submission = findLatestSubmission(submissions, manager, gameweek);
         return scoreSubmission(submission?.players ?? [], pointsByLeg.get(gameweek) ?? new Map());
     };
-    const legScores =
-        stageId === 'final'
-            ? { homeLeg1: score(home, leg1), awayLeg1: score(away, leg1), homeLeg2: 0, awayLeg2: 0 }
-            : {
-                  homeLeg1: score(home, leg1),
-                  awayLeg1: score(away, leg1),
-                  homeLeg2: score(home, leg2 as number),
-                  awayLeg2: score(away, leg2 as number),
-              };
+    const firstLeg = legs[0];
+    if (firstLeg === undefined) {
+        return { success: false, error: 'Play-off tie has no gameweek.' };
+    }
+    const secondLeg = legs[1];
+    const legScores = {
+        homeLeg1: score(home, firstLeg),
+        awayLeg1: score(away, firstLeg),
+        homeLeg2: secondLeg === undefined ? 0 : score(home, secondLeg),
+        awayLeg2: secondLeg === undefined ? 0 : score(away, secondLeg),
+    };
 
     const homeAggregate = legScores.homeLeg1 + legScores.homeLeg2;
     const awayAggregate = legScores.awayLeg1 + legScores.awayLeg2;

@@ -1,7 +1,7 @@
 /* Location: app/cup/lib/cup-config.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import type { CupConfig } from '../types/cup-types';
+import type { CupConfig, CupRound } from '../types/cup-types';
 import {
     getGameweekForStage,
     getRoundForGameweek,
@@ -41,6 +41,12 @@ describe('gameweek <-> stage lookups', () => {
     it('finds the round played in a gameweek', () => {
         expect(getRoundForGameweek(CONFIG, 27)).toMatchObject({ stage: 'qf', leg: 1 });
         expect(getRoundForGameweek(CONFIG, 99)).toBeNull();
+    });
+
+    it('finds extra rounds outside the config, such as play-offs', () => {
+        const playoff: CupRound = { stage: 'playoff', leg: 1, gameweek: 35, playersRequired: 4, twoLegged: false };
+        expect(getRoundForGameweek(CONFIG, 35, [playoff])).toMatchObject({ stage: 'playoff', gameweek: 35 });
+        expect(getRoundForGameweek(CONFIG, 35)).toBeNull();
     });
 
     it('finds the gameweek for a stage/leg', () => {

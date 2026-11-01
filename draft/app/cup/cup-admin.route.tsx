@@ -115,6 +115,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
             return data<CupAdminActionData>(result);
         }
 
+        if (actionType === 'createPlayoff') {
+            const stage = String(formData.get('stage') ?? '');
+            const tie = Number.parseInt(String(formData.get('tie') ?? ''), 10);
+            const gameweek = Number.parseInt(String(formData.get('gameweek') ?? ''), 10);
+            const { createPlayoffAction } = await import('./server/actions/create-playoff.action');
+            const result = await createPlayoffAction({ stage, tie, gameweek });
+            return data<CupAdminActionData>(result);
+        }
+
         if (actionType === 'advanceRound') {
             const stage = String(formData.get('stage') ?? '');
             const { advanceRoundAction } = await import('./server/actions/advance-round.action');

@@ -53,9 +53,20 @@ export function resolveCupRounds(config: CupConfig): CupRound[] {
     return rounds;
 }
 
-/** The round (stage + leg) played in a given gameweek, if any. */
-export function getRoundForGameweek(config: CupConfig, gameweek: number): CupRound | null {
-    return resolveCupRounds(config).find((round) => round.gameweek === gameweek) ?? null;
+/**
+ * The round (stage + leg) played in a given gameweek, if any. `extraRounds`
+ * covers rounds outside the config — play-off ties carry their own gameweek.
+ */
+export function getRoundForGameweek(
+    config: CupConfig,
+    gameweek: number,
+    extraRounds: CupRound[] = [],
+): CupRound | null {
+    return (
+        resolveCupRounds(config).find((round) => round.gameweek === gameweek) ??
+        extraRounds.find((round) => round.gameweek === gameweek) ??
+        null
+    );
 }
 
 /** The gameweek a given stage/leg is played in, if configured. */

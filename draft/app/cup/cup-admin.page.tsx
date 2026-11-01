@@ -157,6 +157,23 @@ export function CupAdminPage() {
                                         Resolve
                                     </button>
                                 </Form>
+                                {!matchup.winner &&
+                                    matchup.homeAggregate !== undefined &&
+                                    matchup.home &&
+                                    matchup.away && (
+                                        <Form method="post" className={styles.form}>
+                                            <input type="hidden" name="actionType" value="createPlayoff" />
+                                            <input type="hidden" name="stage" value={matchup.stage} />
+                                            <input type="hidden" name="tie" value={matchup.tie} />
+                                            <label className={styles.field}>
+                                                <span className={styles.label}>Play-off GW</span>
+                                                <input className={styles.input} name="gameweek" inputMode="numeric" />
+                                            </label>
+                                            <button type="submit" className={styles.button} disabled={isBusy}>
+                                                Create play-off
+                                            </button>
+                                        </Form>
+                                    )}
                             </li>
                         ))}
                     </ul>

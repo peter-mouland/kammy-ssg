@@ -20,7 +20,7 @@ import type {
     CupQualifier,
     CupSubmitPageData,
 } from '../types/cup-page-types';
-import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
+import type { CupConfig, CupRound, ProcessedCupSheetData } from '../types/cup-types';
 
 /** A submission's subs count as confirmed once an admin has approved it (Status = 'Y'). */
 function isConfirmed(submission: ProcessedCupSheetData | undefined): boolean {
@@ -173,20 +173,29 @@ export async function getCupSubmitData(input: {
     cupConfig: CupConfig;
     submissions: ProcessedCupSheetData[];
     fixtures: CupFixture[];
+    /** Rounds outside the config, e.g. a manager's open play-off ties. */
+    extraRounds?: CupRound[];
     now?: Date;
 }): Promise<CupSubmitPageData> {
     const { userTeams, selectedUser, gameweekData, cupConfig, submissions, fixtures } = input;
+    const extraRounds = input.extraRounds ?? [];
     const now = input.now ?? clockNow();
     const gameweek = gameweekData.fplEvent.id;
-    const round = getRoundForGameweek(cupConfig, gameweek);
+    const round = getRoundForGameweek(cupConfig, gameweek, extraRounds);
     const submissionOpen = isSubmissionOpen(gameweekData, now);
     const rawDeadline = gameweekData.fplEvent.deadline_time;
     const deadline = typeof rawDeadline === 'string' ? rawDeadline : rawDeadline.toISOString();
 
-    const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
-        gameweek: r.gameweek,
-        label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
-    }));
+    const gameweekOptions: CupGameweekOption[] = [
+        ...resolveCupRounds(cupConfig).map((r) => ({
+            gameweek: r.gameweek,
+            label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+        })),
+        ...extraRounds.map((r) => ({
+            gameweek: r.gameweek,
+            label: `${CUP_STAGES[r.stage].label} · GW${r.gameweek}`,
+        })),
+    ];
 
     const empty: CupSubmitPageData = {
         hasConfig: !!round,

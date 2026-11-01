@@ -7,7 +7,7 @@ import type { CupSheetData } from '../../_shared/types/sheets-types';
  * Stage ids are stable keys used across config, submissions and the bracket.
  */
 import type { DivisionId, ManagerId } from '../../_shared/types/league-types';
-export type CupStageId = 'league' | 'r16' | 'qf' | 'sf' | 'final';
+export type CupStageId = 'league' | 'r16' | 'qf' | 'sf' | 'final' | 'playoff';
 
 /**
  * The fixed shape of a stage — how many players a manager picks and whether
@@ -98,4 +98,6 @@ export interface CupMatchup {
     homeAggregate?: number;
     awayAggregate?: number;
     winner?: ManagerId | null;
+    /** Play-off ties (rule 4.8) are played in this gameweek instead of a configured one. */
+    gameweek?: number;
 }

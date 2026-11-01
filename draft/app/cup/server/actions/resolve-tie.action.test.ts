@@ -89,19 +89,19 @@ const CUP_BRACKET_TAB = [
 ];
 
 const POINTS_TAB = [
-    ['playerCode', 'webName', 'position', 'teamName', 'gw-3', 'gw-4'],
-    ['101', 'A', 'mid', 'LIV', '5', '6'],
-    ['102', 'B', 'mid', 'LIV', '1', '0'],
-    ['103', 'C', 'mid', 'ARS', '4', '2'],
-    ['104', 'D', 'mid', 'ARS', '4', '2'],
-    ['201', 'E', 'mid', 'LIV', '9', '0'],
-    ['202', 'F', 'mid', 'LIV', '0', '0'],
-    ['203', 'G', 'mid', 'ARS', '1', '0'],
-    ['204', 'H', 'mid', 'ARS', '0', '0'],
-    ['105', 'I', 'mid', 'LIV', '0', '6'],
-    ['106', 'J', 'mid', 'LIV', '0', '0'],
-    ['107', 'K', 'mid', 'ARS', '0', '2'],
-    ['108', 'L', 'mid', 'ARS', '0', '2'],
+    ['playerCode', 'webName', 'position', 'teamName', 'gw-3', 'gw-4', 'gw-11'],
+    ['101', 'A', 'mid', 'LIV', '5', '6', '5'],
+    ['102', 'B', 'mid', 'LIV', '1', '0', '1'],
+    ['103', 'C', 'mid', 'ARS', '4', '2', '4'],
+    ['104', 'D', 'mid', 'ARS', '4', '2', '4'],
+    ['201', 'E', 'mid', 'LIV', '9', '0', '0'],
+    ['202', 'F', 'mid', 'LIV', '0', '0', '0'],
+    ['203', 'G', 'mid', 'ARS', '1', '0', '0'],
+    ['204', 'H', 'mid', 'ARS', '0', '0', '0'],
+    ['105', 'I', 'mid', 'LIV', '0', '6', '0'],
+    ['106', 'J', 'mid', 'LIV', '0', '0', '0'],
+    ['107', 'K', 'mid', 'ARS', '0', '2', '0'],
+    ['108', 'L', 'mid', 'ARS', '0', '2', '0'],
 ];
 
 const server = setupServer(
@@ -121,6 +121,7 @@ const seed = (gw4: { start: string; end: string } = FINISHED) =>
         gameweek(3, FINISHED),
         gameweek(4, gw4),
         gameweek(5),
+        gameweek(11, FINISHED),
     ]);
 
 /** Captures the cell values a bracket write sends to the Sheets API. */
@@ -155,7 +156,7 @@ describe('resolveTieAction', () => {
         expect(result.success).toBe(true);
         expect(result.message).toContain('ann');
         const [rows] = sent;
-        expect(rows[1]).toEqual(['r16', 0, 'ann', 'bob', 12, 12, 'ann']);
+        expect(rows[1]).toEqual(['r16', 0, 'ann', 'bob', 12, 12, 'ann', '']);
     });
 
     it('resolves a decisive aggregate directly', async () => {
@@ -165,7 +166,7 @@ describe('resolveTieAction', () => {
 
         expect(result.success).toBe(true);
         const [rows] = sent;
-        expect(rows[2]).toEqual(['r16', 1, 'cat', 'dee', 9, 1, 'cat']);
+        expect(rows[2]).toEqual(['r16', 1, 'cat', 'dee', 9, 1, 'cat', '']);
     });
 
     it('advances the present manager on a bye', async () => {
@@ -216,7 +217,7 @@ describe('resolveTieAction', () => {
         expect(result.message).toMatch(/play-off/i);
         // Aggregates are recorded; the winner stays unset for the play-off.
         const [rows] = sent;
-        expect(rows[1]).toEqual(['r16', 0, 'eve', 'fin', 12, 12, '']);
+        expect(rows[1]).toEqual(['r16', 0, 'eve', 'fin', 12, 12, '', '']);
     });
 
     it('refuses a tie with a leg still open', async () => {
@@ -226,7 +227,7 @@ describe('resolveTieAction', () => {
         const result = await resolveTieAction({ stage: 'r16', tie: 0 });
 
         expect(result.success).toBe(false);
-        expect(result.error).toMatch(/both legs must finish/i);
+        expect(result.error).toMatch(/must finish before this tie/i);
     });
 
     it('refuses when a side has no submission', async () => {
@@ -248,5 +249,30 @@ describe('resolveTieAction', () => {
     it('refuses a non-knockout stage and an unknown tie', async () => {
         expect((await resolveTieAction({ stage: 'league', tie: 0 })).success).toBe(false);
         expect((await resolveTieAction({ stage: 'r16', tie: 99 })).error).toMatch(/no r16 tie 99/i);
+    });
+
+    it('resolves a play-off tie as a single leg in its own gameweek', async () => {
+        server.use(
+            sheetValuesHandler({
+                CupConfig: CUP_CONFIG_TAB,
+                Cup: [
+                    CUP_TAB[0],
+                    ['Y', '2026-08-12T10:00:00Z', 'ann', 'premierLeague', '11', 'playoff', '1', '101,102', 'FALSE', ''],
+                    ['Y', '2026-08-12T10:00:00Z', 'bob', 'premierLeague', '11', 'playoff', '1', '103,104', 'FALSE', ''],
+                ],
+                CupBracket: [
+                    ['Stage', 'Tie', 'Home', 'Away', 'HomeAggregate', 'AwayAggregate', 'Winner', 'Gameweek'],
+                    ['playoff', '0', 'ann', 'bob', '', '', '', '11'],
+                ],
+                'player-gw-points': POINTS_TAB,
+            }),
+        );
+        const sent = captureWrite();
+
+        const result = await resolveTieAction({ stage: 'playoff', tie: 0 });
+
+        expect(result.success).toBe(true);
+        const [rows] = sent;
+        expect(rows[1]).toEqual(['playoff', 0, 'ann', 'bob', 6, 8, 'bob', 11]);
     });
 });
