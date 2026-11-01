@@ -133,6 +133,7 @@ export function CupSubmitPage() {
             <p className={styles.counter}>
                 Selected {selected.length} / {required}
             </p>
+            <p className={styles.notice}>Pick in rank order — your first pick settles tied scores first (rule 4.7).</p>
 
             <Form method="post">
                 <input type="hidden" name="manager" value={data.selectedUserId} />
@@ -143,7 +144,8 @@ export function CupSubmitPage() {
                 <div className={styles.squad}>
                     {data.squad.map((player) => {
                         const isUsed = usedPlayers.has(player.code);
-                        const isChecked = selected.includes(player.code);
+                        const rank = selected.indexOf(player.code) + 1;
+                        const isChecked = rank > 0;
                         return (
                             <button
                                 type="button"
@@ -152,6 +154,7 @@ export function CupSubmitPage() {
                                 disabled={isUsed || !data.submissionOpen}
                                 onClick={() => toggle(player.code)}
                             >
+                                {isChecked && <span className={styles.rankBadge}>#{rank}</span>}
                                 <span className={styles.playerName}>{player.name}</span>
                                 <span className={styles.playerPosition}>{player.position}</span>
                                 {player.isPending && <span className={styles.pendingBadge}>pending</span>}

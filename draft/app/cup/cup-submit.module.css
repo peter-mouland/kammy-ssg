@@ -146,6 +146,12 @@
     color: var(--color-info);
 }
 
+.rankBadge {
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
 .usedBadge {
     font-size: var(--font-xs);
     color: var(--color-gray-500);

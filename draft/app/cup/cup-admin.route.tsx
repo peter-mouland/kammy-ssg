@@ -93,6 +93,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
             return data<CupAdminActionData>({ success: true, message: 'Round of 16 draw generated.' });
         }
 
+        if (actionType === 'resolveTie') {
+            const stage = String(formData.get('stage') ?? '');
+            const tie = Number.parseInt(String(formData.get('tie') ?? ''), 10);
+            const { resolveTieAction } = await import('./server/actions/resolve-tie.action');
+            const result = await resolveTieAction({ stage, tie });
+            return data<CupAdminActionData>(result);
+        }
+
         return data<CupAdminActionData>({ success: false, error: `Unknown action: ${actionType}` });
     } catch (error) {
         console.error('Cup admin action error:', error);
