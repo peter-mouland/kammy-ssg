@@ -82,6 +82,38 @@ export function CupAdminPage() {
             </section>
 
             <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Autopicks</h2>
+                <p className={styles.hint}>
+                    Generate alphabetical teams for managers missing a submission in a round (rule 4.6). Short squads
+                    pick what they can; missing squads are reported and skipped.
+                </p>
+                <Form method="post" className={styles.form}>
+                    <input type="hidden" name="actionType" value="generateAutopicks" />
+                    <label className={styles.field}>
+                        <span className={styles.label}>Round</span>
+                        <select
+                            className={styles.input}
+                            name="gameweek"
+                            defaultValue={data.gameweekOptions[0]?.gameweek}
+                        >
+                            {data.gameweekOptions.map((option) => (
+                                <option key={option.gameweek} value={option.gameweek}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <button
+                        type="submit"
+                        className={styles.button}
+                        disabled={isBusy || data.gameweekOptions.length === 0}
+                    >
+                        Autopick missing teams
+                    </button>
+                </Form>
+            </section>
+
+            <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Round of 16 draw</h2>
                 <p className={styles.hint}>
                     {data.qualifiers.length} qualifier{data.qualifiers.length === 1 ? '' : 's'} so far. Generating the

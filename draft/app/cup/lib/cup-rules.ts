@@ -21,7 +21,7 @@ export const KNOCKOUT_STAGES: CupStageId[] = ['r16', 'qf', 'sf', 'final'];
 /** Managers that qualify from the league stage into the Round of 16. */
 export const QUALIFYING_PLACES = 16;
 
-/** Reaching this many autopicks in a single stage disqualifies a manager. */
+/** Failing to field a team this many times in one season eliminates a manager (rule 4.14). */
 export const MAX_AUTOPICKS_BEFORE_DQ = 2;
 
 export function getStageShape(stage: CupStageId): CupStageShape {

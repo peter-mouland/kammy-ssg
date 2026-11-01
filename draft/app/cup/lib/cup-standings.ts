@@ -21,10 +21,18 @@ export interface CupStanding {
 
 /**
  * League-stage standings across the configured league gameweeks: total points
- * per manager, autopick count, and DQ flag (2+ autopicks). Disqualified managers
- * sink to the bottom; the rest are ranked by points descending.
+ * per manager, autopick count, and DQ flag. Disqualified managers sink to the
+ * bottom; the rest are ranked by points descending.
+ *
+ * Elimination is season-wide (rule 4.14: twice in one season, league or
+ * knockout), so the count comes from `seasonAutopickCounts` when given and
+ * falls back to the league-stage count otherwise.
  */
-export function computeLeagueStandings(scored: ScoredSubmission[], leagueGameweeks: number[]): CupStanding[] {
+export function computeLeagueStandings(
+    scored: ScoredSubmission[],
+    leagueGameweeks: number[],
+    seasonAutopickCounts: Map<ManagerId, number> = new Map(),
+): CupStanding[] {
     const gameweeks = new Set(leagueGameweeks);
     const byManager = new Map<ManagerId, { points: number; autopickCount: number }>();
 
@@ -39,8 +47,8 @@ export function computeLeagueStandings(scored: ScoredSubmission[], leagueGamewee
     const standings = Array.from(byManager.entries()).map(([manager, entry]) => ({
         manager,
         points: entry.points,
-        autopickCount: entry.autopickCount,
-        disqualified: isDisqualified(entry.autopickCount),
+        autopickCount: seasonAutopickCounts.get(manager) ?? entry.autopickCount,
+        disqualified: isDisqualified(seasonAutopickCounts.get(manager) ?? entry.autopickCount),
         rank: 0,
     }));
 
