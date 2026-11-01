@@ -1,7 +1,8 @@
 /* Location: app/cup/lib/cup-submission.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import { validateCupSubmission } from './cup-submission';
+import type { ProcessedCupSheetData } from '../types/cup-types';
+import { findLatestSubmission, validateCupSubmission } from './cup-submission';
 
 const SQUAD = [10, 11, 12, 13, 14, 15];
 
@@ -38,5 +39,29 @@ describe('validateCupSubmission', () => {
         });
         expect(result.valid).toBe(false);
         expect(result.errors.some((e) => e.includes('other leg'))).toBe(true);
+    });
+});
+
+describe('findLatestSubmission', () => {
+    const row = (manager: string, gameweek: number, players: number[]): ProcessedCupSheetData => ({
+        status: '',
+        timestamp: new Date('2026-08-12T10:00:00Z'),
+        manager,
+        division: 'premierLeague',
+        gameweek,
+        stage: 'league',
+        leg: 1,
+        players,
+        submittedByAdmin: false,
+        adminReason: '',
+    });
+
+    it('returns the last matching row, keeping earlier rows as history', () => {
+        const submissions = [row('ann', 3, [10]), row('ann', 3, [11]), row('bob', 3, [12])];
+        expect(findLatestSubmission(submissions, 'ann', 3)?.players).toEqual([11]);
+    });
+
+    it('returns undefined when nothing matches', () => {
+        expect(findLatestSubmission([row('ann', 3, [10])], 'ann', 4)).toBeUndefined();
     });
 });

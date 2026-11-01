@@ -4,6 +4,7 @@ import type { ManagerId } from '../../_shared/types/league-types';
 import type { CupConfig, CupMatchup, CupRound, ProcessedCupSheetData } from '../types/cup-types';
 import { getGameweekForStage } from './cup-config';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from './cup-scoring';
+import { findLatestSubmission } from './cup-submission';
 
 export interface CupMatchupSide {
     manager: ManagerId | null;
@@ -52,7 +53,7 @@ export function buildStageMatchups(input: {
 
     const pointsFor = (manager: ManagerId | null, gameweek: number | null): number | null => {
         if (!manager || gameweek === null) return null;
-        const submission = submissions.find((s) => s.manager === manager && s.gameweek === gameweek);
+        const submission = findLatestSubmission(submissions, manager, gameweek);
         if (!submission) return null;
         const revealed = deadlinePassedFor(gameweek) && submission.status === 'Y';
         if (!revealed) return null;
