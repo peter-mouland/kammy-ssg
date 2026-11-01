@@ -1,77 +1,84 @@
-/* Location: app/leagues/components/team-of-the-week.tsx */
+/* Location: app/teams/components/team-of-the-week.tsx */
 
 import { Link } from 'react-router';
+import { PlayerSummaryPoints } from '../../_shared/components/player';
+import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
+import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { TeamOfTheWeekData, TeamOfTheWeekPlayer } from '../../leagues';
 import styles from './team-of-the-week.module.css';
+import layoutStyles from './team-view.module.css';
 
-function PlayerCard({ player, teamShortName }: { player: TeamOfTheWeekPlayer; teamShortName: string }) {
-    const photoUrl = `https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`;
+/** Ownership is read from the viewed division, so this means "unowned in this division". */
+const FREE_AGENT_LABEL = 'Free Agent';
+
+type PlayerLookups = {
+    teamsByCode: Record<number, FplTeam>;
+    fplPlayersByCode: Record<number, EnhancedPlayerData>;
+};
+
+/**
+ * One TOTW player, drawn with the same card as a My Team slot.
+ *
+ * TOTW players are picked from the FPL player list, so the lookup always finds them;
+ * the TOTW position overrides the FPL one because it is the sheet position the points
+ * were scored at.
+ */
+function TotwPlayerCard({ player, teamsByCode, fplPlayersByCode }: { player: TeamOfTheWeekPlayer } & PlayerLookups) {
+    const fplPlayer = fplPlayersByCode[player.code];
+    if (!fplPlayer) return null;
 
     return (
-        <Link to={`/players/${player.code}`} className={styles.playerCard}>
-            <div className={styles.photoWrapper}>
-                <img src={photoUrl} alt={player.web_name} className={styles.photo} loading="lazy" />
-            </div>
-            <span className={styles.name}>{player.web_name}</span>
-            <span className={styles.team}>
-                {teamShortName} | {player.position}
-            </span>
-            {player.manager_name && <span className={styles.manager}>{player.manager_name}</span>}
-            <span className={styles.pointsBadge}>{player.points} pts</span>
-        </Link>
+        <div className={styles.playerPosition}>
+            <Link className={styles.playerCard} to={`/players/${player.code}`}>
+                <PlayerSummaryPoints
+                    player={{ ...fplPlayer, playerPosition: player.position }}
+                    teamsByCode={teamsByCode}
+                    points={player.points}
+                />
+                <span className={styles.owner}>{player.manager_name ?? FREE_AGENT_LABEL}</span>
+            </Link>
+        </div>
     );
 }
 
 function FormationRow({
     players,
-    teamsByCode,
     wide = false,
-}: {
-    players: TeamOfTheWeekPlayer[];
-    teamsByCode: Record<number, { short_name: string }>;
-    wide?: boolean;
-}) {
+    ...lookups
+}: { players: TeamOfTheWeekPlayer[]; wide?: boolean } & PlayerLookups) {
     if (players.length === 0) return null;
 
     return (
-        <div className={wide ? styles.rowWide : styles.row}>
+        <div className={`${styles.line} ${wide ? styles.wide : ''}`}>
             {players.map((player) => (
-                <PlayerCard
-                    key={player.code}
-                    player={player}
-                    teamShortName={teamsByCode[player.team_code]?.short_name ?? '???'}
-                />
+                <TotwPlayerCard key={player.code} player={player} {...lookups} />
             ))}
         </div>
     );
 }
 
-export function TeamOfTheWeek({ data }: { data: TeamOfTheWeekData }) {
-    const { players, teamsByCode } = data;
+export function TeamOfTheWeek({ data, ...lookups }: { data: TeamOfTheWeekData } & PlayerLookups) {
+    const { players } = data;
 
     return (
-        <div className={styles.container}>
-            <h3 className={styles.title}>Team of the Week — GW{data.gameweek}</h3>
-            <div className={styles.pitch}>
-                <div className={styles.pitchInner}>
-                    <div className={styles.goal} />
+        <div className={layoutStyles.mainContent}>
+            <div className={layoutStyles.pitchColumn}>
+                <h3 className={styles.title}>Team of the Week — GW{data.gameweek}</h3>
+                <div className={styles.pitch}>
+                    <div className={styles.pitchBackground}>
+                        <div className={styles.goal} />
 
-                    <div className={styles.formation}>
-                        {/* CA — 2 central attackers */}
-                        <FormationRow players={players.ca} teamsByCode={teamsByCode} />
-                        {/* WA — 2 wide attackers, spread */}
-                        <FormationRow players={players.wa} teamsByCode={teamsByCode} wide />
-                        {/* MID — 2 midfielders */}
-                        <FormationRow players={players.mid} teamsByCode={teamsByCode} />
-                        {/* FB — 2 fullbacks, spread */}
-                        <FormationRow players={players.fb} teamsByCode={teamsByCode} wide />
-                        {/* CB — 2 centre-backs */}
-                        <FormationRow players={players.cb} teamsByCode={teamsByCode} />
-                        {/* GK — 1 goalkeeper */}
-                        <FormationRow players={players.gk} teamsByCode={teamsByCode} />
+                        <div className={styles.formation}>
+                            <FormationRow players={players.ca} {...lookups} />
+                            <FormationRow players={players.wa} wide {...lookups} />
+                            <FormationRow players={players.mid} {...lookups} />
+                            <FormationRow players={players.fb} wide {...lookups} />
+                            <FormationRow players={players.cb} {...lookups} />
+                            <FormationRow players={players.gk} {...lookups} />
+                        </div>
+
+                        <div className={styles.penaltyArea} />
                     </div>
-
-                    <div className={styles.penaltyArea} />
                 </div>
             </div>
         </div>
