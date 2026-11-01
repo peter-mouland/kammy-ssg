@@ -219,7 +219,18 @@ describe('the cup page loader', () => {
             allTabs({
                 Cup: [
                     CUP_TAB[0],
-                    ['', '2026-08-12T10:00:00Z', 'ann', 'premierLeague', '3', 'league', '1', '118748,223340', 'FALSE', ''],
+                    [
+                        '',
+                        '2026-08-12T10:00:00Z',
+                        'ann',
+                        'premierLeague',
+                        '3',
+                        'league',
+                        '1',
+                        '118748,223340',
+                        'FALSE',
+                        '',
+                    ],
                 ],
             }),
         );

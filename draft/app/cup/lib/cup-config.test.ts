@@ -67,7 +67,13 @@ describe('getOtherLegGameweek', () => {
 
     it('returns null for single-leg stages', () => {
         expect(
-            getOtherLegGameweek(CONFIG, { stage: 'league', leg: 1, gameweek: 21, playersRequired: 4, twoLegged: false }),
+            getOtherLegGameweek(CONFIG, {
+                stage: 'league',
+                leg: 1,
+                gameweek: 21,
+                playersRequired: 4,
+                twoLegged: false,
+            }),
         ).toBeNull();
         expect(
             getOtherLegGameweek(CONFIG, { stage: 'final', leg: 1, gameweek: 33, playersRequired: 6, twoLegged: false }),
