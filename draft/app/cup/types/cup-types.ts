@@ -68,6 +68,7 @@ export interface ProcessedCupSheetData {
     gameweek: number;
     stage: CupStageId;
     leg: number;
+    /** Player codes in rank order: first-entered settles ties first (rule 4.7). */
     players: number[];
     submittedByAdmin: boolean;
     adminReason: string;
