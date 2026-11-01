@@ -3,7 +3,7 @@
 // Aliased: both builders below assign to a local `now`.
 import { now as clockNow } from '../../_shared/lib/clock';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
-import type { UserTeamsSheetData } from '../../_shared/types/league-types';
+import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import { getGameweekForStage, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
 import type { CupFixture } from '../lib/cup-fixtures';
@@ -11,6 +11,7 @@ import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
+import { findLatestSubmission } from '../lib/cup-submission';
 import { getTeamVisibility } from '../lib/cup-visibility';
 import type {
     CupGameweekOption,
@@ -31,7 +32,7 @@ function findSubmission(
     manager: string,
     gameweek: number,
 ): ProcessedCupSheetData | undefined {
-    return submissions.find((s) => s.manager === manager && s.gameweek === gameweek);
+    return findLatestSubmission(submissions, manager, gameweek);
 }
 
 /**
@@ -120,7 +121,16 @@ export function getCupStandings(input: {
             isAutopick: submission.adminReason === 'autopick',
         }));
 
-    const standings = computeLeagueStandings(scored, cupConfig.league);
+    // Elimination counts autopicks across the whole season, league and
+    // knockout (rule 4.14) — not just the league gameweeks scored above.
+    const seasonAutopickCounts = new Map<ManagerId, number>();
+    for (const submission of submissions) {
+        if (submission.adminReason === 'autopick') {
+            seasonAutopickCounts.set(submission.manager, (seasonAutopickCounts.get(submission.manager) ?? 0) + 1);
+        }
+    }
+
+    const standings = computeLeagueStandings(scored, cupConfig.league, seasonAutopickCounts);
     const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
     const qualifiers: CupQualifier[] = getQualifiers(standings).map((manager) => {
         const standing = standings.find((s) => s.manager === manager);
