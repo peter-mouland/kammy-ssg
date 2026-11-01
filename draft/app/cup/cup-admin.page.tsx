@@ -3,7 +3,9 @@
 import { Form, useActionData, useLoaderData, useNavigation } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import styles from './cup-admin.module.css';
+import { nextKnockoutStage } from './lib/knockout';
 import type { CupAdminPageData } from './types/cup-page-types';
+import type { CupStageId } from './types/cup-types';
 
 interface CupAdminActionData {
     success?: boolean;
@@ -17,6 +19,18 @@ export function CupAdminPage() {
     const navigation = useNavigation();
     const config = data.config;
     const isBusy = navigation.state !== 'idle';
+
+    // Stages with every tie resolved that feed a next round.
+    const tiesByStage = new Map<CupStageId, { total: number; resolved: number; next: CupStageId }>();
+    for (const matchup of data.bracket) {
+        const next = nextKnockoutStage(matchup.stage);
+        if (!next) continue;
+        const entry = tiesByStage.get(matchup.stage) ?? { total: 0, resolved: 0, next };
+        entry.total += 1;
+        if (matchup.winner) entry.resolved += 1;
+        tiesByStage.set(matchup.stage, entry);
+    }
+    const stagesReady = [...tiesByStage].filter(([, entry]) => entry.total > 0 && entry.total === entry.resolved);
 
     return (
         <div className={styles.page}>
@@ -79,6 +93,21 @@ export function CupAdminPage() {
                         Generate R16 draw
                     </button>
                 </Form>
+
+                {stagesReady.length > 0 && (
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>Advance winners</h2>
+                        {stagesReady.map(([stage, entry]) => (
+                            <Form method="post" key={stage}>
+                                <input type="hidden" name="actionType" value="advanceRound" />
+                                <input type="hidden" name="stage" value={stage} />
+                                <button type="submit" className={styles.button} disabled={isBusy}>
+                                    Advance {stage} winners to {entry.next}
+                                </button>
+                            </Form>
+                        ))}
+                    </section>
+                )}
 
                 {data.bracket.length > 0 && (
                     <ul className={styles.bracket}>

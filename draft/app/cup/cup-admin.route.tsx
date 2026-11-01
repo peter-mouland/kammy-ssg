@@ -101,6 +101,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
             return data<CupAdminActionData>(result);
         }
 
+        if (actionType === 'advanceRound') {
+            const stage = String(formData.get('stage') ?? '');
+            const { advanceRoundAction } = await import('./server/actions/advance-round.action');
+            const result = await advanceRoundAction({ stage });
+            return data<CupAdminActionData>(result);
+        }
+
         return data<CupAdminActionData>({ success: false, error: `Unknown action: ${actionType}` });
     } catch (error) {
         console.error('Cup admin action error:', error);

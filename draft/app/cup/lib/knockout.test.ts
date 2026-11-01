@@ -1,7 +1,14 @@
 /* Location: app/cup/lib/knockout.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import { advanceWinners, decideTiebreak, fisherYatesShuffle, pairIntoMatchups, resolveTie } from './knockout';
+import {
+    advanceWinners,
+    decideTiebreak,
+    fisherYatesShuffle,
+    nextKnockoutStage,
+    pairIntoMatchups,
+    resolveTie,
+} from './knockout';
 
 describe('fisherYatesShuffle', () => {
     it('is a permutation and is deterministic for a fixed random source', () => {
@@ -62,6 +69,19 @@ describe('decideTiebreak', () => {
 
     it('needs a play-off when all three levels are equal', () => {
         expect(decideTiebreak([4, 4, 4], [4, 4, 4])).toBeUndefined();
+    });
+});
+
+describe('nextKnockoutStage', () => {
+    it('feeds each round into the next', () => {
+        expect(nextKnockoutStage('r16')).toBe('qf');
+        expect(nextKnockoutStage('qf')).toBe('sf');
+        expect(nextKnockoutStage('sf')).toBe('final');
+    });
+
+    it('returns null where there is no next round', () => {
+        expect(nextKnockoutStage('final')).toBeNull();
+        expect(nextKnockoutStage('league')).toBeNull();
     });
 });
 
