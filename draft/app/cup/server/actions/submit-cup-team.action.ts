@@ -6,7 +6,7 @@ import { getTeamsForGameweek } from '../../../scoring/index.server';
 import { getOtherLegGameweek, getRoundForGameweek } from '../../lib/cup-config';
 import { isSubmissionOpen } from '../../lib/cup-deadlines';
 import { getCupSquad } from '../../lib/cup-squad';
-import { validateCupSubmission } from '../../lib/cup-submission';
+import { findLatestSubmission, validateCupSubmission } from '../../lib/cup-submission';
 import type { CupStageId, ProcessedCupSheetData } from '../../types/cup-types';
 import { addCupSubmission, readCupConfig, readCupSubmissions } from '../cup-sheets';
 
@@ -63,7 +63,7 @@ export async function handleCupSubmission(input: {
     let usedPlayers: number[] = [];
     const otherGameweek = getOtherLegGameweek(cupConfig, round);
     if (otherGameweek !== null) {
-        usedPlayers = submissions.find((s) => s.manager === manager && s.gameweek === otherGameweek)?.players ?? [];
+        usedPlayers = findLatestSubmission(submissions, manager, otherGameweek)?.players ?? [];
     }
 
     const validation = validateCupSubmission({
