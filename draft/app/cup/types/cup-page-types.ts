@@ -58,6 +58,7 @@ export interface CupAdminPageData {
     config: CupConfig | null;
     qualifiers: CupQualifier[];
     bracket: CupMatchup[];
+    gameweekOptions: CupGameweekOption[];
 }
 
 export interface CupSubmitPageData {
