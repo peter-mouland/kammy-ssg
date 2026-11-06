@@ -1,0 +1,51 @@
+{
+    "range": "PlayerInbox!A1:M1000",
+    "majorDimension": "ROWS",
+    "values": [
+        [
+            "code",
+            "name",
+            "club",
+            "fplType",
+            "suggested",
+            "confidence",
+            "basis",
+            "summary",
+            "reasoning",
+            "sources",
+            "added",
+            "position",
+            "status"
+        ],
+        [
+            "192895",
+            "Tierney",
+            "ARS",
+            "DEF",
+            "FB",
+            "high",
+            "record",
+            "Left back in every sampled start.",
+            "Slot 5 of a back four in 5 of 5 sampled league starts.\nValidated against the recognised right back in the same XI, who read slot 2.\nCovered at left centre-back twice, both times as an in-game switch, never from the start.",
+            "Sofascore lineups | https://api.sofascore.com/api/v1/event/11352741/lineups\nFotMob percentiles | https://www.fotmob.com/players/192895",
+            "2026-08-24T06:00:00.000Z",
+            "",
+            ""
+        ],
+        [
+            "223723",
+            "Tomiyasu",
+            "ARS",
+            "DEF",
+            "CB",
+            "low",
+            "projection",
+            "Genuinely split between right back and centre-back; no settled role.",
+            "94 league minutes this season, which is too small a sample to read a split from.\nStarted at right back in the one sampled start, but the depth chart has him behind the first-choice right back.\nManager described him pre-season as cover across the back line rather than for one slot.",
+            "Sofascore lineups | https://api.sofascore.com/api/v1/event/11352755/lineups",
+            "2026-08-24T06:00:00.000Z",
+            "",
+            ""
+        ]
+    ]
+}

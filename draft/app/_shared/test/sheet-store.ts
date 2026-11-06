@@ -24,6 +24,21 @@ export abstract class SheetStore {
      */
     protected abstract seed(tab: string): SheetCell[][];
 
+    /** Whether the tab exists before anything has touched it. */
+    protected abstract seedExists(tab: string): boolean;
+
+    /**
+     * Whether the tab exists at all.
+     *
+     * The real API answers a read for an unknown sheet name with 400 "Unable to parse
+     * range", and code that tells a missing tab apart from an empty one can only be tested
+     * against a fake that makes the same distinction. A tab written to counts as existing,
+     * because by then it does.
+     */
+    has(tab: string): boolean {
+        return this.tabs.has(tab) || this.seedExists(tab);
+    }
+
     /** A tab's rows, header included. Seeded on first use, mutated in place after. */
     values(tab: string): SheetCell[][] {
         const loaded = this.tabs.get(tab);
@@ -81,5 +96,9 @@ export class RecordSheetStore extends SheetStore {
 
     protected seed(tab: string): SheetCell[][] {
         return this.source[tab] ?? [];
+    }
+
+    protected seedExists(tab: string): boolean {
+        return tab in this.source;
     }
 }

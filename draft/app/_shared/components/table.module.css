@@ -463,3 +463,11 @@ th.fixedColumn {
         display: none;
     }
 }
+
+/* Expanded detail row. Sits under its parent row and spans every column, so the panel
+   inside it can lay itself out freely without fighting the table's column widths. */
+.expandedRow > .expandedCell {
+    padding: 0;
+    background: var(--color-gray-50);
+    border-bottom: 1px solid var(--color-gray-200);
+}

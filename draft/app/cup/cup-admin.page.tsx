@@ -3,7 +3,9 @@
 import { Form, useActionData, useLoaderData, useNavigation } from 'react-router';
 import { PageHeader } from '../_shared/components/page-header';
 import styles from './cup-admin.module.css';
+import { nextKnockoutStage } from './lib/knockout';
 import type { CupAdminPageData } from './types/cup-page-types';
+import type { CupStageId } from './types/cup-types';
 
 interface CupAdminActionData {
     success?: boolean;
@@ -17,6 +19,18 @@ export function CupAdminPage() {
     const navigation = useNavigation();
     const config = data.config;
     const isBusy = navigation.state !== 'idle';
+
+    // Stages with every tie resolved that feed a next round.
+    const tiesByStage = new Map<CupStageId, { total: number; resolved: number; next: CupStageId }>();
+    for (const matchup of data.bracket) {
+        const next = nextKnockoutStage(matchup.stage);
+        if (!next) continue;
+        const entry = tiesByStage.get(matchup.stage) ?? { total: 0, resolved: 0, next };
+        entry.total += 1;
+        if (matchup.winner) entry.resolved += 1;
+        tiesByStage.set(matchup.stage, entry);
+    }
+    const stagesReady = [...tiesByStage].filter(([, entry]) => entry.total > 0 && entry.total === entry.resolved);
 
     return (
         <div className={styles.page}>
@@ -68,6 +82,38 @@ export function CupAdminPage() {
             </section>
 
             <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Autopicks</h2>
+                <p className={styles.hint}>
+                    Generate alphabetical teams for managers missing a submission in a round (rule 4.6). Short squads
+                    pick what they can; missing squads are reported and skipped.
+                </p>
+                <Form method="post" className={styles.form}>
+                    <input type="hidden" name="actionType" value="generateAutopicks" />
+                    <label className={styles.field}>
+                        <span className={styles.label}>Round</span>
+                        <select
+                            className={styles.input}
+                            name="gameweek"
+                            defaultValue={data.gameweekOptions[0]?.gameweek}
+                        >
+                            {data.gameweekOptions.map((option) => (
+                                <option key={option.gameweek} value={option.gameweek}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <button
+                        type="submit"
+                        className={styles.button}
+                        disabled={isBusy || data.gameweekOptions.length === 0}
+                    >
+                        Autopick missing teams
+                    </button>
+                </Form>
+            </section>
+
+            <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Round of 16 draw</h2>
                 <p className={styles.hint}>
                     {data.qualifiers.length} qualifier{data.qualifiers.length === 1 ? '' : 's'} so far. Generating the
@@ -80,6 +126,21 @@ export function CupAdminPage() {
                     </button>
                 </Form>
 
+                {stagesReady.length > 0 && (
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>Advance winners</h2>
+                        {stagesReady.map(([stage, entry]) => (
+                            <Form method="post" key={stage}>
+                                <input type="hidden" name="actionType" value="advanceRound" />
+                                <input type="hidden" name="stage" value={stage} />
+                                <button type="submit" className={styles.button} disabled={isBusy}>
+                                    Advance {stage} winners to {entry.next}
+                                </button>
+                            </Form>
+                        ))}
+                    </section>
+                )}
+
                 {data.bracket.length > 0 && (
                     <ul className={styles.bracket}>
                         {data.bracket.map((matchup) => (
@@ -88,6 +149,31 @@ export function CupAdminPage() {
                                 <span className={styles.vs}>v</span>
                                 <span>{matchup.away ?? 'BYE'}</span>
                                 {matchup.winner && <span className={styles.winner}>→ {matchup.winner}</span>}
+                                <Form method="post">
+                                    <input type="hidden" name="actionType" value="resolveTie" />
+                                    <input type="hidden" name="stage" value={matchup.stage} />
+                                    <input type="hidden" name="tie" value={matchup.tie} />
+                                    <button type="submit" className={styles.button} disabled={isBusy}>
+                                        Resolve
+                                    </button>
+                                </Form>
+                                {!matchup.winner &&
+                                    matchup.homeAggregate !== undefined &&
+                                    matchup.home &&
+                                    matchup.away && (
+                                        <Form method="post" className={styles.form}>
+                                            <input type="hidden" name="actionType" value="createPlayoff" />
+                                            <input type="hidden" name="stage" value={matchup.stage} />
+                                            <input type="hidden" name="tie" value={matchup.tie} />
+                                            <label className={styles.field}>
+                                                <span className={styles.label}>Play-off GW</span>
+                                                <input className={styles.input} name="gameweek" inputMode="numeric" />
+                                            </label>
+                                            <button type="submit" className={styles.button} disabled={isBusy}>
+                                                Create play-off
+                                            </button>
+                                        </Form>
+                                    )}
                             </li>
                         ))}
                     </ul>

@@ -53,15 +53,36 @@ export function resolveCupRounds(config: CupConfig): CupRound[] {
     return rounds;
 }
 
-/** The round (stage + leg) played in a given gameweek, if any. */
-export function getRoundForGameweek(config: CupConfig, gameweek: number): CupRound | null {
-    return resolveCupRounds(config).find((round) => round.gameweek === gameweek) ?? null;
+/**
+ * The round (stage + leg) played in a given gameweek, if any. `extraRounds`
+ * covers rounds outside the config — play-off ties carry their own gameweek.
+ */
+export function getRoundForGameweek(
+    config: CupConfig,
+    gameweek: number,
+    extraRounds: CupRound[] = [],
+): CupRound | null {
+    return (
+        resolveCupRounds(config).find((round) => round.gameweek === gameweek) ??
+        extraRounds.find((round) => round.gameweek === gameweek) ??
+        null
+    );
 }
 
 /** The gameweek a given stage/leg is played in, if configured. */
 export function getGameweekForStage(config: CupConfig, stage: CupStageId, leg = 1): number | null {
     const round = resolveCupRounds(config).find((r) => r.stage === stage && r.leg === leg);
     return round ? round.gameweek : null;
+}
+
+/**
+ * The gameweek of the other leg of a two-legged round, for the reuse ban.
+ * Works in both directions: a leg-1 submission made after leg 2 must respect
+ * leg 2's players just as much as the reverse. Null for single-leg stages.
+ */
+export function getOtherLegGameweek(config: CupConfig, round: CupRound): number | null {
+    if (!round.twoLegged) return null;
+    return getGameweekForStage(config, round.stage, round.leg === 1 ? 2 : 1);
 }
 
 /**

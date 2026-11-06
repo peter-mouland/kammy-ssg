@@ -15,6 +15,7 @@ export default [
     route('players/:playerCode', 'players/player.route.tsx'),
     route('transfers/:divisionId?', 'transfers/transfers.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),
+    route('rules', 'rules/rules.route.tsx'),
 
     // Cup (cross-division knockout)
     route('cup', 'cup/cup.route.tsx'),
@@ -40,6 +41,7 @@ export default [
     route('admin', 'admin/admin.route.tsx', [
         index('admin/admin-overview.route.tsx'),
         route('draft', 'admin/admin-draft.route.tsx'),
+        route('new-players', 'admin/admin-new-players.route.tsx'),
         route('points', 'admin/admin-points.route.tsx'),
         route('settings', 'admin/admin-settings.route.tsx'),
         route('setup-new-season', 'admin/admin-setup-new-season.route.tsx'),

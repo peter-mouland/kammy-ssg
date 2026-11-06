@@ -44,6 +44,15 @@ export class FixtureSheetStore extends SheetStore {
     protected seed(tab: string): SheetCell[][] {
         return sheetTab(tab);
     }
+
+    protected seedExists(tab: string): boolean {
+        try {
+            sheetTab(tab);
+            return true;
+        } catch {
+            return false;
+        }
+    }
 }
 
 interface SheetWriteBody {
@@ -73,11 +82,20 @@ export function fixtureSheetsHandlers(store: FixtureSheetStore): RequestHandler[
 
         http.get(SHEETS_VALUES_URL, ({ params }) => {
             const range = rangeOf(params);
-            return HttpResponse.json({
-                range,
-                majorDimension: 'ROWS',
-                values: store.values(tabNameFromRange(range)),
-            });
+            const tab = tabNameFromRange(range);
+
+            // Google's own answer for a sheet name that does not exist. Letting `sheetTab`
+            // throw instead surfaced as a 500 with a message the app cannot interpret, so
+            // a page that handles a missing tab gracefully crashed against the harness
+            // while working against the real thing.
+            if (!store.has(tab)) {
+                return HttpResponse.json(
+                    { error: { code: 400, status: 'INVALID_ARGUMENT', message: `Unable to parse range: ${range}` } },
+                    { status: 400 },
+                );
+            }
+
+            return HttpResponse.json({ range, majorDimension: 'ROWS', values: store.values(tab) });
         }),
 
         http.put(SHEETS_VALUES_URL, async ({ params, request }) => {

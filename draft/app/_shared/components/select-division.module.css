@@ -4,7 +4,9 @@
     font-weight: var(--font-weight-medium);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-4);
+    align-items: stretch;
+    gap: var(--spacing-2);
+    width: 100%;
 }
 
 .selectLabel {
@@ -18,7 +20,8 @@
     border-radius: var(--radius-md);
     background-color: var(--color-white);
     font-size: var(--font-sm);
-    min-width: 150px;
+    width: 100%;
+    min-width: auto;
 }
 
 .selectInput:focus {
@@ -27,16 +30,14 @@
     box-shadow: var(--input-focus-shadow);
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
+@media (min-width: 768px) {
     .selectContainer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-2);
+        gap: var(--spacing-4);
+        width: auto;
     }
 
     .selectInput {
-        width: 100%;
-        min-width: auto;
+        width: auto;
+        min-width: 150px;
     }
 }

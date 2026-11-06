@@ -70,3 +70,56 @@ export function advanceWinners(resolved: CupMatchup[], nextStage: CupStageId): C
     const winners = resolved.map((matchup) => matchup.winner ?? null);
     return pairIntoMatchups(winners, nextStage);
 }
+
+/** The stage a stage's winners feed into, or null for the final. */
+export function nextKnockoutStage(stage: CupStageId): CupStageId | null {
+    if (stage === 'r16') return 'qf';
+    if (stage === 'qf') return 'sf';
+    if (stage === 'sf') return 'final';
+    return null;
+}
+
+/**
+ * A manager's open play-off tie at a gameweek, if any: stage 'playoff', this
+ * gameweek, no winner yet. Used to admit play-off submissions.
+ */
+export function findUnresolvedPlayoff(
+    bracket: CupMatchup[],
+    manager: ManagerId,
+    gameweek: number,
+): CupMatchup | undefined {
+    return bracket.find(
+        (matchup) =>
+            matchup.stage === 'playoff' &&
+            matchup.gameweek === gameweek &&
+            !matchup.winner &&
+            (matchup.home === manager || matchup.away === manager),
+    );
+}
+
+/** The next play-off tie index. */
+export function nextPlayoffTie(bracket: CupMatchup[]): number {
+    return (
+        bracket
+            .filter((matchup) => matchup.stage === 'playoff')
+            .reduce((max, matchup) => Math.max(max, matchup.tie), -1) + 1
+    );
+}
+
+/**
+ * Rank-order tiebreak (rule 4.8): with aggregates level, compare the combined
+ * scores of each side's first-entered players, then second, then third. Each
+ * array holds one side's per-rank combined points across the legs being
+ * compared (a single leg for single-round ties). Returns the winning side, or
+ * undefined when the tie survives every level and needs a play-off.
+ */
+export function decideTiebreak(homeRanked: number[], awayRanked: number[]): 'home' | 'away' | undefined {
+    const levels = Math.min(homeRanked.length, awayRanked.length, 3);
+    for (let level = 0; level < levels; level++) {
+        const home = homeRanked[level] ?? 0;
+        const away = awayRanked[level] ?? 0;
+        if (home > away) return 'home';
+        if (away > home) return 'away';
+    }
+    return undefined;
+}
