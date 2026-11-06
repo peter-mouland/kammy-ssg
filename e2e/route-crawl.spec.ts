@@ -55,6 +55,7 @@ const PAGES = [
     '/cup/admin',
     '/admin',
     '/admin/draft',
+    '/admin/new-players',
     '/admin/points',
     '/admin/settings',
     '/admin/setup-new-season',
