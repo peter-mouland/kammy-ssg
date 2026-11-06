@@ -40,7 +40,12 @@ const resolveTeamName = (
     return teamCode === undefined ? undefined : teamsByCode[teamCode]?.name;
 };
 
-function PositionBadge({ position, isSub = false }: { position: CustomPosition; isSub?: boolean }) {
+/**
+ * Exported so anything showing a position uses the same pill -- the colours come from
+ * the `--color-position-*` tokens and there should be exactly one place that maps a
+ * bucket to them.
+ */
+export function PositionBadge({ position, isSub = false }: { position: CustomPosition; isSub?: boolean }) {
     return (
         <span className={`${styles.positionBadge} ${styles[position.toLowerCase()]}`}>
             <span>{position}</span>

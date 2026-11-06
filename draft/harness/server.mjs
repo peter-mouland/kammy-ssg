@@ -100,13 +100,19 @@ async function main() {
 
     const load = (path) => vite.ssrLoadModule(path);
 
-    const [{ useFakeSheetsCredentials }, { setupServer }, { FixtureSheetStore, fixtureHandlers }, { runWithNow }] =
-        await Promise.all([
-            load('/app/_shared/test/google-sheets-msw.ts'),
-            import('msw/node'),
-            load('/app/_shared/test/fixtures/fixture-msw-handlers.ts'),
-            load('/app/_shared/lib/clock.server.ts'),
-        ]);
+    const [
+        { useFakeSheetsCredentials },
+        { setupServer },
+        { FixtureSheetStore, fixtureHandlers },
+        { runWithNow },
+        { dataCache },
+    ] = await Promise.all([
+        load('/app/_shared/test/google-sheets-msw.ts'),
+        import('msw/node'),
+        load('/app/_shared/test/fixtures/fixture-msw-handlers.ts'),
+        load('/app/_shared/lib/clock.server.ts'),
+        load('/app/_shared/lib/cache/data-cache.service.ts'),
+    ]);
 
     useFakeSheetsCredentials();
 
@@ -147,6 +153,27 @@ async function main() {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.text());
+
+    /**
+     * Put the sheets back to their captured state.
+     *
+     * The store is one object for the life of the process, so a spec that writes leaves
+     * its rows behind -- for the next test in the file, and (with `reuseExistingServer`)
+     * for the next run altogether. A second run of a spec that approves a player would
+     * then fail with "already in the game", which looks like a broken feature rather than
+     * a dirty fixture. Reads need none of this, which is why it did not exist before.
+     */
+    app.post('/__harness/reset-sheets', (_req, res) => {
+        store.reset();
+
+        // The store alone is not the state. `readPlayers()` is cached for 24 hours, so a
+        // released player stays in the app's idea of who is in the game long after the row
+        // has gone from the sheet -- the reset would report success and change nothing
+        // visible. Both have to go for "back to the captured state" to be true.
+        dataCache.clear();
+
+        res.json({ ok: true });
+    });
 
     app.all(
         '*',
