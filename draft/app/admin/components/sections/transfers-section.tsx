@@ -12,10 +12,7 @@ import type { DivisionSheetData, ManagerId, PositionSlotKey } from '../../../_sh
 import type { RosterPlayer } from '../../../_shared/types/squad-types';
 import type { ProcessedTransfer, TransferAdminOverviewData, TransferValidationResult } from '../../../transfers';
 import { LoanStatusDisplay } from '../../../transfers';
-import {
-    transfersAdminAvailableGameweeks,
-    transfersAdminSelectionGameweek,
-} from '../../lib/transfers-gameweek';
+import { selectionOrScoringGameweek, transfersAdminAvailableGameweeks } from '../../lib/transfers-gameweek';
 import type { AdminDataContext } from '../../types/admin-orchestrator-types';
 import * as Icons from '../icons/admin-icons';
 import { ActionBar } from '../layout/action-bar';
@@ -458,11 +455,11 @@ export function TransfersSection({
     const divisionTransferData = transfersData[selectedDivision.id];
     const navigate = useNavigate();
 
-    // Transfers are gameweek-scoped on the selection GW (open transfer window). The loader
-    // throws a friendly response before this renders; this keeps the narrowing local and
-    // honest. After all hooks, so the early return cannot change hook order.
-    const currentGameweekData = transfersAdminSelectionGameweek(sharedContext.fplData.events);
-    if (!currentGameweekData) {
+    // Transfers are gameweek-scoped: the selection GW, or the scoring GW after the final
+    // deadline. The loader throws a friendly response before this renders; this keeps the
+    // narrowing local and honest. After all hooks, so the early return cannot change hook order.
+    const defaultGameweek = selectionOrScoringGameweek(sharedContext.fplData.events);
+    if (!defaultGameweek) {
         return <p>There is no current gameweek, so there are no transfers to review.</p>;
     }
 
@@ -500,7 +497,7 @@ export function TransfersSection({
                 actions={
                     <ActionBar align={'right'} gap={'md'}>
                         <GameweekSelector
-                            currentGameweekData={currentGameweekData}
+                            currentGameweekData={defaultGameweek}
                             selectedGameweekData={selectedGameweek}
                             availableGameweeks={availableGameweeks}
                         />

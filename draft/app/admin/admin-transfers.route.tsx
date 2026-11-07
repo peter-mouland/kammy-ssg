@@ -5,12 +5,8 @@ import type { FplTeam } from '../_shared/lib/fpl/fpl-types';
 import type { DivisionSheetData } from '../_shared/types/league-types';
 import type { TransferAdminOverviewData } from '../transfers';
 import { TransfersSection } from './components/sections/transfers-section';
-import {
-    resolveTransfersAdminSelectedGameweekId,
-    transfersAdminSelectionGameweek,
-} from './lib/transfers-gameweek';
+import { resolveTransfersAdminSelectedGameweekId, selectionOrScoringGameweek } from './lib/transfers-gameweek';
 import type { AdminDataContext } from './types/admin-orchestrator-types';
-import type { SystemStatusSummary } from './types/admin-types';
 
 export const meta: MetaFunction = () => {
     return [
@@ -20,7 +16,6 @@ export const meta: MetaFunction = () => {
 };
 
 interface AdminOutletContext {
-    systemStatus: SystemStatusSummary;
     sharedContext: AdminDataContext;
     transfersData: Record<string, TransferAdminOverviewData> | null;
     teamsByCode: Record<number, FplTeam> | null;
@@ -31,19 +26,19 @@ export default function AdminTransfersRoute() {
     const { sharedContext, transfersData, teamsByCode } = useOutletContext<AdminOutletContext>();
     const [searchParams] = useSearchParams();
 
-    // Selection GW is the open transfer window. The loader throws a friendly response when
-    // there isn't one; this keeps the narrowing local rather than asserting a gameweek the
-    // type no longer promises.
-    const selectionGameweek = transfersAdminSelectionGameweek(sharedContext.fplData.events);
-    if (!selectionGameweek) {
+    // The selection GW, or the scoring GW after the final deadline. The loader throws a
+    // friendly response when there is neither; this keeps the narrowing local rather than
+    // asserting a gameweek the type no longer promises.
+    const defaultGameweek = selectionOrScoringGameweek(sharedContext.fplData.events);
+    if (!defaultGameweek) {
         return <p>There is no current gameweek, so there are no transfers to review.</p>;
     }
 
-    // Get filter parameters from URL — default to selection, not scoring.
+    // Get filter parameters from URL
     const selectedDivisionId = searchParams.get('division') || sharedContext.sheetData.divisions[0]?.id;
     const selectedGameweekId =
         resolveTransfersAdminSelectedGameweekId(sharedContext.fplData.events, searchParams.get('gameweek')) ??
-        selectionGameweek.fplEvent.id;
+        defaultGameweek.fplEvent.id;
 
     // Find the selected division and gameweek objects
     const selectedDivision: DivisionSheetData =
@@ -51,7 +46,7 @@ export default function AdminTransfersRoute() {
         sharedContext.sheetData.divisions[0];
 
     const selectedGameweek =
-        sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId) || selectionGameweek;
+        sharedContext.fplData.events.find((gw) => gw.fplEvent.id === selectedGameweekId) || defaultGameweek;
 
     return (
         <TransfersSection
