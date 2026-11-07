@@ -20,6 +20,7 @@ import type { DraftAction } from '../draft';
 import type { TransferAdminOverviewData } from '../transfers';
 import { AdminLayout } from './admin.layout';
 import styles from './admin.route.module.css';
+import { resolveTransfersAdminSelectedGameweekId, selectionOrScoringGameweek } from './lib/transfers-gameweek';
 import type { AdminDataContext } from './types/admin-orchestrator-types';
 import type { AdminActionData, SystemStatusSummary } from './types/admin-types';
 
@@ -83,12 +84,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
         if (isTransferRoute) {
             // Transfer admin reviews the open transfer window (selection GW), not the scoring
             // GW — same question `/transfers` asks. Mid-window those differ; defaulting to
-            // scoring left reviewers on the played round with the next GW unreachable.
-            const { transfersAdminSelectionGameweek, resolveTransfersAdminSelectedGameweekId } = await import(
-                './lib/transfers-gameweek'
-            );
-            const selectionGameweek = transfersAdminSelectionGameweek(sharedContext.fplData.events);
-            const availability = describeGameweekAvailability(sharedContext.fplData.events, selectionGameweek);
+            // scoring left reviewers on the played round with the next GW unreachable. After
+            // the final deadline there is no selection GW, and scoring keeps GW38 reviewable.
+            const defaultGameweek = selectionOrScoringGameweek(sharedContext.fplData.events);
+            const availability = describeGameweekAvailability(sharedContext.fplData.events, defaultGameweek);
             if (!availability.available) {
                 throw friendlyErrorResponse(availability.title, availability.detail);
             }
