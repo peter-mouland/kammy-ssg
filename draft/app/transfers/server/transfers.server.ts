@@ -6,8 +6,23 @@ import { readPlayers } from '../../_shared/lib/sheets/players';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
 import { getManagerCategoryStandings } from '../../leagues/index.server';
+import { buildUpcomingFixturesByTeamCode, type UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransfersPageData } from '../types/transfer-form-types';
 import { getTransfersDataForDivision } from './services/transfers-data.service';
+
+/**
+ * Each club's fixtures for the gameweeks from the one this transfer is for. {} when the
+ * fixtures cannot be read: the page shows no fixtures rather than failing.
+ */
+async function loadUpcomingFixtures(fromGameweek: number): Promise<UpcomingFixturesByTeamCode> {
+    try {
+        const [fixtures, teams] = await Promise.all([fplApiCache.getFplFixtures(), fplApiCache.getFplTeams()]);
+        return buildUpcomingFixturesByTeamCode(fixtures, teams, fromGameweek);
+    } catch (error) {
+        console.error(`Failed to load upcoming fixtures from GW${fromGameweek}:`, error);
+        return {};
+    }
+}
 
 interface GetTransfersPageDataParams {
     selectedDivision: DivisionId;
@@ -76,12 +91,17 @@ export async function getTransfersPageData({
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
 
         // Category standings are one uncached Firestore read (the division-teams document)
-        // plus the cached UserTeams sheet. They never fail the page: [] means no headers.
-        const [{ transfers: currentTransfers, divisionRosters, validationContext }, categoryStandings] =
-            await Promise.all([
-                getTransfersDataForDivision(selectedDivision, selectedGameweekData, { cache: false }),
-                selectedUser ? getManagerCategoryStandings(selectedDivision, selectedUser.userId) : [],
-            ]);
+        // plus the cached UserTeams sheet. Upcoming fixtures come from data already cached
+        // for every page. Neither ever fails the page: empty means no headers / no fixtures.
+        const [
+            { transfers: currentTransfers, divisionRosters, validationContext },
+            categoryStandings,
+            upcomingFixturesByTeamCode,
+        ] = await Promise.all([
+            getTransfersDataForDivision(selectedDivision, selectedGameweekData, { cache: false }),
+            selectedUser ? getManagerCategoryStandings(selectedDivision, selectedUser.userId) : [],
+            loadUpcomingFixtures(selectedGameweek),
+        ]);
 
         // Load manager's roster if manager is selected
         const managerRoster = divisionRosters[selectedUser?.userId]?.roster;
@@ -99,6 +119,7 @@ export async function getTransfersPageData({
             currentTransfers,
             managerRoster,
             categoryStandings,
+            upcomingFixturesByTeamCode,
             availablePlayers,
             transferDeadline:
                 transferDeadline.toLocaleDateString('en-gb') +

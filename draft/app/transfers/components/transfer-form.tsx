@@ -23,6 +23,7 @@ import type { RosterByManagerId } from '../../teams';
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { OwnedPlayersByCode, PlayerSelectionState, TransferFormValidation } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { TransferType } from '../types/transfer-types';
@@ -57,6 +58,7 @@ interface TransferFormProps {
     selectedManager: ManagerId;
     managerRoster?: TeamRoster;
     categoryStandings?: CategoryStanding[];
+    upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     availablePlayers: EnhancedPlayerData[];
     isBeforeDeadline: boolean;
     divisionRosters: RosterByManagerId;
@@ -160,6 +162,7 @@ interface SelectorStepProps {
     selectedManager: ManagerId;
     managerRoster?: TeamRoster;
     categoryStandings?: CategoryStanding[];
+    upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     journeyPath: JourneyPath;
     playersByCode: Record<number, EnhancedPlayerData>;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
@@ -177,6 +180,7 @@ function FirstSelector({
     selectedManager,
     managerRoster,
     categoryStandings,
+    upcomingFixturesByTeamCode,
     journeyPath,
     playersByCode,
     teamsByCode,
@@ -199,6 +203,7 @@ function FirstSelector({
                 teamsByCode={teamsByCode}
                 roster={managerRoster}
                 categoryStandings={categoryStandings}
+                upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                 selectedPlayer={playerSelection.playerOut}
                 onPlayerChange={onPlayerOutChange}
                 transferType={transferType}
@@ -229,6 +234,7 @@ function SecondSelector({
     selectedManager,
     managerRoster,
     categoryStandings,
+    upcomingFixturesByTeamCode,
     journeyPath,
     playersByCode,
     teamsByCode,
@@ -268,6 +274,7 @@ function SecondSelector({
             teamsByCode={teamsByCode}
             roster={managerRoster}
             categoryStandings={categoryStandings}
+            upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
             selectedPlayer={playerSelection.playerOut}
             onPlayerChange={onPlayerOutChange}
             transferType={transferType}
@@ -427,6 +434,7 @@ export function TransferForm({
     selectedManager,
     managerRoster,
     categoryStandings,
+    upcomingFixturesByTeamCode,
     availablePlayers,
     isBeforeDeadline,
     divisionRosters,
@@ -624,6 +632,7 @@ export function TransferForm({
                             selectedManager={selectedManager}
                             managerRoster={managerRoster}
                             categoryStandings={categoryStandings}
+                            upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                             journeyPath={journeyPath}
                             playersByCode={playersByCode}
                             teamsByCode={teamsByCode}
@@ -644,6 +653,7 @@ export function TransferForm({
                             selectedManager={selectedManager}
                             managerRoster={managerRoster}
                             categoryStandings={categoryStandings}
+                            upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                             journeyPath={journeyPath}
                             playersByCode={playersByCode}
                             teamsByCode={teamsByCode}

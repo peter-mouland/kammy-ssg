@@ -1,0 +1,60 @@
+/* Location: app/transfers/components/fixture-strip.module.css */
+
+.fixtureStrip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(2.5rem, 1fr));
+    gap: var(--spacing-1);
+}
+
+.gameweek {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+}
+
+.fixture {
+    display: block;
+    padding: var(--spacing-1);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    white-space: nowrap;
+    background-color: var(--color-fdr-3);
+    color: var(--color-fdr-3-text);
+}
+
+.difficulty1 {
+    background-color: var(--color-fdr-1);
+    color: var(--color-fdr-1-text);
+}
+
+.difficulty2 {
+    background-color: var(--color-fdr-2);
+    color: var(--color-fdr-2-text);
+}
+
+.difficulty3 {
+    background-color: var(--color-fdr-3);
+    color: var(--color-fdr-3-text);
+}
+
+.difficulty4 {
+    background-color: var(--color-fdr-4);
+    color: var(--color-fdr-4-text);
+}
+
+.difficulty5 {
+    background-color: var(--color-fdr-5);
+    color: var(--color-fdr-5-text);
+}
+
+.blank {
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-400);
+    border: 1px dashed var(--color-gray-300);
+}
+
+.unknown {
+    color: var(--color-gray-400);
+}

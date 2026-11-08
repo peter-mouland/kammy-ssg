@@ -232,6 +232,18 @@
     --color-pitch-gold-dark: var(--color-yellow-700);
     --color-pitch-gold-light: var(--color-yellow-600);
 
+    /* Fixture difficulty (FPL's 1-5 rating): green for kind, gray for even, red for hard */
+    --color-fdr-1: var(--color-green-700);
+    --color-fdr-1-text: var(--color-white);
+    --color-fdr-2: var(--color-green-200);
+    --color-fdr-2-text: var(--color-green-800);
+    --color-fdr-3: var(--color-gray-200);
+    --color-fdr-3-text: var(--color-gray-800);
+    --color-fdr-4: var(--color-red-500);
+    --color-fdr-4-text: var(--color-white);
+    --color-fdr-5: var(--color-red-700);
+    --color-fdr-5-text: var(--color-white);
+
     /* Alias Tokens (legacy — prefer canonical --spacing-*, --font-*, --font-weight-*) */
     --space-1: 0.25rem;
     --space-2: 0.5rem;

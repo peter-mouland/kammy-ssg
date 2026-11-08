@@ -6,10 +6,11 @@ import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
 import { groupRosterByCategory } from '../lib/group-roster-by-category';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransferType } from '../types/transfer-types';
 import { CategoryStandingHeader } from './category-standing-header';
 import styles from './player-out-selector.module.css';
-import { getTransferSelectorStatColumns } from './transfer-selector-stat-columns';
+import { getTransferOutColumns } from './transfer-out-columns';
 
 interface PlayerOutSelectorProps {
     roster: TeamRoster;
@@ -20,6 +21,8 @@ interface PlayerOutSelectorProps {
     teamsByCode: Record<number, FplTeam>;
     /** The manager's standing in each scoring category. Groups render without one when []. */
     categoryStandings?: CategoryStanding[];
+    /** Each club's next few gameweeks, by team code. Players show "–" when theirs is missing. */
+    upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     embeddedInJourney?: boolean;
 }
 
@@ -46,6 +49,7 @@ export function PlayerOutSelector({
     onPlayerChange,
     transferType,
     categoryStandings = [],
+    upcomingFixturesByTeamCode = {},
     embeddedInJourney = false,
 }: PlayerOutSelectorProps) {
     const rosterPlayersByCode: Record<number, RosterPlayer> = Object.fromEntries(
@@ -60,7 +64,7 @@ export function PlayerOutSelector({
             onPlayerChange(rosterPlayersByCode[player.code]);
         }
     };
-    const columns = getTransferSelectorStatColumns(teamsByCode);
+    const columns = getTransferOutColumns(teamsByCode, upcomingFixturesByTeamCode);
 
     return (
         <div className={`${styles.playerOutSelector} ${embeddedInJourney ? styles.embeddedInJourney : ''}`}>
@@ -77,9 +81,11 @@ export function PlayerOutSelector({
                 {groups.map((group) => (
                     <section key={group.key} className={styles.categoryGroup} aria-label={group.label}>
                         <CategoryStandingHeader label={group.label} standing={group.standing} />
+                        {/* Not sortable: a group is one category's two players, already in slot order. */}
                         <Table
                             data={group.players}
                             columns={columns}
+                            sortable={false}
                             onRowClick={(player) => handlePlayerClick(player)}
                             getRowProps={(player) => {
                                 return {

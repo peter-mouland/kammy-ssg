@@ -9,6 +9,7 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import { PlayerOutSelector } from './player-out-selector';
 
 /**
@@ -67,11 +68,22 @@ const CB_STANDING: CategoryStanding = {
     gapBelow: 25,
 };
 
+/** Arsenal (team code 3): Liverpool at home, a blank, then City away. */
+const ARSENAL_FIXTURES: UpcomingFixturesByTeamCode = {
+    3: [
+        { gameweek: 21, fixtures: [{ opponent: 'LIV', isHome: true, difficulty: 4 }] },
+        { gameweek: 22, fixtures: [] },
+        { gameweek: 23, fixtures: [{ opponent: 'MCI', isHome: false, difficulty: 5 }] },
+    ],
+};
+
 function renderSelector({
     categoryStandings = [CB_STANDING],
     onPlayerChange = vi.fn(),
+    upcomingFixturesByTeamCode = ARSENAL_FIXTURES,
 }: {
     categoryStandings?: CategoryStanding[];
+    upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     onPlayerChange?: (p: RosterPlayer | null) => void;
 } = {}) {
     const Stub = createRoutesStub([
@@ -86,6 +98,7 @@ function renderSelector({
                     playersByCode={playersByCode}
                     teamsByCode={teamsByCode}
                     categoryStandings={categoryStandings}
+                    upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                     embeddedInJourney
                 />
             ),
@@ -166,5 +179,60 @@ describe('choosing a player', () => {
         fireEvent.click(row);
 
         expect(onPlayerChange).toHaveBeenCalledWith(expect.objectContaining({ playerCode: 3 }));
+    });
+});
+
+describe('each player row', () => {
+    const rowFor = async (name: string) => {
+        const cb = await screen.findByRole('region', { name: 'CB' });
+        const row = within(cb).getByText(new RegExp(name)).closest('tr');
+        if (!row) throw new Error(`expected ${name} in a table row`);
+        return row;
+    };
+
+    it('shows the next three gameweeks, home in capitals and away in lower case, with a blank marked as no game', async () => {
+        renderSelector();
+        const row = await rowFor('Saliba');
+
+        expect(within(row).getByText('LIV')).toBeDefined();
+        expect(within(row).getByTitle('No game in GW22')).toBeDefined();
+        expect(within(row).getByText('mci')).toBeDefined();
+    });
+
+    it('spells the venue out for anyone not reading the case', async () => {
+        renderSelector();
+        const row = await rowFor('Saliba');
+
+        expect(within(row).getByTitle('GW21: LIV at home, difficulty 4')).toBeDefined();
+        expect(within(row).getByTitle('GW23: MCI away, difficulty 5')).toBeDefined();
+    });
+
+    it('shows a dash when the fixtures could not be loaded', async () => {
+        renderSelector({ upcomingFixturesByTeamCode: {} });
+        const row = await rowFor('Saliba');
+
+        expect(within(row).queryByText('LIV')).toBeNull();
+        expect(within(row).getByText('–')).toBeDefined();
+    });
+
+    it('keeps to player, points and fixtures: the detailed stats stay on the player list', async () => {
+        renderSelector();
+        const cb = await screen.findByRole('region', { name: 'CB' });
+        const headers = within(cb)
+            .getAllByRole('columnheader')
+            .map((header) => header.textContent?.replace(/[^A-Za-z0-9 ]/g, '').trim());
+
+        expect(headers).toEqual(['Player', 'Pts', 'Next 3']);
+    });
+
+    it('offers no sorting: each group is one category, already in slot order', async () => {
+        renderSelector();
+        const cb = await screen.findByRole('region', { name: 'CB' });
+        const headerText = within(cb)
+            .getAllByRole('columnheader')
+            .map((header) => header.textContent)
+            .join(' ');
+
+        expect(headerText).not.toMatch(/[↕↑↓]/);
     });
 });
