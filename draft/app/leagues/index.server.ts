@@ -10,8 +10,10 @@
  */
 
 // --- Standings ---------------------------------------------------------------
-// Every division's table. The homepage loads this to render the dashboard.
-export { getAllLeagueStandingsData } from './server/league-standings.server';
+// Every division's table: the homepage loads it to render the dashboard. And one
+// manager's place in each scoring category: `transfers` shows it while a manager chooses
+// who to move on, so they can see which category needs the help.
+export { getAllLeagueStandingsData, getManagerCategoryStandings } from './server/league-standings.server';
 // --- Team of the week --------------------------------------------------------
 // The best XI across a division for a gameweek. `teams` renders it on a team page —
 // working out who had the best gameweek is a standings question, not a roster one.

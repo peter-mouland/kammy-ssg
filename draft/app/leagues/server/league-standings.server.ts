@@ -5,8 +5,10 @@ import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../_shared/types/league-types';
 import { getDivisionTeamsDocument } from '../../scoring/index.server';
+import { getCategoryStandings } from '../lib/category-standings';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
 import type {
+    CategoryStanding,
     EnhancedLeagueStandingsLoaderData,
     LeagueStandingsTeamData,
     PositionPointsBreakdown,
@@ -76,6 +78,23 @@ export async function getEnhancedLeagueStandingsData({
         availableGameweeks,
         standingsData,
     };
+}
+
+/**
+ * One manager's season standing in each scoring category, as at the gameweek the league
+ * table shows. [] when there is nothing to show — this is decision support, never a
+ * reason for a page to fail.
+ */
+export async function getManagerCategoryStandings(divisionId: DivisionId, userId: string): Promise<CategoryStanding[]> {
+    try {
+        const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
+        const gameweek = await fplApiCache.getScoringGameweek();
+        const standings = await getDivisionStandingsData(divisionId, gameweek);
+        return getCategoryStandings(standings, userId);
+    } catch (error) {
+        console.error(`Failed to get category standings for ${userId} in ${divisionId}:`, error);
+        return [];
+    }
 }
 
 async function getDivisionStandingsWithPositionRankChanges(

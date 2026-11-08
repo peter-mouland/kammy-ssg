@@ -85,6 +85,7 @@ export const TransfersPageComp = (data: TransfersPageData) => {
                     selectedDivision={data.selectedDivision}
                     selectedManager={data.selectedUser}
                     managerRoster={data.managerRoster}
+                    categoryStandings={data.categoryStandings}
                     availablePlayers={data.availablePlayers}
                     isBeforeDeadline={data.isBeforeDeadline}
                     divisionRosters={data.divisionRosters}
