@@ -149,6 +149,24 @@
     border-left: 3px solid var(--color-green-500);
 }
 
+.gameweekOption.rangeOption {
+    border-bottom: 1px solid var(--color-gray-200);
+    color: var(--color-primary);
+    font-size: var(--font-sm);
+    line-height: var(--line-height-tight);
+}
+
+/* At least as wide as the button; wider when the button is narrow, growing leftwards from the right edge. */
+.gameweekDropdown.rangeDropdown {
+    left: auto;
+    width: max-content;
+    min-width: 100%;
+}
+
+.rangeDropdown .dropdownContent {
+    max-height: none;
+}
+
 /* Timeline */
 .timeline {
     display: flex;

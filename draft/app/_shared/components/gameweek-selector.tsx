@@ -4,6 +4,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import type { GameWeekData } from '../lib/fpl/fpl-types';
+import { GAMEWEEK_RANGE_PARAMS, GameweekRangeForm, type SelectedGameweekRange } from './gameweek-range-form';
 import styles from './gameweek-selector.module.css';
 
 interface GameweekSelectorProps {
@@ -12,7 +13,15 @@ interface GameweekSelectorProps {
     availableGameweeks: number[];
     showSeasonOption?: boolean;
     isSeasonSelected?: boolean;
+    /** Offers "Combine gameweeks" in the dropdown. Opt-in: most pages show one gameweek. */
+    showRangeOption?: boolean;
+    /** The range on screen, if any; the selector then labels and opens on it. */
+    selectedRange?: SelectedGameweekRange | null;
 }
+
+const LIST_VIEW = 'list';
+const RANGE_VIEW = 'range';
+type DropdownView = typeof LIST_VIEW | typeof RANGE_VIEW;
 
 export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     currentGameweekData,
@@ -20,20 +29,35 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
     availableGameweeks,
     showSeasonOption = false,
     isSeasonSelected = false,
+    showRangeOption = false,
+    selectedRange = null,
 }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownView, setDropdownView] = useState<DropdownView>(LIST_VIEW);
+
+    const toggleDropdown = () => {
+        // A range on screen opens on the range, ready to adjust; otherwise the gameweek list.
+        setDropdownView(selectedRange ? RANGE_VIEW : LIST_VIEW);
+        setIsOpen(!isOpen);
+    };
+
+    /** A single gameweek (or the season) replaces any range: the range would otherwise win. */
+    const singleGameweekParams = (gameweek: string) => {
+        const newParams = new URLSearchParams(searchParams);
+        for (const param of GAMEWEEK_RANGE_PARAMS) newParams.delete(param);
+        newParams.set('gameweek', gameweek);
+        return newParams;
+    };
 
     const handleGameweekChange = (gameweek: number) => {
-        const newParams = new URLSearchParams(searchParams);
-        newParams.set('gameweek', gameweek.toString());
+        const newParams = singleGameweekParams(gameweek.toString());
         setIsOpen(false);
         setSearchParams(newParams, { replace: true });
     };
 
     const handleSeasonSelect = () => {
-        const newParams = new URLSearchParams(searchParams);
-        newParams.set('gameweek', 'season');
+        const newParams = singleGameweekParams('season');
         setIsOpen(false);
         setSearchParams(newParams, { replace: true });
     };
@@ -68,8 +92,15 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
      */
     const parsedDeadline = selectedGameweekData?.end ? new Date(selectedGameweekData.end) : null;
     const deadline = parsedDeadline && !Number.isNaN(parsedDeadline.getTime()) ? parsedDeadline : null;
-    const canGoPrevious = isSeasonSelected || selectedGameweek > 1;
-    const canGoNext = isSeasonSelected ? false : selectedGameweek < availableGameweeks.length || showSeasonOption;
+    // Stepping one gameweek has no clear meaning for a range; the banner's Back to Current is the way out.
+    const canGoPrevious = !selectedRange && (isSeasonSelected || selectedGameweek > 1);
+    const canGoNext =
+        !selectedRange && (isSeasonSelected ? false : selectedGameweek < availableGameweeks.length || showSeasonOption);
+    const buttonLabel = isSeasonSelected
+        ? 'Season'
+        : selectedRange
+          ? `${selectedRange.from}–${selectedRange.to}`
+          : selectedGameweek;
 
     return (
         <div className={styles.gameweekSelector}>
@@ -97,15 +128,36 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
 
                 {/* Current Gameweek Display */}
                 <div className={styles.gameweekDisplay}>
-                    <button type={'button'} onClick={() => setIsOpen(!isOpen)} className={styles.gameweekButton}>
-                        <span className={styles.gameweekNumber}>{isSeasonSelected ? 'Season' : selectedGameweek}</span>
+                    <button type={'button'} onClick={toggleDropdown} className={styles.gameweekButton}>
+                        <span className={styles.gameweekNumber}>{buttonLabel}</span>
                         <span className={styles.dropdownIcon}>▼</span>
                     </button>
 
                     {/* Dropdown Menu */}
-                    {isOpen && (
+                    {isOpen && dropdownView === RANGE_VIEW && (
+                        <div className={`${styles.gameweekDropdown} ${styles.rangeDropdown}`}>
+                            <div className={styles.dropdownContent}>
+                                <GameweekRangeForm
+                                    availableGameweeks={availableGameweeks}
+                                    selectedRange={selectedRange}
+                                    onBack={() => setDropdownView(LIST_VIEW)}
+                                    onDone={() => setIsOpen(false)}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {isOpen && dropdownView === LIST_VIEW && (
                         <div className={styles.gameweekDropdown}>
                             <div className={styles.dropdownContent}>
+                                {showRangeOption && (
+                                    <button
+                                        type={'button'}
+                                        onClick={() => setDropdownView(RANGE_VIEW)}
+                                        className={`${styles.gameweekOption} ${styles.rangeOption}`}
+                                    >
+                                        <span>⊕ Combine gameweeks</span>
+                                    </button>
+                                )}
                                 {showSeasonOption && (
                                     <button
                                         type={'button'}
@@ -129,7 +181,7 @@ export const GameweekSelector: React.FC<GameweekSelectorProps> = ({
                                             }}
                                             className={`
                                             ${styles.gameweekOption}
-                                            ${!isSeasonSelected && gw === selectedGameweek ? styles.selected : ''}
+                                            ${!isSeasonSelected && !selectedRange && gw === selectedGameweek ? styles.selected : ''}
                                             ${gw === currentGameweek ? styles.current : ''}
                                         `}
                                         >

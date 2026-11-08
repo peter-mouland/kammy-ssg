@@ -148,3 +148,37 @@ tr.relegationRow td {
     color: var(--color-red-500);
     font-weight: var(--font-weight-bold);
 }
+
+/*
+ * The header's gameweek and division controls, laid out as /admin/transfers lays out the
+ * same pair: stacked full width on a phone, one right-aligned row from tablet up.
+ * It spans the page header's two-column action grid, which is shared with other pages.
+ */
+.headerControls {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-3);
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .headerControls {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        width: auto;
+    }
+}
+
+/*
+ * Wider once the header has room beside the title, for the dropdown and its range form.
+ * A min-width rather than a flex-basis: the shared page header sizes its action grid from
+ * its content's minimum, so a basis never gets the extra space.
+ */
+@media (min-width: 1024px) {
+    .gameweekControl {
+        min-width: 300px;
+    }
+}
