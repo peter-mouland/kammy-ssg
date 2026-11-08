@@ -78,13 +78,15 @@ export interface CategoryStanding {
     /** 1-based. Managers on the same points share a rank. */
     rank: number;
     isTied: boolean;
+    /** How many managers share this place, including this one. 1 when not tied. */
+    tiedCount: number;
     /** What the league table awards for this place: 0 for last, managers - 1 for first. */
     rankPoints: number;
     points: number;
     totalManagers: number;
-    /** Points behind the manager immediately above. 0 when level, null when top. */
+    /** Points behind the nearest manager on more points. null when no one has more. */
     gapAbove: number | null;
-    /** Points clear of the manager immediately below. 0 when level, null when bottom. */
+    /** Points clear of the nearest manager on fewer points. null when no one has fewer. */
     gapBelow: number | null;
 }
 

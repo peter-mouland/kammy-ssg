@@ -59,6 +59,7 @@ const CB_STANDING: CategoryStanding = {
     slots: ['cb_0', 'cb_1'],
     rank: 3,
     isTied: false,
+    tiedCount: 1,
     rankPoints: 5,
     points: 142,
     totalManagers: 8,
@@ -122,6 +123,17 @@ describe('the category standing', () => {
         expect(within(cb).getByText('3rd')).toBeDefined();
         expect(within(cb).getByText('142 pts')).toBeDefined();
         expect(within(cb).getByText('10 behind 2nd · 25 clear of 4th')).toBeDefined();
+    });
+
+    it('says when a place is shared, and measures to the managers beyond the tie', async () => {
+        // Two managers level in 2nd: the next place below them is 4th, not 3rd.
+        renderSelector({
+            categoryStandings: [{ ...CB_STANDING, rank: 2, isTied: true, tiedCount: 2, gapAbove: 16, gapBelow: 3 }],
+        });
+        const cb = await screen.findByRole('region', { name: 'CB' });
+
+        expect(within(cb).getByText('=2nd')).toBeDefined();
+        expect(within(cb).getByText('Tied · 16 behind 1st · 3 clear of 4th')).toBeDefined();
     });
 
     it('leaves out rank points, which the place already implies', async () => {

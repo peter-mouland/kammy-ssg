@@ -43,19 +43,21 @@ function getRankAndGaps(
     standings: LeagueStandingsTeamData[],
     manager: LeagueStandingsTeamData,
     position: PositionCategory,
-): Pick<CategoryStanding, 'rank' | 'isTied' | 'gapAbove' | 'gapBelow'> {
+): Pick<CategoryStanding, 'rank' | 'isTied' | 'tiedCount' | 'gapAbove' | 'gapBelow'> {
     const points = manager.seasonPoints[position];
     const others = standings.filter((team) => team.userId !== manager.userId).map((t) => t.seasonPoints[position]);
 
     const ahead = others.filter((other) => other > points);
     const behind = others.filter((other) => other < points);
-    const level = others.length - ahead.length - behind.length;
+    const tiedCount = others.length - ahead.length - behind.length + 1;
 
     return {
         rank: ahead.length + 1,
-        isTied: level > 0,
-        // Someone level with you is the nearest manager either side.
-        gapAbove: level > 0 ? 0 : ahead.length ? Math.min(...ahead) - points : null,
-        gapBelow: level > 0 ? 0 : behind.length ? points - Math.max(...behind) : null,
+        isTied: tiedCount > 1,
+        tiedCount,
+        // Measured to the nearest manager on different points, so a tie looks past the
+        // managers it is level with: what you need to catch, and what is chasing you.
+        gapAbove: ahead.length ? Math.min(...ahead) - points : null,
+        gapBelow: behind.length ? points - Math.max(...behind) : null,
     };
 }
