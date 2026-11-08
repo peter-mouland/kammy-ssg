@@ -58,11 +58,18 @@ describe('the ends of a category', () => {
 describe('managers level on points', () => {
     const standings = [team('a', { fb: 50 }), team('me', { fb: 40 }), team('b', { fb: 40 }), team('c', { fb: 10 })];
 
-    it('share the higher rank, split the rank points, and are 0 from each other', () => {
+    it('share the higher rank and split the rank points', () => {
         const fb = getCategoryStandings(standings, 'me').find((standing) => standing.position === 'fb');
 
         // Places 2 and 3 of 4 are worth 2 and 1 rank points; level managers get 1.5 each.
-        expect(fb).toMatchObject({ rank: 2, isTied: true, rankPoints: 1.5, gapAbove: 0, gapBelow: 0 });
+        expect(fb).toMatchObject({ rank: 2, isTied: true, tiedCount: 2, rankPoints: 1.5 });
+    });
+
+    it('measure the gaps past the managers they are level with', () => {
+        const fb = getCategoryStandings(standings, 'me').find((standing) => standing.position === 'fb');
+
+        // 10 behind "a" in 1st, 30 clear of "c" in 4th -- not 0 from "b" beside them.
+        expect(fb).toMatchObject({ gapAbove: 10, gapBelow: 30 });
     });
 });
 

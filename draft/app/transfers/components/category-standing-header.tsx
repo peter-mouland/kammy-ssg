@@ -19,18 +19,16 @@ export function formatRank(rank: number, isTied: boolean): string {
 
 /**
  * "10 behind 2nd · 25 clear of 4th". The top manager has no "behind" and the bottom one
- * no "clear of". Sharing a place gives "Level on points".
+ * no "clear of". A shared place says so first and measures past the managers it is level
+ * with: two tied for 2nd read "Tied · 16 behind 1st · 3 clear of 4th".
  */
 export function formatGaps(standing: CategoryStanding): string {
-    if (standing.isTied) {
-        return 'Level on points';
-    }
-    const parts: string[] = [];
+    const parts: string[] = standing.isTied ? ['Tied'] : [];
     if (standing.gapAbove !== null) {
         parts.push(`${standing.gapAbove} behind ${formatRank(standing.rank - 1, false)}`);
     }
     if (standing.gapBelow !== null) {
-        parts.push(`${standing.gapBelow} clear of ${formatRank(standing.rank + 1, false)}`);
+        parts.push(`${standing.gapBelow} clear of ${formatRank(standing.rank + standing.tiedCount, false)}`);
     }
     return parts.join(' · ');
 }
