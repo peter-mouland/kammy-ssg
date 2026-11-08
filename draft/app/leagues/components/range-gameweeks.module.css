@@ -1,0 +1,61 @@
+/* Location: app/leagues/components/range-gameweeks.module.css */
+
+.rangeGameweeks {
+    margin-bottom: var(--spacing-8);
+    padding: var(--spacing-4);
+    background: var(--card-background);
+    border: var(--card-border);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+}
+
+.title {
+    margin: 0 0 var(--spacing-1);
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.note {
+    margin: 0 0 var(--spacing-3);
+    color: var(--color-gray-500);
+    font-size: var(--font-sm);
+}
+
+.windows {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-sm);
+}
+
+.headerCell {
+    padding: var(--spacing-2);
+    border-bottom: 1px solid var(--color-gray-200);
+    color: var(--color-gray-600);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+}
+
+.cell {
+    padding: var(--spacing-2);
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+@media (min-width: 768px) {
+    .rangeGameweeks {
+        padding: var(--card-padding);
+    }
+
+    .windows {
+        width: auto;
+    }
+
+    .headerCell,
+    .cell {
+        padding-right: var(--spacing-8);
+    }
+
+    /* Room for each date on one line; on a phone they wrap rather than run off the card. */
+    .cell {
+        white-space: nowrap;
+    }
+}

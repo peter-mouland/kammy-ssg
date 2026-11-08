@@ -6,7 +6,7 @@ import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../_shared/types/league-types';
 import { getDivisionTeamsDocument } from '../../scoring/index.server';
 import { getCategoryStandings } from '../lib/category-standings';
-import { type GameweekRange, gameweeksInRange } from '../lib/gameweek-range';
+import { type GameweekRange, gameweekScoringWindows, gameweeksInRange } from '../lib/gameweek-range';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
 import type {
     CategoryStanding,
@@ -81,6 +81,7 @@ export async function getEnhancedLeagueStandingsData({
         availableGameweeks,
         standingsData,
         selectedRange,
+        rangeGameweeks: selectedRange ? gameweekScoringWindows(selectedRange, events) : [],
     };
 }
 
