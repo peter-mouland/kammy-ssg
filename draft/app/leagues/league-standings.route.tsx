@@ -9,6 +9,7 @@ import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
 import { LeagueStandings } from './league-standings';
+import { parseGameweekRange } from './lib/gameweek-range';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
 
 export const meta: MetaFunction = () => {
@@ -45,7 +46,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const currentUser = userTeams.find((t) => t.userId === persistedUser.selectedUserId);
         const currentGameweek = currentGameweekData.fplEvent.id;
         const selectedDivision = (params.divisionId || currentUser?.divisionId) as DivisionId;
-        const selectedGameweek = Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
+        const selectedRange = parseGameweekRange(url.searchParams, currentGameweek);
+        // A range shows its last week in the selector, and links to teams as they stood then.
+        const selectedGameweek =
+            selectedRange?.to ?? Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
 
         // Dynamic import to keep server code on server
         const { getEnhancedLeagueStandingsData } = await import('./server/league-standings.server');
@@ -55,6 +59,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
             selectedGameweek,
             divisions,
             events,
+            selectedRange,
         });
 
         return data<EnhancedLeagueStandingsLoaderData>({ ...loaderData, userTeams, persistedUser });

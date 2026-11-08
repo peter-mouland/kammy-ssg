@@ -6,6 +6,7 @@ import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../_shared/types/league-types';
 import { getDivisionTeamsDocument } from '../../scoring/index.server';
 import { getCategoryStandings } from '../lib/category-standings';
+import { type GameweekRange, gameweeksInRange } from '../lib/gameweek-range';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
 import type {
     CategoryStanding,
@@ -47,12 +48,15 @@ export async function getEnhancedLeagueStandingsData({
     currentGameweekData,
     divisions,
     events,
+    selectedRange = null,
 }: {
     selectedDivision: DivisionId;
     selectedGameweek?: number;
     currentGameweekData: GameWeekData;
     divisions: DivisionSheetData[];
     events: GameWeekData[];
+    /** When set, the page shows points summed over these gameweeks instead of the season. */
+    selectedRange?: GameweekRange | null;
 }): Promise<EnhancedLeagueStandingsLoaderData> {
     const currentGameweek = currentGameweekData.fplEvent.id;
     const division = divisions.find((d) => selectedDivision === d.id)!;
@@ -63,10 +67,9 @@ export async function getEnhancedLeagueStandingsData({
 
     const standingsData: Record<string, LeagueStandingsTeamData[]> = {};
 
-    standingsData[selectedDivision] = await getDivisionStandingsWithPositionRankChanges(
-        selectedDivision,
-        targetGameweek,
-    );
+    standingsData[selectedDivision] = selectedRange
+        ? await getDivisionRangeStandings(selectedDivision, selectedRange)
+        : await getDivisionStandingsWithPositionRankChanges(selectedDivision, targetGameweek);
 
     return {
         divisions,
@@ -77,7 +80,72 @@ export async function getEnhancedLeagueStandingsData({
         currentGameweek,
         availableGameweeks,
         standingsData,
+        selectedRange,
     };
+}
+
+const emptyBreakdown = (): PositionPointsBreakdown => ({ gk: 0, cb: 0, fb: 0, mid: 0, wa: 0, ca: 0, total: 0 });
+
+function addBreakdowns(a: PositionPointsBreakdown, b: PositionPointsBreakdown): PositionPointsBreakdown {
+    return {
+        gk: a.gk + b.gk,
+        cb: a.cb + b.cb,
+        fb: a.fb + b.fb,
+        mid: a.mid + b.mid,
+        wa: a.wa + b.wa,
+        ca: a.ca + b.ca,
+        total: a.total + b.total,
+    };
+}
+
+/**
+ * Points scored across a run of gameweeks -- a mini-season, which is what a monthly prize is.
+ *
+ * Summed from each gameweek's own points rather than taken as a difference of season totals:
+ * a slot's season figure follows whoever is in it now, so after a transfer the difference
+ * would credit the new player's earlier weeks. Each gameweek document already records who
+ * was in the slot that week.
+ *
+ * The result goes in `gameweekPoints` so the existing table renders it as-is. `seasonPoints`
+ * is left empty: the season is not what this view is about.
+ */
+async function getDivisionRangeStandings(
+    divisionId: DivisionId,
+    range: GameweekRange,
+): Promise<LeagueStandingsTeamData[]> {
+    try {
+        const [userTeams, ...divisionDocs] = await Promise.all([
+            getDivisionUserTeams(divisionId),
+            ...gameweeksInRange(range).map((gameweek) => getDivisionTeamsDocument(divisionId, gameweek)),
+        ]);
+
+        const totals = new Map<string, PositionPointsBreakdown>();
+        for (const divisionDoc of divisionDocs) {
+            if (!divisionDoc) continue;
+            for (const [userId, teamData] of Object.entries(divisionDoc.teams)) {
+                const weekPoints = calculatePositionPoints(teamData.roster, 'gameweek');
+                totals.set(userId, addBreakdowns(totals.get(userId) ?? emptyBreakdown(), weekPoints));
+            }
+        }
+
+        const standings: LeagueStandingsTeamData[] = [];
+        for (const userTeam of userTeams) {
+            const gameweekPoints = totals.get(userTeam.userId);
+            if (!gameweekPoints) continue;
+            standings.push({
+                userId: userTeam.userId,
+                userName: userTeam.userName,
+                teamName: userTeam.teamName,
+                gameweekPoints,
+                seasonPoints: emptyBreakdown(),
+            });
+        }
+
+        return standings.sort((a, b) => b.gameweekPoints.total - a.gameweekPoints.total);
+    } catch (error) {
+        console.error(`Failed to get range standings for ${divisionId} GW${range.from}-${range.to}:`, error);
+        return [];
+    }
 }
 
 /**

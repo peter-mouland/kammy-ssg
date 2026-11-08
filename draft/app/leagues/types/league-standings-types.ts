@@ -2,6 +2,7 @@
 
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { CustomPosition, DivisionSheetData, ManagerId, PositionSlotKey } from '../../_shared/types/league-types';
+import type { GameweekRange } from '../lib/gameweek-range';
 
 export interface PositionPointsBreakdown {
     gk: number; // gk_0 + sub_0 total
@@ -63,6 +64,8 @@ export interface EnhancedLeagueStandingsLoaderData {
     currentGameweekData: GameWeekData;
     availableGameweeks: number[];
     standingsData: Record<string, LeagueStandingsTeamData[]>;
+    /** Set when the page is showing points summed over several gameweeks, not the season. */
+    selectedRange?: GameweekRange | null;
     persistedUser: { selectedUserId: ManagerId | null; requiresSelection: boolean };
 }
 

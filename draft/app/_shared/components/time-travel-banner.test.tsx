@@ -18,13 +18,13 @@ function CurrentSearch() {
     return <output aria-label="search">{useLocation().search}</output>;
 }
 
-function renderBanner(url: string) {
+function renderBanner(url: string, props: Partial<Parameters<typeof TimeTravelBanner>[0]> = {}) {
     const Stub = createRoutesStub([
         {
             path: '/',
             Component: () => (
                 <>
-                    <TimeTravelBanner currentGameweek={21} />
+                    <TimeTravelBanner currentGameweek={21} {...props} />
                     <CurrentSearch />
                 </>
             ),
@@ -43,6 +43,22 @@ describe('viewing a past gameweek', () => {
 
     it('goes back to the current gameweek', () => {
         renderBanner('/?gameweek=5');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Back to Current' }));
+
+        expect(screen.getByLabelText('search').textContent).toBe('?gameweek=21');
+    });
+});
+
+describe('viewing a range of gameweeks', () => {
+    it('shows the message it is given', () => {
+        renderBanner('/?from=5&to=8', { message: 'Viewing a range of gameweeks', clearParams: ['from', 'to'] });
+
+        expect(screen.getByText(/Viewing a range of gameweeks/)).toBeDefined();
+    });
+
+    it('drops the range and lands on the current gameweek', () => {
+        renderBanner('/?from=5&to=8', { message: 'Viewing a range of gameweeks', clearParams: ['from', 'to'] });
 
         fireEvent.click(screen.getByRole('button', { name: 'Back to Current' }));
 
