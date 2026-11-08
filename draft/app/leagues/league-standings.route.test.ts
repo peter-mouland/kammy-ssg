@@ -136,6 +136,16 @@ describe('a range of gameweeks', () => {
         ]);
     });
 
+    // Each gameweek's points run from its own deadline to the next one, so the windows chain.
+    it('says when each gameweek in the range was scored', async () => {
+        const pageData = await load('?from=2&to=3');
+
+        expect(pageData.rangeGameweeks).toEqual([
+            { gameweek: 2, from: new Date(PLAYED).toISOString(), to: new Date(PLAYED).toISOString() },
+            { gameweek: 3, from: new Date(PLAYED).toISOString(), to: new Date(AHEAD).toISOString() },
+        ]);
+    });
+
     it('treats the last week of the range as the selected gameweek', async () => {
         const pageData = await load('?from=1&to=2');
 
@@ -148,6 +158,7 @@ describe('without a usable range', () => {
         const pageData = await load();
 
         expect(pageData.selectedRange).toBeNull();
+        expect(pageData.rangeGameweeks).toEqual([]);
         expect(pageData.selectedGameweek).toBe(3);
         // That week's points only, not a total: the page's own gameweek table.
         expect(Object.fromEntries(totalsByManager(pageData))).toEqual({ Ann: 1, Bob: 10 });

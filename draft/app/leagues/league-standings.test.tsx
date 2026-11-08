@@ -89,6 +89,39 @@ describe('viewing a range of gameweeks', () => {
     });
 });
 
+describe('the gameweeks a range covers', () => {
+    it('lists each gameweek with when its points were scored, in UK time', async () => {
+        renderPage(
+            '/leagues/premierLeague?from=2&to=3',
+            pageData({
+                selectedRange: { from: 2, to: 3 },
+                rangeGameweeks: [
+                    { gameweek: 2, from: '2024-08-24T10:00:00.000Z', to: '2024-08-31T10:00:00.000Z' },
+                    { gameweek: 3, from: '2024-08-31T10:00:00.000Z', to: '2024-09-14T10:00:00.000Z' },
+                ],
+            }),
+        );
+
+        expect(await screen.findByRole('heading', { name: 'Gameweeks in this range' })).toBeDefined();
+        const gw3 = screen.getByRole('row', { name: /GW 3/ });
+        expect(gw3.textContent).toContain('Sat 31 Aug, 11:00');
+        expect(gw3.textContent).toContain('Sat 14 Sept, 11:00');
+    });
+
+    it('says when the last gameweek runs to the end of the season', async () => {
+        renderPage(
+            '/leagues/premierLeague?from=38&to=38',
+            pageData({
+                selectedRange: { from: 38, to: 38 },
+                rangeGameweeks: [{ gameweek: 38, from: '2025-05-25T14:30:00.000Z', to: null }],
+            }),
+        );
+
+        const gw38 = await screen.findByRole('row', { name: /GW 38/ });
+        expect(gw38.textContent).toContain('End of season');
+    });
+});
+
 describe('the normal page', () => {
     it('shows the season standings and the gameweek, with no banner', async () => {
         renderPage('/leagues/premierLeague', pageData());
@@ -96,5 +129,6 @@ describe('the normal page', () => {
         expect(await screen.findByText(/Season Standings/)).toBeDefined();
         expect(screen.getByText(/⚡ Gameweek 3/)).toBeDefined();
         expect(screen.queryByRole('button', { name: 'Back to Current' })).toBeNull();
+        expect(screen.queryByText('Gameweeks in this range')).toBeNull();
     });
 });

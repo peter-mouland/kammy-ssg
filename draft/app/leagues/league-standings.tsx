@@ -8,6 +8,7 @@ import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import type { DivisionId, DivisionSheetData } from '../_shared/types/league-types';
 import { PositionPointsTable } from './components/position-points-table';
+import { RangeGameweeks } from './components/range-gameweeks';
 import styles from './league-standings.module.css';
 import { formatGameweekRange, type GameweekRange, RANGE_PARAMS } from './lib/gameweek-range';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
@@ -111,6 +112,7 @@ const LeagueStandingsComp = ({
     availableGameweeks,
     standingsData,
     selectedRange = null,
+    rangeGameweeks = [],
 }: EnhancedLeagueStandingsLoaderData) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -197,6 +199,9 @@ const LeagueStandingsComp = ({
                     )}
                 </div>
             )}
+
+            {/* Once, after every division's table: it is about the range, not a division. */}
+            {selectedRange && rangeGameweeks.length > 0 && <RangeGameweeks windows={rangeGameweeks} />}
         </>
     );
 };

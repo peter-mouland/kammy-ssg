@@ -1,5 +1,7 @@
 /* Location: app/leagues/lib/gameweek-range.ts */
 
+import type { EventData } from '../../_shared/lib/fpl/fpl-types';
+
 /**
  * A run of consecutive gameweeks, both ends included -- what a monthly prize is played over.
  *
@@ -42,4 +44,35 @@ export function formatGameweekRange({ from, to }: GameweekRange): string {
 /** Every gameweek in the range, in order. */
 export function gameweeksInRange({ from, to }: GameweekRange): number[] {
     return Array.from({ length: to - from + 1 }, (_, i) => from + i);
+}
+
+/**
+ * When a gameweek's points were scored: from its own deadline until the next gameweek's.
+ *
+ * Deliberately not `GameWeekData.start`/`end`. Those are the team-picking window -- previous
+ * deadline to this one -- which sits a whole week earlier, so a gameweek played in early
+ * September would read as August. `to` is null for the season's last gameweek.
+ */
+export interface GameweekScoringWindow {
+    gameweek: number;
+    from: string;
+    to: string | null;
+}
+
+/** Just the part of a gameweek this needs, so it can be fed the app's calendar or a fixture. */
+interface GameweekDeadline {
+    fplEvent: Pick<EventData, 'id' | 'deadline_time'>;
+}
+
+const toIso = (deadline: string | Date): string => new Date(deadline).toISOString();
+
+export function gameweekScoringWindows(range: GameweekRange, events: GameweekDeadline[]): GameweekScoringWindow[] {
+    const deadlineOf = new Map(events.map((event) => [event.fplEvent.id, event.fplEvent.deadline_time]));
+
+    return gameweeksInRange(range).flatMap((gameweek) => {
+        const deadline = deadlineOf.get(gameweek);
+        if (!deadline) return [];
+        const nextDeadline = deadlineOf.get(gameweek + 1);
+        return [{ gameweek, from: toIso(deadline), to: nextDeadline ? toIso(nextDeadline) : null }];
+    });
 }
