@@ -14,7 +14,8 @@ const CACHE_TTL = {
     FPL_BOOTSTRAP: 4 * 60 * 60 * 1000, // 4 hours - data changes rarely
     // 5 min. The fixture SCHEDULE changes rarely, but `started` and `finished` on it are
     // what the scoring badge reads to decide whether points need re-running -- at 24h it
-    // could sit green through an entire match weekend.
+    // could sit green through an entire match weekend. The transfers page also reads it,
+    // for each club's next gameweeks; the schedule is all it needs, so 5 min is plenty fresh.
     FPL_FIXTURES: 5 * 60 * 1000,
     FPL_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player data changes rarely
     FPL_TEAMS: 24 * 60 * 60 * 1000, // 24 hours - team data very static

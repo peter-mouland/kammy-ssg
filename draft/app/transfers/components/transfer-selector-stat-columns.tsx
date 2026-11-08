@@ -6,34 +6,44 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { isStatRelevant, PointsBreakdownTooltip } from '../../scoring';
 
-const STAT_COLUMN_WIDTH = '2rem';
+export const STAT_COLUMN_WIDTH = '2rem';
+
+/** Image, position, name and club. Shared by every transfer table so they all match. */
+export function playerColumn<T extends EnhancedPlayerData>(teamsByCode: Record<number, FplTeam>): TableColumn<T> {
+    return {
+        key: 'name',
+        header: 'Player',
+        accessor: (player) => player.web_name,
+        sortable: true,
+        fixed: true,
+        render: (_, player) => {
+            return <PlayerSummary player={player} teamsByCode={teamsByCode} />;
+        },
+    };
+}
+
+/** Season points, with the breakdown on hover. Shared by every transfer table. */
+export function pointsColumn<T extends EnhancedPlayerData>(): TableColumn<T> {
+    return {
+        key: 'points',
+        header: 'Pts',
+        accessor: (player) => player.draft?.pointsTotal || 0,
+        sortable: true,
+        align: 'center',
+        variant: 'numeric',
+        width: STAT_COLUMN_WIDTH,
+        render: (_, player) => (
+            <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
+        ),
+    };
+}
 
 export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
     teamsByCode: Record<number, FplTeam>,
 ): TableColumn<T>[] {
     return [
-        {
-            key: 'name',
-            header: 'Player',
-            accessor: (player) => player.web_name,
-            sortable: true,
-            fixed: true,
-            render: (_, player) => {
-                return <PlayerSummary player={player} teamsByCode={teamsByCode} />;
-            },
-        },
-        {
-            key: 'points',
-            header: 'Pts',
-            accessor: (player) => player.draft?.pointsTotal || 0,
-            sortable: true,
-            align: 'center',
-            variant: 'numeric',
-            width: STAT_COLUMN_WIDTH,
-            render: (_, player) => (
-                <PointsBreakdownTooltip player={player}>{player.draft?.pointsTotal}</PointsBreakdownTooltip>
-            ),
-        },
+        playerColumn<T>(teamsByCode),
+        pointsColumn<T>(),
         {
             key: 'apps',
             header: <span title="Minutes">Min</span>,

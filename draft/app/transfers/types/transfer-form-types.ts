@@ -12,6 +12,7 @@ import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamPositionSlot, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
 import type { RosterByManagerId } from '../../teams';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransferRecommendation, TransferRuleContext, TransferValidationResult } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
 
@@ -111,6 +112,8 @@ export interface TransfersPageData {
     managerRoster?: TeamRoster;
     /** The selected manager's season standing in each scoring category. [] when unavailable. */
     categoryStandings?: CategoryStanding[];
+    /** Each club's fixtures for the next few gameweeks, by team code. {} when unavailable. */
+    upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     availablePlayers: EnhancedPlayerData[];
     transferDeadline: string;
     isBeforeDeadline: boolean;
