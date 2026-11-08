@@ -1,0 +1,79 @@
+/* Location: app/leagues/components/gameweek-range-selector.module.css */
+
+.rangeSelector {
+    /* Its own row in the page header's two-column grid, so it never widens a column. */
+    grid-column: 1 / -1;
+
+    /* A fieldset's min-width is its content by default, which would overflow a phone. */
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-weight: var(--font-weight-medium);
+}
+
+.rangeLabel {
+    padding: 0;
+    margin-bottom: var(--spacing-2);
+    white-space: nowrap;
+}
+
+.rangeControls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.rangeInput {
+    flex: 1;
+    padding: var(--input-padding);
+    border: var(--input-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    font-size: var(--font-sm);
+}
+
+.rangeInput:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-shadow);
+}
+
+.rangeSeparator {
+    font-size: var(--font-sm);
+}
+
+.showButton {
+    padding: var(--input-padding);
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.showButton:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.showButton:disabled {
+    background-color: var(--color-gray-400);
+    cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+    .rangeSelector {
+        width: auto;
+    }
+
+    .rangeInput {
+        flex: none;
+    }
+}

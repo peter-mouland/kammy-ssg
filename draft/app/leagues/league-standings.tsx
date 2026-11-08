@@ -7,17 +7,21 @@ import { SelectDivision } from '../_shared/components/select-division';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import type { DivisionId, DivisionSheetData } from '../_shared/types/league-types';
+import { GameweekRangeSelector } from './components/gameweek-range-selector';
 import { PositionPointsTable } from './components/position-points-table';
+import { formatGameweekRange, type GameweekRange, RANGE_PARAMS } from './lib/gameweek-range';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
 
 function DivisionStandingsTable({
     division,
     teams,
     selectedGameweek,
+    selectedRange,
 }: {
     division: DivisionSheetData;
     teams: EnhancedLeagueStandingsLoaderData['standingsData'][DivisionId];
     selectedGameweek: number;
+    selectedRange: GameweekRange | null;
 }) {
     const isFirstGameweek = selectedGameweek === 0;
 
@@ -33,6 +37,21 @@ function DivisionStandingsTable({
                     <p style={{ margin: 0 }}>No teams have been added to the {division.label} division yet.</p>
                 </div>
             </div>
+        );
+    }
+
+    if (selectedRange) {
+        const rangeLabel = formatGameweekRange(selectedRange);
+        // No rank changes and no promotion/relegation markers: both describe the season.
+        return (
+            <PositionPointsTable
+                teams={teams}
+                pointsSource="gameweekPoints"
+                title={`📅 ${rangeLabel}`}
+                subtitle={`Points scored during ${rangeLabel.toLowerCase()}`}
+                showRankChange={false}
+                selectedGameweek={selectedGameweek}
+            />
         );
     }
 
@@ -91,16 +110,21 @@ const LeagueStandingsComp = ({
     currentGameweekData,
     availableGameweeks,
     standingsData,
+    selectedRange = null,
 }: EnhancedLeagueStandingsLoaderData) => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const isCurrentGameweek = !searchParams.get('gameweek') || searchParams.get('gameweek') === String(currentGameweek);
 
     const handleDivisionChange = (divisionId: string) => {
+        // A range carries across divisions, so one link compares a month in each.
+        const query = selectedRange
+            ? `?from=${selectedRange.from}&to=${selectedRange.to}`
+            : `?gameweek=${selectedGameweek}`;
         if (divisionId !== 'all') {
-            navigate(`/leagues/${divisionId}?gameweek=${selectedGameweek}`);
+            navigate(`/leagues/${divisionId}${query}`);
         } else {
-            navigate(`/leagues?gameweek=${selectedGameweek}`);
+            navigate(`/leagues${query}`);
         }
     };
 
@@ -120,17 +144,31 @@ const LeagueStandingsComp = ({
                             selectedGameweekData={selectedGameweekData}
                             availableGameweeks={availableGameweeks}
                         />
+                        <GameweekRangeSelector
+                            key={selectedRange ? `${selectedRange.from}-${selectedRange.to}` : 'none'}
+                            availableGameweeks={availableGameweeks}
+                            selectedRange={selectedRange}
+                        />
                     </>
                 }
             />
 
-            {!isCurrentGameweek && <TimeTravelBanner currentGameweek={currentGameweek} />}
+            {selectedRange ? (
+                <TimeTravelBanner
+                    currentGameweek={currentGameweek}
+                    message="Viewing a range of gameweeks"
+                    clearParams={[...RANGE_PARAMS]}
+                />
+            ) : (
+                !isCurrentGameweek && <TimeTravelBanner currentGameweek={currentGameweek} />
+            )}
 
             {selectedDivision ? (
                 <DivisionStandingsTable
                     division={selectedDivision}
                     teams={standingsData[selectedDivision?.id] || []}
                     selectedGameweek={selectedGameweek}
+                    selectedRange={selectedRange}
                 />
             ) : (
                 <div>
@@ -154,6 +192,7 @@ const LeagueStandingsComp = ({
                                     division={division}
                                     teams={standingsData[division.id] || []}
                                     selectedGameweek={selectedGameweek}
+                                    selectedRange={selectedRange}
                                 />
                             ))
                     )}
