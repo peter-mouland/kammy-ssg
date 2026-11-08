@@ -7,8 +7,8 @@ import { SelectDivision } from '../_shared/components/select-division';
 import { TimeTravelBanner } from '../_shared/components/time-travel-banner';
 import { UserSelectionProvider } from '../_shared/features/user-selection/user-selection-provider';
 import type { DivisionId, DivisionSheetData } from '../_shared/types/league-types';
-import { GameweekRangeSelector } from './components/gameweek-range-selector';
 import { PositionPointsTable } from './components/position-points-table';
+import styles from './league-standings.module.css';
 import { formatGameweekRange, type GameweekRange, RANGE_PARAMS } from './lib/gameweek-range';
 import type { EnhancedLeagueStandingsLoaderData } from './types/league-standings-types';
 
@@ -133,23 +133,22 @@ const LeagueStandingsComp = ({
             <PageHeader
                 title={`${selectedDivision?.label} Standings`}
                 actions={
-                    <>
+                    <div className={styles.headerControls}>
+                        <div className={styles.gameweekControl}>
+                            <GameweekSelector
+                                currentGameweekData={currentGameweekData}
+                                selectedGameweekData={selectedGameweekData}
+                                availableGameweeks={availableGameweeks}
+                                showRangeOption
+                                selectedRange={selectedRange}
+                            />
+                        </div>
                         <SelectDivision
                             divisions={divisions}
                             selectedDivision={selectedDivision?.id}
                             handleDivisionChange={handleDivisionChange}
                         />
-                        <GameweekSelector
-                            currentGameweekData={currentGameweekData}
-                            selectedGameweekData={selectedGameweekData}
-                            availableGameweeks={availableGameweeks}
-                        />
-                        <GameweekRangeSelector
-                            key={selectedRange ? `${selectedRange.from}-${selectedRange.to}` : 'none'}
-                            availableGameweeks={availableGameweeks}
-                            selectedRange={selectedRange}
-                        />
-                    </>
+                    </div>
                 }
             />
 
