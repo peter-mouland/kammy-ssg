@@ -5,6 +5,7 @@ import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
 import type { DivisionId, DivisionSheetData, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { PlayersSheetData } from '../../_shared/types/sheets-types';
+import { getManagerCategoryStandings } from '../../leagues/index.server';
 import type { TransfersPageData } from '../types/transfer-form-types';
 import { getTransfersDataForDivision } from './services/transfers-data.service';
 
@@ -74,11 +75,13 @@ export async function getTransfersPageData({
         }
         const divisionManagers = managers.filter((manager) => manager.divisionId === selectedDivision);
 
-        const {
-            transfers: currentTransfers,
-            divisionRosters,
-            validationContext,
-        } = await getTransfersDataForDivision(selectedDivision, selectedGameweekData, { cache: false });
+        // Category standings are one uncached Firestore read (the division-teams document)
+        // plus the cached UserTeams sheet. They never fail the page: [] means no headers.
+        const [{ transfers: currentTransfers, divisionRosters, validationContext }, categoryStandings] =
+            await Promise.all([
+                getTransfersDataForDivision(selectedDivision, selectedGameweekData, { cache: false }),
+                selectedUser ? getManagerCategoryStandings(selectedDivision, selectedUser.userId) : [],
+            ]);
 
         // Load manager's roster if manager is selected
         const managerRoster = divisionRosters[selectedUser?.userId]?.roster;
@@ -95,6 +98,7 @@ export async function getTransfersPageData({
             selectedGameweekData,
             currentTransfers,
             managerRoster,
+            categoryStandings,
             availablePlayers,
             transferDeadline:
                 transferDeadline.toLocaleDateString('en-gb') +

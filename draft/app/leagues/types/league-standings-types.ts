@@ -66,6 +66,28 @@ export interface EnhancedLeagueStandingsLoaderData {
     persistedUser: { selectedUserId: ManagerId | null; requiresSelection: boolean };
 }
 
+/** A scoring category: a column of the league table, without the total. */
+export type PositionCategory = Exclude<keyof PositionPointsBreakdown, 'total'>;
+
+/** One manager's place in one scoring category of their division, over the season. */
+export interface CategoryStanding {
+    position: PositionCategory;
+    label: string;
+    /** The roster slots whose points count towards this category. */
+    slots: PositionSlotKey[];
+    /** 1-based. Managers on the same points share a rank. */
+    rank: number;
+    isTied: boolean;
+    /** What the league table awards for this place: 0 for last, managers - 1 for first. */
+    rankPoints: number;
+    points: number;
+    totalManagers: number;
+    /** Points behind the manager immediately above. 0 when level, null when top. */
+    gapAbove: number | null;
+    /** Points clear of the manager immediately below. 0 when level, null when bottom. */
+    gapBelow: number | null;
+}
+
 export interface PositionColumnConfig {
     key: keyof PositionPointsBreakdown;
     label: string;

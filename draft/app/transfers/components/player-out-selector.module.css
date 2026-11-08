@@ -64,6 +64,12 @@
     min-height: 0;
 }
 
+.categoryGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--spacing-3);
+}
+
 .embeddedInJourney {
     flex: 1;
     min-height: 0;

@@ -4,7 +4,10 @@ import { Table } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
+import type { CategoryStanding } from '../../leagues';
+import { groupRosterByCategory } from '../lib/group-roster-by-category';
 import type { TransferType } from '../types/transfer-types';
+import { CategoryStandingHeader } from './category-standing-header';
 import styles from './player-out-selector.module.css';
 import { getTransferSelectorStatColumns } from './transfer-selector-stat-columns';
 
@@ -15,8 +18,25 @@ interface PlayerOutSelectorProps {
     transferType: TransferType;
     playersByCode: Record<number, EnhancedPlayerData>;
     teamsByCode: Record<number, FplTeam>;
+    /** The manager's standing in each scoring category. Groups render without one when []. */
+    categoryStandings?: CategoryStanding[];
     embeddedInJourney?: boolean;
 }
+
+const EMPTY_STATE = {
+    icon: (
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+        </svg>
+    ),
+    title: 'No players found',
+    description: 'Try adjusting your search or filter criteria.',
+};
 
 export function PlayerOutSelector({
     teamsByCode,
@@ -25,17 +45,13 @@ export function PlayerOutSelector({
     selectedPlayer,
     onPlayerChange,
     transferType,
+    categoryStandings = [],
     embeddedInJourney = false,
 }: PlayerOutSelectorProps) {
-    const rosterPlayersByCode: Record<number, RosterPlayer> = {};
-    const allRosterPlayers = Object.values(roster).flatMap(({ player }) => {
-        const enhanced = playersByCode[player.playerCode];
-        if (!enhanced) {
-            return [];
-        }
-        rosterPlayersByCode[player.playerCode] = player;
-        return [enhanced];
-    });
+    const rosterPlayersByCode: Record<number, RosterPlayer> = Object.fromEntries(
+        Object.values(roster).map(({ player }) => [player.playerCode, player]),
+    );
+    const groups = groupRosterByCategory(roster, playersByCode, categoryStandings);
 
     const handlePlayerClick = (player: EnhancedPlayerData) => {
         if (selectedPlayer?.playerCode === player.code) {
@@ -55,32 +71,24 @@ export function PlayerOutSelector({
                 </div>
             )}
 
-            {/* Player List */}
+            {/* Player List, grouped the way the league table scores it */}
             <div className={styles.playerList}>
-                <Table
-                    data={allRosterPlayers}
-                    columns={columns}
-                    onRowClick={(player) => handlePlayerClick(player)}
-                    getRowProps={(player) => {
-                        return {
-                            className: `${styles.playerItem} ${selectedPlayer?.playerCode === player.code ? styles.selected : ''}`,
-                        };
-                    }}
-                    empty={{
-                        icon: (
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
-                        ),
-                        title: 'No players found',
-                        description: 'Try adjusting your search or filter criteria.',
-                    }}
-                />
+                {groups.length === 0 ? <Table data={[]} columns={columns} empty={EMPTY_STATE} /> : null}
+                {groups.map((group) => (
+                    <section key={group.key} className={styles.categoryGroup} aria-label={group.label}>
+                        <CategoryStandingHeader label={group.label} standing={group.standing} />
+                        <Table
+                            data={group.players}
+                            columns={columns}
+                            onRowClick={(player) => handlePlayerClick(player)}
+                            getRowProps={(player) => {
+                                return {
+                                    className: `${styles.playerItem} ${selectedPlayer?.playerCode === player.code ? styles.selected : ''}`,
+                                };
+                            }}
+                        />
+                    </section>
+                ))}
             </div>
 
             {/* Selected Player Display */}
