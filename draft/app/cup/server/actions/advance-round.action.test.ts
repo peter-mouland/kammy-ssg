@@ -86,6 +86,19 @@ describe('advanceRoundAction', () => {
         expect(rows.some((row) => row.includes('stale'))).toBe(false);
     });
 
+    it('refuses to wipe a next stage that already has results', async () => {
+        server.use(
+            sheetValuesHandler({
+                CupBracket: [...RESOLVED_R16, ['qf', '0', 'ann', 'cat', '12', '7', 'ann', '']],
+            }),
+        );
+
+        const result = await advanceRoundAction({ stage: 'r16' });
+
+        expect(result.success).toBe(false);
+        expect(result.error).toMatch(/qf already has results/i);
+    });
+
     it('refuses the final and non-knockout stages', async () => {
         expect((await advanceRoundAction({ stage: 'final' })).error).toMatch(/no next round/i);
         expect((await advanceRoundAction({ stage: 'league' })).success).toBe(false);

@@ -15,8 +15,9 @@ export interface AdvanceRoundResult {
  * Advance a fully resolved stage's winners into the next round's ties.
  * Explicit rather than automatic on resolve, so correcting an earlier tie
  * cannot silently cascade. Refuses while any tie of the stage is unresolved,
- * naming the ties still waiting. Re-running replaces the next stage's ties,
- * so a correction followed by another advance stays consistent.
+ * naming the ties still waiting. Re-running replaces the next stage's ties
+ * while they are still blank, so a correction followed by another advance
+ * stays consistent, but never wipes a next stage that already has results.
  */
 export async function advanceRoundAction(input: { stage: string }): Promise<AdvanceRoundResult> {
     const { stage } = input;
@@ -38,6 +39,17 @@ export async function advanceRoundAction(input: { stage: string }): Promise<Adva
     const unresolved = ties.filter((matchup) => !matchup.winner).map((matchup) => matchup.tie);
     if (unresolved.length > 0) {
         return { success: false, error: `${stageId} still needs ties resolved: ${unresolved.join(', ')}.` };
+    }
+
+    const existingNext = bracket.filter((matchup) => matchup.stage === nextStage);
+    const hasResults = existingNext.some(
+        (matchup) => matchup.winner || matchup.homeAggregate !== undefined || matchup.awayAggregate !== undefined,
+    );
+    if (hasResults) {
+        return {
+            success: false,
+            error: `Cannot advance: ${nextStage} already has results. Correct them there instead of re-advancing ${stageId}.`,
+        };
     }
 
     const advanced = advanceWinners(ties, nextStage);
