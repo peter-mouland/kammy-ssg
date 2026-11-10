@@ -12,7 +12,7 @@ import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import type { DivisionId } from '../_shared/types/league-types';
 import { CupSubmitPage } from './cup-submit.page';
 import { buildCupFixtures } from './lib/cup-fixtures';
-import { CUP_STAGES } from './lib/cup-rules';
+import { openPlayoffRounds } from './lib/knockout';
 import { getCupSubmitData } from './server/cup.server';
 import { readCupBracket, readCupConfig, readCupSubmissions } from './server/cup-sheets';
 import type { CupSubmitPageData } from './types/cup-page-types';
@@ -62,23 +62,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
         // The manager's open play-off ties (rule 4.8) behave as extra single-leg
         // rounds outside the config: any four players, no reuse ban.
-        const playoffRounds: CupRound[] = selectedUser
-            ? bracket
-                  .filter(
-                      (matchup) =>
-                          matchup.stage === 'playoff' &&
-                          matchup.gameweek !== undefined &&
-                          !matchup.winner &&
-                          (matchup.home === selectedUser.userId || matchup.away === selectedUser.userId),
-                  )
-                  .map((matchup) => ({
-                      stage: 'playoff' as const,
-                      leg: 1,
-                      gameweek: matchup.gameweek as number,
-                      playersRequired: CUP_STAGES.playoff.playersRequired,
-                      twoLegged: false,
-                  }))
-            : [];
+        const playoffRounds: CupRound[] = selectedUser ? openPlayoffRounds(bracket, selectedUser.userId) : [];
 
         // Same gameweek resolution as /cup: ?gameweek wins, else current-if-cup, else first cup gameweek.
         const { resolveCupRounds } = await import('./lib/cup-config');

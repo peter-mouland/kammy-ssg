@@ -6,7 +6,6 @@ import { requestFormData } from '../_shared/lib/form-data';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupAdminPage } from './cup-admin.page';
-import { CUP_STAGES } from './lib/cup-rules';
 import { fisherYatesShuffle, pairIntoMatchups } from './lib/knockout';
 import {
     readCupBracket,
@@ -48,10 +47,10 @@ export async function loader(_args: LoaderFunctionArgs) {
         if (config) {
             const { getCupStandings } = await import('./server/cup.server');
             qualifiers = getCupStandings({ userTeams, cupConfig: config, submissions, pointsRows }).qualifiers;
-            const { resolveCupRounds } = await import('./lib/cup-config');
+            const { gameweekOptionLabel, resolveCupRounds } = await import('./lib/cup-config');
             gameweekOptions = resolveCupRounds(config).map((r) => ({
                 gameweek: r.gameweek,
-                label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+                label: gameweekOptionLabel(r),
             }));
         }
 

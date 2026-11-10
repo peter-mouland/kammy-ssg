@@ -1,11 +1,14 @@
 /* Location: app/cup/server/actions/generate-autopicks.action.ts */
 
+import { now as clockNow } from '../../../_shared/lib/clock';
+import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { cupEligibleManagers } from '../../../_shared/lib/league-divisions';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
 import { getTeamsForGameweek } from '../../../scoring/index.server';
 import { type AutopickCandidate, planAutopicks } from '../../lib/autopick';
 import { getRoundForGameweek } from '../../lib/cup-config';
+import { isDeadlinePassed } from '../../lib/cup-deadlines';
 import { addCupSubmission, readCupConfig, readCupSubmissions } from '../cup-sheets';
 
 export interface GenerateAutopicksResult {
@@ -28,6 +31,14 @@ export async function generateAutopicksAction(input: { gameweek: number }): Prom
     if (!round) {
         return { success: false, error: `Gameweek ${gameweek} is not part of the cup.` };
     }
+    // Autopicks stand in for managers who missed the deadline (rule 4.6).
+    // Running them while submissions are still open would lock in teams for
+    // managers who might yet submit their own.
+    const events = await fplApiCache.getFplEvents();
+    const gameweekData = events.find((event) => event.fplEvent.id === gameweek);
+    if (!gameweekData || !isDeadlinePassed(gameweekData)) {
+        return { success: false, error: `Gameweek ${gameweek} is still open for submissions. Autopick after the deadline.` };
+    }
     const [allUserTeams, divisions] = await Promise.all([readUserTeams(), readDivisions()]);
     const userTeams = cupEligibleManagers(allUserTeams, divisions);
 
@@ -40,7 +51,7 @@ export async function generateAutopicksAction(input: { gameweek: number }): Prom
         candidates.push({ manager: team.userId, division: team.divisionId, roster: squad ? squad.roster : null });
     }
 
-    const now = new Date();
+    const now = clockNow();
     const outcome = planAutopicks({ candidates, submissions, cupConfig, round, gameweek, now });
     for (const row of outcome.rows) {
         await addCupSubmission(row);
