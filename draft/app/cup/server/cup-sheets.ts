@@ -45,7 +45,11 @@ export async function writeCupConfig(config: CupConfig): Promise<void> {
 export async function readCupBracket(): Promise<CupMatchup[]> {
     const rows = await readCupBracketRows();
 
-    return rows.map((row) => ({ ...row, stage: row.stage as CupStageId }));
+    return rows.map((row) => ({
+        ...row,
+        stage: row.stage as CupStageId,
+        parentStage: row.parentStage === undefined ? undefined : (row.parentStage as CupStageId),
+    }));
 }
 
 export async function writeCupBracket(matchups: CupMatchup[]): Promise<void> {

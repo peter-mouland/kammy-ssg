@@ -60,7 +60,7 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
     // A bye needs no scores: the present manager advances.
     if ((matchup.home && !matchup.away) || (matchup.away && !matchup.home)) {
         const resolved = resolveTie(matchup, { homeLeg1: 0, awayLeg1: 0, homeLeg2: 0, awayLeg2: 0 });
-        await writeCupBracket(replaceTie(bracket, resolved));
+        await writeCupBracket(withPlayoffWinnerCopiedBack(replaceTie(bracket, resolved), resolved));
         return { success: true, message: `Bye: ${resolved.winner} advances.` };
     }
     if (!matchup.home || !matchup.away) {
@@ -137,7 +137,7 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
     const awayAggregate = legScores.awayLeg1 + legScores.awayLeg2;
     if (homeAggregate !== awayAggregate) {
         const resolved = resolveTie(matchup, legScores);
-        await writeCupBracket(replaceTie(bracket, resolved));
+        await writeCupBracket(withPlayoffWinnerCopiedBack(replaceTie(bracket, resolved), resolved));
         return {
             success: true,
             message: `${stageId} tie ${tie} resolved: ${resolved.winner} advances ${homeAggregate}-${awayAggregate}.`,
@@ -166,9 +166,11 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
         ...matchup,
         homeAggregate,
         awayAggregate,
-        winner: level ?? matchup.winner,
+        // A correction can turn a decided tie level: the old winner must go,
+        // leaving a winnerless scored draw for the play-off path.
+        winner: level,
     };
-    await writeCupBracket(replaceTie(bracket, resolved));
+    await writeCupBracket(withPlayoffWinnerCopiedBack(replaceTie(bracket, resolved), resolved));
 
     if (!level) {
         return {
@@ -186,4 +188,31 @@ function replaceTie(bracket: CupMatchup[], resolved: CupMatchup): CupMatchup[] {
     return bracket.map((matchup) =>
         matchup.stage === resolved.stage && matchup.tie === resolved.tie ? resolved : matchup,
     );
+}
+
+/**
+ * Copy a resolved play-off's winner back to the tie it was created for, so
+ * the parent stage can advance. Follows the parent chain (a play-off of a
+ * play-off resolves the whole chain) and stops on a cycle or a parent that
+ * already has a winner rather than overwriting it.
+ */
+function withPlayoffWinnerCopiedBack(bracket: CupMatchup[], resolved: CupMatchup): CupMatchup[] {
+    if (resolved.stage !== 'playoff' || !resolved.winner) return bracket;
+
+    let updated = bracket;
+    let child = resolved;
+    const seen = new Set<string>();
+    while (child.parentStage !== undefined && child.parentTie !== undefined) {
+        const key = `${child.parentStage}:${child.parentTie}`;
+        if (seen.has(key)) break;
+        seen.add(key);
+        const parent = updated.find(
+            (matchup) => matchup.stage === child.parentStage && matchup.tie === child.parentTie,
+        );
+        if (!parent || parent.winner) break;
+        const withWinner: CupMatchup = { ...parent, winner: child.winner };
+        updated = updated.map((matchup) => (matchup === parent ? withWinner : matchup));
+        child = withWinner;
+    }
+    return updated;
 }

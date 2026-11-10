@@ -81,7 +81,7 @@ describe('createPlayoffAction', () => {
         expect(result.success).toBe(true);
         expect(result.message).toContain('ann v bob');
         const [rows] = sent;
-        expect(rows).toContainEqual(['playoff', 0, 'ann', 'bob', '', '', '', 11]);
+        expect(rows).toContainEqual(['playoff', 0, 'ann', 'bob', '', '', '', 11, 'r16', 0]);
     });
 
     it('refuses a tie that already has a winner', async () => {
@@ -110,5 +110,23 @@ describe('createPlayoffAction', () => {
             /not a real gameweek/i,
         );
         expect((await createPlayoffAction({ stage: 'r16', tie: 99, gameweek: 11 })).error).toMatch(/no r16 tie 99/i);
+    });
+
+    it('refuses when an open play-off already exists for the tie', async () => {
+        server.use(
+            sheetValuesHandler({
+                CupConfig: CUP_CONFIG_TAB,
+                CupBracket: [
+                    [...BRACKET_HEADERS, 'ParentStage', 'ParentTie'],
+                    ['r16', '0', 'ann', 'bob', '12', '12', '', '', '', ''],
+                    ['playoff', '0', 'ann', 'bob', '', '', '', '11', 'r16', '0'],
+                ],
+            }),
+        );
+
+        const result = await createPlayoffAction({ stage: 'r16', tie: 0, gameweek: 11 });
+
+        expect(result.success).toBe(false);
+        expect(result.error).toMatch(/already has an open play-off/i);
     });
 });
