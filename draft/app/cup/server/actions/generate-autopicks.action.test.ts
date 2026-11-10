@@ -2,6 +2,7 @@
 
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
 import { googleAuthHandler, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
 import { generateAutopicksAction } from './generate-autopicks.action';
@@ -59,5 +60,25 @@ describe('generateAutopicksAction', () => {
         const result = await generateAutopicksAction({ gameweek: Number.NaN });
 
         expect(result.success).toBe(false);
+    });
+
+    it('refuses to autopick while the gameweek is still open', async () => {
+        await dataCache.get(CACHE_KEYS.FPL.EVENTS, async () => [
+            {
+                fplEvent: { id: 1, finished: false },
+                start: new Date('2026-08-01T00:00:00Z'),
+                end: new Date('2099-01-01T00:00:00Z'),
+            },
+            {
+                fplEvent: { id: 2, finished: false },
+                start: new Date('2099-01-01T00:00:00Z'),
+                end: new Date('2099-01-08T00:00:00Z'),
+            },
+        ]);
+
+        const result = await generateAutopicksAction({ gameweek: 1 });
+
+        expect(result.success).toBe(false);
+        expect(result.error).toMatch(/still open for submissions/i);
     });
 });

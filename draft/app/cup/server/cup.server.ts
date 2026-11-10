@@ -4,14 +4,13 @@
 import { now as clockNow } from '../../_shared/lib/clock';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
-import { getOtherLegGameweek, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
+import { gameweekOptionLabel, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
 import type { CupFixture } from '../lib/cup-fixtures';
-import { CUP_STAGES } from '../lib/cup-rules';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
-import { findGroupUsedPlayers, findLatestSubmission } from '../lib/cup-submission';
+import { findLatestSubmission, findUsedPlayers } from '../lib/cup-submission';
 import { getTeamVisibility } from '../lib/cup-visibility';
 import type {
     CupGameweekOption,
@@ -82,7 +81,7 @@ export function getCupPageData(input: {
 
     const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
         gameweek: r.gameweek,
-        label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+        label: gameweekOptionLabel(r),
     }));
 
     return {
@@ -198,11 +197,11 @@ export async function getCupSubmitData(input: {
     const gameweekOptions: CupGameweekOption[] = [
         ...resolveCupRounds(cupConfig).map((r) => ({
             gameweek: r.gameweek,
-            label: `${CUP_STAGES[r.stage].label}${r.twoLegged ? ` L${r.leg}` : ''} · GW${r.gameweek}`,
+            label: gameweekOptionLabel(r),
         })),
         ...extraRounds.map((r) => ({
             gameweek: r.gameweek,
-            label: `${CUP_STAGES[r.stage].label} · GW${r.gameweek}`,
+            label: gameweekOptionLabel(r),
         })),
     ];
 
@@ -235,13 +234,7 @@ export async function getCupSubmitData(input: {
     // The reuse ban covers both directions of a two-legged round and every
     // other league gameweek (rule 4.10), so used players stay disabled in the
     // picker and rejected on submit.
-    let usedPlayers: number[] = [];
-    const otherGameweek = getOtherLegGameweek(cupConfig, round);
-    if (otherGameweek !== null) {
-        usedPlayers = findSubmission(submissions, selectedUser.userId, otherGameweek)?.players ?? [];
-    } else if (round.stage === 'league') {
-        usedPlayers = findGroupUsedPlayers(submissions, selectedUser.userId, cupConfig, gameweek);
-    }
+    const usedPlayers = findUsedPlayers(submissions, selectedUser.userId, cupConfig, round);
 
     return {
         ...empty,

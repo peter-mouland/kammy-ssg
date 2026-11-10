@@ -170,14 +170,29 @@ function isMissingTab(error: unknown): boolean {
  * somebody to go and create a tab.
  */
 export async function readPlayerInbox(): Promise<PlayerInboxRow[]> {
+    return (await readPlayerInboxWithRowCount()).rows;
+}
+
+/**
+ * The inbox rows plus the raw data-row count (header excluded).
+ *
+ * Blank rows and rows whose code was cleared carry no player and are dropped
+ * from `rows`, but they still occupy sheet rows. The approve path must take
+ * the append position from `rawRowCount`, never from `rows.length`, or it
+ * lands on top of a researched row.
+ */
+export async function readPlayerInboxWithRowCount(): Promise<{ rows: PlayerInboxRow[]; rawRowCount: number }> {
     try {
         const data = await readSheetRange(inboxRange(`A:${LAST_COLUMN}`));
 
         // Row 1 is the header, so a data row's sheet row number is its index + 2.
-        return data
-            .slice(1)
-            .map((cells, index) => toRow(cells, index + 2))
-            .filter((row): row is PlayerInboxRow => row !== null);
+        return {
+            rows: data
+                .slice(1)
+                .map((cells, index) => toRow(cells, index + 2))
+                .filter((row): row is PlayerInboxRow => row !== null),
+            rawRowCount: Math.max(0, data.length - 1),
+        };
     } catch (error) {
         if (isMissingTab(error)) {
             throw createAppError(
@@ -193,9 +208,12 @@ export async function readPlayerInbox(): Promise<PlayerInboxRow[]> {
 /**
  * Add rows to the end of the tab.
  *
- * Takes the current row count rather than using `values.append` so the caller knows where
- * the rows landed -- it has just read the tab to work out what is new, and re-reading to
- * find out what it wrote would be a second chance to race with somebody editing the sheet.
+ * Takes the raw data-row count (header excluded, blank rows included) rather than using
+ * `values.append` so the caller knows where the rows landed -- it has just read the tab
+ * to work out what is new, and re-reading to find out what it wrote would be a second
+ * chance to race with somebody editing the sheet. Pass the count from
+ * `readPlayerInboxWithRowCount`, not the parsed rows length: blank rows still
+ * occupy sheet rows, and a parsed length lands the write on top of them.
  */
 export async function appendPlayerInboxRows(rows: NewPlayerInboxRow[], existingRowCount: number): Promise<void> {
     if (rows.length === 0) return;

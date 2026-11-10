@@ -4,10 +4,10 @@ import { describe, expect, it } from 'vitest';
 import {
     advanceWinners,
     decideTiebreak,
-    findUnresolvedPlayoff,
     fisherYatesShuffle,
     nextKnockoutStage,
     nextPlayoffTie,
+    openPlayoffRounds,
     pairIntoMatchups,
     resolveTie,
 } from './knockout';
@@ -94,15 +94,18 @@ describe('play-off helpers', () => {
         { stage: 'r16' as const, tie: 0, home: 'a', away: 'b' },
     ];
 
-    it('finds a manager’s open play-off tie at a gameweek', () => {
-        expect(findUnresolvedPlayoff(bracket, 'a', 11)?.tie).toBe(0);
-        expect(findUnresolvedPlayoff(bracket, 'b', 11)?.tie).toBe(0);
+    it('builds submittable rounds for a manager’s open play-off ties', () => {
+        const rounds = openPlayoffRounds(bracket, 'a');
+
+        expect(rounds).toEqual([
+            { stage: 'playoff', leg: 1, gameweek: 11, playersRequired: 4, twoLegged: false },
+        ]);
+        expect(openPlayoffRounds(bracket, 'b').map((round) => round.gameweek)).toEqual([11]);
     });
 
-    it('ignores resolved ties, other gameweeks and non-participants', () => {
-        expect(findUnresolvedPlayoff(bracket, 'c', 11)).toBeUndefined();
-        expect(findUnresolvedPlayoff(bracket, 'a', 12)).toBeUndefined();
-        expect(findUnresolvedPlayoff(bracket, 'zed', 11)).toBeUndefined();
+    it('ignores resolved ties and non-participants', () => {
+        expect(openPlayoffRounds(bracket, 'c')).toEqual([]);
+        expect(openPlayoffRounds(bracket, 'zed')).toEqual([]);
     });
 
     it('allocates the next play-off tie index', () => {

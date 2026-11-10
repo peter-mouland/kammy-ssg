@@ -89,6 +89,8 @@ function renderSelector({
     selectedPlayer = null,
     teams = teamsByCode,
     availabilityByCode = {},
+    roster: rosterOverride = roster,
+    playersByCode: playersOverride = playersByCode,
 }: {
     selectedPlayer?: RosterPlayer | null;
     teams?: Record<number, FplTeam>;
@@ -97,17 +99,19 @@ function renderSelector({
     availablePlayers?: EnhancedPlayerData[];
     availabilityByCode?: AvailabilityByCode;
     onPlayerChange?: (p: RosterPlayer | null) => void;
+    roster?: TeamRoster;
+    playersByCode?: Record<number, EnhancedPlayerData>;
 } = {}) {
     const Stub = createRoutesStub([
         {
             path: '/',
             Component: () => (
                 <PlayerOutSelector
-                    roster={roster}
+                    roster={rosterOverride}
                     selectedPlayer={selectedPlayer}
                     onPlayerChange={onPlayerChange}
                     transferType="TRANSFER"
-                    playersByCode={playersByCode}
+                    playersByCode={playersOverride}
                     teamsByCode={teams}
                     categoryStandings={categoryStandings}
                     upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
@@ -292,5 +296,21 @@ describe("FPL's availability on the squad", () => {
 
         expect(saliba?.querySelector('[aria-label="Injured"]')).not.toBeNull();
         expect(gabriel?.querySelector('[role="img"][aria-label]')).toBeNull();
+    });
+});
+
+describe('a squad player whose stats have not loaded', () => {
+    const withoutRaya = Object.fromEntries(Object.entries(playersByCode).filter(([code]) => code !== '1'));
+
+    it('names them instead of dropping them silently', async () => {
+        renderSelector({ playersByCode: withoutRaya });
+
+        expect(await screen.findByText(/Raya is unavailable for transfer right now/)).toBeDefined();
+    });
+
+    it('says nothing when every squad player has stats', async () => {
+        renderSelector();
+
+        expect(screen.queryByText(/unavailable for transfer right now/)).toBeNull();
     });
 });
