@@ -7,7 +7,7 @@ import { getGameweekForStage } from '../../lib/cup-config';
 import { isDeadlinePassed } from '../../lib/cup-deadlines';
 import { isKnockoutStage, KNOCKOUT_STAGES } from '../../lib/cup-rules';
 import { buildGameweekPointsMap, scoreSubmission } from '../../lib/cup-scoring';
-import { findLatestSubmission } from '../../lib/cup-submission';
+import { findLatestScorableSubmission } from '../../lib/cup-submission';
 import { decideTiebreak, resolveTie } from '../../lib/knockout';
 import type { CupMatchup, CupStageId } from '../../types/cup-types';
 import { readCupBracket, readCupConfig, readCupSubmissions, writeCupBracket } from '../cup-sheets';
@@ -88,9 +88,12 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
         legs = stageId === 'final' ? [leg1] : [leg1, leg2 as number];
     }
     const eventById = new Map(events.map((event) => [event.fplEvent.id, event]));
+    // A past deadline is not enough: the matches may not have been played
+    // yet. Resolve only once FPL marks the gameweek finished, so a tie can
+    // never be decided on 0 points for an unplayed leg.
     const legsDone = legs.every((gameweek) => {
         const event = eventById.get(gameweek);
-        return event ? isDeadlinePassed(event) : false;
+        return event ? isDeadlinePassed(event) && event.fplEvent.finished === true : false;
     });
     if (!legsDone) {
         return { success: false, error: 'The gameweek must finish before this tie can be resolved.' };
@@ -105,7 +108,7 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
     for (const manager of [home, away]) {
         const picked: number[][] = [];
         for (const gameweek of legs) {
-            const submission = findLatestSubmission(submissions, manager, gameweek);
+            const submission = findLatestScorableSubmission(submissions, manager, gameweek);
             if (!submission) {
                 return {
                     success: false,
@@ -118,7 +121,7 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
     }
 
     const score = (manager: ManagerId, gameweek: number): number => {
-        const submission = findLatestSubmission(submissions, manager, gameweek);
+        const submission = findLatestScorableSubmission(submissions, manager, gameweek);
         return scoreSubmission(submission?.players ?? [], pointsByLeg.get(gameweek) ?? new Map());
     };
     const firstLeg = legs[0];
@@ -138,9 +141,12 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
     if (homeAggregate !== awayAggregate) {
         const resolved = resolveTie(matchup, legScores);
         await writeCupBracket(withPlayoffWinnerCopiedBack(replaceTie(bracket, resolved), resolved));
+        // Winner first: "bob advances 8-6" reads as a win, not a loss.
+        const scoreLine =
+            resolved.winner === away ? `${awayAggregate}-${homeAggregate}` : `${homeAggregate}-${awayAggregate}`;
         return {
             success: true,
-            message: `${stageId} tie ${tie} resolved: ${resolved.winner} advances ${homeAggregate}-${awayAggregate}.`,
+            message: `${stageId} tie ${tie} resolved: ${resolved.winner} advances ${scoreLine}.`,
         };
     }
 
@@ -178,9 +184,10 @@ export async function resolveTieAction(input: { stage: string; tie: number }): P
             message: `${stageId} tie ${tie} is level ${homeAggregate}-${awayAggregate} through third-entered — a play-off is required (rule 4.8).`,
         };
     }
+    const rankScoreLine = level === away ? `${awayAggregate}-${homeAggregate}` : `${homeAggregate}-${awayAggregate}`;
     return {
         success: true,
-        message: `${stageId} tie ${tie} resolved on rank order: ${level} advances ${homeAggregate}-${awayAggregate}.`,
+        message: `${stageId} tie ${tie} resolved on rank order: ${level} advances ${rankScoreLine}.`,
     };
 }
 
