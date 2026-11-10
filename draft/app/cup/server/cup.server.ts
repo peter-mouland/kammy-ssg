@@ -119,8 +119,12 @@ export function getCupStandings(input: {
 
     // Resubmits append rows: only the latest per manager+gameweek counts, so a
     // corrected team neither double-scores nor double-counts autopicks.
+    // Rejected ('N') rows are manual corrections, not teams: skipping them here
+    // leaves an earlier valid row standing, and an all-rejected gameweek reads
+    // as no submission in the table and the season autopick tally alike.
     const latestByKey = new Map<string, ProcessedCupSheetData>();
     for (const submission of submissions) {
+        if (submission.status === 'N') continue;
         latestByKey.set(`${submission.manager}:${submission.gameweek}`, submission);
     }
     const latest = [...latestByKey.values()];
