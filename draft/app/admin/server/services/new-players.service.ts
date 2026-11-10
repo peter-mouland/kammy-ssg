@@ -8,6 +8,7 @@ import {
     PLAYER_INBOX_MISSING,
     type PlayerInboxRow,
     readPlayerInbox,
+    readPlayerInboxWithRowCount,
     updatePlayerInboxRow,
 } from '../../../_shared/lib/sheets/player-inbox';
 import { readPlayers } from '../../../_shared/lib/sheets/players';
@@ -115,7 +116,12 @@ export async function getNewPlayersData(): Promise<NewPlayersData> {
     const awaitingExport = missing.length - awaiting.length;
 
     const newPlayers: NewPlayerCandidate[] = awaiting
-        .filter((element) => (inboxByCode.get(element.code)?.status ?? '') !== 'approved')
+        .filter((element) => {
+            // Released players are in the game; a stale Players read can still
+            // miss them, which used to list them as new again.
+            const status = inboxByCode.get(element.code)?.status ?? '';
+            return status !== 'approved' && status !== 'released';
+        })
         .map((element) => {
             const row = inboxByCode.get(element.code);
 
@@ -169,7 +175,7 @@ export async function approveNewPlayers(approvals: ApprovalRequest[], now: Date)
         };
     }
 
-    const inbox = await readPlayerInbox();
+    const { rows: inbox, rawRowCount } = await readPlayerInboxWithRowCount();
     const inboxByCode = new Map(inbox.map((row) => [row.code, row]));
     const elementByCode = new Map(elements.map((element) => [element.code, element]));
 
@@ -207,7 +213,7 @@ export async function approveNewPlayers(approvals: ApprovalRequest[], now: Date)
         });
     }
 
-    await appendPlayerInboxRows(additions, inbox.length);
+    await appendPlayerInboxRows(additions, rawRowCount);
 
     return {
         success: true,

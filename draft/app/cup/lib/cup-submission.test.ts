@@ -1,8 +1,8 @@
 /* Location: app/cup/lib/cup-submission.test.ts */
 
 import { describe, expect, it } from 'vitest';
-import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
-import { findGroupUsedPlayers, findLatestSubmission, validateCupSubmission } from './cup-submission';
+import type { CupConfig, CupRound, ProcessedCupSheetData } from '../types/cup-types';
+import { findGroupUsedPlayers, findLatestSubmission, findUsedPlayers, validateCupSubmission } from './cup-submission';
 
 const SQUAD = [10, 11, 12, 13, 14, 15];
 
@@ -105,5 +105,54 @@ describe('findGroupUsedPlayers', () => {
     it('uses the latest row when a gameweek was resubmitted', () => {
         const submissions = [leagueRow('ann', 21, [10]), leagueRow('ann', 21, [11])];
         expect(findGroupUsedPlayers(submissions, 'ann', CONFIG, 22)).toEqual([11]);
+    });
+});
+
+describe('findUsedPlayers', () => {
+    const CONFIG: CupConfig = {
+        season: '2526',
+        league: [21, 22],
+        r16: [24, 25],
+        qf: [27, 28],
+        sf: [30, 32],
+        final: 33,
+    };
+    const row = (manager: string, gameweek: number, players: number[]): ProcessedCupSheetData => ({
+        status: 'Y',
+        timestamp: new Date('2026-08-12T10:00:00Z'),
+        manager,
+        division: 'premierLeague',
+        gameweek,
+        stage: 'r16',
+        leg: gameweek === 24 ? 1 : 2,
+        players,
+        submittedByAdmin: false,
+        adminReason: '',
+    });
+    const round = (overrides: Partial<CupRound>): CupRound => ({
+        stage: 'r16',
+        leg: 2,
+        gameweek: 25,
+        playersRequired: 4,
+        twoLegged: true,
+        ...overrides,
+    });
+
+    it('returns the other leg’s team in a two-legged round', () => {
+        expect(findUsedPlayers([row('ann', 24, [10, 11])], 'ann', CONFIG, round({}))).toEqual([10, 11]);
+    });
+
+    it('returns every other league gameweek’s team in a league round', () => {
+        const submissions = [row('ann', 21, [10]), row('ann', 22, [11])];
+        expect(
+            findUsedPlayers(submissions, 'ann', CONFIG, round({ stage: 'league', leg: 1, gameweek: 22, twoLegged: false })),
+        ).toEqual([10]);
+    });
+
+    it('returns nothing for a play-off round', () => {
+        const submissions = [row('ann', 24, [10]), row('ann', 21, [11])];
+        expect(
+            findUsedPlayers(submissions, 'ann', CONFIG, round({ stage: 'playoff', leg: 1, gameweek: 26, twoLegged: false })),
+        ).toEqual([]);
     });
 });

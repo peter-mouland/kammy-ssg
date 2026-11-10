@@ -1,6 +1,7 @@
 /* Location: app/admin/admin-new-players.route.tsx */
 
 import { type ActionFunctionArgs, data, type MetaFunction, useLoaderData } from 'react-router';
+import { now as clockNow } from '../_shared/lib/clock';
 import { requestFormData } from '../_shared/lib/form-data';
 import { NewPlayersSection } from './components/sections/new-players-section';
 import { AdminMessage } from './components/ui/admin-message';
@@ -38,7 +39,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
                     code: number;
                     position: PositionBucket;
                 }>;
-                return data<ActionResult>(await service.approveNewPlayers(approvals, new Date()));
+                return data<ActionResult>(await service.approveNewPlayers(approvals, clockNow()));
             }
             case 'release': {
                 const codes = JSON.parse(formData.get('codes') ?? '[]') as number[];

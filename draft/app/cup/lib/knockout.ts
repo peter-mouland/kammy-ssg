@@ -1,7 +1,8 @@
 /* Location: app/cup/lib/knockout.ts */
 
 import type { ManagerId } from '../../_shared/types/league-types';
-import type { CupMatchup, CupStageId } from '../types/cup-types';
+import type { CupMatchup, CupRound, CupStageId } from '../types/cup-types';
+import { CUP_STAGES } from './cup-rules';
 
 /**
  * Fisher–Yates shuffle with an injectable random source, so the R16 draw is
@@ -80,21 +81,27 @@ export function nextKnockoutStage(stage: CupStageId): CupStageId | null {
 }
 
 /**
- * A manager's open play-off tie at a gameweek, if any: stage 'playoff', this
- * gameweek, no winner yet. Used to admit play-off submissions.
+ * A manager's open play-off ties as submittable single-leg rounds (rule 4.8):
+ * played in their own gameweeks outside the configured cup rounds, any four
+ * players, no reuse ban. One builder for the submit page (all of them) and the
+ * submit action (the one matching the submitted gameweek).
  */
-export function findUnresolvedPlayoff(
-    bracket: CupMatchup[],
-    manager: ManagerId,
-    gameweek: number,
-): CupMatchup | undefined {
-    return bracket.find(
-        (matchup) =>
-            matchup.stage === 'playoff' &&
-            matchup.gameweek === gameweek &&
-            !matchup.winner &&
-            (matchup.home === manager || matchup.away === manager),
-    );
+export function openPlayoffRounds(bracket: CupMatchup[], manager: ManagerId): CupRound[] {
+    return bracket
+        .filter(
+            (matchup) =>
+                matchup.stage === 'playoff' &&
+                matchup.gameweek !== undefined &&
+                !matchup.winner &&
+                (matchup.home === manager || matchup.away === manager),
+        )
+        .map((matchup) => ({
+            stage: 'playoff' as const,
+            leg: 1,
+            gameweek: matchup.gameweek as number,
+            playersRequired: CUP_STAGES.playoff.playersRequired,
+            twoLegged: false,
+        }));
 }
 
 /** The next play-off tie index. */

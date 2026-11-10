@@ -4,6 +4,10 @@
  * The six buckets the league classifies every player into. Kept as a literal union
  * rather than derived from POSITION_COLUMNS because that constant is about *table
  * columns* -- it pairs gk with the sub slot -- and this is about a player's position.
+ *
+ * Uppercase on purpose: the sibling `CustomPosition` is the lowercase game code
+ * ('gk', 'fb', ...) used across draft and players. The two meet only at the
+ * sheet boundary, so they stay separate types.
  */
 export const POSITION_BUCKETS = ['GK', 'CB', 'FB', 'MID', 'WA', 'CA'] as const;
 export type PositionBucket = (typeof POSITION_BUCKETS)[number];
@@ -56,7 +60,7 @@ export interface NewPlayerCandidate {
     suggestion: PositionSuggestion | null;
 }
 
-/** In the `Players` tab with a position, but `isHidden` set -- not yet in the game. */
+/** Approved and waiting in the `PlayerInbox` tab with a position -- not yet in `Players` or the game. */
 export interface HeldPlayer {
     code: number;
     webName: string;

@@ -54,6 +54,14 @@ export function resolveCupRounds(config: CupConfig): CupRound[] {
 }
 
 /**
+ * The gameweek picker label: "R16 L2 · GW4", "Final · GW10", "Play-off · GW11".
+ * One builder for the admin, overview and submit pickers so they read alike.
+ */
+export function gameweekOptionLabel(round: CupRound): string {
+    return `${CUP_STAGES[round.stage].label}${round.twoLegged ? ` L${round.leg}` : ''} · GW${round.gameweek}`;
+}
+
+/**
  * The round (stage + leg) played in a given gameweek, if any. `extraRounds`
  * covers rounds outside the config — play-off ties carry their own gameweek.
  */

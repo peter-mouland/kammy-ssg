@@ -81,21 +81,25 @@ function renderSelector({
     categoryStandings = [CB_STANDING],
     onPlayerChange = vi.fn(),
     upcomingFixturesByTeamCode = ARSENAL_FIXTURES,
+    roster: rosterOverride = roster,
+    playersByCode: playersOverride = playersByCode,
 }: {
     categoryStandings?: CategoryStanding[];
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     onPlayerChange?: (p: RosterPlayer | null) => void;
+    roster?: TeamRoster;
+    playersByCode?: Record<number, EnhancedPlayerData>;
 } = {}) {
     const Stub = createRoutesStub([
         {
             path: '/',
             Component: () => (
                 <PlayerOutSelector
-                    roster={roster}
+                    roster={rosterOverride}
                     selectedPlayer={null}
                     onPlayerChange={onPlayerChange}
                     transferType="TRANSFER"
-                    playersByCode={playersByCode}
+                    playersByCode={playersOverride}
                     teamsByCode={teamsByCode}
                     categoryStandings={categoryStandings}
                     upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
@@ -234,5 +238,21 @@ describe('each player row', () => {
             .join(' ');
 
         expect(headerText).not.toMatch(/[↕↑↓]/);
+    });
+});
+
+describe('a squad player whose stats have not loaded', () => {
+    const withoutRaya = Object.fromEntries(Object.entries(playersByCode).filter(([code]) => code !== '1'));
+
+    it('names them instead of dropping them silently', async () => {
+        renderSelector({ playersByCode: withoutRaya });
+
+        expect(await screen.findByText(/Raya is unavailable for transfer right now/)).toBeDefined();
+    });
+
+    it('says nothing when every squad player has stats', async () => {
+        renderSelector();
+
+        expect(screen.queryByText(/unavailable for transfer right now/)).toBeNull();
     });
 });

@@ -228,6 +228,32 @@ describe('approving a position', () => {
         expect(inboxRows()).toHaveLength(0);
     });
 
+    it('appends after a blank row instead of overwriting researched rows', async () => {
+        // A blank row in the middle of the tab carries no player but still
+        // occupies a sheet row. Approving must land after it, not on Kone.
+        await seed({ inbox: [...INBOX_TAB, [], researched()] });
+
+        const result = await service.approveNewPlayers([{ code: 118748, position: 'GK' }], new Date('2026-08-26'));
+
+        expect(result.success).toBe(true);
+        const rows = inboxRows();
+        expect(rows).toHaveLength(3);
+        expect(rows[1]?.[0]).toBe('542273'); // Kone's researched row is intact
+        expect(rows[2]).toEqual(expect.arrayContaining([118748, 'Dubravka', 'BUR', 'GKP', 'GK', 'approved']));
+    });
+
+    it('does not list a released player as new when the Players read is stale', async () => {
+        // Dubravka was released into the game, but this Players read predates
+        // it. The inbox status is the truth here, not the stale sheet read.
+        await seed({
+            inbox: [...INBOX_TAB, researched({ code: '118748', name: 'Dubravka', status: 'released', position: 'GK' })],
+        });
+
+        const { newPlayers } = await service.getNewPlayersData();
+
+        expect(newPlayers.map((player) => player.webName)).toEqual(['Kone']);
+    });
+
     it('refuses a player already in the game rather than duplicating their row', async () => {
         const result = await service.approveNewPlayers([{ code: 154561, position: 'GK' }], new Date('2026-08-26'));
 
