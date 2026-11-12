@@ -19,6 +19,10 @@ export interface CreatePlayoffResult {
  * parent must be scored but winnerless — otherwise resolve it instead. The
  * gameweek must be a real FPL gameweek outside the configured cup rounds, so
  * play-off submissions can never clash with a scheduled round.
+ *
+ * The play-off records its parent tie so that resolving it copies the winner
+ * back. Only one open play-off per tie: a second create is refused until the
+ * first resolves.
  */
 export async function createPlayoffAction(input: {
     stage: string;
@@ -59,12 +63,28 @@ export async function createPlayoffAction(input: {
         return { success: false, error: `Gameweek ${gameweek} already hosts a cup round.` };
     }
 
+    const openPlayoff = bracket.find(
+        (matchup) =>
+            matchup.stage === 'playoff' &&
+            !matchup.winner &&
+            matchup.parentStage === stage &&
+            matchup.parentTie === tie,
+    );
+    if (openPlayoff) {
+        return {
+            success: false,
+            error: `This tie already has an open play-off (play-off ${openPlayoff.tie}). Resolve it first.`,
+        };
+    }
+
     const playoff: CupMatchup = {
         stage: 'playoff',
         tie: nextPlayoffTie(bracket),
         home: parent.home,
         away: parent.away,
         gameweek,
+        parentStage: stage as CupStageId,
+        parentTie: tie,
     };
     await writeCupBracket([...bracket, playoff]);
     return {

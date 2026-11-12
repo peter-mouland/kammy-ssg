@@ -100,4 +100,8 @@ export interface CupMatchup {
     winner?: ManagerId | null;
     /** Play-off ties (rule 4.8) are played in this gameweek instead of a configured one. */
     gameweek?: number;
+    /** The tie this play-off was created for (rule 4.8). Set on play-off rows only. */
+    parentStage?: CupStageId;
+    /** Index of the parent tie within its stage. Set wherever parentStage is. */
+    parentTie?: number;
 }
