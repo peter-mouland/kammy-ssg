@@ -54,7 +54,7 @@ describe('advanceRoundAction', () => {
         expect(result.success).toBe(true);
         expect(result.message).toContain('ann v cat');
         const [rows] = sent;
-        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '', '']);
+        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '', '', '', '']);
     });
 
     it('refuses while ties are unresolved, naming them', async () => {
@@ -82,8 +82,21 @@ describe('advanceRoundAction', () => {
 
         expect(result.success).toBe(true);
         const [rows] = sent;
-        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '', '']);
+        expect(rows).toContainEqual(['qf', 0, 'ann', 'cat', '', '', '', '', '', '']);
         expect(rows.some((row) => row.includes('stale'))).toBe(false);
+    });
+
+    it('refuses to wipe a next stage that already has results', async () => {
+        server.use(
+            sheetValuesHandler({
+                CupBracket: [...RESOLVED_R16, ['qf', '0', 'ann', 'cat', '12', '7', 'ann', '']],
+            }),
+        );
+
+        const result = await advanceRoundAction({ stage: 'r16' });
+
+        expect(result.success).toBe(false);
+        expect(result.error).toMatch(/qf already has results/i);
     });
 
     it('refuses the final and non-knockout stages', async () => {

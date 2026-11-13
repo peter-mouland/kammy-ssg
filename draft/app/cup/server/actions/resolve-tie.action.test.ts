@@ -5,7 +5,9 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
-import { googleAuthHandler, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
+import { googleAuthHandler, sheetHandlers, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
+import { advanceRoundAction } from './advance-round.action';
+import { createPlayoffAction } from './create-playoff.action';
 import { resolveTieAction } from './resolve-tie.action';
 
 /**
@@ -17,8 +19,11 @@ import { resolveTieAction } from './resolve-tie.action';
  * seeded through the app's own in-memory cache.
  */
 
-const gameweek = (id: number, { start = '2020-01-01T00:00:00Z', end = '2020-01-02T00:00:00Z' } = {}) => ({
-    fplEvent: { id, name: `Gameweek ${id}`, is_current: false, deadline_time: end },
+const gameweek = (
+    id: number,
+    { start = '2020-01-01T00:00:00Z', end = '2020-01-02T00:00:00Z', finished = true } = {},
+) => ({
+    fplEvent: { id, name: `Gameweek ${id}`, is_current: false, finished, deadline_time: end },
     gameWeekIndex: id - 1,
     start: new Date(start),
     end: new Date(end),
@@ -27,8 +32,10 @@ const gameweek = (id: number, { start = '2020-01-01T00:00:00Z', end = '2020-01-0
     hasPassed: false,
 });
 
-const FINISHED = { start: '2020-01-01T00:00:00Z', end: '2020-01-02T00:00:00Z' };
-const OPEN = { start: '2020-01-01T00:00:00Z', end: '2099-01-01T00:00:00Z' };
+const FINISHED = { start: '2020-01-01T00:00:00Z', end: '2020-01-02T00:00:00Z', finished: true };
+const OPEN = { start: '2020-01-01T00:00:00Z', end: '2099-01-01T00:00:00Z', finished: false };
+// Deadline passed but the matches have not been played yet.
+const UNFINISHED = { start: '2020-01-01T00:00:00Z', end: '2020-01-02T00:00:00Z', finished: false };
 
 const CUP_CONFIG_TAB = [
     ['Key', 'Value'],
@@ -114,7 +121,7 @@ const server = setupServer(
     }),
 );
 
-const seed = (gw4: { start: string; end: string } = FINISHED) =>
+const seed = (gw4: { start: string; end: string; finished?: boolean } = FINISHED) =>
     dataCache.get(CACHE_KEYS.FPL.EVENTS, async () => [
         gameweek(1),
         gameweek(2),
@@ -156,7 +163,7 @@ describe('resolveTieAction', () => {
         expect(result.success).toBe(true);
         expect(result.message).toContain('ann');
         const [rows] = sent;
-        expect(rows[1]).toEqual(['r16', 0, 'ann', 'bob', 12, 12, 'ann', '']);
+        expect(rows[1]).toEqual(['r16', 0, 'ann', 'bob', 12, 12, 'ann', '', '', '']);
     });
 
     it('resolves a decisive aggregate directly', async () => {
@@ -166,7 +173,7 @@ describe('resolveTieAction', () => {
 
         expect(result.success).toBe(true);
         const [rows] = sent;
-        expect(rows[2]).toEqual(['r16', 1, 'cat', 'dee', 9, 1, 'cat', '']);
+        expect(rows[2]).toEqual(['r16', 1, 'cat', 'dee', 9, 1, 'cat', '', '', '']);
     });
 
     it('advances the present manager on a bye', async () => {
@@ -217,12 +224,22 @@ describe('resolveTieAction', () => {
         expect(result.message).toMatch(/play-off/i);
         // Aggregates are recorded; the winner stays unset for the play-off.
         const [rows] = sent;
-        expect(rows[1]).toEqual(['r16', 0, 'eve', 'fin', 12, 12, '', '']);
+        expect(rows[1]).toEqual(['r16', 0, 'eve', 'fin', 12, 12, '', '', '', '']);
     });
 
     it('refuses a tie with a leg still open', async () => {
         dataCache.clear();
         await seed(OPEN);
+
+        const result = await resolveTieAction({ stage: 'r16', tie: 0 });
+
+        expect(result.success).toBe(false);
+        expect(result.error).toMatch(/must finish before this tie/i);
+    });
+
+    it('refuses a tie whose leg-2 deadline passed but whose matches are unplayed', async () => {
+        dataCache.clear();
+        await seed(UNFINISHED);
 
         const result = await resolveTieAction({ stage: 'r16', tie: 0 });
 
@@ -246,9 +263,105 @@ describe('resolveTieAction', () => {
         expect(result.error).toMatch(/autopick first/i);
     });
 
+    it('ignores a rejected leg-2 row and scores the earlier valid team', async () => {
+        // A manual 'N' on bob's leg 2 names a 14-point team. It must not count:
+        // ann still advances on first-entered players from the valid rows.
+        server.use(
+            sheetValuesHandler({
+                CupConfig: CUP_CONFIG_TAB,
+                Cup: [
+                    ...CUP_TAB,
+                    ['N', '2026-08-13T10:00:00Z', 'bob', 'premierLeague', '4', 'r16', '2', '101,102', 'FALSE', ''],
+                ],
+                CupBracket: CUP_BRACKET_TAB,
+                'player-gw-points': POINTS_TAB,
+            }),
+        );
+        const sent = captureWrite();
+
+        const result = await resolveTieAction({ stage: 'r16', tie: 0 });
+
+        expect(result.success).toBe(true);
+        expect(result.message).toContain('ann');
+        const [rows] = sent;
+        expect(rows[1]).toEqual(['r16', 0, 'ann', 'bob', 12, 12, 'ann', '', '', '']);
+    });
+
     it('refuses a non-knockout stage and an unknown tie', async () => {
         expect((await resolveTieAction({ stage: 'league', tie: 0 })).success).toBe(false);
         expect((await resolveTieAction({ stage: 'r16', tie: 99 })).error).toMatch(/no r16 tie 99/i);
+    });
+
+    it('clears the winner when a re-resolve after a correction leaves the tie level', async () => {
+        // dee resubmits leg 1 with cat's own players, levelling the aggregate 9-9
+        // with identical ranks. The play-off message must not keep cat's old win.
+        server.use(
+            sheetValuesHandler({
+                CupConfig: CUP_CONFIG_TAB,
+                Cup: [
+                    ...CUP_TAB,
+                    ['Y', '2026-08-13T10:00:00Z', 'dee', 'premierLeague', '3', 'r16', '1', '201,202', 'FALSE', ''],
+                ],
+                CupBracket: [
+                    CUP_BRACKET_TAB[0],
+                    ['r16', '0', 'ann', 'bob', '12', '12', 'ann'],
+                    ['r16', '1', 'cat', 'dee', '9', '1', 'cat'],
+                ],
+                'player-gw-points': POINTS_TAB,
+            }),
+        );
+        const sent = captureWrite();
+
+        const result = await resolveTieAction({ stage: 'r16', tie: 1 });
+
+        expect(result.success).toBe(true);
+        expect(result.message).toMatch(/play-off/i);
+        const [rows] = sent;
+        expect(rows[2]?.[4]).toBe(9);
+        expect(rows[2]?.[5]).toBe(9);
+        expect(rows[2]?.[6]).toBe('');
+    });
+
+    it('carries a play-off winner back to the parent tie so the stage can advance', async () => {
+        // ann and bob pick identically in both legs: level 12-12 at every rank,
+        // so r16 tie 0 needs a play-off. The writes persist in the fake store,
+        // so each step below reads what the previous step wrote.
+        const { handlers, store } = sheetHandlers({
+            CupConfig: CUP_CONFIG_TAB,
+            Cup: [
+                CUP_HEADERS,
+                ...sub('ann', 3, 1, '101,102'),
+                ...sub('bob', 3, 1, '101,102'),
+                ...sub('ann', 4, 2, '101,102'),
+                ...sub('bob', 4, 2, '101,102'),
+                ['Y', '2026-08-12T10:00:00Z', 'ann', 'premierLeague', '11', 'playoff', '1', '101,102', 'FALSE', ''],
+                ['Y', '2026-08-12T10:00:00Z', 'bob', 'premierLeague', '11', 'playoff', '1', '103,104', 'FALSE', ''],
+            ],
+            CupBracket: [
+                ['Stage', 'Tie', 'Home', 'Away', 'HomeAggregate', 'AwayAggregate', 'Winner', 'Gameweek'],
+                ['r16', '0', 'ann', 'bob', '', '', '', ''],
+            ],
+            'player-gw-points': POINTS_TAB,
+        });
+        server.use(...handlers);
+
+        const level = await resolveTieAction({ stage: 'r16', tie: 0 });
+        expect(level.message).toMatch(/play-off/i);
+
+        const created = await createPlayoffAction({ stage: 'r16', tie: 0, gameweek: 11 });
+        expect(created.success).toBe(true);
+
+        // bob outscores ann 8-6 in the play-off gameweek.
+        const decided = await resolveTieAction({ stage: 'playoff', tie: 0 });
+        expect(decided.success).toBe(true);
+        expect(decided.message).toContain('bob');
+
+        const parent = store.values('CupBracket').find((row) => row[0] === 'r16');
+        expect(parent?.[6]).toBe('bob');
+
+        const advanced = await advanceRoundAction({ stage: 'r16' });
+        expect(advanced.success).toBe(true);
+        expect(advanced.message).toContain('bob v TBC');
     });
 
     it('resolves a play-off tie as a single leg in its own gameweek', async () => {
@@ -273,6 +386,6 @@ describe('resolveTieAction', () => {
 
         expect(result.success).toBe(true);
         const [rows] = sent;
-        expect(rows[1]).toEqual(['playoff', 0, 'ann', 'bob', 6, 8, 'bob', 11]);
+        expect(rows[1]).toEqual(['playoff', 0, 'ann', 'bob', 6, 8, 'bob', 11, '', '']);
     });
 });
