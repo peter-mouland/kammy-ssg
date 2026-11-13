@@ -107,6 +107,19 @@ describe('planAutopicks', () => {
         expect(outcome.rows[0]?.players).toEqual([104, 105, 101, 106]);
     });
 
+    it('excludes earlier group picks from a league-stage autopick (rule 4.10)', () => {
+        const leagueRound: CupRound = { stage: 'league', leg: 1, gameweek: 2, playersRequired: 4, twoLegged: false };
+        const outcome = planAutopicks({
+            ...base,
+            round: leagueRound,
+            gameweek: 2,
+            candidates: [candidate('ann', makeStandardRoster())],
+            submissions: [submission('ann', 1, [110, 111, 102, 103])],
+        });
+
+        expect(outcome.rows[0]?.players).toEqual([104, 105, 101, 106]);
+    });
+
     it('skips a manager whose squad could not be loaded', () => {
         const outcome = planAutopicks({
             ...base,

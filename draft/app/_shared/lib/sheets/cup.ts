@@ -207,6 +207,8 @@ const CUP_BRACKET_HEADERS = [
     'AwayAggregate',
     'Winner',
     'Gameweek',
+    'ParentStage',
+    'ParentTie',
 ] as const;
 
 function toManagerId(value: unknown): ManagerId | null {
@@ -223,7 +225,7 @@ function toOptionalNumber(value: unknown): number | undefined {
 async function originalReadCupBracketRows(): Promise<CupBracketRow[]> {
     try {
         const spreadsheetId = process.env.GOOGLE_SHEETS_ID as string;
-        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:H` };
+        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:J` };
         const rows = await readSheetRange(range);
 
         return rows
@@ -239,6 +241,9 @@ async function originalReadCupBracketRows(): Promise<CupBracketRow[]> {
                 winner: toManagerId(row[6]) ?? undefined,
                 // Older rows predate the Gameweek column; they resolve via config.
                 gameweek: toOptionalNumber(row[7]),
+                // Older rows predate the parent columns; only play-offs set them.
+                parentStage: String(row[8] ?? '').trim() || undefined,
+                parentTie: toOptionalNumber(row[9]),
             }));
     } catch (error) {
         throw createAppError('CUP_BRACKET_READ_ERROR', 'Failed to read cup bracket from sheet', error);
@@ -265,9 +270,11 @@ export async function writeCupBracketRows(matchups: CupBracketRow[]): Promise<vo
                 m.awayAggregate ?? '',
                 m.winner ?? '',
                 m.gameweek ?? '',
+                m.parentStage ?? '',
+                m.parentTie ?? '',
             ]),
         ];
-        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:H` };
+        const range: SheetRange = { spreadsheetId, range: `'${CUP_BRACKET_SHEET_NAME}'!A:J` };
         await writeSheetRange(range, rows);
         dataCache.invalidateMultiple(getInvalidationKeys('CUP_BRACKET_UPDATED'));
     } catch (error) {

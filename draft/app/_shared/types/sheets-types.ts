@@ -172,4 +172,8 @@ export interface CupBracketRow {
     winner?: ManagerId | null;
     /** Play-off gameweek. Absent on older rows, which use the configured gameweeks. */
     gameweek?: number;
+    /** The tie this play-off was created for. Absent on older rows and non-play-off ties. */
+    parentStage?: string;
+    /** Index of the parent tie within its stage. Absent wherever parentStage is. */
+    parentTie?: number;
 }

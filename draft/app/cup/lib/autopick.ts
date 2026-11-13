@@ -3,9 +3,8 @@
 import type { DivisionId, ManagerId } from '../../_shared/types/league-types';
 import type { TeamRoster } from '../../_shared/types/squad-types';
 import type { CupConfig, CupRound, ProcessedCupSheetData } from '../types/cup-types';
-import { getGameweekForStage } from './cup-config';
 import { type CupSquadPlayer, getCupSquad } from './cup-squad';
-import { findLatestSubmission } from './cup-submission';
+import { findLatestSubmission, findUsedPlayers } from './cup-submission';
 
 /**
  * Auto-select a manager's cup team when they miss a deadline: take the required
@@ -49,7 +48,8 @@ export interface AutopickOutcome {
 
 /**
  * Plan autopicks (rule 4.6) for managers missing a submission in a round:
- * alphabetical picks from their squad, excluding the other leg's players.
+ * alphabetical picks from their squad, excluding players they cannot reuse
+ * (the other leg, or earlier group games under rule 4.10).
  * Short squads still write what is available and are reported by the caller;
  * only an empty pick or a missing squad (or an existing submission) skips.
  */
@@ -73,14 +73,7 @@ export function planAutopicks(input: {
             outcome.skipped.push({ manager: candidate.manager, reason: 'no squad found' });
             continue;
         }
-        // Same as getOtherLegGameweek (#158): use the helper once that PR merges.
-        const otherGameweek = round.twoLegged
-            ? getGameweekForStage(cupConfig, round.stage, round.leg === 1 ? 2 : 1)
-            : null;
-        const usedPlayers =
-            otherGameweek === null
-                ? []
-                : (findLatestSubmission(submissions, candidate.manager, otherGameweek)?.players ?? []);
+        const usedPlayers = findUsedPlayers(submissions, candidate.manager, cupConfig, round);
         const players = generateAutopick(getCupSquad(candidate.roster), round.playersRequired, usedPlayers);
         if (players.length === 0) {
             outcome.skipped.push({ manager: candidate.manager, reason: 'no eligible players' });

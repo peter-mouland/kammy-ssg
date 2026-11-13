@@ -87,4 +87,21 @@ describe('getCupStandings', () => {
         expect(standings.find((s) => s.manager === 'ann')?.autopickCount).toBe(0);
         expect(standings.find((s) => s.manager === 'ann')?.disqualified).toBe(false);
     });
+
+    it('ignores a rejected row, scoring the earlier valid team instead', () => {
+        const { standings } = getCupStandings({
+            userTeams: USER_TEAMS,
+            cupConfig: CONFIG,
+            submissions: [
+                submission('ann', [1, 4]), // valid: 5 pts
+                submission('ann', [9, 9], { status: 'N' }), // rejected: 200 pts must not count
+                submission('bob', [2, 3]), // 5 pts, first-entered 3
+            ],
+            pointsRows: POINTS,
+        });
+
+        const ann = standings.find((s) => s.manager === 'ann');
+        expect(ann?.points).toBe(5);
+        expect(standings.map((s) => s.manager)).toEqual(['ann', 'bob']);
+    });
 });

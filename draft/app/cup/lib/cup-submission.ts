@@ -1,8 +1,30 @@
 /* Location: app/cup/lib/cup-submission.ts */
 
 import type { ManagerId } from '../../_shared/types/league-types';
-import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
+import type { CupConfig, CupRound, ProcessedCupSheetData } from '../types/cup-types';
+import { getOtherLegGameweek } from './cup-config';
 import { findReusedPlayers } from './cup-rules';
+
+/**
+ * The latest submission that counts for scoring and resolution.
+ *
+ * A rejected ('N') row is a manual correction, not a team, so it is skipped:
+ * an earlier valid row still stands, and a tie with nothing valid left reads
+ * as missing (autopick first) rather than scoring the rejected team.
+ */
+export function findLatestScorableSubmission(
+    submissions: ProcessedCupSheetData[],
+    manager: ManagerId,
+    gameweek: number,
+): ProcessedCupSheetData | undefined {
+    for (let i = submissions.length - 1; i >= 0; i--) {
+        const submission = submissions[i];
+        if (submission?.manager === manager && submission.gameweek === gameweek && submission.status !== 'N') {
+            return submission;
+        }
+    }
+    return undefined;
+}
 
 export interface CupSubmissionValidation {
     valid: boolean;
@@ -45,6 +67,30 @@ export function findGroupUsedPlayers(
         }
     }
     return [...used];
+}
+
+/**
+ * Players a manager cannot pick in this round.
+ *
+ * The single source for the submit path, the picker UI data and autopicks, so
+ * the three cannot drift apart: the other leg's team in a two-legged round,
+ * every other league gameweek's team (rule 4.10, once across the group games,
+ * both directions), and nothing anywhere else (a play-off allows any four).
+ */
+export function findUsedPlayers(
+    submissions: ProcessedCupSheetData[],
+    manager: ManagerId,
+    cupConfig: CupConfig,
+    round: CupRound,
+): number[] {
+    const otherGameweek = getOtherLegGameweek(cupConfig, round);
+    if (otherGameweek !== null) {
+        return findLatestSubmission(submissions, manager, otherGameweek)?.players ?? [];
+    }
+    if (round.stage === 'league') {
+        return findGroupUsedPlayers(submissions, manager, cupConfig, round.gameweek);
+    }
+    return [];
 }
 
 /**

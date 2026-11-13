@@ -57,6 +57,13 @@ export function PlayerOutSelector({
     );
     const groups = groupRosterByCategory(roster, playersByCode, categoryStandings);
 
+    // The grouping drops roster players missing from playersByCode (their stats
+    // have not loaded yet) rather than crashing. Name them so a manager left
+    // unable to transfer someone out knows why.
+    const missingPlayers = Object.values(roster)
+        .map((slot) => slot.player)
+        .filter((player) => playersByCode[player.playerCode] === undefined);
+
     const handlePlayerClick = (player: EnhancedPlayerData) => {
         if (selectedPlayer?.playerCode === player.code) {
             onPlayerChange(null);
@@ -77,6 +84,13 @@ export function PlayerOutSelector({
 
             {/* Player List, grouped the way the league table scores it */}
             <div className={styles.playerList}>
+                {missingPlayers.length > 0 ? (
+                    <p className={styles.selectorDescription}>
+                        {missingPlayers.length === 1
+                            ? `${missingPlayers[0]?.playerName} is unavailable for transfer right now: their latest stats have not loaded yet.`
+                            : `${missingPlayers.length} squad players are unavailable for transfer right now: their latest stats have not loaded yet.`}
+                    </p>
+                ) : null}
                 {groups.length === 0 ? <Table data={[]} columns={columns} empty={EMPTY_STATE} /> : null}
                 {groups.map((group) => (
                     <section key={group.key} className={styles.categoryGroup} aria-label={group.label}>
