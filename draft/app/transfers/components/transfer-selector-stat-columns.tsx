@@ -6,7 +6,7 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { isStatRelevant, PointsBreakdownTooltip } from '../../scoring';
 
-export const STAT_COLUMN_WIDTH = '2rem';
+const STAT_COLUMN_WIDTH = '2rem';
 
 /** Image, position, name and club. Shared by every transfer table so they all match. */
 export function playerColumn<T extends EnhancedPlayerData>(teamsByCode: Record<number, FplTeam>): TableColumn<T> {

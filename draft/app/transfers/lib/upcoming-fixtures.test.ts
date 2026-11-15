@@ -96,3 +96,21 @@ describe('the end of the season', () => {
         expect(arsenal.map((gw) => gw.gameweek)).toEqual([37, 38]);
     });
 });
+
+describe('fixtures FPL has not dated yet', () => {
+    /** FPL sends `null` here for a postponed match, though the shared type says otherwise. */
+    const undated = (event: number | null, home: FplTeam, away: FplTeam) =>
+        ({ ...fixture(21, home, away), event, kickoff_time: null }) as unknown as FplFixtureData;
+
+    it('leaves out a postponed match that has no gameweek', () => {
+        const arsenal = buildUpcomingFixturesByTeamCode([undated(null, ARS, LIV), fixture(21, ARS, MCI)], TEAMS, 21)[3];
+
+        expect(arsenal[0].fixtures.map((f) => f.opponent)).toEqual(['MCI']);
+    });
+
+    it('still shows a match given a gameweek but no kick-off time', () => {
+        const arsenal = buildUpcomingFixturesByTeamCode([fixture(21, ARS, MCI), undated(21, LIV, ARS)], TEAMS, 21)[3];
+
+        expect(arsenal[0].fixtures.map((f) => f.opponent).sort()).toEqual(['LIV', 'MCI']);
+    });
+});
