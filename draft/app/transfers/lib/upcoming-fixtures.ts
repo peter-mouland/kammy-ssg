@@ -51,7 +51,8 @@ export function buildUpcomingFixturesByTeamCode(
 
     const inWindow = fixtures
         .filter((fixture) => fixture.event >= fromGameweek && fixture.event <= lastGameweek)
-        .sort((a, b) => a.kickoff_time.localeCompare(b.kickoff_time));
+        // FPL sends a null kick-off for a match it has not dated yet, despite the type.
+        .sort((a, b) => (a.kickoff_time ?? '').localeCompare(b.kickoff_time ?? ''));
 
     for (const fixture of inWindow) {
         addFixture(byTeamCode, teamsById, fixture, fromGameweek, true);

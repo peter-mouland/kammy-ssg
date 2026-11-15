@@ -2,6 +2,8 @@
 
 .fixtureStrip {
     display: grid;
+
+    /* 3 is UPCOMING_GAMEWEEK_COUNT. CSS can't read it without an inline style, which is banned. */
     grid-template-columns: repeat(3, minmax(2.5rem, 1fr));
     gap: var(--spacing-1);
 }
@@ -34,6 +36,7 @@
     color: var(--color-fdr-2-text);
 }
 
+/* Same as the .fixture default, which is also the fallback for a rating outside 1-5. */
 .difficulty3 {
     background-color: var(--color-fdr-3);
     color: var(--color-fdr-3-text);
