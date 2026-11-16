@@ -163,10 +163,6 @@
     color: var(--color-white);
 }
 
-.clubCode {
-    text-decoration: none;
-}
-
 .visuallyHidden {
     position: absolute;
     width: 1px;
