@@ -3,6 +3,7 @@
 // /teams/components/player-card.tsx
 import type React from 'react';
 import { Link } from 'react-router';
+import { playerPhotoUrl } from '../../_shared/components/player';
 import type { RosterPlayer } from '../../_shared/types/squad-types';
 import styles from './player-card.module.css';
 
@@ -30,7 +31,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
             ? player.playerName.split(' ')[0]
             : player.playerName
         : player.playerName;
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode}.png`}`;
+    const img = playerPhotoUrl(player.playerCode);
 
     return (
         <div
