@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import type { FplTeam } from '../lib/fpl/fpl-types';
 import type { CustomPosition } from '../types/league-types';
@@ -20,6 +21,55 @@ import styles from './player.module.css';
 export type DisplayablePlayer =
     | (EnhancedPlayerData & Partial<RosterPlayer>)
     | (RosterPlayer & Partial<EnhancedPlayerData>);
+
+/**
+ * A player's photo from the Premier League, by FPL player code.
+ *
+ * The older `premierleague/photos/.../p{code}.png` address stopped being updated in
+ * August 2024: players appeared in old kits and anyone signed since had no photo at all.
+ * `premierleague25` is the current one -- same 110x140 size, and no `p` before the code.
+ */
+export const playerPhotoUrl = (code: number | undefined) =>
+    `https://resources.premierleague.com/premierleague25/photos/players/110x140/${code}.png`;
+
+/**
+ * The same silhouette the transfer status column uses for an owned player, shown when the
+ * Premier League has no photo for a player rather than leaving a blank.
+ */
+const PHOTO_FALLBACK = '👤';
+
+/**
+ * The cell's photo, falling back to a silhouette when it fails to load. A photo that fails
+ * before hydration has already fired its error event, so it is also checked on mount.
+ * Keyed by src at the call site, so a reused row never keeps another player's failure.
+ */
+const PlayerPhoto = ({ src }: { src: string }) => {
+    const [failed, setFailed] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
+    useEffect(() => {
+        const img = imgRef.current;
+        if (img?.complete && img.naturalWidth === 0) setFailed(true);
+    }, []);
+
+    if (failed) {
+        return (
+            <span className={`${styles.photoImg} ${styles.photoFallback}`} aria-hidden="true">
+                {PHOTO_FALLBACK}
+            </span>
+        );
+    }
+    return (
+        <img
+            ref={imgRef}
+            className={styles.photoImg}
+            src={src}
+            loading="lazy"
+            alt=""
+            width={35}
+            onError={() => setFailed(true)}
+        />
+    );
+};
 
 /**
  * Resolve a player's club.
@@ -110,11 +160,11 @@ export const PlayerSummary = ({
     onLoanFrom?: string;
     manager?: string;
 }) => {
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
+    const img = playerPhotoUrl(player.playerCode || player.code);
     return (
         <div className={`${styles.player_cell} ${view === 'column' ? styles.player_cell_col : ''}`}>
             <div className={styles.photo}>
-                <img className={styles.photoImg} src={img} loading="lazy" alt="" width={35} />
+                <PlayerPhoto key={img} src={img} />
                 <span className={styles.photoBadge}>
                     <PositionBadge position={player.playerPosition || player.draft?.position} />
                 </span>
@@ -155,7 +205,7 @@ export const PlayerSummaryPoints = ({
     manager?: string;
     points: number;
 }) => {
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
+    const img = playerPhotoUrl(player.playerCode || player.code);
     return (
         <div className={styles.layout}>
             <div className={styles.layoutImg}>
@@ -216,7 +266,7 @@ export const Player = ({
     player: EnhancedPlayerData;
     position: CustomPosition;
 }) => {
-    const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.code}.png`}`;
+    const img = playerPhotoUrl(player.code);
     const playerName = `${player.first_name} ${player.second_name}`;
     return (
         <div className={`${styles.player__large} ${styles[position.toLowerCase()]}`}>

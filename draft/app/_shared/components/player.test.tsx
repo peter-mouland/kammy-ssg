@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { FplTeam } from '../lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../types/player-types';
 import type { RosterPlayer } from '../types/squad-types';
@@ -109,5 +109,44 @@ describe('the loan chip', () => {
         render(<PlayerSummary player={fplPlayer()} teamsByCode={teamsByCode} />);
 
         expect(screen.queryByText('Loan')).toBeNull();
+    });
+});
+
+describe('the player photo', () => {
+    // happy-dom loads no images and reports every one as finished-but-broken, which is what
+    // a missing photo looks like. These say which photos the "browser" managed to load.
+    const photosLoad = () => vi.spyOn(HTMLImageElement.prototype, 'naturalWidth', 'get').mockReturnValue(110);
+    afterEach(() => vi.restoreAllMocks());
+
+    it('comes from the current Premier League photo address', () => {
+        // The older `premierleague/.../p{code}.png` address stopped updating in August 2024.
+        photosLoad();
+        const { container } = render(<PlayerSummary player={fplPlayer()} teamsByCode={teamsByCode} />);
+
+        expect(container.querySelector('img')?.getAttribute('src')).toBe(
+            'https://resources.premierleague.com/premierleague25/photos/players/110x140/100.png',
+        );
+        expect(screen.queryByText('👤')).toBeNull();
+    });
+
+    it('shows a silhouette, with the position still on it, when the photo fails to load', () => {
+        photosLoad();
+        const { container } = render(<PlayerSummary player={fplPlayer()} teamsByCode={teamsByCode} />);
+        const photo = container.querySelector('img');
+        if (!photo) throw new Error('no photo rendered');
+
+        fireEvent.error(photo);
+
+        expect(container.querySelector('img')).toBeNull();
+        expect(screen.getByText('👤')).toBeDefined();
+        expect(screen.getByText('wa')).toBeDefined();
+    });
+
+    it('shows a silhouette when the photo had already failed before the page was interactive', () => {
+        // Its error event fired before React was listening, so there is no event to catch.
+        const { container } = render(<PlayerSummary player={fplPlayer()} teamsByCode={teamsByCode} />);
+
+        expect(container.querySelector('img')).toBeNull();
+        expect(screen.getByText('👤')).toBeDefined();
     });
 });

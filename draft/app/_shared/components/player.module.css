@@ -107,6 +107,17 @@
     height: 100%;
 }
 
+/* Fills the photo box, so the badge still sits across the bottom of it. */
+.photoFallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: var(--spacing-3);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-gray-100);
+    font-size: var(--font-lg);
+}
+
 .photoBadge {
     position: absolute;
     inset-inline: 0;
