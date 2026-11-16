@@ -212,6 +212,9 @@ export function PlayerInSelector({
                 header: 'Status',
                 align: 'left',
                 minWidth: '4.5rem',
+                // Takes all the spare width, so Player shrinks to fit its longest entry
+                // instead of soaking up most of a wide screen.
+                width: '100%',
                 render: (_, player) => (
                     <div className={styles.playerStats}>
                         <div className={styles.playerStatus}>
