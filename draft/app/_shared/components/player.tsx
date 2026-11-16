@@ -22,22 +22,61 @@ export type DisplayablePlayer =
     | (RosterPlayer & Partial<EnhancedPlayerData>);
 
 /**
- * Resolve a player's club name.
+ * Resolve a player's club.
  *
  * A roster player carries only the FPL player code, so its club has to be looked up
  * through the FPL player list; an FPL player carries team_code directly. Either lookup
  * can miss, so this returns undefined rather than indexing into teamsByCode blindly.
  */
-const resolveTeamName = (
+const resolveTeam = (
     player: DisplayablePlayer,
     teamsByCode: Record<number, FplTeam>,
     fplPlayersByCode?: Record<number, EnhancedPlayerData>,
-): string | undefined => {
+): FplTeam | undefined => {
     const playerCode = player.playerCode ?? player.code;
     const teamCode =
         fplPlayersByCode && playerCode !== undefined ? fplPlayersByCode[playerCode]?.team_code : player.team_code;
 
-    return teamCode === undefined ? undefined : teamsByCode[teamCode]?.name;
+    return teamCode === undefined ? undefined : teamsByCode[teamCode];
+};
+
+/**
+ * The club as a short code (CRY), which is what keeps the table cell narrow. The code is
+ * hidden from screen readers and the full name is read instead, so nobody hears "C-R-Y";
+ * sighted users get the full name on hover.
+ */
+const ClubCode = ({ team }: { team?: FplTeam }) => {
+    if (!team) return <div className={styles.team} />;
+    return (
+        <div className={styles.team}>
+            <abbr className={styles.clubCode} title={team.name} aria-hidden="true">
+                {team.short_name}
+            </abbr>
+            <span className={styles.visuallyHidden}>{team.name}</span>
+        </div>
+    );
+};
+
+/**
+ * The tag after the club code. A loaned player and a new player should never coincide -- a
+ * player is only "new" until they join a squad -- but that flag is cleared by hand and can
+ * lag, so Loan wins. The loan chip is short; who it is with stays readable on hover and to
+ * screen readers.
+ */
+const StatusTag = ({ isNew, onLoanTo, onLoanFrom }: { isNew?: boolean; onLoanTo?: string; onLoanFrom?: string }) => {
+    const loanLabel = [onLoanTo && `On Loan to ${onLoanTo}`, onLoanFrom && `On Loan from ${onLoanFrom}`]
+        .filter(Boolean)
+        .join(', ');
+    if (loanLabel) {
+        return (
+            <span className={`${styles.statusTag} ${styles.loanChip}`} title={loanLabel}>
+                <span aria-hidden="true">Loan</span>
+                <span className={styles.visuallyHidden}>{loanLabel}</span>
+            </span>
+        );
+    }
+    if (isNew) return <span className={`${styles.statusTag} ${styles.newChip}`}>New</span>;
+    return null;
 };
 
 /**
@@ -74,25 +113,26 @@ export const PlayerSummary = ({
     const img = `${`https://resources.premierleague.com/premierleague/photos/players/110x140/p${player.playerCode || player.code}.png`}`;
     return (
         <div className={`${styles.player_cell} ${view === 'column' ? styles.player_cell_col : ''}`}>
-            <div style={{ position: 'relative' }}>
-                <img src={img} loading="lazy" alt="" width={35} />
-
-                {onLoanTo && <div className={styles.loanIndicator}>On Loan to {onLoanTo}</div>}
-                {onLoanFrom && <div className={styles.loanIndicator}>On Loan from {onLoanFrom}</div>}
+            <div className={styles.photo}>
+                <img className={styles.photoImg} src={img} loading="lazy" alt="" width={35} />
+                <span className={styles.photoBadge}>
+                    <PositionBadge position={player.playerPosition || player.draft?.position} />
+                </span>
             </div>
-            <div className={styles.player_cell}>
-                {player.draft?.isNew ? <div className={styles.newPlayer}>New</div> : null}
-                <PositionBadge position={player.playerPosition || player.draft?.position} isSub={player.isSub} />
-                <div className={styles.player_cell_details}>
-                    <div className={styles.player_name}>{player.playerName || player.web_name}</div>
-                    <div className={styles.player_details}>
-                        <div className={styles.team}>{resolveTeamName(player, teamsByCode, fplPlayersByCode)}</div>
-                        {manager ? (
-                            <div className={styles.owner}>
-                                <span>{manager}</span>
-                            </div>
-                        ) : null}
+            <div className={styles.player_cell_details}>
+                <div className={`${styles.player_name} ${styles.summaryName}`}>
+                    {player.playerName || player.web_name}
+                </div>
+                <div className={styles.player_details}>
+                    <div className={styles.clubLine}>
+                        <ClubCode team={resolveTeam(player, teamsByCode, fplPlayersByCode)} />
+                        <StatusTag isNew={player.draft?.isNew} onLoanTo={onLoanTo} onLoanFrom={onLoanFrom} />
                     </div>
+                    {manager ? (
+                        <div className={styles.owner}>
+                            <span>{manager}</span>
+                        </div>
+                    ) : null}
                 </div>
             </div>
         </div>
@@ -143,7 +183,7 @@ export const PlayerSummaryPoints = ({
             </div>
 
             <div className={styles.layoutTeam}>
-                <div className={styles.team}>{resolveTeamName(player, teamsByCode, fplPlayersByCode)}</div>
+                <div className={styles.team}>{resolveTeam(player, teamsByCode, fplPlayersByCode)?.name}</div>
             </div>
 
             <div className={styles.layoutOwner}>
