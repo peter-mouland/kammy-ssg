@@ -1,11 +1,13 @@
 /* Location: app/transfers/components/player-out-selector.tsx */
 
+import { useMemo } from 'react';
 import { Table } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
 import { groupRosterByCategory } from '../lib/group-roster-by-category';
+import { buildPositionRanksByCode } from '../lib/position-rank';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransferType } from '../types/transfer-types';
 import { CategoryStandingHeader } from './category-standing-header';
@@ -23,6 +25,8 @@ interface PlayerOutSelectorProps {
     categoryStandings?: CategoryStanding[];
     /** Each club's next few gameweeks, by team code. Players show "–" when theirs is missing. */
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
+    /** Every player a manager could sign: what each squad player's position rank is measured against. */
+    availablePlayers?: EnhancedPlayerData[];
     embeddedInJourney?: boolean;
 }
 
@@ -50,6 +54,7 @@ export function PlayerOutSelector({
     transferType,
     categoryStandings = [],
     upcomingFixturesByTeamCode = {},
+    availablePlayers = [],
     embeddedInJourney = false,
 }: PlayerOutSelectorProps) {
     const rosterPlayersByCode: Record<number, RosterPlayer> = Object.fromEntries(
@@ -64,7 +69,8 @@ export function PlayerOutSelector({
             onPlayerChange(rosterPlayersByCode[player.code]);
         }
     };
-    const columns = getTransferOutColumns(teamsByCode, upcomingFixturesByTeamCode);
+    const positionRanksByCode = useMemo(() => buildPositionRanksByCode(availablePlayers), [availablePlayers]);
+    const columns = getTransferOutColumns(teamsByCode, upcomingFixturesByTeamCode, positionRanksByCode);
 
     return (
         <div className={`${styles.playerOutSelector} ${embeddedInJourney ? styles.embeddedInJourney : ''}`}>
