@@ -93,15 +93,16 @@ const resolveTeam = (
 /**
  * The club as a short code (CRY), which is what keeps the table cell narrow. The code is
  * hidden from screen readers and the full name is read instead, so nobody hears "C-R-Y";
- * sighted users get the full name on hover.
+ * sighted users get the full name on hover. A plain span rather than <abbr>: Biome treats
+ * <abbr> as focusable, and aria-hidden is not allowed on a focusable element.
  */
 const ClubCode = ({ team }: { team?: FplTeam }) => {
     if (!team) return <div className={styles.team} />;
     return (
         <div className={styles.team}>
-            <abbr className={styles.clubCode} title={team.name} aria-hidden="true">
+            <span title={team.name} aria-hidden="true">
                 {team.short_name}
-            </abbr>
+            </span>
             <span className={styles.visuallyHidden}>{team.name}</span>
         </div>
     );
