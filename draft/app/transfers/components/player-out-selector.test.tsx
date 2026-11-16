@@ -19,7 +19,7 @@ import { PlayerOutSelector } from './player-out-selector';
 
 const teamsByCode = { 3: { code: 3, name: 'Arsenal', short_name: 'ARS' } } as unknown as Record<number, FplTeam>;
 
-const player = (code: number, webName: string, position: string): EnhancedPlayerData =>
+const player = (code: number, webName: string, position: string, pointsTotal = 10): EnhancedPlayerData =>
     ({
         id: code,
         code,
@@ -27,18 +27,21 @@ const player = (code: number, webName: string, position: string): EnhancedPlayer
         team_code: 3,
         first_name: '',
         second_name: webName,
-        draft: { position, pointsTotal: 10, pointsBreakdown: {} },
+        draft: { position, pointsTotal, pointsBreakdown: {} },
     }) as unknown as EnhancedPlayerData;
 
 const PLAYERS = [
     player(1, 'Raya', 'gk'),
-    player(2, 'Saliba', 'cb'),
+    player(2, 'Saliba', 'cb', 40),
     player(3, 'Gabriel', 'cb'),
     player(4, 'Havertz', 'ca'),
     player(5, 'Neto', 'gk'),
     player(6, 'Loaned', 'mid'),
 ];
 const playersByCode = Object.fromEntries(PLAYERS.map((p) => [p.code, p]));
+
+/** Everyone a manager could sign. Among the three centre backs, Saliba's 40 is second. */
+const AVAILABLE_PLAYERS = [...PLAYERS, player(7, 'Van Dijk', 'cb', 99)];
 
 const slot = (p: EnhancedPlayerData) => ({
     player: { playerCode: p.code, playerName: p.web_name, playerPosition: p.draft.position } as RosterPlayer,
@@ -81,9 +84,11 @@ function renderSelector({
     categoryStandings = [CB_STANDING],
     onPlayerChange = vi.fn(),
     upcomingFixturesByTeamCode = ARSENAL_FIXTURES,
+    availablePlayers = AVAILABLE_PLAYERS,
 }: {
     categoryStandings?: CategoryStanding[];
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
+    availablePlayers?: EnhancedPlayerData[];
     onPlayerChange?: (p: RosterPlayer | null) => void;
 } = {}) {
     const Stub = createRoutesStub([
@@ -99,6 +104,7 @@ function renderSelector({
                     teamsByCode={teamsByCode}
                     categoryStandings={categoryStandings}
                     upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+                    availablePlayers={availablePlayers}
                     embeddedInJourney
                 />
             ),
@@ -213,6 +219,30 @@ describe('each player row', () => {
 
         expect(within(row).queryByText('LIV')).toBeNull();
         expect(within(row).getByText('–')).toBeDefined();
+    });
+
+    it("ranks the player's points against everyone at their position", async () => {
+        renderSelector();
+        const row = await rowFor('Saliba');
+
+        expect(within(row).getByText('40')).toBeDefined();
+        expect(within(row).getByText('#2')).toBeDefined();
+        expect(within(row).getByTitle('2nd of 3 centre backs by season points')).toBeDefined();
+    });
+
+    it('says when the rank is shared', async () => {
+        renderSelector({ availablePlayers: [...AVAILABLE_PLAYERS, player(8, 'Konsa', 'cb', 40)] });
+        const row = await rowFor('Saliba');
+
+        expect(within(row).getByTitle('Joint 2nd of 4 centre backs by season points')).toBeDefined();
+    });
+
+    it('shows just the points when the player has no rank', async () => {
+        renderSelector({ availablePlayers: [] });
+        const row = await rowFor('Saliba');
+
+        expect(within(row).getByText('40')).toBeDefined();
+        expect(within(row).queryByText(/^#\d/)).toBeNull();
     });
 
     it('keeps to player, points and fixtures: the detailed stats stay on the player list', async () => {

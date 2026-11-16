@@ -1,0 +1,19 @@
+/* Location: app/transfers/components/transfer-out-columns.module.css */
+
+.points {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*
+ * Just the rank, on one line. On a 375px phone the Pts column has no width to spare beyond
+ * the points themselves: adding the position ("#14 CB") pushed the fixtures 3-14px off the
+ * screen. "#188" is no wider than three-digit points, so it fits at any width.
+ */
+.positionRank {
+    font-size: var(--font-2xs);
+    font-style: italic;
+    color: var(--color-gray-500);
+    white-space: nowrap;
+}

@@ -204,6 +204,7 @@ function FirstSelector({
                 roster={managerRoster}
                 categoryStandings={categoryStandings}
                 upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+                availablePlayers={availablePlayers}
                 selectedPlayer={playerSelection.playerOut}
                 onPlayerChange={onPlayerOutChange}
                 transferType={transferType}
@@ -275,6 +276,7 @@ function SecondSelector({
             roster={managerRoster}
             categoryStandings={categoryStandings}
             upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+            availablePlayers={availablePlayers}
             selectedPlayer={playerSelection.playerOut}
             onPlayerChange={onPlayerOutChange}
             transferType={transferType}
