@@ -51,7 +51,7 @@
         "cross-env": "^10.1.0",
         "express": "^4.0.0",
         "firebase-tools": "^14.27.0",
-        "happy-dom": "20.11.1",
+        "happy-dom": "21.0.4",
         "knip": "^5.71.0",
         "msw": "2.15.0",
         "remove-unused-vars": "^0.0.11",
