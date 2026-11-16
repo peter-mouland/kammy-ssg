@@ -54,6 +54,9 @@ export function getTransferOutColumns(
         {
             key: 'upcomingFixtures',
             header: <span title="Fixtures in the next three gameweeks">Next 3</span>,
+            // Takes all the spare width, so Player shrinks to fit its longest entry and
+            // the fixtures get the room.
+            width: '100%',
             render: (_, player) => <FixtureStrip gameweeks={upcomingFixturesByTeamCode[player.team_code]} />,
         },
     ];

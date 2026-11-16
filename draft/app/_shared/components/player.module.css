@@ -60,6 +60,9 @@
     flex-direction: row;
     gap: var(--spacing-2);
 
+    /* Lets a page line up several tables' Player columns: it sets this to the widest cell. */
+    min-width: var(--player-cell-min-width, 0);
+
     img {
         min-width: 35px;
         align-self: center;
@@ -80,6 +83,89 @@
         flex: 1;
         align-items: center;
     }
+}
+
+/*
+ * The position badge sits across the photo's bottom edge, so the cell is only the photo
+ * plus one text column wide.
+ *
+ * The box is sized here, not by the image, so the overlays hold their place while the
+ * photo loads or when a new signing has no photo yet (a broken image collapses to 0x0).
+ * 35px wide at the photos' 110x140 shape -- the width the cell has always used.
+ */
+.photo {
+    position: relative;
+    flex-shrink: 0;
+    align-self: center;
+    width: 2.1875rem;
+    aspect-ratio: 110 / 140;
+}
+
+.photoImg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.photoBadge {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    display: flex;
+}
+
+/* One line, so a table can size its Player column to the longest name. */
+.summaryName {
+    white-space: nowrap;
+}
+
+/* Square, so it covers the photo's full width with no corners of photo showing. */
+.photoBadge .positionBadge {
+    flex: 1;
+    min-width: 0;
+    padding-block: 0;
+    border-radius: 0;
+}
+
+/* The club code, with a Loan or New tag after it when one applies. */
+.clubLine {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}
+
+.statusTag {
+    padding: 0 var(--spacing-1);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-2xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.3;
+}
+
+.newChip {
+    background-color: var(--color-info-light);
+    color: var(--color-info);
+}
+
+.loanChip {
+    background-color: var(--color-warning);
+    color: var(--color-white);
+}
+
+.clubCode {
+    text-decoration: none;
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
 }
 
 .player_cell_details {

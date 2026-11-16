@@ -1,6 +1,6 @@
 /* Location: app/transfers/components/player-out-selector.tsx */
 
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { Table } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
@@ -45,6 +45,23 @@ const EMPTY_STATE = {
     description: 'Try adjusting your search or filter criteria.',
 };
 
+const PLAYER_CELL_MIN_WIDTH = '--player-cell-min-width';
+
+/**
+ * Each group is its own table, and each table sizes its Player column to its own longest
+ * entry, so the fixture columns would not line up from group to group. This widens every
+ * Player cell to the widest on the page. It is cleared before measuring, so the widest is
+ * the content's own width rather than the last value set.
+ */
+function alignPlayerColumns(list: HTMLElement) {
+    list.style.removeProperty(PLAYER_CELL_MIN_WIDTH);
+    const widths = Array.from(list.querySelectorAll('tbody td:first-child > *'), (cell) =>
+        Math.ceil(cell.getBoundingClientRect().width),
+    );
+    const widest = Math.max(0, ...widths);
+    if (widest > 0) list.style.setProperty(PLAYER_CELL_MIN_WIDTH, `${widest}px`);
+}
+
 export function PlayerOutSelector({
     teamsByCode,
     playersByCode,
@@ -72,6 +89,22 @@ export function PlayerOutSelector({
     const positionRanksByCode = useMemo(() => buildPositionRanksByCode(availablePlayers), [availablePlayers]);
     const columns = getTransferOutColumns(teamsByCode, upcomingFixturesByTeamCode, positionRanksByCode);
 
+    // Re-measured after every render (12 cells, cheap) and again once the web font has
+    // loaded, since names change width when it swaps in.
+    const playerListRef = useRef<HTMLDivElement>(null);
+    useLayoutEffect(() => {
+        const list = playerListRef.current;
+        if (!list) return;
+        alignPlayerColumns(list);
+        let active = true;
+        document.fonts?.ready.then(() => {
+            if (active) alignPlayerColumns(list);
+        });
+        return () => {
+            active = false;
+        };
+    });
+
     return (
         <div className={`${styles.playerOutSelector} ${embeddedInJourney ? styles.embeddedInJourney : ''}`}>
             {embeddedInJourney ? null : (
@@ -82,7 +115,7 @@ export function PlayerOutSelector({
             )}
 
             {/* Player List, grouped the way the league table scores it */}
-            <div className={styles.playerList}>
+            <div className={styles.playerList} ref={playerListRef}>
                 {groups.length === 0 ? <Table data={[]} columns={columns} empty={EMPTY_STATE} /> : null}
                 {groups.map((group) => (
                     <section key={group.key} className={styles.categoryGroup} aria-label={group.label}>
