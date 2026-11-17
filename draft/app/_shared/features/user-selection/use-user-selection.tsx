@@ -1,6 +1,7 @@
 /* Location: app/_shared/hooks/use-user-selection.hook.ts */
 
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import type { UserTeamsSheetData } from '../../types/league-types';
 import { clearUserSelection, getClientUserSelection, setUserSelection } from './user-selection.utils';
 
@@ -35,6 +36,8 @@ export function useUserSelection({
     initialSelection, // Add this to pass server-side selection
 }: UseUserSelectionOptions): UseUserSelectionReturn {
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     // Initialize state with server data if available, otherwise use client detection
     const [userSelection, setUserSelectionState] = useState<{
@@ -83,12 +86,14 @@ export function useUserSelection({
         }
     }, [users, autoShowModal, initialSelection]);
 
-    // Auto-show modal if selection is required (for initial server data)
+    // Auto-show modal if the server says a selection is required. Keyed on the loader data
+    // alone: re-running when the modal closes would reopen it before the revalidated
+    // loader data (which no longer requires a selection) has arrived.
     useEffect(() => {
-        if (initialSelection?.requiresSelection && autoShowModal && !showModal) {
+        if (initialSelection?.requiresSelection && autoShowModal) {
             setShowModal(true);
         }
-    }, [initialSelection, autoShowModal, showModal]);
+    }, [initialSelection, autoShowModal]);
 
     // Handle user selection
     const handleUserSelect = (userId: string) => {
@@ -105,14 +110,22 @@ export function useUserSelection({
             requiresSelection: false,
         });
 
-        // Set cookie and update URL
-        setUserSelection(userId, !redirectOnSelection);
+        // Set the cookie only. The URL goes through the router below: changing it with
+        // `history.replaceState` leaves the loader data stale, so the page still thinks
+        // nobody is selected (and the reopen effect above shows the modal again).
+        setUserSelection(userId, false);
 
         // Close modal
         setShowModal(false);
 
         // Call callback if provided
         onUserSelected?.(userId, user);
+
+        if (!redirectOnSelection) {
+            const params = new URLSearchParams(location.search);
+            params.set('userId', userId);
+            navigate({ search: params.toString() }, { replace: true, preventScrollReset: true });
+        }
 
         // Redirect if requested (useful for pages that need full reload with new user)
         if (redirectOnSelection) {

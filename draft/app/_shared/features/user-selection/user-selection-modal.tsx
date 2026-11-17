@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { UserTeamsSheetData } from '../../types/league-types';
-import { setUserSelection } from './user-selection.utils';
 import styles from './user-selection-modal.module.css';
 
 interface UserSelectionModalProps {
@@ -28,9 +27,6 @@ export function UserSelectionModal({
         (userId: string) => {
             setSelectedUserId(userId);
             setIsAnimating(true);
-
-            // Set cookie and update URL
-            setUserSelection(userId, true);
 
             // Small delay for visual feedback before calling onUserSelect
             setTimeout(() => {
