@@ -92,19 +92,29 @@
  * The box is sized here, not by the image, so the overlays hold their place while the
  * photo loads or when a new signing has no photo yet (a broken image collapses to 0x0).
  * 35px wide at the photos' 110x140 shape -- the width the cell has always used.
+ *
+ * The height is set explicitly, not with aspect-ratio. WebKit (Safari, and every browser
+ * on iOS) will not resolve the image's height: 100% against a height that only comes from
+ * aspect-ratio: it used the photo's natural 280px instead, and the box grew to fit,
+ * stretching every photo into a 35px-wide strip. A definite height resolves everywhere.
  */
 .photo {
+    --photo-width: 2.1875rem;
+
     position: relative;
     flex-shrink: 0;
     align-self: center;
-    width: 2.1875rem;
-    aspect-ratio: 110 / 140;
+    width: var(--photo-width);
+    height: calc(var(--photo-width) * 140 / 110);
+    overflow: hidden;
 }
 
+/* cover, so a photo that is not exactly 110x140 is cropped rather than distorted. */
 .photoImg {
     display: block;
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
 /* Fills the photo box, so the badge still sits across the bottom of it. */
