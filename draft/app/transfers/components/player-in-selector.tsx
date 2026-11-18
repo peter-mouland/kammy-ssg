@@ -96,13 +96,21 @@ export function PlayerInSelector({
             {} as Record<number, number>,
         );
 
-        return Array.from(new Set(availablePlayers.map((p) => p.team_code)))
-            .sort((a, b) => (teamsByCode[a].name || '').localeCompare(teamsByCode[b].name || ''))
-            .map((teamCode) => ({
-                id: teamCode.toString(),
-                label: teamsByCode[teamCode].name || `Team ${teamCode}`,
-                count: teamCounts[teamCode] || 0,
-            }));
+        return (
+            Array.from(new Set(availablePlayers.map((p) => p.team_code)))
+                // A club missing from the teams list (e.g. newly promoted) must not crash the page; it sorts last.
+                .sort((a, b) => {
+                    const nameA = teamsByCode[a]?.name;
+                    const nameB = teamsByCode[b]?.name;
+                    if (!nameA || !nameB) return (nameA ? 0 : 1) - (nameB ? 0 : 1);
+                    return nameA.localeCompare(nameB);
+                })
+                .map((teamCode) => ({
+                    id: teamCode.toString(),
+                    label: teamsByCode[teamCode]?.name || `Team ${teamCode}`,
+                    count: teamCounts[teamCode] || 0,
+                }))
+        );
     }, [availablePlayers, teamsByCode]);
 
     // Handle multi-select changes
@@ -284,7 +292,6 @@ export function PlayerInSelector({
                         onSelectionChange={onTeamsChange}
                         placeholder="teams"
                         className={styles.multiSelect}
-                        sortOptions={true}
                     />
                 </div>
 
@@ -363,7 +370,8 @@ export function PlayerInSelector({
                         <div className={styles.summaryPlayer}>
                             <strong>{selectedPlayer.web_name}</strong>
                             <span className={styles.summaryDetails}>
-                                {selectedPlayer.draft?.position} • {teamsByCode[selectedPlayer.team_code].name}
+                                {selectedPlayer.draft?.position} •{' '}
+                                {teamsByCode[selectedPlayer.team_code]?.name ?? `Team ${selectedPlayer.team_code}`}
                             </span>
                         </div>
                     </div>
