@@ -7,6 +7,7 @@ import { createRoutesStub } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { AvailabilityByCode } from '../lib/player-availability';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import { PlayerInSelector } from './player-in-selector';
 
@@ -53,9 +54,11 @@ const validationContext: Omit<TransferRuleContext, 'transfer'> = {
 function renderPlayerList({
     availablePlayers = [SAKA],
     selectedPlayer = null,
+    availabilityByCode = {},
 }: {
     availablePlayers?: EnhancedPlayerData[];
     selectedPlayer?: EnhancedPlayerData | null;
+    availabilityByCode?: AvailabilityByCode;
 } = {}) {
     const Stub = createRoutesStub([
         {
@@ -63,6 +66,7 @@ function renderPlayerList({
             Component: () => (
                 <PlayerInSelector
                     availablePlayers={availablePlayers}
+                    availabilityByCode={availabilityByCode}
                     selectedPlayer={selectedPlayer}
                     onPlayerChange={vi.fn()}
                     transferType="TRANSFER"
@@ -103,5 +107,21 @@ describe('the player list', () => {
         renderPlayerList({ availablePlayers: [SAKA, NEWCOMER], selectedPlayer: NEWCOMER });
 
         expect(await screen.findByText('Selected:')).toBeDefined();
+    });
+});
+
+describe("FPL's availability on the player list", () => {
+    it('flags a candidate FPL has doubts about', async () => {
+        renderPlayerList({ availabilityByCode: { [SAKA.code]: { status: 'd', chanceNextRound: 50 } } });
+        const row = (await screen.findByText(/Saka/)).closest('tr');
+
+        expect(row?.querySelector('[aria-label="Doubtful: 50% chance of playing next gameweek"]')).not.toBeNull();
+    });
+
+    it('flags no one FPL expects to play', async () => {
+        renderPlayerList();
+        await screen.findByText(/Saka/);
+
+        expect(screen.queryByRole('img', { name: /Doubtful|Injured|Suspended|Unavailable/ })).toBeNull();
     });
 });

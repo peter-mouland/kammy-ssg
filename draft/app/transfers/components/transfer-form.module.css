@@ -25,6 +25,12 @@
     margin: 0;
 }
 
+.availabilityAsOf {
+    margin: 0;
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}
+
 .journeyTitle:focus {
     outline: none;
 }
