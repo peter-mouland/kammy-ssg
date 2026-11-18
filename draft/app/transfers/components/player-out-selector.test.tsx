@@ -85,7 +85,11 @@ function renderSelector({
     onPlayerChange = vi.fn(),
     upcomingFixturesByTeamCode = ARSENAL_FIXTURES,
     availablePlayers = AVAILABLE_PLAYERS,
+    selectedPlayer = null,
+    teams = teamsByCode,
 }: {
+    selectedPlayer?: RosterPlayer | null;
+    teams?: Record<number, FplTeam>;
     categoryStandings?: CategoryStanding[];
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     availablePlayers?: EnhancedPlayerData[];
@@ -97,11 +101,11 @@ function renderSelector({
             Component: () => (
                 <PlayerOutSelector
                     roster={roster}
-                    selectedPlayer={null}
+                    selectedPlayer={selectedPlayer}
                     onPlayerChange={onPlayerChange}
                     transferType="TRANSFER"
                     playersByCode={playersByCode}
-                    teamsByCode={teamsByCode}
+                    teamsByCode={teams}
                     categoryStandings={categoryStandings}
                     upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                     availablePlayers={availablePlayers}
@@ -185,6 +189,14 @@ describe('choosing a player', () => {
         fireEvent.click(row);
 
         expect(onPlayerChange).toHaveBeenCalledWith(expect.objectContaining({ playerCode: 3 }));
+    });
+
+    it('shows the chosen player even when their club is missing from the teams list', async () => {
+        // e.g. a newly promoted club, before the teams copy catches up with the players copy.
+        renderSelector({ selectedPlayer: roster.cb_0.player, teams: {} });
+
+        expect(await screen.findByText('Selected:')).toBeDefined();
+        expect(screen.getByRole('region', { name: 'CB' })).toBeDefined();
     });
 });
 
