@@ -28,23 +28,42 @@ const SAKA = {
     draft: { position: 'wa', pointsTotal: 120, pointsBreakdown: {}, isHidden: false, isNew: false },
 } as unknown as EnhancedPlayerData;
 
+/** A club the FPL teams list does not know — e.g. a promoted club before the teams copy catches up. */
+const UNKNOWN_CLUB_CODE = 56;
+
+const NEWCOMER = {
+    id: 2,
+    code: 999001,
+    web_name: 'Newcomer',
+    first_name: 'New',
+    second_name: 'Comer',
+    team_code: UNKNOWN_CLUB_CODE,
+    draft: { position: 'mid', pointsTotal: 10, pointsBreakdown: {}, isHidden: false, isNew: false },
+} as unknown as EnhancedPlayerData;
+
 const validationContext: Omit<TransferRuleContext, 'transfer'> = {
     allGameweekTransfers: [],
     divisionRosters: { nick: { roster: {} } } as unknown as TransferRuleContext['divisionRosters'],
     gameweekData: { fplEvent: { id: 21, deadline_time: '2099-01-01T11:00:00Z' } } as unknown as GameWeekData,
-    fplPlayersByCode: { [SAKA.code]: SAKA },
+    fplPlayersByCode: { [SAKA.code]: SAKA, [NEWCOMER.code]: NEWCOMER },
     divisionId: 'premierLeague',
     currentGameweek: 21,
 };
 
-function renderPlayerList() {
+function renderPlayerList({
+    availablePlayers = [SAKA],
+    selectedPlayer = null,
+}: {
+    availablePlayers?: EnhancedPlayerData[];
+    selectedPlayer?: EnhancedPlayerData | null;
+} = {}) {
     const Stub = createRoutesStub([
         {
             path: '/',
             Component: () => (
                 <PlayerInSelector
-                    availablePlayers={[SAKA]}
-                    selectedPlayer={null}
+                    availablePlayers={availablePlayers}
+                    selectedPlayer={selectedPlayer}
                     onPlayerChange={vi.fn()}
                     transferType="TRANSFER"
                     playerOut={null}
@@ -71,5 +90,18 @@ describe('the player list', () => {
 
         expect(headers).toEqual(expect.arrayContaining(['Player', 'Pts', 'Min', 'G', 'A', 'YC', 'RC', 'DC', 'Status']));
         expect(headers).not.toContain('Next 3');
+    });
+
+    it('still lists a player whose club is missing from the teams list', async () => {
+        renderPlayerList({ availablePlayers: [SAKA, NEWCOMER] });
+
+        expect(await screen.findByRole('row', { name: /Newcomer/ })).toBeDefined();
+        expect(screen.getByRole('row', { name: /Saka/ })).toBeDefined();
+    });
+
+    it('shows the selected player even when their club is missing from the teams list', async () => {
+        renderPlayerList({ availablePlayers: [SAKA, NEWCOMER], selectedPlayer: NEWCOMER });
+
+        expect(await screen.findByText('Selected:')).toBeDefined();
     });
 });

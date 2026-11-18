@@ -53,6 +53,17 @@ const PLAYER_CELL_MIN_WIDTH = '--player-cell-min-width';
  * Player cell to the widest on the page. It is cleared before measuring, so the widest is
  * the content's own width rather than the last value set.
  */
+/** The club for the "Selected" summary. A club missing from the teams list (e.g. newly promoted) must not crash the page. */
+function selectedTeamLabel(
+    playerCode: number,
+    playersByCode: Record<number, EnhancedPlayerData>,
+    teamsByCode: Record<number, FplTeam>,
+): string {
+    const teamCode = playersByCode[playerCode]?.team_code;
+    if (teamCode === undefined) return '';
+    return teamsByCode[teamCode]?.name ?? `Team ${teamCode}`;
+}
+
 function alignPlayerColumns(list: HTMLElement) {
     list.style.removeProperty(PLAYER_CELL_MIN_WIDTH);
     const widths = Array.from(list.querySelectorAll('tbody td:first-child > *'), (cell) =>
@@ -146,7 +157,7 @@ export function PlayerOutSelector({
                             <span className={styles.summaryDetails}>
                                 {' '}
                                 {selectedPlayer.playerPosition} •{' '}
-                                {teamsByCode[playersByCode[selectedPlayer.playerCode].team_code].name}
+                                {selectedTeamLabel(selectedPlayer.playerCode, playersByCode, teamsByCode)}
                             </span>
                         </span>
                     </div>
