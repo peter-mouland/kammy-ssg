@@ -23,6 +23,11 @@ import type { RosterByManagerId } from '../../teams';
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';
+import {
+    type AvailabilityByCode,
+    type AvailabilitySnapshot,
+    describeAvailabilityAsOf,
+} from '../lib/player-availability';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { OwnedPlayersByCode, PlayerSelectionState, TransferFormValidation } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
@@ -32,6 +37,7 @@ import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
 import styles from './transfer-form.module.css';
 import { TransferTypeSelector } from './transfer-type-selector';
+import { useStreamedAvailability } from './use-streamed-availability';
 
 const JOURNEY_PATHS = {
     teamFirst: 'team-first',
@@ -59,6 +65,8 @@ interface TransferFormProps {
     managerRoster?: TeamRoster;
     categoryStandings?: CategoryStanding[];
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
+    /** FPL's injury and suspension status, streamed by the loader after the page. */
+    availability?: Promise<AvailabilitySnapshot | null>;
     availablePlayers: EnhancedPlayerData[];
     isBeforeDeadline: boolean;
     divisionRosters: RosterByManagerId;
@@ -84,6 +92,9 @@ const INITIAL_LOAN_SELECTION: LoanSelectionState = {
     loanToManager: null,
     loanFromManager: null,
 };
+
+/** One empty lookup for "no availability yet", so the tables aren't handed a new object each render. */
+const NO_AVAILABILITY: AvailabilityByCode = {};
 
 const INITIAL_VALIDATION: TransferFormValidation = {
     isValid: true,
@@ -163,6 +174,8 @@ interface SelectorStepProps {
     managerRoster?: TeamRoster;
     categoryStandings?: CategoryStanding[];
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
+    /** Players FPL has doubts about, by code. {} until it arrives, or when it can't be shown. */
+    availabilityByCode: AvailabilityByCode;
     journeyPath: JourneyPath;
     playersByCode: Record<number, EnhancedPlayerData>;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
@@ -181,6 +194,7 @@ function FirstSelector({
     managerRoster,
     categoryStandings,
     upcomingFixturesByTeamCode,
+    availabilityByCode,
     journeyPath,
     playersByCode,
     teamsByCode,
@@ -204,6 +218,7 @@ function FirstSelector({
                 roster={managerRoster}
                 categoryStandings={categoryStandings}
                 upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+                availabilityByCode={availabilityByCode}
                 availablePlayers={availablePlayers}
                 selectedPlayer={playerSelection.playerOut}
                 onPlayerChange={onPlayerOutChange}
@@ -216,6 +231,7 @@ function FirstSelector({
     return (
         <PlayerInSelector
             availablePlayers={availablePlayers}
+            availabilityByCode={availabilityByCode}
             selectedPlayer={playerSelection.playerIn}
             onPlayerChange={onPlayerInChange}
             transferType={transferType}
@@ -236,6 +252,7 @@ function SecondSelector({
     managerRoster,
     categoryStandings,
     upcomingFixturesByTeamCode,
+    availabilityByCode,
     journeyPath,
     playersByCode,
     teamsByCode,
@@ -255,6 +272,7 @@ function SecondSelector({
         return (
             <PlayerInSelector
                 availablePlayers={availablePlayers}
+                availabilityByCode={availabilityByCode}
                 selectedPlayer={playerSelection.playerIn}
                 onPlayerChange={onPlayerInChange}
                 transferType={transferType}
@@ -276,6 +294,7 @@ function SecondSelector({
             roster={managerRoster}
             categoryStandings={categoryStandings}
             upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+            availabilityByCode={availabilityByCode}
             availablePlayers={availablePlayers}
             selectedPlayer={playerSelection.playerOut}
             onPlayerChange={onPlayerOutChange}
@@ -437,6 +456,7 @@ export function TransferForm({
     managerRoster,
     categoryStandings,
     upcomingFixturesByTeamCode,
+    availability,
     availablePlayers,
     isBeforeDeadline,
     divisionRosters,
@@ -456,6 +476,8 @@ export function TransferForm({
     const [validation, setValidation] = useState<TransferFormValidation>(INITIAL_VALIDATION);
     const stepContentRef = useRef<HTMLDivElement>(null);
     const journeyTitleRef = useRef<HTMLHeadingElement>(null);
+    const availabilityState = useStreamedAvailability(availability);
+    const availabilityByCode = availabilityState.kind === 'ready' ? availabilityState.snapshot.byCode : NO_AVAILABILITY;
 
     // Keep each step starting at the top after Continue/Back (window + step panel scroll;
     // also moves focus off the footer button so the browser does not keep it in view).
@@ -624,6 +646,12 @@ export function TransferForm({
                 <h2 className={styles.journeyTitle} ref={journeyTitleRef} tabIndex={-1}>
                     {STEP_TITLES[step][journeyPath]}
                 </h2>
+                {step === JOURNEY_STEPS.review ? null : (
+                    <p className={styles.availabilityAsOf} aria-live="polite">
+                        {/* Real time, not the app clock: the copy's age is wall-clock, like cache TTLs. */}
+                        {describeAvailabilityAsOf(availabilityState, new Date())}
+                    </p>
+                )}
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
@@ -635,6 +663,7 @@ export function TransferForm({
                             managerRoster={managerRoster}
                             categoryStandings={categoryStandings}
                             upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+                            availabilityByCode={availabilityByCode}
                             journeyPath={journeyPath}
                             playersByCode={playersByCode}
                             teamsByCode={teamsByCode}
@@ -656,6 +685,7 @@ export function TransferForm({
                             managerRoster={managerRoster}
                             categoryStandings={categoryStandings}
                             upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
+                            availabilityByCode={availabilityByCode}
                             journeyPath={journeyPath}
                             playersByCode={playersByCode}
                             teamsByCode={teamsByCode}

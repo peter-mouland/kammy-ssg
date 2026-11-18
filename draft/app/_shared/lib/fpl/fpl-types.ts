@@ -29,6 +29,8 @@ export interface FplPlayerData {
     chance_of_playing_this_round: number | null;
     news: string;
     news_added: string | null;
+    /** a available, d doubtful, i injured, s suspended, u unavailable (left / on loan), n not available. */
+    status: string;
     form: string;
     id: number;
     first_name: string;

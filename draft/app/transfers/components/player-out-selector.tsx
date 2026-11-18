@@ -7,6 +7,7 @@ import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
 import { groupRosterByCategory } from '../lib/group-roster-by-category';
+import type { AvailabilityByCode } from '../lib/player-availability';
 import { buildPositionRanksByCode } from '../lib/position-rank';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransferType } from '../types/transfer-types';
@@ -25,6 +26,8 @@ interface PlayerOutSelectorProps {
     categoryStandings?: CategoryStanding[];
     /** Each club's next few gameweeks, by team code. Players show "–" when theirs is missing. */
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
+    /** Players FPL has doubts about, by code. Those without an entry show no icon. */
+    availabilityByCode?: AvailabilityByCode;
     /** Every player a manager could sign: what each squad player's position rank is measured against. */
     availablePlayers?: EnhancedPlayerData[];
     embeddedInJourney?: boolean;
@@ -82,6 +85,7 @@ export function PlayerOutSelector({
     transferType,
     categoryStandings = [],
     upcomingFixturesByTeamCode = {},
+    availabilityByCode = {},
     availablePlayers = [],
     embeddedInJourney = false,
 }: PlayerOutSelectorProps) {
@@ -98,7 +102,12 @@ export function PlayerOutSelector({
         }
     };
     const positionRanksByCode = useMemo(() => buildPositionRanksByCode(availablePlayers), [availablePlayers]);
-    const columns = getTransferOutColumns(teamsByCode, upcomingFixturesByTeamCode, positionRanksByCode);
+    const columns = getTransferOutColumns(
+        teamsByCode,
+        upcomingFixturesByTeamCode,
+        positionRanksByCode,
+        availabilityByCode,
+    );
 
     // Re-measured after every render (12 cells, cheap) and again once the web font has
     // loaded, since names change width when it swaps in.

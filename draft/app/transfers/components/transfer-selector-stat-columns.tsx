@@ -5,11 +5,18 @@ import type { TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { isStatRelevant, PointsBreakdownTooltip } from '../../scoring';
+import type { AvailabilityByCode } from '../lib/player-availability';
 
 const STAT_COLUMN_WIDTH = '2rem';
 
-/** Image, position, name and club. Shared by every transfer table so they all match. */
-export function playerColumn<T extends EnhancedPlayerData>(teamsByCode: Record<number, FplTeam>): TableColumn<T> {
+/**
+ * Image, position, name and club, plus FPL's injury or suspension icon for anyone in doubt.
+ * Shared by every transfer table so they all match.
+ */
+export function playerColumn<T extends EnhancedPlayerData>(
+    teamsByCode: Record<number, FplTeam>,
+    availabilityByCode: AvailabilityByCode = {},
+): TableColumn<T> {
     return {
         key: 'name',
         header: 'Player',
@@ -17,7 +24,13 @@ export function playerColumn<T extends EnhancedPlayerData>(teamsByCode: Record<n
         sortable: true,
         fixed: true,
         render: (_, player) => {
-            return <PlayerSummary player={player} teamsByCode={teamsByCode} />;
+            return (
+                <PlayerSummary
+                    player={player}
+                    teamsByCode={teamsByCode}
+                    availability={availabilityByCode[player.code]}
+                />
+            );
         },
     };
 }
@@ -40,9 +53,10 @@ export function pointsColumn<T extends EnhancedPlayerData>(): TableColumn<T> {
 
 export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
     teamsByCode: Record<number, FplTeam>,
+    availabilityByCode: AvailabilityByCode = {},
 ): TableColumn<T>[] {
     return [
-        playerColumn<T>(teamsByCode),
+        playerColumn<T>(teamsByCode, availabilityByCode),
         pointsColumn<T>(),
         {
             key: 'apps',
