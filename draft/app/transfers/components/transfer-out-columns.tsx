@@ -4,6 +4,7 @@ import type { TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { PointsBreakdownTooltip } from '../../scoring';
+import type { AvailabilityByCode } from '../lib/player-availability';
 import { describePositionRank, type PositionRanksByCode } from '../lib/position-rank';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import { FixtureStrip } from './fixture-strip';
@@ -47,9 +48,10 @@ export function getTransferOutColumns(
     teamsByCode: Record<number, FplTeam>,
     upcomingFixturesByTeamCode: UpcomingFixturesByTeamCode,
     positionRanksByCode: PositionRanksByCode = {},
+    availabilityByCode: AvailabilityByCode = {},
 ): TableColumn<EnhancedPlayerData>[] {
     return [
-        playerColumn(teamsByCode),
+        playerColumn(teamsByCode, availabilityByCode),
         pointsWithRankColumn(positionRanksByCode),
         {
             key: 'upcomingFixtures',

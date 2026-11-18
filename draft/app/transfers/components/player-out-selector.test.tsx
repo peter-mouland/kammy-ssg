@@ -9,6 +9,7 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
+import type { AvailabilityByCode } from '../lib/player-availability';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import { PlayerOutSelector } from './player-out-selector';
 
@@ -85,10 +86,12 @@ function renderSelector({
     onPlayerChange = vi.fn(),
     upcomingFixturesByTeamCode = ARSENAL_FIXTURES,
     availablePlayers = AVAILABLE_PLAYERS,
+    availabilityByCode = {},
 }: {
     categoryStandings?: CategoryStanding[];
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     availablePlayers?: EnhancedPlayerData[];
+    availabilityByCode?: AvailabilityByCode;
     onPlayerChange?: (p: RosterPlayer | null) => void;
 } = {}) {
     const Stub = createRoutesStub([
@@ -105,6 +108,7 @@ function renderSelector({
                     categoryStandings={categoryStandings}
                     upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                     availablePlayers={availablePlayers}
+                    availabilityByCode={availabilityByCode}
                     embeddedInJourney
                 />
             ),
@@ -264,5 +268,17 @@ describe('each player row', () => {
             .join(' ');
 
         expect(headerText).not.toMatch(/[↕↑↓]/);
+    });
+});
+
+describe("FPL's availability on the squad", () => {
+    it('flags an injured squad player in their row, and no one else', async () => {
+        renderSelector({ availabilityByCode: { 2: { status: 'i', chanceNextRound: 0 } } });
+        const cb = await screen.findByRole('region', { name: 'CB' });
+        const saliba = within(cb).getByText('Saliba').closest('tr');
+        const gabriel = within(cb).getByText('Gabriel').closest('tr');
+
+        expect(saliba?.querySelector('[aria-label="Injured"]')).not.toBeNull();
+        expect(gabriel?.querySelector('[role="img"][aria-label]')).toBeNull();
     });
 });

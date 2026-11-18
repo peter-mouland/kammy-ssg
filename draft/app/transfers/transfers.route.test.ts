@@ -2,7 +2,7 @@
 
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CACHE_KEYS } from '../_shared/lib/cache/cache-config';
 import { dataCache } from '../_shared/lib/cache/data-cache.service';
 import { resetInMemoryFirestore } from '../_shared/lib/firestore-cache/firestore-memory';
@@ -22,6 +22,18 @@ import * as route from './transfers.route';
 process.env.KAMMY_FIXTURE_FIRESTORE = '1';
 
 const FPL_FIXTURES_URL = 'https://fantasy.premierleague.com/api/fixtures/';
+const FPL_BOOTSTRAP_URL = 'https://fantasy.premierleague.com/api/bootstrap-static/';
+
+/** FPL's live player list, cut down to what availability reads: one fit, one doubtful, one injured. */
+const BOOTSTRAP = {
+    elements: [
+        { id: 1, code: 101, web_name: 'Fit', status: 'a', chance_of_playing_next_round: null },
+        { id: 2, code: 102, web_name: 'Knock', status: 'd', chance_of_playing_next_round: 75 },
+        { id: 3, code: 103, web_name: 'Crocked', status: 'i', chance_of_playing_next_round: 0 },
+    ],
+};
+const bootstrapFails = () => http.get(FPL_BOOTSTRAP_URL, () => new HttpResponse(null, { status: 500 }));
+const HOUR = 60 * 60 * 1000;
 
 const PLAYED = '2020-01-01T11:00:00Z';
 const AHEAD = '2099-01-01T11:00:00Z';
@@ -75,6 +87,7 @@ const server = setupServer(
         'premierLeague-transfers': [],
     }),
     http.get(FPL_FIXTURES_URL, () => HttpResponse.json(FIXTURES)),
+    http.get(FPL_BOOTSTRAP_URL, () => HttpResponse.json(BOOTSTRAP)),
 );
 
 const load = async (search = '') => {
@@ -94,15 +107,21 @@ const arsenalWindow = (pageData: Awaited<ReturnType<typeof load>>) =>
     ]);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-beforeEach(async () => {
-    dataCache.clear();
+/** The FPL reads that sit behind Firestore. Seeding an expired key refills it. */
+async function seedFpl() {
     await dataCache.get(CACHE_KEYS.FPL.EVENTS, async () => EVENTS);
     await dataCache.get(CACHE_KEYS.FPL.TEAMS, async () => [ARS, LIV]);
     await dataCache.get(CACHE_KEYS.FPL.PLAYERS, async () => []);
+}
+
+beforeEach(async () => {
+    dataCache.clear();
+    await seedFpl();
 });
 afterEach(() => {
     server.resetHandlers();
     resetInMemoryFirestore();
+    vi.useRealTimers();
 });
 afterAll(() => server.close());
 
@@ -133,5 +152,58 @@ describe('the fixtures on the out step', () => {
 
         expect(pageData.selectedUser).toBe('ann');
         expect(pageData.upcomingFixturesByTeamCode).toEqual({});
+    });
+});
+
+describe("FPL's availability, streamed after the page", () => {
+    it('lists only the players in doubt, with when it was fetched', async () => {
+        const pageData = await load();
+        const availability = await pageData.availability;
+
+        expect(availability?.byCode).toEqual({
+            102: { status: 'd', chanceNextRound: 75 },
+            103: { status: 'i', chanceNextRound: 0 },
+        });
+        expect(Date.now() - Date.parse(availability?.fetchedAt ?? '')).toBeLessThan(1000);
+    });
+
+    // Availability is extra information: FPL being down must not stop a transfer, and the
+    // page must not quietly show nothing as if everyone were fit -- null says "can't say".
+    it('resolves to null, and the page still loads, when FPL cannot be read', async () => {
+        server.use(bootstrapFails());
+
+        const pageData = await load();
+
+        expect(pageData.selectedUser).toBe('ann');
+        expect(await pageData.availability).toBeNull();
+    });
+
+    describe('when a refresh fails, the cache hands back its last copy', () => {
+        // Only Date is faked, so MSW and the loader's promises run as normal.
+        beforeEach(async () => {
+            vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-20T09:00:00Z') });
+            await seedFpl(); // seeded under the real clock, so expired under this one
+        });
+
+        it('shows that copy, as of when it was fetched, while it is under six hours old', async () => {
+            await (await load()).availability;
+            server.use(bootstrapFails());
+            vi.setSystemTime(Date.now() + 2 * HOUR);
+            await seedFpl(); // the calendar expires too; only the bootstrap is under test
+
+            const availability = await (await load()).availability;
+
+            expect(availability?.byCode[103]).toEqual({ status: 'i', chanceNextRound: 0 });
+            expect(availability?.fetchedAt).toBe('2026-11-20T09:00:00.000Z');
+        });
+
+        it('shows nothing once that copy is over six hours old: wrong news is worse than none', async () => {
+            await (await load()).availability;
+            server.use(bootstrapFails());
+            vi.setSystemTime(Date.now() + 7 * HOUR);
+            await seedFpl();
+
+            expect(await (await load()).availability).toBeNull();
+        });
     });
 });

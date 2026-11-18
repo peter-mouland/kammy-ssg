@@ -1,0 +1,38 @@
+/* Location: app/_shared/components/availability-icon.module.css */
+
+.availabilityIcon {
+    display: inline-flex;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Big enough to read "75" inside the circle, no taller than the club line it sits on. */
+.shape {
+    width: var(--spacing-4);
+    height: var(--spacing-4);
+}
+
+.mark {
+    fill: var(--color-white);
+}
+
+.chance {
+    font-weight: var(--font-weight-bold);
+    fill: var(--color-gray-900);
+}
+
+.doubtful .fill {
+    fill: var(--color-yellow-500);
+}
+
+.injured .fill {
+    fill: var(--color-red-600);
+}
+
+.suspended .fill {
+    fill: var(--color-red-600);
+}
+
+.unavailable .fill {
+    fill: var(--color-gray-400);
+}
