@@ -30,8 +30,8 @@ export function describeAvailability({ status, chanceNextRound }: PlayerAvailabi
 
 /**
  * One small icon for FPL's view of whether a player will play. Simple shapes drawn here, so
- * they look the same on every device and take their colour from tokens: a circle holding the
- * percentage for a doubt, a cross for an injury, a card for a suspension, a dash for anyone
+ * they look the same on every device and take their colour from tokens: a pill holding the
+ * percentage for a doubt ("75%" -- the sign makes the number read as a chance), a cross for an injury, a card for a suspension, a dash for anyone
  * unavailable (left the club, on loan). All four live in this one component, so a different
  * icon set can replace them without touching anything else.
  */
@@ -47,10 +47,10 @@ export function AvailabilityIcon({ availability }: { availability: PlayerAvailab
 function AvailabilityShape({ availability: { status, chanceNextRound } }: { availability: PlayerAvailability }) {
     if (status === 'd') {
         return (
-            <svg className={`${styles.shape} ${styles.doubtful}`} viewBox="0 0 16 16" aria-hidden="true">
-                <circle cx="8" cy="8" r="8" className={styles.fill} />
-                <text x="8" y="8" fontSize="8" className={styles.chance} textAnchor="middle" dominantBaseline="central">
-                    {chanceNextRound ?? '?'}
+            <svg className={`${styles.shape} ${styles.wide} ${styles.doubtful}`} viewBox="0 0 24 16" aria-hidden="true">
+                <rect width="24" height="16" rx="8" className={styles.fill} />
+                <text x="12" y="8" fontSize="8" className={styles.chance} textAnchor="middle" dominantBaseline="central">
+                    {chanceNextRound === undefined ? '?' : `${chanceNextRound}%`}
                 </text>
             </svg>
         );
