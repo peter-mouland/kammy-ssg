@@ -1,6 +1,15 @@
 /* Location: app/transfers/components/player-out-selector.module.css */
 
 .playerOutSelector {
+    /*
+     * The narrowest a position group's table may get before the groups stack into one
+     * column. Today's columns (Player, Pts, Next 3) need about 20rem at a squeeze; the rest
+     * keeps the fixture strip readable, allows for longer names, and leaves room for the
+     * planned Form column. Grow this if a column is added that no longer fits.
+     */
+    --group-min-width: 30rem;
+    --group-column-gap: var(--spacing-4);
+
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4);
@@ -64,10 +73,26 @@
     min-height: 0;
 }
 
+/*
+ * Two groups side by side once both fit at --group-min-width, one column below that. The
+ * half-width floor in max() is what stops a third column appearing, and the min() with 100%
+ * stops the one column overflowing a phone. Responds to the list's own width rather than the
+ * viewport, so the journey's padding is already allowed for.
+ */
+.playerList {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(100%, max(var(--group-min-width), calc((100% - var(--group-column-gap)) / 2))), 1fr)
+    );
+    gap: var(--spacing-3) var(--group-column-gap);
+    align-content: start;
+}
+
 .categoryGroup {
     display: flex;
     flex-direction: column;
-    margin-bottom: var(--spacing-3);
+    min-width: 0;
 }
 
 .embeddedInJourney {
