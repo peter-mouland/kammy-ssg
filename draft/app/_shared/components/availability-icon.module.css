@@ -12,6 +12,11 @@
     height: var(--spacing-4);
 }
 
+/* The doubtful pill holds "75%", so it is wider than the round icons. */
+.wide {
+    width: var(--spacing-6);
+}
+
 .mark {
     fill: var(--color-white);
 }

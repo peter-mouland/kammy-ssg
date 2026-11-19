@@ -159,7 +159,7 @@ describe("FPL's availability, after the club code", () => {
         renderWith({ status: 'd', chanceNextRound: 75 });
 
         const icon = screen.getByRole('img', { name: 'Doubtful: 75% chance of playing next gameweek' });
-        expect(icon.textContent).toBe('75');
+        expect(icon.textContent).toBe('75%');
     });
 
     it.each([
