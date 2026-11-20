@@ -5,6 +5,7 @@ import type { TableColumn } from '../../_shared/components/table';
 import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { isStatRelevant, PointsBreakdownTooltip } from '../../scoring';
+import { compareByFixtureEase } from '../lib/fixture-ease';
 import type { AvailabilityByCode } from '../lib/player-availability';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import { FixtureStrip } from './fixture-strip';
@@ -53,13 +54,22 @@ export function pointsColumn<T extends EnhancedPlayerData>(): TableColumn<T> {
     };
 }
 
-/** The club's next three gameweeks, coloured by difficulty. Shared by every transfer table. */
+/**
+ * The club's next three gameweeks, coloured by difficulty. Shared by every transfer table.
+ * Sorting it ranks the runs by how easy they are; see `compareByFixtureEase` for the rules.
+ */
 export function upcomingFixturesColumn<T extends EnhancedPlayerData>(
     upcomingFixturesByTeamCode: UpcomingFixturesByTeamCode,
 ): TableColumn<T> {
     return {
         key: 'upcomingFixtures',
-        header: <span title="Fixtures in the next three gameweeks">Next 3</span>,
+        header: (
+            <span title="Fixtures in the next three gameweeks. Sort high to low to put the easiest run first">
+                Next 3
+            </span>
+        ),
+        sortable: true,
+        onSort: (players, direction) => [...players].sort(compareByFixtureEase(upcomingFixturesByTeamCode, direction)),
         render: (_, player) => <FixtureStrip gameweeks={upcomingFixturesByTeamCode[player.team_code]} />,
     };
 }
