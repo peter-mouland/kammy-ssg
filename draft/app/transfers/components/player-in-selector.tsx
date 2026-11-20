@@ -16,6 +16,7 @@ import { sortPositions } from '../../teams';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getPlayerStatusDisplay } from '../lib/get-player-status-display';
 import type { AvailabilityByCode } from '../lib/player-availability';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { OwnedPlayersByCode, SelectablePlayer } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from '../types/transfer-types';
@@ -26,6 +27,8 @@ interface PlayerInSelectorProps {
     availablePlayers: EnhancedPlayerData[];
     /** Players FPL has doubts about, by code. Those without an entry show no icon. */
     availabilityByCode?: AvailabilityByCode;
+    /** Each club's next few gameweeks, by team code. */
+    upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
     selectedPlayer: EnhancedPlayerData | null;
     onPlayerChange: (player: EnhancedPlayerData | null) => void;
     transferType: TransferType;
@@ -41,6 +44,7 @@ interface PlayerInSelectorProps {
 export function PlayerInSelector({
     availablePlayers,
     availabilityByCode = {},
+    upcomingFixturesByTeamCode = {},
     selectedPlayer,
     onPlayerChange,
     transferType,
@@ -210,7 +214,11 @@ export function PlayerInSelector({
 
     const columns: TableColumn<SelectablePlayer>[] = useMemo(
         () => [
-            ...getTransferSelectorStatColumns<SelectablePlayer>(teamsByCode, availabilityByCode),
+            ...getTransferSelectorStatColumns<SelectablePlayer>(
+                teamsByCode,
+                availabilityByCode,
+                upcomingFixturesByTeamCode,
+            ),
             {
                 key: 'status',
                 header: 'Status',
@@ -233,7 +241,7 @@ export function PlayerInSelector({
                 ),
             },
         ],
-        [teamsByCode, availabilityByCode],
+        [teamsByCode, availabilityByCode, upcomingFixturesByTeamCode],
     );
 
     return (

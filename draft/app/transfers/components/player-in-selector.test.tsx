@@ -2,19 +2,20 @@
 
 /* Location: app/transfers/components/player-in-selector.test.tsx */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { AvailabilityByCode } from '../lib/player-availability';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import { PlayerInSelector } from './player-in-selector';
 
 /**
  * The player list a manager picks an incoming player from. The "your team" step slimmed
  * down to player, points and fixtures; this list deliberately keeps its full stats table,
- * because comparing candidates is what it is for.
+ * because comparing candidates is what it is for, and shows the same fixtures beside it.
  */
 
 const teamsByCode = { 3: { code: 3, name: 'Arsenal', short_name: 'ARS' } } as unknown as Record<number, FplTeam>;
@@ -38,7 +39,18 @@ const validationContext: Omit<TransferRuleContext, 'transfer'> = {
     currentGameweek: 21,
 };
 
-function renderPlayerList(availabilityByCode: AvailabilityByCode = {}) {
+const ARSENAL_FIXTURES: UpcomingFixturesByTeamCode = {
+    3: [
+        { gameweek: 21, fixtures: [{ opponent: 'LIV', isHome: true, difficulty: 4 }] },
+        { gameweek: 22, fixtures: [] },
+        { gameweek: 23, fixtures: [{ opponent: 'MCI', isHome: false, difficulty: 5 }] },
+    ],
+};
+
+function renderPlayerList(
+    availabilityByCode: AvailabilityByCode = {},
+    upcomingFixturesByTeamCode: UpcomingFixturesByTeamCode = ARSENAL_FIXTURES,
+) {
     const Stub = createRoutesStub([
         {
             path: '/',
@@ -46,6 +58,7 @@ function renderPlayerList(availabilityByCode: AvailabilityByCode = {}) {
                 <PlayerInSelector
                     availablePlayers={[SAKA]}
                     availabilityByCode={availabilityByCode}
+                    upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                     selectedPlayer={null}
                     onPlayerChange={vi.fn()}
                     transferType="TRANSFER"
@@ -63,16 +76,47 @@ function renderPlayerList(availabilityByCode: AvailabilityByCode = {}) {
     return render(<Stub initialEntries={['/']} />);
 }
 
+const headerNames = () =>
+    screen.getAllByRole('columnheader').map((header) => header.textContent?.replace(/[^A-Za-z0-9 ]/g, '').trim());
+
+const rowFor = async (name: string) => {
+    const row = (await screen.findByText(new RegExp(name))).closest('tr');
+    if (!row) throw new Error(`expected ${name} in a table row`);
+    return row;
+};
+
 describe('the player list', () => {
-    it('keeps its full stats table and eligibility, without the fixtures column', async () => {
+    it('keeps its full stats table and eligibility', async () => {
         renderPlayerList();
         await screen.findByText(/Saka/);
-        const headers = screen
-            .getAllByRole('columnheader')
-            .map((header) => header.textContent?.replace(/[^A-Za-z0-9 ]/g, '').trim());
 
-        expect(headers).toEqual(expect.arrayContaining(['Player', 'Pts', 'Min', 'G', 'A', 'YC', 'RC', 'DC', 'Status']));
-        expect(headers).not.toContain('Next 3');
+        expect(headerNames()).toEqual(
+            expect.arrayContaining(['Player', 'Pts', 'Min', 'G', 'A', 'YC', 'RC', 'DC', 'Status']),
+        );
+    });
+
+    it('puts the next three fixtures straight after the points, before the stats', async () => {
+        renderPlayerList();
+        await screen.findByText(/Saka/);
+
+        expect(headerNames().slice(0, 4)).toEqual(['Player', 'Pts', 'Next 3', 'Min']);
+    });
+
+    it("shows each candidate's club fixtures, home in capitals and away in lower case", async () => {
+        renderPlayerList();
+        const row = await rowFor('Saka');
+
+        expect(within(row).getByTitle('GW21: LIV at home, difficulty 4')).toBeDefined();
+        expect(within(row).getByTitle('No game in GW22')).toBeDefined();
+        expect(within(row).getByText('mci')).toBeDefined();
+    });
+
+    it('shows a dash when the fixtures could not be loaded', async () => {
+        renderPlayerList({}, {});
+        const row = await rowFor('Saka');
+
+        expect(within(row).queryByText('LIV')).toBeNull();
+        expect(within(row).getAllByText('–').length).toBeGreaterThan(0);
     });
 });
 

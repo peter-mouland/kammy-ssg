@@ -6,6 +6,8 @@ import type { FplTeam } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import { isStatRelevant, PointsBreakdownTooltip } from '../../scoring';
 import type { AvailabilityByCode } from '../lib/player-availability';
+import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
+import { FixtureStrip } from './fixture-strip';
 
 const STAT_COLUMN_WIDTH = '2rem';
 
@@ -51,13 +53,27 @@ export function pointsColumn<T extends EnhancedPlayerData>(): TableColumn<T> {
     };
 }
 
+/** The club's next three gameweeks, coloured by difficulty. Shared by every transfer table. */
+export function upcomingFixturesColumn<T extends EnhancedPlayerData>(
+    upcomingFixturesByTeamCode: UpcomingFixturesByTeamCode,
+): TableColumn<T> {
+    return {
+        key: 'upcomingFixtures',
+        header: <span title="Fixtures in the next three gameweeks">Next 3</span>,
+        render: (_, player) => <FixtureStrip gameweeks={upcomingFixturesByTeamCode[player.team_code]} />,
+    };
+}
+
 export function getTransferSelectorStatColumns<T extends EnhancedPlayerData>(
     teamsByCode: Record<number, FplTeam>,
     availabilityByCode: AvailabilityByCode = {},
+    upcomingFixturesByTeamCode: UpcomingFixturesByTeamCode = {},
 ): TableColumn<T>[] {
     return [
         playerColumn<T>(teamsByCode, availabilityByCode),
         pointsColumn<T>(),
+        // Straight after Pts so it is on screen without scrolling the stats sideways.
+        upcomingFixturesColumn<T>(upcomingFixturesByTeamCode),
         {
             key: 'apps',
             header: <span title="Minutes">Min</span>,
