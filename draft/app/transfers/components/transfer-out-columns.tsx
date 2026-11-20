@@ -7,9 +7,8 @@ import { PointsBreakdownTooltip } from '../../scoring';
 import type { AvailabilityByCode } from '../lib/player-availability';
 import { describePositionRank, type PositionRanksByCode } from '../lib/position-rank';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
-import { FixtureStrip } from './fixture-strip';
 import styles from './transfer-out-columns.module.css';
-import { playerColumn, pointsColumn } from './transfer-selector-stat-columns';
+import { playerColumn, pointsColumn, upcomingFixturesColumn } from './transfer-selector-stat-columns';
 
 /**
  * Season points, and beneath them where those points rank at the player's position: 42
@@ -41,7 +40,7 @@ function pointsWithRankColumn(positionRanksByCode: PositionRanksByCode): TableCo
  *
  * Deliberately slimmer than the player list: who the player is, what they have scored and
  * how that ranks at their position, and what is coming up. The detailed stat columns stay on
- * the player list, where comparing candidates needs them. Player and Pts come from the same
+ * the player list, where comparing candidates needs them. Player, Pts and Next 3 come from the same
  * factories, so the two never drift.
  */
 export function getTransferOutColumns(
@@ -54,12 +53,10 @@ export function getTransferOutColumns(
         playerColumn(teamsByCode, availabilityByCode),
         pointsWithRankColumn(positionRanksByCode),
         {
-            key: 'upcomingFixtures',
-            header: <span title="Fixtures in the next three gameweeks">Next 3</span>,
+            ...upcomingFixturesColumn(upcomingFixturesByTeamCode),
             // Takes all the spare width, so Player shrinks to fit its longest entry and
             // the fixtures get the room.
             width: '100%',
-            render: (_, player) => <FixtureStrip gameweeks={upcomingFixturesByTeamCode[player.team_code]} />,
         },
     ];
 }

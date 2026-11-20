@@ -232,6 +232,7 @@ function FirstSelector({
         <PlayerInSelector
             availablePlayers={availablePlayers}
             availabilityByCode={availabilityByCode}
+            upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
             selectedPlayer={playerSelection.playerIn}
             onPlayerChange={onPlayerInChange}
             transferType={transferType}
@@ -273,6 +274,7 @@ function SecondSelector({
             <PlayerInSelector
                 availablePlayers={availablePlayers}
                 availabilityByCode={availabilityByCode}
+                upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                 selectedPlayer={playerSelection.playerIn}
                 onPlayerChange={onPlayerInChange}
                 transferType={transferType}
