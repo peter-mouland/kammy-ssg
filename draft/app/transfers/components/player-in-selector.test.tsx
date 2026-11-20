@@ -2,7 +2,7 @@
 
 /* Location: app/transfers/components/player-in-selector.test.tsx */
 
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { createRoutesStub } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
@@ -18,7 +18,11 @@ import { PlayerInSelector } from './player-in-selector';
  * because comparing candidates is what it is for, and shows the same fixtures beside it.
  */
 
-const teamsByCode = { 3: { code: 3, name: 'Arsenal', short_name: 'ARS' } } as unknown as Record<number, FplTeam>;
+const teamsByCode = {
+    3: { code: 3, name: 'Arsenal', short_name: 'ARS' },
+    4: { code: 4, name: 'Newcastle', short_name: 'NEW' },
+    5: { code: 5, name: 'Southampton', short_name: 'SOU' },
+} as unknown as Record<number, FplTeam>;
 
 const SAKA = {
     id: 1,
@@ -50,13 +54,14 @@ const ARSENAL_FIXTURES: UpcomingFixturesByTeamCode = {
 function renderPlayerList(
     availabilityByCode: AvailabilityByCode = {},
     upcomingFixturesByTeamCode: UpcomingFixturesByTeamCode = ARSENAL_FIXTURES,
+    availablePlayers: EnhancedPlayerData[] = [SAKA],
 ) {
     const Stub = createRoutesStub([
         {
             path: '/',
             Component: () => (
                 <PlayerInSelector
-                    availablePlayers={[SAKA]}
+                    availablePlayers={availablePlayers}
                     availabilityByCode={availabilityByCode}
                     upcomingFixturesByTeamCode={upcomingFixturesByTeamCode}
                     selectedPlayer={null}
@@ -117,6 +122,49 @@ describe('the player list', () => {
 
         expect(within(row).queryByText('LIV')).toBeNull();
         expect(within(row).getAllByText('–').length).toBeGreaterThan(0);
+    });
+});
+
+describe('sorting the player list by its fixtures', () => {
+    const atClub = (name: string, teamCode: number) =>
+        ({
+            ...SAKA,
+            code: teamCode * 1000,
+            web_name: name,
+            second_name: name,
+            team_code: teamCode,
+        }) as EnhancedPlayerData;
+
+    // Gameweek 21 from FPL's point of view: 1 is the easiest match and 5 the hardest.
+    const gameweek = (difficulty: number) => [
+        { gameweek: 21, fixtures: [{ opponent: 'XXX', isHome: true, difficulty }] },
+    ];
+    const fixtures: UpcomingFixturesByTeamCode = { 3: gameweek(3), 4: gameweek(1), 5: gameweek(5) };
+    const players = [atClub('Middling', 3), atClub('Easy', 4), atClub('Hard', 5)];
+
+    const rowNames = () =>
+        screen
+            .getAllByRole('row')
+            .slice(1)
+            .map((row) => ['Easy', 'Middling', 'Hard'].find((name) => row.textContent?.includes(name)));
+
+    const sortByNextThree = () => fireEvent.click(screen.getByRole('columnheader', { name: /Next 3/ }));
+
+    it('puts the easiest run of fixtures first when sorted high to low', async () => {
+        renderPlayerList({}, fixtures, players);
+        await screen.findByText(/Easy/);
+        sortByNextThree(); // low to high
+        sortByNextThree(); // high to low
+
+        expect(rowNames()).toEqual(['Easy', 'Middling', 'Hard']);
+    });
+
+    it('puts the hardest run first when sorted low to high', async () => {
+        renderPlayerList({}, fixtures, players);
+        await screen.findByText(/Easy/);
+        sortByNextThree();
+
+        expect(rowNames()).toEqual(['Hard', 'Middling', 'Easy']);
     });
 });
 
