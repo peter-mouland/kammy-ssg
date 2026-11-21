@@ -28,6 +28,10 @@ interface ActionData {
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
         const url = new URL(request.url);
+        // Started first and not awaited: FPL's availability streams to the page after it
+        // renders, so a slow FPL fetch never holds up a transfer. It never rejects.
+        const { loadAvailability } = await import('./server/availability.server');
+        const playerAvailability = loadAvailability();
         const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
         const [currentGameweekData, events, userTeams, divisions] = await Promise.all([
             fplApiCache.getSelectionGameweekData(),
@@ -73,7 +77,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
             divisions,
         });
 
-        return data<TransfersPageData>({ ...transfersData, userTeams, persistedUser });
+        return data<TransfersPageData>({
+            ...transfersData,
+            userTeams,
+            persistedUser,
+            availability: playerAvailability,
+        });
     } catch (error) {
         if (error instanceof Response) throw error;
         throw loaderErrorResponse('Could not load transfers', error);

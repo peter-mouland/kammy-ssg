@@ -11,7 +11,11 @@
 // Cache TTL configurations (in milliseconds)
 const CACHE_TTL = {
     // FPL API Data - relatively static during gameWeek
-    FPL_BOOTSTRAP: 4 * 60 * 60 * 1000, // 4 hours - data changes rarely
+    // 1 hour. The transfers page reads FPL's injury and suspension news from it, which changes
+    // through the week and fastest before a deadline, when managers are making transfers. It is
+    // only fetched when a page asks for it, so a quiet week costs nothing. /admin/new-players
+    // shares the key, and fresher is harmless there.
+    FPL_BOOTSTRAP: 60 * 60 * 1000,
     // 5 min. The fixture SCHEDULE changes rarely, but `started` and `finished` on it are
     // what the scoring badge reads to decide whether points need re-running -- at 24h it
     // could sit green through an entire match weekend. The transfers page also reads it,

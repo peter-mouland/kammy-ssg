@@ -7,6 +7,7 @@ import { createRoutesStub } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { FplTeam, GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { EnhancedPlayerData } from '../../_shared/types/player-types';
+import type { AvailabilityByCode } from '../lib/player-availability';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import { PlayerInSelector } from './player-in-selector';
 
@@ -37,13 +38,14 @@ const validationContext: Omit<TransferRuleContext, 'transfer'> = {
     currentGameweek: 21,
 };
 
-function renderPlayerList() {
+function renderPlayerList(availabilityByCode: AvailabilityByCode = {}) {
     const Stub = createRoutesStub([
         {
             path: '/',
             Component: () => (
                 <PlayerInSelector
                     availablePlayers={[SAKA]}
+                    availabilityByCode={availabilityByCode}
                     selectedPlayer={null}
                     onPlayerChange={vi.fn()}
                     transferType="TRANSFER"
@@ -71,5 +73,21 @@ describe('the player list', () => {
 
         expect(headers).toEqual(expect.arrayContaining(['Player', 'Pts', 'Min', 'G', 'A', 'YC', 'RC', 'DC', 'Status']));
         expect(headers).not.toContain('Next 3');
+    });
+});
+
+describe("FPL's availability on the player list", () => {
+    it('flags a candidate FPL has doubts about', async () => {
+        renderPlayerList({ [SAKA.code]: { status: 'd', chanceNextRound: 50 } });
+        const row = (await screen.findByText(/Saka/)).closest('tr');
+
+        expect(row?.querySelector('[aria-label="Doubtful: 50% chance of playing next gameweek"]')).not.toBeNull();
+    });
+
+    it('flags no one FPL expects to play', async () => {
+        renderPlayerList();
+        await screen.findByText(/Saka/);
+
+        expect(screen.queryByRole('img', { name: /Doubtful|Injured|Suspended|Unavailable/ })).toBeNull();
     });
 });

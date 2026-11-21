@@ -4,6 +4,7 @@ import type { FplTeam } from '../lib/fpl/fpl-types';
 import type { CustomPosition } from '../types/league-types';
 import type { EnhancedPlayerData } from '../types/player-types';
 import type { RosterPlayer } from '../types/squad-types';
+import { AvailabilityIcon, type PlayerAvailability } from './availability-icon';
 import styles from './player.module.css';
 
 /**
@@ -151,6 +152,7 @@ export const PlayerSummary = ({
     manager,
     onLoanTo,
     onLoanFrom,
+    availability,
     view = 'row',
 }: {
     teamsByCode: Record<number, FplTeam>;
@@ -160,6 +162,8 @@ export const PlayerSummary = ({
     onLoanTo?: string;
     onLoanFrom?: string;
     manager?: string;
+    /** FPL's doubt about whether they'll play. Pages without it show nothing extra. */
+    availability?: PlayerAvailability;
 }) => {
     const img = playerPhotoUrl(player.playerCode || player.code);
     return (
@@ -178,6 +182,7 @@ export const PlayerSummary = ({
                     <div className={styles.clubLine}>
                         <ClubCode team={resolveTeam(player, teamsByCode, fplPlayersByCode)} />
                         <StatusTag isNew={player.draft?.isNew} onLoanTo={onLoanTo} onLoanFrom={onLoanFrom} />
+                        {availability ? <AvailabilityIcon availability={availability} /> : null}
                     </div>
                     {manager ? (
                         <div className={styles.owner}>

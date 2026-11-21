@@ -150,3 +150,32 @@ describe('the player photo', () => {
         expect(screen.getByText('👤')).toBeDefined();
     });
 });
+
+describe("FPL's availability, after the club code", () => {
+    const renderWith = (availability?: Parameters<typeof PlayerSummary>[0]['availability']) =>
+        render(<PlayerSummary player={fplPlayer()} teamsByCode={teamsByCode} availability={availability} />);
+
+    it('shows a doubtful player’s chance of playing, spelled out for screen readers', () => {
+        renderWith({ status: 'd', chanceNextRound: 75 });
+
+        const icon = screen.getByRole('img', { name: 'Doubtful: 75% chance of playing next gameweek' });
+        expect(icon.textContent).toBe('75%');
+    });
+
+    it.each([
+        ['i', 'Injured'],
+        ['s', 'Suspended'],
+        ['u', 'Unavailable'],
+        ['n', 'Unavailable'],
+    ] as const)('names status %s as %s', (status, name) => {
+        renderWith({ status });
+
+        expect(screen.getByRole('img', { name })).toBeDefined();
+    });
+
+    it('shows nothing when the page passes no availability', () => {
+        renderWith();
+
+        expect(screen.queryByRole('img')).toBeNull();
+    });
+});

@@ -12,6 +12,7 @@ import type { EnhancedPlayerData } from '../../_shared/types/player-types';
 import type { RosterPlayer, TeamPositionSlot, TeamRoster } from '../../_shared/types/squad-types';
 import type { CategoryStanding } from '../../leagues';
 import type { RosterByManagerId } from '../../teams';
+import type { AvailabilitySnapshot } from '../lib/player-availability';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { TransferRecommendation, TransferRuleContext, TransferValidationResult } from './transfer-rule-types';
 import type { ProcessedTransfer, TransferType } from './transfer-types';
@@ -114,6 +115,11 @@ export interface TransfersPageData {
     categoryStandings?: CategoryStanding[];
     /** Each club's fixtures for the next few gameweeks, by team code. {} when unavailable. */
     upcomingFixturesByTeamCode?: UpcomingFixturesByTeamCode;
+    /**
+     * FPL's injury and suspension status, streamed after the page renders. Resolves to null
+     * when it can't be read or is too old to trust; it never rejects.
+     */
+    availability?: Promise<AvailabilitySnapshot | null>;
     availablePlayers: EnhancedPlayerData[];
     transferDeadline: string;
     isBeforeDeadline: boolean;
