@@ -179,6 +179,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, test, build, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # One production deploy at a time. Without this, two merges close together deploy in
+    # parallel and whichever finishes last wins, even if it is the older commit: on
+    # 2026-11-21 the deploy for 1db88ee6 finished after the one for 1e7650f4 and put the
+    # site back a commit. A deploy that arrives while one runs waits; if several are
+    # waiting, GitHub keeps only the newest, so the last to run is always the latest master.
+    # Not cancel-in-progress: stopping `firebase deploy` partway could leave hosting and
+    # the functions on different builds.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
 
