@@ -41,6 +41,33 @@
     gap: 8px;
 }
 
+/* GK and SUB share a row. Narrow screens: side by side, like every other row */
+.goalkeeperSlot,
+.substituteSlot {
+    display: contents;
+}
+
+/* Wide screens: GK centred in front of the goal, SUB lined up with the right-hand wide attacker */
+@media (min-width: 768px) {
+    .goalkeeperLine {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-2);
+    }
+
+    .goalkeeperSlot {
+        grid-column: 2;
+        display: flex;
+        justify-content: center;
+    }
+
+    .substituteSlot {
+        grid-column: 3;
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
 /* Specific positioning for each line */
 
 .midfielderLine {
@@ -136,27 +163,10 @@
     text-align: center;
 }
 
-/* Formation info */
+/* Formation */
 
 .formation {
     padding: 8px;
-}
-
-.formationInfo {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    background: rgb(0 0 0 / 70%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: var(--radius-md);
-    backdrop-filter: blur(10px);
-}
-
-.gameweekInfo {
-    font-size: var(--font-xs);
-    color: rgb(255 255 255 / 80%);
-    margin-top: 2px;
 }
 
 /* Responsive adjustments */
@@ -178,12 +188,6 @@
     .emptySlot {
         width: 60px;
         height: 50px;
-    }
-
-    .formationInfo {
-        position: static;
-        margin-top: 12px;
-        text-align: center;
     }
 }
 

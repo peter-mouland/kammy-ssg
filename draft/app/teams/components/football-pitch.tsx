@@ -60,42 +60,35 @@ export const FootballPitch: React.FC<FormationDisplayProps> = ({
 
                 {/* Formation Layout */}
                 <div className={styles.formation}>
-                    <div className={styles.centralAttackerLine}>
-                        {renderPositionGroup(formationSlots.centralAttackers, 'attackers', 'CA')}
+                    {/* Goalkeeper in front of the goal; the sub sits off to the right on wide screens */}
+                    <div className={styles.goalkeeperLine}>
+                        <div className={styles.goalkeeperSlot}>
+                            {renderPositionGroup(formationSlots.goalkeeper, 'goalkeeper', 'GK')}
+                        </div>
+                        <div className={styles.substituteSlot}>
+                            {renderPositionGroup(formationSlots.substitutes, 'substitutes', 'SUB')}
+                        </div>
                     </div>
-                    <div className={styles.wideAttackerLine}>
-                        {renderPositionGroup(formationSlots.wideAttackers, 'wideAttackers', 'WA')}
+                    <div className={styles.centrebackLine}>
+                        {renderPositionGroup(formationSlots.centrebacks, 'centrebacks', 'CB')}
+                    </div>
+                    <div className={styles.fullbackLine}>
+                        {renderPositionGroup(formationSlots.fullbacks, 'fullbacks', 'FB')}
                     </div>
                     <div className={styles.midfielderLine}>
                         {renderPositionGroup(formationSlots.midfielders, 'midfielders', 'MID')}
                     </div>
-
-                    <div className={styles.fullbackLine}>
-                        {renderPositionGroup(formationSlots.fullbacks, 'fullbacks', 'FB')}
+                    <div className={styles.wideAttackerLine}>
+                        {renderPositionGroup(formationSlots.wideAttackers, 'wideAttackers', 'WA')}
                     </div>
-                    <div className={styles.centrebackLine}>
-                        {/* Centre Backs */}
-                        {renderPositionGroup(formationSlots.centrebacks, 'centrebacks', 'CB')}
-                    </div>
-                    <div className={styles.goalkeeperLine}>
-                        {/* Goalkeeper */}
-                        {renderPositionGroup(formationSlots.goalkeeper, 'goalkeeper', 'GK')}
-                        {renderPositionGroup(formationSlots.substitutes, 'substitutes', 'SUB')}
+                    <div className={styles.centralAttackerLine}>
+                        {renderPositionGroup(formationSlots.centralAttackers, 'attackers', 'CA')}
                     </div>
                 </div>
 
                 {/* Penalty Area */}
                 <div className={styles.penaltyArea}>
                     <div className={styles.penaltyLine} />
-                </div>
-            </div>
-
-            {/* Formation Info */}
-            <div className={styles.formationInfo}>
-                <div className={styles.gameweekInfo}>
-                    {isHistorical
-                        ? `Gameweek ${gameweek} (Historical)`
-                        : `${viewMode === 'gameweek' ? `Gameweek ${gameweek}` : 'Season Totals'}`}
                 </div>
             </div>
         </div>
