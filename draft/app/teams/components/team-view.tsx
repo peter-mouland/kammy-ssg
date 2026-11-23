@@ -67,7 +67,7 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                                 selectedUser={''}
                                 users={data.userTeams || []}
                                 handleUserChange={(userId) => {
-                                    navigate(`/teams/${userId}?tab=all-teams`);
+                                    navigate(`/teams/${userId}?tab=my-team`);
                                 }}
                             />
                             <GameweekSelector
@@ -111,7 +111,7 @@ export const TeamViewComp = ({ data }: { data: TeamViewData }) => {
                             selectedUser={data.currentUser.userName}
                             users={data.userTeams || []}
                             handleUserChange={(userId) => {
-                                navigate(`/teams/${userId}?tab=all-teams`);
+                                navigate(`/teams/${userId}?tab=my-team`);
                             }}
                         />
                         <GameweekSelector
