@@ -128,7 +128,7 @@ export async function loader() {
 // Navigation configuration
 const navigationItems = [
     { href: '/leagues', label: 'League Standings' },
-    { href: '/teams?tab=all-teams', label: 'Teams' },
+    { href: '/teams?tab=my-team', label: 'Teams' },
     { href: '/transfers', label: 'Transfers' },
     { href: '/cup', label: 'Cup' },
     { href: '/wishlists', label: 'Wishlists' },
