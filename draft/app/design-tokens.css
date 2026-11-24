@@ -31,6 +31,7 @@
 
     /* Colors - Neutral Scale */
     --color-white: #fff;
+    --color-overlay: rgb(0 0 0 / 50%); /* behind a modal */
     --color-gray-50: #f9fafb;
     --color-gray-100: #f3f4f6;
     --color-gray-200: #e5e7eb;

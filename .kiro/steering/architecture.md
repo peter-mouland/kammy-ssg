@@ -256,6 +256,7 @@ Mirrors [routes.ts](../../draft/app/routes.ts). If you add a route, add it here.
 |---|---|---|
 | `/players.json` | `players/players-json.route.ts` | Player list as JSON |
 | `/players/:playerCode.json` | `players/player-json.route.ts` | Player detail as JSON |
+| `/players/:playerCode/detail.json` | `players/player-detail-json.route.ts` | Everything the player page shows, as JSON, for the transfer flow's player modal |
 | `/scoring/api/gw-points` | `scoring/api/api.gw-points.ts` | Gameweek points API |
 | `/api/transfers/:divisionId` | `api/transfers/api.transfers.ts` | Transfers data API |
 | `/api/cache` | `api/cache/api.cache.ts` | Cache management API |

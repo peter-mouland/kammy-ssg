@@ -1,6 +1,6 @@
 /* Location: app/transfers/transfers.route.tsx */
 
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, ShouldRevalidateFunction } from 'react-router';
 import { data } from 'react-router';
 import { getUserSelection } from '../_shared/features/user-selection/user-selection.utils';
 import { requestFormData } from '../_shared/lib/form-data';
@@ -8,6 +8,7 @@ import { describeGameweekAvailability } from '../_shared/lib/gameweek-availabili
 import { friendlyErrorResponse, loaderErrorResponse } from '../_shared/lib/loader-error';
 import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
+import { onlyPlayerModalChanged } from './lib/player-modal-param';
 import { TransfersPage } from './transfers.page';
 import type { TransfersPageData } from './types/transfer-form-types';
 
@@ -88,6 +89,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
         throw loaderErrorResponse('Could not load transfers', error);
     }
 }
+
+/**
+ * Opening or closing the player modal only changes `?player`, which the loader does not
+ * read. Skipping the reload keeps the modal instant and the form's selections untouched.
+ */
+export const shouldRevalidate: ShouldRevalidateFunction = ({
+    currentUrl,
+    nextUrl,
+    formMethod,
+    defaultShouldRevalidate,
+}) => {
+    if (!formMethod && onlyPlayerModalChanged(currentUrl, nextUrl)) {
+        return false;
+    }
+    return defaultShouldRevalidate;
+};
 
 export async function action({ request, context }: ActionFunctionArgs) {
     try {

@@ -12,6 +12,7 @@ export default [
     route('players', 'players/players.route.tsx'),
     route('players.json', 'players/players-json.route.ts'),
     route('players/:playerCode.json', 'players/player-json.route.ts'),
+    route('players/:playerCode/detail.json', 'players/player-detail-json.route.ts'),
     route('players/:playerCode', 'players/player.route.tsx'),
     route('transfers/:divisionId?', 'transfers/transfers.route.tsx'),
     route('wishlists', 'wishlist/wishlists.route.tsx'),
