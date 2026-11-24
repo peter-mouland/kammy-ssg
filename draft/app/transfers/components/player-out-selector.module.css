@@ -142,9 +142,12 @@
     background-color: var(--color-gray-50);
 }
 
-.playerItem:hover,
-.playerItem:hover td {
-    background-color: var(--color-gray-100);
+/* Hover only where a pointer hovers: on a touch screen it sticks to the row just tapped. */
+@media (hover: hover) {
+    .playerItem:hover,
+    .playerItem:hover td {
+        background-color: var(--color-gray-100);
+    }
 }
 
 .playerItem.selected {
