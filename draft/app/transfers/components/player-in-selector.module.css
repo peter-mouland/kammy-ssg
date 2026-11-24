@@ -176,30 +176,38 @@
     background-color: var(--color-gray-50);
 }
 
-.playerCard:hover,
-.playerCard:hover td {
-    background-color: var(--color-gray-100);
+.playerCard.ineligible {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/*
+ * Hover only where there is a pointer that hovers. On a touch screen :hover sticks to the
+ * row just tapped, and the ineligible rule was more specific than .selected, so a tapped
+ * player another manager owns lost its selected colour. .selected comes after this block so
+ * it also wins over a plain hover.
+ */
+@media (hover: hover) {
+    .playerCard:hover,
+    .playerCard:hover td {
+        background-color: var(--color-gray-100);
+    }
+
+    .playerCard.ineligible:not(.selected):hover,
+    .playerCard.ineligible:not(.selected):hover td {
+        background-color: var(--color-white);
+    }
+
+    .playerCard.ineligible:not(.selected):nth-child(even):hover,
+    .playerCard.ineligible:not(.selected):nth-child(even):hover td {
+        background-color: var(--color-gray-50);
+    }
 }
 
 .playerCard.selected,
 .playerCard.selected td {
     background-color: var(--color-primary-light);
     border-color: var(--color-primary);
-}
-
-.playerCard.ineligible {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.playerCard.ineligible:hover,
-.playerCard.ineligible:hover td {
-    background-color: var(--color-white);
-}
-
-.playerCard.ineligible:nth-child(even):hover,
-.playerCard.ineligible:nth-child(even):hover td {
-    background-color: var(--color-gray-50);
 }
 
 .playerInfo {
