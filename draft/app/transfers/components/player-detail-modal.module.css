@@ -1,0 +1,88 @@
+/* Location: app/transfers/components/player-detail-modal.module.css */
+
+/* Full screen on a phone; the panel scrolls, not the page behind it. */
+.dialog {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+}
+
+.dialog::backdrop {
+    background-color: var(--color-overlay);
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--color-white);
+}
+
+/* Just the Back link: the details below already start with the player's name. */
+.header {
+    display: flex;
+    padding: var(--spacing-2) var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+/* The same text link as the transfer flow's own "← Back" and "← Back to hub". */
+.backButton {
+    align-self: flex-start;
+    min-height: 44px;
+    padding: var(--spacing-2) 0;
+    border: none;
+    background: none;
+    color: var(--color-primary);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+}
+
+.backButton:hover {
+    color: var(--color-primary-hover);
+}
+
+.body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-4);
+}
+
+.status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    color: var(--color-gray-600);
+}
+
+.retryButton {
+    padding: var(--spacing-2) var(--spacing-4);
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+}
+
+/* On a wider screen: about 90% of the viewport, with rounded corners. */
+@media (min-width: 768px) {
+    .dialog {
+        width: 90vw;
+        max-width: 1200px;
+        height: 90vh;
+        margin: auto;
+    }
+
+    .panel {
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+    }
+}

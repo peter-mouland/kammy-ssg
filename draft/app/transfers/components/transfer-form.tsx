@@ -33,10 +33,12 @@ import type { OwnedPlayersByCode, PlayerSelectionState, TransferFormValidation }
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { TransferType } from '../types/transfer-types';
 import { LoanInfoPanel } from './loan-info-panel';
+import { PlayerDetailModal } from './player-detail-modal';
 import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
 import styles from './transfer-form.module.css';
 import { TransferTypeSelector } from './transfer-type-selector';
+import { usePlayerModal } from './use-player-modal';
 import { useStreamedAvailability } from './use-streamed-availability';
 
 const JOURNEY_PATHS = {
@@ -117,6 +119,29 @@ const STEP_TITLES: Record<JourneyStep, Record<JourneyPath, string>> = {
         [JOURNEY_PATHS.playerListFirst]: 'Review and submit',
     },
 };
+
+/** The player picked on the step in view, if any: the one "View player" opens. */
+interface StepSelection {
+    code: number;
+    name: string;
+}
+
+function selectionForStep(
+    step: JourneyStep,
+    journeyPath: JourneyPath,
+    playerSelection: PlayerSelectionState,
+): StepSelection | null {
+    if (step === JOURNEY_STEPS.review) {
+        return null;
+    }
+    const onTeamStep = (step === JOURNEY_STEPS.firstSelector) === (journeyPath === JOURNEY_PATHS.teamFirst);
+    if (onTeamStep) {
+        const { playerOut } = playerSelection;
+        return playerOut ? { code: playerOut.playerCode, name: playerOut.playerName } : null;
+    }
+    const { playerIn } = playerSelection;
+    return playerIn ? { code: playerIn.code, name: playerIn.web_name } : null;
+}
 
 function canContinue(step: JourneyStep, journeyPath: JourneyPath, playerSelection: PlayerSelectionState): boolean {
     switch (step) {
@@ -479,6 +504,7 @@ export function TransferForm({
     const stepContentRef = useRef<HTMLDivElement>(null);
     const journeyTitleRef = useRef<HTMLHeadingElement>(null);
     const availabilityState = useStreamedAvailability(availability);
+    const playerModal = usePlayerModal();
     const availabilityByCode = availabilityState.kind === 'ready' ? availabilityState.snapshot.byCode : NO_AVAILABILITY;
 
     // Keep each step starting at the top after Continue/Back (window + step panel scroll;
@@ -637,6 +663,9 @@ export function TransferForm({
         step === JOURNEY_STEPS.firstSelector && canContinue(step, journeyPath, playerSelection);
 
     const gameweekLimitStatus = getGameweekLimitStatus(validationContext, selectedManager, transferType);
+    const stepSelection = selectionForStep(step, journeyPath, playerSelection);
+    // Only the player picked on this step: a `?player` left over from a reload shows nothing.
+    const playerInModal = stepSelection && playerModal.openPlayerCode === stepSelection.code ? stepSelection : null;
 
     return (
         <div className={styles.journey}>
@@ -740,10 +769,29 @@ export function TransferForm({
                                 />
                             </div>
                         ) : null}
-                        <button type="button" className={styles.continueButton} onClick={goForward}>
-                            Continue
-                        </button>
+                        <div className={styles.footerActions}>
+                            {stepSelection ? (
+                                <button
+                                    type="button"
+                                    className={styles.viewPlayerButton}
+                                    aria-label={`View player: ${stepSelection.name}`}
+                                    onClick={() => playerModal.open(stepSelection.code)}
+                                >
+                                    View player
+                                </button>
+                            ) : null}
+                            <button type="button" className={styles.continueButton} onClick={goForward}>
+                                Continue
+                            </button>
+                        </div>
                     </div>
+                ) : null}
+                {playerInModal ? (
+                    <PlayerDetailModal
+                        playerCode={playerInModal.code}
+                        playerName={playerInModal.name}
+                        onClose={playerModal.close}
+                    />
                 ) : null}
             </form>
         </div>
