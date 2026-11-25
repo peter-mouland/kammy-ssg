@@ -1,0 +1,8 @@
+{
+    "range": "'Rules Settings'!A1:Z1000",
+    "majorDimension": "ROWS",
+    "values": [
+        ["key", "value"],
+        ["rulesDocPubId", "2PACX-fixture-rules-doc"]
+    ]
+}

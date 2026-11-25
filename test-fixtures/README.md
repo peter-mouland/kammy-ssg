@@ -59,6 +59,9 @@ why the capture script originally wrote it as a *directory*.
 `player-export.json` has an **empty row 0** with its headers in row 1, so a naive header parser breaks on
 it.
 
+`rules-settings.json` is hand-written, not captured: it points `/rules` at a placeholder doc ID so the
+fixture server renders the embed instead of the "not configured" notice.
+
 Two things to know before trusting a number:
 
 - **`player-gw-points.json` holds 2024/25 data**, not 2025/26 — all 604 codes exist in the 2024/25 pool and

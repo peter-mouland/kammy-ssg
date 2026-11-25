@@ -28,8 +28,9 @@ export function RulesPage() {
                 </>
             ) : (
                 <p className={styles.notice}>
-                    Rules doc not configured. Set <code className={styles.code}>GOOGLE_RULES_DOC_PUB_ID</code> to the
-                    published Google Doc ID.
+                    Rules doc not configured. In the league spreadsheet, add a{' '}
+                    <code className={styles.code}>Rules Settings</code> tab with a{' '}
+                    <code className={styles.code}>rulesDocPubId</code> row set to the published Google Doc ID.
                 </p>
             )}
         </div>

@@ -3,6 +3,7 @@
 import type { MetaFunction } from 'react-router';
 import { buildRulesEmbedUrl, buildRulesPubUrl } from './lib/rules-doc-urls';
 import { RulesPage } from './rules.page';
+import { resolveRulesDocPubId } from './server/rules-doc.server';
 
 export type RulesLoaderData = {
     pubId: string | null;
@@ -18,7 +19,7 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader(): Promise<RulesLoaderData> {
-    const pubId = process.env.GOOGLE_RULES_DOC_PUB_ID?.trim() || null;
+    const pubId = await resolveRulesDocPubId();
 
     if (!pubId) {
         return {
