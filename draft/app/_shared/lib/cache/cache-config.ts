@@ -36,6 +36,9 @@ const CACHE_TTL = {
     SHEETS_PLAYERS: 24 * 60 * 60 * 1000, // 24 hours - player positions might be updated
     SHEETS_CUP: 30 * 1000, // 30s - cup submissions change up to the deadline
     SHEETS_CUP_CONFIG: 5 * 60 * 1000, // 5 min - stage->gameweek map, changed rarely by admin
+    // 15 min - which published Google Doc /rules embeds. Swapped rarely; editing the doc's
+    // text does not touch this cache at all. SHEETS_CLEAR applies a swap immediately.
+    SHEETS_RULES_SETTINGS: 15 * 60 * 1000,
 
     // Firebase/Firestore Data - real-time or frequently changing
     FIREBASE_DRAFT_STATE: 150 * 1000, // 150 seconds - changes rapidly during draft
@@ -85,6 +88,7 @@ export const CACHE_KEYS = {
         CUP: 'sheets:cup',
         CUP_CONFIG: 'sheets:cup-config',
         CUP_BRACKET: 'sheets:cup-bracket',
+        RULES_SETTINGS: 'sheets:rules-settings',
     },
 
     // Firebase keys
@@ -162,6 +166,7 @@ export const CACHE_INVALIDATION_RULES = {
         CACHE_KEYS.SHEETS.PLAYERS,
         CACHE_KEYS.SHEETS.DIVISIONS,
         CACHE_KEYS.SHEETS.USER_TEAMS,
+        CACHE_KEYS.SHEETS.RULES_SETTINGS,
         CACHE_KEYS.DRAFT_SYNC.COMPARISON(divisionId), // NEW: Clear sync comparison
         CACHE_KEYS.DRAFT_SYNC.ALL_COMPARISONS, // NEW: Clear all comparisons
     ],
@@ -188,6 +193,7 @@ export function getCacheTTL(key: string): number {
     if (key.includes('sheets:transfers')) return CACHE_TTL.SHEETS_TRANSFERS;
     if (key.includes('sheets:cup-config')) return CACHE_TTL.SHEETS_CUP_CONFIG;
     if (key.includes('sheets:cup-bracket')) return CACHE_TTL.SHEETS_CUP_CONFIG;
+    if (key.includes('sheets:rules-settings')) return CACHE_TTL.SHEETS_RULES_SETTINGS;
     if (key.includes('sheets:cup')) return CACHE_TTL.SHEETS_CUP;
     if (key.includes('sheets:draft-state')) return CACHE_TTL.SHEETS_DRAFT_STATE;
     if (key.includes('sheets:draft-picks')) return CACHE_TTL.SHEETS_DRAFT;
