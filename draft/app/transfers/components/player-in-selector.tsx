@@ -15,6 +15,7 @@ import { getPositionDisplayName } from '../../scoring';
 import { sortPositions } from '../../teams';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getPlayerStatusDisplay } from '../lib/get-player-status-display';
+import { typeForPlayerIn } from '../lib/new-player-draw';
 import type { AvailabilityByCode } from '../lib/player-availability';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { OwnedPlayersByCode, SelectablePlayer } from '../types/transfer-form-types';
@@ -143,7 +144,8 @@ export function PlayerInSelector({
             playerOut: playerOut ? validationContext.fplPlayersByCode[playerOut.playerCode] : null,
             playerIn: player,
             managerId,
-            transferType,
+            // A new player is judged as the draw request picking him would make him.
+            transferType: typeForPlayerIn(player, transferType),
             gameweekData: validationContext.gameweekData,
             id: `eligibility-check-${Date.now()}`,
             timestamp: now(),

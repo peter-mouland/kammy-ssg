@@ -125,6 +125,29 @@ export function ownershipLimit(context: TransferRuleContext): RuleValidationResu
         }
     }
 
+    // Pending requests are applied to rosters, so whoever has asked for a new player appears
+    // to hold him. Until a draw is made that is an entry in it, not ownership.
+    const drawRequesters = getPendingDrawRequesters(context);
+    if (playerInOwned && drawRequesters.has(playerInOwned.managerId)) {
+        if (playerInOwned.managerId === transfer.managerId) {
+            return {
+                ruleId: 'ownership',
+                ruleName: 'Ownership',
+                passed: false,
+                severity: 'blocking',
+                message: "You've already entered the draw for this player",
+            };
+        }
+
+        return {
+            ruleId: 'ownership',
+            ruleName: 'Ownership',
+            passed: true,
+            severity: 'blocking',
+            message: 'Ownership check passed',
+        };
+    }
+
     // For regular transfers, player must be available (not owned by anyone)
     if (playerInOwned) {
         if (playerInOwned.managerId === transfer.managerId) {
@@ -153,4 +176,19 @@ export function ownershipLimit(context: TransferRuleContext): RuleValidationResu
         severity: 'blocking',
         message: 'Ownership check passed',
     };
+}
+
+/** Managers with a pending New Player Request for this transfer's player, other than this transfer. */
+function getPendingDrawRequesters({ transfer, allGameweekTransfers }: TransferRuleContext): Set<string> {
+    return new Set(
+        allGameweekTransfers
+            .filter(
+                (other) =>
+                    other.id !== transfer.id &&
+                    other.transferType === 'NEW_PLAYER' &&
+                    other.status === 'PENDING' &&
+                    other.playerIn?.code === transfer.playerIn.code,
+            )
+            .map((other) => other.managerId),
+    );
 }

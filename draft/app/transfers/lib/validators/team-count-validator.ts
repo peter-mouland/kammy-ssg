@@ -33,6 +33,21 @@ export function teamCountLimit(context: TransferRuleContext): RuleValidationResu
     if (transfer.playerIn) teams.set(transfer.playerIn.team_code, teams.get(transfer.playerIn.team_code) + 1);
     const newTeamCount = teams.get(transfer.playerIn.team_code);
 
+    // Rule 3.9: a draw can be entered over the limit. Only a winner has to put it right.
+    if (newTeamCount > 2 && transfer.transferType === 'NEW_PLAYER') {
+        return {
+            ruleId: 'teamCountLimit',
+            ruleName: 'Team Count Limit',
+            passed: false,
+            message:
+                'More than 2 from this club — if you win, get back to 2 by the end of that gameweek or you forfeit him',
+            severity: 'warning',
+            details: {
+                teamCode: transfer.playerIn.team_code,
+            },
+        };
+    }
+
     if (newTeamCount > 2) {
         return {
             ruleId: 'teamCountLimit',

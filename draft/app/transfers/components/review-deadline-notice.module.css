@@ -1,0 +1,49 @@
+.notice {
+    margin: var(--spacing-4) 0;
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background: var(--color-gray-50);
+    color: var(--color-gray-700);
+    font-size: var(--font-sm);
+}
+
+.notice.passed {
+    border-color: var(--color-error-border);
+    background: var(--color-error-light);
+    color: var(--color-error-text);
+}
+
+.line {
+    display: block;
+}
+
+.line + .line {
+    margin-top: var(--spacing-1);
+}
+
+.deadline {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-900);
+}
+
+.closingSoon {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-red-600);
+}
+
+/* Its own line, so "4m 32s left" never breaks across two. */
+.countdown {
+    display: block;
+    margin-top: var(--spacing-2);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-red-600);
+    white-space: nowrap;
+}
+
+.smallPrint {
+    display: block;
+    margin-top: var(--spacing-1);
+    font-size: var(--font-xs);
+    color: var(--color-gray-500);
+}

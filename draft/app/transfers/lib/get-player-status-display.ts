@@ -14,9 +14,13 @@ export function getPlayerStatusDisplay(
     try {
         const validationResults = getTransferValidationResults(validationContext);
 
-        const blockingFailures = validationResults.filter(
-            (result) => !result.passed && result.severity === 'blocking' && !isGameweekLimitMessage(result.ruleId),
-        );
+        // A reason specific to this player (owned, wrong position) comes before the weekly
+        // limit, which is the same for every row and would otherwise hide it.
+        const failures = validationResults.filter((result) => !result.passed && result.severity === 'blocking');
+        const blockingFailures = [
+            ...failures.filter((result) => !isGameweekLimitMessage(result.ruleId)),
+            ...failures.filter((result) => isGameweekLimitMessage(result.ruleId)),
+        ];
 
         if (blockingFailures.length > 0) {
             const formatted = formatEligibilityStatus({
@@ -51,6 +55,16 @@ export function getPlayerStatusDisplay(
                 reason: formatted.text,
                 icon: formatted.icon,
                 fullMessage: formatted.fullMessage,
+            };
+        }
+
+        const { transfer } = validationContext;
+        if (transfer.transferType === 'NEW_PLAYER' && transfer.playerIn?.draft?.isNew) {
+            return {
+                isEligible: true,
+                reason: 'New',
+                icon: '🎟️',
+                fullMessage: 'New to the game: request him to enter the draw',
             };
         }
 
