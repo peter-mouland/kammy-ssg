@@ -100,6 +100,8 @@ export interface TransfersPageData {
     currentGameweek: number;
     selectedGameweek: number;
     currentGameweekData: GameWeekData;
+    /** The gameweek before the open one. Undefined before GW1's deadline. */
+    previousGameweekData?: GameWeekData;
     selectedGameweekData: GameWeekData;
     availableGameweeks: number[];
     gameweekData: GameWeekData;

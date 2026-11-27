@@ -28,6 +28,7 @@ import {
     type AvailabilitySnapshot,
     describeAvailabilityAsOf,
 } from '../lib/player-availability';
+import type { SubmissionGameweek } from '../lib/review-deadline';
 import type { UpcomingFixturesByTeamCode } from '../lib/upcoming-fixtures';
 import type { OwnedPlayersByCode, PlayerSelectionState, TransferFormValidation } from '../types/transfer-form-types';
 import type { TransferRuleContext } from '../types/transfer-rule-types';
@@ -73,6 +74,8 @@ interface TransferFormProps {
     availablePlayers: EnhancedPlayerData[];
     /** The gameweek still open for transfers: the one a request sent now counts towards. */
     submissionGameweek: GameWeekData;
+    /** The gameweek before it, so review can say its deadline has only just gone. None before GW1. */
+    previousGameweek?: GameWeekData;
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
@@ -96,6 +99,12 @@ const INITIAL_LOAN_SELECTION: LoanSelectionState = {
     loanToManager: null,
     loanFromManager: null,
 };
+
+/** The deadline facts the review notice needs from a gameweek. */
+const toSubmissionGameweek = (gameweek: GameWeekData): SubmissionGameweek => ({
+    gameweek: gameweek.fplEvent.id,
+    deadline: gameweek.fplEvent.deadline_time,
+});
 
 /** One empty lookup for "no availability yet", so the tables aren't handed a new object each render. */
 const NO_AVAILABILITY: AvailabilityByCode = {};
@@ -347,6 +356,7 @@ interface SelectorReviewProps {
     selectedManager: ManagerId;
     onBorrowingManagerChange: (managerId: ManagerId) => void;
     submissionGameweek: GameWeekData;
+    previousGameweek?: GameWeekData;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
     canSubmit: boolean;
     isSubmitting: boolean;
@@ -366,6 +376,7 @@ function SelectorReview({
     selectedManager,
     onBorrowingManagerChange,
     submissionGameweek,
+    previousGameweek,
     validationContext,
     canSubmit,
     isSubmitting,
@@ -465,10 +476,8 @@ function SelectorReview({
             ) : null}
 
             <ReviewDeadlineNotice
-                submissionGameweek={{
-                    gameweek: submissionGameweek.fplEvent.id,
-                    deadline: submissionGameweek.fplEvent.deadline_time,
-                }}
+                submissionGameweek={toSubmissionGameweek(submissionGameweek)}
+                previousGameweek={previousGameweek ? toSubmissionGameweek(previousGameweek) : undefined}
             />
 
             <div className={styles.section}>
@@ -494,6 +503,7 @@ export function TransferForm({
     availability,
     availablePlayers,
     submissionGameweek,
+    previousGameweek,
     divisionRosters,
     teamsByCode,
     validationContext,
@@ -754,6 +764,7 @@ export function TransferForm({
                             selectedManager={selectedManager}
                             onBorrowingManagerChange={handleBorrowingManagerChange}
                             submissionGameweek={submissionGameweek}
+                            previousGameweek={previousGameweek}
                             validationContext={validationContext}
                             canSubmit={canSubmit}
                             isSubmitting={fetcher.state === 'submitting'}
