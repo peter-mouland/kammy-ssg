@@ -1,6 +1,7 @@
 import type { TransferRuleContext } from '../../types/transfer-rule-types';
 import { validateGameweekTransferLimit } from './gameweek-transfer-limit-validator';
 import { validateLoanLimit } from './loan-limit-validator';
+import { newPlayerType } from './new-player-validator';
 import { ownershipLimit } from './ownership-validator';
 // import { validateMinimumGap } from './min-time-between-validator';
 import { validatePlayerAvailability } from './player-availability-validator';
@@ -20,6 +21,7 @@ export function getRuleValidationFunctions(validationContext: TransferRuleContex
         validateGameweekTransferLimit(validationContext), // no playerOut needed
         validateLoanLimit(validationContext),
         teamCountLimit(validationContext),
+        newPlayerType(validationContext),
     ];
     return validationResults;
 }

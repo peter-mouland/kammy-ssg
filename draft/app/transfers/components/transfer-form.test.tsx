@@ -341,3 +341,109 @@ describe('the player list once the weekly transfers are used up', () => {
         expect(within(palmerRow).getByText(/\/2 transfers/)).toBeDefined();
     });
 });
+
+/**
+ * A player new to the game goes to a draw (rules 3.7–3.9). Picking one switches the
+ * request to New Player Request and explains what that means; nothing is blocked.
+ */
+describe('a new player', () => {
+    afterEach(() => setNow(null));
+
+    const NEWBIE = {
+        ...player(30, 'Newbie', 'wa'),
+        team_code: 9,
+        draft: { position: 'wa', pointsTotal: 0, pointsBreakdown: {}, isHidden: false, isNew: true },
+    } as unknown as EnhancedPlayerData;
+    const players = [...AVAILABLE_PLAYERS, MARTINELLI, NEWBIE];
+    const andyRequest = {
+        id: 'andy-request',
+        managerId: 'andy',
+        transferType: 'NEW_PLAYER',
+        status: 'PENDING',
+        playerIn: NEWBIE,
+        playerOut: SAKA,
+        timestamp: new Date('2025-01-09T10:00:00Z'),
+        gameweekData: GW21,
+    };
+    /** Andy has asked for Newbie, so his pending request shows him in Andy's squad. */
+    const rosters = {
+        nick: { roster: { ...roster, wa_0: slot(MARTINELLI) } },
+        andy: { roster: { wa_0: slot(NEWBIE) } },
+    } as unknown as RosterByManagerId;
+    const newPlayerProps: Partial<TransferFormProps> = {
+        ...reviewProps,
+        availablePlayers: players,
+        teamsByCode: {
+            ...teamsByCode,
+            9: { id: 8, code: 9, name: 'Everton', short_name: 'EVE' },
+        } as unknown as TransferFormProps['teamsByCode'],
+        divisionRosters: rosters,
+        managerRoster: rosters.nick.roster,
+        validationContext: {
+            ...validationContext,
+            gameweekData: GW21,
+            divisionRosters: rosters as unknown as TransferRuleContext['divisionRosters'],
+            fplPlayersByCode: Object.fromEntries(players.map((p) => [p.code, p])),
+            allGameweekTransfers: [andyRequest] as unknown as TransferRuleContext['allGameweekTransfers'],
+        },
+    };
+
+    async function reviewNewbieForMartinelli() {
+        renderJourney('player-list-first', undefined, newPlayerProps);
+        await pickRow('Newbie');
+        fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+        await screen.findByRole('heading', { name: 'Select player to remove' });
+        await pickRow('Martinelli');
+        fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+        await screen.findByRole('heading', { name: 'Review and submit' });
+    }
+
+    it('shows as a draw in the player list, not as owned by a manager who has only asked for him', async () => {
+        setNow('2025-01-10T12:00:00Z');
+        renderJourney('player-list-first', undefined, newPlayerProps);
+
+        const row = (await screen.findByText(/Newbie/)).closest('tr') as HTMLElement;
+        // The name already carries a "New" chip; this is the Status cell, found by its tooltip.
+        expect(within(row).getByTitle('New to the game: request him to enter the draw').textContent).toBe('New');
+        expect(within(row).queryByText('Andy')).toBeNull();
+    });
+
+    it('switches the request to New Player Request when picked', async () => {
+        setNow('2025-01-10T12:00:00Z');
+        renderJourney('player-list-first', undefined, newPlayerProps);
+        await pickRow('Newbie');
+
+        expect(screen.getByText('New Player Request')).toBeDefined();
+    });
+
+    it('explains the draw on review, with how many others have asked for him, and raises no warnings', async () => {
+        setNow('2025-01-10T12:00:00Z');
+        await reviewNewbieForMartinelli();
+
+        const panel = screen.getByRole('note', { name: 'New player draw' });
+        expect(within(panel).getByText('This is a request for a draw')).toBeDefined();
+        expect(panel.textContent).toContain('1 other manager has asked for him.');
+        expect(panel.textContent).toContain("If you win, it uses one of next week's two transfers");
+        expect(screen.queryByText(/Owned by/)).toBeNull();
+        expect(deadlineLines()).toEqual([
+            'Deadline: Tue 14/01/2025 18:00 (UK time)',
+            'Requests submitted before this deadline go into the draw made shortly after it.',
+        ]);
+    });
+
+    it('warns, in red, if the type is changed back to a normal transfer', async () => {
+        setNow('2025-01-10T12:00:00Z');
+        renderJourney('player-list-first', undefined, newPlayerProps);
+        await pickRow('Newbie');
+        fireEvent.click(screen.getByText('New Player Request'));
+        fireEvent.click(await screen.findByText('Standard player transfer'));
+        fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+        await screen.findByRole('heading', { name: 'Select player to remove' });
+        await pickRow('Martinelli');
+        fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+        await screen.findByRole('heading', { name: 'Review and submit' });
+
+        expect(screen.getByText(/New players go to a draw — choose New Player Request/)).toBeDefined();
+        expect((screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement).disabled).toBe(false);
+    });
+});

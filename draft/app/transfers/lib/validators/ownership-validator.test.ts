@@ -1,16 +1,19 @@
 import { describe, expect, it } from 'vitest';
+import type { EnhancedPlayerData } from '../../../_shared/types/player-types';
 import {
     MGR1,
     MGR2,
     MGR2_CB1,
     makeContext,
     makeDivisionRosters,
+    makePlayer,
     makeRosterWithLoanOut,
     makeTransfer,
     PLAYER_CB1,
     PLAYER_FREE_CB,
     PLAYER_FREE_MID,
     PLAYER_MID1,
+    PLAYER_MID2,
 } from './fixtures';
 import { ownershipLimit } from './ownership-validator';
 
@@ -105,5 +108,68 @@ describe('ownershipLimit — LOAN_END', () => {
         });
         const result = ownershipLimit(makeContext(transfer));
         expect(result.passed).toBe(false);
+    });
+});
+
+describe('ownershipLimit — a new player in a draw (rules 3.7–3.9)', () => {
+    const NEW_MID = {
+        ...makePlayer({ id: 40, code: 400, web_name: 'NewSigning', position: 'mid', team_code: 30 }),
+        draft: { position: 'mid', pointsTotal: 0, pointsBreakdown: {}, isHidden: false, isNew: true },
+    } as EnhancedPlayerData;
+
+    /** Pending requests are applied to rosters, so a requester already "holds" the player. */
+    const rostersWithRequestBy = (managerId: string) => {
+        const rosters = makeDivisionRosters();
+        const roster = rosters[managerId].roster;
+        roster.mid_0 = { ...roster.mid_0, player: { ...roster.mid_0.player, playerCode: NEW_MID.code } };
+        return rosters;
+    };
+    const requestBy = (managerId: string, status: 'PENDING' | 'APPROVED') =>
+        makeTransfer({
+            id: `request-${managerId}`,
+            managerId,
+            status,
+            transferType: 'NEW_PLAYER',
+            playerIn: NEW_MID,
+            playerOut: PLAYER_MID1,
+            timestamp: new Date('2024-01-14T10:00:00Z'),
+        });
+
+    it("does not treat another manager's pending request as owning him: it is an entry in the same draw", () => {
+        const transfer = makeTransfer({ transferType: 'NEW_PLAYER', playerIn: NEW_MID, playerOut: PLAYER_MID1 });
+        const result = ownershipLimit(
+            makeContext(transfer, {
+                divisionRosters: rostersWithRequestBy(MGR2),
+                allGameweekTransfers: [requestBy(MGR2, 'PENDING')],
+            }),
+        );
+
+        expect(result.passed).toBe(true);
+    });
+
+    it('treats him as owned once a request is approved: the draw has been made', () => {
+        const transfer = makeTransfer({ transferType: 'NEW_PLAYER', playerIn: NEW_MID, playerOut: PLAYER_MID1 });
+        const result = ownershipLimit(
+            makeContext(transfer, {
+                divisionRosters: rostersWithRequestBy(MGR2),
+                allGameweekTransfers: [requestBy(MGR2, 'APPROVED')],
+            }),
+        );
+
+        expect(result.passed).toBe(false);
+        expect(result.message).toBe(`Owned by ${MGR2}`);
+    });
+
+    it('says so when the manager has already entered the draw for him', () => {
+        const transfer = makeTransfer({ transferType: 'NEW_PLAYER', playerIn: NEW_MID, playerOut: PLAYER_MID2 });
+        const result = ownershipLimit(
+            makeContext(transfer, {
+                divisionRosters: rostersWithRequestBy(MGR1),
+                allGameweekTransfers: [requestBy(MGR1, 'PENDING')],
+            }),
+        );
+
+        expect(result.passed).toBe(false);
+        expect(result.message).toBe("You've already entered the draw for this player");
     });
 });

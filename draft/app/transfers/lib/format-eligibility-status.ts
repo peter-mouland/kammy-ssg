@@ -55,6 +55,23 @@ export function formatEligibilityStatus({
         };
     }
 
+    // Rule 3.9: over the club limit is allowed for a draw entry, so this is only ever amber.
+    if (normalizedMessage.startsWith('More than 2 from this club')) {
+        return { text: 'Max 2 per club', icon: '⚠️', severity: 'warning', fullMessage: normalizedMessage };
+    }
+
+    if (normalizedMessage === 'New players go to a draw — choose New Player Request') {
+        return { text: 'Draw only', icon: '🎟️', severity: 'blocking', fullMessage: normalizedMessage };
+    }
+
+    if (normalizedMessage === 'Not a new player — use Transfer') {
+        return { text: 'Not new', icon: '🚫', severity: 'blocking', fullMessage: normalizedMessage };
+    }
+
+    if (normalizedMessage === "You've already entered the draw for this player") {
+        return { text: 'Requested', icon: '🎟️', severity: 'blocking', fullMessage: normalizedMessage };
+    }
+
     const ownedByMatch = normalizedMessage.match(/^Owned by (.+)$/);
     if (ownedByMatch) {
         const ownerName = getManagerDisplayName(managers, ownedByMatch[1]);

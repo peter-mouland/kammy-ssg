@@ -115,4 +115,38 @@ describe('teamCountLimit', () => {
         expect(result.passed).toBe(false);
         expect(result.severity).toBe('warning');
     });
+    it('only warns for a New Player Request, which rule 3.9 allows over the club limit', () => {
+        const sameTeamPlayer = makePlayer({
+            id: 30,
+            code: 300,
+            web_name: 'SameTeam',
+            position: 'fb',
+            team_code: PLAYER_CB1.team_code,
+        });
+        const roster = makeStandardRoster();
+        roster.fb_0 = { ...roster.fb_0, player: { ...roster.fb_0.player, playerCode: sameTeamPlayer.code } };
+        const newSigning = makePlayer({
+            id: 32,
+            code: 302,
+            web_name: 'NewSigning',
+            position: 'mid',
+            team_code: PLAYER_CB1.team_code,
+        });
+        const transfer = makeTransfer({ transferType: 'NEW_PLAYER', playerIn: newSigning, playerOut: PLAYER_MID1 });
+        const fplPlayersByCode = {
+            ...makeContext(transfer).fplPlayersByCode,
+            [sameTeamPlayer.code]: sameTeamPlayer,
+            [newSigning.code]: newSigning,
+        };
+
+        const result = teamCountLimit(
+            makeContext(transfer, { divisionRosters: makeDivisionRosters(roster), fplPlayersByCode }),
+        );
+
+        expect(result.passed).toBe(false);
+        expect(result.severity).toBe('warning');
+        expect(result.message).toBe(
+            'More than 2 from this club — if you win, get back to 2 by the end of that gameweek or you forfeit him',
+        );
+    });
 });

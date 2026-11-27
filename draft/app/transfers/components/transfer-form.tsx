@@ -23,6 +23,7 @@ import type { RosterByManagerId } from '../../teams';
 import { getGameweekLimitStatus } from '../lib/get-gameweek-limit-status';
 import { getPlayerOwnership } from '../lib/get-player-ownership';
 import { getTransferJourneyIssues } from '../lib/get-transfer-journey-issues';
+import { countOtherDrawRequests, typeForPlayerIn } from '../lib/new-player-draw';
 import {
     type AvailabilityByCode,
     type AvailabilitySnapshot,
@@ -34,6 +35,7 @@ import type { OwnedPlayersByCode, PlayerSelectionState, TransferFormValidation }
 import type { TransferRuleContext } from '../types/transfer-rule-types';
 import type { TransferType } from '../types/transfer-types';
 import { LoanInfoPanel } from './loan-info-panel';
+import { NewPlayerDrawPanel } from './new-player-draw-panel';
 import { PlayerDetailModal } from './player-detail-modal';
 import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
@@ -383,6 +385,7 @@ function SelectorReview({
 }: SelectorReviewProps) {
     const playerOutFpl = playerSelection.playerOut ? playersByCode[playerSelection.playerOut.playerCode] : null;
     const playerIn = playerSelection.playerIn;
+    const isDrawRequest = transferType === 'NEW_PLAYER' && playerIn?.draft?.isNew === true;
 
     const journeyIssues =
         playerSelection.playerOut && playerIn && playerOutFpl
@@ -475,9 +478,20 @@ function SelectorReview({
                 </div>
             ) : null}
 
+            {isDrawRequest && playerIn ? (
+                <NewPlayerDrawPanel
+                    otherRequests={countOtherDrawRequests(
+                        validationContext.allGameweekTransfers,
+                        playerIn.code,
+                        selectedManager,
+                    )}
+                />
+            ) : null}
+
             <ReviewDeadlineNotice
                 submissionGameweek={toSubmissionGameweek(submissionGameweek)}
                 previousGameweek={previousGameweek ? toSubmissionGameweek(previousGameweek) : undefined}
+                isDrawRequest={isDrawRequest}
             />
 
             <div className={styles.section}>
@@ -606,10 +620,13 @@ export function TransferForm({
             ...playerSelection,
             playerIn,
         };
+        // A new player goes to a draw, so picking one makes this a New Player Request.
+        const nextTransferType = playerIn ? typeForPlayerIn(playerIn, transferType) : transferType;
 
         setPlayerSelection(nextPlayerSelection);
+        setTransferType(nextTransferType);
         setLoanSelection(
-            getLoanSelectionForTransfer(transferType, nextPlayerSelection, ownedPlayersByCode, selectedManager),
+            getLoanSelectionForTransfer(nextTransferType, nextPlayerSelection, ownedPlayersByCode, selectedManager),
         );
     };
 

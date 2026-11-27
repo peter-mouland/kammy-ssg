@@ -58,6 +58,16 @@ export function getPlayerStatusDisplay(
             };
         }
 
+        const { transfer } = validationContext;
+        if (transfer.transferType === 'NEW_PLAYER' && transfer.playerIn?.draft?.isNew) {
+            return {
+                isEligible: true,
+                reason: 'New',
+                icon: '🎟️',
+                fullMessage: 'New to the game: request him to enter the draw',
+            };
+        }
+
         return {
             isEligible: true,
             reason: 'Free Agent',

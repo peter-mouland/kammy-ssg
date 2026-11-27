@@ -17,9 +17,12 @@ const TICK_MS = 1000;
 export function ReviewDeadlineNotice({
     submissionGameweek,
     previousGameweek,
+    isDrawRequest = false,
 }: {
     submissionGameweek: SubmissionGameweek;
     previousGameweek?: SubmissionGameweek;
+    /** A new-player request goes into a draw after the deadline; it does not start scoring then. */
+    isDrawRequest?: boolean;
 }) {
     const [at, setAt] = useState(now);
 
@@ -52,10 +55,16 @@ export function ReviewDeadlineNotice({
                 </strong>{' '}
                 (UK time)
             </span>
-            <span className={styles.line}>
-                If approved, transfers submitted before this deadline start scoring in{' '}
-                <strong className={styles.deadline}>GW{deadline.gameweek}</strong>.
-            </span>
+            {isDrawRequest ? (
+                <span className={styles.line}>
+                    Requests submitted before this deadline go into the draw made shortly after it.
+                </span>
+            ) : (
+                <span className={styles.line}>
+                    If approved, transfers submitted before this deadline start scoring in{' '}
+                    <strong className={styles.deadline}>GW{deadline.gameweek}</strong>.
+                </span>
+            )}
             {deadline.isClosingSoon ? (
                 <>
                     <span className={styles.countdown}>{formatRemaining(deadline.remainingMs)}</span>
