@@ -1,5 +1,6 @@
 /* Location: app/transfers/server/transfers.server.ts */
 
+import { now } from '../../_shared/lib/clock';
 import { fplApiCache } from '../../_shared/lib/fpl/api-cache';
 import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readPlayers } from '../../_shared/lib/sheets/players';
@@ -61,7 +62,7 @@ export async function getTransfersPageData({
         // Calculate transfer deadline
         const selectedGameweekData = events.find((gw) => gw.fplEvent.id === selectedGameweek) || gameweeks[0];
         const transferDeadline = new Date(selectedGameweekData!.fplEvent.deadline_time);
-        const isBeforeDeadline = new Date() < transferDeadline;
+        const isBeforeDeadline = now() < transferDeadline;
         const availableGameweeks = Array.from({ length: currentGameweek || 1 }, (_, i) => i + 1);
 
         const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {

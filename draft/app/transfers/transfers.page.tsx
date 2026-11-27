@@ -89,7 +89,7 @@ export const TransfersPageComp = (data: TransfersPageData) => {
                     upcomingFixturesByTeamCode={data.upcomingFixturesByTeamCode}
                     availability={data.availability}
                     availablePlayers={data.availablePlayers}
-                    isBeforeDeadline={data.isBeforeDeadline}
+                    submissionGameweek={data.currentGameweekData}
                     divisionRosters={data.divisionRosters}
                     teamsByCode={data.teamsByCode}
                     validationContext={data.validationContext}

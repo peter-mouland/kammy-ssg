@@ -74,7 +74,7 @@ Verify once on any flow, then spot-check on others:
 | Step | Action | Expected |
 |------|--------|----------|
 | 1 | Pick owned player as player in | Ineligible styling / blocking message on review |
-| 2 | Submit after deadline closed | “Missed the Deadline” on review; submit blocked |
+| 2 | Leave review open across the deadline | Review line switches to “Deadline for GW n … will count in the following week's transfer window”; in the last 5 minutes it counts down in red with the device-clock small print; submit still allowed |
 
 ---
 

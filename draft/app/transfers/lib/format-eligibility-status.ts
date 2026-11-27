@@ -57,11 +57,12 @@ export function formatEligibilityStatus({
 
     const ownedByMatch = normalizedMessage.match(/^Owned by (.+)$/);
     if (ownedByMatch) {
+        const ownerName = getManagerDisplayName(managers, ownedByMatch[1]);
         return {
-            text: getManagerDisplayName(managers, ownedByMatch[1]),
+            text: ownerName,
             icon: '👤',
             severity: 'blocking',
-            fullMessage: normalizedMessage,
+            fullMessage: `Owned by ${ownerName} — this player isn't available`,
         };
     }
 
