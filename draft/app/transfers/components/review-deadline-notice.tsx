@@ -10,10 +10,17 @@ const TICK_MS = 1000;
 
 /**
  * The deadline on the review step: which gameweek an approved transfer starts scoring in,
- * a countdown in the last five minutes, and what happens if the deadline passes while the
- * manager is still here. It never stops them submitting.
+ * a countdown in the last five minutes, and what happens once the deadline has passed,
+ * whether the manager was here when it did or arrived in the five minutes after. It never
+ * stops them submitting.
  */
-export function ReviewDeadlineNotice({ submissionGameweek }: { submissionGameweek: SubmissionGameweek }) {
+export function ReviewDeadlineNotice({
+    submissionGameweek,
+    previousGameweek,
+}: {
+    submissionGameweek: SubmissionGameweek;
+    previousGameweek?: SubmissionGameweek;
+}) {
     const [at, setAt] = useState(now);
 
     useEffect(() => {
@@ -21,25 +28,34 @@ export function ReviewDeadlineNotice({ submissionGameweek }: { submissionGamewee
         return () => clearInterval(timer);
     }, []);
 
-    const deadline = describeReviewDeadline(submissionGameweek, at);
+    const deadline = describeReviewDeadline({ submission: submissionGameweek, previous: previousGameweek }, at);
 
     if (deadline.state === 'passed') {
         return (
             <div role="note" aria-label="Deadline" className={`${styles.notice} ${styles.passed}`}>
-                Deadline for GW{deadline.gameweek}: {deadline.deadlineLabel}. Changes submitted after the deadline will
-                count in the following week's transfer window.
+                <span className={styles.line}>
+                    Deadline for GW{deadline.gameweek}: <strong>{deadline.deadlineLabel}</strong>
+                </span>
+                <span className={styles.line}>
+                    Changes submitted after the deadline will count in the following week's transfer window.
+                </span>
             </div>
         );
     }
 
     return (
         <div role="note" aria-label="Deadline" className={styles.notice}>
-            Deadline:{' '}
-            <strong className={deadline.isClosingSoon ? styles.closingSoon : styles.deadline}>
-                {deadline.deadlineLabel}
-            </strong>{' '}
-            (UK time). If approved, transfers submitted before this deadline start scoring in{' '}
-            <strong className={styles.deadline}>GW{deadline.gameweek}</strong>.
+            <span className={styles.line}>
+                Deadline:{' '}
+                <strong className={deadline.isClosingSoon ? styles.closingSoon : styles.deadline}>
+                    {deadline.deadlineLabel}
+                </strong>{' '}
+                (UK time)
+            </span>
+            <span className={styles.line}>
+                If approved, transfers submitted before this deadline start scoring in{' '}
+                <strong className={styles.deadline}>GW{deadline.gameweek}</strong>.
+            </span>
             {deadline.isClosingSoon ? (
                 <>
                     <span className={styles.countdown}>{formatRemaining(deadline.remainingMs)}</span>

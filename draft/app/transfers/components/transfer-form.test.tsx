@@ -199,6 +199,7 @@ const MANAGERS = [
     { userId: 'andy', userName: 'Andy', divisionId: 'premierLeague' },
 ] as unknown as TransferFormProps['managers'];
 const GW21 = { fplEvent: { id: 21, deadline_time: '2025-01-14T18:00:00Z' } } as unknown as GameWeekData;
+const GW22 = { fplEvent: { id: 22, deadline_time: '2025-01-18T11:00:00Z' } } as unknown as GameWeekData;
 
 const reviewProps: Partial<TransferFormProps> = {
     managers: MANAGERS,
@@ -214,6 +215,9 @@ const reviewProps: Partial<TransferFormProps> = {
 };
 
 const deadlineNotice = () => screen.getByRole('note', { name: 'Deadline' }).textContent;
+/** The notice as a manager reads it, one line at a time. */
+const deadlineLines = () =>
+    Array.from(screen.getByRole('note', { name: 'Deadline' }).children, (line) => line.textContent);
 
 async function reviewSakaForMartinelli(overrides: Partial<TransferFormProps> = {}) {
     renderJourney('player-list-first', undefined, { ...reviewProps, ...overrides });
@@ -240,9 +244,10 @@ describe('the review step', () => {
         setNow('2025-01-10T12:00:00Z');
         await reviewSakaForMartinelli();
 
-        expect(deadlineNotice()).toBe(
-            'Deadline: Tue 14/01/2025 18:00 (UK time). If approved, transfers submitted before this deadline start scoring in GW21.',
-        );
+        expect(deadlineLines()).toEqual([
+            'Deadline: Tue 14/01/2025 18:00 (UK time)',
+            'If approved, transfers submitted before this deadline start scoring in GW21.',
+        ]);
         expect(screen.queryByText(/left$/)).toBeNull();
     });
 
@@ -265,12 +270,33 @@ describe('the review step', () => {
 
         await waitFor(
             () =>
-                expect(deadlineNotice()).toBe(
-                    "Deadline for GW21: Tue 14/01/2025 18:00. Changes submitted after the deadline will count in the following week's transfer window.",
-                ),
+                expect(deadlineLines()).toEqual([
+                    'Deadline for GW21: Tue 14/01/2025 18:00',
+                    "Changes submitted after the deadline will count in the following week's transfer window.",
+                ]),
             { timeout: 2500 },
         );
         expect((screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement).disabled).toBe(false);
+    });
+
+    it('says the deadline has just passed when the review is reached within five minutes of it', async () => {
+        setNow('2025-01-14T18:02:00Z');
+        await reviewSakaForMartinelli({ submissionGameweek: GW22, previousGameweek: GW21 });
+
+        expect(deadlineLines()).toEqual([
+            'Deadline for GW21: Tue 14/01/2025 18:00',
+            "Changes submitted after the deadline will count in the following week's transfer window.",
+        ]);
+    });
+
+    it('shows the next deadline once five minutes have gone', async () => {
+        setNow('2025-01-14T18:06:00Z');
+        await reviewSakaForMartinelli({ submissionGameweek: GW22, previousGameweek: GW21 });
+
+        expect(deadlineLines()).toEqual([
+            'Deadline: Sat 18/01/2025 11:00 (UK time)',
+            'If approved, transfers submitted before this deadline start scoring in GW22.',
+        ]);
     });
 
     it('no longer shows the old "Missed the Deadline" warning', async () => {

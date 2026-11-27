@@ -6,13 +6,17 @@
  * A transfer counts towards the gameweek whose window contains its submission time, and
  * the server stamps that time, not the form. So the review step states the deadline of the
  * gameweek it was opened for, counts down in the last few minutes, and says plainly once
- * that deadline has gone: a request sent then lands in the following week's window.
+ * that deadline has gone: a request sent then lands in the following week's window. It
+ * says so for five minutes after a deadline even if the review was reached afterwards.
  *
  * Nothing here blocks a submission. Rules are warnings for now; the panel decides.
  */
 
 /** How close to the deadline the countdown appears. */
 export const CLOSING_SOON_MS = 5 * 60 * 1000;
+
+/** How long after a deadline the review step still says it has just passed. */
+export const JUST_PASSED_MS = 5 * 60 * 1000;
 
 export interface SubmissionGameweek {
     gameweek: number;
@@ -63,12 +67,31 @@ export function formatRemaining(ms: number): string {
     return minutes > 0 ? `${minutes}m ${seconds}s left` : `${seconds}s left`;
 }
 
-export function describeReviewDeadline({ gameweek, deadline }: SubmissionGameweek, at: Date): ReviewDeadline {
+export function describeReviewDeadline(
+    {
+        submission,
+        previous,
+    }: {
+        /** The gameweek open when the page loaded: the one a request sent then counts towards. */
+        submission: SubmissionGameweek;
+        /** The gameweek before it, whose deadline has already gone. None before GW1. */
+        previous?: SubmissionGameweek;
+    },
+    at: Date,
+): ReviewDeadline {
+    const { gameweek, deadline } = submission;
     const deadlineLabel = formatUkDeadline(deadline);
     const remainingMs = new Date(deadline).getTime() - at.getTime();
 
+    // The page was left open across the deadline.
     if (remainingMs <= 0) {
         return { state: 'passed', gameweek, deadlineLabel };
+    }
+
+    // The page was opened just after a deadline: say it has gone before offering the next.
+    const sincePreviousMs = previous ? at.getTime() - new Date(previous.deadline).getTime() : Number.POSITIVE_INFINITY;
+    if (previous && sincePreviousMs >= 0 && sincePreviousMs <= JUST_PASSED_MS) {
+        return { state: 'passed', gameweek: previous.gameweek, deadlineLabel: formatUkDeadline(previous.deadline) };
     }
 
     return {

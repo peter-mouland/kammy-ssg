@@ -207,3 +207,18 @@ describe("FPL's availability, streamed after the page", () => {
         });
     });
 });
+
+describe('the deadlines the review step states', () => {
+    it('are the open gameweek and the one before it, whose deadline has just gone', async () => {
+        const pageData = await load();
+
+        expect(pageData.currentGameweekData.fplEvent.id).toBe(4);
+        expect(pageData.previousGameweekData?.fplEvent.id).toBe(3);
+    });
+
+    it('do not follow ?gameweek=, since a transfer sent now counts towards the open one', async () => {
+        const pageData = await load('&gameweek=2');
+
+        expect(pageData.previousGameweekData?.fplEvent.id).toBe(3);
+    });
+});

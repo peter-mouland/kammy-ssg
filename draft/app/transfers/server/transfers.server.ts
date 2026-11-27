@@ -64,6 +64,8 @@ export async function getTransfersPageData({
         const transferDeadline = new Date(selectedGameweekData!.fplEvent.deadline_time);
         const isBeforeDeadline = now() < transferDeadline;
         const availableGameweeks = Array.from({ length: currentGameweek || 1 }, (_, i) => i + 1);
+        // The deadline that has just gone, so review can say so for a few minutes after it.
+        const previousGameweekData = events.find((gw) => gw.fplEvent.id === currentGameweek - 1);
 
         const sheetsPlayersByCode = sheetsPlayers.reduce((acc: Record<string, PlayersSheetData>, player) => {
             acc[player.code] = player;
@@ -111,6 +113,7 @@ export async function getTransfersPageData({
             divisions,
             managers: divisionManagers,
             currentGameweekData,
+            previousGameweekData,
             currentGameweek,
             availableGameweeks,
             selectedDivision,
