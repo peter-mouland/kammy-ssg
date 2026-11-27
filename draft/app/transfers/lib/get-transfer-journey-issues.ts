@@ -19,26 +19,15 @@ export function getTransferJourneyIssues({
     transfer,
     managers,
     managerId,
-    isBeforeDeadline,
     includeGameweekLimit = true,
 }: {
     validationContext: Omit<TransferRuleContext, 'transfer'>;
     transfer: ProcessedTransfer;
     managers: UserTeamsSheetData[];
     managerId: ManagerId;
-    isBeforeDeadline: boolean;
     includeGameweekLimit?: boolean;
 }): TransferJourneyIssue[] {
     const issues: TransferJourneyIssue[] = [];
-
-    if (!isBeforeDeadline) {
-        issues.push({
-            text: 'Missed the Deadline',
-            icon: '🚫',
-            severity: 'blocking',
-            fullMessage: 'Missed the Deadline',
-        });
-    }
 
     if (includeGameweekLimit) {
         const gameweekLimit = getGameweekLimitStatus(validationContext, managerId, transfer.transferType);

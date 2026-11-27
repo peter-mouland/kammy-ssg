@@ -36,6 +36,7 @@ import { LoanInfoPanel } from './loan-info-panel';
 import { PlayerDetailModal } from './player-detail-modal';
 import { PlayerInSelector } from './player-in-selector';
 import { PlayerOutSelector } from './player-out-selector';
+import { ReviewDeadlineNotice } from './review-deadline-notice';
 import styles from './transfer-form.module.css';
 import { TransferTypeSelector } from './transfer-type-selector';
 import { usePlayerModal } from './use-player-modal';
@@ -70,7 +71,8 @@ interface TransferFormProps {
     /** FPL's injury and suspension status, streamed by the loader after the page. */
     availability?: Promise<AvailabilitySnapshot | null>;
     availablePlayers: EnhancedPlayerData[];
-    isBeforeDeadline: boolean;
+    /** The gameweek still open for transfers: the one a request sent now counts towards. */
+    submissionGameweek: GameWeekData;
     divisionRosters: RosterByManagerId;
     teamsByCode: Record<FplTeam['code'], FplTeam>;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
@@ -344,7 +346,7 @@ interface SelectorReviewProps {
     divisionsManagers: UserTeamsSheetData[];
     selectedManager: ManagerId;
     onBorrowingManagerChange: (managerId: ManagerId) => void;
-    isBeforeDeadline: boolean;
+    submissionGameweek: GameWeekData;
     validationContext: Omit<TransferRuleContext, 'transfer'>;
     canSubmit: boolean;
     isSubmitting: boolean;
@@ -363,7 +365,7 @@ function SelectorReview({
     divisionsManagers,
     selectedManager,
     onBorrowingManagerChange,
-    isBeforeDeadline,
+    submissionGameweek,
     validationContext,
     canSubmit,
     isSubmitting,
@@ -390,7 +392,6 @@ function SelectorReview({
                   },
                   managers: divisionsManagers,
                   managerId: selectedManager,
-                  isBeforeDeadline,
                   includeGameweekLimit: true,
               })
             : [];
@@ -457,11 +458,18 @@ function SelectorReview({
                             className={issue.severity === 'warning' ? styles.warningIssue : styles.blockingIssue}
                             title={issue.fullMessage}
                         >
-                            {issue.icon} {issue.text}
+                            {issue.icon} {issue.fullMessage}
                         </div>
                     ))}
                 </div>
             ) : null}
+
+            <ReviewDeadlineNotice
+                submissionGameweek={{
+                    gameweek: submissionGameweek.fplEvent.id,
+                    deadline: submissionGameweek.fplEvent.deadline_time,
+                }}
+            />
 
             <div className={styles.section}>
                 <button
@@ -485,7 +493,7 @@ export function TransferForm({
     upcomingFixturesByTeamCode,
     availability,
     availablePlayers,
-    isBeforeDeadline,
+    submissionGameweek,
     divisionRosters,
     teamsByCode,
     validationContext,
@@ -745,7 +753,7 @@ export function TransferForm({
                             divisionsManagers={divisionsManagers}
                             selectedManager={selectedManager}
                             onBorrowingManagerChange={handleBorrowingManagerChange}
-                            isBeforeDeadline={isBeforeDeadline}
+                            submissionGameweek={submissionGameweek}
                             validationContext={validationContext}
                             canSubmit={canSubmit}
                             isSubmitting={fetcher.state === 'submitting'}
