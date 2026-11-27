@@ -24,6 +24,15 @@
     color: var(--color-red-600);
 }
 
+/* Its own line, so "4m 32s left" never breaks across two. */
+.countdown {
+    display: block;
+    margin-top: var(--spacing-2);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-red-600);
+    white-space: nowrap;
+}
+
 .smallPrint {
     display: block;
     margin-top: var(--spacing-1);
