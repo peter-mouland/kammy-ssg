@@ -8,6 +8,7 @@ import { resetInMemoryFirestore } from '../_shared/lib/firestore-cache/firestore
 import { googleAuthHandler, sheetValuesHandler } from '../_shared/test/google-sheets-msw';
 import { createDivisionTeamsDocument } from '../scoring/index.server';
 import type { DivisionTeamsDocument, RosterByManagerId } from '../teams';
+import { getAllLeagueStandingsData } from './index.server';
 import * as route from './league-standings.route';
 
 /**
@@ -168,5 +169,44 @@ describe('without a usable range', () => {
         const pageData = await load('?from=2&to=4');
 
         expect(pageData.selectedRange).toBeNull();
+    });
+});
+
+describe('when the gameweek being scored has no standings yet', () => {
+    // GW3's deadline has passed (so it is the gameweek being scored) but its matches
+    // have not been scored: there is no GW3 division document. GW2 is the latest
+    // gameweek with standings. This is the state the live site sat in for GW12.
+    const seedOnlyScoredWeeks = async () => {
+        resetInMemoryFirestore();
+        await seedWeek(1, { ann: { gk: 50, ca: 50 }, bob: { gk: 1, ca: 1 } });
+        await seedWeek(2, { ann: { gk: 2, ca: 3 }, bob: { gk: 6, ca: 4 } });
+    };
+
+    it('defaults the league page to the latest scored gameweek instead of an empty table', async () => {
+        await seedOnlyScoredWeeks();
+
+        const pageData = await load();
+
+        expect(pageData.selectedGameweek).toBe(2);
+        expect(Object.fromEntries(totalsByManager(pageData))).toEqual({ Ann: 5, Bob: 10 });
+    });
+
+    it('keeps an explicit selection of the unscored gameweek empty', async () => {
+        await seedOnlyScoredWeeks();
+
+        const pageData = await load('?gameweek=3');
+
+        expect(pageData.selectedGameweek).toBe(3);
+        expect(pageData.standingsData.premierLeague).toEqual([]);
+    });
+
+    it('defaults the homepage standings to the latest scored gameweek too', async () => {
+        await seedOnlyScoredWeeks();
+
+        const pageData = await getAllLeagueStandingsData();
+
+        expect(pageData.selectedGameweek).toBe(2);
+        expect(pageData.currentGameweek).toBe(2);
+        expect(pageData.standingsData.premierLeague?.map((team) => team.userName)).toEqual(['Ann', 'Bob']);
     });
 });
