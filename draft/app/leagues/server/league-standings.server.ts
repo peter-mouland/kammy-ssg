@@ -16,12 +16,42 @@ import type {
     PositionRankChange,
 } from '../types/league-standings-types';
 
+/**
+ * The latest gameweek at or before `fromGameweek` that actually has standings for a
+ * division, or null when none of them do.
+ *
+ * The gameweek being scored is picked by deadline, so it rolls over the moment a
+ * deadline passes, hours or days before that gameweek's matches are played and its
+ * `division-teams` document exists. Defaulting a page to it in that window renders
+ * an empty table even though the previous gameweek's standings are right there.
+ * This finds the gameweek a default view should land on instead. Explicitly chosen
+ * gameweeks do not come through here: asking for the unscored week stays empty.
+ */
+export async function findLatestScoredGameweek(divisionId: DivisionId, fromGameweek: number): Promise<number | null> {
+    try {
+        for (let gameweek = fromGameweek; gameweek >= 1; gameweek--) {
+            const divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
+            if (divisionDoc && Object.keys(divisionDoc.teams ?? {}).length > 0) return gameweek;
+        }
+    } catch (error) {
+        console.error(`Failed to find scored gameweeks for ${divisionId} up to GW${fromGameweek}:`, error);
+    }
+    return null;
+}
+
 export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandingsLoaderData> {
     // Import services dynamically to keep server code on server
     const { fplApiCache } = await import('../../_shared/lib/fpl/api-cache');
 
     const divisions = await readDivisions();
-    const currentGameweek = await fplApiCache.getScoringGameweek();
+    const scoringGameweek = await fplApiCache.getScoringGameweek();
+    // One gameweek for the whole page, so the heading names the week every table
+    // shows: the latest week every division with standings has reached.
+    const latestByDivision = await Promise.all(
+        divisions.map((division) => findLatestScoredGameweek(division.id, scoringGameweek)),
+    );
+    const scoredGameweeks = latestByDivision.filter((gameweek): gameweek is number => gameweek !== null);
+    const currentGameweek = scoredGameweeks.length > 0 ? Math.min(...scoredGameweeks) : scoringGameweek;
     const availableGameweeks = Array.from({ length: currentGameweek }, (_, i) => i + 1);
 
     // Get data for specific division with position rank changes

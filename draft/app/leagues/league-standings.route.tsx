@@ -48,11 +48,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const selectedDivision = (params.divisionId || currentUser?.divisionId) as DivisionId;
         const selectedRange = parseGameweekRange(url.searchParams, currentGameweek);
         // A range shows its last week in the selector, and links to teams as they stood then.
-        const selectedGameweek =
-            selectedRange?.to ?? Number.parseInt(url.searchParams.get('gameweek') || String(currentGameweek), 10);
+        const requestedGameweek = url.searchParams.get('gameweek');
+        let selectedGameweek = selectedRange?.to ?? Number.parseInt(requestedGameweek || String(currentGameweek), 10);
 
         // Dynamic import to keep server code on server
-        const { getEnhancedLeagueStandingsData } = await import('./server/league-standings.server');
+        const { findLatestScoredGameweek, getEnhancedLeagueStandingsData } = await import(
+            './server/league-standings.server'
+        );
+
+        // The default view lands on the latest gameweek with standings. The gameweek
+        // being scored is chosen by deadline and has no standings until its matches
+        // are scored, so defaulting to it would show an empty table in that window.
+        // An explicitly chosen gameweek is left alone, unscored or not.
+        if (!selectedRange && !requestedGameweek && selectedDivision) {
+            selectedGameweek = (await findLatestScoredGameweek(selectedDivision, currentGameweek)) ?? selectedGameweek;
+        }
         const loaderData = await getEnhancedLeagueStandingsData({
             currentGameweekData,
             selectedDivision,
