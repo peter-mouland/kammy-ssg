@@ -90,6 +90,7 @@ export const TransfersPageComp = (data: TransfersPageData) => {
                     availability={data.availability}
                     availablePlayers={data.availablePlayers}
                     submissionGameweek={data.currentGameweekData}
+                    previousGameweek={data.previousGameweekData}
                     divisionRosters={data.divisionRosters}
                     teamsByCode={data.teamsByCode}
                     validationContext={data.validationContext}
