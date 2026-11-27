@@ -38,16 +38,15 @@ export function ReviewDeadlineNotice({ submissionGameweek }: { submissionGamewee
             <strong className={deadline.isClosingSoon ? styles.closingSoon : styles.deadline}>
                 {deadline.deadlineLabel}
             </strong>{' '}
-            (UK time)
-            {deadline.isClosingSoon ? (
-                <span className={styles.closingSoon}> · {formatRemaining(deadline.remainingMs)}</span>
-            ) : null}
-            . If approved, transfers submitted before this deadline start scoring in{' '}
+            (UK time). If approved, transfers submitted before this deadline start scoring in{' '}
             <strong className={styles.deadline}>GW{deadline.gameweek}</strong>.
             {deadline.isClosingSoon ? (
-                <small className={styles.smallPrint}>
-                    Timer runs from your device clock, so may differ from the true deadline countdown.
-                </small>
+                <>
+                    <span className={styles.countdown}>{formatRemaining(deadline.remainingMs)}</span>
+                    <small className={styles.smallPrint}>
+                        Timer runs from your device clock, so may differ from the true deadline countdown.
+                    </small>
+                </>
             ) : null}
         </div>
     );
