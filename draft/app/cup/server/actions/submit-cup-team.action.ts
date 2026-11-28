@@ -2,7 +2,7 @@
 
 import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import type { DivisionId } from '../../../_shared/types/league-types';
-import { getTeamsForGameweek } from '../../../scoring/index.server';
+import { getLatestTeamsForGameweek } from '../../../scoring/index.server';
 import { getRoundForGameweek } from '../../lib/cup-config';
 import { isSubmissionOpen } from '../../lib/cup-deadlines';
 import { getCupSquad } from '../../lib/cup-squad';
@@ -61,7 +61,10 @@ export async function handleCupSubmission(input: {
         return { success: false, error: 'The submission window for this round has closed.' };
     }
 
-    const team = await getTeamsForGameweek(division, manager, gameweek);
+    // The picker fell back to the manager's most recent squad (the round's own
+    // gameweek has no document before its deadline), so validation must read
+    // the same squad or every pick from it is refused.
+    const team = await getLatestTeamsForGameweek(division, manager, gameweek);
     if (!team) {
         return { success: false, error: 'Could not find your squad for this gameweek.' };
     }

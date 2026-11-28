@@ -85,6 +85,61 @@ function StageMatchups({ data }: { data: CupPageData }) {
     );
 }
 
+function LeagueTables({ data }: { data: CupPageData }) {
+    if (data.leagueTables.length === 0) {
+        return (
+            <p className={styles.notice}>
+                The leagues haven't been generated yet — an admin can draw them from the cup admin page. Everyone is in
+                one table until then.
+            </p>
+        );
+    }
+    return (
+        <>
+            {data.leagueTables.map((league) => (
+                <section key={league.name} className={styles.qualifiers}>
+                    <h2 className={styles.sectionTitle}>{league.name}</h2>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th className={styles.headerCell}>Pos</th>
+                                <th className={styles.headerCell}>Manager</th>
+                                <th className={styles.headerCell}>Overall</th>
+                                <th className={styles.headerCell}>Pts</th>
+                                <th className={styles.headerCell}>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {league.entries.map((entry, index) => (
+                                <tr key={entry.manager}>
+                                    <td className={styles.cell}>{index + 1}</td>
+                                    <td className={styles.cell}>
+                                        <span className={styles.managerName}>{entry.userName}</span>
+                                        <span className={styles.teamName}>{entry.teamName}</span>
+                                    </td>
+                                    <td className={styles.cell}>
+                                        {entry.disqualified ? 'DQ' : entry.rank ? `#${entry.rank}` : '–'}
+                                    </td>
+                                    <td className={styles.cell}>{entry.points}</td>
+                                    <td className={styles.cell}>
+                                        {entry.visibility === 'revealed' ? (
+                                            <span className={styles.revealed}>Submitted</span>
+                                        ) : entry.visibility === 'submitted_hidden' ? (
+                                            <span className={styles.hidden}>Hidden until deadline</span>
+                                        ) : (
+                                            <span className={styles.pending}>Not submitted</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </section>
+            ))}
+        </>
+    );
+}
+
 function QualifiersTable({ data }: { data: CupPageData }) {
     if (data.qualifiers.length === 0) return null;
     return (
@@ -144,6 +199,8 @@ export function CupPage() {
             {data.hasConfig ? (
                 isKnockout ? (
                     <StageMatchups data={data} />
+                ) : data.leagueTables.length > 0 ? (
+                    <LeagueTables data={data} />
                 ) : (
                     <table className={styles.table}>
                         <thead>

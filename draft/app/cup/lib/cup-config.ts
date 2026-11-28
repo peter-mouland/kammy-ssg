@@ -123,6 +123,17 @@ export function parseCupConfig(rows: CupConfigRow[]): CupConfig {
         qf: parseLeggedPair(get('qf')),
         sf: parseLeggedPair(get('sf')),
         final: Number.parseInt(get('final').trim(), 10),
+        leagueSize: Number.parseInt(get('leaguesize').trim(), 10) || 0,
+        // One league per chunk: managers comma-separated, leagues semicolon-separated.
+        leagues: get('leagues')
+            .split(';')
+            .map((league) =>
+                league
+                    .split(',')
+                    .map((manager) => manager.trim())
+                    .filter(Boolean),
+            )
+            .filter((league) => league.length > 0),
     };
 }
 
@@ -134,5 +145,7 @@ export function serializeCupConfig(config: CupConfig): CupConfigRow[] {
         { key: 'qf', value: config.qf.join(',') },
         { key: 'sf', value: config.sf.join(',') },
         { key: 'final', value: String(config.final) },
+        { key: 'leagueSize', value: String(config.leagueSize ?? 0) },
+        { key: 'leagues', value: (config.leagues ?? []).map((league) => league.join(',')).join(';') },
     ];
 }

@@ -51,6 +51,23 @@ export async function getTeamsForGameweek(divisionId: DivisionId, userId: Manage
 }
 
 /**
+ * A manager's most recent squad at or before a gameweek.
+ *
+ * Squads are picked before a deadline, but that gameweek's document is only
+ * created once the gameweek is processed. Asking for the gameweek itself in
+ * that window finds nothing, and a picker built on it has nobody to pick. This
+ * walks back to the latest squad that exists; the returned `gameweek` says
+ * which week it actually came from.
+ */
+export async function getLatestTeamsForGameweek(divisionId: DivisionId, userId: ManagerId, gameweek: number) {
+    for (let candidate = gameweek; candidate >= 1; candidate--) {
+        const team = await getTeamsForGameweek(divisionId, userId, candidate);
+        if (team) return team;
+    }
+    return null;
+}
+
+/**
  * Check if division teams document exists for gameweek
  */
 export async function divisionDocumentExists(divisionId: DivisionId, gameweek: number): Promise<boolean> {

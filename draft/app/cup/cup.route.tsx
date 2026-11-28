@@ -31,6 +31,7 @@ const EMPTY: CupPageData = {
     deadlinePassed: false,
     rows: [],
     standings: [],
+    leagueTables: [],
     qualifiers: [],
     bracket: [],
     selectedGameweek: 0,

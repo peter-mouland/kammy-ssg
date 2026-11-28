@@ -82,6 +82,52 @@ export function CupAdminPage() {
             </section>
 
             <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Leagues</h2>
+                <p className={styles.hint}>
+                    Split the {data.managerCount} cup managers into leagues for the league stage. Choose how many
+                    managers go in each league; the draw is random and leagues come out within one manager of each other
+                    in size. Qualification does not change: the top 16 overall still reach the Round of 16. Generating
+                    again replaces the current leagues.
+                </p>
+                <Form method="post" className={styles.form}>
+                    <input type="hidden" name="actionType" value="generateLeagues" />
+                    <label className={styles.field}>
+                        <span className={styles.label}>Managers per league</span>
+                        <input
+                            className={styles.input}
+                            name="leagueSize"
+                            type="number"
+                            min={2}
+                            defaultValue={config?.leagueSize || 8}
+                        />
+                    </label>
+                    <button
+                        type="submit"
+                        className={styles.button}
+                        disabled={isBusy || !config || data.managerCount < 2}
+                    >
+                        {data.leagues.length > 0 ? 'Regenerate leagues' : 'Generate leagues'}
+                    </button>
+                </Form>
+
+                {data.leagues.length > 0 ? (
+                    <ul className={styles.bracket}>
+                        {data.leagues.map((league) => (
+                            <li key={league.name} className={styles.tie}>
+                                <span>
+                                    {league.name} ({league.members.length}): {league.members.join(', ')}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className={styles.hint}>
+                        No leagues generated yet. The cup page shows one combined table until you do.
+                    </p>
+                )}
+            </section>
+
+            <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Autopicks</h2>
                 <p className={styles.hint}>
                     Generate alphabetical teams for managers missing a submission in a round (rule 4.6). Short squads

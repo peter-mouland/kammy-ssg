@@ -1,10 +1,16 @@
 /* Location: app/cup/server/cup.server.test.ts */
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { resetInMemoryFirestore } from '../../_shared/lib/firestore-cache/firestore-memory';
+import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import type { UserTeamsSheetData } from '../../_shared/types/league-types';
+import { createDivisionTeamsDocument } from '../../scoring/index.server';
+import type { DivisionTeamsDocument, RosterByManagerId } from '../../teams';
 import type { PlayerPointsRow } from '../lib/cup-scoring';
 import type { CupConfig, ProcessedCupSheetData } from '../types/cup-types';
-import { getCupStandings } from './cup.server';
+import { getCupStandings, getCupSubmitData } from './cup.server';
+
+process.env.KAMMY_FIXTURE_FIRESTORE = '1';
 
 /**
  * Standings count each manager+gameweek once. Resubmits append rows, so the
@@ -103,5 +109,53 @@ describe('getCupStandings', () => {
         const ann = standings.find((s) => s.manager === 'ann');
         expect(ann?.points).toBe(5);
         expect(standings.map((s) => s.manager)).toEqual(['ann', 'bob']);
+    });
+});
+
+describe('getCupSubmitData squad picker', () => {
+    afterEach(() => resetInMemoryFirestore());
+
+    // The live GW13 state: the cup round is GW22, picked before its deadline,
+    // but only GW21's division document exists. The picker must offer the GW21
+    // squad rather than nobody at all.
+    it('offers the most recent squad when the round gameweek has no document yet', async () => {
+        await createDivisionTeamsDocument({
+            divisionId: 'premierLeague',
+            gameweek: 21,
+            lastUpdated: '2026-01-01T00:00:00.000Z',
+            teams: {
+                ann: {
+                    roster: {
+                        gk_0: { player: { playerCode: 1, playerName: 'Keeper', playerPosition: 'gk' } },
+                        cb_0: { player: { playerCode: 2, playerName: 'Back', playerPosition: 'cb' } },
+                    },
+                },
+            } as unknown as RosterByManagerId,
+            metadata: {
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                pointsLastUpdated: null,
+                pointsLastGameweek: null,
+            },
+        } as DivisionTeamsDocument);
+
+        const gameweekData = {
+            fplEvent: { id: 22, deadline_time: '2099-01-01T11:00:00Z', finished: false },
+            start: new Date('2020-01-01T00:00:00Z'),
+            end: new Date('2099-01-01T11:00:00Z'),
+        } as unknown as GameWeekData;
+
+        const pageData = await getCupSubmitData({
+            userTeams: USER_TEAMS,
+            selectedUser: USER_TEAMS[0],
+            gameweekData,
+            cupConfig: { ...CONFIG, league: [22] },
+            submissions: [],
+            fixtures: [],
+            now: new Date('2026-06-01T00:00:00Z'),
+        });
+
+        expect(pageData.squad.map((player) => player.code)).toEqual([1, 2]);
+        expect(pageData.squadGameweek).toBe(21);
     });
 });

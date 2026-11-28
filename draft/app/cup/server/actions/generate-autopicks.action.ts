@@ -5,7 +5,7 @@ import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { cupEligibleManagers } from '../../../_shared/lib/league-divisions';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
-import { getTeamsForGameweek } from '../../../scoring/index.server';
+import { getLatestTeamsForGameweek } from '../../../scoring/index.server';
 import { type AutopickCandidate, planAutopicks } from '../../lib/autopick';
 import { getRoundForGameweek } from '../../lib/cup-config';
 import { isDeadlinePassed } from '../../lib/cup-deadlines';
@@ -37,7 +37,10 @@ export async function generateAutopicksAction(input: { gameweek: number }): Prom
     const events = await fplApiCache.getFplEvents();
     const gameweekData = events.find((event) => event.fplEvent.id === gameweek);
     if (!gameweekData || !isDeadlinePassed(gameweekData)) {
-        return { success: false, error: `Gameweek ${gameweek} is still open for submissions. Autopick after the deadline.` };
+        return {
+            success: false,
+            error: `Gameweek ${gameweek} is still open for submissions. Autopick after the deadline.`,
+        };
     }
     const [allUserTeams, divisions] = await Promise.all([readUserTeams(), readDivisions()]);
     const userTeams = cupEligibleManagers(allUserTeams, divisions);
@@ -47,7 +50,7 @@ export async function generateAutopicksAction(input: { gameweek: number }): Prom
         // Skip squad lookups for managers who already submitted: the plan
         // would skip them anyway, and each lookup is a Firestore read.
         if (submissions.some((s) => s.manager === team.userId && s.gameweek === gameweek)) continue;
-        const squad = await getTeamsForGameweek(team.divisionId, team.userId, gameweek);
+        const squad = await getLatestTeamsForGameweek(team.divisionId, team.userId, gameweek);
         candidates.push({ manager: team.userId, division: team.divisionId, roster: squad ? squad.roster : null });
     }
 

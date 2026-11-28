@@ -8,6 +8,7 @@ import {
     createDivisionTeamsDocument,
     divisionDocumentExists,
     getDivisionTeamsDocument,
+    getLatestTeamsForGameweek,
     getTeamsForGameweek,
     updateDivisionTeamsDocument,
 } from '../../index.server';
@@ -121,6 +122,33 @@ describe('reading one manager’s team for a gameweek', () => {
 
     it('returns null when the gameweek has no document at all', async () => {
         expect(await getTeamsForGameweek('leagueOne', 'ann', 21)).toBeNull();
+    });
+});
+
+describe('reading one manager’s latest team at or before a gameweek', () => {
+    // A cup round is picked before its deadline, but that gameweek's document is
+    // only created once the gameweek is processed. The picker must fall back to
+    // the most recent squad that exists, or there is nobody to pick.
+    it('falls back to the most recent earlier squad when the gameweek has none', async () => {
+        await createDivisionTeamsDocument(divisionTeams('leagueOne', 21, 111));
+
+        const team = await getLatestTeamsForGameweek('leagueOne', 'ann', 23);
+
+        expect(team?.gameweek).toBe(21);
+        expect(team?.roster.gk_0.player.playerCode).toBe(111);
+    });
+
+    it('prefers the gameweek itself when it has a squad', async () => {
+        await createDivisionTeamsDocument(divisionTeams('leagueOne', 21, 111));
+        await createDivisionTeamsDocument(divisionTeams('leagueOne', 23, 333));
+
+        expect((await getLatestTeamsForGameweek('leagueOne', 'ann', 23))?.roster.gk_0.player.playerCode).toBe(333);
+    });
+
+    it('returns null when no squad exists at or before the gameweek', async () => {
+        await createDivisionTeamsDocument(divisionTeams('leagueOne', 24, 111));
+
+        expect(await getLatestTeamsForGameweek('leagueOne', 'ann', 23)).toBeNull();
     });
 });
 

@@ -19,6 +19,7 @@ export {
     createDivisionTeamsDocument,
     divisionDocumentExists,
     getDivisionTeamsDocument,
+    getLatestTeamsForGameweek,
     getTeamsForGameweek,
     updateDivisionTeamsDocument,
 } from './server/services/division-teams.service';

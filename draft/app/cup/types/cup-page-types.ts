@@ -2,6 +2,7 @@
 
 import type { DivisionId, ManagerId, UserTeamsSheetData } from '../../_shared/types/league-types';
 import type { CupFixture } from '../lib/cup-fixtures';
+import type { CupLeagueTable } from '../lib/cup-leagues';
 import type { CupMatchupView } from '../lib/cup-matchups';
 import type { CupSquadPlayer } from '../lib/cup-squad';
 import type { CupStanding } from '../lib/cup-standings';
@@ -40,6 +41,8 @@ export interface CupPageData {
     deadlinePassed: boolean;
     rows: CupOverviewRow[];
     standings: CupStanding[];
+    /** One standings table per generated league. Empty until leagues are generated. */
+    leagueTables: CupLeagueTable[];
     qualifiers: CupQualifier[];
     bracket: CupMatchup[];
     /** The gameweek being viewed, and all selectable cup gameweeks. */
@@ -59,6 +62,10 @@ export interface CupAdminPageData {
     qualifiers: CupQualifier[];
     bracket: CupMatchup[];
     gameweekOptions: CupGameweekOption[];
+    /** Generated leagues with member names, for the admin leagues section. */
+    leagues: { name: string; members: string[] }[];
+    /** How many cup-eligible managers a league generation would draw from. */
+    managerCount: number;
 }
 
 export interface CupSubmitPageData {
@@ -69,6 +76,8 @@ export interface CupSubmitPageData {
     selectedUserName: string | null;
     division: DivisionId | null;
     squad: CupSquadPlayer[];
+    /** The gameweek the pickable squad actually came from, when it is not the round's own. */
+    squadGameweek: number | null;
     existingPlayers: number[];
     /** Players used in the other leg of this round (cannot be reused). */
     usedPlayers: number[];
