@@ -34,6 +34,10 @@ export interface CupConfig {
     qf: [number, number];
     sf: [number, number];
     final: number; // single-leg gameweek
+    /** Managers per generated league. 0 until an admin generates the leagues. */
+    leagueSize?: number;
+    /** Generated league-stage leagues: manager ids per league, in league order. */
+    leagues?: ManagerId[][];
 }
 
 /**

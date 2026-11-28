@@ -34,14 +34,25 @@ function GameweekSelector({ data }: { data: CupPageData }) {
     );
 }
 
-function StatusCell({ row }: { row: CupOverviewRow }) {
-    if (row.visibility === 'revealed') {
-        return <span className={styles.revealed}>{row.points ?? 0} pts</span>;
+/** One status cell for every cup table, so they cannot drift apart. */
+function SubmissionStatus({
+    visibility,
+    points,
+}: {
+    visibility: CupOverviewRow['visibility'];
+    points?: number | null;
+}) {
+    if (visibility === 'revealed') {
+        return <span className={styles.revealed}>{points ?? 0} pts</span>;
     }
-    if (row.visibility === 'submitted_hidden') {
+    if (visibility === 'submitted_hidden') {
         return <span className={styles.hidden}>🔒 Hidden until deadline</span>;
     }
     return <span className={styles.pending}>Not submitted</span>;
+}
+
+function StatusCell({ row }: { row: CupOverviewRow }) {
+    return <SubmissionStatus visibility={row.visibility} points={row.points} />;
 }
 
 function sideScore(points: number | null, aggregate: number | null): string {
@@ -82,6 +93,55 @@ function StageMatchups({ data }: { data: CupPageData }) {
                 </li>
             ))}
         </ul>
+    );
+}
+
+function LeagueTables({ data }: { data: CupPageData }) {
+    if (data.leagueTables.length === 0) {
+        return (
+            <p className={styles.notice}>
+                The leagues haven't been generated yet — an admin can draw them from the cup admin page. Everyone is in
+                one table until then.
+            </p>
+        );
+    }
+    return (
+        <>
+            {data.leagueTables.map((league) => (
+                <section key={league.name} className={styles.qualifiers}>
+                    <h2 className={styles.sectionTitle}>{league.name}</h2>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th className={styles.headerCell}>Pos</th>
+                                <th className={styles.headerCell}>Manager</th>
+                                <th className={styles.headerCell}>Overall</th>
+                                <th className={styles.headerCell}>Pts</th>
+                                <th className={styles.headerCell}>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {league.entries.map((entry, index) => (
+                                <tr key={entry.manager}>
+                                    <td className={styles.cell}>{index + 1}</td>
+                                    <td className={styles.cell}>
+                                        <span className={styles.managerName}>{entry.userName}</span>
+                                        <span className={styles.teamName}>{entry.teamName}</span>
+                                    </td>
+                                    <td className={styles.cell}>
+                                        {entry.disqualified ? 'DQ' : entry.rank ? `#${entry.rank}` : '–'}
+                                    </td>
+                                    <td className={styles.cell}>{entry.points}</td>
+                                    <td className={styles.cell}>
+                                        <SubmissionStatus visibility={entry.visibility} points={entry.gameweekPoints} />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </section>
+            ))}
+        </>
     );
 }
 
@@ -144,6 +204,8 @@ export function CupPage() {
             {data.hasConfig ? (
                 isKnockout ? (
                     <StageMatchups data={data} />
+                ) : data.leagueTables.length > 0 ? (
+                    <LeagueTables data={data} />
                 ) : (
                     <table className={styles.table}>
                         <thead>

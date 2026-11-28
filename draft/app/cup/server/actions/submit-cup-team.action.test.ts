@@ -4,8 +4,13 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
-import { googleAuthHandler, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
+import { resetInMemoryFirestore } from '../../../_shared/lib/firestore-cache/firestore-memory';
+import { googleAuthHandler, sheetHandlers } from '../../../_shared/test/google-sheets-msw';
+import { createDivisionTeamsDocument } from '../../../scoring/index.server';
+import type { DivisionTeamsDocument, RosterByManagerId } from '../../../teams';
 import * as action from './submit-cup-team.action';
+
+process.env.KAMMY_FIXTURE_FIRESTORE = '1';
 
 /**
  * Server-side rules for a cup submission.
@@ -17,9 +22,10 @@ import * as action from './submit-cup-team.action';
  *
  * See https://github.com/peter-mouland/kammy-ssg/issues/60.
  *
- * Note on scope: `getTeamsForGameweek` reads Firestore directly with no cache seam, so
- * these tests cover the checks that run *before* it. That is deliberate — the deadline
- * check belongs before an expensive lookup for a request that is already doomed.
+ * Note on scope: most tests cover the checks that run *before* the squad lookup
+ * — the deadline check belongs before an expensive lookup for a request that is
+ * already doomed. The fallback-squad test at the end runs the real lookup against
+ * the in-memory Firestore, because that is the path the picker depends on.
  */
 
 /** `start`/`end` bracket the submission window — see `cup/lib/cup-deadlines.ts`. */
@@ -61,7 +67,8 @@ const CUP_TAB = [
     ],
 ];
 
-const server = setupServer(googleAuthHandler, sheetValuesHandler({ CupConfig: CUP_CONFIG_TAB, Cup: CUP_TAB }));
+const { handlers, store } = sheetHandlers({ CupConfig: CUP_CONFIG_TAB, Cup: CUP_TAB });
+const server = setupServer(googleAuthHandler, ...handlers);
 
 const SQUAD = [101, 102, 103, 104];
 
@@ -85,7 +92,11 @@ beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
 });
 beforeEach(() => dataCache.clear());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+    server.resetHandlers();
+    resetInMemoryFirestore();
+    store.reset();
+});
 afterAll(() => server.close());
 
 describe('handleCupSubmission — the submission window', () => {
@@ -139,5 +150,43 @@ describe('handleCupSubmission — the checks that already existed', () => {
 
         expect(result.success).toBe(false);
         expect(result.error).toMatch(/missing/i);
+    });
+});
+
+describe('handleCupSubmission — the fallback squad', () => {
+    // The live picker state: GW3 is the cup round, picked before its deadline,
+    // and only GW2's division document exists. A pick from the GW2 squad must
+    // be accepted, because that is the squad the picker offered.
+    it('accepts a pick from the most recent earlier squad when the round has no document yet', async () => {
+        await seed(OPEN);
+        const slot = (playerCode: number, playerPosition: string) => ({
+            player: { playerCode, playerName: `Player ${playerCode}`, playerPosition },
+        });
+        await createDivisionTeamsDocument({
+            divisionId: 'premierLeague',
+            gameweek: 2,
+            lastUpdated: '2026-01-01T00:00:00.000Z',
+            teams: {
+                ann: {
+                    roster: {
+                        gk_0: slot(101, 'gk'),
+                        cb_0: slot(102, 'cb'),
+                        fb_0: slot(103, 'fb'),
+                        mid_0: slot(104, 'mid'),
+                    },
+                },
+            } as unknown as RosterByManagerId,
+            metadata: {
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                pointsLastUpdated: null,
+                pointsLastGameweek: null,
+            },
+        } as DivisionTeamsDocument);
+
+        const result = await submit();
+
+        expect(result.success).toBe(true);
+        expect(store.values('Cup').some((row) => row.includes('101,102,103,104'))).toBe(true);
     });
 });

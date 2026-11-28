@@ -98,6 +98,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             selectedUserName: selectedUser?.userName ?? null,
             division: selectedUser?.divisionId ?? null,
             squad: [],
+            squadGameweek: null,
             existingPlayers: [],
             usedPlayers: [],
             submissionOpen: false,

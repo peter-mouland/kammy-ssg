@@ -7,6 +7,7 @@ import type { ManagerId, UserTeamsSheetData } from '../../_shared/types/league-t
 import { gameweekOptionLabel, getRoundForGameweek, resolveCupRounds } from '../lib/cup-config';
 import { isDeadlinePassed, isSubmissionOpen } from '../lib/cup-deadlines';
 import type { CupFixture } from '../lib/cup-fixtures';
+import { buildLeagueTables } from '../lib/cup-leagues';
 import { buildGameweekPointsMap, type PlayerPointsRow, scoreSubmission } from '../lib/cup-scoring';
 import { getCupSquad } from '../lib/cup-squad';
 import { computeLeagueStandings, getQualifiers, type ScoredSubmission } from '../lib/cup-standings';
@@ -79,6 +80,40 @@ export function getCupPageData(input: {
 
     const { standings, qualifiers } = getCupStandings({ userTeams, cupConfig, submissions, pointsRows });
 
+    // The visual of the league stage: one table per generated league. Empty
+    // until an admin generates the leagues, when the page falls back to the
+    // single all-manager table.
+    const managerInfo = new Map(
+        rows.map((row) => [
+            row.manager,
+            {
+                userName: row.userName,
+                teamName: row.teamName,
+                division: row.division,
+                visibility: row.visibility,
+                points: row.points,
+            },
+        ]),
+    );
+    const leagueTables = buildLeagueTables({
+        leagues: cupConfig.leagues ?? [],
+        standings,
+        managerInfo,
+    });
+
+    // A manager who becomes cup-eligible after the draw (new team, division
+    // change) is in no league. They still score and can still qualify overall,
+    // so they must not vanish from the league stage: show them as Unassigned
+    // until an admin can regenerate (which locks once the stage starts).
+    if (leagueTables.length > 0) {
+        const assigned = new Set((cupConfig.leagues ?? []).flat());
+        const unassignedIds = rows.filter((row) => !assigned.has(row.manager)).map((row) => row.manager);
+        if (unassignedIds.length > 0) {
+            const [unassigned] = buildLeagueTables({ leagues: [unassignedIds], standings, managerInfo });
+            if (unassigned) leagueTables.push({ ...unassigned, name: 'Unassigned' });
+        }
+    }
+
     const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
         gameweek: r.gameweek,
         label: gameweekOptionLabel(r),
@@ -92,6 +127,7 @@ export function getCupPageData(input: {
         rows,
         standings,
         qualifiers,
+        leagueTables,
         selectedGameweek: gameweek,
         gameweekOptions,
     };
@@ -213,6 +249,7 @@ export async function getCupSubmitData(input: {
         selectedUserName: selectedUser?.userName ?? null,
         division: selectedUser?.divisionId ?? null,
         squad: [],
+        squadGameweek: null,
         existingPlayers: [],
         usedPlayers: [],
         submissionOpen,
@@ -224,9 +261,12 @@ export async function getCupSubmitData(input: {
 
     if (!selectedUser || !round) return empty;
 
-    // Load the manager's roster for this gameweek from their own division.
-    const { getTeamsForGameweek } = await import('../../scoring/index.server');
-    const team = await getTeamsForGameweek(selectedUser.divisionId, selectedUser.userId, gameweek);
+    // Load the manager's roster from their own division. The round is picked
+    // before its deadline, when its own gameweek document does not exist yet,
+    // so fall back to the most recent squad that does: asking only for the
+    // round's gameweek left the picker empty (the live GW13 state).
+    const { getLatestTeamsForGameweek } = await import('../../scoring/index.server');
+    const team = await getLatestTeamsForGameweek(selectedUser.divisionId, selectedUser.userId, gameweek);
     const squad = team ? getCupSquad(team.roster) : [];
 
     const existing = findSubmission(submissions, selectedUser.userId, gameweek);
@@ -239,6 +279,7 @@ export async function getCupSubmitData(input: {
     return {
         ...empty,
         squad,
+        squadGameweek: team && team.gameweek !== gameweek ? team.gameweek : null,
         existingPlayers: existing?.players ?? [],
         usedPlayers,
     };

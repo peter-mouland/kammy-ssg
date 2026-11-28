@@ -3,9 +3,12 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from 'react-router';
 import { data } from 'react-router';
 import { requestFormData } from '../_shared/lib/form-data';
+import { cupEligibleManagers } from '../_shared/lib/league-divisions';
+import { readDivisions } from '../_shared/lib/sheets/divisions';
 import { readPlayerGameweekPointsFromSheet } from '../_shared/lib/sheets/player-gw-points';
 import { readUserTeams } from '../_shared/lib/sheets/user-teams';
 import { CupAdminPage } from './cup-admin.page';
+import { leagueName } from './lib/cup-leagues';
 import { fisherYatesShuffle, pairIntoMatchups } from './lib/knockout';
 import {
     readCupBracket,
@@ -44,6 +47,9 @@ export async function loader(_args: LoaderFunctionArgs) {
 
         let qualifiers: CupAdminPageData['qualifiers'] = [];
         let gameweekOptions: CupGameweekOption[] = [];
+        let leagues: CupAdminPageData['leagues'] = [];
+        let managerCount = 0;
+        let divisionsError = false;
         if (config) {
             const { getCupStandings } = await import('./server/cup.server');
             qualifiers = getCupStandings({ userTeams, cupConfig: config, submissions, pointsRows }).qualifiers;
@@ -52,12 +58,38 @@ export async function loader(_args: LoaderFunctionArgs) {
                 gameweek: r.gameweek,
                 label: gameweekOptionLabel(r),
             }));
+            // A failed Divisions read is an outage, not zero managers: say so
+            // on the page rather than letting the count read as a data problem.
+            const divisions = await readDivisions().catch(() => null);
+            if (divisions === null) divisionsError = true;
+            const eligible = divisions === null ? [] : cupEligibleManagers(userTeams, divisions);
+            managerCount = eligible.length;
+            const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
+            leagues = (config.leagues ?? []).map((managerIds, index) => ({
+                name: leagueName(index),
+                members: managerIds.map((manager) => userNameById.get(manager) ?? manager),
+            }));
         }
 
-        return data<CupAdminPageData>({ config, qualifiers, bracket, gameweekOptions });
+        return data<CupAdminPageData>({
+            config,
+            qualifiers,
+            bracket,
+            gameweekOptions,
+            leagues,
+            managerCount,
+            divisionsError,
+        });
     } catch (error) {
         console.error('Cup admin loader error:', error);
-        return data<CupAdminPageData>({ config: null, qualifiers: [], bracket: [], gameweekOptions: [] });
+        return data<CupAdminPageData>({
+            config: null,
+            qualifiers: [],
+            bracket: [],
+            gameweekOptions: [],
+            leagues: [],
+            managerCount: 0,
+        });
     }
 }
 
@@ -67,6 +99,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
         const actionType = String(formData.get('actionType') ?? '');
 
         if (actionType === 'setConfig') {
+            // Generated leagues live in the same config rows: keep them, or saving
+            // gameweeks would silently un-generate the leagues.
+            const existing = await readCupConfig().catch(() => null);
             const config: CupConfig = {
                 season: String(formData.get('season') ?? ''),
                 league: parseGameweekList(String(formData.get('league') ?? '')),
@@ -74,9 +109,64 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 qf: parseGameweekList(String(formData.get('qf') ?? '')).slice(0, 2) as [number, number],
                 sf: parseGameweekList(String(formData.get('sf') ?? '')).slice(0, 2) as [number, number],
                 final: Number.parseInt(String(formData.get('final') ?? ''), 10),
+                leagueSize: existing?.leagueSize ?? 0,
+                leagues: existing?.leagues ?? [],
             };
             await writeCupConfig(config);
             return data<CupAdminActionData>({ success: true, message: 'Cup gameweeks saved.' });
+        }
+
+        if (actionType === 'generateLeagues') {
+            const leagueSize = Number.parseInt(String(formData.get('leagueSize') ?? ''), 10);
+            const [config, allUserTeams, divisions] = await Promise.all([
+                readCupConfig(),
+                readUserTeams(),
+                readDivisions(),
+            ]);
+            // Never reshuffle the leagues mid-stage: once the first league
+            // gameweek's deadline has passed, managers have been following
+            // these tables. Same anti-clobber rule as advancing a round (#176).
+            const firstLeagueGameweek = config.league[0];
+            if (firstLeagueGameweek === undefined) {
+                return data<CupAdminActionData>({
+                    success: false,
+                    error: 'Save the cup gameweeks first, then generate the leagues.',
+                });
+            }
+            const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
+            const events = await fplApiCache.getFplEvents();
+            const firstEvent = events.find((event) => event.fplEvent.id === firstLeagueGameweek);
+            const { isDeadlinePassed } = await import('./lib/cup-deadlines');
+            if (firstEvent && isDeadlinePassed(firstEvent)) {
+                return data<CupAdminActionData>({
+                    success: false,
+                    error: `The league stage started at GW${firstLeagueGameweek}, so the leagues can no longer be regenerated.`,
+                });
+            }
+            const eligible = cupEligibleManagers(allUserTeams, divisions);
+            if (eligible.length < 2) {
+                return data<CupAdminActionData>({ success: false, error: 'Not enough cup managers to draw leagues.' });
+            }
+            const { generateLeagues } = await import('./lib/cup-leagues');
+            let leagues: string[][];
+            try {
+                leagues = generateLeagues(
+                    eligible.map((team) => team.userId),
+                    leagueSize,
+                );
+            } catch (error) {
+                return data<CupAdminActionData>({
+                    success: false,
+                    error: error instanceof Error ? error.message : 'Invalid league size.',
+                });
+            }
+            await writeCupConfig({ ...config, leagueSize, leagues });
+            return data<CupAdminActionData>({
+                success: true,
+                message: `Generated ${leagues.length} leagues from ${eligible.length} managers (${leagues
+                    .map((league) => league.length)
+                    .join(', ')} per league).`,
+            });
         }
 
         if (actionType === 'generateDraw') {

@@ -134,6 +134,19 @@ export function CupSubmitPage() {
                 Selected {selected.length} / {required}
             </p>
             <p className={styles.notice}>Pick in rank order — your first pick settles tied scores first (rule 4.7).</p>
+            {data.squadGameweek ? (
+                <p className={styles.notice}>
+                    Picking provisionally from your GW{data.squadGameweek} squad, the most recent processed one.
+                    Transfers for this gameweek are only checked at the deadline, so your cup team is confirmed once
+                    they have been processed.
+                </p>
+            ) : null}
+            {data.squad.length === 0 ? (
+                <p className={styles.notice}>
+                    No squad is available for your division yet, so there is nobody to pick. An admin needs to commit
+                    teams for your division, after which this picker loads automatically.
+                </p>
+            ) : null}
 
             <Form method="post">
                 <input type="hidden" name="manager" value={data.selectedUserId} />

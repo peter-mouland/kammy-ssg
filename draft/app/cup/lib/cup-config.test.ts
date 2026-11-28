@@ -18,6 +18,8 @@ const CONFIG: CupConfig = {
     qf: [27, 28],
     sf: [30, 32],
     final: 33,
+    leagueSize: 2,
+    leagues: [['ann', 'bob'], ['cat']],
 };
 
 describe('resolveCupRounds', () => {
@@ -96,8 +98,17 @@ describe('parse/serialize config rows (sheet round-trip)', () => {
             { key: 'qf', value: '27,28' },
             { key: 'sf', value: '30,32' },
             { key: 'final', value: '33' },
+            { key: 'leagueSize', value: '2' },
+            { key: 'leagues', value: 'ann,bob;cat' },
         ]);
         expect(parsed).toEqual(CONFIG);
+    });
+
+    it('defaults league generation fields when older rows do not have them', () => {
+        const parsed = parseCupConfig([{ key: 'season', value: '2526' }]);
+
+        expect(parsed.leagueSize).toBe(0);
+        expect(parsed.leagues).toEqual([]);
     });
 
     it('round-trips through serialize -> parse unchanged', () => {

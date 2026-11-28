@@ -4,8 +4,13 @@ import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { CACHE_KEYS } from '../../../_shared/lib/cache/cache-config';
 import { dataCache } from '../../../_shared/lib/cache/data-cache.service';
-import { googleAuthHandler, sheetValuesHandler } from '../../../_shared/test/google-sheets-msw';
+import { resetInMemoryFirestore } from '../../../_shared/lib/firestore-cache/firestore-memory';
+import { googleAuthHandler, sheetHandlers } from '../../../_shared/test/google-sheets-msw';
+import { createDivisionTeamsDocument } from '../../../scoring/index.server';
+import type { DivisionTeamsDocument, RosterByManagerId } from '../../../teams';
 import { generateAutopicksAction } from './generate-autopicks.action';
+
+process.env.KAMMY_FIXTURE_FIRESTORE = '1';
 
 /**
  * Autopick generation (rule 4.6) runs from the admin page for managers missing
@@ -39,13 +44,33 @@ const CUP_TAB = [
     ],
 ];
 
-const server = setupServer(googleAuthHandler, sheetValuesHandler({ CupConfig: CUP_CONFIG_TAB, Cup: CUP_TAB }));
+const USER_TEAMS_TAB = [
+    ['User ID', 'User Name', 'Team Name', 'Division ID', 'Last Updated'],
+    ['ann', 'Ann', 'Ann FC', 'premierLeague', '2026-08-01'],
+];
+
+const DIVISIONS_TAB = [
+    ['id', 'spreadsheetKey', 'label', 'order', 'url', 'promotion', 'relegation', 'cup'],
+    ['premierLeague', 'premierLeague', 'Premier League', 1, 'premier-league', 'FALSE', 'TRUE', 'TRUE'],
+];
+
+const { handlers, store } = sheetHandlers({
+    CupConfig: CUP_CONFIG_TAB,
+    Cup: CUP_TAB,
+    UserTeams: USER_TEAMS_TAB,
+    Divisions: DIVISIONS_TAB,
+});
+const server = setupServer(googleAuthHandler, ...handlers);
 
 beforeAll(() => {
     server.listen({ onUnhandledRequest: 'error' });
 });
 beforeEach(() => dataCache.clear());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+    server.resetHandlers();
+    resetInMemoryFirestore();
+    store.reset();
+});
 afterAll(() => server.close());
 
 describe('generateAutopicksAction', () => {
@@ -80,5 +105,48 @@ describe('generateAutopicksAction', () => {
 
         expect(result.success).toBe(false);
         expect(result.error).toMatch(/still open for submissions/i);
+    });
+
+    // The round's own gameweek (GW3) has no division document yet; GW2's does.
+    // Autopicks must generate from that earlier squad, not skip the manager as
+    // "no squad found" — the same squad the picker and submit agree on.
+    it('generates a team from the most recent earlier squad when the round has no document yet', async () => {
+        await dataCache.get(CACHE_KEYS.FPL.EVENTS, async () => [
+            {
+                fplEvent: { id: 3, deadline_time: '2020-01-02T00:00:00Z', finished: true },
+                start: new Date('2020-01-01T00:00:00Z'),
+                end: new Date('2020-01-02T00:00:00Z'),
+            },
+        ]);
+        const slot = (playerCode: number, playerName: string, playerPosition: string) => ({
+            player: { playerCode, playerName, playerPosition },
+        });
+        await createDivisionTeamsDocument({
+            divisionId: 'premierLeague',
+            gameweek: 2,
+            lastUpdated: '2026-01-01T00:00:00.000Z',
+            teams: {
+                ann: {
+                    roster: {
+                        gk_0: slot(101, 'Alpha', 'gk'),
+                        cb_0: slot(102, 'Bravo', 'cb'),
+                        fb_0: slot(103, 'Charlie', 'fb'),
+                        mid_0: slot(104, 'Delta', 'mid'),
+                    },
+                },
+            } as unknown as RosterByManagerId,
+            metadata: {
+                createdAt: '2026-01-01T00:00:00.000Z',
+                updatedAt: '2026-01-01T00:00:00.000Z',
+                pointsLastUpdated: null,
+                pointsLastGameweek: null,
+            },
+        } as DivisionTeamsDocument);
+
+        const result = await generateAutopicksAction({ gameweek: 3 });
+
+        expect(result.success).toBe(true);
+        expect(result.message).toContain('Autopicked 1: ann');
+        expect(store.values('Cup').some((row) => row.includes('ann'))).toBe(true);
     });
 });
