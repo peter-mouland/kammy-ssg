@@ -14,9 +14,13 @@ export function getPlayerStatusDisplay(
     try {
         const validationResults = getTransferValidationResults(validationContext);
 
-        const blockingFailures = validationResults.filter(
-            (result) => !result.passed && result.severity === 'blocking' && !isGameweekLimitMessage(result.ruleId),
-        );
+        // A reason specific to this player (owned, wrong position) comes before the weekly
+        // limit, which is the same for every row and would otherwise hide it.
+        const failures = validationResults.filter((result) => !result.passed && result.severity === 'blocking');
+        const blockingFailures = [
+            ...failures.filter((result) => !isGameweekLimitMessage(result.ruleId)),
+            ...failures.filter((result) => isGameweekLimitMessage(result.ruleId)),
+        ];
 
         if (blockingFailures.length > 0) {
             const formatted = formatEligibilityStatus({
