@@ -31,6 +31,23 @@ If you notice something outside the current task while working — a bug, a code
 
 If completing the task correctly requires touching something outside the stated scope, stop and explain why before doing it. Do not assume permission to expand.
 
+### Fix the pattern, not just the instance
+
+When you fix a bug, search for the same pattern everywhere before you call it done. Fix the siblings in the same PR if they are in scope, or list them under **[Separate problem found]** if they are not. If a helper for the fix already exists somewhere, use it rather than writing another copy.
+
+```bash
+# The unknown-club crash was fixed in two transfer components; the same expression still crashed Teams and Wishlist
+git grep -nE "teamsByCode\[[^]]+\]\.[a-z]" -- draft/app
+```
+
+### One domain per PR, and say what it is stacked on
+
+A PR changes one domain, plus whatever it must add to `_shared/` or to another domain's index. A "feedback batch" that also fixes admin and transfers is three PRs. If a branch is built on another unmerged branch, say so in the first line of the description and rebase (not merge) once the parent lands, so the reviewer reads only your commits.
+
+### Review your own branch before asking someone else to
+
+Run `.kiro/steering/self-review.md` on your branch before requesting a review. In Claude Code, ask for a self-review and the `self-review` agent (`.claude/agents/self-review.md`) works through it and reports in the same format a reviewer uses. Fix or label what it finds first.
+
 ---
 
 ## Code Structure Rules
@@ -64,6 +81,22 @@ import type { TransferType } from '../transfers/types/transfer-types'
 ```
 
 Concepts the **whole league** shares — `DivisionId`, `ManagerId`, `CustomPosition`, `PositionSlotKey` — are not owned by any one domain. They live in `_shared/types/league-types.ts`, the shared kernel. That file explains what earns a place in it; adding to it needs a note in `.kiro/backlog.md`.
+
+### One domain concept, one definition
+
+When code has to decide what something *means* in the domain — "does this cup row count?", "is this a draw entry?", "which gameweek is a default view?" — that decision is one named function in the owning domain's `lib/`, and every consumer calls it. Never re-derive the meaning inline from raw fields.
+
+Before you change what a concept means, find **every** consumer of the raw field and decide for each one:
+
+```bash
+git grep -n "status !== 'N'\|status === 'N'\|findLatestSubmission" -- draft/app/cup
+```
+
+The failure this prevents: a rule is changed in the two places the PR was about, and the other three keep the old meaning. Rejected cup rows were skipped by resolution and standings, but still counted as "submitted" by autopick and as "used" by the reuse ban, so admin could neither resolve the tie nor autopick it.
+
+### Domain values are typed at the sheet boundary
+
+Sheet cells arrive as strings (`'N'`, `'Y'`, `''`, `'approved'`). The sheet module converts them to a typed union once, when it parses the row, and nothing past that boundary compares raw cell strings. If a union already exists for the concept (`CupSubmissionStatus`), use it, and don't create a second vocabulary next to it.
 
 ### A domain is reached only through its public API
 
@@ -128,6 +161,14 @@ Pure or near-pure helpers should live outside components and receive their depen
 
 Use named constants for repeated string comparisons, especially UI state values such as steps, modes, and tabs. Avoid scattering magic strings through branch logic.
 
+### Manager-facing text comes from one place
+
+The validator (or rule) that produces a result owns the sentence a manager reads. Formatters may substitute display names for ids, shorten text for a narrow column, or choose an icon, but they never rewrite the sentence, and they recognise results by `ruleId` and `details`, never by matching the message text. Developer messages ("unknown state", "questionable.") must never reach a page: if a result can be shown, its message is written for a manager.
+
+### Moved code meets today's conventions
+
+Moving or splitting a file is not a reason to carry its old violations into the new file. Either bring the moved code up to the current conventions in the same PR (tokens, no `!important`, canonical breakpoints), or label what you left under **[Will slow down future work]**.
+
 ### React Router loaders own data fetching
 
 All server-side data fetching happens in React Router loader functions (`.route.tsx` files). Components do not fetch data directly on the server. Client-side re-fetching uses TanStack Query.
@@ -156,6 +197,6 @@ Each division runs its own snake draft independently. A player can only be owned
 
 Managers submit transfers via the UI. They start as `PENDING` in Google Sheets. An admin approves or rejects them via `/admin/transfers`. Only `APPROVED` transfers are applied to rosters.
 
-### There are three divisions with promotion and relegation
+### Not every division takes part in promotion and relegation
 
-`premierLeague` > `championship` > `leagueOne`. Season-end: each division's winner is promoted, loser is relegated. Features that touch standings or end-of-season logic need to account for all three divisions.
+There are four divisions. `premierLeague` > `championship` > `leagueOne` promote and relegate; `greatScott` is standalone and takes part in nothing cross-division. What a division takes part in is data (the `Divisions` sheet), never inferred from its id or order — see *Divisions* in `architecture.md`.

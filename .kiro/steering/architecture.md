@@ -179,11 +179,26 @@ Each slot holds a `RosterPlayer` (who is in the slot) + per-gameweek and cumulat
 - Draft is division-scoped — a player can only be drafted once per division
 - State is tracked in both Google Sheets and Firebase Realtime Database (sync comparison exists to detect drift)
 
+### Gameweeks — one vocabulary
+
+Several different gameweeks matter at the same moment, and naming them loosely has caused real bugs (a default view landing on an unscored week, transfers stamped against the week just played). Use these names in new code, and don't introduce `currentGameweek` for a new value: it already means different things in different domains.
+
+| name | meaning | where it comes from |
+|---|---|---|
+| **selection** (open) gameweek | the one still open for transfers and cup picks — a request sent now counts towards it | `fplApiCache.getSelectionGameweekData()` |
+| **scoring** gameweek | the one whose deadline has gone, so its matches are being played. Rolls over at the deadline, **before** any standings for it exist | `fplApiCache.getScoringGameweek()` |
+| **latest scored** gameweek | the latest one that has points processed / standings written. What a default view should show | `findLatestScoredGameweek()` (leagues) |
+| **previous** gameweek | the selection gameweek − 1, whose deadline has just passed | derived |
+
+"FPL says `finished`" means the matches are played. It does **not** mean our points have been processed for that gameweek. Anything that reads points (cup resolution, standings) must check that the points exist, not just that the gameweek finished.
+
 ### Transfers
 Types: `TRANSFER | SWAP | LOAN_START | LOAN_END | TRADE | NEW_PLAYER`
 Status: `APPROVED | REJECTED | PENDING`
 
 Submitted by managers, approved/rejected by admins via the Admin UI. Loans track `onLoanTo` and `onLoanFrom` fields on the roster player.
+
+**Validation runs in sequence and applies what passes.** `validateTransfers` checks a gameweek's transfers in time order, and applies each one that passes to `divisionRosters` before checking the next. That pass feeds both `/admin/transfers` (its APPROVE/REJECT recommendations) and the rosters the transfer page validates against. So any change to a validator changes what admin is told to approve and what later transfers see. Check a validator change against that sequence, with more than one manager, not only against a single transfer in isolation.
 
 ### Cup
 A **cross-division** knockout — the one feature that ignores division boundaries. Rules live in `cup/lib/cup-rules.ts`.

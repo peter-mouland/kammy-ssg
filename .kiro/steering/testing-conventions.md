@@ -23,6 +23,10 @@ Code is organised vertically by domain (teams, scoring, transfers, draft, player
 
 Before fixing a bug, write a test that reproduces it. The fix is only complete when that test passes. This prevents regressions and documents what went wrong.
 
+**Red first.** Run the new test against the code *before* your fix and see it fail, and say so in the PR ("all new tests failed before the change"). A test that passes either way proves nothing.
+
+**Fixes a test cannot see** — layout, Safari rendering, touch highlight — are the one exception. happy-dom does no layout. The PR must instead include before/after screenshots at 375px and name the browser, and the commit message must say why there is no test.
+
 Tests must never be written to make a known bug pass. A test that asserts broken behaviour is just hiding the bug with extra ceremony. If you identify a bug, the test should fail until the bug is fixed. If the current behaviour is intentional — even if surprising — the test name and comments should describe the *intended design*, not frame it as a bug.
 
 ### New features must be tested from the consumer's perspective
@@ -42,6 +46,8 @@ The goal is that a passing test means the real behaviour works, not just that th
 **The distinction that matters is not "mock vs no mock" — it is *where* you substitute.**
 
 Replacing a module is a fiction: you are asserting that some internal function exists and behaves a certain way. Replacing a **network response** is not a fiction — the network is a real boundary the app crosses, and something on the other side really does return bytes. Substituting there leaves all of your own code running.
+
+**Stubbing a browser API the test DOM lacks is allowed; stubbing app code is not.** happy-dom never loads images, so making `HTMLImageElement.prototype.naturalWidth` report a loaded photo is filling a gap in the environment, not replacing your code. Keep such stubs to platform APIs (DOM, `matchMedia`, `IntersectionObserver`), put them next to a comment saying which gap they fill, and restore them after the test. `vi.spyOn(someModule, 'fn')` on an app module is still a module mock.
 
 ### MSW is the standard for anything crossing the network
 
@@ -81,6 +87,25 @@ vi.mock('../../_shared/lib/fpl/api-cache');
 | Route loaders | That the loader returns the correct shape of data for a given URL and division. Use MSW for the Sheets/FPL calls underneath. |
 | `_shared/lib/` | Only the cache invalidation logic and TTL config — these have real business impact. |
 | FPL + Sheets clients | Behaviour against real payloads via MSW: a good response, a 500, a timeout, and a payload missing a field. These are the app's only external dependencies and the only place it can be broken by someone else. |
+
+### Test a rule where it is consumed, not only where it is defined
+
+A validator, a status rule or a "which gameweek" helper is consumed by more than one path. Test the path that consumes it end to end at least once:
+
+- a transfer validator → `validateTransfers` with **two managers** and two transfers in the same gameweek, asserting both the recommendations and what was applied to the rosters
+- a cup submission rule (rejected rows, reuse ban) → resolve **and** autopick **and** the bracket display, for the same rows
+- a "default gameweek" rule → the loaders of every page that defaults to it
+
+The unit test proves the rule. The consumer test proves the rule means the same thing everywhere it is used.
+
+### Faking time: two tools, two jobs
+
+| you need | use | why |
+|---|---|---|
+| a decision that reads "now" (deadlines, windows, reveal, countdowns) | `setNow()` from `_shared/lib/clock` | it is the app's own clock, so it drives the real decision code |
+| cache TTL / age arithmetic, which deliberately reads `Date.now()` | `vi.useFakeTimers()` + `vi.setSystemTime()` | the cache does not use the clock on purpose |
+
+Don't mix them in one test without a comment saying why. A `new Date()` at a decision site is a bug (see *The clock* in `architecture.md`), even in a component's display text.
 
 ### Where tests live
 

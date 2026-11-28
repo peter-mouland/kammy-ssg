@@ -222,6 +222,8 @@ Write mobile-first. Use `min-width` breakpoints. The canonical breakpoints are d
 @media (min-width: 1024px) { ... } /* lg */
 ```
 
+These three are the only breakpoints. Do not add another (`680px`, `900px`) without proposing it as a token first.
+
 Keep media queries inside the module file, co-located with the classes they modify. Do not create separate responsive files.
 
 ---
