@@ -4,7 +4,7 @@ import type { GameWeekData } from '../../_shared/lib/fpl/fpl-types';
 import { readDivisions } from '../../_shared/lib/sheets/divisions';
 import { getDivisionUserTeams } from '../../_shared/lib/sheets/user-teams';
 import type { DivisionId, DivisionSheetData, PositionSlotKey } from '../../_shared/types/league-types';
-import { getDivisionTeamsDocument } from '../../scoring/index.server';
+import { getDivisionTeamsDocument, getLatestScoredGameweek } from '../../scoring/index.server';
 import { getCategoryStandings } from '../lib/category-standings';
 import { type GameweekRange, gameweekScoringWindows, gameweeksInRange } from '../lib/gameweek-range';
 import { calculatePositionRankings } from '../lib/simple-position-rankings';
@@ -28,15 +28,10 @@ import type {
  * gameweeks do not come through here: asking for the unscored week stays empty.
  */
 export async function findLatestScoredGameweek(divisionId: DivisionId, fromGameweek: number): Promise<number | null> {
-    try {
-        for (let gameweek = fromGameweek; gameweek >= 1; gameweek--) {
-            const divisionDoc = await getDivisionTeamsDocument(divisionId, gameweek);
-            if (divisionDoc && Object.keys(divisionDoc.teams ?? {}).length > 0) return gameweek;
-        }
-    } catch (error) {
-        console.error(`Failed to find scored gameweeks for ${divisionId} up to GW${fromGameweek}:`, error);
-    }
-    return null;
+    // Scoring owns the documents, so it owns this walk too (see
+    // getLatestScoredGameweek there). This leagues-level name is the one the
+    // routes and homepage already call.
+    return getLatestScoredGameweek(divisionId, fromGameweek);
 }
 
 export async function getAllLeagueStandingsData(): Promise<EnhancedLeagueStandingsLoaderData> {

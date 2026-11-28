@@ -54,6 +54,8 @@ export interface CupLeagueTableEntry {
     division: DivisionId;
     /** League-stage points in total, across every league gameweek. */
     points: number;
+    /** This gameweek's points, when the team is revealed. */
+    gameweekPoints: number | null;
     /** Rank across every manager, not just this league. Null until they score. */
     rank: number | null;
     disqualified: boolean;
@@ -70,6 +72,8 @@ export interface LeagueManagerInfo {
     teamName: string;
     division: DivisionId;
     visibility: CupTeamVisibility;
+    /** This gameweek's points when revealed, for the status column. */
+    points?: number | null;
 }
 
 /**
@@ -96,6 +100,7 @@ export function buildLeagueTables(input: {
                     teamName: info.teamName,
                     division: info.division,
                     points: standing?.points ?? 0,
+                    gameweekPoints: info.points ?? null,
                     rank: standing?.rank ?? null,
                     disqualified: standing?.disqualified ?? false,
                     visibility: info.visibility,

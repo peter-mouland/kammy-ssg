@@ -49,6 +49,7 @@ export async function loader(_args: LoaderFunctionArgs) {
         let gameweekOptions: CupGameweekOption[] = [];
         let leagues: CupAdminPageData['leagues'] = [];
         let managerCount = 0;
+        let divisionsError = false;
         if (config) {
             const { getCupStandings } = await import('./server/cup.server');
             qualifiers = getCupStandings({ userTeams, cupConfig: config, submissions, pointsRows }).qualifiers;
@@ -57,7 +58,11 @@ export async function loader(_args: LoaderFunctionArgs) {
                 gameweek: r.gameweek,
                 label: gameweekOptionLabel(r),
             }));
-            const eligible = cupEligibleManagers(userTeams, await readDivisions().catch(() => []));
+            // A failed Divisions read is an outage, not zero managers: say so
+            // on the page rather than letting the count read as a data problem.
+            const divisions = await readDivisions().catch(() => null);
+            if (divisions === null) divisionsError = true;
+            const eligible = divisions === null ? [] : cupEligibleManagers(userTeams, divisions);
             managerCount = eligible.length;
             const userNameById = new Map(userTeams.map((team) => [team.userId, team.userName]));
             leagues = (config.leagues ?? []).map((managerIds, index) => ({
@@ -66,7 +71,15 @@ export async function loader(_args: LoaderFunctionArgs) {
             }));
         }
 
-        return data<CupAdminPageData>({ config, qualifiers, bracket, gameweekOptions, leagues, managerCount });
+        return data<CupAdminPageData>({
+            config,
+            qualifiers,
+            bracket,
+            gameweekOptions,
+            leagues,
+            managerCount,
+            divisionsError,
+        });
     } catch (error) {
         console.error('Cup admin loader error:', error);
         return data<CupAdminPageData>({
@@ -110,6 +123,26 @@ export async function action({ request, context }: ActionFunctionArgs) {
                 readUserTeams(),
                 readDivisions(),
             ]);
+            // Never reshuffle the leagues mid-stage: once the first league
+            // gameweek's deadline has passed, managers have been following
+            // these tables. Same anti-clobber rule as advancing a round (#176).
+            const firstLeagueGameweek = config.league[0];
+            if (firstLeagueGameweek === undefined) {
+                return data<CupAdminActionData>({
+                    success: false,
+                    error: 'Save the cup gameweeks first, then generate the leagues.',
+                });
+            }
+            const { fplApiCache } = await import('../_shared/lib/fpl/api-cache');
+            const events = await fplApiCache.getFplEvents();
+            const firstEvent = events.find((event) => event.fplEvent.id === firstLeagueGameweek);
+            const { isDeadlinePassed } = await import('./lib/cup-deadlines');
+            if (firstEvent && isDeadlinePassed(firstEvent)) {
+                return data<CupAdminActionData>({
+                    success: false,
+                    error: `The league stage started at GW${firstLeagueGameweek}, so the leagues can no longer be regenerated.`,
+                });
+            }
             const eligible = cupEligibleManagers(allUserTeams, divisions);
             if (eligible.length < 2) {
                 return data<CupAdminActionData>({ success: false, error: 'Not enough cup managers to draw leagues.' });

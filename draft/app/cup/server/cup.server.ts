@@ -83,16 +83,36 @@ export function getCupPageData(input: {
     // The visual of the league stage: one table per generated league. Empty
     // until an admin generates the leagues, when the page falls back to the
     // single all-manager table.
+    const managerInfo = new Map(
+        rows.map((row) => [
+            row.manager,
+            {
+                userName: row.userName,
+                teamName: row.teamName,
+                division: row.division,
+                visibility: row.visibility,
+                points: row.points,
+            },
+        ]),
+    );
     const leagueTables = buildLeagueTables({
         leagues: cupConfig.leagues ?? [],
         standings,
-        managerInfo: new Map(
-            rows.map((row) => [
-                row.manager,
-                { userName: row.userName, teamName: row.teamName, division: row.division, visibility: row.visibility },
-            ]),
-        ),
+        managerInfo,
     });
+
+    // A manager who becomes cup-eligible after the draw (new team, division
+    // change) is in no league. They still score and can still qualify overall,
+    // so they must not vanish from the league stage: show them as Unassigned
+    // until an admin can regenerate (which locks once the stage starts).
+    if (leagueTables.length > 0) {
+        const assigned = new Set((cupConfig.leagues ?? []).flat());
+        const unassignedIds = rows.filter((row) => !assigned.has(row.manager)).map((row) => row.manager);
+        if (unassignedIds.length > 0) {
+            const [unassigned] = buildLeagueTables({ leagues: [unassignedIds], standings, managerInfo });
+            if (unassigned) leagueTables.push({ ...unassigned, name: 'Unassigned' });
+        }
+    }
 
     const gameweekOptions: CupGameweekOption[] = resolveCupRounds(cupConfig).map((r) => ({
         gameweek: r.gameweek,

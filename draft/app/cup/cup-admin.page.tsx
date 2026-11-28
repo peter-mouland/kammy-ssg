@@ -83,11 +83,17 @@ export function CupAdminPage() {
 
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Leagues</h2>
+                {data.divisionsError ? (
+                    <p className={styles.error}>
+                        Couldn&apos;t read the Divisions sheet, so the manager count is unknown.
+                    </p>
+                ) : null}
                 <p className={styles.hint}>
                     Split the {data.managerCount} cup managers into leagues for the league stage. Choose how many
                     managers go in each league; the draw is random and leagues come out within one manager of each other
                     in size. Qualification does not change: the top 16 overall still reach the Round of 16. Generating
-                    again replaces the current leagues.
+                    again replaces the current leagues, and generation locks once the first league gameweek deadline has
+                    passed.
                 </p>
                 <Form method="post" className={styles.form}>
                     <input type="hidden" name="actionType" value="generateLeagues" />

@@ -51,16 +51,44 @@ export async function getTeamsForGameweek(divisionId: DivisionId, userId: Manage
 }
 
 /**
+ * The latest scored gameweek for a division at or before `fromGameweek`: the
+ * newest gameweek whose division-teams document exists and has teams in it.
+ *
+ * Scoring owns this because scoring owns the documents. The leagues default
+ * view and the cup squad picker both need it, and they must agree on what
+ * "processed" means (a document with no teams is not processed). See
+ * "Gameweeks, one vocabulary" in architecture.md.
+ */
+export async function getLatestScoredGameweek(divisionId: DivisionId, fromGameweek: number): Promise<number | null> {
+    try {
+        for (let candidate = fromGameweek; candidate >= 1; candidate--) {
+            const divisionDoc = await getDivisionTeamsDocument(divisionId, candidate);
+            if (divisionDoc && Object.keys(divisionDoc.teams ?? {}).length > 0) return candidate;
+        }
+    } catch (error) {
+        console.error(`Failed to find scored gameweeks for ${divisionId} up to GW${fromGameweek}:`, error);
+    }
+    return null;
+}
+
+/**
  * A manager's most recent squad at or before a gameweek.
  *
  * Squads are picked before a deadline, but that gameweek's document is only
  * created once the gameweek is processed. Asking for the gameweek itself in
  * that window finds nothing, and a picker built on it has nobody to pick. This
- * walks back to the latest squad that exists; the returned `gameweek` says
- * which week it actually came from.
+ * starts from the division's latest scored gameweek and walks back only if
+ * this manager is missing from it; the returned `gameweek` says which week
+ * the squad actually came from.
  */
 export async function getLatestTeamsForGameweek(divisionId: DivisionId, userId: ManagerId, gameweek: number) {
-    for (let candidate = gameweek; candidate >= 1; candidate--) {
+    const latestScored = await getLatestScoredGameweek(divisionId, gameweek);
+    if (latestScored !== null) {
+        const team = await getTeamsForGameweek(divisionId, userId, latestScored);
+        if (team) return team;
+    }
+    const walkFrom = latestScored === null ? gameweek : latestScored - 1;
+    for (let candidate = walkFrom; candidate >= 1; candidate--) {
         const team = await getTeamsForGameweek(divisionId, userId, candidate);
         if (team) return team;
     }

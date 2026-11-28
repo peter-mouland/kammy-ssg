@@ -66,6 +66,8 @@ export interface CupAdminPageData {
     leagues: { name: string; members: string[] }[];
     /** How many cup-eligible managers a league generation would draw from. */
     managerCount: number;
+    /** The Divisions sheet could not be read, so managerCount is unknown, not zero. */
+    divisionsError?: boolean;
 }
 
 export interface CupSubmitPageData {

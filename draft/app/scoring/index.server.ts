@@ -19,6 +19,7 @@ export {
     createDivisionTeamsDocument,
     divisionDocumentExists,
     getDivisionTeamsDocument,
+    getLatestScoredGameweek,
     getLatestTeamsForGameweek,
     getTeamsForGameweek,
     updateDivisionTeamsDocument,

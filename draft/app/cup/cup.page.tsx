@@ -34,14 +34,25 @@ function GameweekSelector({ data }: { data: CupPageData }) {
     );
 }
 
-function StatusCell({ row }: { row: CupOverviewRow }) {
-    if (row.visibility === 'revealed') {
-        return <span className={styles.revealed}>{row.points ?? 0} pts</span>;
+/** One status cell for every cup table, so they cannot drift apart. */
+function SubmissionStatus({
+    visibility,
+    points,
+}: {
+    visibility: CupOverviewRow['visibility'];
+    points?: number | null;
+}) {
+    if (visibility === 'revealed') {
+        return <span className={styles.revealed}>{points ?? 0} pts</span>;
     }
-    if (row.visibility === 'submitted_hidden') {
+    if (visibility === 'submitted_hidden') {
         return <span className={styles.hidden}>🔒 Hidden until deadline</span>;
     }
     return <span className={styles.pending}>Not submitted</span>;
+}
+
+function StatusCell({ row }: { row: CupOverviewRow }) {
+    return <SubmissionStatus visibility={row.visibility} points={row.points} />;
 }
 
 function sideScore(points: number | null, aggregate: number | null): string {
@@ -122,13 +133,7 @@ function LeagueTables({ data }: { data: CupPageData }) {
                                     </td>
                                     <td className={styles.cell}>{entry.points}</td>
                                     <td className={styles.cell}>
-                                        {entry.visibility === 'revealed' ? (
-                                            <span className={styles.revealed}>Submitted</span>
-                                        ) : entry.visibility === 'submitted_hidden' ? (
-                                            <span className={styles.hidden}>Hidden until deadline</span>
-                                        ) : (
-                                            <span className={styles.pending}>Not submitted</span>
-                                        )}
+                                        <SubmissionStatus visibility={entry.visibility} points={entry.gameweekPoints} />
                                     </td>
                                 </tr>
                             ))}

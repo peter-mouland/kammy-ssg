@@ -136,7 +136,9 @@ export function CupSubmitPage() {
             <p className={styles.notice}>Pick in rank order — your first pick settles tied scores first (rule 4.7).</p>
             {data.squadGameweek ? (
                 <p className={styles.notice}>
-                    Picking from your GW{data.squadGameweek} squad, the most recent one available for your division.
+                    Picking provisionally from your GW{data.squadGameweek} squad, the most recent processed one.
+                    Transfers for this gameweek are only checked at the deadline, so your cup team is confirmed once
+                    they have been processed.
                 </p>
             ) : null}
             {data.squad.length === 0 ? (

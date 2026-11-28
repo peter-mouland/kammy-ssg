@@ -5,7 +5,7 @@ import { fplApiCache } from '../../../_shared/lib/fpl/api-cache';
 import { cupEligibleManagers } from '../../../_shared/lib/league-divisions';
 import { readDivisions } from '../../../_shared/lib/sheets/divisions';
 import { readUserTeams } from '../../../_shared/lib/sheets/user-teams';
-import { getLatestTeamsForGameweek } from '../../../scoring/index.server';
+import { getDivisionTeamsDocument, getLatestScoredGameweek } from '../../../scoring/index.server';
 import { type AutopickCandidate, planAutopicks } from '../../lib/autopick';
 import { getRoundForGameweek } from '../../lib/cup-config';
 import { isDeadlinePassed } from '../../lib/cup-deadlines';
@@ -45,14 +45,25 @@ export async function generateAutopicksAction(input: { gameweek: number }): Prom
     const [allUserTeams, divisions] = await Promise.all([readUserTeams(), readDivisions()]);
     const userTeams = cupEligibleManagers(allUserTeams, divisions);
 
-    const candidates: AutopickCandidate[] = [];
-    for (const team of userTeams) {
-        // Skip squad lookups for managers who already submitted: the plan
-        // would skip them anyway, and each lookup is a Firestore read.
-        if (submissions.some((s) => s.manager === team.userId && s.gameweek === gameweek)) continue;
-        const squad = await getLatestTeamsForGameweek(team.divisionId, team.userId, gameweek);
-        candidates.push({ manager: team.userId, division: team.divisionId, roster: squad ? squad.roster : null });
+    // One document read per division, not one walk per manager: find each
+    // division's latest scored gameweek once, read that document, and take
+    // every missing manager's roster from it.
+    const missing = userTeams.filter(
+        (team) => !submissions.some((s) => s.manager === team.userId && s.gameweek === gameweek),
+    );
+    const rosterByManager = new Map<string, AutopickCandidate['roster']>();
+    for (const divisionId of [...new Set(missing.map((team) => team.divisionId))]) {
+        const latestScored = await getLatestScoredGameweek(divisionId, gameweek);
+        const divisionDoc = latestScored === null ? null : await getDivisionTeamsDocument(divisionId, latestScored);
+        for (const team of missing.filter((candidate) => candidate.divisionId === divisionId)) {
+            rosterByManager.set(team.userId, divisionDoc?.teams[team.userId]?.roster ?? null);
+        }
     }
+    const candidates: AutopickCandidate[] = missing.map((team) => ({
+        manager: team.userId,
+        division: team.divisionId,
+        roster: rosterByManager.get(team.userId) ?? null,
+    }));
 
     const now = clockNow();
     const outcome = planAutopicks({ candidates, submissions, cupConfig, round, gameweek, now });

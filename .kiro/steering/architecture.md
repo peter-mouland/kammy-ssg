@@ -187,7 +187,7 @@ Several different gameweeks matter at the same moment, and naming them loosely h
 |---|---|---|
 | **selection** (open) gameweek | the one still open for transfers and cup picks — a request sent now counts towards it | `fplApiCache.getSelectionGameweekData()` |
 | **scoring** gameweek | the one whose deadline has gone, so its matches are being played. Rolls over at the deadline, **before** any standings for it exist | `fplApiCache.getScoringGameweek()` |
-| **latest scored** gameweek | the latest one that has points processed / standings written. What a default view should show | `findLatestScoredGameweek()` (leagues) |
+| **latest scored** gameweek | the latest one that has points processed / standings written. What a default view should show | `getLatestScoredGameweek()` (scoring, owns the documents); leagues wraps it as `findLatestScoredGameweek()` |
 | **previous** gameweek | the selection gameweek − 1, whose deadline has just passed | derived |
 
 "FPL says `finished`" means the matches are played. It does **not** mean our points have been processed for that gameweek. Anything that reads points (cup resolution, standings) must check that the points exist, not just that the gameweek finished.
