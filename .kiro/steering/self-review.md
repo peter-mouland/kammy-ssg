@@ -141,3 +141,4 @@ Write it the way a reviewer would, in this order:
 5. **Nits**: one line each.
 6. **Tests**: what they prove, and the missing case.
 7. **DDD / conventions**: a plain rating for boundaries, model and conventions, with each crack named.
+8. **Before you request review**: a short checklist of the things the author still has to do, in order.

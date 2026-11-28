@@ -60,7 +60,7 @@ All league configuration and management decisions live here — managed by admin
 | `CupBracket` | Knockout bracket state |
 | `Rules Settings` | `key \| value` config for `/rules` — `rulesDocPubId` is the published Google Doc it embeds. Wins over the `GOOGLE_RULES_DOC_PUB_ID` env fallback, so swapping the doc needs no deploy |
 
-Access: `googleapis` with a service account (base64 credentials in env). Each sheet has its own module in `draft/app/_shared/lib/sheets/`.
+Access: `@googleapis/sheets` with a service account (base64 credentials in env). Each sheet has its own module in `draft/app/_shared/lib/sheets/`.
 
 ### FPL API (live player and gameweek data)
 Live data from `https://fantasy.premierleague.com/api/`:

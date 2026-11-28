@@ -1,0 +1,7 @@
+---
+description: Self-review checklist to run on your own branch before requesting a human review. Apply when asked to "self-review", "review my branch", or "check this before I open a PR".
+alwaysApply: false
+---
+
+@.claude/agents/self-review.md
+@.kiro/steering/self-review.md
